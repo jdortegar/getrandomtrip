@@ -15,6 +15,7 @@ const copy: TripperReviewsDict = {
   title: "RESEÑAS & NPS",
   eyebrow: "Lo que dicen tus viajeros",
   description: "Mira las reseñas de tus clientes y tu puntaje NPS.",
+  errorLoad: "Error al cargar las reseñas",
   kpis: {
     averageRating: "Rating promedio",
     totalReviews: "Total reseñas",
@@ -239,6 +240,50 @@ describe("ReviewsPageClient — sort composes with filter, search, and paginatio
     expect(postSortUrl).toContain("status=approved");
     expect(postSortUrl).toContain("search=Ana");
     expect(postSortUrl).toContain("sortBy=rating");
+  });
+});
+
+describe("ReviewsPageClient — initial load error (never loaded)", () => {
+  it("recovers into an interactive page showing the error, not a dead end", async () => {
+    fetchMock().mockResolvedValue({
+      ok: false,
+      json: async () => ({}),
+    });
+
+    render(<ReviewsPageClient dict={copy} locale="es" />);
+    await flush();
+
+    // The "has loaded once" flag transitions on any settle (success or
+    // failure), so the steady state after a failed first load is the full
+    // interactive page with the error surfaced inline — never a stuck spinner.
+    expect(container.textContent).toContain(copy.errorLoad);
+    expect(container.querySelector("select")).not.toBeNull();
+  });
+});
+
+describe("ReviewsPageClient — refetch error keeps chrome mounted", () => {
+  it("shows an inline banner inside the panel without unmounting header/filters", async () => {
+    render(<ReviewsPageClient dict={copy} locale="es" />);
+    await flush();
+
+    expect(container.textContent).toContain("Reseñas de clientes");
+
+    fetchMock().mockResolvedValue({
+      ok: false,
+      json: async () => ({}),
+    });
+
+    const select = container.querySelector("select") as HTMLSelectElement;
+    await act(async () => {
+      select.value = "approved";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      await Promise.resolve();
+    });
+    await flush();
+
+    expect(container.querySelector("select")).not.toBeNull();
+    const banner = container.querySelector('[role="alert"]');
+    expect(banner).not.toBeNull();
   });
 });
 

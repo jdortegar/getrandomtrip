@@ -701,6 +701,7 @@
       "eyebrow": "Solicitudes de clientes",
       "title": "Solicitudes de viaje",
       "edit": "Editar",
+      "errorLoad": "Error al cargar las solicitudes de viaje.",
       "empty": "No se encontraron solicitudes de viaje.",
       "filters": {
         "allStatuses": "Todos los estados",
@@ -4171,6 +4172,7 @@
     "title": "RESEÑAS & NPS",
     "eyebrow": "Lo que dicen tus viajeros",
     "description": "Mira las reseñas de tus clientes y tu puntaje NPS.",
+    "errorLoad": "Error al cargar las reseñas",
     "kpis": {
       "averageRating": "Rating promedio",
       "totalReviews": "Total reseñas",

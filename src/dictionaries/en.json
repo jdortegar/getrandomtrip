@@ -701,6 +701,7 @@
       "eyebrow": "Client requests",
       "title": "Trip Requests",
       "edit": "Edit",
+      "errorLoad": "Failed to load trip requests.",
       "empty": "No trip requests found.",
       "filters": {
         "allStatuses": "All statuses",
@@ -4171,6 +4172,7 @@
     "title": "REVIEWS & NPS",
     "eyebrow": "What your travelers say",
     "description": "See your client reviews and your NPS score.",
+    "errorLoad": "Failed to load reviews",
     "kpis": {
       "averageRating": "Average rating",
       "totalReviews": "Total reviews",

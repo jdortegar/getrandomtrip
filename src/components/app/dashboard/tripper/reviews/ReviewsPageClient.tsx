@@ -7,7 +7,9 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { SortButton } from "@/components/ui/SortButton";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import { useDictionary } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import {
   REVIEW_SORT_DEFAULT,
   REVIEW_SORT_INITIAL_ORDER,
@@ -81,7 +83,8 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
+  const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,6 +112,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
 
     async function fetchReviews() {
       setLoading(true);
+      setError(null);
       try {
         const params = new URLSearchParams({
           page: String(page),
@@ -121,10 +125,15 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
 
         const res = await fetch(`/api/tripper/reviews?${params.toString()}`);
         const data = (await res.json()) as {
+          error?: string;
           reviews?: TripperReview[];
           total?: number;
         } & Partial<ReviewsStats>;
         if (cancelled) return;
+        if (!res.ok) {
+          setError(data.error ?? copy.errorLoad);
+          return;
+        }
         setReviews(data.reviews ?? []);
         setTotal(data.total ?? 0);
         setStats({
@@ -134,11 +143,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           promoters: data.promoters ?? 0,
           totalReviews: data.totalReviews ?? 0,
         });
+      } catch {
+        if (!cancelled) setError(copy.errorLoad);
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-          setHasLoadedOnce(true);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
@@ -205,6 +213,8 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   }
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
+  if (error && !hasLoadedOnce)
+    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const kpis: KpiCard[] = [
     {
@@ -376,12 +386,15 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           />
         </div>
 
-        <div
-          className={cn(
-            "transition-opacity",
-            loading && "pointer-events-none opacity-50",
+        <TableLoadingOverlay isLoading={loading}>
+          {error && (
+            <div
+              className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+              role="alert"
+            >
+              {error}
+            </div>
           )}
-        >
           {reviews.length === 0 ? (
             <div className="py-16 text-center">
               <p className="mb-2 text-sm font-semibold text-neutral-700">
@@ -475,7 +488,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
               ))}
             </ul>
           )}
-        </div>
+        </TableLoadingOverlay>
       </div>
 
       <Pagination

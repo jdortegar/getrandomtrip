@@ -1,4 +1,5 @@
 import { SortButton } from "@/components/ui/SortButton";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import type { TripRequestSortBy, TripRequestSortOrder } from "@/lib/admin/tripRequestsSort";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -8,6 +9,8 @@ type TripRequestsCopy = MarketingDictionary["adminPages"]["tripRequests"];
 
 interface TripRequestsTableProps {
   copy: TripRequestsCopy;
+  error: string | null;
+  isLoading: boolean;
   locale: string;
   onSort: (field: TripRequestSortBy) => void;
   paymentStatusLabels: Record<string, string>;
@@ -19,6 +22,8 @@ interface TripRequestsTableProps {
 
 export function TripRequestsTable({
   copy,
+  error,
+  isLoading,
   locale,
   onSort,
   paymentStatusLabels,
@@ -39,7 +44,18 @@ export function TripRequestsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <TableLoadingOverlay
+      className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+      isLoading={isLoading}
+    >
+      {error && (
+        <div
+          className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
       {trips.length === 0 ? (
         <p className="py-16 text-center text-sm text-neutral-500">
           {copy.empty}
@@ -123,6 +139,6 @@ export function TripRequestsTable({
           </table>
         </div>
       )}
-    </div>
+    </TableLoadingOverlay>
   );
 }

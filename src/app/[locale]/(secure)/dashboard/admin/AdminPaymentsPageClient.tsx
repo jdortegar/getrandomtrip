@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import type { AdminPayment } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 
 const PAGE_SIZE = 20;
 
@@ -20,6 +22,7 @@ export function AdminPaymentsPageClient() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
   const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -51,8 +54,8 @@ export function AdminPaymentsPageClient() {
     })();
   }, [page, copy.errorLoad]);
 
-  if (loading) return <LoadingSpinner />;
-  if (error)
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
+  if (error && !hasLoadedOnce)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
@@ -75,7 +78,18 @@ export function AdminPaymentsPageClient() {
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <TableLoadingOverlay
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        isLoading={loading}
+      >
+        {error && (
+          <div
+            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {payments.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {copy.empty}
@@ -147,7 +161,7 @@ export function AdminPaymentsPageClient() {
             </table>
           </div>
         )}
-      </div>
+      </TableLoadingOverlay>
 
       <Pagination
         nextLabel={paginationCopy.next}

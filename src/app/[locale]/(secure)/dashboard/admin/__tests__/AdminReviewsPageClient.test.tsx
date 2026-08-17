@@ -231,3 +231,53 @@ describe("AdminReviewsPageClient — sort composes with filter, search, and pagi
     expect(postSortUrl).toContain("sortBy=rating");
   });
 });
+
+describe("AdminReviewsPageClient — initial load error (never loaded)", () => {
+  it("recovers into an interactive page showing the error, not a dead end", async () => {
+    fetchMock().mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Boom" }),
+    });
+
+    render(<AdminReviewsPageClient />);
+    await flush();
+
+    // The "has loaded once" flag transitions on any settle (success or
+    // failure), so the steady state after a failed first load is the full
+    // interactive page with the error surfaced inline — never a stuck
+    // full-page blank error with no way to retry/clear filters.
+    expect(container.textContent).toContain("Boom");
+    expect(container.querySelector("select")).not.toBeNull();
+    expect(container.querySelector("table")).toBeNull();
+  });
+});
+
+describe("AdminReviewsPageClient — refetch error keeps chrome mounted", () => {
+  it("shows an inline banner inside the panel without unmounting header/filters", async () => {
+    render(<AdminReviewsPageClient />);
+    await flush();
+
+    // Header should be mounted after a successful initial load.
+    expect(container.textContent).toContain("Reseña");
+
+    fetchMock().mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Refetch boom" }),
+    });
+
+    const select = container.querySelector("select") as HTMLSelectElement;
+    await act(async () => {
+      select.value = "unapproved";
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+      await Promise.resolve();
+    });
+    await flush();
+
+    // Header/filter chrome still mounted.
+    expect(container.querySelector("select")).not.toBeNull();
+    // Inline banner rendered with role=alert.
+    const banner = container.querySelector('[role="alert"]');
+    expect(banner).not.toBeNull();
+    expect(banner?.textContent).toContain("Refetch boom");
+  });
+});
