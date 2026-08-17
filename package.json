@@ -92,6 +92,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "2.1.4",
+    "@netlify/plugin-lighthouse": "^6.0.4",
     "@prisma/client": "^7.4.1",
     "@tailwindcss/typography": "^0.5.19",
     "@types/bcryptjs": "^2.4.6",
