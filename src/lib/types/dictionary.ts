@@ -1729,6 +1729,12 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
+  /** Scratch-to-reveal gate shown once per trip over the hero (TripScratchReveal). */
+  scratch: {
+    title: string;
+    subtitle: string;
+    scrollCue: string;
+  };
 }
 
 export interface AdminTripFulfillmentDict {

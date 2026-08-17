@@ -689,3 +689,192 @@
   font-size: 0.78rem;
   color: #9ca3af;
 }
+
+/* ---------- Scratch-to-reveal gate ----------
+   Ported from the approved "Scratch to Reveal Gated" prototype. `.hero`'s
+   own min-height stays untouched — `.heroGated` only forces the wrapper to
+   100svh while the gate is up, so a returning visitor (gate already opened)
+   sees the hero at its normal height with no full-viewport jump. */
+:global(body.rt-scratch-locked) {
+  overflow: hidden;
+}
+
+.scratchWrap {
+  position: relative;
+  overflow: hidden;
+}
+.heroGated {
+  height: 100svh;
+}
+
+.scratchContent {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  transform: scale(1.06);
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.scratchContentRevealed {
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.scratchCover {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  touch-action: none;
+  cursor: url("/assets/icons/isologo-cursor.png") 36 36, grab;
+  transition: opacity 0.7s ease;
+}
+.scratchCoverGone {
+  opacity: 0;
+  pointer-events: none;
+}
+.scratchCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.scratchHint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+  color: #fff;
+  text-align: center;
+  padding: 32px;
+  transition: opacity 0.3s;
+}
+.scratchHintDim {
+  opacity: 0.22;
+}
+.scratchIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scratchBob 2.4s ease-in-out infinite;
+}
+.scratchIcon svg {
+  width: 25px;
+  height: 25px;
+}
+@keyframes scratchBob {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-8deg);
+  }
+  50% {
+    transform: translate(10px, -6px) rotate(6deg);
+  }
+}
+.scratchTitle {
+  font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 5vw, 52px);
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 0;
+}
+.scratchSubtitle {
+  margin: 0;
+  font-size: 13.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.scratchBar {
+  position: absolute;
+  left: clamp(24px, 5vw, 64px);
+  right: clamp(24px, 5vw, 64px);
+  bottom: 30px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+}
+.scratchBarFill {
+  display: block;
+  height: 100%;
+  background: var(--sun);
+  transition: width 0.12s linear;
+}
+
+.scrollCue {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.9s;
+  pointer-events: none;
+}
+.scrollCueVisible {
+  opacity: 1;
+}
+.scrollCueArrow {
+  font-size: 15px;
+  animation: scrollCueNudge 1.8s ease-in-out infinite;
+}
+@keyframes scrollCueNudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+/* ---------- <main> entrance stagger (post-gate) ---------- */
+.mainBlock {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mainRevealed .mainBlock {
+  opacity: 1;
+  transform: none;
+}
+.mainRevealed .mainBlock:nth-child(1) {
+  transition-delay: 0.05s;
+}
+.mainRevealed .mainBlock:nth-child(2) {
+  transition-delay: 0.13s;
+}
+.mainRevealed .mainBlock:nth-child(3) {
+  transition-delay: 0.21s;
+}
+.mainRevealed .mainBlock:nth-child(4) {
+  transition-delay: 0.29s;
+}
+.mainRevealed .mainBlock:nth-child(5) {
+  transition-delay: 0.37s;
+}
+.mainRevealed .mainBlock:nth-child(6) {
+  transition-delay: 0.45s;
+}

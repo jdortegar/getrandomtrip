@@ -4877,6 +4877,11 @@
     },
     "footer": {
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
+    },
+    "scratch": {
+      "title": "Rascá para descubrir",
+      "subtitle": "Deslizá el dedo sobre la tarjeta",
+      "scrollCue": "Seguí bajando"
     }
   },
   "tripReveal": {

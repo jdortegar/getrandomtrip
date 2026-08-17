@@ -4877,6 +4877,11 @@
     },
     "footer": {
       "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
+    },
+    "scratch": {
+      "title": "Scratch to reveal",
+      "subtitle": "Drag your finger across the card",
+      "scrollCue": "Keep scrolling"
     }
   },
   "tripReveal": {
