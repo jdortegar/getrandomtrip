@@ -1,3 +1,60 @@
+# Experience Type Filtering — Specification
+
+## Purpose
+
+Ensures experience type filtering in admin interfaces returns correct results regardless of caller casing.
+
+## Requirements
+
+### Requirement: Case-Normalized Experience Type Filtering
+
+`GET /api/admin/experiences` MUST normalize an incoming `type` query filter to the same case in which `Experience.type` values are stored before applying Prisma's exact-match `where.type = { has: filterType }`. Callers MAY send either case; the comparison MUST NOT depend on the caller's casing.
+
+(Fixes: `buildAssignableExperiencesQuery` forwards `TripRequest.type` verbatim, e.g. `"xsed"` lowercase, while `Experience.type` is stored in mixed case depending on type; the previous exact-match comparison returned zero results for certain callers.)
+
+#### Scenario: Lowercase filter matches stored type
+- GIVEN an `ACTIVE` experience with `type: ["XSED"]`
+- WHEN `GET /api/admin/experiences?type=xsed` is called
+- THEN that experience is included in the results
+
+#### Scenario: Existing uppercase callers are unaffected
+- GIVEN the admin catalog-browsing caller sends `type=XSED`
+- WHEN the request is processed
+- THEN the same matching experiences are returned as before this change
+
+#### Scenario: Admin assignment dropdown is no longer empty
+- GIVEN an XSED `TripRequest` with `type: "xsed"` and at least one `ACTIVE` experience with `type: ["XSED"]`
+- WHEN the admin trip-request page loads assignable experiences
+- THEN the dropdown is non-empty
+
+---
+
+# XSED Drop Authoring Content — Specification
+
+## Purpose
+
+Enables admins to author itinerary, inclusions, and exclusions content for XSED drops via the admin form.
+
+## Requirements
+
+### Requirement: XSED Drop Itinerary, Inclusions, and Exclusions Authoring
+
+`XsedDropDraft`, the `XsedDropShell` step map, and `PUT /api/admin/xsed/[id]`'s field whitelist MUST support `itinerary`, `inclusions`, and `exclusions`. These fields MUST persist through the update endpoint and be readable back unchanged.
+
+(Previously: all three fields were absent from `XsedDropDraft` and omitted from the `PUT` whitelist, so any value sent was silently dropped.)
+
+#### Scenario: Itinerary, inclusions, exclusions round-trip
+- GIVEN an admin adds itinerary days, inclusions, and exclusions to an XSED drop
+- WHEN the admin saves via `PUT /api/admin/xsed/[id]`
+- THEN a subsequent read of that drop returns the same itinerary, inclusions, and exclusions
+
+#### Scenario: Previously-dropped fields are no longer silently discarded
+- GIVEN a `PUT /api/admin/xsed/[id]` request includes `itinerary`
+- WHEN the request is processed
+- THEN `itinerary` is persisted, not silently omitted as before this change
+
+---
+
 # Experience Approval Flow — Specification
 
 ## Change: `experience-approval-flow`
@@ -14,30 +71,105 @@ Defines the authoritative status state machine for Experience records, pricing o
 
 ## Requirements
 
+### Requirement: Experience Ownership Source
+
+The `Experience` model MUST carry a `source: ExperienceSource` field with values `TRIPPER | RANDOMTRIP`, distinct from the `type: String[]` travel-category array. `source` MUST default to `TRIPPER`. `source` MUST be derived exclusively from the authenticated caller's role at creation time — it MUST NOT be read from, or settable via, the request body. Once set at creation, `source` is immutable for the lifetime of the record (no update path changes it).
+
+#### Scenario: Source derived from admin caller
+
+- GIVEN an authenticated ADMIN calls the experience creation endpoint
+- WHEN the row is created
+- THEN `source` is persisted as `RANDOMTRIP` regardless of any `source` value present in the request body
+
+#### Scenario: Source derived from tripper caller
+
+- GIVEN an authenticated TRIPPER calls the experience creation endpoint
+- WHEN the row is created
+- THEN `source` is persisted as `TRIPPER`
+
+#### Scenario: Client-sent source is ignored
+
+- GIVEN a request body containing `source: "RANDOMTRIP"` sent by a TRIPPER-role caller
+- WHEN the experience is created
+- THEN the persisted `source` is `TRIPPER` — the client-sent value has no effect
+
+---
+
+### Requirement: Role-Aware Experience Creation Endpoint
+
+`POST /api/tripper/experiences` MUST accept calls from both TRIPPER and ADMIN roles (no separate admin endpoint). For an ADMIN caller, the created experience MUST be persisted with `status: ACTIVE` directly (skipping `PENDING_REVIEW`) and MUST NOT include a commission value. For a TRIPPER caller, existing behavior MUST be unchanged: `status: DRAFT`, entering the standard `DRAFT → PENDING_REVIEW → ACTIVE` pipeline, with the commission field shown/required in the creation UI.
+
+#### Scenario: Admin creation auto-publishes
+
+- GIVEN an authenticated ADMIN submits the New Experience form
+- WHEN the creation request succeeds
+- THEN the experience is persisted with `status: ACTIVE` and `source: RANDOMTRIP`
+- AND it never passes through `PENDING_REVIEW`
+
+#### Scenario: Tripper creation flow unaffected
+
+- GIVEN an authenticated TRIPPER submits the New Experience form
+- WHEN the creation request succeeds
+- THEN the experience is persisted with `status: DRAFT` and `source: TRIPPER`, identical to pre-change behavior
+
+#### Scenario: Commission omitted for admin-created rows
+
+- GIVEN an ADMIN is creating a generic experience
+- WHEN the New Experience form renders for that caller
+- THEN no commission field/value is shown or submitted, and the server MUST NOT persist a commission value tied to that experience
+
+---
+
+### Requirement: XSED Ownership Backfill
+
+A one-time, idempotent migration MUST set `source: RANDOMTRIP` on every existing `Experience` row where `'XSED' = ANY(type)`, without altering the `type` array or any other field on those rows.
+
+#### Scenario: Existing XSED drops backfilled
+
+- GIVEN an XSED experience created before this change, with `type: ["XSED"]` and no `source` value
+- WHEN the migration runs
+- THEN the row has `source: RANDOMTRIP` and `type: ["XSED"]` unchanged
+
+#### Scenario: Non-XSED rows unaffected
+
+- GIVEN a tripper-owned experience with `type: ["couple"]`
+- WHEN the migration runs
+- THEN its `source` remains `TRIPPER` (the column default)
+
+---
+
 ### Requirement: Status State Machine
 
 The system MUST enforce the following lifecycle for Experience records:
 
 - `DRAFT` → `PENDING_REVIEW` (tripper submits)
+- `DRAFT` → `ACTIVE` (admin/RandomTrip creation auto-publish; `source: RANDOMTRIP` only)
 - `PENDING_REVIEW` → `ACTIVE` (admin approves)
 - `PENDING_REVIEW` → `DRAFT` (admin rejects)
 - `ACTIVE` → `DRAFT` (tripper edits; reverts to draft, loses ACTIVE)
 
-No other direct transitions are permitted. `INACTIVE` and `ARCHIVED` transitions are out of scope for this change.
+No other direct transitions are permitted. `INACTIVE` and `ARCHIVED` transitions are out of scope for this change. The `DRAFT → ACTIVE` transition MUST only occur for rows created with `source: RANDOMTRIP`; it MUST NOT be reachable for `source: TRIPPER` rows.
 
-#### Scenario: Happy path — submit → approve
+#### Scenario: Happy path — submit → approve (no copy)
 
-- GIVEN an experience in `DRAFT` status with all required fields complete
+- GIVEN an experience in `DRAFT` with all required fields complete
 - WHEN a tripper submits for review
 - THEN status becomes `PENDING_REVIEW`
 - AND the experience is read-only for the tripper until admin acts
 
-#### Scenario: Happy path — approve sets ACTIVE
+#### Scenario: Admin approves directly — no copy path
 
-- GIVEN an experience in `PENDING_REVIEW`
+- GIVEN an experience in `PENDING_REVIEW` with no review copy
 - WHEN an admin approves with valid `pricingByType`
 - THEN status becomes `ACTIVE`
 - AND `pricingByType` is persisted on the record
+
+#### Scenario: Admin approves — copy exists path
+
+- GIVEN an experience in `PENDING_REVIEW` with an existing review copy
+- WHEN an admin approves
+- THEN the copy data overwrites the original atomically and the copy is hard-deleted
+- AND status becomes `ACTIVE`
 
 #### Scenario: Rejection returns to DRAFT
 
@@ -45,13 +177,24 @@ No other direct transitions are permitted. `INACTIVE` and `ARCHIVED` transitions
 - WHEN an admin rejects with a non-empty `reviewNote`
 - THEN status becomes `DRAFT`
 - AND `reviewNote` is persisted on the record
-- AND the tripper can edit the experience again
 
 #### Scenario: Invalid transition rejected
 
 - GIVEN an experience in `ACTIVE` status
 - WHEN a request attempts to set status directly to `PENDING_REVIEW` without going through `DRAFT`
 - THEN the API MUST return a 422 error
+
+#### Scenario: Admin/RandomTrip creation skips PENDING_REVIEW
+
+- GIVEN an ADMIN caller creates a new generic experience
+- WHEN the creation request succeeds
+- THEN the record transitions directly from creation to `ACTIVE`, never occupying `DRAFT` or `PENDING_REVIEW`
+
+#### Scenario: Tripper-created rows cannot reach ACTIVE directly
+
+- GIVEN a TRIPPER caller creates a new experience (`source: TRIPPER`)
+- WHEN the creation request succeeds
+- THEN the record is `DRAFT` and MUST go through `PENDING_REVIEW` before it can become `ACTIVE`
 
 ---
 
@@ -277,6 +420,16 @@ On success, the experience MUST return to `DRAFT`, the side panel MUST close, an
 ---
 
 # API Contracts
+
+### `POST /api/tripper/experiences` (Updated — role-aware create)
+
+| Field | Rule |
+|-------|------|
+| Auth | TRIPPER or ADMIN role |
+| Behavior (TRIPPER) | `status: DRAFT`, `source: TRIPPER` |
+| Behavior (ADMIN) | `status: ACTIVE`, `source: RANDOMTRIP` |
+| Server-derived | `source` is derived from authenticated caller role; client-sent `source` is ignored |
+| Commission | Not included in request/response; TRIPPER path shows the field in UI, ADMIN path does not |
 
 ### `POST /api/tripper/experiences/[id]/submit`
 
