@@ -121,40 +121,6 @@ Values are persisted as percentages and map directly to CSS `object-position` / 
 
 ---
 
-## Feature: Invited-Only Site Access (2026-08-16)
-
-Generalizes the `TripperInvite` primitive into a kinded `AccessInvite` that can grant either the `TRIPPER` role or just a site-access pass through the marketing gate (`User.siteAccessGrantedAt`). Removes the existing-user guard on waitlist invites so a self-registered user can be invited to pass the gate; separates "invite someone to be a Tripper" (users table) from "invite someone to pass the gate" (waitlist table). Both accept flows now grant `siteAccessGrantedAt`; `TRIPPER`-kind grants also append the role.
-
-### Data Model
-
-`TripperInvite` model renamed to `AccessInvite` (table `tripper_invites` → `access_invites` via `ALTER TABLE` rename — no data loss) with new `kind` column (`AccessInviteKind` enum: `TRIPPER | SITE_ACCESS`, default `TRIPPER`). Pre-existing rows backfill to `TRIPPER` kind via the DEFAULT. New `User.siteAccessGrantedAt DateTime?` marks gate access, set to the current time on invite accept (both kinds) and on companion traveler claim.
-
-### Admin Trigger Endpoints
-
-`POST /api/admin/waitlist/[id]/invite` (renamed from `.../invite-tripper`, issues `kind: SITE_ACCESS`, no existing-user guard) and `POST /api/admin/users/[id]/invite-tripper` (path unchanged, issues `kind: TRIPPER`, 400 if target already `TRIPPER`/`ADMIN`). Email sends are kind-aware: `SITE_ACCESS` emails do not reference a Tripper role.
-
-### Accept Flow — Existing User
-
-Set `siteAccessGrantedAt` on the user regardless of `kind`. When `kind: TRIPPER`, additionally append `TRIPPER` to `roles`. Mark the invite `consumedAt` and redirect to `/` with a log-in message.
-
-### Accept Flow — New User
-
-Render the registration form with invite email pre-filled. On successful account creation (credentials or Google OAuth), set `siteAccessGrantedAt` regardless of `kind`. When `kind: TRIPPER`, additionally grant `roles: [TRAVELER, TRIPPER]` at creation; otherwise `roles: [TRAVELER]`. Mark the invite `consumedAt` and delete the matching `WaitlistEntry` (by email) if one exists.
-
-### Schema Delivery Sequencing
-
-Delivering the `AccessInvite` rename and new columns MUST follow a two-phase sequence (idempotent SQL script → `db:push`) because this repository has no Prisma migration history. Phase 1: run `npm run db:rename-access-invites` (idempotent SQL via `$executeRawUnsafe`: enum create, table+index rename, column adds). Phase 2: run `npm run db:push` (expect "already in sync"; if it proposes a drop, ABORT — do not pass `--accept-data-loss`). Phase 3: `npm run db:generate`. No application code referencing `prisma.accessInvite` may run before phase 2 completes.
-
-### Admin Waitlist Invite Availability
-
-Waitlist table invite action (row button and bulk invite) MUST be available for every entry regardless of existing-user status. Client-side gating (`alreadyMember` disabling the row button, `invitableSelectedIds` filter, "skipped" note) is removed alongside the server 400 guard. This explicitly supersedes the invite-filtering half of the `waitlist-bulk-actions` change's Resolved Decision #1. The other half (checkboxes and bulk delete never filtered by `alreadyMember`) is unaffected. The `alreadyMember` status chip remains rendered as information.
-
-### Accept Page Copy Selection
-
-The accept-invite client MUST select copy based on resolved invite's `kind`. For `kind: SITE_ACCESS`, both accept-page branches render `tripperInviteAccept.siteAccess` override strings instead of the default Tripper copy. For `kind: TRIPPER`, both branches render the default copy.
-
----
-
 ## Next Steps
 
 1. **Fix blog link locale prefix** — prepend `/${locale}` to all blog navigation links in `BlogPostsList`, `BlogPostRow`, and `TripperQuickActions`.
