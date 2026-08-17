@@ -812,42 +812,6 @@
   transition: width 0.12s linear;
 }
 
-.scrollCue {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 22px;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 0.5s ease 0.9s;
-  pointer-events: none;
-}
-.scrollCueVisible {
-  opacity: 1;
-}
-.scrollCueArrow {
-  font-size: 15px;
-  animation: scrollCueNudge 1.8s ease-in-out infinite;
-}
-@keyframes scrollCueNudge {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(5px);
-  }
-}
-
 /* ---------- <main> entrance stagger (post-gate) ---------- */
 .mainBlock {
   opacity: 0;

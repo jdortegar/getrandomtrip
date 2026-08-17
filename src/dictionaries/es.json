@@ -4883,8 +4883,7 @@
     },
     "scratch": {
       "title": "Rascá para descubrir",
-      "subtitle": "Deslizá el dedo sobre la tarjeta",
-      "scrollCue": "Seguí bajando"
+      "subtitle": "Deslizá el dedo sobre la tarjeta"
     }
   },
   "tripReveal": {

@@ -21,7 +21,7 @@ import { TripScratchReveal } from "@/components/app/dashboard/traveler/TripScrat
 const TRIP_ID = "trip-123";
 const STORAGE_KEY = `rt:scratch:${TRIP_ID}`;
 
-const copy = { title: "Scratch to reveal", subtitle: "Drag your finger", scrollCue: "Keep scrolling" };
+const copy = { title: "Scratch to reveal", subtitle: "Drag your finger" };
 
 // Node 25's native (unflagged) `localStorage` global shadows happy-dom's
 // implementation and is non-functional without `--localstorage-file`

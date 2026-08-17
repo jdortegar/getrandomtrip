@@ -4883,8 +4883,7 @@
     },
     "scratch": {
       "title": "Scratch to reveal",
-      "subtitle": "Drag your finger across the card",
-      "scrollCue": "Keep scrolling"
+      "subtitle": "Drag your finger across the card"
     }
   },
   "tripReveal": {

@@ -1733,7 +1733,6 @@ export interface TripItineraryDict {
   scratch: {
     title: string;
     subtitle: string;
-    scrollCue: string;
   };
 }
 

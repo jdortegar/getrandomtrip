@@ -15,7 +15,6 @@ export const BODY_LOCK_CLASS = "rt-scratch-locked";
 interface TripScratchRevealCopy {
   title: string;
   subtitle: string;
-  scrollCue: string;
 }
 
 interface TripScratchRevealProps {
@@ -238,13 +237,6 @@ export function TripScratchReveal({ tripId, children, copy, onComplete }: TripSc
           </div>
         </div>
       )}
-
-      <div className={`${styles.scrollCue} ${revealed ? styles.scrollCueVisible : ""}`}>
-        <span>{copy.scrollCue}</span>
-        <span className={styles.scrollCueArrow} aria-hidden="true">
-          ↓
-        </span>
-      </div>
     </div>
   );
 }
