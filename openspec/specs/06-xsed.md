@@ -2,7 +2,7 @@
 
 **Priority:** 6 — Secondary curated drop product  
 **Routes:** `/xsed`, `/xsed/book`, `/xsed/drops`, `/xsed/drops/[slug]`, `/dashboard/admin/xsed/new`, `/dashboard/admin/xsed/[id]/edit`  
-**Last audited:** 2026-06-22
+**Last audited:** 2026-08-16
 
 ---
 
@@ -15,6 +15,8 @@ XSED is a curated-drop product: a single surprise overnight trip with limited sp
 ## Business Rules
 
 - **Trip dates are always canonical, never admin-configured.** Every XSED `TripRequest` runs from the upcoming Saturday to the following Sunday, computed fresh server-side at booking time via `xsedCanonicalDates()` in `POST /api/trip-requests` — regardless of any date typed into the admin drop form. `Experience.tripDate` is informational only (used for display and reveal-countdown copy); it must never be read back into a `TripRequest`'s `startDate`/`endDate`. This was a real bug: a stale `tripDate` on one drop (entered via an unconstrained `<input type="date">` with no validation) silently overrode the correct booking dates for a real purchase. Do not reintroduce any code path that lets a linked Experience's date win over the canonical computation.
+- **The booking window is Sunday 16:00-20:00 local time, enforced server-side at the `/xsed/book` page itself** — not just cosmetic countdown UI. `src/lib/xsed/window.ts` defines the window (`DROP_DAY_OF_WEEK`/`LOCAL_WINDOW_START_HOUR`/`LOCAL_WINDOW_END_HOUR`) and `isLocalWindowOpen(tz)`; the page resolves the visitor's timezone from the Netlify-injected `x-country` header and renders `XsedUnavailablePage` instead of the booking form when the window is closed. This is the only enforcement point in the app — no other route (checkout, payment-intent, trip-requests) re-checks the window, so it relies entirely on the page gate, not a defense-in-depth check at purchase time.
+- **Three independent bypasses can open the window, each an OR against the others** (any one is sufficient): (1) the signed-in user has the `admin` role; (2) the `XSED_BYPASS_WINDOW` env var is `"true"`; (3) the admin-configurable `SiteSetting.xsedWindowEnforcementEnabled` flag is off — toggled from `/dashboard/admin/settings`'s Features tab ("XSED window validation"), read via `isXsedWindowEnforcementEnabled()`. Unlike the other two, this one is a live DB flag any admin can flip without a deploy or env change, meant for letting ops open XSED purchases outside the normal Sunday window (e.g. a special one-off drop).
 
 ---
 
@@ -25,7 +27,7 @@ What works end-to-end today:
 - **`/xsed`** — Landing page renders. Hero, product explanation, CTA to join waitlist or book.
 - **`/xsed/drops`** — Renders a list of XSED drops fetched from `/api/xsed/drops`. Shows active and past drops.
 - **`/xsed/drops/[slug]`** — Individual drop detail page. Fetches drop data, sold-count from `/api/xsed/drops/[slug]/sold-count`. Renders drop info, countdown, CTA.
-- **`/xsed/book`** — Booking form for XSED. Wired into the Stripe checkout flow with server-authoritative XSED-specific date handling (canonical dates override client-sent values — see `xsedCanonicalDates()` in the trip-requests API; see Business Rules above).
+- **`/xsed/book`** — Server-gated: renders the booking form only when the Sunday 16-20hs local window is open (or one of the three bypasses applies — see Business Rules above); otherwise renders `XsedUnavailablePage`. When open, wired into the Stripe checkout flow with server-authoritative XSED-specific date handling (canonical dates override client-sent values — see `xsedCanonicalDates()` in the trip-requests API).
 - **Admin drop creation** — `/dashboard/admin/xsed/new` and `/dashboard/admin/xsed/[id]/edit` allow admins to create and edit drops with date, pricing, capacity, and destination.
 - **XSED notifications** — Admin can create and manage XSED notification records (`/api/admin/xsed-notifications`). Internal notify endpoint at `POST /api/internal/xsed/notify`.
 - **Sold-count** — `GET /api/xsed/drops/[slug]/sold-count` returns real-time booking count for a drop.

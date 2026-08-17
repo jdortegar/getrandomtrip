@@ -15,6 +15,21 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
+# Lighthouse audit on every deploy. Thresholds below are a starting point, NOT
+# strict gates yet — we have no baseline. Tune these once we've seen a few
+# real reports from the deployed (SSR) site.
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+
+  [plugins.inputs]
+    output_path = "reports/lighthouse.html"
+
+    [plugins.inputs.thresholds]
+      performance = 0.8
+      accessibility = 0.9
+      best-practices = 0.9
+      seo = 0.9
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
