@@ -3389,6 +3389,19 @@
     },
     "comingSoon": "Próximamente",
     "comingSoonDescription": "Esta sección estará disponible próximamente.",
+    "dangerZone": {
+      "title": "Eliminar cuenta",
+      "hint": "Desactiva tu cuenta y cerrás sesión. Iniciá sesión de nuevo dentro de los próximos 30 días para recuperarla con todos tus datos intactos — pasado ese plazo, tu cuenta se elimina de forma permanente.",
+      "deleteButton": "Eliminar cuenta",
+      "confirmTitle": "¿Seguro que querés eliminar tu cuenta?",
+      "cancel": "Cancelar",
+      "confirming": "Eliminando...",
+      "error": "No pudimos eliminar tu cuenta. Intentá de nuevo.",
+      "blockedTitle": "Todavía no podés eliminar tu cuenta.",
+      "blockedActiveTrips": "Tenés viajes activos — esperá a que finalicen o cancelalos primero.",
+      "blockedOwnedExperiences": "Tenés experiencias publicadas — eliminalas o transferilas primero.",
+      "blockedAdmin": "Las cuentas de administrador no se pueden eliminar desde acá."
+    },
     "tripperSections": {
       "publicProfileDescription": "Tu perfil público es lo que ven los clientes. Mantenerlo actualizado mejora tu visibilidad.",
       "publicProfileCta": "Ver y editar perfil público",
@@ -3899,7 +3912,7 @@
       "newPost": "Nuevo Post",
       "experiences": "Mis Experiencias",
       "experiencesSub": "Ver todas las experiencias",
-      "settings": "Mi Perfil",
+      "settings": "Configuración",
       "settingsSub": "Gestiona tu perfil",
       "dashboard": "Mi Dashboard",
       "notifications": "Notificaciones"
@@ -4012,7 +4025,7 @@
       "trips": "Mis viajes",
       "reviews": "Mis reseñas",
       "notifications": "Notificaciones",
-      "settings": "Mi Perfil"
+      "settings": "Configuración"
     },
     "pageHeadings": {
       "dashboard": {

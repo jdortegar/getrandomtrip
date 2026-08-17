@@ -3389,6 +3389,19 @@
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
+    "dangerZone": {
+      "title": "Delete account",
+      "hint": "This deactivates your account and signs you out. Log back in within 30 days to restore it with all your data intact — after that, your account is permanently deleted.",
+      "deleteButton": "Delete account",
+      "confirmTitle": "Are you sure you want to delete your account?",
+      "cancel": "Cancel",
+      "confirming": "Deleting...",
+      "error": "We couldn't delete your account. Please try again.",
+      "blockedTitle": "You can't delete your account yet.",
+      "blockedActiveTrips": "You have active trips — wait until they're completed or cancel them first.",
+      "blockedOwnedExperiences": "You have published experiences — remove or transfer them first.",
+      "blockedAdmin": "Admin accounts can't be deleted from here."
+    },
     "tripperSections": {
       "publicProfileDescription": "Your public profile is what clients see when looking for trippers. Keeping it updated improves your visibility.",
       "publicProfileCta": "View and edit public profile",
@@ -3899,7 +3912,7 @@
       "blogs": "My Posts",
       "blogsSub": "Manage blog",
       "newPost": "New Post",
-      "settings": "My Profile",
+      "settings": "Settings",
       "settingsSub": "Manage your profile",
       "dashboard": "My Dashboard",
       "notifications": "Notifications"
@@ -4012,7 +4025,7 @@
       "trips": "My trips",
       "reviews": "My reviews",
       "notifications": "Notifications",
-      "settings": "My Profile"
+      "settings": "Settings"
     },
     "pageHeadings": {
       "dashboard": {

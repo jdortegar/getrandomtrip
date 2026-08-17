@@ -187,6 +187,15 @@ export const authOptions: NextAuthOptions = {
       // Ensure user has the database ID
       if (dbUser) {
         user.id = dbUser.id;
+
+        // Self-service account deactivation is a soft-delete — signing back
+        // in (any provider) restores the account exactly as it was.
+        if (dbUser.deactivatedAt) {
+          await prisma.user.update({
+            data: { deactivatedAt: null, isActive: true },
+            where: { id: dbUser.id },
+          });
+        }
       }
 
       return true;

@@ -1,10 +1,18 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getUserProfileMe } from "@/lib/db/user-queries";
+import {
+  getTripperDashboardStats,
+  getTripperReviewStats,
+  getTripperSettingsExtras,
+} from "@/lib/db/tripper-queries";
+import { prisma } from "@/lib/prisma";
 import Section from "@/components/layout/Section";
 import { AccountSettingsPanel } from "@/components/app/account/AccountSettingsPanel";
+import TripperSettingsPageClient from "@/app/[locale]/(secure)/dashboard/tripper/settings/TripperSettingsPageClient";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import type { TripperSettingsStats } from "@/types/tripper";
 
 export default async function TravelerSettingsPage(props: {
   params: Promise<{ locale: string }>;
@@ -15,9 +23,42 @@ export default async function TravelerSettingsPage(props: {
   const copy = dict.travelerDashboard.settingsProfile;
 
   const session = await getServerSession(authOptions);
-  const initialProfile = session?.user?.email
-    ? await getUserProfileMe(session.user.email)
-    : null;
+  const userId = session?.user?.id;
+  const email = session?.user?.email;
+  const initialProfile = email ? await getUserProfileMe(email) : null;
+
+  // A traveler who is also a tripper gets the same role toggle the tripper
+  // settings page has, so they can flip to their tripper profile without
+  // leaving this page.
+  const isAlsoTripper = initialProfile?.roles.includes("tripper") ?? false;
+
+  if (isAlsoTripper && userId) {
+    const [extras, totalExperiences, reviewStats, dashboardStats] =
+      await Promise.all([
+        getTripperSettingsExtras(userId),
+        prisma.experience.count({ where: { ownerId: userId } }),
+        getTripperReviewStats(userId),
+        getTripperDashboardStats(userId),
+      ]);
+
+    const initialStats: TripperSettingsStats = {
+      averageRating: reviewStats?.averageRating ?? 0,
+      totalBookings: dashboardStats?.totalBookings ?? 0,
+      totalExperiences,
+      totalReviews: reviewStats?.totalReviews ?? 0,
+    };
+
+    return (
+      <TripperSettingsPageClient
+        initialDict={dict}
+        initialExtras={extras}
+        initialStats={initialStats}
+        initialTravelerProfile={initialProfile}
+        initialViewMode="traveler"
+        locale={locale}
+      />
+    );
+  }
 
   return (
     <Section className="py-10!">

@@ -3049,6 +3049,21 @@ export interface MarketingDictionary {
     };
     comingSoon: string;
     comingSoonDescription: string;
+    /** Self-service account deactivation, in the Security tab. Soft-delete:
+     * no data is destroyed, logging back in restores the account. */
+    dangerZone: {
+      title: string;
+      hint: string;
+      deleteButton: string;
+      confirmTitle: string;
+      cancel: string;
+      confirming: string;
+      error: string;
+      blockedTitle: string;
+      blockedActiveTrips: string;
+      blockedOwnedExperiences: string;
+      blockedAdmin: string;
+    };
     header: {
       badgeActiveTraveler: string;
       badgeAdmin: string;

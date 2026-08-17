@@ -28,6 +28,7 @@ import { FormField } from "@/components/ui/FormField";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import EmptyState from "@/components/profile/EmptyState";
 import { AccountSettingsDocumentsTab } from "@/components/app/account/AccountSettingsDocumentsTab";
+import { AccountDangerZone } from "@/components/app/account/AccountDangerZone";
 import { AccountSettingsTagList } from "@/components/app/account/AccountSettingsTagList";
 import { AccountSettingsPasswordField } from "@/components/app/account/AccountSettingsPasswordField";
 import { TabSelector } from "@/components/ui/TabSelector";
@@ -839,6 +840,9 @@ export function AccountSettingsPanel({
           </div>
         </div>
       )}
+
+      {/* Danger zone */}
+      {activeTab === "security" && <AccountDangerZone copy={p.dangerZone} />}
 
       {/* Documents */}
       {activeTab === "documents" && <AccountSettingsDocumentsTab copy={p} />}
