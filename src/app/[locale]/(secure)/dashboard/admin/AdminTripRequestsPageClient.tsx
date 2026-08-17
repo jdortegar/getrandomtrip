@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { TripRequestsKPIStrip } from "@/components/app/admin/TripRequestsKPIStrip";
 import { TripRequestsTable } from "@/components/app/admin/TripRequestsTable";
 import { useDictionary } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import { useTripRequests } from "@/hooks/useTripRequests";
 import { resolveInitialStatusFilter } from "@/lib/admin/trip-status";
 import {
@@ -66,7 +67,6 @@ export function AdminTripRequestsPageClient({
     TRIP_REQUEST_SORT_DEFAULT.sortOrder,
   );
   const [page, setPage] = useState(1);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -77,6 +77,7 @@ export function AdminTripRequestsPageClient({
   }, [searchQuery]);
 
   const { error, loading, statusCounts, total, trips } = useTripRequests({
+    errorLoad: pageCopy.errorLoad,
     page,
     level: levelFilter,
     limit: PAGE_SIZE,
@@ -88,9 +89,7 @@ export function AdminTripRequestsPageClient({
     type: typeFilter,
   });
 
-  useEffect(() => {
-    if (!loading) setHasLoadedOnce(true);
-  }, [loading]);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const hasActiveFilters =
@@ -142,7 +141,7 @@ export function AdminTripRequestsPageClient({
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
 
-  if (error) {
+  if (error && !hasLoadedOnce) {
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
   }
 
@@ -253,6 +252,8 @@ export function AdminTripRequestsPageClient({
 
       <TripRequestsTable
         copy={pageCopy}
+        error={error}
+        isLoading={loading}
         locale={locale}
         onSort={toggleSort}
         paymentStatusLabels={paymentStatusLabels}

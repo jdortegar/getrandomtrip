@@ -13,6 +13,7 @@ const copy: MarketingDictionary["adminPages"]["tripRequests"] = {
   eyebrow: "Client requests",
   title: "Trip Requests",
   edit: "Edit",
+  errorLoad: "Failed to load trip requests.",
   empty: "No trip requests found.",
   filters: {
     allStatuses: "All statuses",
@@ -96,7 +97,11 @@ function baseTrip(overrides: Partial<AdminTripRequest> = {}): AdminTripRequest {
 let container: HTMLDivElement;
 let root: Root;
 
-function render(trips: AdminTripRequest[], onSort = vi.fn()) {
+function render(
+  trips: AdminTripRequest[],
+  onSort = vi.fn(),
+  overrides: { error?: string | null; isLoading?: boolean } = {},
+) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -104,6 +109,8 @@ function render(trips: AdminTripRequest[], onSort = vi.fn()) {
     root.render(
       <TripRequestsTable
         copy={copy}
+        error={overrides.error ?? null}
+        isLoading={overrides.isLoading ?? false}
         locale="en"
         onSort={onSort}
         paymentStatusLabels={{}}
@@ -175,5 +182,34 @@ describe("TripRequestsTable — column sorters", () => {
       statusButton?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
     expect(onSort).toHaveBeenCalledWith("status");
+  });
+});
+
+describe("TripRequestsTable — loading overlay and inline error", () => {
+  it("sets aria-busy=true on the panel when isLoading is true", () => {
+    render([baseTrip()], vi.fn(), { isLoading: true });
+    const panel = container.firstElementChild as HTMLElement;
+    expect(panel.getAttribute("aria-busy")).toBe("true");
+    expect(panel.className).toContain("pointer-events-none");
+  });
+
+  it("sets aria-busy=false and no dimming classes when not loading", () => {
+    render([baseTrip()], vi.fn(), { isLoading: false });
+    const panel = container.firstElementChild as HTMLElement;
+    expect(panel.getAttribute("aria-busy")).toBe("false");
+    expect(panel.className).not.toContain("pointer-events-none");
+  });
+
+  it("renders an inline role=alert banner when error is set, keeping the table mounted", () => {
+    render([baseTrip()], vi.fn(), { error: "Something broke" });
+    const banner = container.querySelector('[role="alert"]');
+    expect(banner).not.toBeNull();
+    expect(banner?.textContent).toContain("Something broke");
+    expect(container.querySelector("table")).not.toBeNull();
+  });
+
+  it("renders no banner when error is null", () => {
+    render([baseTrip()]);
+    expect(container.querySelector('[role="alert"]')).toBeNull();
   });
 });

@@ -8,8 +8,10 @@ import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { TableIconLink } from "@/components/ui/TableIconButton";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import type { AdminBlog } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import { cn } from "@/lib/utils";
 
 type Tab = "all" | "pending";
@@ -31,6 +33,7 @@ export function AdminBlogPageClient() {
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
   const [tab, setTab] = useState<Tab>("pending");
 
   async function fetchBlogs() {
@@ -69,8 +72,8 @@ export function AdminBlogPageClient() {
     void fetchBlogs();
   }, [page, tab]);
 
-  if (loading) return <LoadingSpinner />;
-  if (error)
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
+  if (error && !hasLoadedOnce)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
@@ -116,7 +119,18 @@ export function AdminBlogPageClient() {
       </div>
 
       {/* Table panel */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <TableLoadingOverlay
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        isLoading={loading}
+      >
+        {error && (
+          <div
+            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {blogs.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {tab === "pending" ? copy.emptyPending : copy.empty}
@@ -203,7 +217,7 @@ export function AdminBlogPageClient() {
             </table>
           </div>
         )}
-      </div>
+      </TableLoadingOverlay>
 
       <Pagination
         nextLabel={paginationCopy.next}

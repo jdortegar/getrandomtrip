@@ -7,9 +7,10 @@ import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { SortButton } from "@/components/ui/SortButton";
 import { TableIconButton } from "@/components/ui/TableIconButton";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
-import { cn } from "@/lib/utils";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import {
   REVIEW_SORT_DEFAULT,
   REVIEW_SORT_INITIAL_ORDER,
@@ -31,7 +32,7 @@ export function AdminReviewsPageClient() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -83,7 +84,6 @@ export function AdminReviewsPageClient() {
       setError(copy.errorLoad);
     } finally {
       setLoading(false);
-      setHasLoadedOnce(true);
     }
   }
 
@@ -132,7 +132,7 @@ export function AdminReviewsPageClient() {
   }, [page, statusFilter, debouncedSearch, sortBy, sortOrder]);
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
-  if (error)
+  if (error && !hasLoadedOnce)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
@@ -204,12 +204,18 @@ export function AdminReviewsPageClient() {
         </div>
       </div>
 
-      <div
-        className={cn(
-          "overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-opacity",
-          loading && "pointer-events-none opacity-50",
-        )}
+      <TableLoadingOverlay
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        isLoading={loading}
       >
+        {error && (
+          <div
+            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {reviews.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {copy.empty}
@@ -400,7 +406,7 @@ export function AdminReviewsPageClient() {
             </table>
           </div>
         )}
-      </div>
+      </TableLoadingOverlay>
 
       <Pagination
         nextLabel={paginationCopy.next}

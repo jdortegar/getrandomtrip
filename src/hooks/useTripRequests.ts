@@ -14,6 +14,7 @@ import type {
 } from "@/lib/admin/tripRequestsSort";
 
 interface UseTripRequestsParams {
+  errorLoad: string;
   page: number;
   level?: TripRequestLevel | "ALL";
   limit: number;
@@ -45,6 +46,7 @@ const EMPTY_COUNTS = {
 } satisfies Record<TripRequestStatus, number>;
 
 export function useTripRequests({
+  errorLoad,
   page,
   level,
   limit,
@@ -78,23 +80,40 @@ export function useTripRequests({
     if (search) params.set("search", search);
     if (sortBy) params.set("sortBy", sortBy);
     if (sortOrder) params.set("sortOrder", sortOrder);
-    const res = await fetch(`/api/admin/trip-requests?${params.toString()}`);
-    const data = (await res.json()) as {
-      error?: string;
-      tripRequests?: AdminTripRequest[];
-      total?: number;
-      statusCounts?: Record<TripRequestStatus, number>;
-    };
-    if (!res.ok) {
-      setError(data.error ?? "Failed to load trip requests.");
+    try {
+      const res = await fetch(
+        `/api/admin/trip-requests?${params.toString()}`,
+      );
+      const data = (await res.json()) as {
+        error?: string;
+        tripRequests?: AdminTripRequest[];
+        total?: number;
+        statusCounts?: Record<TripRequestStatus, number>;
+      };
+      if (!res.ok) {
+        setError(data.error ?? errorLoad);
+        return;
+      }
+      setTrips(data.tripRequests ?? []);
+      setTotal(data.total ?? 0);
+      setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
+    } catch {
+      setError(errorLoad);
+    } finally {
       setLoading(false);
-      return;
     }
-    setTrips(data.tripRequests ?? []);
-    setTotal(data.total ?? 0);
-    setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
-    setLoading(false);
-  }, [page, limit, status, type, level, paymentStatus, search, sortBy, sortOrder]);
+  }, [
+    errorLoad,
+    page,
+    limit,
+    status,
+    type,
+    level,
+    paymentStatus,
+    search,
+    sortBy,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     void load();

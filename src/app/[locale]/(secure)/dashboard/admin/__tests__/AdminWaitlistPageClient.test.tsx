@@ -502,3 +502,82 @@ describe("AdminWaitlistPageClient — bulk delete", () => {
     );
   });
 });
+
+describe("AdminWaitlistPageClient — refetch keeps chrome mounted and dims the panel", () => {
+  it("sets aria-busy on the panel during a page-change refetch without unmounting the header", async () => {
+    const page1 = makeEntries(25);
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ entries: page1.slice(0, 20), total: 25, page: 1, limit: 20 }),
+    });
+
+    render(<AdminWaitlistPageClient />);
+    await flush();
+
+    const panel = container.querySelector(".overflow-hidden.rounded-xl") as HTMLElement;
+    expect(panel.getAttribute("aria-busy")).toBe("false");
+
+    let resolveFetch: (value: unknown) => void = () => {};
+    (fetch as ReturnType<typeof vi.fn>).mockReturnValue(
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      }),
+    );
+
+    const nextButton = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Siguiente"),
+    ) as HTMLButtonElement;
+
+    await act(async () => {
+      nextButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    // Chrome (bulk-action buttons) still mounted mid-refetch, panel dimmed.
+    expect(buttonWithText("Invitar")).toBeTruthy();
+    expect(panel.getAttribute("aria-busy")).toBe("true");
+
+    await act(async () => {
+      resolveFetch({
+        ok: true,
+        json: async () => ({ entries: page1.slice(20), total: 25, page: 2, limit: 20 }),
+      });
+      await Promise.resolve();
+    });
+    await flush();
+
+    const settledPanel = container.querySelector(".overflow-hidden.rounded-xl") as HTMLElement;
+    expect(settledPanel.getAttribute("aria-busy")).toBe("false");
+  });
+});
+
+describe("AdminWaitlistPageClient — refetch error keeps chrome mounted", () => {
+  it("shows an inline banner without unmounting the page shell", async () => {
+    const entries = makeEntries(25);
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ entries: entries.slice(0, 20), total: 25, page: 1, limit: 20 }),
+    });
+
+    render(<AdminWaitlistPageClient />);
+    await flush();
+
+    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      json: async () => ({ error: "Refetch boom" }),
+    });
+
+    const nextButton = Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("Siguiente"),
+    ) as HTMLButtonElement;
+    await act(async () => {
+      nextButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await Promise.resolve();
+    });
+    await flush();
+
+    expect(buttonWithText("Invitar")).toBeTruthy();
+    const banner = container.querySelector('[role="alert"]');
+    expect(banner).not.toBeNull();
+    expect(banner?.textContent).toContain("Refetch boom");
+  });
+});

@@ -483,6 +483,7 @@ export interface TripperReviewsDict {
   title: string;
   eyebrow: string;
   description: string;
+  errorLoad: string;
   kpis: {
     averageRating: string;
     detractorsCaption: string;
@@ -1541,6 +1542,7 @@ export interface AdminPagesDict {
     eyebrow: string;
     title: string;
     edit: string;
+    errorLoad: string;
     empty: string;
     filters: {
       allStatuses: string;

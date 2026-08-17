@@ -1,6 +1,7 @@
 import type { RefObject } from "react";
 import type { AdminUser } from "./UsersTableRow";
 import { UsersTableRow } from "./UsersTableRow";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 interface UsersTableProps {
@@ -8,7 +9,9 @@ interface UsersTableProps {
   bulkSelectedIds: Set<string>;
   copy: MarketingDictionary["adminUsers"];
   currentUserId: string | null;
+  error: string | null;
   invitingId: string | null;
+  isLoading: boolean;
   locale: string;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
@@ -25,7 +28,9 @@ export function UsersTable({
   bulkSelectedIds,
   copy,
   currentUserId,
+  error,
   invitingId,
+  isLoading,
   locale,
   onDelete,
   onEdit,
@@ -46,7 +51,18 @@ export function UsersTable({
     copy.headers.actions,
   ];
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <TableLoadingOverlay
+      className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+      isLoading={isLoading}
+    >
+      {error && (
+        <div
+          className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+          role="alert"
+        >
+          {error}
+        </div>
+      )}
       {users.length === 0 ? (
         <p className="py-16 text-center text-sm text-neutral-500">
           {copy.empty}
@@ -97,6 +113,6 @@ export function UsersTable({
           </table>
         </div>
       )}
-    </div>
+    </TableLoadingOverlay>
   );
 }

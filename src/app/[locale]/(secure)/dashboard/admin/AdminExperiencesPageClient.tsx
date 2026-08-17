@@ -21,6 +21,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { SortButton } from "@/components/ui/SortButton";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
+import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   EXPERIENCE_SORT_DEFAULT,
@@ -31,6 +32,7 @@ import {
 import type { AdminExperience } from "@/lib/admin/types";
 import { EXPERIENCE_LEVELS, getExperienceTypes } from "@/lib/constants/packages";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import { cn } from "@/lib/utils";
 
 /** "PENDING" is a synthetic value spanning both pending-review statuses —
@@ -65,6 +67,7 @@ export function AdminExperiencesPageClient() {
   const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("PENDING");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
@@ -270,8 +273,8 @@ export function AdminExperiencesPageClient() {
     void fetchExperiences();
   }, [fetchExperiences]);
 
-  if (loading) return <LoadingSpinner />;
-  if (error)
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
+  if (error && !hasLoadedOnce)
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
 
   const cols = copy.columns;
@@ -402,7 +405,18 @@ export function AdminExperiencesPageClient() {
       )}
 
       {/* Table panel */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <TableLoadingOverlay
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        isLoading={loading}
+      >
+        {error && (
+          <div
+            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
+            role="alert"
+          >
+            {error}
+          </div>
+        )}
         {experiences.length === 0 ? (
           <p className="py-16 text-center text-sm text-neutral-500">
             {statusFilter === "PENDING" ? copy.emptyPending : copy.empty}
@@ -609,7 +623,7 @@ export function AdminExperiencesPageClient() {
             </table>
           </div>
         )}
-      </div>
+      </TableLoadingOverlay>
 
       <Pagination
         nextLabel={paginationCopy.next}

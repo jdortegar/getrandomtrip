@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
 import type { AdminUser } from "@/components/app/admin/UsersTableRow";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
 const PAGE_SIZE = 20;
@@ -34,6 +35,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
   const [error, setError] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -175,9 +177,9 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     })();
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
 
-  if (error) {
+  if (error && !hasLoadedOnce) {
     return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
   }
 
@@ -228,7 +230,9 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         bulkSelectedIds={bulkSelectedIds}
         copy={copy}
         currentUserId={currentUserId}
+        error={error}
         invitingId={invitingId}
+        isLoading={loading}
         locale={locale}
         onDelete={setDeleteTargetId}
         onEdit={setSelectedUserId}
