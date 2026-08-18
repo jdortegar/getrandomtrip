@@ -215,3 +215,124 @@ describe("PATCH /api/admin/users/[id] — tripperSince", () => {
     expect(updateArgs.data.tripperSince).toBeUndefined();
   });
 });
+
+describe("PATCH /api/admin/users/[id] — self-demote guard", () => {
+  let PATCH: RouteModule["PATCH"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    const mod = (await import("../route")) as RouteModule;
+    PATCH = mod.PATCH;
+  });
+
+  it("rejects an admin removing their own ADMIN role with 400 and never calls update", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminCaller("admin-1"),
+    );
+
+    const res = await PATCH(
+      makeRequest({ roles: ["TRAVELER"] }),
+      makeProps("admin-1"),
+    );
+
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("PATCH /api/admin/users/[id] — priceOverrides", () => {
+  let PATCH: RouteModule["PATCH"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminCaller("admin-1"),
+    );
+    (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "target-1",
+      roles: ["TRAVELER", "TRIPPER"],
+      tripperSlug: "some-slug",
+      commission: 0.2,
+      tripperPriceOverrides: { couple: { essenza: 220 } },
+    });
+    const mod = (await import("../route")) as RouteModule;
+    PATCH = mod.PATCH;
+  });
+
+  it("persists a valid grid atomically alongside roles/commission in one update call", async () => {
+    const res = await PATCH(
+      makeRequest({
+        commission: 20,
+        priceOverrides: { couple: { essenza: 220 } },
+        roles: ["TRAVELER", "TRIPPER"],
+      }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(200);
+    expect(prisma.user.update).toHaveBeenCalledTimes(1);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(updateArgs.data.tripperPriceOverrides).toEqual({
+      couple: { essenza: 220 },
+    });
+    expect(updateArgs.data.commission).toBe(0.2);
+  });
+
+  it("rejects an invalid cell with 400 and never calls update (nothing written)", async () => {
+    const res = await PATCH(
+      makeRequest({
+        priceOverrides: { couple: { essenza: -50 } },
+        roles: ["TRAVELER", "TRIPPER"],
+      }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects an override on a not-offered pair with 400 and never calls update", async () => {
+    const res = await PATCH(
+      makeRequest({
+        priceOverrides: { honeymoon: { essenza: 100 } },
+        roles: ["TRAVELER", "TRIPPER"],
+      }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects priceOverrides for a non-tripper target with 400 and never calls update", async () => {
+    const res = await PATCH(
+      makeRequest({
+        priceOverrides: { couple: { essenza: 220 } },
+        roles: ["TRAVELER"],
+      }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("omits tripperPriceOverrides from the update data when priceOverrides is absent from the body", async () => {
+    const res = await PATCH(
+      makeRequest({ roles: ["TRAVELER", "TRIPPER"] }),
+      makeProps(),
+    );
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.user.update as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect("tripperPriceOverrides" in updateArgs.data).toBe(false);
+  });
+});

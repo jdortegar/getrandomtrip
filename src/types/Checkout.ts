@@ -14,6 +14,8 @@ export interface CheckoutTripFromApi {
   id: string;
   type: string;
   level: string;
+  /** Server-resolved base price per person (USD), pre-pax-multiplier — prefers a tripper override, falls back to the global catalog. */
+  basePriceUsd: number;
   originCountry: string;
   originCity: string;
   startDate: string | null;

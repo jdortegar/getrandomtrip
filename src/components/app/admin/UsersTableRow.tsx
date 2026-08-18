@@ -1,5 +1,5 @@
 import { Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
-import { TableIconButton } from "@/components/ui/TableIconButton";
+import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 import { toCommissionPercent } from "@/lib/tripper/commission";
@@ -23,10 +23,8 @@ interface UsersTableRowProps {
   copy: MarketingDictionary["adminUsers"];
   invitingId: string | null;
   isCheckedForBulk: boolean;
-  isSelected: boolean;
   locale: string;
   onDelete: (id: string) => void;
-  onEdit: (id: string) => void;
   onInvite: (id: string) => void;
   onToggleBulkSelect: (id: string) => void;
   rowLockedForBulk: boolean;
@@ -42,10 +40,8 @@ export function UsersTableRow({
   copy,
   invitingId,
   isCheckedForBulk,
-  isSelected,
   locale,
   onDelete,
-  onEdit,
   onInvite,
   onToggleBulkSelect,
   rowLockedForBulk,
@@ -57,12 +53,7 @@ export function UsersTableRow({
     user.roles.includes("TRIPPER") || user.roles.includes("ADMIN");
   const isInviting = invitingId === user.id;
   return (
-    <tr
-      className={cn(
-        "transition-colors hover:bg-gray-50",
-        isSelected && "border-l-2 border-l-gray-900 bg-blue-50",
-      )}
-    >
+    <tr className="transition-colors hover:bg-gray-50">
       <td className="px-5 py-4">
         <input
           aria-label={copy.selectRow}
@@ -138,9 +129,12 @@ export function UsersTableRow({
               )}
             </TableIconButton>
           )}
-          <TableIconButton onClick={() => onEdit(user.id)} title={copy.edit}>
+          <TableIconLink
+            href={`/${locale}/dashboard/admin/settings/users/${user.id}/edit`}
+            title={copy.edit}
+          >
             <Pencil className="h-4 w-4" />
-          </TableIconButton>
+          </TableIconLink>
           <TableIconButton
             danger
             onClick={() => onDelete(user.id)}

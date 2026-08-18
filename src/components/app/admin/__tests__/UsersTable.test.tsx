@@ -46,12 +46,10 @@ function render(overrides: { error?: string | null; isLoading?: boolean } = {}) 
         isLoading={overrides.isLoading ?? false}
         locale="es"
         onDelete={vi.fn()}
-        onEdit={vi.fn()}
         onInvite={vi.fn()}
         onToggleBulkSelect={vi.fn()}
         onToggleSelectAll={vi.fn()}
         selectAllRef={createRef<HTMLInputElement>()}
-        selectedId={null}
         users={[user()]}
       />,
     );

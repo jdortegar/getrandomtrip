@@ -8,7 +8,8 @@ import Img from "@/components/common/Img";
 import { TRAVELER_TYPE_LABELS } from "@/lib/data/journey-labels";
 import { formatUSD } from "@/lib/format";
 import { useParams } from "next/navigation";
-import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import {
   getExcuseOptions,
@@ -139,6 +140,8 @@ interface JourneySummaryProps {
   summary: JourneySummaryDict;
   /** Checkout-aligned filter breakdown + subtotal/total labels (journey.checkout). */
   totalsLabels: JourneyTotalsLabels;
+  /** Requesting tripper's price overrides, or `null` for no tripper / RandomTrip-owned journeys. */
+  tripperPriceOverrides?: TripperPriceOverrides | null;
 }
 
 export default function JourneySummary({
@@ -151,6 +154,7 @@ export default function JourneySummary({
   refineDetailOptions,
   summary,
   totalsLabels,
+  tripperPriceOverrides = null,
 }: JourneySummaryProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
@@ -223,14 +227,21 @@ export default function JourneySummary({
   const locale = (params?.locale as string) ?? "es";
   const selectedLevel = useMemo(() => {
     if (!experience || !travelType) return null;
-    return getLevelById(travelType, experience, locale) ?? null;
-  }, [experience, travelType, locale]);
+    return (
+      getLevelById(travelType, experience, locale, tripperPriceOverrides) ??
+      null
+    );
+  }, [experience, travelType, locale, tripperPriceOverrides]);
 
   const selectedTravelTypeInfo = useMemo(() => {
     if (!travelType) return null;
     const card = getCardForType(travelType, locale);
     const price = selectedLevel
-      ? getBasePricePerPerson(travelType, selectedLevel.id)
+      ? resolveBasePricePerPerson({
+          levelId: selectedLevel.id,
+          overrides: tripperPriceOverrides,
+          travelerType: travelType,
+        }).price
       : 0;
     return {
       image: card?.img,
@@ -239,7 +250,7 @@ export default function JourneySummary({
       rating: 7.0,
       reviews: 10,
     };
-  }, [travelType, selectedLevel, locale]);
+  }, [travelType, selectedLevel, locale, tripperPriceOverrides]);
 
   const selectedExperienceInfo = useMemo(() => {
     if (!selectedLevel) return null;

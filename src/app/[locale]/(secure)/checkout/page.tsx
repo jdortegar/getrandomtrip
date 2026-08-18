@@ -23,8 +23,8 @@ import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
 import type { Logistics, Filters } from "@/store/slices/journeyStore";
 import {
+  applyPaxMultiplier,
   getBasePricePerPerson,
-  getPricePerPerson,
 } from "@/lib/data/traveler-types";
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import { formatUSD } from "@/lib/format";
@@ -407,7 +407,9 @@ function CheckoutContent() {
     selected: Array.isArray(trip?.addons) ? trip!.addons! : [],
   };
   const basePriceUsd = trip
-    ? getBasePriceFromCatalog(normalizeTripType(trip.type), trip.level) || 0
+    ? (trip.basePriceUsd ??
+      getBasePriceFromCatalog(normalizeTripType(trip.type), trip.level) ??
+      0)
     : 0;
 
   const avoidDestinations = filtersResolved.avoidDestinations ?? [];
@@ -478,9 +480,12 @@ function CheckoutContent() {
       (normalized ? getLevelById(travelType, normalized, resolvedLocale) : null)
     );
   })();
-  const pricePerPerson = getPricePerPerson(
+  // Derived from the already-resolved `basePriceUsd` (override-or-catalog,
+  // server-resolved on `trip`) so this card's price never disagrees with the
+  // total below — only the PAWS pax multiplier is applied client-side.
+  const pricePerPerson = applyPaxMultiplier(
+    basePriceUsd,
     travelType ?? "",
-    experience ?? undefined,
     pax,
   );
   const selectedTravelTypeInfo = (() => {

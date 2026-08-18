@@ -5,7 +5,9 @@ import { getStripe } from "@/lib/stripe";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { applyPaxMultiplier } from "@/lib/data/traveler-types";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
 import type {
@@ -83,7 +85,17 @@ export async function POST(request: NextRequest) {
     // the existing intent against — a family-scoped active row can be
     // reconfigured while a live PaymentIntent still points at the old
     // amount, and the idempotency short-circuit must not paper over that.
-    const basePriceUsd = getPricePerPerson(trip.type, trip.level, trip.pax);
+    const overrides = await loadTripperPriceOverrides(trip.tripperId);
+    const resolution = resolveBasePricePerPerson({
+      levelId: trip.level,
+      overrides,
+      travelerType: trip.type,
+    });
+    const basePriceUsd = applyPaxMultiplier(
+      resolution.price,
+      trip.type,
+      trip.pax,
+    );
 
     const addonsRaw = Array.isArray(trip.addons)
       ? (trip.addons as unknown as AddonSelection[])

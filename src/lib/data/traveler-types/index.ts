@@ -125,6 +125,24 @@ export function getBasePricePerPerson(
 const PAWS_PAX_MULTIPLIER = 1.2;
 
 /**
+ * Applies the PAWS pax multiplier (+20% for single/triple, base for pax 2) to
+ * an already-resolved base price per person. Extracted so the tripper-override
+ * price path (`resolveBasePricePerPerson`) can reuse it instead of duplicating
+ * the PAWS rule. Other traveler types are unaffected regardless of pax.
+ */
+export function applyPaxMultiplier(
+  base: number,
+  type: TravelerTypeSlug | string,
+  pax?: number,
+): number {
+  if (base === 0) return 0;
+  if (type !== "paws") return base;
+  const p = pax ?? 2;
+  if (p === 2) return base;
+  return Math.round(base * PAWS_PAX_MULTIPLIER);
+}
+
+/**
  * Price per person (USD) for checkout/totals. Applies PAWS +20% for single/triple when pax !== 2.
  */
 export function getPricePerPerson(
@@ -133,11 +151,7 @@ export function getPricePerPerson(
   pax?: number,
 ): number {
   const base = getBasePricePerPerson(type, levelId);
-  if (base === 0) return 0;
-  if (type !== "paws") return base;
-  const p = pax ?? 2;
-  if (p === 2) return base;
-  return Math.round(base * PAWS_PAX_MULTIPLIER);
+  return applyPaxMultiplier(base, type, pax);
 }
 
 /** All traveler type slugs in display order (used for options list and maps). */

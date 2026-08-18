@@ -34,6 +34,14 @@ model User {
   tripperSlug    String?  @unique // For trippers: 'dawson', 'alma', etc.
   commission     Float? // Tripper's commission rate (0.12 = 12%)
   availableTypes String[] @default([]) // ['solo', 'couple', 'group']
+  /**
+   * Admin-set per-tripper price overrides. Shape:
+   * Partial<Record<TravelerTypeSlug, Partial<Record<PriceLevelId, number>>>>.
+   * Absent key = inherit the global PRICE_BY_TYPE_AND_LEVEL catalog value.
+   * Only cells with an explicit override are stored; see
+   * src/lib/pricing/tripper-price-overrides.ts.
+   */
+  tripperPriceOverrides Json?
 
   // Tripper profile fields
   tripperSince        DateTime? // Set once, the moment the TRIPPER role is first granted — never overwritten after

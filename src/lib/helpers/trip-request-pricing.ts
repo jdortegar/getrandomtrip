@@ -1,5 +1,7 @@
-import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import { applyPaxMultiplier } from "@/lib/data/traveler-types";
 import type { PaymentTotalsInput } from "@/lib/helpers/payment-totals";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 
 /** Optional fields present on Prisma `TripRequest` list items (dashboard / GET /api/trips). */
@@ -43,16 +45,26 @@ function coerceTransport(raw: string | undefined): string {
 /**
  * Builds checkout-identical payment input from a stored trip request row.
  * Used when `totalTripUsd` is not persisted or is zero (unpaid drafts).
+ *
+ * `overrides` is REQUIRED (not optional) so TypeScript surfaces every call
+ * site that needs to load tripper overrides first — pass `null` explicitly
+ * for RandomTrip-owned trips (no tripper attribution).
  */
 export function paymentTotalsInputFromTripRequest(
   trip: TripRequestPricingFields,
+  overrides: TripperPriceOverrides | null,
 ): PaymentTotalsInput | null {
   const type = trip.type?.trim().toLowerCase();
   const level = trip.level?.trim();
   if (!type || !level) return null;
 
   const pax = Math.max(1, trip.pax || 1);
-  const basePriceUsd = getBasePricePerPerson(type, level) || 0;
+  const resolution = resolveBasePricePerPerson({
+    levelId: level,
+    overrides,
+    travelerType: type,
+  });
+  const basePriceUsd = applyPaxMultiplier(resolution.price, type, pax);
 
   const avoidList = Array.isArray(trip.avoidDestinations)
     ? trip.avoidDestinations

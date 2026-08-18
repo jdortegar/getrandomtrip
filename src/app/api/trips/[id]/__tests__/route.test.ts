@@ -56,6 +56,9 @@ const mockTrip = {
   payment: null,
   travelers: [],
   experience: mockExperience,
+  type: "couple",
+  level: "essenza",
+  tripperId: null,
 };
 
 // ── Tests ──────────────────────────────────────────────────────────────────────

@@ -12,7 +12,8 @@ import {
   commissionPercentToFraction,
   isValidCommissionPercent,
 } from "@/lib/tripper/commission";
-import type { UserRole } from "@prisma/client";
+import { parseTripperPriceOverridesPayload } from "@/lib/pricing/tripper-price-overrides";
+import type { Prisma, UserRole } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,7 @@ export async function PATCH(
       role?: unknown;
       roles?: unknown;
       commission?: unknown;
+      priceOverrides?: unknown;
     };
     let nextRoles: UserRole[] | null = parseUserRolesPayload(body.roles);
     if (!nextRoles && isValidRoleToken(body.role)) {
@@ -131,6 +133,27 @@ export async function PATCH(
     if (hasCommission && !isValidCommissionPercent(body.commission)) {
       return NextResponse.json(
         { error: "Invalid commission" },
+        { status: 400 },
+      );
+    }
+
+    // Price overrides are also admin-owned and optional; validate the ENTIRE
+    // grid before anything is written (ADR-4) — a single bad cell rejects
+    // the whole request, nothing partial. Only meaningful for a TRIPPER
+    // target: reject outright if the resulting roles don't include TRIPPER.
+    const hasPriceOverrides = body.priceOverrides !== undefined;
+    if (hasPriceOverrides && !nextRoles.includes("TRIPPER")) {
+      return NextResponse.json(
+        { error: "priceOverrides requires the TRIPPER role" },
+        { status: 400 },
+      );
+    }
+    const parsedOverrides = hasPriceOverrides
+      ? parseTripperPriceOverridesPayload(body.priceOverrides)
+      : null;
+    if (parsedOverrides && !parsedOverrides.ok) {
+      return NextResponse.json(
+        { error: `Invalid priceOverrides: ${parsedOverrides.error}` },
         { status: 400 },
       );
     }
@@ -176,8 +199,20 @@ export async function PATCH(
               ),
             }
           : {}),
+        ...(parsedOverrides?.ok
+          ? {
+              tripperPriceOverrides:
+                parsedOverrides.value as Prisma.InputJsonValue,
+            }
+          : {}),
       },
-      select: { id: true, roles: true, tripperSlug: true, commission: true },
+      select: {
+        id: true,
+        roles: true,
+        tripperSlug: true,
+        commission: true,
+        tripperPriceOverrides: true,
+      },
       where: { id: params.id },
     });
 

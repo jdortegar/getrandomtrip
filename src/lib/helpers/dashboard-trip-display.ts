@@ -53,22 +53,30 @@ export function getTripPriceParts(trip: Trip): {
     };
   }
 
-  const paymentInput = paymentTotalsInputFromTripRequest({
-    accommodationType: trip.accommodationType,
-    addons: trip.addons ?? null,
-    arrivePref: trip.arrivePref,
-    avoidDestinations: trip.avoidDestinations,
-    city: trip.city,
-    climate: trip.climate,
-    country: trip.country,
-    departPref: trip.departPref,
-    level: trip.level,
-    maxTravelTime: trip.maxTravelTime,
-    nights: trip.nights,
-    pax,
-    transport: trip.transport,
-    type: trip.type,
-  });
+  // `Trip` (dashboard list projection) carries no `tripperId`, so this
+  // display-only estimate cannot resolve a tripper override here — pass
+  // `null` explicitly (global catalog), matching this path's pre-existing
+  // behavior. Out of scope for the tripper-price-override change: this is
+  // never the authoritative charge (see stripe payment-intent route).
+  const paymentInput = paymentTotalsInputFromTripRequest(
+    {
+      accommodationType: trip.accommodationType,
+      addons: trip.addons ?? null,
+      arrivePref: trip.arrivePref,
+      avoidDestinations: trip.avoidDestinations,
+      city: trip.city,
+      climate: trip.climate,
+      country: trip.country,
+      departPref: trip.departPref,
+      level: trip.level,
+      maxTravelTime: trip.maxTravelTime,
+      nights: trip.nights,
+      pax,
+      transport: trip.transport,
+      type: trip.type,
+    },
+    null,
+  );
 
   if (paymentInput) {
     const t = calculatePaymentTotals(paymentInput);

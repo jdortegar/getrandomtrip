@@ -1738,6 +1738,54 @@ export interface TripItineraryDict {
   };
 }
 
+export interface AdminUserEditPageDict {
+  eyebrow: string;
+  subtitle: string;
+  backToUsers: string;
+  save: string;
+  saving: string;
+  cancel: string;
+  errorFallback: string;
+  rolesPanel: {
+    number: string;
+    title: string;
+    desc: string;
+    travelerBase: string;
+    travelerBaseHint: string;
+    tripper: string;
+    admin: string;
+    commissionLabel: string;
+    commissionPlaceholder: string;
+    commissionError: string;
+  };
+  pricingPanel: {
+    number: string;
+    title: string;
+    desc: string;
+    adminOnlyNote: string;
+    levelHeader: string;
+    notOffered: string;
+    inheritPlaceholder: string;
+    inheritedHint: string;
+    resetCell: string;
+    resetAll: string;
+    invalidValue: string;
+    notOfferedError: string;
+    requiresTripperError: string;
+  };
+  notTripperNotice: {
+    title: string;
+    caption: string;
+  };
+  levels: {
+    essenza: string;
+    explora: string;
+    "explora-plus": string;
+    bivouac: string;
+    atelier: string;
+  };
+}
+
 export interface AdminTripFulfillmentDict {
   eyebrow: string;
   /** Interpolated with {{userName}}. */
@@ -3179,6 +3227,7 @@ export interface MarketingDictionary {
     };
   };
   adminUsers: {
+    editPage: AdminUserEditPageDict;
     actions: string;
     edit: string;
     editing: string;

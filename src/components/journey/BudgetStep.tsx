@@ -7,6 +7,7 @@ import { TravelerTypesCarousel } from "@/components/landing/exploration/Traveler
 import TypePlanner from "@/components/by-type/TypePlanner";
 import { Button } from "@/components/ui/Button";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 
 type TravelerTypeCardOption = {
@@ -47,6 +48,8 @@ interface BudgetStepProps {
   travelerType?: TravelerTypeSlug;
   /** Tripper branding — when defined, shown on each trip type card (curated journey). */
   tripperBadge?: { name: string; avatarUrl: string | null };
+  /** This tripper's price overrides (curated journey). `null`/undefined for a direct journey. */
+  tripperPriceOverrides?: TripperPriceOverrides | null;
 }
 
 export default function BudgetStep({
@@ -65,6 +68,7 @@ export default function BudgetStep({
   travelerType,
   travelTypeContent,
   tripperBadge,
+  tripperPriceOverrides,
 }: BudgetStepProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,7 +82,11 @@ export default function BudgetStep({
 
   const hasTravelType = Boolean(travelerType);
   const rawPlannerContent = hasTravelType
-    ? getPlannerContentForType(travelerType as TravelerTypeSlug, locale)
+    ? getPlannerContentForType(
+        travelerType as TravelerTypeSlug,
+        locale,
+        tripperPriceOverrides,
+      )
     : null;
 
   // Apply level filtering when a curated allowedLevelsByType is provided.

@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { revertExpiredPendingPaymentsForUser } from "@/lib/db/tripRequest";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import { loadTripperPriceOverridesBatch } from "@/lib/pricing/tripper-price-overrides.server";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -84,8 +86,25 @@ export async function GET(request: NextRequest) {
         unknown
       >;
     }
+    // Server-resolved per-person base price (pre-pax-multiplier) so the
+    // checkout page's displayed price always matches what will be charged —
+    // prefers a tripper override for `trip.tripperId`, falls back to the
+    // global catalog. Batched to avoid one query per trip.
+    const overridesByTripperId = await loadTripperPriceOverridesBatch(
+      trips.map((trip) => trip.tripperId),
+    );
     const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId).map(
-      (trip) => ({ ...trip, role: tripRoleFor(trip, user.id) }),
+      (trip) => ({
+        ...trip,
+        basePriceUsd: resolveBasePricePerPerson({
+          levelId: trip.level,
+          overrides: trip.tripperId
+            ? (overridesByTripperId[trip.tripperId] ?? null)
+            : null,
+          travelerType: trip.type,
+        }).price,
+        role: tripRoleFor(trip, user.id),
+      }),
     );
     console.log("Trips found:", trips.length);
 

@@ -6,7 +6,6 @@ import { Search, Trash2 } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { BulkDeleteUsersModal } from "@/components/app/admin/BulkDeleteUsersModal";
 import { DeleteUserModal } from "@/components/app/admin/DeleteUserModal";
-import { UserRoleModal } from "@/components/app/admin/UserRoleModal";
 import { UsersTable } from "@/components/app/admin/UsersTable";
 import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
@@ -37,7 +36,6 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const [loading, setLoading] = useState(true);
   const hasLoadedOnce = useHasLoadedOnce(loading);
   const [error, setError] = useState<string | null>(null);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [invitingId, setInvitingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -105,10 +103,6 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
       setInvitingId(null);
     }
   }
-
-  const selectedUser = selectedUserId
-    ? users.find((u) => u.id === selectedUserId)
-    : null;
 
   const deleteTarget = deleteTargetId
     ? users.find((u) => u.id === deleteTargetId)
@@ -235,12 +229,10 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         isLoading={loading}
         locale={locale}
         onDelete={setDeleteTargetId}
-        onEdit={setSelectedUserId}
         onInvite={(id) => void inviteAsTripper(id)}
         onToggleBulkSelect={toggleBulkSelect}
         onToggleSelectAll={toggleSelectAll}
         selectAllRef={selectAllRef}
-        selectedId={selectedUserId}
         users={users}
       />
 
@@ -262,16 +254,6 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         open={bulkDeleteOpen}
       />
 
-      {selectedUser && (
-        <UserRoleModal
-          copy={copy}
-          key={selectedUser.id}
-          onClose={() => setSelectedUserId(null)}
-          onSaved={() => void fetchUsers()}
-          open
-          user={selectedUser}
-        />
-      )}
       {deleteTarget && (
         <DeleteUserModal
           copy={copy}

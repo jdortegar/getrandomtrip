@@ -4,7 +4,9 @@ import { getStripe } from "@/lib/stripe";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { applyPaxMultiplier } from "@/lib/data/traveler-types";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
 import type {
   AddonSelection,
@@ -52,7 +54,17 @@ export async function POST(request: NextRequest) {
     const effectivePax = fixedPax
       ? fixedPax.adults + fixedPax.minors
       : trip.pax;
-    const basePriceUsd = getPricePerPerson(trip.type, trip.level, effectivePax);
+    const overrides = await loadTripperPriceOverrides(trip.tripperId);
+    const resolution = resolveBasePricePerPerson({
+      levelId: trip.level,
+      overrides,
+      travelerType: trip.type,
+    });
+    const basePriceUsd = applyPaxMultiplier(
+      resolution.price,
+      trip.type,
+      effectivePax,
+    );
     const addonsRaw = Array.isArray(trip.addons)
       ? (trip.addons as unknown as AddonSelection[])
       : [];
