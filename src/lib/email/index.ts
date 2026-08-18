@@ -70,6 +70,7 @@ import TravelerReminder, {
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
+import { getStripe } from "@/lib/stripe";
 import React from "react";
 
 function resolveLocale(locale: string | null | undefined): "es" | "en" {
@@ -82,7 +83,7 @@ export function sendBookingConfirmed(
 ): void {
   void (async () => {
     try {
-      const [user, tripRequest] = await Promise.all([
+      const [user, tripRequest, payment] = await Promise.all([
         prisma.user.findUnique({
           where: { id: userId },
           select: { email: true, name: true, locale: true },
@@ -90,6 +91,10 @@ export function sendBookingConfirmed(
         prisma.tripRequest.findUnique({
           where: { id: tripRequestId },
           select: { type: true, nights: true, startDate: true },
+        }),
+        prisma.payment.findUnique({
+          where: { tripRequestId },
+          select: { stripePaymentIntentId: true },
         }),
       ]);
 
@@ -103,6 +108,22 @@ export function sendBookingConfirmed(
           )
         : undefined;
 
+      let receiptUrl: string | null = null;
+      if (payment?.stripePaymentIntentId) {
+        try {
+          const pi = await getStripe().paymentIntents.retrieve(
+            payment.stripePaymentIntentId,
+            { expand: ["latest_charge"] },
+          );
+          const charge = pi.latest_charge;
+          if (charge && typeof charge === "object" && "receipt_url" in charge) {
+            receiptUrl = (charge as { receipt_url: string | null }).receipt_url;
+          }
+        } catch (err) {
+          console.error("[email] sendBookingConfirmed receiptUrl:", err);
+        }
+      }
+
       await sendMail({
         to: user.email,
         subject: bookingConfirmedSubjects[locale],
@@ -113,6 +134,7 @@ export function sendBookingConfirmed(
             tripType: tripRequest.type,
             nights: tripRequest.nights,
             departureDate,
+            receiptUrl,
             locale,
           }),
         },
