@@ -1,7 +1,15 @@
 import React from "react";
 import { Resend } from "resend";
 
+/** Mirrors Resend's `Attachment` shape — kept local so callers don't need to import from `resend` directly. */
+export interface MailAttachment {
+  filename: string;
+  content: Buffer | string;
+  contentType?: string;
+}
+
 interface SendMailParams {
+  attachments?: MailAttachment[];
   content:
     | { react: React.ReactElement; html?: never; text?: string }
     | { html: string; react?: never; text?: string }
@@ -36,6 +44,7 @@ export async function sendMail(params: SendMailParams) {
 
   const { data, error } = await resend.emails.send({
     ...content,
+    attachments: params.attachments,
     from,
     replyTo: params.replyTo,
     subject: params.subject,

@@ -159,6 +159,9 @@ model TripRequest {
   // Companion travelers roster — locked server-side at startDate - 7 days
   travelersLockedAt DateTime? // Pass-2 cutoff-lock idempotency stamp
 
+  // Trip-start voucher email — attaches all TripDocument rows, sent once startDate has passed
+  voucherEmailSentAt DateTime? // Trip-start voucher email idempotency stamp
+
   // Timestamps
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

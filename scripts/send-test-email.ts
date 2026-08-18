@@ -13,6 +13,7 @@ import TripCompleted, { subjects as tripCompletedSubjects } from "../src/emails/
 import ExperienceSubmitted, { subjects as experienceSubmittedSubjects } from "../src/emails/ExperienceSubmitted";
 import WelcomeEmail, { subjects as welcomeEmailSubjects } from "../src/emails/WelcomeEmail";
 import AdminNewBooking, { subject as adminNewBookingSubject } from "../src/emails/AdminNewBooking";
+import TripStartVouchers, { subjects as tripStartVouchersSubjects } from "../src/emails/TripStartVouchers";
 
 const templates: Record<string, { element: React.ReactElement; subject: string }> = {
   NewsletterGoLive: {
@@ -117,6 +118,26 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
       locale: "es",
     }),
     subject: welcomeEmailSubjects.es,
+  },
+  TripStartVouchers: {
+    element: React.createElement(TripStartVouchers, {
+      client: "María García",
+      documents: [
+        { label: "Confirmación de Hotel", mimeType: "application/pdf" },
+        { label: "Confirmación Restaurant", mimeType: "application/pdf" },
+        { label: "Confirmación de Spa Day", mimeType: "application/pdf" },
+        { label: "Hoja de Ruta", mimeType: "application/pdf" },
+      ],
+      skippedCount: 0,
+      startDate: new Date(),
+      endDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+      nights: 4,
+      pax: 2,
+      tripType: "couple",
+      locale: "es",
+      tripId: "trip-test-001",
+    }),
+    subject: tripStartVouchersSubjects.es,
   },
 };
 
