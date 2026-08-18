@@ -12,7 +12,7 @@
 | Check | Result | Detail |
 |-------|--------|--------|
 | `npm run typecheck` | PASS | 0 errors |
-| `npm run test` | PASS | 75 passed, 6 failed (all 6 are pre-existing xsed failures — known baseline, unchanged) |
+| `npm run test` | PASS | 75 passed, 6 failed (all 6 are pre-existing XSED failures — known baseline, unchanged) |
 | New endpoint tests (18 total) | PASS | All 18 GREEN: 6 submit + 6 approve + 6 reject |
 
 ---

@@ -49,6 +49,6 @@ All 5 slices' core spec requirements (shell swap, notifications tab, overview st
 ## Test/Typecheck Summary
 
 - `npm run typecheck`: PASS (0 errors)
-- `npm run test`: 227/233 passing, 6 pre-existing unrelated xsed failures (confirmed via `git log` unrelated to this change)
+- `npm run test`: 227/233 passing, 6 pre-existing unrelated XSED failures (confirmed via `git log` unrelated to this change)
 
 **Next recommended**: `sdd-archive` (no CRITICAL blockers; the 2 WARNINGs are disclosed, low-severity, documentation-worthy scope notes suitable for the archive report rather than a blocking re-apply).

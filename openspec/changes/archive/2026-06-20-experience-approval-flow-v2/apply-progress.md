@@ -63,7 +63,7 @@
 - `AdminExperienceReviewClient.tsx` import path: `../../../AdminReviewSlot` (not `../../../../`)
 - `PENDING_TRIPPER_REVIEW` comparisons use `(status as string)` cast until `db:push && db:generate` is run
 - Email sender uses `(prisma.experience.findUnique as any)(...)` pattern with explicit return type
-- Pre-existing xsed test failures (6 tests in 2 files) are unrelated to this change
+- Pre-existing XSED test failures (6 tests in 2 files) are unrelated to this change
 
 ---
 

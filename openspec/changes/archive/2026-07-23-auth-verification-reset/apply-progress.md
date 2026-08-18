@@ -61,7 +61,7 @@ Single batch — no continuation needed for automatable work. Remaining items (1
 - [x] 5.4 `src/app/api/auth/reset-password/route.ts` (new) — validates policy + token, updates hash, opportunistically verifies email
 - [x] 5.5 Route tests: `verify-email` (3), `forgot-password` (4), `reset-password` (5) — 12 tests, all green
 
-**Deviation**: all three new routes use `Request` (not `NextRequest`) as the handler param type, matching the established pattern from `experience-approval-flow`/xsed routes — none of them need `cookies`/`nextUrl`, and this avoids a TS mismatch against `new Request(...)` in tests.
+**Deviation**: all three new routes use `Request` (not `NextRequest`) as the handler param type, matching the established pattern from `experience-approval-flow`/XSED routes — none of them need `cookies`/`nextUrl`, and this avoids a TS mismatch against `new Request(...)` in tests.
 
 ---
 
@@ -127,7 +127,7 @@ Single batch — no continuation needed for automatable work. Remaining items (1
 | ID | Decision |
 |----|----------|
 | D1 | Kept design's strict-equality assumption for `result.error === "EMAIL_NOT_VERIFIED"` — verified empirically via NextAuth v4.24.14 source (see 10.8), not just assumed |
-| D2 | New API routes (`verify-email`, `forgot-password`, `reset-password`) use `Request`, not `NextRequest` — matches established xsed/experience-approval-flow convention, avoids test-type friction |
+| D2 | New API routes (`verify-email`, `forgot-password`, `reset-password`) use `Request`, not `NextRequest` — matches established XSED/experience-approval-flow convention, avoids test-type friction |
 | D3 | `validateForm` in `AuthModal` branches password validation by mode (strict `isValidPassword` for register, legacy `length < 6` for login) to avoid blocking pre-existing users while still enforcing the new policy on new signups — not explicitly specified in design but required to avoid a client/server validation mismatch |
 | D4 | Localized the pre-existing hardcoded "Forgot password?" button label (new `auth.forgotPasswordLink` key) since the line was directly modified in this change and the repo's i18n rule has zero exceptions |
 | D5 | `npm run db:generate` had to be run after the schema edit (not explicitly listed as a task, implied by 1.2) — the backfill script failed with "Unknown argument `emailVerified`" until the Prisma client was regenerated |

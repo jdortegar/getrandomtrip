@@ -21,7 +21,7 @@
 | 3 | 3.2 sendDestinationAssignmentReminder | COMPLETE | Queries `prisma.user.findMany({ where: { roles: { has: "ADMIN" } } })` |
 | 3 | 3.3 DestinationRevealed.tsx tripId prop | COMPLETE | `tripId` prop added; CTA points to `/${locale}/dashboard/trips/${tripId}/reveal` |
 | 3 | 3.4 sendDestinationRevealed updated | COMPLETE | Passes `tripId: tripRequestId`; admin route caller is compatible |
-| 4 | 4.1 route.ts + isAuthorized guard | COMPLETE | Guard copied from xsed pattern |
+| 4 | 4.1 route.ts + isAuthorized guard | COMPLETE | Guard copied from XSED pattern |
 | 4 | 4.2 runPass1 | COMPLETE | Idempotency via `destinationAssignmentNotifiedAt IS NULL` query filter |
 | 4 | 4.3 runPass2 | COMPLETE | `updateMany({ where: { id, status: "CONFIRMED" } })` guard present |
 | 4 | 4.4 Tests | COMPLETE | 12 tests, all green |
@@ -35,7 +35,7 @@
 |-------|--------|
 | `npm run typecheck` | 0 errors |
 | `npm run test` (PR 1 files only) | 27 passed (15 countdown + 12 route) |
-| `npm run test` (full suite) | 6 failures in pre-existing xsed tests — NOT introduced by PR 1 |
+| `npm run test` (full suite) | 6 failures in pre-existing XSED tests — NOT introduced by PR 1 |
 
 **Pre-existing failures** (unrelated to PR 1):
 - `src/lib/xsed/__tests__/notifications.test.ts` — 2 failures (last touched before destination-reveal-flow work)

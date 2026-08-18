@@ -71,7 +71,7 @@
 | ESLint | ✅ PASS | No new errors; pre-existing env config issue noted |
 | Unit Tests (routes) | ✅ PASS | approve + reject route tests: 6/6 PASS |
 | Unit Tests (new code) | ⚠️ PARTIAL | PATCH locale, useSyncLocale, email templates lack unit tests |
-| Integration Tests | ✅ PASS | 75 suite tests pass; 6 pre-existing failures (xsed suite, unrelated) |
+| Integration Tests | ✅ PASS | 75 suite tests pass; 6 pre-existing failures (XSED suite, unrelated) |
 | Manual QA | ✅ CONFIRMED | User confirmed emails working end-to-end (approval + rejection) |
 
 ### Warnings (5 Total)
@@ -80,7 +80,7 @@
 - **W2**: useSyncLocale has no unit/integration tests (fire-and-forget pattern, low risk)
 - **W3**: Email templates have no render tests (acceptable — visual templates, manual+user confirmed)
 - **W4**: sendMail side-effect not asserted in route unit tests (fire-and-forget guarantee tested; sendMail called verified in practice)
-- **W5**: 6 pre-existing xsed suite failures leave test suite non-green (unrelated to this change)
+- **W5**: 6 pre-existing XSED suite failures leave test suite non-green (unrelated to this change)
 
 **Mitigation**: All warnings are low-risk. Routes are covered by integration tests. Email working confirmed by user.
 

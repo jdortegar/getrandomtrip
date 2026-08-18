@@ -14,7 +14,7 @@ All decisions below were resolved in a live grill-me session and are **final** f
 
 | # | Decision |
 |---|----------|
-| 1 | One active (`DRAFT`/`SAVED`/`PENDING_PAYMENT`) trip per user **per family**: journey (`type !== "xsed"`) and xsed (`type === "xsed"`) are independent slots and must not overwrite each other. Journey sub-type switches (couple → solo) reuse the same row. |
+| 1 | One active (`DRAFT`/`SAVED`/`PENDING_PAYMENT`) trip per user **per family**: journey (`type !== "xsed"`) and XSED (`type === "xsed"`) are independent slots and must not overwrite each other. Journey sub-type switches (couple → solo) reuse the same row. |
 | 2 | Enforcement is server-side in `POST /api/trip-requests`: `findFirst` on `userId` + family + non-terminal status, then `update`; `create` only when none exists. Client-supplied `id` is still honored when it resolves to a row owned by the user (preserve current ownership check), but is **not** the source of truth. |
 | 3 | Expired `PENDING_PAYMENT` reverts to `SAVED`, not `CANCELLED` — the configuration is still valid and resumable. Same row, so no new slot is consumed. |
 | 4 | No new column. Expiry derives from the existing `Payment.expiresAt` (24h, set in `upsertPaymentForTripCheckout`, used at `payment-intent/route.ts:166`) via the 1:1 `Payment.tripRequestId @unique` relation (`schema.prisma:288`). |
@@ -89,7 +89,7 @@ Revert the change commits — no schema migration to undo. Data effects are reco
 ## Success Criteria
 
 - [ ] Repeated `/journey` entries without `tripRequestId` update one row instead of creating new ones
-- [ ] An in-progress journey draft and an xsed booking coexist as two separate rows
+- [ ] An in-progress journey draft and an XSED booking coexist as two separate rows
 - [ ] A `PENDING_PAYMENT` trip whose `Payment.expiresAt` has passed is persisted back to `SAVED` on the next `GET /api/trips` or payment-intent request
 - [ ] Cleanup script leaves exactly one non-terminal row per user per family
 - [ ] `POST /api/trips` no longer exists; `GET /api/trips` still works

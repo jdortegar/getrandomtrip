@@ -49,7 +49,7 @@ All 27 tasks across 5 phases implemented. Typecheck: 0 errors. 18 new tests: all
 - [x] 5.1 `src/dictionaries/es.json` + `src/dictionaries/en.json` — all new copy keys added
 - [x] 5.2 `src/lib/types/dictionary.ts` — `PENDING_REVIEW`, `submitForReview`, `review{}`, `statusBadge{}`, `tabs{}`, `pendingReview`, admin `review{}` sub-objects
 - [x] 5.3 Typecheck: 0 errors; lint: no raw `<img>` in new files; all `displayPrice` refs migrated or removed
-- [x] 5.4 XSED untouched: `AdminXsedExperience.basePrice` intact; xsed routes unchanged; pre-existing xsed test failures (6) unchanged
+- [x] 5.4 XSED untouched: `AdminXsedExperience.basePrice` intact; XSED routes unchanged; pre-existing XSED test failures (6) unchanged
 
 ---
 

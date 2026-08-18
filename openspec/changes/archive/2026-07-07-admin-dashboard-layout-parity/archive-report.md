@@ -103,7 +103,7 @@ All 3 rows render unconditionally, even at zero.
 
 ### Test Results
 - `npm run typecheck`: PASS (0 errors)
-- `npm run test`: 227/233 passing (6 pre-existing xsed failures unrelated to this change, confirmed via git log)
+- `npm run test`: 227/233 passing (6 pre-existing XSED failures unrelated to this change, confirmed via git log)
 - Manual QA: Deferred (no browser tool in this session); items recorded in tasks.md under 2.5, 3.7, 4.3, 5.7 for future live pass.
 
 ### Disclosed Warnings (Scope Tradeoffs, Not Regressions)

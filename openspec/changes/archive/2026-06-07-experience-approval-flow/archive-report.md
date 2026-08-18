@@ -147,7 +147,7 @@ The `experience-approval-flow` change has been successfully implemented, verifie
 | Check | Result | Detail |
 |-------|--------|--------|
 | `npm run typecheck` | PASS | 0 errors |
-| `npm run test` | PASS | 75 passed (non-pre-existing); 6 pre-existing xsed failures unchanged |
+| `npm run test` | PASS | 75 passed (non-pre-existing); 6 pre-existing XSED failures unchanged |
 | New endpoint tests | PASS | 18 total: 6 submit + 6 approve + 6 reject (all GREEN) |
 
 ### API Compliance
