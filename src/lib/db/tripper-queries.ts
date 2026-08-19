@@ -209,6 +209,37 @@ export async function getTripperFeaturedTrips(
 }
 
 /**
+ * Minimal `{tripperSlug, name}` projection for the unauthenticated,
+ * `force-dynamic` register-modal dropdown (`/api/trippers/active`, hit every
+ * time the modal opens). Matches the exact same active-tripper filter as
+ * `getAllTrippers()` (TRIPPER role, `tripperSlug` set, `isActive`) but skips
+ * selecting/normalizing `bio`, `location`, `commission`, `travelerType`, and
+ * `avatarUrl` — none of which that dropdown ever uses.
+ */
+export async function getActiveTripperSlugsAndNames(): Promise<
+  { tripperSlug: string; name: string }[]
+> {
+  try {
+    const trippers = await prisma.user.findMany({
+      where: {
+        roles: { has: "TRIPPER" },
+        tripperSlug: { not: null },
+        isActive: true,
+      },
+      select: { tripperSlug: true, name: true },
+      orderBy: { name: "asc" },
+    });
+
+    return trippers.filter(
+      (t): t is typeof t & { tripperSlug: string } => t.tripperSlug !== null,
+    );
+  } catch (error) {
+    console.error("Error fetching active tripper slugs:", error);
+    return [];
+  }
+}
+
+/**
  * Get all trippers (for listings/search)
  * Only returns trippers who have completed onboarding (tripperSlug set) and are active.
  */

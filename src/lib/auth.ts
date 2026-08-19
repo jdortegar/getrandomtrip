@@ -24,6 +24,11 @@ import {
   TRAVELER_INVITE_COOKIE,
   hasLiveTravelerInviteGrant,
 } from "@/lib/travelers/travelerInviteTokens";
+import {
+  readAttributionSlug,
+  resolveReferrerId,
+  stampReferral,
+} from "@/lib/tripper/attribution-server";
 
 /**
  * Read-time liveness re-validation of the referring tripper (design
@@ -200,6 +205,18 @@ export const authOptions: NextAuthOptions = {
         });
         console.log("✅ Created new user from Google OAuth:", dbUser.id);
         sendWelcomeEmail(dbUser.id);
+
+        // Referral capture at signup (design ADR-5/spec "Referral Capture
+        // at Signup") also applies to the Google-OAuth new-user path, not
+        // just the credentials `/api/auth/register` route — otherwise a
+        // visitor referred by a tripper who signs up via "Continue with
+        // Google" never earns that tripper credit (write-once field, so
+        // this is the only chance). Reuses the exact same
+        // read-cookie -> resolve-active-referrer -> write-once-stamp
+        // pipeline as the register route.
+        const referralSlug = await readAttributionSlug();
+        const referrerId = await resolveReferrerId(referralSlug);
+        await stampReferral(dbUser.id, referrerId);
 
         if (grantAccess && inviteToken) {
           await consumeAccessInvite(inviteToken);

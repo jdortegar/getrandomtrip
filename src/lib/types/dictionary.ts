@@ -2280,6 +2280,8 @@ export interface MarketingDictionary {
     passwordPolicyHint: string;
     forgotPasswordLink: string;
     keepLoggedIn: string;
+    referredByLabel: string;
+    referredByNoneOption: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
   resetPasswordPage: ResetPasswordPageDict;

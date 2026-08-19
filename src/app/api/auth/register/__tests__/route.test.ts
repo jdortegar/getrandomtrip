@@ -26,6 +26,12 @@ vi.mock("bcryptjs", () => ({
   default: { hash: vi.fn().mockResolvedValue("hashed-password") },
 }));
 
+vi.mock("@/lib/tripper/attribution-server", () => ({
+  readAttributionSlug: vi.fn(),
+  resolveReferrerId: vi.fn(),
+  stampReferral: vi.fn(),
+}));
+
 import { prisma } from "@/lib/prisma";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 import {
@@ -33,6 +39,17 @@ import {
   consumeAccessInvite,
 } from "@/lib/auth/accessInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
+import {
+  readAttributionSlug,
+  resolveReferrerId,
+  stampReferral,
+} from "@/lib/tripper/attribution-server";
+
+const readAttributionSlugMock = readAttributionSlug as ReturnType<
+  typeof vi.fn
+>;
+const resolveReferrerIdMock = resolveReferrerId as ReturnType<typeof vi.fn>;
+const stampReferralMock = stampReferral as ReturnType<typeof vi.fn>;
 
 function makePostRequest(body: Record<string, unknown>) {
   return new Request("http://localhost/api/auth/register", {
@@ -280,5 +297,176 @@ describe("POST /api/auth/register", () => {
     expect(json.user).toEqual(
       expect.objectContaining({ id: "user-3", email: "carol@example.com" }),
     );
+  });
+});
+
+describe("POST /api/auth/register — referral capture (auth-verification spec)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+  });
+
+  it("Scenario: registration writes validated referral once — resolves the submitted slug and stamps the referrer id", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-10",
+      name: "Ana",
+      email: "ana@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    resolveReferrerIdMock.mockResolvedValue("tripper-maria-id");
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Ana",
+        email: "ana@example.com",
+        password: "abc12345",
+        referredByTripperSlug: "maria",
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    expect(readAttributionSlugMock).not.toHaveBeenCalled();
+    expect(resolveReferrerIdMock).toHaveBeenCalledWith("maria");
+    expect(stampReferralMock).toHaveBeenCalledWith(
+      "user-10",
+      "tripper-maria-id",
+    );
+  });
+
+  it("Scenario: inactive tripper in dropdown data is rejected server-side — account still created with no referral stamped", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-11",
+      name: "Bea",
+      email: "bea@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    resolveReferrerIdMock.mockResolvedValue(null);
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Bea",
+        email: "bea@example.com",
+        password: "abc12345",
+        referredByTripperSlug: "inactive-tripper",
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    expect(resolveReferrerIdMock).toHaveBeenCalledWith("inactive-tripper");
+    expect(stampReferralMock).toHaveBeenCalledWith("user-11", null);
+  });
+
+  it("explicit None (referredByTripperSlug: null) freezes null without consulting the cookie", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-12",
+      name: "Caro",
+      email: "caro@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Caro",
+        email: "caro@example.com",
+        password: "abc12345",
+        referredByTripperSlug: null,
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    expect(readAttributionSlugMock).not.toHaveBeenCalled();
+    expect(resolveReferrerIdMock).not.toHaveBeenCalled();
+    expect(stampReferralMock).toHaveBeenCalledWith("user-12", null);
+  });
+
+  it("omitted referredByTripperSlug (undefined) falls back to the anonymous cookie slug", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-13",
+      name: "Dan",
+      email: "dan@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    readAttributionSlugMock.mockResolvedValue("carla");
+    resolveReferrerIdMock.mockResolvedValue("tripper-carla-id");
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Dan",
+        email: "dan@example.com",
+        password: "abc12345",
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    expect(readAttributionSlugMock).toHaveBeenCalled();
+    expect(resolveReferrerIdMock).toHaveBeenCalledWith("carla");
+    expect(stampReferralMock).toHaveBeenCalledWith(
+      "user-13",
+      "tripper-carla-id",
+    );
+  });
+
+  it("a non-string referredByTripperSlug (e.g. a number) does not 500 — treated as absent, falls back to the cookie (finding #6)", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-15",
+      name: "Frank",
+      email: "frank@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    readAttributionSlugMock.mockResolvedValue("carla");
+    resolveReferrerIdMock.mockResolvedValue("tripper-carla-id");
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Frank",
+        email: "frank@example.com",
+        password: "abc12345",
+        referredByTripperSlug: 123,
+      }),
+    );
+    const json = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(readAttributionSlugMock).toHaveBeenCalled();
+    expect(resolveReferrerIdMock).toHaveBeenCalledWith("carla");
+    expect(stampReferralMock).toHaveBeenCalledWith(
+      "user-15",
+      "tripper-carla-id",
+    );
+    expect(json.user).toEqual(
+      expect.objectContaining({ id: "user-15", email: "frank@example.com" }),
+    );
+  });
+
+  it("self-referral guard: stampReferral is still invoked and delegated to reject same-id writes (guard lives in stampReferral itself)", async () => {
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-14",
+      name: "Eli",
+      email: "eli@example.com",
+      createdAt: new Date("2026-01-01"),
+    });
+    resolveReferrerIdMock.mockResolvedValue("user-14");
+
+    const mod = await import("../route");
+    const res = await mod.POST(
+      makePostRequest({
+        name: "Eli",
+        email: "eli@example.com",
+        password: "abc12345",
+        referredByTripperSlug: "eli-as-tripper",
+      }),
+    );
+
+    expect(res.status).toBe(201);
+    // The route always delegates to stampReferral, which owns the
+    // self-referral no-op guard (already unit-tested in attribution-server.test.ts).
+    expect(stampReferralMock).toHaveBeenCalledWith("user-14", "user-14");
   });
 });
