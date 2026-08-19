@@ -81,6 +81,16 @@ The price used at actual payment-intent creation MUST always be resolved server-
 - WHEN the visitor's attribution changes (banner toggle, login) before payment-intent creation
 - THEN the charged amount is re-derived under the attribution state active at charge time, not the earlier displayed value
 
+## Cross-Cutting: Request-Scoped Attribution Reads
+Reading the `grt_tripper` cookie (`readAttributionSlug`) and re-validating a tripper's liveness (`getTripperJourneyContext`) SHOULD be memoized per request when the same value is read by more than one server-rendered surface in the same response (e.g. the layout-mounted banner and a page's own attribution read for the same slug). This is a performance guarantee, not a correctness one — a request that fails to dedupe still returns correct results, just at the cost of redundant cookie-verify/DB work.
+
+#### Scenario: Banner and page both read attribution for the same request
+- GIVEN a page render includes both `AttributionModeBanner` and a page-level attribution read (`by-type/page.tsx` or `journey/page.tsx`) for the same visitor
+- WHEN the request is processed
+- THEN the `grt_tripper` cookie is verified and the tripper's liveness is resolved at most once for that request, via `React.cache()`-wrapped `readAttributionSlug`/`getTripperJourneyContext`
+
+(Found during PR3 apply: each server-rendered surface called `readAttributionSlug()`/`getTripperJourneyContext()` independently, duplicating the HMAC cookie-verify and the DB round-trip within the same request whenever more than one surface needed the same slug's attribution. Fixed by wrapping both in `React.cache()` — a no-op outside an active Next.js request render, e.g. in unit tests, so behavior is unchanged in every environment; only redundant same-request work is eliminated.)
+
 ## Explicitly Out of Scope
 Commission rate calculation, payout modeling, and any `ReferralCommission` ledger (the 1%/2%/3% logic) are NOT part of this change. This spec covers only the attribution foundation; commission consumes it in a future change.
 

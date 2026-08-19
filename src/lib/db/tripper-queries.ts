@@ -2,6 +2,7 @@
 // Tripper Database Queries
 // ============================================================================
 
+import { cache } from "react";
 import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
@@ -153,7 +154,7 @@ export async function getTripperFeaturedTrips(
     if (!tripper) return [];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const trips = await (prisma.experience.findMany as any)({
+    const trips = (await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripper.id,
         isActive: true,
@@ -178,10 +179,18 @@ export async function getTripperFeaturedTrips(
         maxPax: true,
         pricingByType: true,
       },
-    }) as Array<{
-      id: string; title: string; teaser: string; heroImage: string;
-      type: string[]; level: string; activities: unknown; tags: string[];
-      likes: number; minNights: number; minPax: number;
+    })) as Array<{
+      id: string;
+      title: string;
+      teaser: string;
+      heroImage: string;
+      type: string[];
+      level: string;
+      activities: unknown;
+      tags: string[];
+      likes: number;
+      minNights: number;
+      minPax: number;
       pricingByType: Record<string, number> | null;
     }>;
 
@@ -193,7 +202,9 @@ export async function getTripperFeaturedTrips(
       heroImage: trip.heroImage || "/images/fallback.jpg",
       type: trip.type as any,
       level: trip.level as any,
-      highlights: (trip.activities as ActivityEntry[]).slice(0, 3).map((a) => a.name),
+      highlights: (trip.activities as ActivityEntry[])
+        .slice(0, 3)
+        .map((a) => a.name),
       tags: trip.tags,
       likes: trip.likes,
       nights: trip.minNights,
@@ -204,6 +215,37 @@ export async function getTripperFeaturedTrips(
     }));
   } catch (error) {
     console.error("Error fetching tripper featured trips:", error);
+    return [];
+  }
+}
+
+/**
+ * Minimal `{tripperSlug, name}` projection for the unauthenticated,
+ * `force-dynamic` register-modal dropdown (`/api/trippers/active`, hit every
+ * time the modal opens). Matches the exact same active-tripper filter as
+ * `getAllTrippers()` (TRIPPER role, `tripperSlug` set, `isActive`) but skips
+ * selecting/normalizing `bio`, `location`, `commission`, `travelerType`, and
+ * `avatarUrl` — none of which that dropdown ever uses.
+ */
+export async function getActiveTripperSlugsAndNames(): Promise<
+  { tripperSlug: string; name: string }[]
+> {
+  try {
+    const trippers = await prisma.user.findMany({
+      where: {
+        roles: { has: "TRIPPER" },
+        tripperSlug: { not: null },
+        isActive: true,
+      },
+      select: { tripperSlug: true, name: true },
+      orderBy: { name: "asc" },
+    });
+
+    return trippers.filter(
+      (t): t is typeof t & { tripperSlug: string } => t.tripperSlug !== null,
+    );
+  } catch (error) {
+    console.error("Error fetching active tripper slugs:", error);
     return [];
   }
 }
@@ -235,8 +277,7 @@ export async function getAllTrippers(): Promise<TripperListItem[]> {
 
     return trippers
       .filter(
-        (t): t is typeof t & { tripperSlug: string } =>
-          t.tripperSlug !== null,
+        (t): t is typeof t & { tripperSlug: string } => t.tripperSlug !== null,
       )
       .map((tripper) => ({
         id: tripper.id,
@@ -364,7 +405,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
     if (!owner) return {};
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const packages = await (prisma.experience.findMany as any)({
+    const packages = (await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -385,10 +426,18 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         pricingByType: true,
       },
       orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
-    }) as Array<{
-      id: string; type: string[]; level: string | null; title: string;
-      teaser: string; heroImage: string; tags: string[]; activities: unknown;
-      excuseKey: string | null; destinationCountry: string; destinationCity: string;
+    })) as Array<{
+      id: string;
+      type: string[];
+      level: string | null;
+      title: string;
+      teaser: string;
+      heroImage: string;
+      tags: string[];
+      activities: unknown;
+      excuseKey: string | null;
+      destinationCountry: string;
+      destinationCity: string;
       pricingByType: Record<string, number> | null;
     }>;
 
@@ -445,78 +494,88 @@ export type TripperJourneyContextResult =
 /**
  * Returns branding + allowed types/levels for a tripper's curated journey.
  * Only considers experiences with status = ACTIVE.
+ *
+ * Wrapped in React's `cache()` (risk flagged after the initial PR3 apply
+ * batch): the same slug can be re-resolved multiple times within a single
+ * request — `AttributionModeBanner` (mounted in `layout.tsx`) and a page's
+ * own attribution read (`by-type/page.tsx`, `journey/page.tsx`) each call
+ * this independently. `cache()` dedupes same-argument calls within one
+ * Server render pass only; outside an active Next.js request render (e.g.
+ * plain unit tests) it transparently falls back to calling straight
+ * through on every invocation — no memoization, but no different result or
+ * behavior either.
  */
-export async function getTripperJourneyContext(
-  slug: string,
-): Promise<TripperJourneyContextResult> {
-  try {
-    const tripper = await prisma.user.findUnique({
-      where: {
-        tripperSlug: slug,
-        roles: { has: "TRIPPER" },
-      },
-      select: {
-        id: true,
-        name: true,
-        avatarUrl: true,
-        location: true,
-        isActive: true,
-        tripperPriceOverrides: true,
-      },
-    });
+export const getTripperJourneyContext = cache(
+  async (slug: string): Promise<TripperJourneyContextResult> => {
+    try {
+      const tripper = await prisma.user.findUnique({
+        where: {
+          tripperSlug: slug,
+          roles: { has: "TRIPPER" },
+        },
+        select: {
+          id: true,
+          name: true,
+          avatarUrl: true,
+          location: true,
+          isActive: true,
+          tripperPriceOverrides: true,
+        },
+      });
 
-    if (!tripper) return { status: "not_found" };
-    if (!tripper.isActive) return { status: "inactive", name: tripper.name };
+      if (!tripper) return { status: "not_found" };
+      if (!tripper.isActive) return { status: "inactive", name: tripper.name };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const experiences = await (prisma.experience.findMany as any)({
-      where: {
-        ownerId: tripper.id,
-        status: "ACTIVE",
-      },
-      select: {
-        type: true,
-        level: true,
-      },
-    }) as Array<{ type: string[]; level: string | null }>;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const experiences = (await (prisma.experience.findMany as any)({
+        where: {
+          ownerId: tripper.id,
+          status: "ACTIVE",
+        },
+        select: {
+          type: true,
+          level: true,
+        },
+      })) as Array<{ type: string[]; level: string | null }>;
 
-    // Distinct flat-mapped types
-    const allowedTypes = [...new Set(experiences.flatMap((e) => e.type))];
+      // Distinct flat-mapped types
+      const allowedTypes = [...new Set(experiences.flatMap((e) => e.type))];
 
-    // For each type, collect distinct non-null levels of experiences that include that type
-    const allowedLevelsByType: Record<string, string[]> = {};
-    for (const type of allowedTypes) {
-      const levels = [
-        ...new Set(
-          experiences
-            .filter((e) => e.type.includes(type) && e.level !== null)
-            .map((e) => e.level as string),
-        ),
-      ];
-      allowedLevelsByType[type] = levels;
+      // For each type, collect distinct non-null levels of experiences that include that type
+      const allowedLevelsByType: Record<string, string[]> = {};
+      for (const type of allowedTypes) {
+        const levels = [
+          ...new Set(
+            experiences
+              .filter((e) => e.type.includes(type) && e.level !== null)
+              .map((e) => e.level as string),
+          ),
+        ];
+        allowedLevelsByType[type] = levels;
+      }
+
+      return {
+        status: "ok",
+        context: {
+          name: tripper.name,
+          avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
+          location: tripper.location ?? null,
+          allowedTypes,
+          allowedLevelsByType,
+          priceOverrides: parseTripperPriceOverrides(
+            tripper.tripperPriceOverrides ?? null,
+          ),
+        },
+      };
+    } catch (error) {
+      // Supplementary data for an otherwise-functional generic journey — a
+      // transient DB blip degrades to "not_found" (unbranded journey) rather
+      // than rethrowing, unlike getTripperBySlug's page-identity 404/500 split.
+      console.error("Error fetching tripper journey context:", error);
+      return { status: "not_found" };
     }
-
-    return {
-      status: "ok",
-      context: {
-        name: tripper.name,
-        avatarUrl: normalizeUploadUrl(tripper.avatarUrl),
-        location: tripper.location ?? null,
-        allowedTypes,
-        allowedLevelsByType,
-        priceOverrides: parseTripperPriceOverrides(
-          tripper.tripperPriceOverrides ?? null,
-        ),
-      },
-    };
-  } catch (error) {
-    // Supplementary data for an otherwise-functional generic journey — a
-    // transient DB blip degrades to "not_found" (unbranded journey) rather
-    // than rethrowing, unlike getTripperBySlug's page-identity 404/500 split.
-    console.error("Error fetching tripper journey context:", error);
-    return { status: "not_found" };
-  }
-}
+  },
+);
 
 // ============================================================================
 // DASHBOARD QUERIES
@@ -839,9 +898,7 @@ export async function getTripperReviewStats(tripperId: string) {
     const promoters = ratings.filter((r) => r >= 4).length;
     const detractors = ratings.filter((r) => r <= 2).length;
     const nps =
-      totalReviews > 0
-        ? ((promoters - detractors) / totalReviews) * 100
-        : 0;
+      totalReviews > 0 ? ((promoters - detractors) / totalReviews) * 100 : 0;
 
     const averageRating =
       totalReviews > 0
@@ -857,7 +914,13 @@ export async function getTripperReviewStats(tripperId: string) {
     };
   } catch (error) {
     console.error("Error fetching tripper review stats:", error);
-    return { averageRating: 0, totalReviews: 0, nps: 0, promoters: 0, detractors: 0 };
+    return {
+      averageRating: 0,
+      totalReviews: 0,
+      nps: 0,
+      promoters: 0,
+      detractors: 0,
+    };
   }
 }
 
@@ -934,7 +997,12 @@ export async function getTripperReviews(
 export async function getTripperExperiences(
   tripperId: string,
   pagination: { page: number; limit: number },
-  filters: { status?: string; level?: string; type?: string; search?: string } = {},
+  filters: {
+    status?: string;
+    level?: string;
+    type?: string;
+    search?: string;
+  } = {},
 ) {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

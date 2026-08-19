@@ -48,6 +48,32 @@ export function isAttributionEnabled(): boolean {
   return process.env.ATTRIBUTION_ENABLED === "true";
 }
 
+/**
+ * Reads `NEXTAUTH_SECRET` from the environment (falls back to `""` so a
+ * missing secret degrades to "every signature fails" rather than throwing).
+ * Single shared implementation — do NOT reimplement `process.env.NEXTAUTH_SECRET
+ * ?? ""` at call sites (`proxy.ts`, `attribution-server.ts`,
+ * `attribution/mode/route.ts` all import this one).
+ */
+export function getAttributionSecret(): string {
+  return process.env.NEXTAUTH_SECRET ?? "";
+}
+
+/**
+ * Canonical tripper-slug format (PR1, previously inline-only in
+ * `src/app/api/user/tripper/route.ts`): lowercase alphanumeric segments
+ * joined by single dashes — no dots, no leading/trailing/double dashes.
+ * Shared here (Edge-safe — a regex literal has zero Edge/Node compatibility
+ * concerns) so both the write side (`/api/user/tripper`) and the proxy's
+ * inbound `?tripper=` query-param reader use the exact same rule.
+ */
+export const TRIPPER_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/** Whether `slug` matches the canonical tripper-slug format (see `TRIPPER_SLUG_PATTERN`). */
+export function isValidTripperSlug(slug: string): boolean {
+  return TRIPPER_SLUG_PATTERN.test(slug);
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Signing (Web Crypto HMAC-SHA256 only — no node:crypto)
 // ─────────────────────────────────────────────────────────────────────────

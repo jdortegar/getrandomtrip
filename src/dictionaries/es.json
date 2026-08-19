@@ -992,7 +992,9 @@
     "forgotSentGeneric": "Si existe una cuenta con ese email, te enviamos un enlace para restablecer la contraseña.",
     "passwordPolicyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
     "forgotPasswordLink": "¿Olvidaste tu contraseña?",
-    "keepLoggedIn": "Mantenerme conectado"
+    "keepLoggedIn": "Mantenerme conectado",
+    "referredByLabel": "¿Te recomendó un tripper?",
+    "referredByNoneOption": "Ninguno"
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verificando tu email…",
@@ -5103,5 +5105,12 @@
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"
+  },
+  "tripperAttribution": {
+    "visitRandomTripExperiences": "Visitar experiencias RandomTrip",
+    "bannerTripperModeMessage": "Estás viendo experiencias curadas por {name}.",
+    "bannerRandomtripModeMessage": "Estás viendo experiencias generales de RandomTrip.",
+    "bannerSwitchToRandomtrip": "Ver experiencias generales de RandomTrip",
+    "bannerSwitchToTripper": "Volver a experiencias de {name}"
   }
 }

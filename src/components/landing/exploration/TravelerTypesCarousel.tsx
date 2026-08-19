@@ -7,6 +7,7 @@ import {
   cardDataToCardItem,
   filterCarouselCards,
   getCarouselCardOptions,
+  resolveCarouselCardHref,
 } from "@/lib/utils/experiencesData";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { motion } from "framer-motion";
@@ -46,6 +47,9 @@ export function TravelerTypesCarousel({
 }: TravelerTypesCarouselProps) {
   const locale = useLocale();
   const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
+  const fallbackLabel = useDictionary(
+    (d) => d.tripperAttribution.visitRandomTripExperiences,
+  );
 
   const cards = getCarouselCardOptions(locale, {
     localizedTravelerTypes,
@@ -56,10 +60,6 @@ export function TravelerTypesCarousel({
     availableTypes,
     tripperContext,
   });
-
-  if (tripperContext && typesToShow.length === 0) {
-    return null;
-  }
 
   return (
     <motion.div
@@ -73,23 +73,28 @@ export function TravelerTypesCarousel({
         {typesToShow.map((type) => {
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
+          const item = cardDataToCardItem(type);
           return (
             <TravelerTypeCard
               key={type.key}
               fill
               className="aspect-3/4"
               comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
-              href={
-                isComingSoon
-                  ? undefined
-                  : `/experiences/by-type/${slugify(type.key)}`
+              href={resolveCarouselCardHref(slugify(type.key), {
+                isComingSoon,
+                availableFromTripper: type.availableFromTripper,
+                tripperSlug,
+              })}
+              item={
+                type.availableFromTripper
+                  ? item
+                  : { ...item, description: fallbackLabel }
               }
-              item={cardDataToCardItem(type)}
               onClick={
                 onSelect && !isComingSoon ? () => onSelect(slug) : undefined
               }
               selected={selectedTravelType === slug}
-              tripperBadge={tripperBadge}
+              tripperBadge={type.availableFromTripper ? tripperBadge : undefined}
               wrapped={wrapped}
             />
           );

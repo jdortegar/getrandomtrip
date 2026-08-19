@@ -219,6 +219,17 @@ The parent layout is already `force-dynamic`, so this does not newly opt the pag
 
 Regression guard: an import-lint assertion that `attribution.ts` has no `node:crypto` / `@/lib/prisma` import — the single easiest way to silently break Edge. **STATUS: implemented in PR1** (`attribution.purity.test.ts`).
 
+### ADR-10 — Request-scoped memoization: `React.cache()`, added post-apply (PR3 risk remediation)
+Flagged as a risk after the first PR3 apply batch: `readAttributionSlug()` and `getTripperJourneyContext()` were each called independently by every server-rendered surface that needed them (`AttributionModeBanner` in `layout.tsx`, plus `by-type/page.tsx` and `journey/page.tsx`), duplicating the cookie HMAC-verify and the DB round-trip within a single request whenever more than one surface resolved the same slug.
+
+| Option | Verdict |
+|---|---|
+| Leave as-is (small, cheap operations) | Rejected — cheap per-call, but grows linearly with every future attribution-aware surface added to the layout/page tree; fixing the pattern now is near-zero cost |
+| Manual per-request cache (e.g. a module-level `Map` keyed by request) | Rejected — Next.js Server Components have no ambient "current request" handle to key a manual cache off of without extra plumbing |
+| **`React.cache()`** | **Chosen** — the standard React 19 / Next.js App Router primitive for exactly this: memoizes by argument identity within a single render pass, and is provably a no-op passthrough (not an error) outside an active request render — confirmed empirically, so it cannot silently change behavior in unit tests or any non-RSC call site |
+
+Applied to `getTripperJourneyContext` (`src/lib/db/tripper-queries.ts`) and `readAttributionSlug` (`src/lib/tripper/attribution-server.ts`). Not applied to any write path (`stampReferral`, `resolveReferrerId`, the mode-toggle route) — caching a write would be a correctness bug, not an optimization.
+
 ## Migration / Rollout
 
 Additive nullable column; backfills as `null`. Feature-flag the proxy block via `ATTRIBUTION_ENABLED` — off = no cookie written = base RandomTrip catalog, never a wrong price. Migration ships before the register picker. Rollback leaves the column in place.

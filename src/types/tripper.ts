@@ -1,3 +1,6 @@
+import type { TravelerTypeCardData } from "@/lib/utils/traveler-card";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
+
 // ============================================================================
 // Tripper Types - Database Models
 // ============================================================================
@@ -503,3 +506,39 @@ export interface ExperienceListItem {
   changedFields?: string[];
   reviewLockedBy?: string | null;
 }
+
+// ─── Attribution-aware carousel card (tripper-attribution PR3) ───────────────
+
+/**
+ * `TravelerTypeCardData` flagged with whether the attributed tripper offers
+ * this type. `filterCarouselCards` (`@/lib/utils/traveler-card`) always
+ * returns one of these per input card — it never drops a card from the list
+ * (design "traveler-card.ts — flag, do not drop").
+ */
+export interface CarouselCard extends TravelerTypeCardData {
+  availableFromTripper: boolean;
+}
+
+// ─── Journey-page tripper attribution state (tripper-attribution PR3) ────────
+
+/** Branding + allowed types/levels/overrides for a tripper's curated journey. */
+export interface TripperJourneyContext {
+  name: string;
+  avatarUrl: string | null;
+  location: string | null;
+  allowedTypes: string[];
+  allowedLevelsByType: Record<string, string[]>;
+  priceOverrides: TripperPriceOverrides | null;
+}
+
+/**
+ * Explicit tri-state so "no tripper attributed" (`none`) can never be
+ * confused with "tripper unavailable" (`unavailable`, e.g. deactivated or
+ * deleted) — a nullable `TripperJourneyContext | null` could not distinguish
+ * the two. Resolved server-side (see `journey/page.tsx`) from the
+ * `grt_tripper` cookie, not from a client-read `?tripper=` query param.
+ */
+export type TripperContextState =
+  | { status: "none" }
+  | { status: "ok"; context: TripperJourneyContext }
+  | { status: "unavailable"; name?: string };

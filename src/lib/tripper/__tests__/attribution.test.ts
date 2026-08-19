@@ -3,7 +3,9 @@ import {
   GRT_TRIPPER_COOKIE,
   COOKIE_MAX_AGE,
   attributionCookieOptions,
+  getAttributionSecret,
   isAttributionEnabled,
+  isValidTripperSlug,
   resolveAttribution,
   signAttribution,
   verifyAttribution,
@@ -124,6 +126,46 @@ describe("signAttribution / verifyAttribution round-trip", () => {
   it("rejects malformed input (wrong number of segments)", async () => {
     const verified = await verifyAttribution("not.a.valid.token.at.all", secret);
     expect(verified).toBeNull();
+  });
+});
+
+describe("isValidTripperSlug (shared with /api/user/tripper, PR2 review finding #1)", () => {
+  it("accepts lowercase alphanumeric segments joined by single dashes", () => {
+    expect(isValidTripperSlug("carla-diaz")).toBe(true);
+    expect(isValidTripperSlug("maria")).toBe(true);
+    expect(isValidTripperSlug("j-doe-2")).toBe(true);
+  });
+
+  it("rejects a human-readable display name (space, capital letters) — the blog-link ?tripper= collision case", () => {
+    expect(isValidTripperSlug("Carla Diaz")).toBe(false);
+  });
+
+  it("rejects dots, leading/trailing/double dashes, and uppercase", () => {
+    expect(isValidTripperSlug("j.doe")).toBe(false);
+    expect(isValidTripperSlug("-carla")).toBe(false);
+    expect(isValidTripperSlug("carla-")).toBe(false);
+    expect(isValidTripperSlug("carla--diaz")).toBe(false);
+    expect(isValidTripperSlug("Carla")).toBe(false);
+  });
+});
+
+describe("getAttributionSecret", () => {
+  it("reads NEXTAUTH_SECRET from the environment", () => {
+    const prev = process.env.NEXTAUTH_SECRET;
+    process.env.NEXTAUTH_SECRET = "a-test-secret";
+    expect(getAttributionSecret()).toBe("a-test-secret");
+    if (prev !== undefined) {
+      process.env.NEXTAUTH_SECRET = prev;
+    } else {
+      delete process.env.NEXTAUTH_SECRET;
+    }
+  });
+
+  it("falls back to an empty string when unset", () => {
+    const prev = process.env.NEXTAUTH_SECRET;
+    delete process.env.NEXTAUTH_SECRET;
+    expect(getAttributionSecret()).toBe("");
+    if (prev !== undefined) process.env.NEXTAUTH_SECRET = prev;
   });
 });
 

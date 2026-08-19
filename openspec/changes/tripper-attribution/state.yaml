@@ -19,8 +19,21 @@ branches:
   pr1: feature/tripper-attribution-pr1-foundation-security
   pr1_pr_url: https://github.com/jdortegar/getrandomtrip/pull/123
   pr1_status: open (committed 289a5886, pushed, PR opened against tracker)
-  pr2: not yet created
-  pr3: not yet created
+  pr2: feature/tripper-attribution-pr2-server-wiring
+  pr2_pr_url: https://github.com/jdortegar/getrandomtrip/pull/124
+  pr2_status: open (committed 6fda1ae0, pushed, PR opened against PR1 branch,
+    stacked). 8 review findings fixed pre-commit across two independent
+    adversarial review passes (second pass hit an account spend limit
+    mid-run; findings from the first pass were independently verified
+    directly in code and via full test suite before commit).
+  pr3: feature/tripper-attribution-pr3-carousel-ui
+  pr3_pr_url: https://github.com/jdortegar/getrandomtrip/pull/125
+  pr3_status: open (committed 534d068b, pushed, PR opened against PR2 branch,
+    stacked). All 12/12 Phase 3 tasks plus the 3/3 Phase 3b risk-remediation
+    tasks done in the same commit (fixed pre-commit, mirroring PR2's
+    convention). Full regression suite green (211 files/1547 tests),
+    typecheck clean. Off branch feature/tripper-attribution-pr2-server-wiring
+    (PR1+PR2 code already present in history).
 size_exception:
   status: not_applicable
   reason: Chained delivery was chosen specifically to avoid needing a size exception.
@@ -30,7 +43,7 @@ phases:
   spec: done
   design: done
   tasks: done
-  apply: in_progress
+  apply: done
   verify: pending
   archive: pending
 artifacts:
@@ -49,7 +62,7 @@ artifacts:
   tasks_origin: sdd/tripper-attribution/tasks (engram #542, historical)
   apply_progress: openspec/changes/tripper-attribution/apply-progress.md
   apply_progress_origin: sdd/tripper-attribution/apply-progress (engram #543, historical; PR1/Phase 1 only)
-updated: 2026-08-18
+updated: 2026-08-19 (PR3 risk remediation)
 strict_tdd: true
 migration_note: >-
   This repo uses `prisma db push`; prisma/migrations/ is empty/untracked
@@ -58,11 +71,17 @@ migration_note: >-
 repo_rules_binding:
   - .claude/rules/i18n-and-types.md — every new user-visible string needs es AND
     en dictionary entries in the same change, plus a type addition in
-    src/lib/types/dictionary.ts. Applies to PR3 (register picker, carousel
-    fallback label, banner copy) — not yet reached.
+    src/lib/types/dictionary.ts. PR2's register-picker copy
+    (auth.referredByLabel/auth.referredByNoneOption) satisfied this in both
+    locales + dictionary.ts. PR3's carousel fallback label + banner copy
+    (tripperAttribution section) also satisfied this — added to es.json,
+    en.json, and a new TripperAttributionDict in dictionary.ts, parity
+    verified programmatically.
   - .claude/rules/component-patterns.md — reuse existing UI primitives
-    (FormField/FormSelectField); do not hand-roll form controls. Applies to
-    PR2's AuthModal picker.
+    (FormField/FormSelectField); do not hand-roll form controls. PR2's
+    AuthModal picker uses FormSelectField, satisfied. PR3 introduced no new
+    form controls (banner toggle is a plain button, carousel reuses the
+    existing TravelerTypeCard primitive).
 verified_facts:
   date: 2026-08-18
   notes:
@@ -238,3 +257,71 @@ revisions:
       this state.yaml and the sibling .md files were backfilled from the 6
       engram observations that existed at that point, at the user's request
       to switch from engram-only to openspec-only artifact storage.
+  - artifact: apply (PR2)
+    date: 2026-08-18
+    note: >
+      Implemented Phase 2 (11/11 tasks) on branch
+      feature/tripper-attribution-pr2-server-wiring, off PR1's branch (already
+      merged into this branch's history). Strict TDD throughout — every
+      mockable unit (attribution-server.ts, all three new/modified route
+      handlers) had a RED test confirmed against the pre-implementation state
+      before GREEN. proxy.ts and AuthModal.tsx have no dedicated unit tests,
+      matching the design's own testing-strategy scoping (no middleware
+      harness, no AuthModal test precedent to follow). One deliberate design
+      deviation: proxy.ts applies the attribution cookie decision to i18n/canon
+      redirect responses too, not only the NextResponse.next() pass-through,
+      so a ?tripper= param on a redirected request doesn't need a second
+      round-trip to take effect. Full regression suite green (206 files/1506
+      tests, +25 vs PR1), typecheck clean. npm run lint remains broken
+      repo-wide for the same pre-existing reason noted in PR1.
+  - artifact: apply (PR3)
+    date: 2026-08-18
+    note: >
+      Implemented Phase 3 (12/12 tasks, the final phase) on branch
+      feature/tripper-attribution-pr3-carousel-ui, off PR2's branch (PR1+PR2
+      already merged into this branch's history). filterCarouselCards
+      rewritten to flag (availableFromTripper) instead of dropping
+      non-offered types; TravelerTypesCarousel wired to a new pure
+      resolveCarouselCardHref helper (design ADR-8's href table) plus a
+      fallback description for non-offered cards; by-type and journey pages
+      now resolve attribution server-side (readAttributionSlug +
+      getTripperJourneyContext/resolveLiveAttribution) instead of
+      JourneyPageClient's retired client-side ?tripper= fetch;
+      AttributionModeBanner (server) + AttributionModeBannerToggle (client)
+      created and mounted in layout.tsx via a new banner prop on
+      GateAwareChrome. Mid-session copy revision: banner/toggle copy was
+      changed to remove all pricing language in favor of framing the toggle
+      as tripper-curated vs. RandomTrip general experiences, per direct user
+      feedback during the same apply session. Strict TDD followed for the
+      one new pure-logic unit (traveler-card.ts); component/page-wiring
+      layers verified via full regression + typecheck per the design's own
+      testing-strategy scoping, consistent with PR1/PR2's precedent. Full
+      regression suite green (209 files/1538 tests, +1 file/+10 tests vs
+      PR2), typecheck clean. npm run lint remains broken repo-wide for the
+      same pre-existing reason noted in PR1/PR2. All 32 tasks across all 3
+      phases are now complete; left uncommitted per instructions for
+      orchestrator review.
+  - artifact: apply (PR3 risk remediation, Phase 3b)
+    date: 2026-08-19
+    note: >
+      Same session, post-apply: user asked to address the three risks
+      flagged in the PR3 return summary and formalize them into specs/tasks
+      rather than leave them as flagged-but-unfixed. (1)
+      TripperTravelerTypesSection.tsx's own independent hide guard removed
+      — a tripper with zero offerings now shows the fallback-card row
+      instead of the whole section vanishing; new spec scenario in
+      specs/tripper/spec.md + a new component test. (2) Added
+      component-mount test coverage for TravelerTypesCarousel itself
+      (previously only its pure helpers were unit-tested) plus 2 new tests
+      on GateAwareChrome's banner prop; empirically confirmed no
+      ResizeObserver/Embla mounting issues. (3) Wrapped
+      getTripperJourneyContext and readAttributionSlug in React.cache() to
+      dedupe same-request duplicate cookie-verify/DB reads across the
+      banner and page-level attribution resolves; new
+      "Cross-Cutting: Request-Scoped Attribution Reads" spec section +
+      design.md ADR-10; empirically verified cache() is a safe no-op
+      passthrough outside an active Next.js request render, so no existing
+      test needed a mock change. tasks.md gained a new Phase 3b (3.13-3.15,
+      3/3 complete). Full regression: 211 files/1547 tests green (+2
+      files/+9 tests vs the post-PR3 baseline), typecheck clean. Still
+      uncommitted per instructions.

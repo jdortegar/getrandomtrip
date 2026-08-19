@@ -4,12 +4,17 @@ import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { Button } from "@/components/ui/Button";
-import { FormField } from "@/components/ui/FormField";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { isValidPassword } from "@/lib/validation/password";
 import { isValidEmail } from "@/lib/validation/email";
 import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
+
+interface ActiveTripperOption {
+  slug: string;
+  name: string;
+}
 
 interface AuthModalProps {
   /** When false, hides the sign-up toggle and keeps the modal in login mode only. */
@@ -54,6 +59,30 @@ export default function AuthModal({
   const [password, setPassword] = useState("");
   const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
 
+  // Register-mode referring-tripper picker (design ADR-8/"AuthModal.tsx").
+  // Three distinct states, not two:
+  //  - "" (NOT_DECIDED_VALUE): still loading, or the user hasn't touched the
+  //    dropdown yet -> submit omits the key entirely (`undefined`) so the
+  //    server falls back to the anonymous `grt_tripper` cookie.
+  //  - "none" (NONE_OPTION_VALUE): the user explicitly picked "None" ->
+  //    submit sends literal `null`, never consults the cookie.
+  //  - any other value: a real tripper slug, either pre-filled from the
+  //    cookie once `/api/trippers/active` resolves, or picked manually ->
+  //    submit sends that slug string.
+  // Collapsing "not yet decided" and "explicitly none" into one empty-string
+  // sentinel previously meant an in-flight/failed pre-fill fetch always sent
+  // `null`, silently and permanently losing a real cookie-based referral
+  // (write-once field) if the user submitted before it resolved.
+  const NOT_DECIDED_VALUE = "";
+  const NONE_OPTION_VALUE = "none";
+  const [referredByTripperSlug, setReferredByTripperSlug] =
+    useState(NOT_DECIDED_VALUE);
+  const [activeTrippers, setActiveTrippers] = useState<ActiveTripperOption[]>(
+    [],
+  );
+  const [hasFetchedActiveTrippers, setHasFetchedActiveTrippers] =
+    useState(false);
+
   // Handle successful authentication - just close modal and let the page handle the next action
   const handleAuthSuccess = useCallback(() => {
     // Clear form state
@@ -63,6 +92,9 @@ export default function AuthModal({
     setError("");
     setErrorKind(null);
     setResendState("idle");
+    setReferredByTripperSlug(NOT_DECIDED_VALUE);
+    setHasFetchedActiveTrippers(false);
+    setActiveTrippers([]);
 
     // Close modal
     onClose();
@@ -73,6 +105,12 @@ export default function AuthModal({
 
   // Handle close - just close the modal, don't redirect
   const handleClose = useCallback(() => {
+    // Reset the referring-tripper picker's fetch flag so a failed/aborted
+    // pre-fill attempt gets a fresh retry the next time the modal opens,
+    // instead of being permanently blocked for the rest of the page's
+    // lifetime (previously this flag was only ever set once, on the
+    // request firing, never on success/failure).
+    setHasFetchedActiveTrippers(false);
     onClose();
     // Don't redirect when closing - let user stay on current page
   }, [onClose]);
@@ -98,6 +136,32 @@ export default function AuthModal({
     setEmail(rememberedEmail);
     setKeepMeLoggedIn(true);
   }, [isOpen, initialEmail]);
+
+  // Fetch the active-trippers list once, the first time register mode is
+  // reached — `current` (derived server-side from the httpOnly grt_tripper
+  // cookie) pre-fills the picker only if the user hasn't already chosen a
+  // value (spec "Pre-filled from anonymous cookie"). Best-effort: a fetch
+  // failure just leaves the picker on its "None" default.
+  useEffect(() => {
+    if (mode !== "register" || hasFetchedActiveTrippers) return;
+
+    fetch("/api/trippers/active")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { trippers?: ActiveTripperOption[]; current?: string | null } | null) => {
+        if (!data) return;
+        // Only mark as fetched on success — a failed/aborted request must
+        // not permanently block retries (see handleClose's reset comment).
+        setHasFetchedActiveTrippers(true);
+        setActiveTrippers(data.trippers ?? []);
+        if (data.current) {
+          setReferredByTripperSlug((prev) => prev || data.current!);
+        }
+      })
+      .catch(() => {
+        // No-op — register still works with the "not yet decided" default,
+        // which falls back to the cookie server-side on submit.
+      });
+  }, [mode, hasFetchedActiveTrippers]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -140,11 +204,28 @@ export default function AuthModal({
 
     try {
       if (mode === "register") {
-        // Register new user
+        // Register new user.
+        // `referredByTripperSlugForSubmit` resolves the picker's three
+        // states: NOT_DECIDED_VALUE -> `undefined` (JSON.stringify drops the
+        // key -> server falls back to the cookie); NONE_OPTION_VALUE ->
+        // explicit `null` (server never consults the cookie); anything else
+        // -> that slug string.
+        const referredByTripperSlugForSubmit: string | null | undefined =
+          referredByTripperSlug === NOT_DECIDED_VALUE
+            ? undefined
+            : referredByTripperSlug === NONE_OPTION_VALUE
+              ? null
+              : referredByTripperSlug;
+
         const response = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            referredByTripperSlug: referredByTripperSlugForSubmit,
+          }),
         });
 
         const data = await response.json();
@@ -441,6 +522,28 @@ export default function AuthModal({
                     value={password}
                   />
                 </div>
+
+                {mode === "register" && (
+                  <div>
+                    <FormSelectField
+                      id="auth-referred-by-tripper"
+                      label={t?.referredByLabel}
+                      onChange={(e) =>
+                        setReferredByTripperSlug(e.target.value)
+                      }
+                      value={referredByTripperSlug}
+                    >
+                      <option value={NONE_OPTION_VALUE}>
+                        {t?.referredByNoneOption}
+                      </option>
+                      {activeTrippers.map((tripper) => (
+                        <option key={tripper.slug} value={tripper.slug}>
+                          {tripper.name}
+                        </option>
+                      ))}
+                    </FormSelectField>
+                  </div>
+                )}
 
                 {mode === "login" && (
                   <div className="flex flex-col gap-2 pt-1">

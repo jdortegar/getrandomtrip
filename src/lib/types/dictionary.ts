@@ -2096,6 +2096,30 @@ export interface InviteTravelersDict {
   savingAction: string;
 }
 
+/**
+ * Site-wide tripper attribution copy (design ADR-8/ADR-9): the carousel's
+ * non-offered-type fallback CTA, and the persistent tripper-vs-general
+ * experiences banner + toggle. Copy is framed around *which experiences*
+ * are shown (tripper-curated vs. RandomTrip's general catalog), never
+ * around pricing — the underlying mechanism does affect price overrides,
+ * but that's an implementation detail, not something surfaced to the
+ * visitor. Kept as its own top-level section (not nested under `trippers`
+ * or `journey`) since it's shared across the carousel, the layout-mounted
+ * banner, and any future attribution-aware surface.
+ */
+export interface TripperAttributionDict {
+  /** Fallback CTA/description shown on a carousel card for a type the attributed tripper doesn't offer. */
+  visitRandomTripExperiences: string;
+  /** Banner copy while browsing tripper-curated experiences. Contains a literal "{name}" placeholder. */
+  bannerTripperModeMessage: string;
+  /** Banner copy after switching to RandomTrip's general experiences. */
+  bannerRandomtripModeMessage: string;
+  /** Toggle label: tripper-curated experiences -> general RandomTrip experiences. */
+  bannerSwitchToRandomtrip: string;
+  /** Toggle label: general experiences -> back to the tripper's curated experiences. Contains a literal "{name}" placeholder. */
+  bannerSwitchToTripper: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -2280,6 +2304,8 @@ export interface MarketingDictionary {
     passwordPolicyHint: string;
     forgotPasswordLink: string;
     keepLoggedIn: string;
+    referredByLabel: string;
+    referredByNoneOption: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
   resetPasswordPage: ResetPasswordPageDict;
@@ -3345,4 +3371,5 @@ export interface MarketingDictionary {
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
   tripDetail: TripDetailDict;
+  tripperAttribution: TripperAttributionDict;
 }

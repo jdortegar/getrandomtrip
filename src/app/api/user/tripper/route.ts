@@ -10,6 +10,7 @@ import {
   generateUniqueTripperSlug,
   getTripperSettingsExtras,
 } from "@/lib/db/tripper-queries";
+import { isValidTripperSlug } from "@/lib/tripper/attribution";
 
 export async function GET() {
   try {
@@ -87,7 +88,7 @@ export async function PATCH(request: NextRequest) {
       // cookie (v1.<slug>.<exp>.<sig>) and used as a URL path segment — only
       // lowercase alphanumeric characters and single dashes are allowed (no
       // dots, no leading/trailing/double dashes).
-      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(requestedSlug)) {
+      if (!isValidTripperSlug(requestedSlug)) {
         return NextResponse.json(
           {
             error:
