@@ -323,3 +323,63 @@ Mid-turn feedback: address the three risks flagged in the PR3 return summary and
 Verification after all three fixes: `npx tsc --noEmit` clean; `npx vitest run` -> **211 test files, 1547 tests, all green** (+2 files/+9 tests vs. the 209/1538 baseline right after the main PR3 batch — 2 new test files totaling 7 tests, plus 2 new tests added to the existing `GateAwareChrome.test.tsx`).
 
 Updated artifacts: `openspec/changes/tripper-attribution/specs/tripper/spec.md`, `openspec/changes/tripper-attribution/specs/tripper-attribution/spec.md`, `openspec/changes/tripper-attribution/design.md` (ADR-10), `openspec/changes/tripper-attribution/tasks.md` (new Phase 3b, tasks 3.13-3.15).
+
+## Tracker-branch review fixes (post-merge, on `feature/tripper-attribution`)
+
+An independent adversarial code review against the fully-merged tracker branch (PR1+PR2+PR3) confirmed 10 findings across correctness, i18n, UX consistency, and performance. All 10 were applied in full; none were skipped or partially resolved.
+
+1. **Case-sensitivity mismatch, carousel vs. by-type pricing gate** — `filterCarouselCards` normalized `availableTypes` with `.toLowerCase().trim()`; the by-type page's `priceOverrides` gate did a raw case-sensitive `.includes()` against the same `Experience.type` data. Extracted a single shared `isTypeOffered(allowedTypes, slug)` helper into `src/lib/utils/traveler-card.ts`, used by both `filterCarouselCards` and `src/app/[locale]/experiences/by-type/[type]/page.tsx`. Tests: `src/lib/utils/__tests__/traveler-card.test.ts` (+3 tests, mixed-case `["XSED", "Couple"]` resolving `"couple"` as offered in both call sites).
+
+2. **`TripperTravelerTypesSection.tsx` hardcoded Spanish-only copy** — the section's own guard-removal (task 3.13 above) meant it now always renders, exposing hardcoded Spanish strings ("Tipos de viajero", "Viajes con {name}", etc.) to English-locale visitors. Added `trippers.travelerTypesSection` (`eyebrow`/`title`/`subtitle`, `{name}` placeholder) to `src/lib/types/dictionary.ts` + `src/dictionaries/es.json` + `src/dictionaries/en.json`. Component now takes a required `copy` prop (same pattern as `TripperUnavailableNotice`); caller `src/app/[locale]/trippers/[tripper]/page.tsx` passes `dict.trippers.travelerTypesSection`. Test added to `TripperTravelerTypesSection.test.tsx` proving English copy renders with no Spanish leak.
+
+3. **Unvalidated `tripperSlug` forwarded to client on dead/inactive tripper** — `src/app/[locale]/journey/page.tsx` now only forwards the raw `tripperSlug` prop to `JourneyPageClient` when `resolveTripperState` resolved to `status: "ok"`; `"none"`/`"unavailable"` forward `undefined` regardless of the cookie's HMAC validity. Tests added to `journey/__tests__/page.test.ts` (+3 tests) covering not_found, inactive, and ok paths.
+
+4. **Banner permanently loses "switch back" after toggle-off + refresh** — added a second, separate, longer-lived cookie `grt_tripper_last_seen` (90-day TTL vs. the live `grt_tripper` cookie's 30-day TTL; `GRT_TRIPPER_LAST_SEEN_COOKIE`/`LAST_SEEN_COOKIE_MAX_AGE`/`lastSeenCookieOptions()` in `src/lib/tripper/attribution.ts`). Written alongside the live cookie on a genuinely NEW referral (`proxy.ts`'s `action.kind === "set"`) and on `POST /api/attribution/mode` re-selecting `"tripper"` mode; deliberately NEVER cleared by the `"randomtrip"` toggle action. `AttributionModeBanner` (`src/components/tripper/AttributionModeBanner.tsx`) now falls back to this cookie (via new `readLastSeenTripperSlug()` in `attribution-server.ts`) when there's no live cookie, rendering the toggle in `initialMode="randomtrip"` so the visitor can still switch back. Explicitly documented as distinct from `referredByTripperId` (permanent, write-once, DB-level referral credit) — this is a session/cookie-level, UI-only "last seen" signal. Tests: `attribution-server.readSlugs.test.ts` (new, 4 tests), `proxy.attribution.test.ts` (+3 tests), `mode/route.test.ts` (+2 tests), `AttributionModeBannerToggle.test.tsx` (new, covers `initialMode`).
+
+5. **Toggle doesn't invalidate already-rendered Server Component pricing** — `AttributionModeBannerToggle.tsx`'s `handleToggle` now calls `router.refresh()` (from `next/navigation`) immediately after a successful `POST /api/attribution/mode`, so already-rendered by-type page pricing re-renders with the new attribution state. Test: `AttributionModeBannerToggle.test.tsx` asserts `router.refresh()` is called after a successful toggle and NOT called after a failed one.
+
+6. **Banner/page disagree under `?catalog=randomtrip`** — `AttributionModeBannerToggle` (client component, already nested under the Suspense boundary from fix #8) now reads `useSearchParams()` directly — this works even though layouts don't receive `searchParams` as a prop, because the hook subscribes to the router's client-side URL state regardless of where it's mounted in the tree. When `catalog=randomtrip` is active, the banner shows only the RandomTrip-general message with no toggle button (a page-local, per-request opt-out has no sensible cookie-level toggle action to offer). Documented the App-Router layout/page boundary reasoning inline. Tests: `AttributionModeBannerToggle.test.tsx` (+2 tests: opt-out active vs. any other `catalog` value).
+
+7. **`cache()`-wrapped `getTripperJourneyContext` memoizes transient DB errors** — the catch-all in `src/lib/db/tripper-queries.ts` used to swallow ANY thrown error into `{ status: "not_found" }`, which `React.cache()` would then memoize for the rest of the request. Changed to re-throw genuine DB errors (verified against React 19's documented `cache()` semantics: a rejected/thrown result is never memoized, only a resolved value is) while still returning `{ status: "not_found" }` normally for an actual missing tripper (not an exception). Error handling moved to the call sites that need graceful degradation without poisoning the shared cache: `resolveLiveAttribution` (`attribution-server.ts`) and `resolveTripperState` (`journey/page.tsx`) each catch-and-log locally now. Tests: `tripper-queries.getTripperJourneyContext.test.ts` (+2 tests distinguishing "doesn't exist" from "DB threw").
+
+8. **`AttributionModeBanner` has no Suspense boundary** — wrapped it in `<Suspense fallback={null}>` in `src/app/[locale]/layout.tsx`, mirroring the existing `AppTracking` pattern in the same file, so the cookie/DB lookup no longer blocks the initial HTML/RSC response for every route.
+
+9. **`TripperJourneyContext` type duplicated** — removed the duplicate `interface TripperJourneyContext` from `src/lib/db/tripper-queries.ts` (and its now-unused `TripperPriceOverrides` import); `tripper-queries.ts` now imports the canonical type from `src/types/tripper.ts`. Updated `src/lib/tripper/attribution-server.ts`'s import to also pull the type from `@/types/tripper` instead of re-exporting through `tripper-queries.ts`.
+
+10. **Unparallelized awaits on the by-type page** — `src/app/[locale]/experiences/by-type/[type]/page.tsx` now runs the attribution resolution (`readAttributionSlug` + `resolveLiveAttribution`, skipped entirely when `catalog=randomtrip`), `getDictionary`, and `getReviewsForTripType` concurrently via `Promise.all` (not `allSettled` — verified neither `getDictionary` nor `getReviewsForTripType` can meaningfully reject, and `resolveLiveAttribution` now catches its own errors per fix #7). Test: new `by-type/[type]/__tests__/page.test.tsx` (3 tests, including a timing-based test proving concurrent — not sequential — execution).
+
+### Verification
+
+- `npx tsc --noEmit` — clean, zero errors.
+- `npx vitest run` — **214 test files, 1574 tests, all passing** (up from the 211/1547 baseline: +3 new test files — `attribution-server.readSlugs.test.ts`, `AttributionModeBannerToggle.test.tsx`, `by-type/[type]/__tests__/page.test.tsx` — plus additions to 6 existing test files).
+
+### Files touched
+
+- `src/lib/utils/traveler-card.ts` (+`isTypeOffered`)
+- `src/lib/utils/__tests__/traveler-card.test.ts`
+- `src/app/[locale]/experiences/by-type/[type]/page.tsx`
+- `src/app/[locale]/experiences/by-type/[type]/__tests__/page.test.tsx` (new)
+- `src/lib/types/dictionary.ts`
+- `src/dictionaries/es.json`, `src/dictionaries/en.json`
+- `src/components/tripper/TripperTravelerTypesSection.tsx`
+- `src/components/tripper/__tests__/TripperTravelerTypesSection.test.tsx`
+- `src/app/[locale]/trippers/[tripper]/page.tsx`
+- `src/app/[locale]/journey/page.tsx`
+- `src/app/[locale]/journey/__tests__/page.test.ts`
+- `src/lib/tripper/attribution.ts` (+`GRT_TRIPPER_LAST_SEEN_COOKIE`, `LAST_SEEN_COOKIE_MAX_AGE`, `lastSeenCookieOptions`)
+- `src/lib/tripper/attribution-server.ts` (+`readLastSeenTripperSlug`, error handling in `resolveLiveAttribution`, type import fix)
+- `src/lib/tripper/__tests__/attribution-server.readSlugs.test.ts` (new)
+- `src/proxy.ts`
+- `src/__tests__/proxy.attribution.test.ts`
+- `src/app/api/attribution/mode/route.ts`
+- `src/app/api/attribution/mode/__tests__/route.test.ts`
+- `src/components/tripper/AttributionModeBanner.tsx`
+- `src/components/tripper/AttributionModeBannerToggle.tsx`
+- `src/components/tripper/__tests__/AttributionModeBannerToggle.test.tsx` (new)
+- `src/lib/db/tripper-queries.ts`
+- `src/lib/db/__tests__/tripper-queries.getTripperJourneyContext.test.ts`
+- `src/app/[locale]/layout.tsx`
+
+### Status
+
+All 10 confirmed findings applied in full, no partial fixes. Left uncommitted per instructions — working tree changes are ready for orchestrator review and commit.

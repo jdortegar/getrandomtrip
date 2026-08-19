@@ -62,7 +62,7 @@ artifacts:
   tasks_origin: sdd/tripper-attribution/tasks (engram #542, historical)
   apply_progress: openspec/changes/tripper-attribution/apply-progress.md
   apply_progress_origin: sdd/tripper-attribution/apply-progress (engram #543, historical; PR1/Phase 1 only)
-updated: 2026-08-19 (PR3 risk remediation)
+updated: 2026-08-19 (tracker-branch adversarial review fixes)
 strict_tdd: true
 migration_note: >-
   This repo uses `prisma db push`; prisma/migrations/ is empty/untracked
@@ -325,3 +325,36 @@ revisions:
       3/3 complete). Full regression: 211 files/1547 tests green (+2
       files/+9 tests vs the post-PR3 baseline), typecheck clean. Still
       uncommitted per instructions.
+  - artifact: apply (tracker-branch adversarial review fixes)
+    date: 2026-08-19
+    note: >
+      Post-merge on the tracker branch feature/tripper-attribution (PR1+PR2+
+      PR3 already merged in via GitHub): an independent adversarial code
+      review against the full merged feature confirmed 10 findings —
+      case-sensitivity mismatch between the carousel filter and the by-type
+      pricing gate (fixed via a shared isTypeOffered helper); hardcoded
+      Spanish-only copy in TripperTravelerTypesSection now always rendering
+      (fixed with a new trippers.travelerTypesSection dictionary section);
+      an unvalidated tripperSlug forwarded to the client on a dead/inactive
+      tripper (journey/page.tsx now forwards undefined unless status is
+      "ok"); the banner permanently losing its "switch back" control after
+      a toggle-to-randomtrip + refresh (fixed with a new, separate,
+      longer-lived grt_tripper_last_seen cookie, distinct from the
+      permanent referredByTripperId DB field); the toggle not calling
+      router.refresh() after a successful cookie change (stale
+      already-rendered prices); the banner and the by-type page
+      disagreeing under ?catalog=randomtrip (fixed by reading
+      useSearchParams() directly in the client toggle component, since
+      layouts don't receive searchParams as a prop); getTripperJourneyContext's
+      cache() wrapping memoizing transient DB errors as a false
+      not_found for the rest of the request (fixed by re-throwing genuine
+      DB errors instead of swallowing them, verified against React 19's
+      documented cache() semantics — only resolved values are memoized);
+      AttributionModeBanner missing the Suspense boundary AppTracking
+      already had (fixed, same pattern); TripperJourneyContext defined
+      twice (duplicate removed from tripper-queries.ts, canonical
+      definition kept in types/tripper.ts); and unparallelized awaits on
+      the by-type page (now Promise.all'd). All 10 applied in full, none
+      partial. Full regression suite green (214 files/1574 tests, +3
+      files/+27 tests vs the Phase 3b baseline), typecheck clean. Still
+      uncommitted per instructions — left for orchestrator review.

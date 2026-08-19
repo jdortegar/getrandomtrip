@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import {
   COOKIE_MAX_AGE,
   GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
+  LAST_SEEN_COOKIE_MAX_AGE,
   attributionCookieOptions,
   getAttributionSecret,
+  lastSeenCookieOptions,
   signAttribution,
 } from "@/lib/tripper/attribution";
 
@@ -60,13 +63,18 @@ function isTrustedOrigin(request: Request): boolean {
  * `attribution-server.ts#stampReferral`; no Prisma import exists here on
  * purpose).
  *
- * `mode: "randomtrip"` clears the cookie unconditionally (base catalog).
+ * `mode: "randomtrip"` clears the LIVE cookie unconditionally (base catalog)
+ * — it deliberately leaves `GRT_TRIPPER_LAST_SEEN_COOKIE` untouched (review
+ * finding #4): that longer-lived cookie is what lets the banner still offer
+ * "switch back to {name}" on a later request, even after this clears the
+ * live pricing cookie entirely.
  * `mode: "tripper"` requires `slug` in the body (the caller already knows
  * it — e.g. the banner keeps the underlying slug client-side even while
- * displaying randomtrip mode) and (re-)signs a fresh cookie for it. No
- * liveness re-validation happens here, matching the proxy's "cookie is a
- * pointer, never an authority" contract — liveness is re-checked at Node
- * read sites, not at write time.
+ * displaying randomtrip mode) and (re-)signs a fresh cookie for it, refreshing
+ * the last-seen cookie's TTL for the same slug too. No liveness
+ * re-validation happens here, matching the proxy's "cookie is a pointer,
+ * never an authority" contract — liveness is re-checked at Node read sites,
+ * not at write time.
  */
 export async function POST(request: Request) {
   if (!isTrustedOrigin(request)) {
@@ -92,8 +100,18 @@ export async function POST(request: Request) {
 
   const secret = getAttributionSecret();
   const signed = await signAttribution(slug, secret, COOKIE_MAX_AGE);
+  const lastSeenSigned = await signAttribution(
+    slug,
+    secret,
+    LAST_SEEN_COOKIE_MAX_AGE,
+  );
 
   const response = NextResponse.json({ ok: true, mode });
   response.cookies.set(GRT_TRIPPER_COOKIE, signed, attributionCookieOptions());
+  response.cookies.set(
+    GRT_TRIPPER_LAST_SEEN_COOKIE,
+    lastSeenSigned,
+    lastSeenCookieOptions(),
+  );
   return response;
 }

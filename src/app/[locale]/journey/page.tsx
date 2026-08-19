@@ -21,12 +21,23 @@ async function resolveTripperState(
   slug: string | null,
 ): Promise<TripperContextState> {
   if (!slug) return { status: "none" };
-  const result = await getTripperJourneyContext(slug);
-  if (result.status === "ok") return { status: "ok", context: result.context };
-  if (result.status === "inactive") {
-    return { status: "unavailable", name: result.name };
+  try {
+    const result = await getTripperJourneyContext(slug);
+    if (result.status === "ok") return { status: "ok", context: result.context };
+    if (result.status === "inactive") {
+      return { status: "unavailable", name: result.name };
+    }
+    return { status: "none" };
+  } catch (error) {
+    // `getTripperJourneyContext` re-throws unexpected DB errors instead of
+    // swallowing them into `{ status: "not_found" }` (review finding #7 —
+    // that swallowing used to get memoized by `cache()` for the rest of
+    // the request). Caught here, not inside the cached function, so the
+    // failure is never memoized — a later call in the same request (e.g.
+    // from `AttributionModeBanner`) can still succeed even if this didn't.
+    console.error("resolveTripperState: getTripperJourneyContext threw", error);
+    return { status: "none" };
   }
-  return { status: "none" };
 }
 
 export async function generateMetadata(props: {
@@ -48,10 +59,16 @@ export default async function JourneyPage(props: {
 }) {
   const tripperSlug = await readAttributionSlug();
   const tripperState = await resolveTripperState(tripperSlug);
+  // Only forward the raw slug when it actually resolved to a live tripper —
+  // a signature-valid-but-dead (deleted/deactivated) slug must never reach
+  // the client/API payload, regardless of whether downstream layers
+  // re-validate it (review finding #3, defense in depth).
+  const validatedTripperSlug =
+    tripperState.status === "ok" ? tripperSlug ?? undefined : undefined;
   return (
     <JourneyPageClient
       params={props.params}
-      tripperSlug={tripperSlug ?? undefined}
+      tripperSlug={validatedTripperSlug}
       tripperState={tripperState}
     />
   );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   filterCarouselCards,
+  isTypeOffered,
   resolveCarouselCardHref,
   type TravelerTypeCardData,
 } from "../traveler-card";
@@ -48,6 +49,29 @@ describe("filterCarouselCards (flag, never drop — design 'traveler-card.ts' in
   it("preserves original card fields alongside the new flag", () => {
     const [first] = filterCarouselCards(CARDS, { tripperContext: false });
     expect(first).toMatchObject(CARDS[0]);
+  });
+});
+
+describe("isTypeOffered (review finding #1 — single normalized comparison shared by carousel + by-type page)", () => {
+  it("resolves mixed-case allowedTypes against a lowercase slug the same way filterCarouselCards does", () => {
+    const allowedTypes = ["XSED", "Couple"];
+    expect(isTypeOffered(allowedTypes, "couple")).toBe(true);
+
+    const filtered = filterCarouselCards(CARDS, {
+      tripperContext: true,
+      availableTypes: allowedTypes,
+    });
+    const byKey = Object.fromEntries(filtered.map((c) => [c.key, c.availableFromTripper]));
+    expect(byKey.couple).toBe(true);
+  });
+
+  it("returns false for a type not in allowedTypes", () => {
+    expect(isTypeOffered(["couple"], "honeymoon")).toBe(false);
+  });
+
+  it("treats missing/empty allowedTypes as not offered", () => {
+    expect(isTypeOffered(undefined, "couple")).toBe(false);
+    expect(isTypeOffered([], "couple")).toBe(false);
   });
 });
 

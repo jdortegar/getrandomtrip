@@ -16,13 +16,12 @@ import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import {
   GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
   getAttributionSecret,
   verifyAttribution,
 } from "@/lib/tripper/attribution";
-import {
-  getTripperJourneyContext,
-  type TripperJourneyContext,
-} from "@/lib/db/tripper-queries";
+import { getTripperJourneyContext } from "@/lib/db/tripper-queries";
+import type { TripperJourneyContext } from "@/types/tripper";
 
 /**
  * Reads and verifies the `grt_tripper` cookie server-side (Node read sites
@@ -44,17 +43,45 @@ export const readAttributionSlug = cache(async (): Promise<string | null> => {
 });
 
 /**
+ * Reads and verifies the separate, longer-lived `grt_tripper_last_seen`
+ * cookie (review finding #4) — survives the mode-toggle's "switch to
+ * RandomTrip" action (which only clears `grt_tripper`), so
+ * `AttributionModeBanner` can still offer "switch back to {name}" on a
+ * fresh render even when there is no live pricing cookie. Never used for
+ * pricing/referral decisions — UI-only.
+ */
+export const readLastSeenTripperSlug = cache(
+  async (): Promise<string | null> => {
+    const raw = (await cookies()).get(GRT_TRIPPER_LAST_SEEN_COOKIE)?.value;
+    return verifyAttribution(raw, getAttributionSecret());
+  },
+);
+
+/**
  * Re-validates a slug's liveness via `getTripperJourneyContext` and returns
  * the branding/pricing context only when the tripper is still `ok`
  * (active + found). `not_found`/`inactive` collapse to `null` — the caller
  * falls back to the base RandomTrip catalog, never a stale price.
+ *
+ * `getTripperJourneyContext` now re-throws on an unexpected DB error instead
+ * of swallowing it into `{ status: "not_found" }` (review finding #7 — that
+ * swallowing used to get memoized by `cache()` for the rest of the request).
+ * This call site is where that error is actually handled: caught here (not
+ * inside the cached function) so the failure never gets memoized, and this
+ * specific caller still degrades to "no attribution" for THIS call only —
+ * a fresh call later in the same request can still succeed.
  */
 export async function resolveLiveAttribution(
   slug: string | null,
 ): Promise<TripperJourneyContext | null> {
   if (!slug) return null;
-  const result = await getTripperJourneyContext(slug);
-  return result.status === "ok" ? result.context : null;
+  try {
+    const result = await getTripperJourneyContext(slug);
+    return result.status === "ok" ? result.context : null;
+  } catch (error) {
+    console.error("resolveLiveAttribution: getTripperJourneyContext threw", error);
+    return null;
+  }
 }
 
 /**

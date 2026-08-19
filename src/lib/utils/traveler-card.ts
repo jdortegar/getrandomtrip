@@ -82,6 +82,27 @@ export function getCarouselCardOptions(
 }
 
 /**
+ * Normalized "does this tripper offer this type" check — single source of
+ * truth shared by `filterCarouselCards` (below) and the by-type page's
+ * price-override gate (`experiences/by-type/[type]/page.tsx`). Both call
+ * sites compare the same kind of data (`Experience.type`, a Prisma
+ * `String[]` that can mix casing, against a lowercase traveler-type slug),
+ * so both MUST use the identical lowercase+trim comparison — a
+ * case-sensitive check on one side and a normalized one on the other lets
+ * the carousel and the by-type page disagree about whether a type is
+ * "offered" (bug: carousel review finding #1).
+ */
+export function isTypeOffered(
+  allowedTypes: string[] | undefined | null,
+  slug: string,
+): boolean {
+  const normalizedSlug = slug.toLowerCase().trim();
+  return (allowedTypes ?? []).some(
+    (t) => String(t).toLowerCase().trim() === normalizedSlug,
+  );
+}
+
+/**
  * Flags every card with `availableFromTripper` — never drops a card from the
  * list (design "traveler-card.ts — flag, do not drop"; spec "Carousel
  * Attribution-Aware Fallback Cards"). Non-tripper context: every card is
@@ -102,12 +123,9 @@ export function filterCarouselCards(
   if (!tripperContext) {
     return cards.map((card) => ({ ...card, availableFromTripper: true }));
   }
-  const allowed = new Set(
-    (availableTypes ?? []).map((t) => String(t).toLowerCase().trim()),
-  );
   return cards.map((card) => ({
     ...card,
-    availableFromTripper: allowed.has(card.key.toLowerCase()),
+    availableFromTripper: isTypeOffered(availableTypes, card.key),
   }));
 }
 

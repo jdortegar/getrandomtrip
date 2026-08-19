@@ -7,10 +7,13 @@ import { LOCALES } from "@/lib/i18n/config";
 import {
   COOKIE_MAX_AGE,
   GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
+  LAST_SEEN_COOKIE_MAX_AGE,
   attributionCookieOptions,
   getAttributionSecret,
   isAttributionEnabled,
   isValidTripperSlug,
+  lastSeenCookieOptions,
   resolveAttribution,
   signAttribution,
   verifyAttribution,
@@ -116,6 +119,24 @@ export async function applyAttribution(
 
   const signed = await signAttribution(slugToSign, secret, COOKIE_MAX_AGE);
   res.cookies.set(GRT_TRIPPER_COOKIE, signed, attributionCookieOptions());
+
+  // Only a genuinely NEW referral (`"set"`, not `"keep"`'s exp refresh)
+  // overwrites the longer-lived "last seen tripper" signal (review finding
+  // #4) — this is what lets the banner still offer "switch back to X" after
+  // the visitor later toggles to RandomTrip mode and the live cookie above
+  // gets cleared.
+  if (action.kind === "set") {
+    const lastSeenSigned = await signAttribution(
+      slugToSign,
+      secret,
+      LAST_SEEN_COOKIE_MAX_AGE,
+    );
+    res.cookies.set(
+      GRT_TRIPPER_LAST_SEEN_COOKIE,
+      lastSeenSigned,
+      lastSeenCookieOptions(),
+    );
+  }
 }
 
 export async function proxy(req: NextRequest) {

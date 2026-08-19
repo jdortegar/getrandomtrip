@@ -7,10 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
-import {
-  parseTripperPriceOverrides,
-  type TripperPriceOverrides,
-} from "@/lib/pricing/tripper-price-overrides";
+import { parseTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import {
   REVIEW_SORT_DEFAULT,
   reviewListOrderBy,
@@ -24,6 +21,7 @@ import type {
   FeaturedTrip,
   FeaturedTripCard,
   TripperBySlugResult,
+  TripperJourneyContext,
   TripperListItem,
   TripperProfile,
   TripperSessionExtras,
@@ -467,18 +465,6 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
 // JOURNEY CONTEXT
 // ============================================================================
 
-export interface TripperJourneyContext {
-  name: string;
-  avatarUrl: string | null;
-  location: string | null;
-  /** Distinct ACTIVE experience types for this tripper. */
-  allowedTypes: string[];
-  /** For each type, the distinct non-null levels of ACTIVE experiences that include that type. */
-  allowedLevelsByType: Record<string, string[]>;
-  /** This tripper's price overrides, for override-aware price display before any TripRequest exists. */
-  priceOverrides: TripperPriceOverrides | null;
-}
-
 /**
  * Discriminated result from getTripperJourneyContext, mirroring
  * getTripperBySlug's shape:
@@ -568,11 +554,21 @@ export const getTripperJourneyContext = cache(
         },
       };
     } catch (error) {
-      // Supplementary data for an otherwise-functional generic journey — a
-      // transient DB blip degrades to "not_found" (unbranded journey) rather
-      // than rethrowing, unlike getTripperBySlug's page-identity 404/500 split.
+      // React's `cache()` only memoizes a RESOLVED value — a rejected
+      // promise/thrown error is never cached (verified against React's
+      // `cache()` semantics for the fix to review finding #7). Swallowing an
+      // unexpected DB error into `{ status: "not_found" }` here would get
+      // memoized as a false "tripper doesn't exist" for the REST of the
+      // request — poisoning every other same-slug call this request makes
+      // (e.g. `AttributionModeBanner` hitting a transient blip would also
+      // sour the journey page's own later call for the same slug). Genuine
+      // "no such tripper"/"inactive" cases are returned above, before this
+      // catch, and are never exceptions — only an actual thrown error from
+      // the DB calls reaches here, so re-throwing (not swallowing) is safe
+      // and correct: it lets the caller's own error handling/retry apply,
+      // instead of silently and durably lying about the tripper's existence.
       console.error("Error fetching tripper journey context:", error);
-      return { status: "not_found" };
+      throw error;
     }
   },
 );

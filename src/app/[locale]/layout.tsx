@@ -44,7 +44,11 @@ export default async function LocaleLayout(props: {
         <AppTracking />
       </Suspense>
       <GateAwareChrome
-        banner={<AttributionModeBanner copy={dict.tripperAttribution} />}
+        banner={
+          <Suspense fallback={null}>
+            <AttributionModeBanner copy={dict.tripperAttribution} />
+          </Suspense>
+        }
         dict={dict}
         gateEnabled={gateEnabled}
         locale={localeTyped}

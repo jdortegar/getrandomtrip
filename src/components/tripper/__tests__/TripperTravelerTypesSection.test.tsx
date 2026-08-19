@@ -16,6 +16,12 @@ vi.mock("next/navigation", () => ({
 let container: HTMLDivElement;
 let root: Root;
 
+const COPY = {
+  eyebrow: "Tipos de viajero",
+  title: "Viajes con {name}",
+  subtitle: "Explora los paquetes de {name} por tipo de viajero",
+};
+
 function render(ui: React.ReactElement) {
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -48,6 +54,7 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     render(
       <TripperTravelerTypesSection
         availableTypes={[]}
+        copy={COPY}
         tripperName="Maria"
         tripperSlug="maria"
       />,
@@ -63,10 +70,35 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     ).not.toBeNull();
   });
 
+  it("renders copy from the dictionary-sourced `copy` prop, not hardcoded Spanish text (review finding #2)", () => {
+    const enCopy = {
+      eyebrow: "Traveler types",
+      title: "Trips with {name}",
+      subtitle: "Explore {name}'s packages by traveler type",
+    };
+
+    render(
+      <TripperTravelerTypesSection
+        availableTypes={[]}
+        copy={enCopy}
+        tripperName="Maria"
+        tripperSlug="maria"
+      />,
+    );
+
+    expect(container.textContent).toContain("Trips with Maria");
+    expect(container.textContent).toContain(
+      "Explore Maria's packages by traveler type",
+    );
+    expect(container.textContent).not.toContain("Tipos de viajero");
+    expect(container.textContent).not.toContain("Viajes con Maria");
+  });
+
   it("renders offered-type cards with a working tripper-attributed href", () => {
     render(
       <TripperTravelerTypesSection
         availableTypes={["couple"]}
+        copy={COPY}
         tripperName="Maria"
         tripperSlug="maria"
       />,

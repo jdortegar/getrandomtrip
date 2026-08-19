@@ -1270,6 +1270,11 @@
       "title": "Este perfil no está disponible",
       "description": "{name} pausó su perfil por ahora. Podés explorar otros trippers mientras tanto.",
       "ctaLabel": "Ver todos los trippers"
+    },
+    "travelerTypesSection": {
+      "eyebrow": "Tipos de viajero",
+      "title": "Viajes con {name}",
+      "subtitle": "Explora los paquetes de {name} por tipo de viajero"
     }
   },
   "blogPage": {

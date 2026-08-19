@@ -21,13 +21,35 @@ export const GRT_TRIPPER_COOKIE = "grt_tripper";
 /** Cookie TTL: 30 days, in seconds (ADR-4 — product-confirmed referral window). */
 export const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 
+/**
+ * Separate, longer-lived "last seen tripper" cookie (review finding #4).
+ * `GRT_TRIPPER_COOKIE` is the LIVE pricing/attribution signal — it's cleared
+ * outright by the mode-toggle's "switch to RandomTrip" action, and re-reading
+ * it after that clears the banner's "switch back to {tripper}" control with
+ * no way to recover it short of re-clicking the original referral link.
+ *
+ * This cookie is a separate, purely UI-level "who did this visitor most
+ * recently arrive via" memory: written alongside `GRT_TRIPPER_COOKIE`
+ * whenever a NEW referral is resolved (`proxy.ts`'s `action.kind === "set"`,
+ * or `/api/attribution/mode` re-selecting "tripper" mode), but NEVER cleared
+ * by the toggle-to-randomtrip action — only ever overwritten by a fresh
+ * referral. It is NOT `referredByTripperId` (the permanent, write-once DB
+ * field for referral credit, see `attribution-server.ts#stampReferral`) —
+ * this is session/cookie-level and purely cosmetic (which "switch back to
+ * X" control the banner offers), never used for pricing or credit.
+ */
+export const GRT_TRIPPER_LAST_SEEN_COOKIE = "grt_tripper_last_seen";
+
+/** Last-seen cookie TTL: 90 days — deliberately longer than `COOKIE_MAX_AGE` so it outlives the live pricing cookie's own natural expiry, not just the toggle-to-randomtrip clear. */
+export const LAST_SEEN_COOKIE_MAX_AGE = 90 * 24 * 60 * 60;
+
 /** Domain-separation label for the derived HMAC signing key (ADR-3). `v1` gives free key rotation. */
 const KEY_DERIVATION_LABEL = "grt_tripper.v1";
 
 /** Payload version tag, embedded in the signed cookie value. */
 const PAYLOAD_VERSION = "v1";
 
-export function attributionCookieOptions(): {
+function cookieOptionsWithMaxAge(maxAge: number): {
   httpOnly: boolean;
   secure: boolean;
   sameSite: "lax";
@@ -39,8 +61,29 @@ export function attributionCookieOptions(): {
     secure: true,
     sameSite: "lax",
     path: "/",
-    maxAge: COOKIE_MAX_AGE,
+    maxAge,
   };
+}
+
+export function attributionCookieOptions(): {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "lax";
+  path: string;
+  maxAge: number;
+} {
+  return cookieOptionsWithMaxAge(COOKIE_MAX_AGE);
+}
+
+/** Cookie options for `GRT_TRIPPER_LAST_SEEN_COOKIE` — same shape, longer `maxAge` (see `LAST_SEEN_COOKIE_MAX_AGE`). */
+export function lastSeenCookieOptions(): {
+  httpOnly: boolean;
+  secure: boolean;
+  sameSite: "lax";
+  path: string;
+  maxAge: number;
+} {
+  return cookieOptionsWithMaxAge(LAST_SEEN_COOKIE_MAX_AGE);
 }
 
 /** Reads the `ATTRIBUTION_ENABLED` feature flag. Off = never write/trust the cookie (base RandomTrip catalog only, never a wrong price). */

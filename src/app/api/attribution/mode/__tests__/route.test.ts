@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GRT_TRIPPER_COOKIE } from "@/lib/tripper/attribution";
+import {
+  GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
+} from "@/lib/tripper/attribution";
 
 const TRUSTED_ORIGIN = "http://localhost:3010";
 
@@ -54,6 +57,14 @@ describe("POST /api/attribution/mode", () => {
     expect(setCookie.toLowerCase()).toContain("1970");
   });
 
+  it("mode: randomtrip does NOT touch the longer-lived grt_tripper_last_seen cookie (review finding #4)", async () => {
+    const { POST } = await import("../route");
+    const res = await POST(makePostRequest({ mode: "randomtrip" }));
+
+    const setCookie = res.headers.get("set-cookie") ?? "";
+    expect(setCookie).not.toContain(GRT_TRIPPER_LAST_SEEN_COOKIE);
+  });
+
   it("mode: tripper without a slug returns 400 MISSING_SLUG and sets no cookie", async () => {
     const { POST } = await import("../route");
     const res = await POST(makePostRequest({ mode: "tripper" }));
@@ -76,6 +87,14 @@ describe("POST /api/attribution/mode", () => {
     expect(setCookie).toContain(`${GRT_TRIPPER_COOKIE}=v1.maria.`);
     expect(setCookie).toContain("HttpOnly");
     expect(setCookie.toLowerCase()).toContain("samesite=lax");
+  });
+
+  it("mode: tripper with a slug also (re-)signs the longer-lived grt_tripper_last_seen cookie (review finding #4)", async () => {
+    const { POST } = await import("../route");
+    const res = await POST(makePostRequest({ mode: "tripper", slug: "maria" }));
+
+    const setCookie = res.headers.get("set-cookie") ?? "";
+    expect(setCookie).toContain(`${GRT_TRIPPER_LAST_SEEN_COOKIE}=v1.maria.`);
   });
 });
 

@@ -2439,6 +2439,19 @@ export interface MarketingDictionary {
       description: string;
       title: string;
     };
+    /**
+     * `TripperTravelerTypesSection` copy (review finding #2) — the section
+     * always renders now (even with zero available types, to show fallback
+     * cards), so it can no longer hide hardcoded-locale text behind an
+     * early-return guard.
+     */
+    travelerTypesSection: {
+      eyebrow: string;
+      /** Contains a literal "{name}" placeholder interpolated at render time. */
+      subtitle: string;
+      /** Contains a literal "{name}" placeholder interpolated at render time. */
+      title: string;
+    };
   };
   blogPage: {
     backToProfile: string;

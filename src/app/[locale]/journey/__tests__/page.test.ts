@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 
 // `page.tsx` now imports `attribution-server.ts` / `tripper-queries.ts`
 // (Node-only, both prisma-touching) for the tripper-attribution server-side
@@ -14,7 +14,72 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+const readAttributionSlugMock = vi.fn();
+vi.mock("@/lib/tripper/attribution-server", () => ({
+  readAttributionSlug: () => readAttributionSlugMock(),
+}));
+
+const getTripperJourneyContextMock = vi.fn();
+vi.mock("@/lib/db/tripper-queries", () => ({
+  getTripperJourneyContext: (slug: string) =>
+    getTripperJourneyContextMock(slug),
+}));
+
 import { getAccordionForStep } from "@/app/[locale]/journey/page";
+import JourneyPage from "@/app/[locale]/journey/page";
+
+describe("JourneyPage — unvalidated tripperSlug forwarding (review finding #3)", () => {
+  beforeEach(() => {
+    readAttributionSlugMock.mockReset();
+    getTripperJourneyContextMock.mockReset();
+  });
+
+  it("does not forward the raw tripperSlug when the resolved tripper state is 'none' (not_found)", async () => {
+    readAttributionSlugMock.mockResolvedValue("dead-tripper");
+    getTripperJourneyContextMock.mockResolvedValue({ status: "not_found" });
+
+    const element = await JourneyPage({ params: Promise.resolve({ locale: "es" }) });
+
+    expect(element.props.tripperSlug).toBeUndefined();
+    expect(element.props.tripperState).toEqual({ status: "none" });
+  });
+
+  it("does not forward the raw tripperSlug when the tripper is inactive", async () => {
+    readAttributionSlugMock.mockResolvedValue("paused-tripper");
+    getTripperJourneyContextMock.mockResolvedValue({
+      status: "inactive",
+      name: "Paused Tripper",
+    });
+
+    const element = await JourneyPage({ params: Promise.resolve({ locale: "es" }) });
+
+    expect(element.props.tripperSlug).toBeUndefined();
+    expect(element.props.tripperState).toEqual({
+      status: "unavailable",
+      name: "Paused Tripper",
+    });
+  });
+
+  it("forwards the raw tripperSlug when the tripper resolves ok", async () => {
+    readAttributionSlugMock.mockResolvedValue("live-tripper");
+    getTripperJourneyContextMock.mockResolvedValue({
+      status: "ok",
+      context: {
+        name: "Live Tripper",
+        avatarUrl: null,
+        location: null,
+        allowedTypes: [],
+        allowedLevelsByType: {},
+        priceOverrides: null,
+      },
+    });
+
+    const element = await JourneyPage({ params: Promise.resolve({ locale: "es" }) });
+
+    expect(element.props.tripperSlug).toBe("live-tripper");
+    expect(element.props.tripperState.status).toBe("ok");
+  });
+});
 
 describe("getAccordionForStep", () => {
   it("returns 'pax' for the pax substep — Travellers is a normal collapsible accordion item, same as Origin/Dates/Transport", () => {

@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { GRT_TRIPPER_COOKIE, signAttribution } from "@/lib/tripper/attribution";
+import {
+  GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
+  signAttribution,
+} from "@/lib/tripper/attribution";
 
 vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
@@ -104,5 +108,48 @@ describe("applyAttribution", () => {
     expect(resSlug.cookies.get(GRT_TRIPPER_COOKIE)?.value).toMatch(
       /^v1\.carla-diaz\./,
     );
+  });
+
+  describe("grt_tripper_last_seen (review finding #4)", () => {
+    it("a NEW referral ('set') also (re-)signs the longer-lived last-seen cookie", async () => {
+      getTokenMock.mockResolvedValue(null);
+      const { applyAttribution } = await import("../proxy");
+
+      const req = new NextRequest("http://localhost/blog?tripper=carla-diaz");
+      const res = NextResponse.next();
+      await applyAttribution(req, res);
+
+      expect(res.cookies.get(GRT_TRIPPER_LAST_SEEN_COOKIE)?.value).toMatch(
+        /^v1\.carla-diaz\./,
+      );
+    });
+
+    it("a 'keep' (exp refresh only, no new referral) does NOT touch the last-seen cookie", async () => {
+      getTokenMock.mockResolvedValue({ referredByTripperSlug: undefined });
+      const { applyAttribution } = await import("../proxy");
+
+      const signedCookie = await signAttribution("maria", secret, 60);
+      const req = new NextRequest("http://localhost/");
+      req.cookies.set(GRT_TRIPPER_COOKIE, signedCookie);
+      const res = NextResponse.next();
+
+      await applyAttribution(req, res);
+
+      expect(res.cookies.get(GRT_TRIPPER_LAST_SEEN_COOKIE)).toBeUndefined();
+    });
+
+    it("clearing the live cookie ('clear') does NOT delete the last-seen cookie", async () => {
+      getTokenMock.mockResolvedValue({ referredByTripperSlug: null });
+      const { applyAttribution } = await import("../proxy");
+
+      const staleSigned = await signAttribution("stale-tripper", secret, 60);
+      const req = new NextRequest("http://localhost/");
+      req.cookies.set(GRT_TRIPPER_COOKIE, staleSigned);
+      const res = NextResponse.next();
+
+      await applyAttribution(req, res);
+
+      expect(res.cookies.get(GRT_TRIPPER_LAST_SEEN_COOKIE)).toBeUndefined();
+    });
   });
 });
