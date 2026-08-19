@@ -20,8 +20,12 @@ branches:
   pr1_pr_url: https://github.com/jdortegar/getrandomtrip/pull/123
   pr1_status: open (committed 289a5886, pushed, PR opened against tracker)
   pr2: feature/tripper-attribution-pr2-server-wiring
-  pr2_status: apply complete (11/11 Phase 2 tasks), uncommitted — awaiting
-    orchestrator review/commit/push/PR creation
+  pr2_pr_url: https://github.com/jdortegar/getrandomtrip/pull/124
+  pr2_status: open (committed 6fda1ae0, pushed, PR opened against PR1 branch,
+    stacked). 8 review findings fixed pre-commit across two independent
+    adversarial review passes (second pass hit an account spend limit
+    mid-run; findings from the first pass were independently verified
+    directly in code and via full test suite before commit).
   pr3: not yet created
 size_exception:
   status: not_applicable
