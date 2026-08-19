@@ -17,6 +17,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { filterContentTabsForUI, getAccordionForStep } from "@/lib/helpers/journey";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import type { JourneyDetailsProgress } from "@/hooks/useJourneyDetailsProgress";
 import {
@@ -78,6 +79,7 @@ interface TripperJourneyContext {
   location: string | null;
   allowedTypes: string[];
   allowedLevelsByType: Record<string, string[]>;
+  priceOverrides: TripperPriceOverrides | null;
 }
 
 /**
@@ -299,6 +301,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
               addonLabels={journey.addons}
               allowedLevelsByType={tripperContext?.allowedLevelsByType}
               allowedTypes={tripperContext?.allowedTypes}
+              tripperPriceOverrides={tripperContext?.priceOverrides ?? null}
               detailsStepLabels={journey.detailsStep}
               localizedExcuses={journey.excuses}
               localizedRefineOptions={journey.refineDetailOptions}
@@ -324,6 +327,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
           <JourneySummary
             addonLabels={journey.addons}
             filterOptions={journey.preferencesStep.filterOptions}
+            tripperPriceOverrides={tripperContext?.priceOverrides ?? null}
             localizedExcuses={hasExcuseStep ? journey.excuses : undefined}
             onEdit={handleSummaryEdit}
             refineDetailOptions={

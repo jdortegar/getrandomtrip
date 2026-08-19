@@ -8,6 +8,7 @@ interface BookingConfirmedProps {
   tripType: string;
   nights: number;
   departureDate?: string;
+  receiptUrl?: string | null;
   locale: "es" | "en";
 }
 
@@ -25,6 +26,7 @@ const copy = {
     subtext:
       "Recibirás más detalles a medida que se acerque la fecha. ¡Gracias por confiar en Randomtrip!",
     cta: "VER MI VIAJE",
+    receiptLink: "Ver comprobante de pago",
   },
   en: {
     preview: "Your booking is confirmed! Your adventure starts soon.",
@@ -37,6 +39,7 @@ const copy = {
     subtext:
       "You'll receive more details as the date approaches. Thank you for trusting Randomtrip!",
     cta: "VIEW MY TRIP",
+    receiptLink: "View payment receipt",
   },
 };
 
@@ -50,6 +53,7 @@ export default function BookingConfirmed({
   tripType,
   nights,
   departureDate,
+  receiptUrl,
   locale,
 }: BookingConfirmedProps) {
   const c = copy[locale];
@@ -82,6 +86,13 @@ export default function BookingConfirmed({
       <Button href={ctaHref} style={ctaButton}>
         {c.cta}
       </Button>
+      {receiptUrl && (
+        <Text style={receiptLinkText}>
+          <a href={receiptUrl} style={receiptLinkAnchor}>
+            {c.receiptLink}
+          </a>
+        </Text>
+      )}
     </EmailLayout>
   );
 }
@@ -143,6 +154,19 @@ const subtextStyle: React.CSSProperties = {
   lineHeight: "1.6",
   maxWidth: "400px",
   textAlign: "center",
+};
+
+const receiptLinkText: React.CSSProperties = {
+  margin: "16px auto 0",
+  textAlign: "center",
+};
+
+const receiptLinkAnchor: React.CSSProperties = {
+  color: "#4F96B6",
+  fontFamily: "'Barlow', Arial, sans-serif",
+  fontSize: "13px",
+  fontWeight: "600",
+  textDecoration: "underline",
 };
 
 const ctaButton: React.CSSProperties = {

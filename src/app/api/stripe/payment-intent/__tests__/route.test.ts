@@ -22,7 +22,15 @@ vi.mock("@/lib/helpers/payment-totals", () => ({
 }));
 
 vi.mock("@/lib/data/traveler-types", () => ({
-  getPricePerPerson: vi.fn(),
+  applyPaxMultiplier: vi.fn((base: number) => base),
+}));
+
+vi.mock("@/lib/pricing/resolve-base-price", () => ({
+  resolveBasePricePerPerson: vi.fn(),
+}));
+
+vi.mock("@/lib/pricing/tripper-price-overrides.server", () => ({
+  loadTripperPriceOverrides: vi.fn(),
 }));
 
 const stripeMock = {
@@ -52,7 +60,9 @@ import { prisma } from "@/lib/prisma";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { getPricePerPerson } from "@/lib/data/traveler-types";
+import { applyPaxMultiplier } from "@/lib/data/traveler-types";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 
 type RouteModule = typeof import("../route");
 
@@ -97,7 +107,13 @@ describe("POST /api/stripe/payment-intent — expiry revert", () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "buyer-1" },
     });
-    (getPricePerPerson as ReturnType<typeof vi.fn>).mockReturnValue(100);
+    (loadTripperPriceOverrides as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (
+      resolveBasePricePerPerson as ReturnType<typeof vi.fn>
+    ).mockReturnValue({ offered: true, price: 100, source: "catalog" });
+    (applyPaxMultiplier as ReturnType<typeof vi.fn>).mockReturnValue(100);
     (calculatePaymentTotals as ReturnType<typeof vi.fn>).mockReturnValue({
       totalTrip: 200,
     });
@@ -160,7 +176,13 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "buyer-1" },
     });
-    (getPricePerPerson as ReturnType<typeof vi.fn>).mockReturnValue(100);
+    (loadTripperPriceOverrides as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (
+      resolveBasePricePerPerson as ReturnType<typeof vi.fn>
+    ).mockReturnValue({ offered: true, price: 100, source: "catalog" });
+    (applyPaxMultiplier as ReturnType<typeof vi.fn>).mockReturnValue(100);
     (calculatePaymentTotals as ReturnType<typeof vi.fn>).mockReturnValue({
       totalTrip: 200, // amountCents = 20000
     });

@@ -4659,6 +4659,53 @@
     }
   },
   "adminUsers": {
+    "editPage": {
+      "eyebrow": "Admin · User Management",
+      "subtitle": "Manage role, earnings and experience pricing for this user.",
+      "backToUsers": "Back to Users",
+      "save": "Save Changes",
+      "saving": "Saving…",
+      "cancel": "Discard",
+      "errorFallback": "Failed to save changes",
+      "rolesPanel": {
+        "number": "01",
+        "title": "Role & Access",
+        "desc": "Set this user's permissions and their tripper earning percentage.",
+        "travelerBase": "Traveler",
+        "travelerBaseHint": "Base — every account is a traveler",
+        "tripper": "Tripper",
+        "admin": "Admin",
+        "commissionLabel": "Earning Percentage",
+        "commissionPlaceholder": "15",
+        "commissionError": "Enter a whole number between 0 and 100"
+      },
+      "pricingPanel": {
+        "number": "02",
+        "title": "Experience Pricing by Level",
+        "desc": "These are the exact prices travelers pay when booking this tripper's experiences, per traveler type.",
+        "adminOnlyNote": "Only an admin can edit these prices.",
+        "levelHeader": "Level",
+        "notOffered": "— not offered —",
+        "inheritPlaceholder": "Catalog",
+        "inheritedHint": "Inherited from the global catalog",
+        "resetCell": "Reset",
+        "resetAll": "Reset all",
+        "invalidValue": "Enter a number greater than or equal to 0",
+        "notOfferedError": "This level/type pair is not available",
+        "requiresTripperError": "Enable the Tripper role to set prices"
+      },
+      "notTripperNotice": {
+        "title": "Enable Tripper role to set experience pricing",
+        "caption": "Once this user is a Tripper, you'll be able to set their earning percentage and per-level experience prices here."
+      },
+      "levels": {
+        "essenza": "Essenza",
+        "explora": "Explora",
+        "explora-plus": "Explora Plus",
+        "bivouac": "Bivouac",
+        "atelier": "Atelier"
+      }
+    },
     "actions": "Actions",
     "edit": "Edit",
     "editing": "editing",

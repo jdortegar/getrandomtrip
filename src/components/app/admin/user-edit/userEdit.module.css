@@ -1,0 +1,419 @@
+/* Ported verbatim from the approved prototype
+   (https://claude.ai/code/artifact/36347598-b4ca-4068-adf1-52a9432978fc).
+   Tokens match .claude/rules/design-system.md. Scoped under .root instead of
+   :root so these custom properties and base element rules don't leak into
+   the rest of the app — only the .root subtree (this page) uses them.
+
+   The prototype's role chips, "Tripper URL Slug" field, and Danger Zone
+   panel are intentionally NOT ported — role toggles use the shared `Chip`
+   component (@/components/Chip) per design-system.md, and the slug field /
+   Danger Zone panel are out of scope for this page (final approved scope
+   per Main.dc.html / NotYetTripper.dc.html). */
+
+.root {
+  --ink: #111827;
+  --cyan: #4f96b6;
+  --cyan-600: #3d7a94;
+  --surface: #ffffff;
+  --ground: #f9fafb;
+  --border: #e5e7eb;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-900: #111827;
+
+  --sky-50: #f0f9ff;
+  --sky-200: #bae6fd;
+  --sky-700: #0369a1;
+
+  font-family: "Barlow", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--neutral-900);
+}
+
+.root a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+.root a:hover {
+  color: var(--cyan-600);
+}
+
+.root button,
+.root select,
+.root input {
+  font-family: inherit;
+}
+
+.cond {
+  font-family: "Barlow Condensed", "Barlow", sans-serif;
+}
+
+/* Layout shell */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Back link */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  width: fit-content;
+}
+.backLink svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.headerTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 280px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+  margin: 0;
+}
+
+.pageTitle {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.02;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: var(--neutral-500);
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  border: 2px solid transparent;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn svg {
+  width: 15px;
+  height: 15px;
+}
+.btnPrimary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #1f2937;
+}
+.btnSecondary {
+  background: #fff;
+  border-color: var(--border);
+  color: var(--neutral-700);
+}
+.btnSecondary:hover:not(:disabled) {
+  background: var(--gray-50);
+}
+
+/* Panels */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+  overflow: hidden;
+}
+
+.panelBody {
+  padding: 22px 24px;
+}
+
+.sectionHeadingRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.sectionNumber {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+}
+
+.panelTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin: 4px 0 0;
+}
+
+.panelDesc {
+  font-size: 12.5px;
+  color: var(--neutral-500);
+  margin: 4px 0 0;
+  max-width: 62ch;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 18px;
+}
+@media (max-width: 860px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-500);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Commission input */
+.numberInput {
+  width: 100%;
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0 12px;
+  font-size: 13.5px;
+  color: var(--neutral-900);
+}
+.inputWrap {
+  position: relative;
+}
+.inputSuffix {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--neutral-400);
+  font-weight: 600;
+}
+
+/* Pricing table */
+.priceTableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-top: 18px;
+}
+.priceTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+.priceTable thead tr {
+  background: var(--ground);
+  border-bottom: 1px solid var(--border);
+}
+.priceTable th {
+  padding: 10px 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--neutral-500);
+  text-align: left;
+  white-space: nowrap;
+}
+.priceTable th:first-child {
+  min-width: 150px;
+}
+.priceTable td {
+  padding: 12px;
+  vertical-align: middle;
+  border-top: 1px solid var(--gray-100);
+}
+.priceTable tr:first-child td {
+  border-top: none;
+}
+.levelCell {
+  display: flex;
+  align-items: center;
+}
+.levelChip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid var(--sky-200);
+  background: var(--sky-50);
+  color: var(--sky-700);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.priceCellInput {
+  width: 100%;
+  min-width: 92px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  padding: 0 10px 0 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  font-family: "Barlow Condensed", sans-serif;
+}
+.priceCellInput:disabled {
+  background: var(--gray-100);
+  color: var(--neutral-500);
+}
+.priceCellWrap {
+  position: relative;
+}
+.priceCellPrefix {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--neutral-400);
+}
+.notOffered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px dashed var(--gray-300);
+  color: var(--neutral-400);
+  font-size: 13px;
+}
+.resetCellBtn {
+  margin-top: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 11px;
+  color: var(--neutral-400);
+  cursor: pointer;
+  text-decoration: underline;
+}
+.resetCellBtn:hover {
+  color: var(--neutral-700);
+}
+
+/* Not-yet-tripper muted empty state (replaces Panel 2 entirely) */
+.mutedNote {
+  background: var(--ground);
+  border: 1px dashed var(--gray-300);
+  border-radius: 12px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--neutral-500);
+}
+.mutedNote svg {
+  width: 22px;
+  height: 22px;
+  color: var(--neutral-400);
+}
+.mutedNoteTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-600);
+  margin: 0;
+}
+.mutedNoteCaption {
+  font-size: 12px;
+  color: var(--neutral-400);
+  margin: 0;
+  max-width: 40ch;
+}
+
+@media (max-width: 640px) {
+  .pageTitle {
+    font-size: 26px;
+  }
+  .headerActions {
+    width: 100%;
+  }
+  .headerActions .btn {
+    flex: 1;
+  }
+}

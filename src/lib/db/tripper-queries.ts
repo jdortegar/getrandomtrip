@@ -7,6 +7,10 @@ import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import {
+  parseTripperPriceOverrides,
+  type TripperPriceOverrides,
+} from "@/lib/pricing/tripper-price-overrides";
+import {
   REVIEW_SORT_DEFAULT,
   reviewListOrderBy,
   type ReviewSortOrder,
@@ -422,6 +426,8 @@ export interface TripperJourneyContext {
   allowedTypes: string[];
   /** For each type, the distinct non-null levels of ACTIVE experiences that include that type. */
   allowedLevelsByType: Record<string, string[]>;
+  /** This tripper's price overrides, for override-aware price display before any TripRequest exists. */
+  priceOverrides: TripperPriceOverrides | null;
 }
 
 /**
@@ -455,6 +461,7 @@ export async function getTripperJourneyContext(
         avatarUrl: true,
         location: true,
         isActive: true,
+        tripperPriceOverrides: true,
       },
     });
 
@@ -497,6 +504,9 @@ export async function getTripperJourneyContext(
         location: tripper.location ?? null,
         allowedTypes,
         allowedLevelsByType,
+        priceOverrides: parseTripperPriceOverrides(
+          tripper.tripperPriceOverrides ?? null,
+        ),
       },
     };
   } catch (error) {

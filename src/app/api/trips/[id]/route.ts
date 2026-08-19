@@ -6,6 +6,8 @@ import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 
 // GET /api/trips/[id] - Get a specific trip
 export async function GET(
@@ -86,8 +88,19 @@ export async function GET(
       responseTrip = { ...trip, experience: restExperience as typeof trip.experience };
     }
 
+    // Resolved server-side so the displayed price always matches what
+    // checkout will charge (tripper override, or global catalog fallback).
+    // Per-person, pre-pax-multiplier — mirrors the previous client-side
+    // `getBasePriceFromCatalog` call this replaces at checkout/page.tsx.
+    const overrides = await loadTripperPriceOverrides(trip.tripperId);
+    const basePriceUsd = resolveBasePricePerPerson({
+      levelId: trip.level,
+      overrides,
+      travelerType: trip.type,
+    }).price;
+
     return NextResponse.json(
-      { trip: { ...responseTrip, roster } },
+      { trip: { ...responseTrip, basePriceUsd, roster } },
       { status: 200 },
     );
   } catch (error) {

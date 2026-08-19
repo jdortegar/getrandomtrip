@@ -4659,6 +4659,53 @@
     }
   },
   "adminUsers": {
+    "editPage": {
+      "eyebrow": "Admin · Gestión de Usuarios",
+      "subtitle": "Administrá el rol, las ganancias y los precios de experiencias de este usuario.",
+      "backToUsers": "Volver a Usuarios",
+      "save": "Guardar cambios",
+      "saving": "Guardando…",
+      "cancel": "Descartar",
+      "errorFallback": "No se pudieron guardar los cambios",
+      "rolesPanel": {
+        "number": "01",
+        "title": "Rol y Acceso",
+        "desc": "Definí los permisos de este usuario y su porcentaje de ganancia como tripper.",
+        "travelerBase": "Traveler",
+        "travelerBaseHint": "Base — todas las cuentas son traveler",
+        "tripper": "Tripper",
+        "admin": "Admin",
+        "commissionLabel": "Porcentaje de Ganancia",
+        "commissionPlaceholder": "15",
+        "commissionError": "Ingresá un número entero entre 0 y 100"
+      },
+      "pricingPanel": {
+        "number": "02",
+        "title": "Precios de Experiencias por Nivel",
+        "desc": "Estos son los precios exactos que pagan los viajeros al reservar las experiencias de este tripper, por tipo de viajero.",
+        "adminOnlyNote": "Solo un admin puede editar estos precios.",
+        "levelHeader": "Nivel",
+        "notOffered": "— no ofrecido —",
+        "inheritPlaceholder": "Catálogo",
+        "inheritedHint": "Heredado del catálogo global",
+        "resetCell": "Restablecer",
+        "resetAll": "Restablecer todo",
+        "invalidValue": "Ingresá un número mayor o igual a 0",
+        "notOfferedError": "Este par nivel/tipo no está disponible",
+        "requiresTripperError": "Activá el rol Tripper para definir precios"
+      },
+      "notTripperNotice": {
+        "title": "Activá el rol Tripper para definir precios de experiencias",
+        "caption": "Una vez que este usuario sea Tripper, vas a poder definir su porcentaje de ganancia y los precios de experiencias por nivel."
+      },
+      "levels": {
+        "essenza": "Essenza",
+        "explora": "Explora",
+        "explora-plus": "Explora Plus",
+        "bivouac": "Bivouac",
+        "atelier": "Atelier"
+      }
+    },
     "actions": "Acciones",
     "edit": "Editar",
     "editing": "editando",

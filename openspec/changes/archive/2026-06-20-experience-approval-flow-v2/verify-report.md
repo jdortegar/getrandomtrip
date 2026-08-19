@@ -35,7 +35,7 @@
 
 **Pre-existing failures (unchanged):**
 - `src/lib/xsed/__tests__/notifications.test.ts` — 2 failures (timezone field mismatch, unrelated to this change)
-- `src/app/api/admin/xsed/__tests__/route.test.ts` — 4 failures (xsed route fixture issue, unrelated to this change)
+- `src/app/api/admin/xsed/__tests__/route.test.ts` — 4 failures (XSED route fixture issue, unrelated to this change)
 
 ---
 

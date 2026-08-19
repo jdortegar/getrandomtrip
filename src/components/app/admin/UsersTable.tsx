@@ -14,12 +14,10 @@ interface UsersTableProps {
   isLoading: boolean;
   locale: string;
   onDelete: (id: string) => void;
-  onEdit: (id: string) => void;
   onInvite: (id: string) => void;
   onToggleBulkSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   selectAllRef: RefObject<HTMLInputElement | null>;
-  selectedId: string | null;
   users: AdminUser[];
 }
 
@@ -33,12 +31,10 @@ export function UsersTable({
   isLoading,
   locale,
   onDelete,
-  onEdit,
   onInvite,
   onToggleBulkSelect,
   onToggleSelectAll,
   selectAllRef,
-  selectedId,
   users,
 }: UsersTableProps) {
   const headers = [
@@ -98,11 +94,9 @@ export function UsersTable({
                   copy={copy}
                   invitingId={invitingId}
                   isCheckedForBulk={bulkSelectedIds.has(user.id)}
-                  isSelected={selectedId === user.id}
                   key={user.id}
                   locale={locale}
                   onDelete={onDelete}
-                  onEdit={onEdit}
                   onInvite={onInvite}
                   onToggleBulkSelect={onToggleBulkSelect}
                   rowLockedForBulk={user.id === currentUserId}

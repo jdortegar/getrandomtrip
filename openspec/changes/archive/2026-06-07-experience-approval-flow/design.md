@@ -36,7 +36,7 @@ across the three new endpoints so they read the same and fail the same way.
 ## Key Decisions
 
 **Decision D1 — keep `basePrice`, drop only `displayPrice`.**
-- Rationale: `basePrice` is load-bearing for XSED (admin xsed create/edit, `xsed.ts` data
+- Rationale: `basePrice` is load-bearing for XSED (admin XSED create/edit, `xsed.ts` data
   layer, public drop pricing). The proposal's intent is to remove *tripper self-pricing*,
   which is `displayPrice` (the human string shown on cards) plus the tripper's ability to set
   `basePrice` via the form. Tripper experiences will stop reading/writing `basePrice`;

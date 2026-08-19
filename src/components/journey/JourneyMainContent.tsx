@@ -52,6 +52,7 @@ import { useStore } from "@/store/store";
 import { useUserStore } from "@/store/slices/userStore";
 import { cn } from "@/lib/utils";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 
 interface JourneyMainContentLabels {
   back: string;
@@ -111,6 +112,8 @@ interface JourneyMainContentProps {
    */
   allowedLevelsByType?: Record<string, string[]>;
   className?: string;
+  /** This tripper's price overrides (curated journey), threaded into BudgetStep's level cards. `null`/undefined for a direct journey. */
+  tripperPriceOverrides?: TripperPriceOverrides | null;
   /** Localized excuse titles/descriptions (journey.excuses). */
   localizedExcuses?: Array<{ key: string; title: string; description: string }>;
   /** Localized label/desc for refine-detail options, keyed by travelType then excuse key (journey.refineDetailOptions). */
@@ -156,6 +159,7 @@ export default function JourneyMainContent({
   allowedTypes,
   allowedLevelsByType,
   className,
+  tripperPriceOverrides,
   detailsStepLabels,
   localizedExcuses,
   localizedRefineOptions,
@@ -617,6 +621,7 @@ export default function JourneyMainContent({
           <BudgetStep
             accordionValue={accordionValue}
             allowedLevelsByType={allowedLevelsByType}
+            tripperPriceOverrides={tripperPriceOverrides}
             experienceContent={getExperienceLabel(
               url.travelType,
               url.experience,

@@ -234,22 +234,30 @@ function TripDetailsContent() {
   // and prefer the actually-charged Payment.amount as the authoritative total
   // when one exists.
   const pax = Math.max(1, trip.pax || 1);
-  const paymentInput = paymentTotalsInputFromTripRequest({
-    accommodationType: trip.accommodationType,
-    addons: addonsList,
-    arrivePref: trip.arrivePref,
-    avoidDestinations: trip.avoidDestinations,
-    city: trip.originCity,
-    climate: trip.climate,
-    country: trip.originCountry,
-    departPref: trip.departPref,
-    level: trip.level,
-    maxTravelTime: trip.maxTravelTime,
-    nights: trip.nights,
-    pax,
-    transport: trip.transport,
-    type: trip.type,
-  });
+  // This client page's `TripDetails` projection carries no `tripperId` (and
+  // no server access to load one), so this display-only estimate cannot
+  // resolve a tripper override — pass `null` explicitly (global catalog).
+  // The actually-charged `Payment.amount` (preferred above when present)
+  // already reflects any override applied at checkout time.
+  const paymentInput = paymentTotalsInputFromTripRequest(
+    {
+      accommodationType: trip.accommodationType,
+      addons: addonsList,
+      arrivePref: trip.arrivePref,
+      avoidDestinations: trip.avoidDestinations,
+      city: trip.originCity,
+      climate: trip.climate,
+      country: trip.originCountry,
+      departPref: trip.departPref,
+      level: trip.level,
+      maxTravelTime: trip.maxTravelTime,
+      nights: trip.nights,
+      pax,
+      transport: trip.transport,
+      type: trip.type,
+    },
+    null,
+  );
   const totals = paymentInput ? calculatePaymentTotals(paymentInput) : null;
   const basePriceTotal = (totals?.basePerPax ?? 0) * pax;
   const filtersCostTotal = (totals?.filtersPerPax ?? 0) * pax;

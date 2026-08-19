@@ -2,7 +2,8 @@
 
 **Priority:** 1 — Core revenue path  
 **Routes:** `/journey`, `/checkout`, `/checkout/success`, `/checkout/pending`, `/checkout/failure`, `/reveal-destination`  
-**Last audited:** 2026-06-22
+**Last audited:** 2026-08-18  
+**Related capabilities:** `trip-pricing` (tripper-aware overrides), `tripper-price-override`
 
 ---
 
@@ -16,6 +17,7 @@ What works end-to-end today:
 - **Promo code cycle** — `apply-promo` validates against Stripe, recalculates, updates the existing PaymentIntent amount. `remove-promo` resets it. Both are server-authoritative.
 - **Webhook + client-side fallback** — webhook handles `succeeded / failed / canceled`. The success page fires `POST /api/stripe/confirm-payment` as a race-safe fallback. Atomic `updateMany` with a status guard prevents double-email if both arrive simultaneously.
 - **Post-payment emails** — `BookingConfirmed` → traveler, `AdminNewBooking` → admin, `PaymentFailed` → traveler. All fire on the first `APPROVED` transition.
+- **Tripper-aware pricing** — base price per person is resolved via override-first, catalog-fallback at every funnel point (journey level cards, summary sidebar, checkout display, and Stripe payment calculation). RandomTrip-owned bookings (no tripper attribution) always use the global catalog. Per-tripper overrides are stored as JSON on `User.tripperPriceOverrides` and set via the admin user edit page.
 - **Checkout UI** — contact form pre-fills from session, Stripe Elements mounts correctly, pax edit patches the trip and re-creates the intent, promo discount reflected in real time.
 - **Success / pending / failure pages** — all exist with correct i18n metadata and Suspense boundaries.
 

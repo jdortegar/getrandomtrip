@@ -9,7 +9,6 @@ import type {
   TypePlannerContent,
 } from "@/types/planner";
 import {
-  getBasePricePerPerson,
   getTravelerType,
   normalizePriceLevelId,
 } from "@/lib/data/traveler-types";
@@ -20,6 +19,8 @@ import {
   type ExperienceLevelId,
 } from "@/lib/data/experience-levels";
 import { getExcusesByType } from "@/lib/helpers/excuse-helper";
+import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
+import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getXsedLevel } from "@/lib/data/xsed-catalog";
 
 /** Map experience level id to URL/store LevelSlug. */
@@ -86,15 +87,27 @@ const ICON_BY_SLUG: Record<LevelSlug, string> = {
 
 /**
  * Levels for a traveler type from experience-levels (content) + traveler-types (price).
+ *
+ * `overrides` is the requesting tripper's price overrides (or `null`/omitted
+ * for no tripper / RandomTrip-owned journeys) — pass it explicitly so a
+ * display surface can't silently fall back to the global catalog by omission.
  */
-export function getLevelsForType(type: string, locale?: string): Level[] {
+export function getLevelsForType(
+  type: string,
+  locale?: string,
+  overrides?: TripperPriceOverrides | null,
+): Level[] {
   const levelIds = getLevelIdsForType(type);
   const levels: Level[] = [];
   for (const levelId of levelIds) {
     const content = getLevelContent(levelId as ExperienceLevelId, type, locale);
     if (!content) continue;
     const slug = toLevelSlug(content.id);
-    const price = getBasePricePerPerson(type, content.id);
+    const price = resolveBasePricePerPerson({
+      levelId: content.id,
+      overrides: overrides ?? null,
+      travelerType: type,
+    }).price;
     const isLast = slug === "atelier-getaway";
     const features = content.features.map((f) => f.description ?? f.title);
     levels.push({
@@ -121,10 +134,11 @@ export function getLevelById(
   type: string | undefined,
   levelId: string,
   locale?: string,
+  overrides?: TripperPriceOverrides | null,
 ): Level | undefined {
   if ((type ?? "").toLowerCase() === "xsed") return getXsedLevel(locale);
   const t = type ?? "solo";
-  const levels = getLevelsForType(t, locale);
+  const levels = getLevelsForType(t, locale, overrides);
   const normalized = levelId.toLowerCase().replace(/\s+/g, "-");
   const slug =
     normalized === "modo-explora" || normalized === "explora"
@@ -163,10 +177,15 @@ function getPlannerPriceCopy(
 
 /**
  * Levels in planner shape (for TypePlanner / LevelCard). Uses experience-levels + price + excuses.
+ *
+ * `overrides` is the requesting tripper's price overrides (or `null` for no
+ * tripper / RandomTrip-owned journeys) — pass it explicitly so a display
+ * surface can't silently fall back to the global catalog by omission.
  */
 export function getPlannerLevelsForType(
   type: string,
   locale?: string,
+  overrides?: TripperPriceOverrides | null,
 ): PlannerLevel[] {
   const levelIds = getLevelIdsForType(type);
   const excuses = getExcusesByType(type);
@@ -175,7 +194,11 @@ export function getPlannerLevelsForType(
     const content = getLevelContent(levelId as ExperienceLevelId, type, locale);
     if (!content) continue;
     const slug = toLevelSlug(content.id);
-    const price = getBasePricePerPerson(type, content.id);
+    const price = resolveBasePricePerPerson({
+      levelId: content.id,
+      overrides: overrides ?? null,
+      travelerType: type,
+    }).price;
     const isLast = slug === "atelier-getaway";
     const priceCopy = getPlannerPriceCopy(type, content.id, locale, isLast);
     plannerLevels.push({
@@ -202,9 +225,10 @@ export function getPlannerLevelsForType(
 export function getPlannerContentForType(
   type: string,
   locale?: string,
+  overrides?: TripperPriceOverrides | null,
 ): TypePlannerContent {
   const header = getPlannerHeader(type, locale);
-  const levels = getPlannerLevelsForType(type, locale);
+  const levels = getPlannerLevelsForType(type, locale, overrides);
   return {
     eyebrow: header.eyebrow,
     levels,

@@ -8,14 +8,14 @@ Guarantee at most one non-terminal (`DRAFT`/`SAVED`/`PENDING_PAYMENT`) `TripRequ
 
 ### Requirement: Family Classification
 
-The system MUST classify every `TripRequest` into exactly one of two families based on its `type` field: **xsed** family when `type === "xsed"`, **journey** family for every other `type` value (`couple`, `family`, `group`, `solo`, `honeymoon`, `paws`, etc.). This predicate MUST be centralized in a single shared helper — no inline re-implementation elsewhere.
+The system MUST classify every `TripRequest` into exactly one of two families based on its `type` field: **XSED** family when `type === "xsed"`, **journey** family for every other `type` value (`couple`, `family`, `group`, `solo`, `honeymoon`, `paws`, etc.). This predicate MUST be centralized in a single shared helper — no inline re-implementation elsewhere.
 
 #### Scenario: Journey sub-type switch stays in the journey family
 - GIVEN a user's active journey trip has `type: "couple"`
 - WHEN they change the sub-type to `type: "solo"` on the same active row
 - THEN the row remains classified as `journey` family and is still the single active journey slot
 
-#### Scenario: Xsed and journey are independent slots
+#### Scenario: XSED and journey are independent slots
 - GIVEN a user has one active `journey` trip and one active `xsed` trip
 - WHEN either family's finder runs
 - THEN each family finder returns only the row belonging to its own family — neither overwrites the other
@@ -36,7 +36,7 @@ The system MUST classify every `TripRequest` into exactly one of two families ba
 - THEN the existing row is updated with the new configuration
 - AND no second `TripRequest` row is created
 
-#### Scenario: Journey and xsed requests coexist
+#### Scenario: Journey and XSED requests coexist
 - GIVEN a user has an active `DRAFT` journey `TripRequest`
 - WHEN they submit `POST /api/trip-requests` with `type: "xsed"` and no `id`
 - THEN a new `TripRequest` row is created for the `xsed` family

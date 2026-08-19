@@ -72,4 +72,45 @@ describe("getTripperJourneyContext — three-way discriminated result", () => {
       expect(result.context.allowedLevelsByType.solo).toEqual(["essenza"]);
     }
   });
+
+  it("selects and parses tripperPriceOverrides into the context", async () => {
+    findUniqueMock.mockResolvedValue({
+      id: "u3",
+      name: "David",
+      avatarUrl: null,
+      location: null,
+      isActive: true,
+      tripperPriceOverrides: { couple: { essenza: 999 } },
+    });
+
+    const result = await getTripperJourneyContext("david");
+
+    expect(findUniqueMock.mock.calls[0][0].select).toMatchObject({
+      tripperPriceOverrides: true,
+    });
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.context.priceOverrides).toEqual({
+        couple: { essenza: 999 },
+      });
+    }
+  });
+
+  it("resolves priceOverrides to null when the tripper has none set", async () => {
+    findUniqueMock.mockResolvedValue({
+      id: "u4",
+      name: "No Overrides",
+      avatarUrl: null,
+      location: null,
+      isActive: true,
+      tripperPriceOverrides: null,
+    });
+
+    const result = await getTripperJourneyContext("no-overrides");
+
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.context.priceOverrides).toBeNull();
+    }
+  });
 });

@@ -67,9 +67,15 @@ import TravelerInvite, {
 import TravelerReminder, {
   subjects as travelerReminderSubjects,
 } from "@/emails/TravelerReminder";
+import TripStartVouchers, {
+  subjects as tripStartVouchersSubjects,
+} from "@/emails/TripStartVouchers";
 import { getLevelContent } from "@/lib/data/experience-levels";
+import type { MailAttachment } from "@/lib/helpers/sendMail";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
+import { getTripDocumentStore } from "@/lib/storage/tripDocumentStore";
+import { getStripe } from "@/lib/stripe";
 import React from "react";
 
 function resolveLocale(locale: string | null | undefined): "es" | "en" {
@@ -82,7 +88,7 @@ export function sendBookingConfirmed(
 ): void {
   void (async () => {
     try {
-      const [user, tripRequest] = await Promise.all([
+      const [user, tripRequest, payment] = await Promise.all([
         prisma.user.findUnique({
           where: { id: userId },
           select: { email: true, name: true, locale: true },
@@ -90,6 +96,10 @@ export function sendBookingConfirmed(
         prisma.tripRequest.findUnique({
           where: { id: tripRequestId },
           select: { type: true, nights: true, startDate: true },
+        }),
+        prisma.payment.findUnique({
+          where: { tripRequestId },
+          select: { stripePaymentIntentId: true },
         }),
       ]);
 
@@ -103,6 +113,22 @@ export function sendBookingConfirmed(
           )
         : undefined;
 
+      let receiptUrl: string | null = null;
+      if (payment?.stripePaymentIntentId) {
+        try {
+          const pi = await getStripe().paymentIntents.retrieve(
+            payment.stripePaymentIntentId,
+            { expand: ["latest_charge"] },
+          );
+          const charge = pi.latest_charge;
+          if (charge && typeof charge === "object" && "receipt_url" in charge) {
+            receiptUrl = (charge as { receipt_url: string | null }).receipt_url;
+          }
+        } catch (err) {
+          console.error("[email] sendBookingConfirmed receiptUrl:", err);
+        }
+      }
+
       await sendMail({
         to: user.email,
         subject: bookingConfirmedSubjects[locale],
@@ -113,6 +139,7 @@ export function sendBookingConfirmed(
             tripType: tripRequest.type,
             nights: tripRequest.nights,
             departureDate,
+            receiptUrl,
             locale,
           }),
         },
@@ -1016,4 +1043,131 @@ export function sendWelcomeEmail(userId: string): void {
       console.error("[email] sendWelcomeEmail:", err);
     }
   })();
+}
+
+/**
+ * Resend caps the total request payload (rendered email + all attachments,
+ * base64-encoded) at 40MB. Budget conservatively against RAW attachment
+ * bytes: base64 inflates size by ~33%, and the rendered HTML body adds a
+ * little more on top — so cap raw bytes well under the 40MB wire ceiling to
+ * leave headroom for that overhead.
+ */
+const MAX_TOTAL_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB raw
+
+/**
+ * Sends the trip-start voucher email: every `TripDocument` row for the trip,
+ * attached as-is — there is no fixed "voucher" category, documents are
+ * free-labeled by admins (see `prisma/schema.prisma` comment on
+ * `TripDocument`).
+ *
+ * DIVERGES from every other `send*` function in this module on purpose: it
+ * is `await`-able and returns `{ sent }` instead of firing-and-forgetting.
+ * The caller (`runPass1` in `api/internal/trip-start-voucher-email`) needs
+ * that result to decide whether to stamp `voucherEmailSentAt` — Resolved
+ * Decision: when a trip has zero documents, skip sending AND skip stamping,
+ * so the hourly job keeps retrying and sends automatically the moment
+ * documents are uploaded, instead of the trip silently never getting a
+ * voucher email.
+ *
+ * Individual documents that would push the email past the size budget are
+ * skipped (not the whole send) — `skippedCount` is surfaced in the email so
+ * the traveler knows to check the dashboard for anything left out.
+ */
+export async function sendTripStartVouchers(
+  tripRequestId: string,
+  userId: string,
+): Promise<{ sent: boolean }> {
+  const [user, tripRequest, documents] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true, name: true, locale: true },
+    }),
+    prisma.tripRequest.findUnique({
+      where: { id: tripRequestId },
+      select: { startDate: true, endDate: true, nights: true, pax: true, type: true },
+    }),
+    prisma.tripDocument.findMany({
+      where: { tripRequestId },
+      select: {
+        label: true,
+        storageKey: true,
+        mimeType: true,
+        originalFilename: true,
+        sizeBytes: true,
+      },
+      orderBy: { createdAt: "asc" },
+    }),
+  ]);
+
+  if (!user?.email || !tripRequest) return { sent: false };
+
+  if (documents.length === 0) {
+    console.log(
+      `[email] sendTripStartVouchers: trip ${tripRequestId} has no documents yet — skipping (will retry next run)`,
+    );
+    return { sent: false };
+  }
+
+  const locale = resolveLocale(user.locale);
+  const store = getTripDocumentStore();
+
+  const attachments: MailAttachment[] = [];
+  const attachedDocuments: { label: string; mimeType: string }[] = [];
+  let skippedCount = 0;
+  let totalBytes = 0;
+
+  for (const doc of documents) {
+    if (totalBytes + doc.sizeBytes > MAX_TOTAL_ATTACHMENT_BYTES) {
+      skippedCount++;
+      console.warn(
+        `[email] sendTripStartVouchers: skipping "${doc.originalFilename}" (trip ${tripRequestId}) — would exceed the attachment size budget`,
+      );
+      continue;
+    }
+
+    try {
+      const blob = await store.get(doc.storageKey, { type: "blob" });
+      if (!blob) {
+        skippedCount++;
+        continue;
+      }
+
+      const buffer = Buffer.from(await blob.arrayBuffer());
+      attachments.push({
+        filename: doc.originalFilename,
+        content: buffer,
+        contentType: doc.mimeType,
+      });
+      attachedDocuments.push({ label: doc.label, mimeType: doc.mimeType });
+      totalBytes += doc.sizeBytes;
+    } catch (err) {
+      skippedCount++;
+      console.error(
+        `[email] sendTripStartVouchers: failed to fetch "${doc.originalFilename}" (trip ${tripRequestId}):`,
+        err,
+      );
+    }
+  }
+
+  await sendMail({
+    to: user.email,
+    subject: tripStartVouchersSubjects[locale],
+    attachments: attachments.length > 0 ? attachments : undefined,
+    content: {
+      react: React.createElement(TripStartVouchers, {
+        client: user.name ?? "",
+        documents: attachedDocuments,
+        skippedCount,
+        startDate: tripRequest.startDate,
+        endDate: tripRequest.endDate,
+        nights: tripRequest.nights,
+        pax: tripRequest.pax,
+        tripType: tripRequest.type,
+        locale,
+        tripId: tripRequestId,
+      }),
+    },
+  });
+
+  return { sent: true };
 }

@@ -48,9 +48,9 @@ Claim: `npm run lint` fails due to a pre-existing Next 16 / eslint 8.57 incompat
 | Requirement | Scenario | Status | Evidence |
 |---|---|---|---|
 | Family Classification | Journey sub-type switch stays in family | ✅ PASS | `tripRequest.test.ts` (`tripFamilyOf` cases) + `route.test.ts` test (b) — SAVED journey row with `type: "couple"` reused when body sends `type: "solo"` |
-| Family Classification | Xsed/journey independent finders | ✅ PASS | `route.test.ts` tests (c)/(d) assert distinct `where.type` shape per family |
+| Family Classification | XSED/journey independent finders | ✅ PASS | `route.test.ts` tests (c)/(d) assert distinct `where.type` shape per family |
 | Family-Scoped Single-Active-Trip Upsert | Repeated journey entry without id updates same row | ✅ PASS | `route.test.ts` test (b) |
-| Family-Scoped Single-Active-Trip Upsert | Journey and xsed coexist | ✅ PASS | `route.test.ts` tests (c)/(d) via `tripFamilyWhere` scoping |
+| Family-Scoped Single-Active-Trip Upsert | Journey and XSED coexist | ✅ PASS | `route.test.ts` tests (c)/(d) via `tripFamilyWhere` scoping |
 | Family-Scoped Single-Active-Trip Upsert | First request for family creates | ✅ PASS | `route.test.ts` test (a) |
 | Family-Scoped Single-Active-Trip Upsert | Client-supplied id updates directly | ✅ PASS | `route.test.ts` test (e) — code path returns before family resolution (route.ts:358-379) |
 | Family-Scoped Single-Active-Trip Upsert | Terminal rows don't block new slot | ✅ PASS (by construction) | `findActiveTripRequest` query scoped to `NON_TERMINAL_TRIP_STATUSES`, unit-tested in `tripRequest.test.ts` |
@@ -74,8 +74,8 @@ Claim: `npm run lint` fails due to a pre-existing Next 16 / eslint 8.57 incompat
 Confirmed via direct read (lines 354-439): `tripFamilyOf(type)` classifies by `type === "xsed"` vs everything else; `findActiveTripRequest(user.id, family)` scopes the `where.type` clause via `tripFamilyWhere`. Switching sub-type (`couple` → `solo`) keeps `family = "journey"` in both cases, so the same active row is found and updated — confirmed both by code read and by test (b)/(h)/(i).
 
 **Gap found (WARNING, not CRITICAL)**: the spec's Family Classification requirement states the family predicate "MUST be centralized in a single shared helper — no inline re-implementation elsewhere." Two spots in `trip-requests/route.ts` still inline `type === "xsed"` rather than routing through `tripFamilyOf`:
-- Line 191 (`buildTripRequestCreateFields`, xsed canonical-date resolution)
-- Line 445 (xsed `revalidatePath` trigger)
+- Line 191 (`buildTripRequestCreateFields`, XSED canonical-date resolution)
+- Line 445 (XSED `revalidatePath` trigger)
 
 Both produce today's identical result to `tripFamilyOf(type) === "xsed"` and are functionally harmless — no bug. But this is a literal violation of the spec's "no inline re-implementation elsewhere" wording, and it is not new drift introduced by apply: `buildTripRequestCreateFields` is a design-confirmed "pure extraction" of pre-existing lines 291-352 (unchanged logic), and design.md's own step-7 pseudocode for the resolution order literally writes `if resulting row .type === "xsed"` rather than calling the helper. So this gap was baked into design.md itself, not an apply-phase deviation. Flagging because a strict reading of the spec requirement is not fully met by the code, even though the implementation matches the design document exactly.
 

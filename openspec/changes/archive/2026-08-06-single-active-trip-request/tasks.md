@@ -28,7 +28,7 @@ Chain strategy: pending
 
 ## Phase 1: Foundation — Shared Helper (PR 1)
 
-- [x] 1.1 RED: `src/lib/db/__tests__/tripRequest.test.ts` — `tripFamilyOf` cases (xsed/journey/`"family"`/empty/undefined).
+- [x] 1.1 RED: `src/lib/db/__tests__/tripRequest.test.ts` — `tripFamilyOf` cases (XSED/journey/`"family"`/empty/undefined).
 - [x] 1.2 RED: same file — `isExpiredPendingPayment` cases (expired, not-yet, `expiresAt: null`, no payment, wrong status, `expiresAt === now`).
 - [x] 1.3 GREEN: `src/lib/db/tripRequest.ts` — `tripFamilyOf`, `tripFamilyWhere`, `isExpiredPendingPayment`, `NON_TERMINAL_TRIP_STATUSES`.
 - [x] 1.4 RED: mocked-Prisma tests — `findActiveTripRequest` where/orderBy shape; `revertExpiredPendingPayment` write-once + returns effective status; `revertExpiredPendingPaymentsForUser` skip-when-empty.
@@ -39,7 +39,7 @@ Chain strategy: pending
 - [x] 2.1 RED: `src/app/api/trip-requests/__tests__/route.test.ts` — matrix (a)-(i) per design Testing Strategy (create/update branching, cross-family, stale-id, tripperId preservation, `"family"` regression).
 - [x] 2.2 GREEN: extract `buildTripRequestCreateFields` from existing create block (route.ts:291-352).
 - [x] 2.3 GREEN: replace create/update branch with 7-step resolution (design "resolution order"), using Unit 1's `tripFamilyOf`/`findActiveTripRequest`.
-- [x] 2.4 GREEN: preserve xsed `revalidatePath` calls on both create and reused-row paths.
+- [x] 2.4 GREEN: preserve XSED `revalidatePath` calls on both create and reused-row paths.
 
 ## Phase 3: Trips Route Cleanup (PR 3)
 
@@ -64,4 +64,4 @@ Chain strategy: pending
 ## Phase 6: Wrap-up
 
 - [x] 6.1 `npm run typecheck` clean across all five units; full `vitest run` suite green (111 files / 856 tests). `npm run lint` blocked by a pre-existing repo issue (Next.js 16 `next lint` removed the command; direct `eslint` run also fails with a circular-JSON error in `eslint-config-next`/`eslint.config.mjs` even on untouched files) — not introduced by this change, flagged for the user/verify phase.
-- [x] 6.2 Manual QA: two-tab journey dedup, journey+xsed coexistence, 24h-expired dashboard revert, dry-run then `--apply` against a DB copy. PASSED — verified against live dev DB/browser session.
+- [x] 6.2 Manual QA: two-tab journey dedup, journey+XSED coexistence, 24h-expired dashboard revert, dry-run then `--apply` against a DB copy. PASSED — verified against live dev DB/browser session.

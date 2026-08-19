@@ -76,4 +76,4 @@ Driven directly by user QA on the shipped feature — see design.md → "Post-Ve
 - [x] 7.7 `ReviewActionsBar.tsx` (new): sticky bar combining the changed-fields summary and approve/reject actions, offset below the site navbar via `var(--rt-header-h, 64px)`; remove the old per-tab banner and bottom-of-tab actions from `ExperienceFormContent.tsx`
 - [x] 7.8 `TripperReviewCopyClient.tsx`: replace shared `saving` boolean with `pendingAction: "approve" | "reject" | null` so only the clicked button shows its spinner
 - [x] 7.9 Added regression tests: `resolveEntryPeek` (5 cases), `RichTextInput` peek (4 cases, including an explicit assertion that toggling never calls `onChange`)
-- [x] 7.10 Re-run `npm run typecheck` and `npm run test` after each change in this phase — final state: typecheck clean, 198/204 tests passing (6 pre-existing unrelated `xsed` failures, confirmed via `git stash` before this change began)
+- [x] 7.10 Re-run `npm run typecheck` and `npm run test` after each change in this phase — final state: typecheck clean, 198/204 tests passing (6 pre-existing unrelated XSED failures, confirmed via `git stash` before this change began)
