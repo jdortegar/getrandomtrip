@@ -83,6 +83,20 @@ export async function PATCH(request: NextRequest) {
 
     let tripperSlug: string;
     if (requestedSlug) {
+      // Slugs are embedded verbatim into the signed tripper-attribution
+      // cookie (v1.<slug>.<exp>.<sig>) and used as a URL path segment — only
+      // lowercase alphanumeric characters and single dashes are allowed (no
+      // dots, no leading/trailing/double dashes).
+      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(requestedSlug)) {
+        return NextResponse.json(
+          {
+            error:
+              "Tripper slug can only contain lowercase letters, numbers, and single dashes",
+          },
+          { status: 400 },
+        );
+      }
+
       // Check if tripperSlug is already taken by another user
       const existingTripper = await prisma.user.findFirst({
         where: {

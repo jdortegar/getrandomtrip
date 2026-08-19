@@ -48,6 +48,7 @@ model User {
   siteAccessGrantedAt DateTime? // Set once, the moment the gate is unlocked for this account (any AccessInvite kind, or a companion claim) — first-grant-wins, never overwritten or cleared
   isActive            Boolean   @default(true) // Self-service visibility toggle; default true so existing trippers stay visible
   deactivatedAt       DateTime? // Self-service account deactivation (soft-delete) — null means active. Cleared automatically on next successful sign-in, so the account and all its data are preserved.
+  referredByTripperId String? // Set once at account creation (register or Google create) — never overwritten. Null = no referrer, or referrer account deleted.
   nickname            String? // Public display name shown to clients instead of the legal name, if set
   bio                 String? // Tripper biography/description
   heroImage           String? // Hero banner image
@@ -92,6 +93,8 @@ model User {
   // Relations
   tripRequests            TripRequest[]        @relation("CustomerTripRequests")
   attributedTripRequests  TripRequest[]        @relation("TripperTripRequests")
+  referredBy              User?                @relation("ReferredBy", fields: [referredByTripperId], references: [id], onDelete: SetNull)
+  referredTravelers       User[]               @relation("ReferredBy")
   ownedExperiences        Experience[]         @relation("OwnedExperiences")
   payments                Payment[]
   reviews                 Review[]

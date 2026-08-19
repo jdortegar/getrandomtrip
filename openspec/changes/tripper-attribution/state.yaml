@@ -1,0 +1,240 @@
+change: tripper-attribution
+status: apply
+artifact_store: openspec
+artifact_store_migration_note: >-
+  This change was started under artifact_store: engram (all phase documents
+  written only to persistent memory, no files). Partway through implementation
+  (during PR1 apply), the user asked why no SDD files were visible and
+  requested switching to openspec-only going forward. All prior engram
+  observations were fetched and backfilled into these files verbatim; the
+  engram observations themselves were left in place as historical reference,
+  not deleted. Engram observation ids for cross-reference: explore=537,
+  proposal=539, spec=540, design=541, tasks=542, apply-progress=543 (project
+  getrandomtrip). No new engram writes will occur for this change going
+  forward; openspec files are now authoritative.
+delivery_strategy: chained
+chain_strategy: feature-branch-chain
+branches:
+  tracker: feature/tripper-attribution
+  pr1: feature/tripper-attribution-pr1-foundation-security
+  pr1_pr_url: https://github.com/jdortegar/getrandomtrip/pull/123
+  pr1_status: open (committed 289a5886, pushed, PR opened against tracker)
+  pr2: not yet created
+  pr3: not yet created
+size_exception:
+  status: not_applicable
+  reason: Chained delivery was chosen specifically to avoid needing a size exception.
+phases:
+  explore: done
+  proposal: done
+  spec: done
+  design: done
+  tasks: done
+  apply: in_progress
+  verify: pending
+  archive: pending
+artifacts:
+  explore: openspec/changes/tripper-attribution/explore.md
+  explore_origin: sdd/tripper-attribution/explore (engram #537, historical)
+  proposal: openspec/changes/tripper-attribution/proposal.md
+  proposal_origin: sdd/tripper-attribution/proposal (engram #539, historical)
+  spec_tripper_attribution: openspec/changes/tripper-attribution/specs/tripper-attribution/spec.md
+  spec_tripper: openspec/changes/tripper-attribution/specs/tripper/spec.md
+  spec_tripper_price_override: openspec/changes/tripper-attribution/specs/tripper-price-override/spec.md
+  spec_auth_verification: openspec/changes/tripper-attribution/specs/auth-verification/spec.md
+  spec_origin: sdd/tripper-attribution/spec (engram #540, historical)
+  design: openspec/changes/tripper-attribution/design.md
+  design_origin: sdd/tripper-attribution/design (engram #541, historical)
+  tasks: openspec/changes/tripper-attribution/tasks.md
+  tasks_origin: sdd/tripper-attribution/tasks (engram #542, historical)
+  apply_progress: openspec/changes/tripper-attribution/apply-progress.md
+  apply_progress_origin: sdd/tripper-attribution/apply-progress (engram #543, historical; PR1/Phase 1 only)
+updated: 2026-08-18
+strict_tdd: true
+migration_note: >-
+  This repo uses `prisma db push`; prisma/migrations/ is empty/untracked
+  (.gitkeep only). The migration artifact is the schema.prisma diff only, not
+  a new migration file.
+repo_rules_binding:
+  - .claude/rules/i18n-and-types.md — every new user-visible string needs es AND
+    en dictionary entries in the same change, plus a type addition in
+    src/lib/types/dictionary.ts. Applies to PR3 (register picker, carousel
+    fallback label, banner copy) — not yet reached.
+  - .claude/rules/component-patterns.md — reuse existing UI primitives
+    (FormField/FormSelectField); do not hand-roll form controls. Applies to
+    PR2's AuthModal picker.
+verified_facts:
+  date: 2026-08-18
+  notes:
+    - "No src/middleware.ts exists — Next.js 16 renamed the convention to
+       src/proxy.ts, exporting proxy(req). Confirmed via glob."
+    - "proxy.ts's matcher excludes /api entirely: matcher:
+       [\"/((?!_next|api|favicon\\.png|.*\\..*).*)\"]. Force-attribution logic
+       needs a shared helper reachable from both proxy.ts and API routes."
+    - "Prisma is Node-only in this repo (@prisma/adapter-pg + raw pg.Pool) —
+       not Edge-compatible. proxy.ts defaults to Edge runtime and does zero DB
+       work. Authenticated attribution is sourced from a NextAuth JWT claim
+       (referredByTripperSlug), not a live query."
+    - "filterCarouselCards (src/lib/utils/traveler-card.ts:86-100) drops
+       non-offered types with no fallback — confirmed exactly."
+    - "TravelerTypesCarousel.tsx:82-86 href is unconditionally
+       /experiences/by-type/${slug}, no tripper param, even for offered types
+       — confirmed exactly."
+    - "TripRequest.tripperId resolution (src/app/api/trip-requests/route.ts:
+       394-425) is write-once and already validates isActive:true at write
+       time — reused as the precedent pattern."
+    - "getTripperJourneyContext (src/lib/db/tripper-queries.ts:449+) is the
+       reusable resolve+validate primitive (not_found|inactive|ok), reused for
+       liveness re-validation instead of new logic."
+    - "AuthModal.tsx (register modal) uses plain useState + FormField, NOT
+       react-hook-form — RHF exists in package.json but is used only in 2
+       unrelated xsed files."
+    - "No combobox/autocomplete component exists anywhere in src/components/ui/
+       or src/components/app/admin/ — the register-modal tripper picker is
+       net-new UI, a plain <select>."
+    - "TripperPreviewBanner.tsx is a usable shape for the mode-banner precedent
+       but is hardcoded Spanish-only with zero dictionary usage — a
+       pre-existing i18n violation, must not be copied as-is."
+    - "@db.VarChar is not used anywhere in this schema for ids — only
+       @db.Text for long text. Ids are bare String. referredByTripperId
+       follows that convention (design ADR-7)."
+    - "src/lib/auth.ts:219-221's trigger:'update' branch did
+       `return { ...token, ...clientSession }` — a blanket client-controlled
+       token spread. Confirmed as a real, blocking vulnerability once an
+       attribution claim was to be added to the token (design ADR-6). Fixed in
+       PR1: the client-supplied referredByTripperSlug key is stripped before
+       the spread and the claim is recomputed from the DB unconditionally."
+    - "getPlannerContentForType (src/lib/utils/levels.ts:225-238) already
+       accepts an optional overrides param — the by-type page just never
+       passed one. PR3's wiring there is smaller than originally assumed."
+capabilities:
+  new:
+    - tripper-attribution
+  modified:
+    - tripper
+    - tripper-price-override
+    - auth-verification
+resolved_decisions:
+  - id: 1
+    status: final
+    summary: >-
+      ADR-1: User.referredByTripperId onDelete: SetNull, no historical
+      snapshot/ledger. If a referring tripper's account is deleted, every
+      traveler they referred permanently loses that attribution with no
+      surviving record; RandomTrip keeps 100% of those travelers' future
+      bookings. Deliberate — confirmed by user directly, not just the
+      recommended default.
+  - id: 2
+    status: final
+    summary: >-
+      Cookie TTL is 30 days (design ADR-4). Standard referral-attribution
+      window; confirmed by user over session-only (too aggressive) and 90d/1y
+      (stale-repricing support burden with no offsetting benefit, since the
+      permanent referral is captured at signup regardless).
+  - id: 3
+    status: final
+    summary: >-
+      Browsing /trippers/[slug] itself sets pricing attribution — intended,
+      not a bug requiring a stronger explicit action. The persistent banner +
+      toggle is what makes this visible and reversible to the visitor, rather
+      than gating attribution behind a click-through.
+  - id: 4
+    status: final
+    summary: >-
+      Cookie name is grt_tripper (design ADR-2), matching the existing
+      grt_tripper_invite / grt_traveler_invite namespace — the original
+      rt_tripper placeholder from the proposal brief was corrected during
+      design.
+  - id: 5
+    status: final
+    summary: >-
+      Signing secret is a derived subkey (HMAC-SHA256(NEXTAUTH_SECRET,
+      "grt_tripper.v1")), not a new env var and not the raw NEXTAUTH_SECRET
+      reused directly (design ADR-3) — avoids Netlify env churn while keeping
+      cryptographic domain separation from session JWT signing.
+  - id: 6
+    status: final
+    summary: >-
+      ADR-6 security fix (auth.ts trigger:"update" client-session-spread
+      hardening) is a blocking prerequisite, sequenced before the JWT claim is
+      wired anywhere else — implemented and test-covered in PR1.
+  - id: 7
+    status: final
+    summary: >-
+      Delivery is chained PRs under feature-branch-chain (not single-PR/
+      size:exception like the prior admin-user-edit-page change) — explicitly
+      chosen given this change touches auth.ts's token-forgery surface
+      directly, judged higher-stakes than a typical single-PR change in this
+      repo.
+  - id: 8
+    status: final
+    summary: >-
+      Commission rate calculation/payout logic (the original 1%/2%/3% ask)
+      remains explicitly out of scope for this change — it only builds the
+      attribution foundation a future commission change would consume.
+open_questions_remaining: 0
+revisions:
+  - artifact: explore
+    date: 2026-08-18
+    note: >
+      Explored current attribution architecture. Corrected two premises
+      against real code: no src/middleware.ts (it's src/proxy.ts), and Prisma
+      is Node-only/Edge-incompatible in this repo, ruling out a live DB lookup
+      in the Edge proxy. Recommended JWT-claim-based authenticated attribution
+      instead. Confirmed both carousel bugs, the write-once TripRequest
+      precedent, and that the register modal has no RHF/combobox to reuse.
+  - artifact: proposal
+    date: 2026-08-18
+    note: >
+      Wrote the proposal folding in explore's corrections as settled facts.
+      Flagged ADR-1 (onDelete behavior) for explicit user sign-off given its
+      real data-integrity consequence (historical referral credit loss on
+      referrer deletion) — user confirmed SetNull/no-history directly rather
+      than accepting the recommendation silently.
+  - artifact: spec
+    date: 2026-08-18
+    note: >
+      Wrote delta specs across 4 capability domains (tripper-attribution new;
+      tripper, tripper-price-override, auth-verification modified as ADDED
+      Requirements, since none of the three existing capability specs had
+      overlapping requirement text to replace). Folded in the confirmed ADR-1
+      decision as a settled, non-negotiable requirement rather than an open
+      question.
+  - artifact: design
+    date: 2026-08-18
+    note: >
+      Wrote design with 9 ADRs. Found and fixed a blocking security issue
+      (ADR-6): the brief's plan to add an attribution claim to the NextAuth
+      JWT would have been client-forgeable via the existing
+      trigger:"update" branch's unfiltered clientSession spread. Corrected
+      the cookie name (grt_tripper, not rt_tripper) and the signing-secret
+      source (derived subkey, not a new env var or raw NEXTAUTH_SECRET) against
+      real code conventions. Flagged cookie TTL and the
+      browsing-sets-attribution question for explicit user confirmation
+      rather than silently picking defaults — both confirmed by user.
+  - artifact: tasks
+    date: 2026-08-18
+    note: >
+      32 tasks across 3 phases/work units, explicitly sized as 3 separate PRs
+      given the security-sensitive auth.ts surface (higher review-workload
+      forecast risk than the prior single-PR change). Orchestrator asked the
+      user to choose chained-vs-single delivery and, once chained was chosen,
+      which chain strategy — feature-branch-chain was selected over
+      stacked-to-main.
+  - artifact: apply (PR1)
+    date: 2026-08-18
+    note: >
+      Implemented Phase 1 (9/9 tasks) on branch
+      feature/tripper-attribution-pr1-foundation-security, off tracker branch
+      feature/tripper-attribution (both created off develop). Strict TDD
+      throughout; the ADR-6 security fix and the JWT claim wiring were
+      implemented in the same jwt() edit (no commits existed yet to sequence
+      against, so the hard-ordering requirement was satisfied by construction
+      rather than by separate commits — flagged for the orchestrator's commit
+      strategy). Full regression suite green (203 files/1481 tests),
+      typecheck clean. npm run lint remains broken repo-wide for unrelated
+      pre-existing reasons (Next 16.2.6 / eslint-config-next flat-config
+      issue). Mid-flight, the user asked to see the SDD documents as files;
+      this state.yaml and the sibling .md files were backfilled from the 6
+      engram observations that existed at that point, at the user's request
+      to switch from engram-only to openspec-only artifact storage.
