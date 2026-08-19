@@ -17,6 +17,8 @@ chain_strategy: feature-branch-chain
 branches:
   tracker: feature/tripper-attribution
   pr1: feature/tripper-attribution-pr1-foundation-security
+  pr1_pr_url: https://github.com/jdortegar/getrandomtrip/pull/123
+  pr1_status: open (committed 289a5886, pushed, PR opened against tracker)
   pr2: not yet created
   pr3: not yet created
 size_exception:
