@@ -11,6 +11,7 @@
  * to re-validate liveness (spec "Read-Time Liveness Re-Validation").
  */
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import {
@@ -28,11 +29,19 @@ import {
  * only — Server Components, Route Handlers). Returns `null` on any missing,
  * malformed, tampered, or expired cookie — identical treatment to "no
  * cookie" per `verifyAttribution`'s contract.
+ *
+ * Wrapped in React's `cache()` (risk flagged after the initial PR3 apply
+ * batch): `AttributionModeBanner` (layout.tsx) and a page's own attribution
+ * read (`by-type/page.tsx`, `journey/page.tsx`) each call this
+ * independently within the same request — `cache()` dedupes the cookie
+ * read + HMAC verify to once per request. Outside an active Next.js request
+ * render (e.g. plain unit tests) it transparently falls back to calling
+ * straight through every time — no memoization, but no different result.
  */
-export async function readAttributionSlug(): Promise<string | null> {
+export const readAttributionSlug = cache(async (): Promise<string | null> => {
   const raw = (await cookies()).get(GRT_TRIPPER_COOKIE)?.value;
   return verifyAttribution(raw, getAttributionSecret());
-}
+});
 
 /**
  * Re-validates a slug's liveness via `getTripperJourneyContext` and returns

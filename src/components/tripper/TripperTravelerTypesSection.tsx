@@ -15,8 +15,6 @@ export function TripperTravelerTypesSection({
   tripperName,
   tripperSlug,
 }: TripperTravelerTypesSectionProps) {
-  if (!availableTypes?.length) return null;
-
   return (
     <Section
       eyebrow="Tipos de viajero"

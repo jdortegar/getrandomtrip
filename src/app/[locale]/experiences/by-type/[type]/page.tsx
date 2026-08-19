@@ -16,6 +16,10 @@ import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import {
+  readAttributionSlug,
+  resolveLiveAttribution,
+} from "@/lib/tripper/attribution-server";
 
 /**
  * Generate static paths for all traveler types and their aliases.
@@ -52,8 +56,10 @@ export async function generateMetadata(props: {
  */
 export default async function TravelerTypePage(props: {
   params: Promise<{ locale?: string; type: string }>;
+  searchParams: Promise<{ catalog?: string }>;
 }) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const locale = hasLocale(params.locale)
     ? (params.locale as Locale)
     : ("es" as Locale);
@@ -62,6 +68,17 @@ export default async function TravelerTypePage(props: {
   if (!typeData) {
     notFound();
   }
+
+  // `?catalog=randomtrip` is a per-request, reversible opt-out into base
+  // RandomTrip pricing — read here by the page, not by the proxy, so it
+  // never touches the `grt_tripper` cookie itself (design ADR-8).
+  const attributedSlug =
+    searchParams?.catalog === "randomtrip" ? null : await readAttributionSlug();
+  const tripperContext = await resolveLiveAttribution(attributedSlug);
+  const priceOverrides =
+    tripperContext && tripperContext.allowedTypes.includes(typeData.meta.slug)
+      ? tripperContext.priceOverrides
+      : null;
 
   const dict = await getDictionary(locale);
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
@@ -86,7 +103,11 @@ export default async function TravelerTypePage(props: {
         id={`${typeData.meta.slug}-story`}
       />
       <TypePlanner
-        content={getPlannerContentForType(typeData.meta.slug, locale)}
+        content={getPlannerContentForType(
+          typeData.meta.slug,
+          locale,
+          priceOverrides,
+        )}
         itemsPerView={3}
         type={typeData.meta.slug as TravelerTypeSlug}
         navigateOnCardClick={true}
