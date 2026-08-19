@@ -5105,5 +5105,12 @@
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"
+  },
+  "tripperAttribution": {
+    "visitRandomTripExperiences": "Visitar experiencias RandomTrip",
+    "bannerTripperModeMessage": "Estás viendo experiencias curadas por {name}.",
+    "bannerRandomtripModeMessage": "Estás viendo experiencias generales de RandomTrip.",
+    "bannerSwitchToRandomtrip": "Ver experiencias generales de RandomTrip",
+    "bannerSwitchToTripper": "Volver a experiencias de {name}"
   }
 }

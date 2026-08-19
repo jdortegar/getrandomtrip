@@ -17,7 +17,7 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { filterContentTabsForUI, getAccordionForStep } from "@/lib/helpers/journey";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
-import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
+import type { TripperContextState } from "@/types/tripper";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import type { JourneyDetailsProgress } from "@/hooks/useJourneyDetailsProgress";
 import {
@@ -73,34 +73,20 @@ function getInitialStepFromParams(params: URLSearchParams): {
   return { tabId: "preferences", sectionId: "filters" };
 }
 
-interface TripperJourneyContext {
-  name: string;
-  avatarUrl: string | null;
-  location: string | null;
-  allowedTypes: string[];
-  allowedLevelsByType: Record<string, string[]>;
-  priceOverrides: TripperPriceOverrides | null;
-}
-
-/**
- * Explicit tri-state so "no tripper in the URL" (`none`) can never be
- * confused with "tripper unavailable" (`unavailable`) — a nullable
- * `TripperJourneyContext | null` could not distinguish the two.
- */
-type TripperContextState =
-  | { status: "none" }
-  | { status: "ok"; context: TripperJourneyContext }
-  | { status: "unavailable"; name?: string };
-
-function JourneyPageContent({ locale }: { locale?: string }) {
+function JourneyPageContent({
+  locale,
+  tripperSlug,
+  tripperState,
+}: {
+  locale?: string;
+  tripperSlug?: string;
+  tripperState: TripperContextState;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
   const [openSectionId, setOpenSectionId] = useState("travel-type");
-  const [tripperState, setTripperState] = useState<TripperContextState>({
-    status: "none",
-  });
   const hasSyncedJourneyStateFromUrl = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -140,37 +126,6 @@ function JourneyPageContent({ locale }: { locale?: string }) {
   );
 
   const resolvedLocale = hasLocale(locale) ? locale : "es";
-
-  // Fetch tripper context when the journey URL includes ?tripper=<slug>
-  useEffect(() => {
-    const tripperSlug = searchParams.get("tripper");
-    if (!tripperSlug) {
-      setTripperState({ status: "none" });
-      return;
-    }
-    let cancelled = false;
-    fetch(`/api/trippers/${encodeURIComponent(tripperSlug)}/journey-context`)
-      .then(async (res) => {
-        if (res.status === 410) {
-          const body = (await res.json().catch(() => ({}))) as {
-            name?: string;
-          };
-          return { status: "unavailable" as const, name: body.name };
-        }
-        if (!res.ok) return { status: "none" as const };
-        const context = (await res.json()) as TripperJourneyContext;
-        return { status: "ok" as const, context };
-      })
-      .then((next) => {
-        if (!cancelled) setTripperState(next);
-      })
-      .catch(() => {
-        if (!cancelled) setTripperState({ status: "none" });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [searchParams]);
 
   useEffect(() => {
     getDictionary(resolvedLocale).then(setDict);
@@ -320,7 +275,7 @@ function JourneyPageContent({ locale }: { locale?: string }) {
                     }
                   : undefined
               }
-              tripperSlug={searchParams.get("tripper") ?? undefined}
+              tripperSlug={tripperSlug}
             />
           </div>
 
@@ -355,11 +310,17 @@ function JourneyPageContent({ locale }: { locale?: string }) {
 
 export default function JourneyPageClient(props: {
   params?: Promise<{ locale?: string }>;
+  tripperSlug?: string;
+  tripperState?: TripperContextState;
 }) {
   const params = use(props.params ?? Promise.resolve({ locale: undefined }));
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <JourneyPageContent locale={params?.locale} />
+      <JourneyPageContent
+        locale={params?.locale}
+        tripperSlug={props.tripperSlug}
+        tripperState={props.tripperState ?? { status: "none" }}
+      />
     </Suspense>
   );
 }

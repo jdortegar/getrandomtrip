@@ -9,6 +9,7 @@ import {
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
 import { getXsedCard } from "@/lib/data/xsed-catalog";
+import type { CarouselCard } from "@/types/tripper";
 
 export type { TravelerTypeSlug };
 
@@ -81,7 +82,14 @@ export function getCarouselCardOptions(
 }
 
 /**
- * Filter cards for display: in tripper context only show availableTypes; otherwise show all (or filter by availableTypes if set).
+ * Flags every card with `availableFromTripper` — never drops a card from the
+ * list (design "traveler-card.ts — flag, do not drop"; spec "Carousel
+ * Attribution-Aware Fallback Cards"). Non-tripper context: every card is
+ * flagged `true` (identity behaviour preserved — the carousel renders
+ * exactly as it always did outside a tripper's context). Tripper context:
+ * each card is flagged by whether its key is in `availableTypes`; an empty
+ * or missing `availableTypes` flags every card `false` rather than emptying
+ * the list, so the carousel can still render a full row of fallback cards.
  */
 export function filterCarouselCards(
   cards: TravelerTypeCardData[],
@@ -89,14 +97,48 @@ export function filterCarouselCards(
     availableTypes?: string[];
     tripperContext: boolean;
   },
-): TravelerTypeCardData[] {
+): CarouselCard[] {
   const { availableTypes, tripperContext } = options;
-  if (!availableTypes?.length) return cards;
+  if (!tripperContext) {
+    return cards.map((card) => ({ ...card, availableFromTripper: true }));
+  }
   const allowed = new Set(
-    availableTypes.map((t) => String(t).toLowerCase().trim()),
+    (availableTypes ?? []).map((t) => String(t).toLowerCase().trim()),
   );
-  if (tripperContext && allowed.size === 0) return [];
-  return cards.filter((t) => allowed.has(t.key.toLowerCase()));
+  return cards.map((card) => ({
+    ...card,
+    availableFromTripper: allowed.has(card.key.toLowerCase()),
+  }));
+}
+
+/**
+ * Per-card carousel href (design ADR-8):
+ * - coming-soon types never link (`undefined`, blocks interaction).
+ * - available types keep `?tripper={slug}` when a slug is known, so a
+ *   copied/shared link self-heals attribution even if the cookie was
+ *   cleared — the proxy re-affirms the same value, not a second source of
+ *   truth.
+ * - unavailable types (tripper context only — `filterCarouselCards` never
+ *   flags a card unavailable outside tripper context) fall back to
+ *   `?catalog=randomtrip`, a per-request, reversible opt-out read by the
+ *   `by-type` page, never by the proxy — the cookie itself is left
+ *   untouched.
+ */
+export function resolveCarouselCardHref(
+  slug: string,
+  options: {
+    isComingSoon: boolean;
+    availableFromTripper: boolean;
+    tripperSlug?: string;
+  },
+): string | undefined {
+  const { isComingSoon, availableFromTripper, tripperSlug } = options;
+  if (isComingSoon) return undefined;
+  const base = `/experiences/by-type/${slug}`;
+  if (!availableFromTripper) return `${base}?catalog=randomtrip`;
+  return tripperSlug
+    ? `${base}?tripper=${encodeURIComponent(tripperSlug)}`
+    : base;
 }
 
 /** Shape TravelerTypeCard expects for its item prop. */

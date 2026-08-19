@@ -1,4 +1,19 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// `page.tsx` now imports `attribution-server.ts` / `tripper-queries.ts`
+// (Node-only, both prisma-touching) for the tripper-attribution server-side
+// resolve (PR3). This suite only exercises the pure `getAccordionForStep`
+// re-export and never invokes the page component itself, but merely
+// importing the module still constructs the real `PrismaClient` at
+// module-load time — which throws outside a configured DB env. Mock it away,
+// same pattern as `attribution-server.test.ts`.
+vi.mock("@/lib/prisma", () => ({
+  prisma: {
+    user: { findUnique: vi.fn() },
+    experience: { findMany: vi.fn() },
+  },
+}));
+
 import { getAccordionForStep } from "@/app/[locale]/journey/page";
 
 describe("getAccordionForStep", () => {

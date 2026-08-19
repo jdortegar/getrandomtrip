@@ -5105,5 +5105,12 @@
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"
+  },
+  "tripperAttribution": {
+    "visitRandomTripExperiences": "Visit RandomTrip experiences",
+    "bannerTripperModeMessage": "You're viewing experiences curated by {name}.",
+    "bannerRandomtripModeMessage": "You're viewing general RandomTrip experiences.",
+    "bannerSwitchToRandomtrip": "View general RandomTrip experiences",
+    "bannerSwitchToTripper": "Switch back to {name}'s experiences"
   }
 }
