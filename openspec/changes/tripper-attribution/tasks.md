@@ -18,7 +18,7 @@ Decision needed before apply: RESOLVED — feature-branch-chain, PR1 = Phase 1 o
 | Unit | Goal | PR | Notes |
 |---|---|---|---|
 | 1 | Schema + Edge-safe attribution.ts + Edge-purity guard + auth.ts ADR-6 hardening + jwt() claim + ATTRIBUTION_ENABLED flag | PR1 | Security-critical, must merge/land first; blocks 2 and 3 — **DONE, branch `feature/tripper-attribution-pr1-foundation-security`** |
-| 2 | attribution-server.ts + proxy.ts wiring + register/trippers-active/mode routes + AuthModal picker | PR2 | Depends on PR1's module + claim — NOT STARTED |
+| 2 | attribution-server.ts + proxy.ts wiring + register/trippers-active/mode routes + AuthModal picker | PR2 | Depends on PR1's module + claim — **DONE, branch `feature/tripper-attribution-pr2-server-wiring`** |
 | 3 | Carousel flagging + by-type/journey wiring + AttributionModeBanner + i18n | PR3 | Depends on PR2's read APIs — NOT STARTED |
 
 ## Phase 1: Foundation + Security (blocking, must land first) — COMPLETE (9/9)
@@ -33,19 +33,19 @@ Decision needed before apply: RESOLVED — feature-branch-chain, PR1 = Phase 1 o
 - [x] 1.8 [RED/GREEN, mocked prisma] `getReferralClaim` behavior covered by `auth.jwt.test.ts` ("referredByTripperSlug claim" describe block, 4 tests): active tripper -> slug; deactivated referrer -> null; demoted (non-TRIPPER) referrer -> null; no referrer -> null.
 - [x] 1.9 Wired `ATTRIBUTION_ENABLED`: `isAttributionEnabled()` primitive added to `attribution.ts` (tested, 2 tests) + documented in `env.example` with the "off = never write/trust the cookie, base RandomTrip catalog only" contract. Scope note: the actual gating call-sites (proxy.ts cookie-write skip, Node read-site fallback) do not exist yet — that's PR2/PR3 scope, consuming `isAttributionEnabled()` at their respective gate points.
 
-## Phase 2: Server Wiring + APIs — NOT STARTED (separate PR, PR2)
+## Phase 2: Server Wiring + APIs — COMPLETE (11/11, PR2, branch `feature/tripper-attribution-pr2-server-wiring`)
 
-- [ ] 2.1 Create `src/lib/tripper/attribution-server.ts`: `readAttributionSlug`, `resolveLiveAttribution` (-> `getTripperJourneyContext`), `resolveReferrerId`, `stampReferral` (write-once + self-referral no-op, `updateMany`).
-- [ ] 2.2 [RED/GREEN, mocked prisma] `stampReferral`: no-op if already set, no-op if `referrerId===userId`. `resolveReferrerId`: inactive/non-tripper/missing->null.
-- [ ] 2.3 Modify `src/proxy.ts`: after i18n/canon, `getToken()` + read `?tripper=`/`/trippers/[slug]` + verify cookie -> `resolveAttribution()` -> Set-Cookie `grt_tripper`; gate under `ATTRIBUTION_ENABLED`.
-- [ ] 2.4 Manual-verification only (no middleware harness exists, do not build one): document QA steps for all 5 precedence rows in-browser.
-- [ ] 2.5 Create `src/app/api/trippers/active/route.ts`: GET -> `{trippers, current}` (`current` from httpOnly cookie, server-side).
-- [ ] 2.6 [Route test] `/api/trippers/active` happy path + empty list.
-- [ ] 2.7 Modify `src/app/api/auth/register/route.ts`: accept `referredByTripperSlug` (`undefined`->cookie fallback, `null`->None), validate ACTIVE tripper, call `stampReferral`.
-- [ ] 2.8 [Route test] register: valid/inactive/None/self-referral cases.
-- [ ] 2.9 Create `src/app/api/attribution/mode/route.ts`: POST toggles cookie only, never touches `referredByTripperId`.
-- [ ] 2.10 [Route test] mode route cookie-only behavior.
-- [ ] 2.11 Modify `AuthModal.tsx`: register `<select>` via `FormSelectField` (reuse, no hand-roll), fetch `/api/trippers/active`, `""`->`null` sentinel.
+- [x] 2.1 Create `src/lib/tripper/attribution-server.ts`: `readAttributionSlug`, `resolveLiveAttribution` (-> `getTripperJourneyContext`), `resolveReferrerId`, `stampReferral` (write-once + self-referral no-op, `updateMany`).
+- [x] 2.2 [RED/GREEN, mocked prisma] `stampReferral`: no-op if already set, no-op if `referrerId===userId`. `resolveReferrerId`: inactive/non-tripper/missing->null. Covered by `src/lib/tripper/__tests__/attribution-server.test.ts` (7 tests).
+- [x] 2.3 Modify `src/proxy.ts`: after i18n/canon, `getToken()` + read `?tripper=`/`/trippers/[slug]` + verify cookie -> `resolveAttribution()` -> Set-Cookie `grt_tripper`; gate under `ATTRIBUTION_ENABLED`. Applied uniformly to whichever response (i18n redirect / canon redirect / next()) is returned, not just the pass-through case.
+- [x] 2.4 Manual-verification only (no middleware harness exists, none built): QA steps documented in `apply-progress.md` PR2 section for all 5 precedence rows.
+- [x] 2.5 Create `src/app/api/trippers/active/route.ts`: GET -> `{trippers, current}` (`current` from httpOnly cookie, server-side, only surfaced if it still matches an active tripper in the same response).
+- [x] 2.6 [Route test] `/api/trippers/active` happy path + empty list + stale-cookie-not-in-list case. `src/app/api/trippers/active/__tests__/route.test.ts` (3 tests).
+- [x] 2.7 Modify `src/app/api/auth/register/route.ts`: accept `referredByTripperSlug` (`undefined`->cookie fallback, `null`->None), validate ACTIVE tripper via `resolveReferrerId`, call `stampReferral`.
+- [x] 2.8 [Route test] register: valid/inactive/None/omitted-cookie-fallback/self-referral cases. Extended `src/app/api/auth/register/__tests__/route.test.ts` (+5 tests, 12 total).
+- [x] 2.9 Create `src/app/api/attribution/mode/route.ts`: POST toggles cookie only, never touches `referredByTripperId` (no Prisma import in the file at all).
+- [x] 2.10 [Route test] mode route cookie-only behavior. `src/app/api/attribution/mode/__tests__/route.test.ts` (4 tests).
+- [x] 2.11 Modify `AuthModal.tsx`: register `<select>` via `FormSelectField` (reuse, no hand-roll), fetch `/api/trippers/active`, `""`->`null` sentinel. New `auth.referredByLabel`/`auth.referredByNoneOption` dictionary keys added to both `es.json`/`en.json` + `dictionary.ts`.
 
 ## Phase 3: Carousel + Page Wiring + Banner — NOT STARTED (separate PR, PR3)
 

@@ -992,7 +992,9 @@
     "forgotSentGeneric": "If an account exists for that email, we sent a reset link.",
     "passwordPolicyHint": "Min. 8 characters, at least one letter and one number.",
     "forgotPasswordLink": "Forgot password?",
-    "keepLoggedIn": "Keep me logged in"
+    "keepLoggedIn": "Keep me logged in",
+    "referredByLabel": "Were you referred by a tripper?",
+    "referredByNoneOption": "None"
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verifying your email…",

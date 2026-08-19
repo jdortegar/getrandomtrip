@@ -19,7 +19,13 @@ branches:
   pr1: feature/tripper-attribution-pr1-foundation-security
   pr1_pr_url: https://github.com/jdortegar/getrandomtrip/pull/123
   pr1_status: open (committed 289a5886, pushed, PR opened against tracker)
-  pr2: not yet created
+  pr2: feature/tripper-attribution-pr2-server-wiring
+  pr2_pr_url: https://github.com/jdortegar/getrandomtrip/pull/124
+  pr2_status: open (committed 6fda1ae0, pushed, PR opened against PR1 branch,
+    stacked). 8 review findings fixed pre-commit across two independent
+    adversarial review passes (second pass hit an account spend limit
+    mid-run; findings from the first pass were independently verified
+    directly in code and via full test suite before commit).
   pr3: not yet created
 size_exception:
   status: not_applicable
@@ -49,7 +55,7 @@ artifacts:
   tasks_origin: sdd/tripper-attribution/tasks (engram #542, historical)
   apply_progress: openspec/changes/tripper-attribution/apply-progress.md
   apply_progress_origin: sdd/tripper-attribution/apply-progress (engram #543, historical; PR1/Phase 1 only)
-updated: 2026-08-18
+updated: 2026-08-18 (PR2)
 strict_tdd: true
 migration_note: >-
   This repo uses `prisma db push`; prisma/migrations/ is empty/untracked
@@ -58,11 +64,13 @@ migration_note: >-
 repo_rules_binding:
   - .claude/rules/i18n-and-types.md — every new user-visible string needs es AND
     en dictionary entries in the same change, plus a type addition in
-    src/lib/types/dictionary.ts. Applies to PR3 (register picker, carousel
-    fallback label, banner copy) — not yet reached.
+    src/lib/types/dictionary.ts. PR2's register-picker copy
+    (auth.referredByLabel/auth.referredByNoneOption) satisfied this in both
+    locales + dictionary.ts. PR3 (carousel fallback label, banner copy) not
+    yet reached.
   - .claude/rules/component-patterns.md — reuse existing UI primitives
-    (FormField/FormSelectField); do not hand-roll form controls. Applies to
-    PR2's AuthModal picker.
+    (FormField/FormSelectField); do not hand-roll form controls. PR2's
+    AuthModal picker uses FormSelectField, satisfied.
 verified_facts:
   date: 2026-08-18
   notes:
@@ -238,3 +246,20 @@ revisions:
       this state.yaml and the sibling .md files were backfilled from the 6
       engram observations that existed at that point, at the user's request
       to switch from engram-only to openspec-only artifact storage.
+  - artifact: apply (PR2)
+    date: 2026-08-18
+    note: >
+      Implemented Phase 2 (11/11 tasks) on branch
+      feature/tripper-attribution-pr2-server-wiring, off PR1's branch (already
+      merged into this branch's history). Strict TDD throughout — every
+      mockable unit (attribution-server.ts, all three new/modified route
+      handlers) had a RED test confirmed against the pre-implementation state
+      before GREEN. proxy.ts and AuthModal.tsx have no dedicated unit tests,
+      matching the design's own testing-strategy scoping (no middleware
+      harness, no AuthModal test precedent to follow). One deliberate design
+      deviation: proxy.ts applies the attribution cookie decision to i18n/canon
+      redirect responses too, not only the NextResponse.next() pass-through,
+      so a ?tripper= param on a redirected request doesn't need a second
+      round-trip to take effect. Full regression suite green (206 files/1506
+      tests, +25 vs PR1), typecheck clean. npm run lint remains broken
+      repo-wide for the same pre-existing reason noted in PR1.

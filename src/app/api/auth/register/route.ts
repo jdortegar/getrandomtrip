@@ -9,12 +9,18 @@ import {
   consumeAccessInvite,
 } from "@/lib/auth/accessInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
+import {
+  readAttributionSlug,
+  resolveReferrerId,
+  stampReferral,
+} from "@/lib/tripper/attribution-server";
 import type { UserRole } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password, inviteToken } = body;
+    const { name, email, password, inviteToken, referredByTripperSlug } =
+      body;
 
     // Validate input. These are stable codes, not display text — clients
     // map them to localized copy (see registerErrorMessage).
@@ -95,6 +101,29 @@ export async function POST(request: NextRequest) {
       await consumeAccessInvite(inviteToken);
       await prisma.waitlistEntry.deleteMany({ where: { email } });
     }
+
+    // Referral capture at signup (spec "Referral Capture at Signup",
+    // auth-verification delta): `undefined` -> fall back to the anonymous
+    // `grt_tripper` cookie; explicit `null` -> "None", never consult the
+    // cookie; a string -> the register `<select>`'s submitted slug. Any
+    // slug that fails to resolve to an ACTIVE tripper (deactivated/unknown)
+    // is silently dropped — the account is still created, just unattributed.
+    // `referredByTripperSlug` comes straight off the untyped JSON body — a
+    // client sending anything other than `null` or a string (e.g. a number
+    // or object) must never reach the Prisma `where: { tripperSlug }` filter
+    // below (that would throw a Prisma validation error and 500 an otherwise
+    // valid signup). Treat any such malformed value the same as "absent":
+    // fall back to the cookie.
+    const isValidReferralInput =
+      referredByTripperSlug === null ||
+      typeof referredByTripperSlug === "string";
+    const referralSlug: string | null = isValidReferralInput
+      ? referredByTripperSlug
+      : await readAttributionSlug();
+    const referrerId = referralSlug
+      ? await resolveReferrerId(referralSlug)
+      : null;
+    await stampReferral(user.id, referrerId);
 
     const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
     sendVerificationEmail(user.id, token); // fire-and-forget
