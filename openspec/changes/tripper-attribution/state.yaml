@@ -27,13 +27,13 @@ branches:
     mid-run; findings from the first pass were independently verified
     directly in code and via full test suite before commit).
   pr3: feature/tripper-attribution-pr3-carousel-ui
-  pr3_pr_url: not yet opened
-  pr3_status: implemented, uncommitted (working tree only, per instructions —
-    orchestrator to review diff and commit/push/open PR3 separately). All
-    12/12 Phase 3 tasks done. Full regression suite green (209 files/1538
-    tests), typecheck clean. Off branch
-    feature/tripper-attribution-pr2-server-wiring (PR1+PR2 code already
-    present in history).
+  pr3_pr_url: https://github.com/jdortegar/getrandomtrip/pull/125
+  pr3_status: open (committed 534d068b, pushed, PR opened against PR2 branch,
+    stacked). All 12/12 Phase 3 tasks plus the 3/3 Phase 3b risk-remediation
+    tasks done in the same commit (fixed pre-commit, mirroring PR2's
+    convention). Full regression suite green (211 files/1547 tests),
+    typecheck clean. Off branch feature/tripper-attribution-pr2-server-wiring
+    (PR1+PR2 code already present in history).
 size_exception:
   status: not_applicable
   reason: Chained delivery was chosen specifically to avoid needing a size exception.
