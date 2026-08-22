@@ -58,8 +58,8 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
         className="absolute left-0 top-0 h-px w-px"
       />
 
-      {/* Full-bleed hero with background image (70vh cap) */}
-      <div className="relative h-[70vh] w-full overflow-hidden">
+      {/* Full-bleed hero with background image (70vh floor, grows with content) */}
+      <div className="relative min-h-[70vh] w-full overflow-hidden">
         <SafeImage
           alt={bannerAlt}
           className="object-cover"
@@ -72,16 +72,17 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
         <div className="absolute inset-0 bg-linear-to-b from-slate-950/50 to-slate-950/80" />
 
         {/* Centered content block: avatar left, text right */}
-        <div className="absolute inset-0 flex items-center justify-center px-4">
-          <div className="rt-container flex flex-col items-center gap-8 md:flex-row md:items-end md:justify-left lg:gap-12">
+        {/* pt clears the absolute h-16 Navbar overlaid on top of the hero */}
+        <div className="relative z-10 flex min-h-[70vh] items-center justify-center px-4 pb-10 pt-24 sm:pb-16 sm:pt-28 md:pb-20 md:pt-28">
+          <div className="rt-container flex flex-col items-center gap-4 sm:gap-8 md:flex-row md:items-end md:justify-left lg:gap-12">
             {/* Circular profile image with white border */}
-            <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl md:h-52 md:w-52">
+            <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl sm:h-40 sm:w-40 md:h-52 md:w-52">
               <SafeImage
                 alt={`Retrato de ${tripperName || "tripper"}`}
                 className="object-cover"
                 fill
                 priority
-                sizes="(max-width: 768px) 160px, 208px"
+                sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 208px"
                 src={avatarSrc}
               />
             </div>
@@ -101,11 +102,11 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
                 </div>
               )}
 
-              <h1 className="mb-4 font-barlow-condensed font-extrabold leading-none text-7xl uppercase text-white sm:text-5xl md:text-7xl">
+              <h1 className="mb-4 font-barlow-condensed font-extrabold leading-none text-4xl uppercase text-white sm:text-5xl md:text-7xl">
                 {tripperName}
               </h1>
               {tripperBio && (
-                <p className="mb-4 max-w-xl font-barlow text-base font-normal leading-relaxed text-white">
+                <p className="mb-4 max-w-xl font-barlow text-sm font-normal leading-relaxed text-white sm:text-base">
                   {tripperBio}
                 </p>
               )}

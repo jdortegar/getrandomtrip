@@ -97,7 +97,7 @@ export default function TripperPlanner({
       subtitle={`${tripperData.name} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.`}
       title={`Planificá tu Randomtrip con ${firstName}`}
     >
-      <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-16">
+      <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-4 sm:px-6 lg:px-8">
         {/* Countries + expertise */}
         <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
           <div className="flex flex-col items-center">
