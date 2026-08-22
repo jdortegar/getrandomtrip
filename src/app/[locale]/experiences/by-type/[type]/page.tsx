@@ -13,9 +13,14 @@ import {
 } from "@/lib/data/traveler-types";
 import { getReviewsForTripType } from "@/lib/db/tripper-queries";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
+import { getEffectiveTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import {
+  readAttributionSlug,
+  resolveLiveAttribution,
+} from "@/lib/tripper/attribution-server";
 
 /**
  * Generate static paths for all traveler types and their aliases.
@@ -52,8 +57,10 @@ export async function generateMetadata(props: {
  */
 export default async function TravelerTypePage(props: {
   params: Promise<{ locale?: string; type: string }>;
+  searchParams: Promise<{ catalog?: string }>;
 }) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const locale = hasLocale(params.locale)
     ? (params.locale as Locale)
     : ("es" as Locale);
@@ -63,9 +70,32 @@ export default async function TravelerTypePage(props: {
     notFound();
   }
 
-  const dict = await getDictionary(locale);
+  // `?catalog=randomtrip` is a per-request, reversible opt-out into base
+  // RandomTrip pricing — read here by the page, not by the proxy, so it
+  // never touches the `grt_tripper` cookie itself (design ADR-8).
+  //
+  // The attribution resolution (cookie read + possible DB call) doesn't
+  // depend on, and isn't depended on by, `getDictionary`/
+  // `getReviewsForTripType` — all three ran sequentially before (review
+  // finding #10). Both `getDictionary` (a bundled JSON import) and
+  // `getReviewsForTripType` (catches its own DB errors internally, see
+  // `tripper-queries.ts`) never reject in practice, and `resolveLiveAttribution`
+  // now catches its own errors too (review finding #7) — so a plain
+  // `Promise.all` is correct here, not `allSettled`.
+  const catalogOptOut = searchParams?.catalog === "randomtrip";
+  const [tripperContext, dict, testimonials] = await Promise.all([
+    catalogOptOut
+      ? Promise.resolve(null)
+      : readAttributionSlug().then((slug) => resolveLiveAttribution(slug)),
+    getDictionary(locale),
+    getReviewsForTripType(typeData.meta.slug),
+  ]);
+  const priceOverrides = getEffectiveTripperPriceOverrides(
+    tripperContext,
+    typeData.meta.slug,
+  );
+
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
-  const testimonials = await getReviewsForTripType(typeData.meta.slug);
   const blogHref = pathForLocale(locale, "/blog");
   const viewAll = typeData.blog.viewAll
     ? {
@@ -86,7 +116,11 @@ export default async function TravelerTypePage(props: {
         id={`${typeData.meta.slug}-story`}
       />
       <TypePlanner
-        content={getPlannerContentForType(typeData.meta.slug, locale)}
+        content={getPlannerContentForType(
+          typeData.meta.slug,
+          locale,
+          priceOverrides,
+        )}
         itemsPerView={3}
         type={typeData.meta.slug as TravelerTypeSlug}
         navigateOnCardClick={true}

@@ -101,14 +101,17 @@ interface JourneyMainContentProps {
     }
   >;
   /**
-   * When defined (curated journey), only these travel type keys are shown.
-   * When undefined, all types are shown (direct journey — current behavior).
+   * When defined (curated journey), the types this tripper actually offers —
+   * every type still renders in the carousel, badged "BY TRIPPER {name}"
+   * when in this list or "RANDOMTRIP" (base pricing) when not. When
+   * undefined, all types render tripper-badge-free (direct journey).
    */
   allowedTypes?: string[];
   /**
-   * When defined (curated journey), maps each type key to the allowed level ids.
-   * Threaded into BudgetStep to filter level cards after type selection.
-   * When undefined, all levels are shown.
+   * When defined (curated journey), which levels of an offered type the
+   * tripper actually has ACTIVE content for — badge signal only (nothing is
+   * hidden on it). Threaded into BudgetStep's level cards so each one can be
+   * badged "BY TRIPPER {name}" or "BY RANDOMTRIP", same as the type carousel.
    */
   allowedLevelsByType?: Record<string, string[]>;
   className?: string;
@@ -608,18 +611,10 @@ export default function JourneyMainContent({
   const renderContent = () => {
     switch (activeTab) {
       case "budget": {
-        // In curated journeys, filter types to only what the tripper offers.
-        // When allowedTypes is undefined, pass the full list (direct journey).
-        const filteredTravelerTypes =
-          allowedTypes !== undefined
-            ? (localizedTravelerTypes ?? []).filter((t) =>
-                allowedTypes.includes(t.key),
-              )
-            : localizedTravelerTypes;
-
         return (
           <BudgetStep
             accordionValue={accordionValue}
+            allowedTypes={allowedTypes}
             allowedLevelsByType={allowedLevelsByType}
             tripperPriceOverrides={tripperPriceOverrides}
             experienceContent={getExperienceLabel(
@@ -640,7 +635,7 @@ export default function JourneyMainContent({
               browseGeneralExperiences: labels.browseGeneralExperiences,
             }}
             locale={locale}
-            localizedTravelerTypes={filteredTravelerTypes}
+            localizedTravelerTypes={localizedTravelerTypes}
             minimizeAllFeatures
             onAccordionValueChange={setAccordionValue}
             selectedExperienceLevel={url.experience}
@@ -648,10 +643,11 @@ export default function JourneyMainContent({
             travelerType={url.travelType as TravelerTypeSlug}
             travelTypeContent={getTravelTypeLabel(
               url.travelType,
-              filteredTravelerTypes,
+              localizedTravelerTypes,
               labels.travelTypePlaceholder,
             )}
             tripperBadge={tripperBadge}
+            tripperSlug={tripperSlug}
           />
         );
       }

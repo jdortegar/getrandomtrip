@@ -31,5 +31,13 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     id: string;
+    /**
+     * Referring tripper's slug (design ADR-5), re-derived server-side in the
+     * `jwt()` callback on every sign-in — NEVER trust a client-supplied value
+     * for this claim (design ADR-6). `undefined` = pre-deploy token (leave
+     * the anonymous cookie alone); explicit `null` = confirmed no referrer
+     * (force-clear the cookie).
+     */
+    referredByTripperSlug?: string | null;
   }
 }

@@ -23,10 +23,14 @@ interface TravelerTypeCardProps {
   href?: string;
   imageUrl?: string;
   onClick?: () => void;
+  /** Localized "BY TRIPPER" label shown above the tripper's name in `tripperBadge`. Required whenever `tripperBadge` is set. */
+  byTripperLabel?: string;
   selected?: boolean;
   title?: string;
   /** When defined (curated journey), renders tripper attribution mid-card. */
   tripperBadge?: { name: string; avatarUrl: string | null };
+  /** When set (and `tripperBadge` is not), renders the RandomTrip isologo + this label ("BY RANDOMTRIP") instead — this type/level isn't offered by the attributed tripper, but is still bookable through RandomTrip's own catalog. */
+  randomtripBadgeLabel?: string;
   width?: number;
   /** When true, the card content is wrapped to the top of the card. */
   wrapped?: boolean;
@@ -43,9 +47,11 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   imageUrl: imageUrlProp,
   item,
   onClick,
+  byTripperLabel,
   selected = false,
   title: titleProp,
   tripperBadge,
+  randomtripBadgeLabel,
   width = 100,
   wrapped = false,
 }) => {
@@ -109,18 +115,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
         <ReviewBadge rating="4.6" />
 
-        <div
-          className={cn(
-            "absolute left-0 z-20 w-full p-5 @[200px]:pb-20 text-left text-white @sm:top-1/2",
-            {
-              "top-1/2": !wrapped,
-              "top-10": wrapped,
-            },
-          )}
-        >
-          {tripperBadge && (
-            <div className=" flex items-center gap-3 mb-3">
-              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-2 ring-white/40">
+        <div className="absolute inset-x-0 bottom-0 z-20 w-full p-5 text-left text-white">
+          {tripperBadge ? (
+            <div className="flex items-center gap-2 mb-1.5 @[200px]:gap-3 @[200px]:mb-3">
+              <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full ring-2 ring-white/40 @[200px]:h-10 @[200px]:w-10">
                 {tripperBadge.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -129,25 +127,41 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
                     src={tripperBadge.avatarUrl}
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-neutral-500 font-barlow-condensed text-lg font-bold text-white">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-neutral-500 font-barlow-condensed text-xs font-bold text-white @[200px]:text-lg">
                     {tripperBadge.name.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
               <div className="flex justify-start flex-col text-left">
-                <p className="font-barlow-condensed text-sm font-extrabold  uppercase leading-tight text-white">
-                  BY TRIPPER
+                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
+                  {byTripperLabel}
                 </p>
-                <p className="font-barlow-condensed text-sm font-extrabold uppercase leading-tight text-white">
+                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
                   {tripperBadge.name.toUpperCase()}
                 </p>
               </div>
             </div>
+          ) : (
+            randomtripBadgeLabel && (
+              <div className="flex items-center gap-2 mb-1.5 @[200px]:gap-3 @[200px]:mb-3">
+                <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-white/10 ring-2 ring-white/40 @[200px]:h-10 @[200px]:w-10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt="Randomtrip"
+                    className="h-full w-full object-cover"
+                    src="/assets/icons/isologo.png"
+                  />
+                </div>
+                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
+                  {randomtripBadgeLabel}
+                </p>
+              </div>
+            )
           )}
-          <h3 className="font-barlow-condensed text-2xl @[200px]:text-5xl font-extrabold uppercase leading-tight">
+          <h3 className="font-barlow-condensed text-xl lg:text-2xl @[250px]:text-xl @[400px]:text-5xl font-extrabold uppercase leading-tight">
             {title}
           </h3>
-          <p className="font-barlow text-base @[200px]:text-lg text-white/90">
+          <p className="font-barlow text-sm @[250px]:text-base @[400px]:text-lg text-white/90">
             {description}
           </p>
         </div>

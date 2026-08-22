@@ -7,7 +7,10 @@ import { TravelerTypesCarousel } from "@/components/landing/exploration/Traveler
 import TypePlanner from "@/components/by-type/TypePlanner";
 import { Button } from "@/components/ui/Button";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
-import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
+import {
+  getEffectiveTripperPriceOverrides,
+  type TripperPriceOverrides,
+} from "@/lib/pricing/tripper-price-overrides";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 
 type TravelerTypeCardOption = {
@@ -29,9 +32,20 @@ interface BudgetStepLabels {
 interface BudgetStepProps {
   accordionValue: string;
   /**
-   * When defined (curated journey), maps each type key to the allowed level ids.
-   * After a type is selected, only levels in this list are shown.
-   * When undefined, all levels are shown (current behavior).
+   * When defined (curated journey), the types this tripper actually offers
+   * (has an ACTIVE experience of). Gates `tripperPriceOverrides` so a price
+   * override never applies to a type the tripper doesn't offer, even if
+   * `travelerType` reaches this component outside the (also-filtered)
+   * type-picker — e.g. a stale/direct `?travelType=` param. When undefined
+   * (direct, non-curated journey), `tripperPriceOverrides` passes through
+   * unchanged.
+   */
+  allowedTypes?: string[];
+  /**
+   * When defined (curated journey), which levels of the selected type the
+   * tripper actually has ACTIVE content for — badge signal only, forwarded
+   * to each level card so it reads "BY TRIPPER {name}" or "BY RANDOMTRIP",
+   * same treatment as the type carousel. Nothing is ever hidden by this.
    */
   allowedLevelsByType?: Record<string, string[]>;
   experienceContent: string;
@@ -50,10 +64,13 @@ interface BudgetStepProps {
   tripperBadge?: { name: string; avatarUrl: string | null };
   /** This tripper's price overrides (curated journey). `null`/undefined for a direct journey. */
   tripperPriceOverrides?: TripperPriceOverrides | null;
+  /** Tripper slug (curated journey) — forwarded to the type-picker carousel so it can gate cards by `allowedTypes`. */
+  tripperSlug?: string;
 }
 
 export default function BudgetStep({
   accordionValue,
+  allowedTypes,
   allowedLevelsByType,
   experienceContent,
   handleExperienceSelect,
@@ -69,6 +86,7 @@ export default function BudgetStep({
   travelTypeContent,
   tripperBadge,
   tripperPriceOverrides,
+  tripperSlug,
 }: BudgetStepProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -81,25 +99,37 @@ export default function BudgetStep({
   }
 
   const hasTravelType = Boolean(travelerType);
-  const rawPlannerContent = hasTravelType
+  // Badge signal for TypePlanner/LevelCard — `undefined` means no tripper
+  // context at all (direct journey, no badges); a defined (possibly empty)
+  // list badges each level "BY TRIPPER {name}" or "BY RANDOMTRIP".
+  const allowedLevelIds = allowedLevelsByType
+    ? (allowedLevelsByType[travelerType as string] ?? [])
+    : undefined;
+  // Gate overrides by allowedTypes (when curated) rather than trusting
+  // travelerType to already be an offered type — the type-picker filters its
+  // own options to allowedTypes, but travelerType is read from the URL and
+  // can reach this component via a stale/direct `?travelType=` param that
+  // never went through that picker. Also gated per-level by allowedLevelIds
+  // so a "BY RANDOMTRIP"-badged level never shows the tripper's price.
+  const effectiveTripperPriceOverrides =
+    hasTravelType && allowedTypes !== undefined
+      ? getEffectiveTripperPriceOverrides(
+          { allowedTypes, priceOverrides: tripperPriceOverrides ?? null },
+          travelerType as TravelerTypeSlug,
+          allowedLevelIds,
+        )
+      : tripperPriceOverrides;
+  // Levels are never hidden — a level the tripper hasn't priced already
+  // falls back to RandomTrip's base price inside `getPlannerContentForType`
+  // (via `resolveBasePricePerPerson`), so every level for the selected type
+  // stays bookable.
+  const plannerContent = hasTravelType
     ? getPlannerContentForType(
         travelerType as TravelerTypeSlug,
         locale,
-        tripperPriceOverrides,
+        effectiveTripperPriceOverrides,
       )
     : null;
-
-  // Apply level filtering when a curated allowedLevelsByType is provided.
-  const plannerContent = (() => {
-    if (!rawPlannerContent) return null;
-    if (!allowedLevelsByType || !travelerType) return rawPlannerContent;
-    const allowedLevelIds = allowedLevelsByType[travelerType] ?? [];
-    // Empty allowedLevelIds = no levels available for this type in curated journey.
-    const filteredLevels = rawPlannerContent.levels.filter((l) =>
-      allowedLevelIds.includes(l.id),
-    );
-    return { ...rawPlannerContent, levels: filteredLevels };
-  })();
 
   // Force travel-type open until the user has made a selection
   const effectiveAccordionValue = !selectedTravelType
@@ -134,6 +164,7 @@ export default function BudgetStep({
           ) : (
             <TravelerTypesCarousel
               overflow="right"
+              availableTypes={allowedTypes}
               localizedTravelerTypes={localizedTravelerTypes}
               onSelect={(slug) => {
                 handleTravelTypeSelect(slug);
@@ -141,6 +172,7 @@ export default function BudgetStep({
               }}
               selectedTravelType={selectedTravelType}
               tripperBadge={tripperBadge}
+              tripperSlug={tripperSlug}
               wrapped
             />
           )}
@@ -160,11 +192,13 @@ export default function BudgetStep({
               </p>
               <TypePlanner
                 compact
+                allowedLevelIds={allowedLevelIds}
                 content={plannerContent}
                 itemsPerView={2}
                 minimizeAllFeatures={minimizeAllFeatures}
                 onSelect={handleExperienceSelect}
                 selectedLevel={selectedExperienceLevel}
+                tripperBadge={tripperBadge}
                 type={travelerType as TravelerTypeSlug}
                 cardClassName="min-h-[450px]!"
               />

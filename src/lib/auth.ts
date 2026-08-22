@@ -24,6 +24,42 @@ import {
   TRAVELER_INVITE_COOKIE,
   hasLiveTravelerInviteGrant,
 } from "@/lib/travelers/travelerInviteTokens";
+import {
+  readAttributionSlug,
+  resolveReferrerId,
+  stampReferral,
+} from "@/lib/tripper/attribution-server";
+
+/**
+ * Read-time liveness re-validation of the referring tripper (design
+ * ADR-5/ADR-6, spec "Read-Time Liveness Re-Validation"): emits the referrer's
+ * slug ONLY if that referrer is still `isActive` AND still holds the
+ * `TRIPPER` role. A deactivated or demoted referrer resolves to `null` here,
+ * exactly like an unset referrer — the claim is never trusted from a stale
+ * `referredByTripperId` alone.
+ */
+async function getReferralClaim(userId: string): Promise<string | null> {
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      referredBy: {
+        select: { tripperSlug: true, isActive: true, roles: true },
+      },
+    },
+  });
+
+  const referrer = dbUser?.referredBy;
+  if (
+    !referrer ||
+    !referrer.isActive ||
+    !referrer.tripperSlug ||
+    !referrer.roles.includes("TRIPPER")
+  ) {
+    return null;
+  }
+
+  return referrer.tripperSlug;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -170,6 +206,18 @@ export const authOptions: NextAuthOptions = {
         console.log("✅ Created new user from Google OAuth:", dbUser.id);
         sendWelcomeEmail(dbUser.id);
 
+        // Referral capture at signup (design ADR-5/spec "Referral Capture
+        // at Signup") also applies to the Google-OAuth new-user path, not
+        // just the credentials `/api/auth/register` route — otherwise a
+        // visitor referred by a tripper who signs up via "Continue with
+        // Google" never earns that tripper credit (write-once field, so
+        // this is the only chance). Reuses the exact same
+        // read-cookie -> resolve-active-referrer -> write-once-stamp
+        // pipeline as the register route.
+        const referralSlug = await readAttributionSlug();
+        const referrerId = await resolveReferrerId(referralSlug);
+        await stampReferral(dbUser.id, referrerId);
+
         if (grantAccess && inviteToken) {
           await consumeAccessInvite(inviteToken);
           await prisma.waitlistEntry.deleteMany({
@@ -213,11 +261,31 @@ export const authOptions: NextAuthOptions = {
             token.id = dbUser.id;
           }
         }
+
+        // Tripper attribution claim (design ADR-5) — computed once per
+        // sign-in, from the CURRENT DB state, never from client input.
+        token.referredByTripperSlug = await getReferralClaim(
+          token.id as string,
+        );
       }
 
-      // Handle session updates from client
-      if (trigger === "update" && clientSession) {
-        return { ...token, ...clientSession };
+      // Handle session updates from client (design ADR-6, SECURITY-BLOCKING):
+      // `clientSession` is attacker-controlled input (`update({...})` from
+      // any authenticated browser). A blanket `{ ...token, ...clientSession }`
+      // spread would let a client mint `referredByTripperSlug: "rival"` and
+      // silently steal another tripper's pricing/commission. Strip that key
+      // out of the spread unconditionally and recompute it from the DB in
+      // this same branch — `update()` is a cheap safety net, not the primary
+      // correctness path (the claim is already fresh from the `user`-present
+      // branch above on every sign-in).
+      if (trigger === "update") {
+        const { referredByTripperSlug: _drop, ...safe } = (clientSession ??
+          {}) as Record<string, unknown>;
+        return {
+          ...token,
+          ...safe,
+          referredByTripperSlug: await getReferralClaim(token.id as string),
+        };
       }
 
       return token;

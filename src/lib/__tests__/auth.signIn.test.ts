@@ -37,6 +37,12 @@ vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
   TRAVELER_INVITE_COOKIE: "grt_traveler_invite",
 }));
 
+vi.mock("@/lib/tripper/attribution-server", () => ({
+  readAttributionSlug: vi.fn(),
+  resolveReferrerId: vi.fn(),
+  stampReferral: vi.fn(),
+}));
+
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import {
@@ -44,6 +50,17 @@ import {
   consumeAccessInvite,
   resolveOAuthInviteGrant,
 } from "@/lib/auth/accessInviteTokens";
+import {
+  readAttributionSlug,
+  resolveReferrerId,
+  stampReferral,
+} from "@/lib/tripper/attribution-server";
+
+const readAttributionSlugMock = readAttributionSlug as ReturnType<
+  typeof vi.fn
+>;
+const resolveReferrerIdMock = resolveReferrerId as ReturnType<typeof vi.fn>;
+const stampReferralMock = stampReferral as ReturnType<typeof vi.fn>;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function makeCookieStore(value: string | undefined) {
@@ -175,6 +192,71 @@ describe("signIn() callback — OAuth create branch grantAccess/grantTripper spl
     expect(createArgs.data.siteAccessGrantedAt).toBeUndefined();
     expect(consumeAccessInvite).not.toHaveBeenCalled();
     expect(prisma.waitlistEntry.deleteMany).not.toHaveBeenCalled();
+  });
+});
+
+describe("signIn() callback — Google new-user creation stamps referral from the grt_tripper cookie (finding #4)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("a valid grt_tripper cookie at Google new-user creation results in referredByTripperId being stamped", async () => {
+    (cookies as ReturnType<typeof vi.fn>).mockResolvedValue(
+      makeCookieStore(undefined),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (resolveOAuthInviteGrant as ReturnType<typeof vi.fn>).mockReturnValue(
+      false,
+    );
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-6",
+      email: "gina@example.com",
+    });
+    readAttributionSlugMock.mockResolvedValue("carla");
+    resolveReferrerIdMock.mockResolvedValue("tripper-carla-id");
+
+    const signIn = await getSignInCallback();
+    const result = await signIn({
+      user: { email: "gina@example.com", name: "Gina", image: null },
+      account: { provider: "google" },
+    } as unknown as Parameters<typeof signIn>[0]);
+
+    expect(result).toBe(true);
+    expect(readAttributionSlugMock).toHaveBeenCalled();
+    expect(resolveReferrerIdMock).toHaveBeenCalledWith("carla");
+    expect(stampReferralMock).toHaveBeenCalledWith(
+      "user-6",
+      "tripper-carla-id",
+    );
+  });
+
+  it("no grt_tripper cookie at Google new-user creation stamps no referral", async () => {
+    (cookies as ReturnType<typeof vi.fn>).mockResolvedValue(
+      makeCookieStore(undefined),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (resolveOAuthInviteGrant as ReturnType<typeof vi.fn>).mockReturnValue(
+      false,
+    );
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "user-7",
+      email: "hank@example.com",
+    });
+    readAttributionSlugMock.mockResolvedValue(null);
+    resolveReferrerIdMock.mockResolvedValue(null);
+
+    const signIn = await getSignInCallback();
+    const result = await signIn({
+      user: { email: "hank@example.com", name: "Hank", image: null },
+      account: { provider: "google" },
+    } as unknown as Parameters<typeof signIn>[0]);
+
+    expect(result).toBe(true);
+    expect(stampReferralMock).toHaveBeenCalledWith("user-7", null);
   });
 });
 

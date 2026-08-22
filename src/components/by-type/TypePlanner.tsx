@@ -5,9 +5,20 @@ import Section from "@/components/layout/Section";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import LevelCard from "@/components/by-type/shared/LevelCard";
 import type { TypePlannerContent } from "@/types/planner";
-import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import {
+  normalizePriceLevelId,
+  type TravelerTypeSlug,
+} from "@/lib/data/traveler-types";
 
 interface TypePlannerProps {
+  /**
+   * Badge signal only (curated journey) — level ids the tripper actually has
+   * ACTIVE content for. `undefined` means no tripper context at all (no
+   * badges anywhere); a defined list (possibly empty) badges each level
+   * card "BY TRIPPER {name}" when included, "BY RANDOMTRIP" when not.
+   * Nothing is ever hidden by this.
+   */
+  allowedLevelIds?: string[];
   compact?: boolean;
   content: TypePlannerContent;
   minimizeAllFeatures?: boolean;
@@ -17,9 +28,12 @@ interface TypePlannerProps {
   type: TravelerTypeSlug;
   itemsPerView?: 2 | 3 | 4;
   cardClassName?: string;
+  /** Tripper branding — when defined alongside `allowedLevelIds`, shown on each offered level card. */
+  tripperBadge?: { name: string; avatarUrl: string | null };
 }
 
 export default function TypePlanner({
+  allowedLevelIds,
   compact = false,
   content,
   minimizeAllFeatures = false,
@@ -29,12 +43,27 @@ export default function TypePlanner({
   type,
   itemsPerView = 4,
   cardClassName,
+  tripperBadge,
 }: TypePlannerProps) {
   const [internalSelectedLevel, setInternalSelectedLevel] = useState<
     string | null
   >(null);
 
   const selectedLevel = externalSelectedLevel ?? internalSelectedLevel;
+
+  // `allowedLevelIds` comes from raw Prisma `Experience.level` values
+  // ("essenza", "explora", "atelier", ...); `level.id` is a `LevelSlug`
+  // ("modo-explora", "atelier-getaway", ...) — both must normalize to the
+  // same canonical `PriceLevelId` before comparing, or "explora"/"atelier"
+  // would never match and always read as RandomTrip's even when the tripper
+  // does offer them.
+  const normalizedAllowedLevelIds = allowedLevelIds
+    ? new Set(
+        allowedLevelIds
+          .map((id) => normalizePriceLevelId(id))
+          .filter((id): id is NonNullable<typeof id> => id !== null),
+      )
+    : undefined;
 
   const handleLevelSelect = (levelId: string) => {
     setInternalSelectedLevel(levelId);
@@ -50,6 +79,11 @@ export default function TypePlanner({
           // Featured state: exploraPlus or index 2
           const isFeatured = index === 2;
 
+          const tripperContext = normalizedAllowedLevelIds !== undefined;
+          const availableFromTripper =
+            normalizedAllowedLevelIds?.has(normalizePriceLevelId(level.id)!) ??
+            false;
+
           return (
             <div className=" w-full min-w-0 py-3" key={level.id}>
               <LevelCard
@@ -59,7 +93,9 @@ export default function TypePlanner({
                 navigateOnCardClick={navigateOnCardClick}
                 onSelect={handleLevelSelect}
                 selected={selectedLevel === level.id}
+                showRandomtripBadge={tripperContext && !availableFromTripper}
                 travelerType={type}
+                tripperBadge={availableFromTripper ? tripperBadge : undefined}
                 variant={variant}
                 className={cardClassName}
               />

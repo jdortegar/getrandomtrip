@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GateAwareChrome } from "../GateAwareChrome";
@@ -65,13 +65,14 @@ function makeLocalStorageStub() {
 let container: HTMLDivElement;
 let root: Root;
 
-function render() {
+function render(banner?: ReactNode) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
     root.render(
       <GateAwareChrome
+        banner={banner}
         dict={{} as unknown as Dictionary}
         gateEnabled
         locale={"en" as Locale}
@@ -170,5 +171,36 @@ describe("GateAwareChrome — session-status guard (ADR 7)", () => {
     await flush();
 
     expect(window.localStorage.getItem(GATE_STORAGE_KEY)).toBe("1");
+  });
+});
+
+describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3)", () => {
+  it("renders the banner just inside normal chrome when gate is unlocked", async () => {
+    mockSessionState = {
+      data: { user: { hasSiteAccess: true, role: "traveler" } },
+      status: "authenticated",
+    };
+
+    render(<div data-testid="attribution-banner">banner</div>);
+    await flush();
+
+    expect(
+      container.querySelector('[data-testid="attribution-banner"]'),
+    ).not.toBeNull();
+  });
+
+  it("renders nothing extra when no banner prop is passed (AttributionModeBanner returning null)", async () => {
+    mockSessionState = {
+      data: { user: { hasSiteAccess: true, role: "traveler" } },
+      status: "authenticated",
+    };
+
+    render(undefined);
+    await flush();
+
+    expect(
+      container.querySelector('[data-testid="attribution-banner"]'),
+    ).toBeNull();
+    expect(container.querySelector('[data-testid="navbar"]')).not.toBeNull();
   });
 });

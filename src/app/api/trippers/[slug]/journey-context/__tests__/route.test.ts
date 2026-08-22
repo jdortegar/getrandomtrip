@@ -74,4 +74,17 @@ describe("GET /api/trippers/[slug]/journey-context", () => {
     const body = await response.json();
     expect(body).toEqual(context);
   });
+
+  it("returns 500 (not a false 404) when getTripperJourneyContext throws (review finding #7 — a transient DB error is not 'tripper not found')", async () => {
+    getTripperJourneyContextMock.mockRejectedValue(new Error("connection reset"));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const response = await GET(makeRequest() as any, {
+      params: Promise.resolve({ slug: "ana-lopez" }),
+    });
+
+    expect(response.status).toBe(500);
+    const body = await response.json();
+    expect(body).toEqual({ error: "Internal server error" });
+  });
 });

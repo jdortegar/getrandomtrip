@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import Link from "next/link";
+import { useDictionary } from "@/hooks/useDictionary";
 
 interface LevelCardProps {
   featured?: boolean;
@@ -29,7 +30,11 @@ interface LevelCardProps {
   navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
   selected?: boolean;
+  /** When set (and `tripperBadge` is not), renders the RandomTrip isologo + "BY RANDOMTRIP" — this level isn't offered by the attributed tripper, but is still bookable at RandomTrip's base price. */
+  showRandomtripBadge?: boolean;
   travelerType?: string;
+  /** Tripper branding — when defined, renders "BY TRIPPER {name}" on this card (curated journey, level the tripper actually offers). */
+  tripperBadge?: { name: string; avatarUrl: string | null };
   variant?: "light" | "dark";
   className?: string;
 }
@@ -54,12 +59,18 @@ export default function LevelCard({
   navigateOnCardClick = false,
   onSelect,
   selected = false,
+  showRandomtripBadge = false,
   travelerType,
+  tripperBadge,
   variant = "light",
   className,
 }: LevelCardProps) {
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
+  const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
+  const byRandomtripLabel = useDictionary(
+    (d) => d.journey.tripperBadge.byRandomtrip,
+  );
   const ctaHref = travelerType
     ? `/journey?travelType=${travelerType}&experience=${level.id}`
     : `/experiences/by-type/${level.id}`;
@@ -130,6 +141,20 @@ export default function LevelCard({
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
         </div>
+      )}
+
+      {/* Tripper / RandomTrip badge — text only, no avatar/isologo (dense card). */}
+      {(tripperBadge || showRandomtripBadge) && (
+        <p
+          className={cn(
+            "mb-2 text-center font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight @[250px]:mb-3 @[250px]:text-xs",
+            secondaryTextColor,
+          )}
+        >
+          {tripperBadge
+            ? `${byTripperLabel} ${tripperBadge.name}`
+            : byRandomtripLabel}
+        </p>
       )}
 
       {/* Eyebrow Text */}

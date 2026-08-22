@@ -992,7 +992,11 @@
     "forgotSentGeneric": "If an account exists for that email, we sent a reset link.",
     "passwordPolicyHint": "Min. 8 characters, at least one letter and one number.",
     "forgotPasswordLink": "Forgot password?",
-    "keepLoggedIn": "Keep me logged in"
+    "keepLoggedIn": "Keep me logged in",
+    "referredByLabel": "Were you referred by a tripper?",
+    "referredByPlaceholder": "Select an option",
+    "referredByNoneOption": "None",
+    "referredByRequired": "Select whether a tripper referred you, or \"None\", to continue."
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verifying your email…",
@@ -1268,6 +1272,11 @@
       "title": "This profile isn't available",
       "description": "{name} has paused their profile for now. You can explore other trippers in the meantime.",
       "ctaLabel": "See all trippers"
+    },
+    "travelerTypesSection": {
+      "eyebrow": "Traveler types",
+      "title": "Trips with {name}",
+      "subtitle": "Explore {name}'s packages by traveler type"
     }
   },
   "blogPage": {
@@ -2714,7 +2723,8 @@
     },
     "tripperBadge": {
       "curatedBy": "TRIP CURATED BY",
-      "byTripper": "BY TRIPPER"
+      "byTripper": "BY TRIPPER",
+      "byRandomtrip": "BY RANDOMTRIP"
     },
     "userNamePlaceholder": "User name",
     "meta": {
@@ -5103,5 +5113,12 @@
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"
+  },
+  "tripperAttribution": {
+    "visitRandomTripExperiences": "Visit RandomTrip experiences",
+    "bannerTripperModeMessage": "You're viewing experiences curated by {name}.",
+    "bannerRandomtripModeMessage": "You're viewing general RandomTrip experiences.",
+    "bannerSwitchToRandomtrip": "View general RandomTrip experiences",
+    "bannerSwitchToTripper": "Switch back to {name}'s experiences"
   }
 }

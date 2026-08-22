@@ -1,0 +1,123 @@
+/**
+ * Node-only tripper attribution primitives (design "Two-file module split").
+ *
+ * Companion to `src/lib/tripper/attribution.ts` (Edge-safe). This file is
+ * free to import Prisma and `next/headers` because it is NEVER imported from
+ * `src/proxy.ts` (Edge runtime) — only from Node read sites (server
+ * components, route handlers, `signIn`'s Google-create branch).
+ *
+ * The cookie/JWT value is a pointer, never an authority — every
+ * price/referral-affecting read goes through `getTripperJourneyContext` here
+ * to re-validate liveness (spec "Read-Time Liveness Re-Validation").
+ */
+
+import { cache } from "react";
+import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import {
+  GRT_TRIPPER_COOKIE,
+  GRT_TRIPPER_LAST_SEEN_COOKIE,
+  getAttributionSecret,
+  verifyAttribution,
+} from "@/lib/tripper/attribution";
+import { getTripperJourneyContext } from "@/lib/db/tripper-queries";
+import type { TripperJourneyContext } from "@/types/tripper";
+
+/**
+ * Reads and verifies the `grt_tripper` cookie server-side (Node read sites
+ * only — Server Components, Route Handlers). Returns `null` on any missing,
+ * malformed, tampered, or expired cookie — identical treatment to "no
+ * cookie" per `verifyAttribution`'s contract.
+ *
+ * Wrapped in React's `cache()` (risk flagged after the initial PR3 apply
+ * batch): `AttributionModeBanner` (layout.tsx) and a page's own attribution
+ * read (`by-type/page.tsx`, `journey/page.tsx`) each call this
+ * independently within the same request — `cache()` dedupes the cookie
+ * read + HMAC verify to once per request. Outside an active Next.js request
+ * render (e.g. plain unit tests) it transparently falls back to calling
+ * straight through every time — no memoization, but no different result.
+ */
+export const readAttributionSlug = cache(async (): Promise<string | null> => {
+  const raw = (await cookies()).get(GRT_TRIPPER_COOKIE)?.value;
+  return verifyAttribution(raw, getAttributionSecret());
+});
+
+/**
+ * Reads and verifies the separate, longer-lived `grt_tripper_last_seen`
+ * cookie (review finding #4) — survives the mode-toggle's "switch to
+ * RandomTrip" action (which only clears `grt_tripper`), so
+ * `AttributionModeBanner` can still offer "switch back to {name}" on a
+ * fresh render even when there is no live pricing cookie. Never used for
+ * pricing/referral decisions — UI-only.
+ */
+export const readLastSeenTripperSlug = cache(
+  async (): Promise<string | null> => {
+    const raw = (await cookies()).get(GRT_TRIPPER_LAST_SEEN_COOKIE)?.value;
+    return verifyAttribution(raw, getAttributionSecret());
+  },
+);
+
+/**
+ * Re-validates a slug's liveness via `getTripperJourneyContext` and returns
+ * the branding/pricing context only when the tripper is still `ok`
+ * (active + found). `not_found`/`inactive` collapse to `null` — the caller
+ * falls back to the base RandomTrip catalog, never a stale price.
+ *
+ * `getTripperJourneyContext` now re-throws on an unexpected DB error instead
+ * of swallowing it into `{ status: "not_found" }` (review finding #7 — that
+ * swallowing used to get memoized by `cache()` for the rest of the request).
+ * This call site is where that error is actually handled: caught here (not
+ * inside the cached function) so the failure never gets memoized, and this
+ * specific caller still degrades to "no attribution" for THIS call only —
+ * a fresh call later in the same request can still succeed.
+ */
+export async function resolveLiveAttribution(
+  slug: string | null,
+): Promise<TripperJourneyContext | null> {
+  if (!slug) return null;
+  try {
+    const result = await getTripperJourneyContext(slug);
+    return result.status === "ok" ? result.context : null;
+  } catch (error) {
+    console.error("resolveLiveAttribution: getTripperJourneyContext threw", error);
+    return null;
+  }
+}
+
+/**
+ * Resolves a tripper slug to its `User.id`, ONLY if that tripper is still
+ * ACTIVE and holds the TRIPPER role — used at registration to validate the
+ * selected referrer before writing `referredByTripperId`.
+ */
+export async function resolveReferrerId(
+  slug: string | null | undefined,
+): Promise<string | null> {
+  if (!slug) return null;
+
+  const tripper = await prisma.user.findUnique({
+    where: { tripperSlug: slug, roles: { has: "TRIPPER" } },
+    select: { id: true, isActive: true },
+  });
+
+  if (!tripper || !tripper.isActive) return null;
+  return tripper.id;
+}
+
+/**
+ * Write-once, self-referral-safe stamp of `referredByTripperId` (mirrors
+ * `stampSiteAccess`, `src/lib/auth/accessInviteTokens.ts:139-144`).
+ * `updateMany`, not `update` — `update`'s `where` only accepts unique
+ * fields, so the `referredByTripperId: null` write-once guard is illegal
+ * there.
+ */
+export async function stampReferral(
+  userId: string,
+  referrerId: string | null,
+): Promise<void> {
+  if (!referrerId || referrerId === userId) return;
+
+  await prisma.user.updateMany({
+    where: { id: userId, referredByTripperId: null },
+    data: { referredByTripperId: referrerId },
+  });
+}
