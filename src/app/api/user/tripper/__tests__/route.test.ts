@@ -105,6 +105,68 @@ describe("PATCH /api/user/tripper — commission lockdown", () => {
   });
 });
 
+describe("PATCH /api/user/tripper — tripperSlug format validation", () => {
+  let PATCH: RouteModule["PATCH"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      name: "Some Tripper",
+      roles: ["TRAVELER"],
+    });
+    (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (prisma.user.update as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "tripper-1",
+      roles: ["TRAVELER", "TRIPPER"],
+      tripperSlug: "j-doe",
+      availableTypes: ["classic"],
+    });
+    const mod = (await import("../route")) as RouteModule;
+    PATCH = mod.PATCH;
+  });
+
+  it("rejects a slug containing a dot (would break the signed attribution cookie's dot-delimited parsing)", async () => {
+    const res = await PATCH(
+      makeRequest({ tripperSlug: "j.doe", availableTypes: ["classic"] }),
+    );
+    expect(res.status).toBe(400);
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects a slug with uppercase letters", async () => {
+    const res = await PATCH(
+      makeRequest({ tripperSlug: "JDoe", availableTypes: ["classic"] }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a slug with a leading dash", async () => {
+    const res = await PATCH(
+      makeRequest({ tripperSlug: "-jdoe", availableTypes: ["classic"] }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("rejects a slug with a double dash", async () => {
+    const res = await PATCH(
+      makeRequest({ tripperSlug: "j--doe", availableTypes: ["classic"] }),
+    );
+    expect(res.status).toBe(400);
+  });
+
+  it("accepts a valid lowercase-alphanumeric-and-dash slug", async () => {
+    const res = await PATCH(
+      makeRequest({ tripperSlug: "j-doe-2", availableTypes: ["classic"] }),
+    );
+    expect(res.status).toBe(200);
+  });
+});
+
 describe("PATCH /api/user/tripper — tripperSince", () => {
   let PATCH: RouteModule["PATCH"];
 

@@ -7,6 +7,7 @@ import SyncLocale from "@/components/providers/SyncLocale";
 import AppTracking from "@/components/tracking/AppTracking";
 import { Toaster } from "@/components/ui/toaster";
 import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
+import { AttributionModeBanner } from "@/components/tripper/AttributionModeBanner";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { isGateEnabled } from "@/lib/siteSettings";
@@ -42,7 +43,16 @@ export default async function LocaleLayout(props: {
       <Suspense fallback={null}>
         <AppTracking />
       </Suspense>
-      <GateAwareChrome dict={dict} gateEnabled={gateEnabled} locale={localeTyped}>
+      <GateAwareChrome
+        banner={
+          <Suspense fallback={null}>
+            <AttributionModeBanner copy={dict.tripperAttribution} />
+          </Suspense>
+        }
+        dict={dict}
+        gateEnabled={gateEnabled}
+        locale={localeTyped}
+      >
         {children}
       </GateAwareChrome>
       <GlobalAuthModal dict={dict} />

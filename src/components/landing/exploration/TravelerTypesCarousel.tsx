@@ -7,6 +7,7 @@ import {
   cardDataToCardItem,
   filterCarouselCards,
   getCarouselCardOptions,
+  resolveCarouselCardHref,
 } from "@/lib/utils/experiencesData";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { motion } from "framer-motion";
@@ -46,6 +47,10 @@ export function TravelerTypesCarousel({
 }: TravelerTypesCarouselProps) {
   const locale = useLocale();
   const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
+  const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
+  const randomtripBadgeLabel = useDictionary(
+    (d) => d.journey.tripperBadge.byRandomtrip,
+  );
 
   const cards = getCarouselCardOptions(locale, {
     localizedTravelerTypes,
@@ -56,10 +61,6 @@ export function TravelerTypesCarousel({
     availableTypes,
     tripperContext,
   });
-
-  if (tripperContext && typesToShow.length === 0) {
-    return null;
-  }
 
   return (
     <motion.div
@@ -79,17 +80,23 @@ export function TravelerTypesCarousel({
               fill
               className="aspect-3/4"
               comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
-              href={
-                isComingSoon
-                  ? undefined
-                  : `/experiences/by-type/${slugify(type.key)}`
-              }
+              href={resolveCarouselCardHref(slugify(type.key), {
+                isComingSoon,
+                availableFromTripper: type.availableFromTripper,
+                tripperSlug,
+              })}
               item={cardDataToCardItem(type)}
               onClick={
                 onSelect && !isComingSoon ? () => onSelect(slug) : undefined
               }
               selected={selectedTravelType === slug}
-              tripperBadge={tripperBadge}
+              byTripperLabel={byTripperLabel}
+              tripperBadge={type.availableFromTripper ? tripperBadge : undefined}
+              randomtripBadgeLabel={
+                tripperContext && !type.availableFromTripper
+                  ? randomtripBadgeLabel
+                  : undefined
+              }
               wrapped={wrapped}
             />
           );

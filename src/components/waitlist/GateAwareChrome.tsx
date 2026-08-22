@@ -38,6 +38,8 @@ function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
 }
 
 interface GateAwareChromeProps {
+  /** Server-rendered pricing-mode banner (design ADR-9) — renders `null` when there is no live attribution to surface. */
+  banner?: React.ReactNode;
   children: React.ReactNode;
   dict: Dictionary;
   /** Global admin toggle (site_settings.gateEnabled). False = gate is fully
@@ -47,6 +49,7 @@ interface GateAwareChromeProps {
 }
 
 export function GateAwareChrome({
+  banner,
   children,
   dict,
   gateEnabled,
@@ -81,14 +84,17 @@ export function GateAwareChrome({
 
   const normalChrome = (
     <>
-      <Navbar
-        backgroundPrimary={navbarBackgroundPrimary}
-        dict={dict}
-        locale={locale}
-      />
-      <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
-        <main className="min-h-screen">{children}</main>
-      </NavbarChromeContext.Provider>
+      {banner}
+      <div className="relative">
+        <Navbar
+          backgroundPrimary={navbarBackgroundPrimary}
+          dict={dict}
+          locale={locale}
+        />
+        <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
+          <main className="min-h-screen">{children}</main>
+        </NavbarChromeContext.Provider>
+      </div>
       <Footer dict={dict} locale={locale} />
     </>
   );

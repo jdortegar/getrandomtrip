@@ -9,6 +9,7 @@ import {
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
 import { getXsedCard } from "@/lib/data/xsed-catalog";
+import type { CarouselCard } from "@/types/tripper";
 
 export type { TravelerTypeSlug };
 
@@ -81,7 +82,39 @@ export function getCarouselCardOptions(
 }
 
 /**
- * Filter cards for display: in tripper context only show availableTypes; otherwise show all (or filter by availableTypes if set).
+ * Normalized "does this tripper offer this type" check — single source of
+ * truth shared by `filterCarouselCards` (below) and the by-type page's
+ * price-override gate (`experiences/by-type/[type]/page.tsx`). Both call
+ * sites compare the same kind of data (`Experience.type`, a Prisma
+ * `String[]` that can mix casing, against a lowercase traveler-type slug),
+ * so both MUST use the identical lowercase+trim comparison — a
+ * case-sensitive check on one side and a normalized one on the other lets
+ * the carousel and the by-type page disagree about whether a type is
+ * "offered" (bug: carousel review finding #1).
+ */
+export function isTypeOffered(
+  allowedTypes: string[] | undefined | null,
+  slug: string,
+): boolean {
+  const normalizedSlug = slug.toLowerCase().trim();
+  return (allowedTypes ?? []).some(
+    (t) => String(t).toLowerCase().trim() === normalizedSlug,
+  );
+}
+
+/**
+ * Flags every card with `availableFromTripper` — never drops a card from the
+ * list (design "traveler-card.ts — flag, do not drop"; spec "Carousel
+ * Attribution-Aware Fallback Cards"). Non-tripper context: every card is
+ * flagged `true` (identity behaviour preserved — the carousel renders
+ * exactly as it always did outside a tripper's context). Tripper context:
+ * each card is flagged by whether its key is in `availableTypes`, so the
+ * caller (`TravelerTypesCarousel`) can badge it "BY TRIPPER {name}" or
+ * "RANDOMTRIP" per card — a type the tripper doesn't offer still degrades
+ * to RandomTrip's own base-priced version rather than disappearing (a
+ * dedicated "browse everything" catch-all card was tried and reverted —
+ * it read as a second, competing escape hatch alongside the attribution
+ * banner's own toggle).
  */
 export function filterCarouselCards(
   cards: TravelerTypeCardData[],
@@ -89,14 +122,45 @@ export function filterCarouselCards(
     availableTypes?: string[];
     tripperContext: boolean;
   },
-): TravelerTypeCardData[] {
+): CarouselCard[] {
   const { availableTypes, tripperContext } = options;
-  if (!availableTypes?.length) return cards;
-  const allowed = new Set(
-    availableTypes.map((t) => String(t).toLowerCase().trim()),
-  );
-  if (tripperContext && allowed.size === 0) return [];
-  return cards.filter((t) => allowed.has(t.key.toLowerCase()));
+  if (!tripperContext) {
+    return cards.map((card) => ({ ...card, availableFromTripper: true }));
+  }
+  return cards.map((card) => ({
+    ...card,
+    availableFromTripper: isTypeOffered(availableTypes, card.key),
+  }));
+}
+
+/**
+ * Per-card carousel href (design ADR-8):
+ * - coming-soon types never link (`undefined`, blocks interaction).
+ * - available types keep `?tripper={slug}` when a slug is known, so a
+ *   copied/shared link self-heals attribution even if the cookie was
+ *   cleared — the proxy re-affirms the same value, not a second source of
+ *   truth.
+ * - unavailable types (tripper context only — `filterCarouselCards` never
+ *   flags a card unavailable outside tripper context) fall back to
+ *   `?catalog=randomtrip`, a per-request, reversible opt-out read by the
+ *   `by-type` page, never by the proxy — the cookie itself is left
+ *   untouched.
+ */
+export function resolveCarouselCardHref(
+  slug: string,
+  options: {
+    isComingSoon: boolean;
+    availableFromTripper: boolean;
+    tripperSlug?: string;
+  },
+): string | undefined {
+  const { isComingSoon, availableFromTripper, tripperSlug } = options;
+  if (isComingSoon) return undefined;
+  const base = `/experiences/by-type/${slug}`;
+  if (!availableFromTripper) return `${base}?catalog=randomtrip`;
+  return tripperSlug
+    ? `${base}?tripper=${encodeURIComponent(tripperSlug)}`
+    : base;
 }
 
 /** Shape TravelerTypeCard expects for its item prop. */

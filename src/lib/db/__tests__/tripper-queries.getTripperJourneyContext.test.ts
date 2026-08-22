@@ -96,6 +96,31 @@ describe("getTripperJourneyContext — three-way discriminated result", () => {
     }
   });
 
+  it("re-throws (does not swallow into not_found) when the DB call itself throws (review finding #7 — cache() must not memoize a false not_found)", async () => {
+    const dbError = new Error("connection reset");
+    findUniqueMock.mockRejectedValue(dbError);
+
+    await expect(getTripperJourneyContext("whoever")).rejects.toThrow(
+      "connection reset",
+    );
+  });
+
+  it("distinguishes 'tripper doesn't exist' (cacheable not_found) from 'DB threw' (must not poison the cache)", async () => {
+    // A genuine not-found — findUnique resolving to null — is NOT an error
+    // and must still resolve to a normal, cacheable `{ status: "not_found" }`.
+    findUniqueMock.mockResolvedValueOnce(null);
+    await expect(getTripperJourneyContext("truly-nobody")).resolves.toEqual({
+      status: "not_found",
+    });
+
+    // A thrown DB error for a DIFFERENT slug must propagate as a rejection,
+    // never collapse into the same `{ status: "not_found" }` shape.
+    findUniqueMock.mockRejectedValueOnce(new Error("transient blip"));
+    await expect(
+      getTripperJourneyContext("blipped-slug"),
+    ).rejects.toThrow("transient blip");
+  });
+
   it("resolves priceOverrides to null when the tripper has none set", async () => {
     findUniqueMock.mockResolvedValue({
       id: "u4",

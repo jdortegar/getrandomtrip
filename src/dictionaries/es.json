@@ -992,7 +992,11 @@
     "forgotSentGeneric": "Si existe una cuenta con ese email, te enviamos un enlace para restablecer la contraseña.",
     "passwordPolicyHint": "Mín. 8 caracteres, con al menos una letra y un número.",
     "forgotPasswordLink": "¿Olvidaste tu contraseña?",
-    "keepLoggedIn": "Mantenerme conectado"
+    "keepLoggedIn": "Mantenerme conectado",
+    "referredByLabel": "¿Te recomendó un tripper?",
+    "referredByPlaceholder": "Seleccioná una opción",
+    "referredByNoneOption": "Ninguno",
+    "referredByRequired": "Elegí si te recomendó un tripper o \"Ninguno\" para continuar."
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verificando tu email…",
@@ -1268,6 +1272,11 @@
       "title": "Este perfil no está disponible",
       "description": "{name} pausó su perfil por ahora. Podés explorar otros trippers mientras tanto.",
       "ctaLabel": "Ver todos los trippers"
+    },
+    "travelerTypesSection": {
+      "eyebrow": "Tipos de viajero",
+      "title": "Viajes con {name}",
+      "subtitle": "Explora los paquetes de {name} por tipo de viajero"
     }
   },
   "blogPage": {
@@ -1306,7 +1315,8 @@
     },
     "tripperBadge": {
       "curatedBy": "VIAJE CURADO POR",
-      "byTripper": "BY TRIPPER"
+      "byTripper": "BY TRIPPER",
+      "byRandomtrip": "BY RANDOMTRIP"
     },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [
@@ -5103,5 +5113,12 @@
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"
+  },
+  "tripperAttribution": {
+    "visitRandomTripExperiences": "Visitar experiencias RandomTrip",
+    "bannerTripperModeMessage": "Estás viendo experiencias curadas por {name}.",
+    "bannerRandomtripModeMessage": "Estás viendo experiencias generales de RandomTrip.",
+    "bannerSwitchToRandomtrip": "Ver experiencias generales de RandomTrip",
+    "bannerSwitchToTripper": "Volver a experiencias de {name}"
   }
 }
