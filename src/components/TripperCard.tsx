@@ -36,11 +36,11 @@ export default function TripperCard({
             style={{ objectFit: "cover" }}
             priority
           />
-          <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-8 py-6 bg-linear-to-t from-black/70 to-transparent">
-            <h3 className="font-barlow-condensed text-4xl font-extrabold uppercase wrap-break-word whitespace-normal">
+          <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-6 bg-linear-to-t from-black/70 to-transparent">
+            <h3 className="font-barlow-condensed text-lg leading-tight md:text-2xl lg:text-4xl font-extrabold uppercase wrap-break-word whitespace-normal">
               {name}
             </h3>
-            <div className="flex justify-between text-base text-white/90">
+            <div className="flex justify-between text-xs md:text-sm lg:text-base text-white/90 mt-1">
               <span>{`@${instagramUrl}`}</span>
               <span>Bio +</span>
             </div>
