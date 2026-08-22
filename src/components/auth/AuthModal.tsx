@@ -188,6 +188,10 @@ export default function AuthModal({
       setError(t?.invalidEmail ?? "");
       return false;
     }
+    if (mode === "register" && referredByTripperSlug === NOT_DECIDED_VALUE) {
+      setError(t?.referredByRequired ?? "");
+      return false;
+    }
     return true;
   };
 
@@ -320,10 +324,46 @@ export default function AuthModal({
   }, [email, password]);
 
   const handleGoogleSignIn = useCallback(async () => {
+    // Register mode requires the referring-tripper choice up front, same as
+    // the credentials path (validateForm) — Google's OAuth redirect can't
+    // carry this component's state through the round-trip, so an explicit
+    // pick (real slug or "None") is synced into the `grt_tripper` cookie via
+    // the same reviewed/CSRF-guarded endpoint the mode-toggle banner uses
+    // (`/api/attribution/mode`) right before handing off to Google. The
+    // signIn callback (`auth.ts`) then reads that cookie for the new account.
+    if (mode === "register") {
+      if (referredByTripperSlug === NOT_DECIDED_VALUE) {
+        setError(t?.referredByRequired ?? "");
+        return;
+      }
+      setIsLoading(true);
+      setError("");
+      try {
+        const syncResponse = await fetch("/api/attribution/mode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            referredByTripperSlug === NONE_OPTION_VALUE
+              ? { mode: "randomtrip" }
+              : { mode: "tripper", slug: referredByTripperSlug },
+          ),
+        });
+        if (!syncResponse.ok) {
+          setError(t?.loginFailed ?? "");
+          setIsLoading(false);
+          return;
+        }
+      } catch {
+        setError(t?.loginFailed ?? "");
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(false);
+    }
     trackCustomEvent({ event: mode === "register" ? "sign_up" : "login", method: "google" });
     // Use current page as callback - let the page handle what happens next
     await signIn("google", { callbackUrl: window.location.href });
-  }, [mode]);
+  }, [mode, referredByTripperSlug, t?.referredByRequired, t?.loginFailed]);
 
   const toggleMode = useCallback(() => {
     setMode(mode === "login" ? "register" : "login");
@@ -390,47 +430,56 @@ export default function AuthModal({
             </p>
           </div>
 
-          {/* Google Sign In */}
-          <Button
-            className="h-14 w-full bg-[#f2f3f8] text-base text-neutral-800 hover:bg-[#e9ebf3] border-neutral-200"
-            disabled={isLoading}
-            onClick={handleGoogleSignIn}
-            size="lg"
-            type="button"
-            variant="secondary"
-          >
-            <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            {t?.continueWithGoogle}
-          </Button>
+          {/* Google Sign In — hidden once the not-verified panel is active
+              (below): `auth.ts`'s Google signIn callback finds the just-
+              created account by email and, since it already exists, never
+              checks `emailVerified` at all — clicking it here would fully
+              authenticate the unverified account, silently bypassing the
+              verification gate this panel exists to enforce. */}
+          {errorKind !== "notVerified" && (
+            <>
+              <Button
+                className="h-14 w-full bg-[#f2f3f8] text-base text-neutral-800 hover:bg-[#e9ebf3] border-neutral-200"
+                disabled={isLoading}
+                onClick={handleGoogleSignIn}
+                size="lg"
+                type="button"
+                variant="secondary"
+              >
+                <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  />
+                </svg>
+                {t?.continueWithGoogle}
+              </Button>
 
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-5 text-neutral-400">
-                {t?.orContinueWith}
-              </span>
-            </div>
-          </div>
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-neutral-200" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white px-5 text-neutral-400">
+                    {t?.orContinueWith}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Not-verified panel — replaces the form while active */}
           {errorKind === "notVerified" ? (
@@ -531,8 +580,12 @@ export default function AuthModal({
                       onChange={(e) =>
                         setReferredByTripperSlug(e.target.value)
                       }
+                      required
                       value={referredByTripperSlug}
                     >
+                      <option disabled value={NOT_DECIDED_VALUE}>
+                        {t?.referredByPlaceholder}
+                      </option>
                       <option value={NONE_OPTION_VALUE}>
                         {t?.referredByNoneOption}
                       </option>

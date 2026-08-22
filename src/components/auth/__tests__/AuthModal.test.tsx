@@ -117,18 +117,48 @@ function mockFetchSequence(
         ),
       );
     }
+    if (url === "/api/attribution/mode") {
+      return Promise.resolve(
+        new Response(JSON.stringify({ ok: true }), { status: 200 }),
+      );
+    }
     return Promise.reject(new Error(`Unexpected fetch: ${url}`));
   });
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
 }
 
-function getRegisterRequestBody(fetchMock: ReturnType<typeof vi.fn>) {
-  const call = fetchMock.mock.calls.find(
-    (args: unknown[]) => args[0] === "/api/auth/register",
-  );
+function getRequestBody(fetchMock: ReturnType<typeof vi.fn>, url: string) {
+  const call = fetchMock.mock.calls.find((args: unknown[]) => args[0] === url);
   const body = call?.[1]?.body;
   return body ? JSON.parse(body) : null;
+}
+
+function getRegisterRequestBody(fetchMock: ReturnType<typeof vi.fn>) {
+  return getRequestBody(fetchMock, "/api/auth/register");
+}
+
+function queryGoogleButton(): HTMLButtonElement | null {
+  // Distinguish from the close button's lucide `X` icon, which also happens
+  // to use a 24x24 viewBox — target the Google "G" logo's distinctive path
+  // fill instead of the svg's viewBox.
+  return (container
+    .querySelector('svg path[fill="#4285F4"]')
+    ?.closest("button") ?? null) as HTMLButtonElement | null;
+}
+
+function getGoogleButton(): HTMLButtonElement {
+  return queryGoogleButton()!;
+}
+
+async function clickGoogleButton() {
+  await act(async () => {
+    getGoogleButton().dispatchEvent(
+      new MouseEvent("click", { bubbles: true }),
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 }
 
 beforeEach(() => {
@@ -147,8 +177,8 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("AuthModal register submit — referredByTripperSlug three-state picker (finding #3)", () => {
-  it("omits referredByTripperSlug entirely (undefined) when the user submits before the pre-fill fetch resolves", async () => {
+describe("AuthModal register submit — referredByTripperSlug mandatory picker", () => {
+  it("blocks submit and never calls /api/auth/register when the picker is still undecided", async () => {
     let resolveFetch!: (value: Response) => void;
     const pending = new Promise<Response>((resolve) => {
       resolveFetch = resolve;
@@ -161,9 +191,9 @@ describe("AuthModal register submit — referredByTripperSlug three-state picker
     fillRequiredFields();
     await submitForm();
 
-    const body = getRegisterRequestBody(fetchMock);
-    expect(body).not.toBeNull();
-    expect("referredByTripperSlug" in body).toBe(false);
+    expect(
+      fetchMock.mock.calls.some((args) => args[0] === "/api/auth/register"),
+    ).toBe(false);
 
     // Resolve the pending fetch after the fact so it doesn't leak between
     // tests, and so its state update is act()-wrapped like everything else.
@@ -176,6 +206,36 @@ describe("AuthModal register submit — referredByTripperSlug three-state picker
       await Promise.resolve();
       await Promise.resolve();
     });
+  });
+
+  it("still submits with the cookie-derived slug when the pre-fill fetch resolves before submit", async () => {
+    const fetchMock = mockFetchSequence(
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            trippers: [{ slug: "carla-diaz", name: "Carla Diaz" }],
+            current: "carla-diaz",
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    render(
+      <AuthModal defaultMode="register" isOpen onClose={() => {}} />,
+    );
+    fillRequiredFields();
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await submitForm();
+
+    const body = getRegisterRequestBody(fetchMock);
+    expect(body).not.toBeNull();
+    expect(body.referredByTripperSlug).toBe("carla-diaz");
   });
 
   it("sends explicit null when the user picks the None option", async () => {
@@ -245,5 +305,148 @@ describe("AuthModal register submit — referredByTripperSlug three-state picker
 
     const body = getRegisterRequestBody(fetchMock);
     expect(body.referredByTripperSlug).toBe("carla-diaz");
+  });
+});
+
+describe("AuthModal Google sign-in — mandatory picker gates the OAuth redirect too", () => {
+  it("blocks signIn(\"google\") and never calls the mode-sync endpoint when the picker is still undecided", async () => {
+    const fetchMock = mockFetchSequence(
+      Promise.resolve(
+        new Response(JSON.stringify({ trippers: [], current: null }), {
+          status: 200,
+        }),
+      ),
+    );
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await clickGoogleButton();
+
+    expect(
+      fetchMock.mock.calls.some((args) => args[0] === "/api/attribution/mode"),
+    ).toBe(false);
+    expect(signInMock).not.toHaveBeenCalled();
+  });
+
+  it("clears the live cookie via mode=randomtrip then calls signIn when the user picks None", async () => {
+    const fetchMock = mockFetchSequence(
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            trippers: [{ slug: "carla-diaz", name: "Carla Diaz" }],
+            current: null,
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const select = container.querySelector(
+      "#auth-referred-by-tripper",
+    ) as HTMLSelectElement;
+    setSelectValue(select, "none");
+
+    await clickGoogleButton();
+
+    const body = getRequestBody(fetchMock, "/api/attribution/mode");
+    expect(body).toEqual({ mode: "randomtrip" });
+    expect(signInMock).toHaveBeenCalledWith(
+      "google",
+      expect.objectContaining({ callbackUrl: expect.any(String) }),
+    );
+  });
+
+  it("sets the cookie to the picked slug via mode=tripper then calls signIn when the user selects a real tripper", async () => {
+    const fetchMock = mockFetchSequence(
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            trippers: [{ slug: "carla-diaz", name: "Carla Diaz" }],
+            current: null,
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const select = container.querySelector(
+      "#auth-referred-by-tripper",
+    ) as HTMLSelectElement;
+    setSelectValue(select, "carla-diaz");
+
+    await clickGoogleButton();
+
+    const body = getRequestBody(fetchMock, "/api/attribution/mode");
+    expect(body).toEqual({ mode: "tripper", slug: "carla-diaz" });
+    expect(signInMock).toHaveBeenCalledWith(
+      "google",
+      expect.objectContaining({ callbackUrl: expect.any(String) }),
+    );
+  });
+
+  it("does not gate login mode — signIn(\"google\") fires immediately with no picker/sync involved", async () => {
+    const fetchMock = mockFetchSequence(null);
+
+    render(<AuthModal defaultMode="login" isOpen onClose={() => {}} />);
+
+    await clickGoogleButton();
+
+    expect(
+      fetchMock.mock.calls.some((args) => args[0] === "/api/attribution/mode"),
+    ).toBe(false);
+    expect(signInMock).toHaveBeenCalledWith(
+      "google",
+      expect.objectContaining({ callbackUrl: expect.any(String) }),
+    );
+  });
+});
+
+describe("AuthModal not-verified panel — hides Google sign-in", () => {
+  it("removes the Google button once register lands on the not-verified panel", async () => {
+    mockFetchSequence(
+      Promise.resolve(
+        new Response(
+          JSON.stringify({
+            trippers: [{ slug: "carla-diaz", name: "Carla Diaz" }],
+            current: "carla-diaz",
+          }),
+          { status: 200 },
+        ),
+      ),
+    );
+    signInMock.mockResolvedValueOnce({ error: "EMAIL_NOT_VERIFIED" });
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+    fillRequiredFields();
+
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(queryGoogleButton()).not.toBeNull();
+
+    await submitForm();
+
+    expect(queryGoogleButton()).toBeNull();
   });
 });

@@ -47,8 +47,9 @@ export function TravelerTypesCarousel({
 }: TravelerTypesCarouselProps) {
   const locale = useLocale();
   const comingSoonLabel = useDictionary((d) => d.profile.comingSoon);
-  const fallbackLabel = useDictionary(
-    (d) => d.tripperAttribution.visitRandomTripExperiences,
+  const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
+  const randomtripBadgeLabel = useDictionary(
+    (d) => d.journey.tripperBadge.byRandomtrip,
   );
 
   const cards = getCarouselCardOptions(locale, {
@@ -73,7 +74,6 @@ export function TravelerTypesCarousel({
         {typesToShow.map((type) => {
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
-          const item = cardDataToCardItem(type);
           return (
             <TravelerTypeCard
               key={type.key}
@@ -85,16 +85,18 @@ export function TravelerTypesCarousel({
                 availableFromTripper: type.availableFromTripper,
                 tripperSlug,
               })}
-              item={
-                type.availableFromTripper
-                  ? item
-                  : { ...item, description: fallbackLabel }
-              }
+              item={cardDataToCardItem(type)}
               onClick={
                 onSelect && !isComingSoon ? () => onSelect(slug) : undefined
               }
               selected={selectedTravelType === slug}
+              byTripperLabel={byTripperLabel}
               tripperBadge={type.availableFromTripper ? tripperBadge : undefined}
+              randomtripBadgeLabel={
+                tripperContext && !type.availableFromTripper
+                  ? randomtripBadgeLabel
+                  : undefined
+              }
               wrapped={wrapped}
             />
           );

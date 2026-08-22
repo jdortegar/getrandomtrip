@@ -147,6 +147,7 @@ export default async function Page(props: {
       <HomeInfo content={homeInfoContent} />
       <TripperTravelerTypesSection
         availableTypes={availableTypesFromPackages}
+        avatarUrl={tripperData.avatarUrl}
         copy={dict.trippers.travelerTypesSection}
         tripperName={tripperData.name}
         tripperSlug={tripperData.tripperSlug}

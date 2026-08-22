@@ -7,6 +7,7 @@ export const TRIPPER_TRAVELER_TYPES_ANCHOR_ID = "tripper-traveler-types";
 
 interface TripperTravelerTypesSectionProps {
   availableTypes: string[];
+  avatarUrl: string | null;
   copy: MarketingDictionary["trippers"]["travelerTypesSection"];
   tripperName: string;
   tripperSlug: string | null;
@@ -23,6 +24,7 @@ interface TripperTravelerTypesSectionProps {
  */
 export function TripperTravelerTypesSection({
   availableTypes,
+  avatarUrl,
   copy,
   tripperName,
   tripperSlug,
@@ -36,8 +38,10 @@ export function TripperTravelerTypesSection({
     >
       <TravelerTypesCarousel
         availableTypes={availableTypes}
+        tripperBadge={{ name: tripperName, avatarUrl }}
         tripperMode
         tripperSlug={tripperSlug ?? undefined}
+        wrapped
       />
     </Section>
   );

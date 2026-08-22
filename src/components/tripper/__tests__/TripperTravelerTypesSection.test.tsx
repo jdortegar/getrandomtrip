@@ -54,6 +54,7 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     render(
       <TripperTravelerTypesSection
         availableTypes={[]}
+        avatarUrl={null}
         copy={COPY}
         tripperName="Maria"
         tripperSlug="maria"
@@ -80,6 +81,7 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     render(
       <TripperTravelerTypesSection
         availableTypes={[]}
+        avatarUrl={null}
         copy={enCopy}
         tripperName="Maria"
         tripperSlug="maria"
@@ -94,18 +96,21 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     expect(container.textContent).not.toContain("Viajes con Maria");
   });
 
-  it("renders offered-type cards with a working tripper-attributed href", () => {
+  it("renders offered-type cards with a working tripper-attributed href and the tripper's badge", () => {
     render(
       <TripperTravelerTypesSection
         availableTypes={["couple"]}
+        avatarUrl={null}
         copy={COPY}
         tripperName="Maria"
         tripperSlug="maria"
       />,
     );
 
-    expect(
-      container.querySelector('a[href="/experiences/by-type/couple?tripper=maria"]'),
-    ).not.toBeNull();
+    const coupleLink = container.querySelector(
+      'a[href="/experiences/by-type/couple?tripper=maria"]',
+    );
+    expect(coupleLink).not.toBeNull();
+    expect(coupleLink?.textContent).toContain("MARIA");
   });
 });

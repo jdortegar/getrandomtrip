@@ -994,7 +994,9 @@
     "forgotPasswordLink": "¿Olvidaste tu contraseña?",
     "keepLoggedIn": "Mantenerme conectado",
     "referredByLabel": "¿Te recomendó un tripper?",
-    "referredByNoneOption": "Ninguno"
+    "referredByPlaceholder": "Seleccioná una opción",
+    "referredByNoneOption": "Ninguno",
+    "referredByRequired": "Elegí si te recomendó un tripper o \"Ninguno\" para continuar."
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verificando tu email…",
@@ -1313,7 +1315,8 @@
     },
     "tripperBadge": {
       "curatedBy": "VIAJE CURADO POR",
-      "byTripper": "BY TRIPPER"
+      "byTripper": "BY TRIPPER",
+      "byRandomtrip": "BY RANDOMTRIP"
     },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [

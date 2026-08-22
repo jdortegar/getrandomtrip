@@ -40,8 +40,15 @@ afterEach(() => {
  * ref (`isStatic` branch) — Embla's own scroll-measurement code never runs
  * in this test, only the plain-DOM fallback layout, which keeps this test
  * fast and independent of ResizeObserver-driven behavior.
+ *
+ * Nothing is ever dropped from the carousel: a type the tripper doesn't
+ * offer stays visible, loses the tripper badge, gets a "RANDOMTRIP" label
+ * instead, and links into that type's base-priced RandomTrip flow via
+ * `?catalog=randomtrip` — a dedicated single "browse everything" fallback
+ * card was tried and reverted (it read as a second, competing escape hatch
+ * next to the attribution banner's own toggle).
  */
-describe("TravelerTypesCarousel (design ADR-8 + spec 'Carousel Attribution-Aware Fallback Cards')", () => {
+describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -63,7 +70,7 @@ describe("TravelerTypesCarousel (design ADR-8 + spec 'Carousel Attribution-Aware
     expect(coupleLink?.textContent).toContain("BY TRIPPER");
   });
 
-  it("tripper context: a non-offered type still renders (never dropped/hidden) with a catalog=randomtrip fallback href, no badge", () => {
+  it("tripper context: a non-offered type still renders with a catalog=randomtrip href, no tripper badge, RANDOMTRIP label instead", () => {
     render(
       <TravelerTypesCarousel
         availableTypes={["couple"]}
@@ -78,9 +85,10 @@ describe("TravelerTypesCarousel (design ADR-8 + spec 'Carousel Attribution-Aware
     );
     expect(soloLink).not.toBeNull();
     expect(soloLink?.textContent).not.toContain("BY TRIPPER");
+    expect(soloLink?.textContent).toContain("RANDOMTRIP");
   });
 
-  it("tripper context with an empty availableTypes list: the carousel still renders every card (old early-return guard is gone)", () => {
+  it("tripper context with an empty availableTypes list: every card still renders, none with a tripper badge", () => {
     render(<TravelerTypesCarousel availableTypes={[]} tripperMode />);
 
     expect(
@@ -91,12 +99,14 @@ describe("TravelerTypesCarousel (design ADR-8 + spec 'Carousel Attribution-Aware
     ).not.toBeNull();
   });
 
-  it("non-tripper context: plain hrefs, no catalog fallback, regardless of availableTypes", () => {
+  it("non-tripper context: plain hrefs, no catalog fallback, no RANDOMTRIP label, regardless of availableTypes", () => {
     render(<TravelerTypesCarousel />);
 
-    expect(
-      container.querySelector('a[href="/experiences/by-type/couple"]'),
-    ).not.toBeNull();
+    const coupleLink = container.querySelector(
+      'a[href="/experiences/by-type/couple"]',
+    );
+    expect(coupleLink).not.toBeNull();
+    expect(coupleLink?.textContent).not.toContain("RANDOMTRIP");
     expect(
       container.querySelector('a[href*="catalog=randomtrip"]'),
     ).toBeNull();

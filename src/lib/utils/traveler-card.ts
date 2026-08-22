@@ -108,9 +108,13 @@ export function isTypeOffered(
  * Attribution-Aware Fallback Cards"). Non-tripper context: every card is
  * flagged `true` (identity behaviour preserved — the carousel renders
  * exactly as it always did outside a tripper's context). Tripper context:
- * each card is flagged by whether its key is in `availableTypes`; an empty
- * or missing `availableTypes` flags every card `false` rather than emptying
- * the list, so the carousel can still render a full row of fallback cards.
+ * each card is flagged by whether its key is in `availableTypes`, so the
+ * caller (`TravelerTypesCarousel`) can badge it "BY TRIPPER {name}" or
+ * "RANDOMTRIP" per card — a type the tripper doesn't offer still degrades
+ * to RandomTrip's own base-priced version rather than disappearing (a
+ * dedicated "browse everything" catch-all card was tried and reverted —
+ * it read as a second, competing escape hatch alongside the attribution
+ * banner's own toggle).
  */
 export function filterCarouselCards(
   cards: TravelerTypeCardData[],

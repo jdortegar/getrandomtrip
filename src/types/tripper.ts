@@ -527,6 +527,7 @@ export interface TripperJourneyContext {
   avatarUrl: string | null;
   location: string | null;
   allowedTypes: string[];
+  /** Badge signal only (nothing is hidden on it) — which levels of an offered type the tripper actually has ACTIVE content for. */
   allowedLevelsByType: Record<string, string[]>;
   priceOverrides: TripperPriceOverrides | null;
 }

@@ -13,7 +13,7 @@ import {
 } from "@/lib/data/traveler-types";
 import { getReviewsForTripType } from "@/lib/db/tripper-queries";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
-import { isTypeOffered } from "@/lib/utils/traveler-card";
+import { getEffectiveTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -90,11 +90,10 @@ export default async function TravelerTypePage(props: {
     getDictionary(locale),
     getReviewsForTripType(typeData.meta.slug),
   ]);
-  const priceOverrides =
-    tripperContext &&
-    isTypeOffered(tripperContext.allowedTypes, typeData.meta.slug)
-      ? tripperContext.priceOverrides
-      : null;
+  const priceOverrides = getEffectiveTripperPriceOverrides(
+    tripperContext,
+    typeData.meta.slug,
+  );
 
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
   const blogHref = pathForLocale(locale, "/blog");

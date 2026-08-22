@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getEffectiveTripperPriceOverrides,
   isPairOffered,
   parseTripperPriceOverrides,
   parseTripperPriceOverridesPayload,
@@ -145,5 +146,39 @@ describe("parseTripperPriceOverridesPayload (write side, strict)", () => {
       ok: true,
       value: {},
     });
+  });
+});
+
+describe("getEffectiveTripperPriceOverrides", () => {
+  const overrides = { couple: { explora: 350 } };
+
+  it("returns null when there is no tripper context", () => {
+    expect(getEffectiveTripperPriceOverrides(null, "couple")).toBeNull();
+    expect(getEffectiveTripperPriceOverrides(undefined, "couple")).toBeNull();
+  });
+
+  it("returns null when the tripper doesn't offer the requested type", () => {
+    const context = { allowedTypes: ["solo"], priceOverrides: overrides };
+    expect(getEffectiveTripperPriceOverrides(context, "couple")).toBeNull();
+  });
+
+  it("returns the tripper's overrides when the type is offered", () => {
+    const context = { allowedTypes: ["couple", "solo"], priceOverrides: overrides };
+    expect(getEffectiveTripperPriceOverrides(context, "couple")).toBe(
+      overrides,
+    );
+  });
+
+  it("returns null (not the stale object) when overrides exist but the type isn't offered, even case-insensitively", () => {
+    const context = { allowedTypes: ["Couple"], priceOverrides: overrides };
+    expect(getEffectiveTripperPriceOverrides(context, "couple")).toBe(
+      overrides,
+    );
+    expect(getEffectiveTripperPriceOverrides(context, "solo")).toBeNull();
+  });
+
+  it("returns null when the tripper offers the type but has no overrides configured", () => {
+    const context = { allowedTypes: ["couple"], priceOverrides: null };
+    expect(getEffectiveTripperPriceOverrides(context, "couple")).toBeNull();
   });
 });

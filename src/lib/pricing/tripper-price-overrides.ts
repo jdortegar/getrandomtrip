@@ -10,9 +10,11 @@
 import {
   PRICE_BY_TYPE_AND_LEVEL,
   TRAVELER_TYPE_SLUGS,
+  normalizePriceLevelId,
   type PriceLevelId,
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
+import { isTypeOffered } from "@/lib/utils/traveler-card";
 
 const PRICE_LEVEL_IDS: PriceLevelId[] = [
   "essenza",
@@ -50,6 +52,63 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return (
     typeof value === "object" && value !== null && !Array.isArray(value)
   );
+}
+
+/**
+ * Single source of truth for "should this tripper's price overrides apply to
+ * this traveler type" — a tripper's `priceOverrides` grid can carry a value
+ * for any catalog-valid (type, level) pair regardless of whether they
+ * currently have an ACTIVE `Experience` listing of that type (the admin grid
+ * and a tripper's live experience list are two independent things). Reading
+ * `priceOverrides` without also checking `allowedTypes` (experience-derived)
+ * lets a display surface apply a tripper's override for a type they don't
+ * actually offer today. Every call site that resolves a tripper-aware price
+ * for a specific type MUST go through this instead of reading
+ * `priceOverrides` directly — this used to be reimplemented ad hoc
+ * (`by-type/[type]/page.tsx`) or relied on incidentally (an empty
+ * `allowedLevelsByType` entry happening to filter everything out), which let
+ * the two drift.
+ *
+ * `allowedLevelIds`, when passed, applies that same gate one level deeper —
+ * a card badged "BY RANDOMTRIP" (the tripper doesn't have ACTIVE content at
+ * that specific level, even though the type itself is offered) must never
+ * still show the tripper's overridden price; it falls back to the global
+ * catalog price like any other non-offered level. Values are raw
+ * `Experience.level` strings (e.g. "explora", "atelier") and are normalized
+ * via `normalizePriceLevelId` before comparing against the override map's
+ * already-canonical `PriceLevelId` keys. Omitting it (the by-type page,
+ * which has no level-granular tripper data) keeps the pre-existing
+ * type-only gate.
+ */
+export function getEffectiveTripperPriceOverrides(
+  tripperContext:
+    | { allowedTypes: string[]; priceOverrides: TripperPriceOverrides | null }
+    | null
+    | undefined,
+  type: string,
+  allowedLevelIds?: string[],
+): TripperPriceOverrides | null {
+  if (!tripperContext) return null;
+  if (!isTypeOffered(tripperContext.allowedTypes, type)) return null;
+
+  const overrides = tripperContext.priceOverrides;
+  if (!overrides || allowedLevelIds === undefined) return overrides;
+
+  const typeKey = type as TravelerTypeSlug;
+  const typeOverrides = overrides[typeKey];
+  if (!typeOverrides) return overrides;
+
+  const normalizedAllowed = new Set(
+    allowedLevelIds
+      .map((id) => normalizePriceLevelId(id))
+      .filter((id): id is PriceLevelId => id !== null),
+  );
+  const filteredLevels = Object.fromEntries(
+    Object.entries(typeOverrides).filter(([levelId]) =>
+      normalizedAllowed.has(levelId as PriceLevelId),
+    ),
+  );
+  return { ...overrides, [typeKey]: filteredLevels };
 }
 
 /**

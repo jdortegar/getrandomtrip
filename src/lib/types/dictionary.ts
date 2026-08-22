@@ -2305,7 +2305,9 @@ export interface MarketingDictionary {
     forgotPasswordLink: string;
     keepLoggedIn: string;
     referredByLabel: string;
+    referredByPlaceholder: string;
     referredByNoneOption: string;
+    referredByRequired: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
   resetPasswordPage: ResetPasswordPageDict;
@@ -2824,6 +2826,8 @@ export interface MarketingDictionary {
     tripperBadge: {
       curatedBy: string;
       byTripper: string;
+      /** Shown on a carousel card in place of the tripper badge when the attributed tripper doesn't offer this type/level — it's still bookable, just priced/fulfilled by RandomTrip directly. */
+      byRandomtrip: string;
     };
     userNamePlaceholder: string;
     meta: {

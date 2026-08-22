@@ -527,7 +527,10 @@ export const getTripperJourneyContext = cache(
       // Distinct flat-mapped types
       const allowedTypes = [...new Set(experiences.flatMap((e) => e.type))];
 
-      // For each type, collect distinct non-null levels of experiences that include that type
+      // For each type, collect distinct non-null levels of experiences that
+      // include that type — badge signal only (nothing is hidden on it), so
+      // a display surface can tell "this level is BY {tripper}" from "this
+      // level falls back to RandomTrip's own base price".
       const allowedLevelsByType: Record<string, string[]> = {};
       for (const type of allowedTypes) {
         const levels = [

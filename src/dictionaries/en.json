@@ -994,7 +994,9 @@
     "forgotPasswordLink": "Forgot password?",
     "keepLoggedIn": "Keep me logged in",
     "referredByLabel": "Were you referred by a tripper?",
-    "referredByNoneOption": "None"
+    "referredByPlaceholder": "Select an option",
+    "referredByNoneOption": "None",
+    "referredByRequired": "Select whether a tripper referred you, or \"None\", to continue."
   },
   "verifyEmailPage": {
     "verifyingTitle": "Verifying your email…",
@@ -2721,7 +2723,8 @@
     },
     "tripperBadge": {
       "curatedBy": "TRIP CURATED BY",
-      "byTripper": "BY TRIPPER"
+      "byTripper": "BY TRIPPER",
+      "byRandomtrip": "BY RANDOMTRIP"
     },
     "userNamePlaceholder": "User name",
     "meta": {

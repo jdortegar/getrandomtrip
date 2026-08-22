@@ -84,15 +84,17 @@ export function GateAwareChrome({
 
   const normalChrome = (
     <>
-      <Navbar
-        backgroundPrimary={navbarBackgroundPrimary}
-        dict={dict}
-        locale={locale}
-      />
       {banner}
-      <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
-        <main className="min-h-screen">{children}</main>
-      </NavbarChromeContext.Provider>
+      <div className="relative">
+        <Navbar
+          backgroundPrimary={navbarBackgroundPrimary}
+          dict={dict}
+          locale={locale}
+        />
+        <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
+          <main className="min-h-screen">{children}</main>
+        </NavbarChromeContext.Provider>
+      </div>
       <Footer dict={dict} locale={locale} />
     </>
   );
