@@ -1,21 +1,12 @@
 "use client";
 
 import type { TripperProfile } from "@/types/tripper";
-import CountryFlag from "@/components/common/CountryFlag";
 import SafeImage from "@/components/common/SafeImage";
-import { Button } from "@/components/ui/Button";
+import TripperHeroContent from "@/components/tripper/TripperHeroContent";
 import { useMemo } from "react";
-import { TRIPPER_TRAVELER_TYPES_ANCHOR_ID } from "@/components/tripper/TripperTravelerTypesSection";
-import Link from "next/link";
 
 interface TripperHeroProps {
   tripper: TripperProfile;
-}
-
-function truncateTagline(bio: string | null | undefined, maxLength: number) {
-  if (!bio) return null;
-  if (bio.length <= maxLength) return bio;
-  return `${bio.slice(0, maxLength).trim()} ......`;
 }
 
 /** Derive country name/code from location string (e.g. "MÉXICO CITY, MÉXICO" → "MÉXICO") for flag. */
@@ -31,15 +22,12 @@ function getCountryFromLocation(
 }
 
 export default function TripperHero({ tripper }: TripperHeroProps) {
-  const firstName = tripper.name?.split(" ")[0] ?? tripper.name ?? "";
   const tripperName = tripper.name;
   const tripperAvatar = tripper.avatarUrl || null;
   const tripperHeroImage = tripper.heroImage || tripper.avatarUrl || null;
   const tripperBio = tripper.bio;
   const tripperLocation = tripper.location;
-  const heroObjectPosition = `${tripper.heroImagePositionX ?? 50}% ${tripper.heroImagePositionY ?? 50}%`;
 
-  const tagline = truncateTagline(tripperBio, 50);
   const countryForFlag = getCountryFromLocation(tripperLocation);
 
   const bannerAlt = useMemo(
@@ -49,17 +37,23 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
   );
   const bannerSrc = tripperHeroImage ?? tripperAvatar ?? undefined;
   const avatarSrc = tripperAvatar ?? tripperHeroImage ?? undefined;
+  const avatarAlt = `Retrato de ${tripperName || "tripper"}`;
 
   return (
-    <section className="relative bg-slate-950  text-white" id="tripper-hero">
+    <section
+      className="relative bg-slate-950 pt-16 text-white md:pt-0"
+      id="tripper-hero"
+    >
       <div
         id="hero-sentinel"
         aria-hidden
         className="absolute left-0 top-0 h-px w-px"
       />
 
-      {/* Full-bleed hero with background image (70vh floor, grows with content) */}
-      <div className="relative min-h-[70vh] w-full overflow-hidden">
+      {/* Fixed 16:9 band on every breakpoint — what a tripper frames in the
+          settings editor is pixel-for-pixel what renders here. The server
+          bakes the final crop; no client-side objectPosition math. */}
+      <div className="relative mx-auto aspect-[16/9] w-full max-w-[1920px] overflow-hidden">
         <SafeImage
           alt={bannerAlt}
           className="object-cover"
@@ -67,58 +61,37 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
           priority
           sizes="100vw"
           src={bannerSrc}
-          style={{ objectPosition: heroObjectPosition }}
         />
         <div className="absolute inset-0 bg-linear-to-b from-slate-950/50 to-slate-950/80" />
 
-        {/* Centered content block: avatar left, text right */}
-        {/* pt clears the absolute h-16 Navbar overlaid on top of the hero */}
-        <div className="relative z-10 flex min-h-[70vh] items-center justify-center px-4 pb-10 pt-24 sm:pb-16 sm:pt-28 md:pb-20 md:pt-28">
-          <div className="rt-container flex flex-col items-center gap-4 sm:gap-8 md:flex-row md:items-end md:justify-left lg:gap-12">
-            {/* Circular profile image with white border */}
-            <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl sm:h-40 sm:w-40 md:h-52 md:w-52">
-              <SafeImage
-                alt={`Retrato de ${tripperName || "tripper"}`}
-                className="object-cover"
-                fill
-                priority
-                sizes="(max-width: 640px) 128px, (max-width: 768px) 160px, 208px"
-                src={avatarSrc}
-              />
-            </div>
-
-            {/* Location, name, tagline, CTA — Hero.tsx text styles */}
-            <div className="flex flex-col items-center text-center md:items-start md:text-left">
-              {tripperLocation && (
-                <div className="flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-amber-400 md:text-base leading-none mb-2">
-                  {countryForFlag && (
-                    <CountryFlag
-                      className="inline-block shrink-0 align-baseline"
-                      country={countryForFlag}
-                      title={tripperLocation}
-                    />
-                  )}
-                  <span>{tripperLocation}</span>
-                </div>
-              )}
-
-              <h1 className="mb-4 font-barlow-condensed font-extrabold leading-none text-4xl uppercase text-white sm:text-5xl md:text-7xl">
-                {tripperName}
-              </h1>
-              {tripperBio && (
-                <p className="mb-4 max-w-xl font-barlow text-sm font-normal leading-relaxed text-white sm:text-base">
-                  {tripperBio}
-                </p>
-              )}
-              <Button asChild className="mt-2" size="lg" variant="feature">
-                <Link href={`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`} scroll>
-                  RANDOMTRIP-ME!
-                </Link>
-              </Button>
-            </div>
-          </div>
+        {/* md+: 16:9 at 1280px is 720px tall — taller than the old 70vh
+            floor, so the overlay content still fits unchanged. */}
+        <div className="relative z-10 hidden h-full items-center justify-center px-4 md:flex">
+          <TripperHeroContent
+            avatarAlt={avatarAlt}
+            avatarSrc={avatarSrc}
+            countryForFlag={countryForFlag}
+            location={tripperLocation}
+            name={tripperName}
+            tagline={tripperBio}
+            variant="overlay"
+          />
         </div>
       </div>
+
+      {/* < md: 16:9 is only ~202px tall at 360px — too short to host the
+          overlay without hiding a third of the framed crop under the
+          navbar. Content flows below the band instead. */}
+      <TripperHeroContent
+        avatarAlt={avatarAlt}
+        avatarSrc={avatarSrc}
+        className="md:hidden"
+        countryForFlag={countryForFlag}
+        location={tripperLocation}
+        name={tripperName}
+        tagline={tripperBio}
+        variant="stacked"
+      />
     </section>
   );
 }

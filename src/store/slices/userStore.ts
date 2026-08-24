@@ -40,7 +40,14 @@ export interface User {
   /** Multi-role membership (app-level role tokens) */
   roles?: UserRole[];
   handle?: string; // <-- agregado
+  /** Client-store name for the DB/API field `avatarUrl` (`User.avatarUrl`,
+   * `/api/user/me`, `/api/user/update`). Deliberately not renamed to match —
+   * `SessionUser.ts` coalesces `avatar ?? avatarUrl ?? image` across three
+   * upstream shapes, so a rename here would be a semantic change, not a
+   * pure rename (see design.md Q3). */
   avatar?: string; // <-- agregado
+  /** Stored original upload behind `avatar`, retained for lossless re-crop. */
+  avatarUrlOriginal?: string;
   prefs: UserPrefs;
   socials?: UserSocials; // <-- agregado
   metrics?: UserMetrics; // <-- agregado

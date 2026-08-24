@@ -4,6 +4,7 @@ import type { TravelerType, User, UserRole } from "@/store/slices/userStore";
 export type SessionUser = Session["user"] & {
   avatar?: string | null;
   avatarUrl?: string | null;
+  avatarUrlOriginal?: string | null;
   handle?: string | null;
   image?: string | null;
   role?: string;
@@ -84,6 +85,7 @@ export function mapSessionUserToStoreUser(
       sessionUser.avatarUrl ??
       sessionUser.image ??
       undefined,
+    avatarUrlOriginal: sessionUser.avatarUrlOriginal ?? undefined,
     prefs: {
       travelerType: normalizeTravelerType(sessionUser.travelerType),
       interests: Array.isArray(sessionUser.interests)

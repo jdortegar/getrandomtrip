@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: {
       id: string;
       address?: Record<string, string> | null;
+      avatarUrlOriginal?: string | null;
       createdAt?: string;
       dislikes?: string[];
       email: string;
