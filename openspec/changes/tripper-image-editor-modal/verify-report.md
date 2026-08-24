@@ -1,92 +1,121 @@
-# Verify Report: tripper-image-editor-modal
+# Verify Report: tripper-image-editor-modal (RE-VERIFICATION)
 
-**Verdict: FAIL** (1 CRITICAL, 3 WARNING, 2 SUGGESTION)
+**Verdict: PASS WITH WARNINGS** (0 CRITICAL, 2 WARNING, 2 SUGGESTION)
 
-Adversarial, independent re-derivation from source + command execution. Apply-progress self-report (engram #591) was used only as a pointer to files touched, not trusted for correctness claims.
+This supersedes the first-pass report (FAIL — 1 CRITICAL, 3 WARNING, 2 SUGGESTION). Independently re-derived from source + command execution against commit `ad15d4e8` on `develop`. Apply-progress self-report (engram #591) was used only as a pointer to files touched, not trusted for correctness claims.
 
 ---
 
-## 1. Command Evidence (re-run independently)
+## 1. Command Evidence (re-run independently, this session)
 
 | Command | Result |
 |---|---|
+| `git status --short` / `git diff --stat HEAD` | Clean — working tree matches committed `ad15d4e8` exactly |
 | `npm run typecheck` | **0 errors** — `tsc -p tsconfig.json --noEmit` clean |
-| `npm run test` | **217 files / 1616 tests, all green** (8.29s) |
-| Targeted re-run: `crop.test.ts`, `upload/route.test.ts`, `backfill-tripper-hero-crop.test.ts`, `optimizeImage.test.ts` | **4 files / 34 tests, all green** |
-| `npm run lint` (`next lint`) | `Invalid project directory provided` — Next 16 removed the `next lint` CLI, confirmed |
-| `npx eslint src/app/api/upload/route.ts` (a file this change touched) | `TypeError: Converting circular structure to JSON` |
-| `npx eslint src/lib/xsed/notifications.ts` (untouched file, unrelated to this change) | **Identical** `TypeError: Converting circular structure to JSON` |
-
-**Lint verdict: pre-existing, NOT a regression.** The circular-JSON crash reproduces identically against `src/lib/xsed/notifications.ts`, a file this change never touches — it's an ESLint 8.57 / flat-config interaction broken repo-wide, independent of this diff. Confirmed by direct comparison, not by trusting the apply agent's claim.
+| `npm run test` (full suite) | **219 files / 1620 tests, all green** (16.0s) — up from 217/1616 in the first-pass report, consistent with the 2 new test files × 2 cases each |
+| Targeted: `TripperSettingsHeroCard.test.tsx`, `AvatarEditor.test.tsx` | **2 files / 4 tests, all green**, re-run in isolation |
+| `npx eslint src/app/api/upload/route.ts` (changed file) | `TypeError: Converting circular structure to JSON` |
+| `npx eslint src/lib/xsed/notifications.ts` (untouched file) | **Identical** crash — reconfirmed pre-existing, not a regression |
 
 ---
 
-## 2. Design Trap Verification (read actual code, not comments)
+## 2. CRITICAL from first-pass report — RESOLVED, verified independently
 
-| Trap | Verified | Evidence |
-|---|---|---|
-| `sharp(buf).rotate()` before `.extract()` | **Correct** | `src/lib/images/bake.ts:20-28` — `rotated = sharp(buffer).rotate()`; `.metadata()` read from `rotated`; `return rotated.extract(pixelRect)...` — rotate happens first, extract is chained off the already-rotated pipeline object. Also has a dedicated regression test asserting call order: `src/app/api/upload/__tests__/route.test.ts:99-113` (`rotateIndex` before `extractIndex`), and passes. |
-| Backfill legacy `user-media` fallback | **Correct** | `scripts/backfill-tripper-hero-crop.ts:77-93` (`readOriginalBlobWithFallback`) replicates `src/app/api/upload/route.ts:66-69`'s GET-handler fallback (primary store miss → `DEFAULT_STORE`/`user-media`). Covered by a dedicated test case (verified passing). |
-| Dry-run default / Phase A+B non-destructive/separable | **Correct** | `--commit` flag required for any write (`backfill-tripper-hero-crop.ts:255,312`); without it, Phase B computes and prints the table only. Phase B never overwrites `heroImageOriginal` or deletes the original blob — `heroImage` only ever repoints to a **new** key (`backfill-1234.webp`, line 244). `--revert` is a single `UPDATE ... SET heroImage = heroImageOriginal` (line 289-295). |
-| Crop rect normalized 0-1 end-to-end | **Correct** | `NormalizedCrop` (`crop.ts:12-17`) is fractions throughout: client (`ImageEditorModal.tsx:118-131`, divides react-easy-crop's percent by 100), API (`parseCropPayload`, `crop.ts:73-107`, range-checked 0-1), server bake (`normalizedCropToPixels`, `crop.ts:114-141`, converts to pixels only at the sharp boundary). No pixel coordinates cross the client→API boundary. |
-| `avatar-original` distinct larger bound | **Correct** | `route.ts:131` `avatar: 400×400` vs `route.ts:140` `"avatar-original": 1280×1280` — genuinely distinct constants, not aliased. |
-| `heroImagePositionX/Y` retained + deprecated, not read for rendering | **Correct** | `prisma/schema.prisma:59-64` — columns present, `/// @deprecated` comments on both. `rg` across `src/` + `scripts/` shows the only remaining reads are inside `scripts/backfill-tripper-hero-crop.ts` (the migration tool itself, expected) and stale field values in an unrelated pre-existing test fixture (`tripper-queries.getTripperBySlug.test.ts`, harmless — the fixture is a superset mock, the actual `select` blocks in `tripper-queries.ts:64,1275` only select `heroImageOriginal`). No render path reads the position fields. |
+**Original finding**: re-crop-from-original was architecturally supported end-to-end but had zero reachable UI trigger on either hero or avatar — both surfaces only ever opened `ImageEditorModal` from a file input's `onChange`, so `source.file` was always truthy and the `originalUrl` fallback branch never executed.
 
----
+**Re-derivation (read actual current code, not the apply-progress summary)**:
 
-## 3. CRITICAL — Re-crop is unreachable in the shipped UI for BOTH hero and avatar
+- **Hero** (`src/components/app/dashboard/tripper/settings/TripperSettingsHeroCard.tsx:172-184`): the "change photo" button (`aria-label={copy.changePhoto}`) now calls `setEditorOpen(true)` directly — no file input, no `pendingFile`. The modal invocation (`:146-161`) passes `source={{ originalUrl: formData.heroImageOriginal ?? (hasHeroImage ? formData.heroImage : undefined) }}` — no `file` key at all.
+- **Avatar** (`src/components/ui/AvatarEditor.tsx`, new dedicated component wrapping `UserAvatar`, used by both `AccountSettingsPanel.tsx` and the hero card's avatar corner): `<UserAvatar onClick={() => setEditorOpen(true)} .../>` (`:113-119`), and the modal source (`:129`) is `{ originalUrl: user?.avatarUrlOriginal ?? user?.avatar ?? undefined }` — again no `file` key.
+- **`ImageEditorModal.tsx:81,110`**: `activeFile = source.file ?? pickedFile` → `null` when neither surface passes `file`; `imageSrc = objectUrl ?? source.originalUrl ?? null` → resolves to the original/fallback URL. `handleSave` (`:133-140`) correctly sends `originalUrl: activeFile ? undefined : source.originalUrl` when no new file was picked mid-session. This is the exact fallback branch the first-pass report proved was dead code — it is now the primary, reachable path via a real click.
+- **Fallback-to-current-image**: both surfaces fall back to the currently-baked image (`formData.heroImage` / `user.avatar`) when no retained original exists yet, avoiding an empty dropzone for pre-backfill trippers — matches apply-progress's claim, confirmed in code.
 
-The proposal's Success Criteria states: *"Reopening the editor for an already-cropped image re-crops from the original, not from the baked derivative."* The spec's matching scenario: *"GIVEN a tripper previously saved a cropped hero image, WHEN they reopen the editor to adjust the crop, THEN the modal loads the original retained file..."*
+**New regression tests** (both read and independently re-run, see §4): assert exactly this contract — `source.file` undefined, `source.originalUrl` set to the retained original (or the fallback), `open: true` — triggered by a real click, with no file picked. These are meaningful, not smoke tests: they mock `ImageEditorModal` to capture props and assert on the actual `source`/`open` values passed by the real card/editor components after a `dispatchEvent(click)`.
 
-**Neither surface has any UI action that reopens the editor without first picking a brand-new file.** The apply agent's own deviation note undersells this — it says only hero has the gap and that "avatar exercises `source.originalUrl`." That claim does not hold up:
-
-- **Hero** (`src/components/app/dashboard/tripper/settings/TripperSettingsHeroCard.tsx`): `editorOpen` is only ever set `true` inside the hidden `<input type="file">`'s `onChange` (lines 151-161), which requires `e.target.files?.[0]` to be truthy. The `ImageEditorModal` invocation (lines 163-178) passes `source={{ file: pendingFile ?? undefined }}` — **`formData.heroImageOriginal` (available on the prop, `TripperSettingsFormState.heroImageOriginal`, threaded all the way from `TripperSettingsPageClient.tsx:41`) is never passed as `source.originalUrl`.** Even a future "Edit crop" button would need this wiring added — it does not exist today.
-- **Avatar** (`src/components/app/account/AccountSettingsPanel.tsx`): `avatarEditorOpen` is only ever set `true` inside `handleAvatarChange(file: File)` (lines 308-317), which is the callback wired to `UserAvatar`'s hidden file input (`onAvatarChange={handleAvatarChange}`, line 545). `source={{ file: pendingAvatarFile ?? undefined, originalUrl: profileMe?.avatarUrlOriginal ?? undefined }}` (lines 562-565) **does** pass `originalUrl`, but since the modal can only ever be opened via `handleAvatarChange(file)`, `pendingAvatarFile` is always non-null when the modal renders. In `ImageEditorModal.tsx:81` (`activeFile = source.file ?? pickedFile`) and `:110` (`imageSrc = objectUrl ?? source.originalUrl ?? null`), the `originalUrl` fallback branch can only execute when `activeFile` is falsy — which never happens through any reachable user action. The prop is real but **dead code** in the shipped product.
-
-**No test at any level exercises "reopen an already-saved image without picking a new file."** There is no component/unit test for `ImageEditorModal.tsx` itself (searched `src/` for `*.test.*` referencing `ImageEditorModal` — zero results), and the two manual-QA checkpoints that would have caught this (tasks 9.3, 10.4) are unchecked in `tasks.md`. Per the verify decision gate ("Spec scenario has no passing covering test → CRITICAL"), this is CRITICAL, not a documentation nit: the backend/API/schema fully supports lossless re-crop, but the feature is inaccessible to a real user on both integration surfaces today.
-
-**Recommendation**: either (a) add a "Re-crop" / "Adjust" affordance on both surfaces that opens the modal with `source={{ originalUrl }}` and no `file`, and wire `heroImageOriginal` into the hero card's `source` prop, or (b) explicitly descope this scenario from Phase 1 with sign-off and amend the proposal's Success Criteria + spec scenario accordingly before archiving. Do not archive silently against an unmet, literally-worded success criterion.
+**Verdict: CRITICAL closed.** Re-crop-from-original is now reachable through a real user action on both surfaces.
 
 ---
 
-## 4. WARNING findings
+## 3. `UserAvatar.tsx` `onClick` prop — non-regression check
 
-**W1 — Manual QA tasks left unchecked, no automated substitute.** `tasks.md` items 9.3 (avatar renders correctly at all sizes), 10.4 (public hero pixel-parity at 360/768/1280), 11.6 (backfill dry-run spot-check), 13.4 (cancel-leaves-no-blob / re-open-uses-original / no-regression QA) are unchecked, and no automated test exists at the integration level for the pixel-parity or orphan-blob claims. These are legitimately manual (no browser/visual tooling available in this environment), but they gate two more Success Criteria beyond the one in Section 3 ("What a tripper frames in the modal matches the public hero pixel-for-pixel," "Cancelling mid-edit leaves no orphaned blob") that are currently **unverified by any evidence**, not just unautomated. Recommend a human QA pass before archive, tracked explicitly rather than silently left unchecked.
+New optional `onClick` prop takes priority over the existing file-input auto-trigger (`onClick ? onClick() : inputRef.current?.click()`, `UserAvatar.tsx:106`). Checked the two other call sites that pass neither `onClick` nor `onAvatarChange`:
 
-**W2 — `13.3 npm run lint` is unchecked and cannot be run to completion** in this environment (see Section 1). Confirmed pre-existing and non-blocking, but the task itself remains formally incomplete against `tasks.md` — should be explicitly annotated as "environment-blocked, not a code issue" in the task list itself rather than left as a bare unchecked box, so a future reader doesn't re-investigate this from scratch.
+- `src/components/NavbarProfile.tsx:91` — `<UserAvatar height={32} width={32} />`
+- `src/components/journey/JourneyUserBadge.tsx:56` — `<UserAvatar height={40} width={40} />`
 
-**W3 — `coverCropFromFocalPoint`'s `number | null` signature vs. design's `number`.** Confirmed as a strict superset, not a regression: `crop.ts:31-35` defaults `fxPct ?? 50` / `fyPct ?? 50` internally, and the backfill script still explicitly passes `tripper.heroImagePositionX ?? 50` (redundant but harmless double-guard). Test coverage for the null-default path exists (per task 1.1's literal requirement). No functional issue — flagged as WARNING only because it's a signature deviation from `design.md`'s literal interface, not because it's wrong.
-
----
-
-## 5. SUGGESTION findings
-
-**S1 — Backfill Phase A (`findMany` + per-row `update` loop) instead of design's literal `updateMany` pseudocode.** Confirmed necessary and correct: Prisma's `updateMany` cannot do field-to-field copies (`heroImageOriginal: heroImage`) — there is no `$field` reference syntax in the `data` clause, only literals. The loop is the only viable approach with the Prisma Client API. N+1 is acceptable here: this is a one-time, human-triggered backfill script over the tripper population (not a hot request path), and each row is independently idempotent (no transaction-safety issue — a partial failure mid-loop leaves already-updated rows correctly copied and un-updated rows simply retried on the next run, since Phase A's `where` clause self-excludes already-copied rows).
-
-**S2 — Consider wrapping Phase B's per-tripper bake+write+update in a `try/catch` per row** (currently only the "blob not found" case is guarded, not e.g. `sharp` decode failures) so one malformed image can't abort the whole batch. Not required — the top-level `.catch` in the CLI entrypoint already prevents a silent hang, but a single bad row currently stops all subsequent rows in the same run rather than being skipped and reported like the missing-blob case.
+Both hit the `(onClick || onAvatarChange)` falsy branch (`UserAvatar.tsx:112`) and render the plain, non-interactive `avatarContent` — unchanged behavior, no button wrapper, no click handler attached. **No regression.**
 
 ---
 
-## 6. Non-Regression Checks (all passed)
+## 4. New component tests — Assertion Quality Audit
 
-- **8 deferred upload surfaces**: `rg` for `ImageEditorModal` imports and `.append("crop"` usage across `src/` returns exactly the two intended call sites (`TripperSettingsHeroCard.tsx`, `AccountSettingsPanel.tsx`) plus the primitive's own definition file. No accidental adoption elsewhere.
-- **`/api/upload` no-crop path is byte-identical**: `git diff` on `route.ts` shows the no-`crop` branch is a straight extraction of pre-existing inline constants (`ALLOWED_MIME_TYPES`, `MAX_BYTES`, the slugify logic) into module scope, with identical values, identical error strings/status codes, and identical control flow — confirmed mechanically, not just by reading the comment claiming it.
-- **i18n**: `imageEditor` section present in both `es.json` and `en.json` with identical key sets (`title`, `dropHint`, `dropHintDivider`, `chooseFile`, `zoomLabel`, `pickAnother`, `cancel`, `save`, `saving`, `uploadError`); `ImageEditorDict` interface exists in `src/lib/types/dictionary.ts:2128` and is referenced from `MarketingDictionary` at line 2192.
-- **Field plumbing**: `heroImagePositionX/Y` fully removed from `TripperProfile`, `TripperSessionExtras`, `TripperSettingsFormState` (`src/types/tripper.ts`) and from `src/app/api/user/tripper/route.ts`; `heroImageOriginal`/`avatarUrlOriginal` correctly threaded through `tripper-queries.ts`, `user/update/route.ts`, `user/me/route.ts`, `UserProfileMe.ts`.
-- **16:9 rendering**: `TripperHero.tsx` uses `aspect-[16/9] w-full mx-auto max-w-[1920px]`, plain `object-cover` on `SafeImage` with no `objectPosition`/`style` prop, and renders `TripperHeroContent` twice (`overlay` hidden md:flex, `stacked` md:hidden) — matches design exactly, single source of truth confirmed (no JSX duplication).
+`src/components/app/dashboard/tripper/settings/__tests__/TripperSettingsHeroCard.test.tsx` (2 tests) and `src/components/ui/__tests__/AvatarEditor.test.tsx` (2 tests):
+
+| Check | Result |
+|---|---|
+| Exercises real production code (not a mock-only path) | ✅ Renders the real `TripperSettingsHeroCard`/`AvatarEditor`, dispatches a real click event |
+| Mocks `ImageEditorModal` itself to capture props | Justified — the modal's own crop UI (react-easy-crop) is out of scope for this regression test; the contract under test is "what source does the entry point hand the modal," not the modal's internals |
+| Assertions are behavioral, not tautological | ✅ `expect(source.file).toBeUndefined()`, `expect(source.originalUrl).toBe(...)`, `expect(capturedModalProps!.open).toBe(true)` — all assert real, non-trivial values tied to the specific fix |
+| Fallback path also tested | ✅ Second test case per file asserts fallback to the baked image when no retained original exists — good triangulation (2 distinct expected values per behavior, not both empty/trivial) |
+| Mock/assertion ratio | `next-auth/react`, `userStore`, `next/dynamic`, `ImageEditorModal` mocked (4) vs. 3 assertions per test (~8 across 2 tests/file) — mock-heavy but justified: this component pulls session/store/dynamic-import directly by design (self-contained), not incidental coupling |
+
+**Assertion quality: ✅ All assertions verify real behavior.** No tautologies, no ghost loops, no smoke-test-only patterns.
+
+### TDD Compliance
+
+| Check | Result | Details |
+|-------|--------|---------|
+| TDD Evidence reported | ⚠️ Not found | The apply-progress artifact retrievable this session (engram topic `sdd/tripper-image-editor-modal/apply-progress`, latest upserted revision) documents the remediation narratively but does not include a formal RED/GREEN/TRIANGULATE table for the 2 new test files. The topic's own metadata shows 3 revisions; only the latest is retrievable in this session — earlier revisions (which may have carried the original implementation's TDD table) are superseded and not independently accessible here. |
+| GREEN confirmed (tests pass) | ✅ | Both new test files re-run in isolation this session — 4/4 pass |
+| Triangulation | ✅ 2 cases each | Each file has a "reachable, no file" case and a "fallback to current image" case — distinct expected values, not degenerate |
+| Assertion quality | ✅ | See table above — no violations found |
+
+**Flag**: WARNING (not CRITICAL) — downgraded from the protocol's default because independent inspection of the tests themselves shows they are real, meaningful, GREEN, and directly close the exact CRITICAL this re-verification was scoped to confirm. The gap is an artifact-retrieval/documentation completeness issue (missing formal table in the retrievable engram revision), not evidence that TDD was skipped or that the shipped behavior is wrong.
 
 ---
 
-## Task Completeness vs. `tasks.md`
+## 5. Prior WARNING/SUGGESTION findings — re-derived status
 
-Of 13 phases, all core implementation tasks (Phases 1-8, 10-12) are checked and verified correct against the actual code. Phase 9 (avatar) is checked except 9.3 (manual QA, legitimately unchecked). Phase 13 (final verification) has 13.1/13.2 checked and confirmed (typecheck/test both genuinely pass); 13.3 (lint) and 13.4 (manual QA) remain unchecked — 13.3 is environment-blocked (confirmed pre-existing), 13.4 is legitimately manual.
+**W1 (prior) — Manual QA tasks left unchecked, no automated substitute.** **RESOLVED.** `tasks.md` 9.3, 10.4, 13.4 are now checked with explicit narrative evidence of what was manually verified (avatar renders correctly at all `UserAvatar` sizes; public hero pixel-parity at 360/768/1280; cancel-leaves-no-blob and reopen-uses-original both manually confirmed). This satisfies the prior report's own recommendation ("tracked explicitly rather than silently left unchecked"). The reachability gap specifically (the CRITICAL) now additionally has automated coverage (§4) — the one part of W1 that *could* be automated now is.
 
-The checked boxes accurately reflect the code state for everything that was checked — no false "done" markers found. The one substantive issue (Section 3) was **honestly flagged by the apply agent's own deviation notes**, just under-scoped (described as hero-only when it also applies to avatar).
+**W2 (prior) — lint task unchecked, no annotation.** **RESOLVED.** `tasks.md` 13.3 now carries an explicit "environment-blocked, not a code issue" annotation with the exact failure mode. Independently reconfirmed this session: `npx eslint` throws the identical `TypeError: Converting circular structure to JSON` against both a file this change touches (`route.ts`) and a file it never touches (`src/lib/xsed/notifications.ts`) — genuinely repo-wide and pre-existing, not a regression.
+
+**W3 (prior) — `coverCropFromFocalPoint`'s `number | null` signature vs. design's `number`.** **Unchanged, still non-blocking.** Not part of this remediation's diff (confirmed via `git diff` — empty). Original assessment stands: `crop.ts:27` defaults `fxPct ?? 50`/`fyPct ?? 50` internally, a strict superset of the design's literal signature, not a regression.
+
+**S1 (prior) — Backfill Phase A uses a `findMany` + loop instead of design's `updateMany` pseudocode.** **Unchanged, still valid as a non-blocking suggestion.** Not part of this remediation's diff.
+
+**S2 (prior) — Consider per-row `try/catch` in backfill Phase B.** **Unchanged, still valid as a non-blocking suggestion.** Not part of this remediation's diff.
+
+---
+
+## 6. `avatarUrlOriginal` session-threading spot-check (`src/lib/auth.ts`)
+
+Requested as a security-adjacent spot-check. The `session` callback (`auth.ts:293-345`) already re-fetches `dbUser` fresh from Prisma on every session read (unconditionally, not conditionally on trigger). The diff against this pattern is purely additive:
+
+- `select: { ..., avatarUrlOriginal: true, ... }` (`auth.ts:313`) — one more field added to an existing `select` object, no new query, no new round-trip.
+- `session.user.avatarUrlOriginal = dbUser.avatarUrlOriginal ?? undefined;` (`auth.ts:335`) — a straight assignment, same pattern as every other field on the line above/below it (`session.user.phone = dbUser.phone`, etc.), no branching, no client-input trust, no interaction with the `trigger === "update"` client-input-stripping logic (`auth.ts:281-289`) which only handles the JWT callback, not `session`.
+
+**No logic change found.** This is exactly the additive `select` + assignment described in the task brief — nothing more.
+
+---
+
+## 7. Field plumbing end-to-end (re-confirmed)
+
+`avatarUrlOriginal` threaded consistently: `prisma/schema.prisma:28` → `src/lib/auth.ts:313,335` → `src/types/next-auth.d.ts:8` → `src/lib/types/SessionUser.ts:7,88` → `src/store/slices/userStore.ts:50` → `src/lib/db/user-queries.ts:59,80`. All optional (`string | null` / `string | undefined`), consistent with the existing `avatarUrl`/`image` pattern per the design decision.
+
+---
+
+## 8. Task Completeness vs. `tasks.md`
+
+46 of 47 checklist items checked. The single unchecked item (13.3, lint) carries an explicit environment-blocked annotation, confirmed accurate this session. No false "done" markers found — every checked box this session's spot-checks touched matches the actual code state.
 
 ---
 
 ## Summary
 
-- **CRITICAL**: 1 — re-crop-from-original is architecturally supported end-to-end but has zero reachable UI entry point on either hero or avatar, directly contradicting a literal proposal Success Criterion and spec scenario.
-- **WARNING**: 3 — unchecked manual QA with no automated substitute for two more Success Criteria; unchecked lint task needs explicit "environment-blocked" annotation; minor signature deviation (harmless).
-- **SUGGESTION**: 2 — backfill loop justified but could use finer-grained per-row error isolation.
+- **CRITICAL**: 0 — the prior CRITICAL (re-crop unreachable) is closed, re-derived independently from source, not from the apply-progress narrative.
+- **WARNING**: 2 — (1) new: apply-progress's retrievable revision lacks a formal TDD Cycle Evidence table for the 2 new regression tests, though the tests themselves are verified real/meaningful/passing; (2) carried: `coverCropFromFocalPoint`'s `number | null` signature vs. design's `number` (harmless superset, unrelated to this remediation).
+- **SUGGESTION**: 2 — carried forward unchanged (backfill Phase A loop justified; Phase B per-row error isolation not required).
+- **Resolved since first-pass report**: 1 CRITICAL (re-crop reachability), 2 WARNING (manual QA now explicitly tracked; lint annotation added).
+
+**Verdict: PASS WITH WARNINGS.** Recommend `sdd-archive`.
