@@ -2120,6 +2120,24 @@ export interface TripperAttributionDict {
   bannerSwitchToTripper: string;
 }
 
+/**
+ * Copy for the generic image editor modal (`ImageEditorModal`) — shared by
+ * every call site (tripper hero, avatar) regardless of mask shape, since the
+ * upload/crop/zoom/save flow language is identical across both.
+ */
+export interface ImageEditorDict {
+  title: string;
+  dropHint: string;
+  dropHintDivider: string;
+  chooseFile: string;
+  zoomLabel: string;
+  pickAnother: string;
+  cancel: string;
+  save: string;
+  saving: string;
+  uploadError: string;
+}
+
 export interface MarketingDictionary {
   nav: {
     ariaLabelBitacoras: string;
@@ -2171,6 +2189,7 @@ export interface MarketingDictionary {
      */
     countries: Record<string, string>;
   };
+  imageEditor: ImageEditorDict;
   adminXsed: AdminXsedDict;
   adminPages: AdminPagesDict;
   adminExperienceReview: {

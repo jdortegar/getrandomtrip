@@ -57,9 +57,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { address, avatarUrl, email, name, phone } = body as {
+    const { address, avatarUrl, avatarUrlOriginal, email, name, phone } = body as {
       address?: unknown;
       avatarUrl?: string;
+      avatarUrlOriginal?: string;
       email?: string;
       name?: string;
       phone?: string | null;
@@ -67,16 +68,23 @@ export async function PATCH(request: NextRequest) {
 
     const data: Prisma.UserUpdateInput = {};
 
-    if (typeof avatarUrl === "string" && avatarUrl.trim()) {
-      // Store as relative path so the URL works in any environment.
-      // Strip the origin if the URL points to the same site.
-      const raw = avatarUrl.trim();
+    /** Store as a relative path so the URL works in any environment — strips
+     * the origin when the value is a same-site absolute URL. */
+    function toRelative(raw: string): string {
       try {
         const parsed = new URL(raw);
-        data.avatarUrl = parsed.pathname + parsed.search;
+        return parsed.pathname + parsed.search;
       } catch {
-        data.avatarUrl = raw;
+        return raw;
       }
+    }
+
+    if (typeof avatarUrl === "string" && avatarUrl.trim()) {
+      data.avatarUrl = toRelative(avatarUrl.trim());
+    }
+
+    if (typeof avatarUrlOriginal === "string" && avatarUrlOriginal.trim()) {
+      data.avatarUrlOriginal = toRelative(avatarUrlOriginal.trim());
     }
 
     if (typeof name === "string") {

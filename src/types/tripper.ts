@@ -96,8 +96,8 @@ export interface TripperSessionExtras {
   commission?: number;
   destinations?: string[];
   heroImage?: string;
-  heroImagePositionX?: number | null;
-  heroImagePositionY?: number | null;
+  /** Pre-crop original hero upload, retained for lossless re-crop via the image editor modal. */
+  heroImageOriginal?: string | null;
   isActive?: boolean;
   location?: string;
   nickname?: string;
@@ -113,10 +113,8 @@ export interface TripperSettingsFormState {
   email: string;
   bio: string;
   heroImage: string;
-  /** Hero image horizontal focal point (0–100). Defaults to 50 (center). */
-  heroImagePositionX: number;
-  /** Hero image vertical focal point (0–100). Defaults to 50 (center). */
-  heroImagePositionY: number;
+  /** Pre-crop original hero upload, retained for lossless re-crop via the image editor modal. */
+  heroImageOriginal: string | null;
   isActive: boolean;
   location: string;
   tierLevel: string;
@@ -181,8 +179,8 @@ export interface TripperProfile {
   interests: string[];
   bio: string | null;
   heroImage: string | null;
-  heroImagePositionX: number | null;
-  heroImagePositionY: number | null;
+  /** Pre-crop original hero upload, retained for lossless re-crop via the image editor modal. */
+  heroImageOriginal: string | null;
   isActive: boolean;
   location: string | null;
   tierLevel: string | null;

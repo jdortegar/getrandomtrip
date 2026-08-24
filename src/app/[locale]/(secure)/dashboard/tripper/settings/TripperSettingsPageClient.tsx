@@ -29,6 +29,7 @@ import {
   DEFAULT_COMMISSION,
   effectiveCommission,
 } from "@/lib/tripper/commission";
+import type { NormalizedCrop } from "@/lib/images/crop";
 
 function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
   return {
@@ -37,8 +38,7 @@ function normalizeExtras(extras: TripperSessionExtras): TripperSessionExtras {
     commission: effectiveCommission(extras.commission),
     destinations: extras.destinations ?? [],
     heroImage: extras.heroImage ?? "",
-    heroImagePositionX: extras.heroImagePositionX ?? null,
-    heroImagePositionY: extras.heroImagePositionY ?? null,
+    heroImageOriginal: extras.heroImageOriginal ?? null,
     isActive: extras.isActive ?? true,
     location: extras.location ?? "",
     nickname: extras.nickname ?? "",
@@ -54,8 +54,7 @@ const EMPTY_FORM: TripperSettingsFormState = {
   email: "",
   bio: "",
   heroImage: "",
-  heroImagePositionX: 50,
-  heroImagePositionY: 50,
+  heroImageOriginal: null,
   isActive: true,
   location: "",
   tierLevel: "",
@@ -101,8 +100,6 @@ export default function TripperSettingsPageClient({
   const [formData, setFormData] = useState<TripperSettingsFormState>(() => ({
     ...EMPTY_FORM,
     ...(initialNormalized ?? {}),
-    heroImagePositionX: initialNormalized?.heroImagePositionX ?? 50,
-    heroImagePositionY: initialNormalized?.heroImagePositionY ?? 50,
     isActive: initialNormalized?.isActive ?? true,
   }));
   const [profile, setProfile] = useState<TripperSessionExtras>(
@@ -112,8 +109,7 @@ export default function TripperSettingsPageClient({
       commission: DEFAULT_COMMISSION,
       destinations: [],
       heroImage: "",
-      heroImagePositionX: null,
-      heroImagePositionY: null,
+      heroImageOriginal: null,
       isActive: true,
       location: "",
       nickname: "",
@@ -164,8 +160,6 @@ export default function TripperSettingsPageClient({
             setFormData((prev) => ({
               ...prev,
               ...normalized,
-              heroImagePositionX: normalized.heroImagePositionX ?? 50,
-              heroImagePositionY: normalized.heroImagePositionY ?? 50,
               isActive: normalized.isActive ?? true,
               name: currentUser.name || "",
               email: currentUser.email || "",
@@ -238,8 +232,6 @@ export default function TripperSettingsPageClient({
     setFormData((prev) => ({
       ...prev,
       ...profile,
-      heroImagePositionX: profile.heroImagePositionX ?? 50,
-      heroImagePositionY: profile.heroImagePositionY ?? 50,
       isActive: profile.isActive ?? true,
       name: currentUser?.name || "",
       email: currentUser?.email || "",
@@ -256,8 +248,7 @@ export default function TripperSettingsPageClient({
         body: JSON.stringify({
           bio: formData.bio,
           heroImage: formData.heroImage,
-          heroImagePositionX: formData.heroImagePositionX,
-          heroImagePositionY: formData.heroImagePositionY,
+          heroImageOriginal: formData.heroImageOriginal,
           location: formData.location,
           nickname: formData.nickname,
           socialLinks: formData.socialLinks,
@@ -285,8 +276,7 @@ export default function TripperSettingsPageClient({
             ...session?.user,
             bio: nextProfile.bio,
             heroImage: nextProfile.heroImage,
-            heroImagePositionX: nextProfile.heroImagePositionX,
-            heroImagePositionY: nextProfile.heroImagePositionY,
+            heroImageOriginal: nextProfile.heroImageOriginal,
             location: nextProfile.location,
             nickname: nextProfile.nickname,
             socialLinks: nextProfile.socialLinks,
@@ -320,9 +310,13 @@ export default function TripperSettingsPageClient({
     }
   }
 
-  async function handleUploadHeroImage(file: File) {
-    const MAX_HERO_BYTES = 5 * 1024 * 1024; // 5 MB
-    if (file.size > MAX_HERO_BYTES) {
+  async function handleUploadHeroImage(
+    file: File | undefined,
+    crop: NormalizedCrop,
+    originalUrl?: string,
+  ) {
+    const MAX_HERO_BYTES = 10 * 1024 * 1024; // 10 MB — matches /api/upload's cap
+    if (file && file.size > MAX_HERO_BYTES) {
       toast.error(copy.hero.imageTooLarge);
       return;
     }
@@ -330,8 +324,12 @@ export default function TripperSettingsPageClient({
     try {
       const oldHeroImage = formData.heroImage;
       const upload = new FormData();
-      upload.append("file", file);
+      if (file) upload.append("file", file);
       upload.append("feature", "tripper-hero");
+      upload.append("crop", JSON.stringify(crop));
+      if (!file && originalUrl) {
+        upload.append("originalKey", originalUrl.replace(/^\/api\/upload\//, ""));
+      }
       const response = await fetch("/api/upload", {
         body: upload,
         method: "POST",
@@ -344,11 +342,23 @@ export default function TripperSettingsPageClient({
         throw new Error(body?.error ?? "Upload failed");
       }
 
-      const data = (await response.json()) as { url?: string };
+      const data = (await response.json()) as {
+        url?: string;
+        originalUrl?: string;
+      };
       if (!data.url) throw new Error("No URL returned from upload");
-      setFormData((prev) => ({ ...prev, heroImage: data.url as string }));
-      setProfile((prev) => ({ ...prev, heroImage: data.url as string }));
-      // Delete old blob (fire-and-forget)
+      setFormData((prev) => ({
+        ...prev,
+        heroImage: data.url as string,
+        heroImageOriginal: data.originalUrl ?? prev.heroImageOriginal,
+      }));
+      setProfile((prev) => ({
+        ...prev,
+        heroImage: data.url as string,
+        heroImageOriginal: data.originalUrl ?? prev.heroImageOriginal,
+      }));
+      // Delete old baked blob (fire-and-forget) — the original is retained
+      // for lossless re-crop, never deleted here.
       if (oldHeroImage?.includes("/api/upload")) {
         void fetch(oldHeroImage, { method: "DELETE" }).catch(() => null);
       }
@@ -387,23 +397,24 @@ export default function TripperSettingsPageClient({
 
           {viewMode === "tripper" && (
             <>
-              <TripperSettingsHeroCard
-                copy={copy.hero}
-                formData={formData}
-                isEditing={isEditing}
-                isSaving={isSaving}
-                isUploadingHeroImage={isUploadingHeroImage}
-                onCancel={cancelEdit}
-                onChange={setFormData}
-                onEdit={openEdit}
-                onSave={handleSave}
-                onUploadHeroImage={handleUploadHeroImage}
-                stats={stats}
-                tierLabels={tierLabels}
-              />
-
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
-                <div>
+                <div className="flex flex-col gap-6">
+                  <TripperSettingsHeroCard
+                    avatarToastCopy={dict.profile.toasts}
+                    copy={copy.hero}
+                    imageEditorCopy={dict.imageEditor}
+                    formData={formData}
+                    isEditing={isEditing}
+                    isSaving={isSaving}
+                    isUploadingHeroImage={isUploadingHeroImage}
+                    onCancel={cancelEdit}
+                    onChange={setFormData}
+                    onEdit={openEdit}
+                    onSave={handleSave}
+                    onUploadHeroImage={handleUploadHeroImage}
+                    stats={stats}
+                    tierLabels={tierLabels}
+                  />
                   <TripperSettingsPublicPresenceCard
                     copy={copy.publicPresence}
                     formData={formData}

@@ -310,6 +310,7 @@ export const authOptions: NextAuthOptions = {
             interests: true,
             dislikes: true,
             avatarUrl: true,
+            avatarUrlOriginal: true,
             siteAccessGrantedAt: true,
           },
         });
@@ -331,6 +332,7 @@ export const authOptions: NextAuthOptions = {
           if (dbUser.avatarUrl) {
             session.user.image = dbUser.avatarUrl;
           }
+          session.user.avatarUrlOriginal = dbUser.avatarUrlOriginal ?? undefined;
           session.user.address = dbUser.address as
             | Record<string, string>
             | null

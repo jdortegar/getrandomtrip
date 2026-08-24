@@ -56,6 +56,7 @@ export async function getUserProfileMe(
       dislikes: true,
       roles: true,
       avatarUrl: true,
+      avatarUrlOriginal: true,
     },
   });
 
@@ -76,5 +77,6 @@ export async function getUserProfileMe(
     role: prismaUserRoleToAppRole(primaryRoleFromMembership(u.roles)),
     roles,
     avatarUrl: u.avatarUrl,
+    avatarUrlOriginal: u.avatarUrlOriginal,
   };
 }

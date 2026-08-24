@@ -48,8 +48,7 @@ export async function PATCH(request: NextRequest) {
     const {
       bio,
       heroImage,
-      heroImagePositionX,
-      heroImagePositionY,
+      heroImageOriginal,
       location,
       nickname,
       socialLinks,
@@ -132,9 +131,9 @@ export async function PATCH(request: NextRequest) {
       data: {
         bio,
         heroImage,
+        heroImageOriginal:
+          typeof heroImageOriginal === "string" ? heroImageOriginal : undefined,
         ...(isNewTripper ? { tripperSince: new Date() } : {}),
-        heroImagePositionX: typeof heroImagePositionX === "number" ? heroImagePositionX : undefined,
-        heroImagePositionY: typeof heroImagePositionY === "number" ? heroImagePositionY : undefined,
         location,
         nickname,
         socialLinks,
@@ -152,8 +151,7 @@ export async function PATCH(request: NextRequest) {
         roles: true,
         bio: true,
         heroImage: true,
-        heroImagePositionX: true,
-        heroImagePositionY: true,
+        heroImageOriginal: true,
         isActive: true,
         location: true,
         nickname: true,

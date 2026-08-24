@@ -66,6 +66,18 @@
       "TT": "Trinidad and Tobago"
     }
   },
+  "imageEditor": {
+    "title": "Edit image",
+    "dropHint": "Drag an image here",
+    "dropHintDivider": "or",
+    "chooseFile": "Choose a file",
+    "zoomLabel": "Zoom",
+    "pickAnother": "Pick another image",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "uploadError": "Couldn't upload the image. Please try again."
+  },
   "adminDashboard": {
     "nav": {
       "dashboard": "Dashboard",

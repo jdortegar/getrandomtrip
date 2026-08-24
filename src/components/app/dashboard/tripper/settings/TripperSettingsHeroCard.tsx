@@ -1,11 +1,14 @@
 "use client";
 
-import { Camera, MapPin, MoveHorizontal, Pencil, RotateCcw, Shield, Star } from "lucide-react";
-import { useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { Camera, Loader2, MapPin, Pencil, Shield, Star } from "lucide-react";
+import { useState } from "react";
+import { AvatarEditor } from "@/components/ui/AvatarEditor";
 import { Button } from "@/components/ui/Button";
-import { UserAvatar } from "@/components/ui/UserAvatar";
 import Img from "@/components/common/Img";
-import type { TripperDashboardDict } from "@/lib/types/dictionary";
+import type { AvatarEditorToastCopy } from "@/components/ui/AvatarEditor";
+import type { ImageEditorResult } from "@/components/ui/ImageEditorModal";
+import type { ImageEditorDict, TripperDashboardDict } from "@/lib/types/dictionary";
 import {
   TRIPPER_TIER_ORDER,
   type TripperSettingsFormState,
@@ -13,9 +16,23 @@ import {
   type TripperTierCopy,
   type TripperTierLevel,
 } from "@/types/tripper";
+import type { NormalizedCrop } from "@/lib/images/crop";
+
+// Dynamic-imported at module scope so react-easy-crop is not in the settings
+// page's initial bundle — only fetched once the editor is actually opened.
+const ImageEditorModal = dynamic(
+  () => import("@/components/ui/ImageEditorModal").then((m) => m.ImageEditorModal),
+  { ssr: false },
+);
+
+/** Fraction of the public hero's height the navbar occludes at md+ — drawn as
+ * a guide strip in the editor so trippers don't frame a face under it. */
+const HERO_SAFE_AREA_TOP_PCT = 0.09;
 
 interface TripperSettingsHeroCardProps {
+  avatarToastCopy: AvatarEditorToastCopy;
   copy: TripperDashboardDict["settingsProfile"]["hero"];
+  imageEditorCopy: ImageEditorDict;
   tierLabels: TripperTierCopy;
   formData: TripperSettingsFormState;
   stats: TripperSettingsStats;
@@ -26,21 +43,17 @@ interface TripperSettingsHeroCardProps {
   onCancel: () => void;
   onEdit: () => void;
   onSave: () => void;
-  onUploadHeroImage: (file: File) => Promise<void>;
-}
-
-interface DragState {
-  active: boolean;
-  startX: number;
-  startY: number;
-  startPosX: number;
-  startPosY: number;
-  containerWidth: number;
-  containerHeight: number;
+  onUploadHeroImage: (
+    file: File | undefined,
+    crop: NormalizedCrop,
+    originalUrl?: string,
+  ) => Promise<void>;
 }
 
 export function TripperSettingsHeroCard({
+  avatarToastCopy,
   copy,
+  imageEditorCopy,
   tierLabels,
   formData,
   stats,
@@ -53,22 +66,9 @@ export function TripperSettingsHeroCard({
   onSave,
   onUploadHeroImage,
 }: TripperSettingsHeroCardProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const dragRef = useRef<DragState>({
-    active: false,
-    startX: 0,
-    startY: 0,
-    startPosX: 50,
-    startPosY: 50,
-    containerWidth: 1,
-    containerHeight: 1,
-  });
-
-  const [isDragging, setIsDragging] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   const hasHeroImage = formData.heroImage.trim().length > 0;
-  const posX = formData.heroImagePositionX;
-  const posY = formData.heroImagePositionY;
 
   const tierKey = (
     TRIPPER_TIER_ORDER.includes(formData.tierLevel as TripperTierLevel)
@@ -102,82 +102,33 @@ export function TripperSettingsHeroCard({
     },
   ];
 
-  function handlePointerDown(e: React.PointerEvent<HTMLDivElement>) {
-    if (!isEditing || !hasHeroImage || isUploadingHeroImage) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    dragRef.current = {
-      active: true,
-      startX: e.clientX,
-      startY: e.clientY,
-      startPosX: posX,
-      startPosY: posY,
-      // Capture dimensions once so pointer move never triggers layout reads
-      containerWidth: rect.width || 1,
-      containerHeight: rect.height || 1,
-    };
-    setIsDragging(true);
-  }
-
-  function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
-    if (!dragRef.current.active) return;
-    const { startX, startY, startPosX, startPosY, containerWidth, containerHeight } =
-      dragRef.current;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    // Invert: dragging right shifts the focal point left (image pans right)
-    const newX = Math.min(100, Math.max(0, startPosX - (dx / containerWidth) * 100));
-    const newY = Math.min(100, Math.max(0, startPosY - (dy / containerHeight) * 100));
-    onChange({ ...formData, heroImagePositionX: newX, heroImagePositionY: newY });
-  }
-
-  function handlePointerUp() {
-    if (!dragRef.current.active) return;
-    dragRef.current.active = false;
-    setIsDragging(false);
-  }
-
   function stopPropagation(e: React.PointerEvent) {
     e.stopPropagation();
   }
 
-  function handleResetPosition() {
-    onChange({ ...formData, heroImagePositionX: 50, heroImagePositionY: 50 });
+  async function handleEditorSave(result: ImageEditorResult) {
+    await onUploadHeroImage(result.file, result.crop, result.originalUrl);
+    setEditorOpen(false);
   }
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
-      <div className="relative h-95 md:h-72">
-        {/* Draggable image surface */}
+      <div className="relative aspect-[16/9] w-full">
+        {/* Image surface — plain object-cover, no client-side position math:
+            the server bakes the final 16:9 crop, this just displays it. */}
         <div
-          className="absolute inset-0"
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          style={{
-            cursor: isEditing && hasHeroImage
-              ? isDragging
-                ? "grabbing"
-                : "grab"
-              : "default",
-          }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={
+            hasHeroImage
+              ? { backgroundImage: `url(${formData.heroImage})` }
+              : {
+                  background:
+                    "linear-gradient(135deg, #0f2a36 0%, #1a4a62 40%, #2d6a8f 70%, #4f96b6 100%)",
+                }
+          }
         >
-          {hasHeroImage ? (
-            <div
-              className="absolute inset-0 bg-cover bg-no-repeat"
-              style={{
-                backgroundImage: `url(${formData.heroImage})`,
-                backgroundPosition: `${posX}% ${posY}%`,
-              }}
-            />
-          ) : (
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{
-                background:
-                  "linear-gradient(135deg, #0f2a36 0%, #1a4a62 40%, #2d6a8f 70%, #4f96b6 100%)",
-              }}
-            >
+          {!hasHeroImage && (
+            <div className="absolute inset-0 flex items-center justify-center">
               <Img
                 alt=""
                 className="opacity-[0.28]"
@@ -190,56 +141,46 @@ export function TripperSettingsHeroCard({
             </div>
           )}
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
-
-          {/* Drag-to-reposition hint pill */}
-          {isEditing && hasHeroImage && !isDragging && (
-            <div className="pointer-events-none absolute bottom-24 left-1/2 -translate-x-1/2 md:bottom-16">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-                <MoveHorizontal className="h-3.5 w-3.5" />
-                {copy.dragToReposition}
-              </span>
-            </div>
-          )}
         </div>
 
-        {/* Hidden file input */}
-        <input
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) void onUploadHeroImage(file);
-            e.currentTarget.value = "";
-          }}
-          ref={fileInputRef}
-          type="file"
-        />
+        {editorOpen && (
+          <ImageEditorModal
+            aspect={16 / 9}
+            copy={imageEditorCopy}
+            maskShape="rect"
+            onOpenChange={setEditorOpen}
+            onSave={handleEditorSave}
+            open={editorOpen}
+            safeAreaTopPct={HERO_SAFE_AREA_TOP_PCT}
+            saving={isUploadingHeroImage}
+            source={{
+              originalUrl:
+                formData.heroImageOriginal ??
+                (hasHeroImage ? formData.heroImage : undefined),
+            }}
+          />
+        )}
 
-        {/* Edit-mode overlay buttons: Change photo + Reset */}
-        {isEditing && hasHeroImage && (
-          <div className="absolute left-3 top-3 z-10 flex gap-2">
-            <button
-              aria-label={copy.changePhoto}
-              className="flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/80 disabled:opacity-50"
-              disabled={isUploadingHeroImage}
-              onClick={() => fileInputRef.current?.click()}
-              onPointerDown={stopPropagation}
-              type="button"
-            >
-              <Camera className="h-3.5 w-3.5" />
-              {isUploadingHeroImage ? copy.saving : copy.changePhoto}
-            </button>
-            <button
-              aria-label={copy.resetPosition}
-              className="flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition-colors hover:bg-black/80"
-              onClick={handleResetPosition}
-              onPointerDown={stopPropagation}
-              type="button"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              {copy.resetPosition}
-            </button>
+        {/* Edit-mode hover-to-change treatment — same pattern as UserAvatar's
+            hover overlay: darkened backdrop fades in on hover, centered
+            camera icon, swapped for a spinner while uploading. */}
+        {isEditing && hasHeroImage && isUploadingHeroImage && (
+          <div className="absolute inset-0 z-[5] flex items-center justify-center bg-black/40">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
+        )}
+        {isEditing && hasHeroImage && !isUploadingHeroImage && (
+          <button
+            aria-label={copy.changePhoto}
+            className="group absolute inset-0 z-[5]"
+            onClick={() => setEditorOpen(true)}
+            onPointerDown={stopPropagation}
+            type="button"
+          >
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+              <Camera className="h-6 w-6 text-white" />
+            </div>
+          </button>
         )}
 
         {/* Edit-mode upload hint when no image */}
@@ -248,7 +189,7 @@ export function TripperSettingsHeroCard({
             aria-label={copy.uploadHint}
             className="absolute inset-0 z-10 flex items-center justify-center"
             disabled={isUploadingHeroImage}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => setEditorOpen(true)}
             type="button"
           >
             <span className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-sm font-medium text-white">
@@ -302,7 +243,12 @@ export function TripperSettingsHeroCard({
         <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-4 p-6 text-center md:flex-row md:items-end md:justify-between md:text-left">
           <div className="flex flex-col items-center gap-2 md:flex-row md:items-end md:gap-4">
             <div className="shrink-0 rounded-full ring-4 ring-white/20">
-              <UserAvatar height={80} width={80} />
+              <AvatarEditor
+                imageEditorCopy={imageEditorCopy}
+                showStatus
+                size={160}
+                toastCopy={avatarToastCopy}
+              />
             </div>
             <div className="flex flex-col items-center gap-2 md:items-start">
               {isEditing ? (

@@ -21,4 +21,6 @@ export interface UserProfileMe {
    */
   role: "admin" | "traveler" | "tripper";
   avatarUrl?: string | null;
+  /** Pre-crop original avatar upload, retained for lossless re-crop via the image editor modal. */
+  avatarUrlOriginal?: string | null;
 }

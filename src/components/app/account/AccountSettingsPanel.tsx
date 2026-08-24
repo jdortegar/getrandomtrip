@@ -23,9 +23,9 @@ import { toast } from "sonner";
 
 import { useUserStore } from "@/store/slices/userStore";
 import Chip from "@/components/Chip";
+import { AvatarEditor } from "@/components/ui/AvatarEditor";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
-import { UserAvatar } from "@/components/ui/UserAvatar";
 import EmptyState from "@/components/profile/EmptyState";
 import { AccountSettingsDocumentsTab } from "@/components/app/account/AccountSettingsDocumentsTab";
 import { AccountDangerZone } from "@/components/app/account/AccountDangerZone";
@@ -121,7 +121,6 @@ export function AccountSettingsPanel({
     initialProfile,
   );
   const [profileLoading, setProfileLoading] = useState(!initialProfile);
-  const [avatarUploading, setAvatarUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [isDetailsEditing, setIsDetailsEditing] = useState(false);
   const [detailsForm, setDetailsForm] = useState<DetailsFormState>({
@@ -294,59 +293,6 @@ export function AccountSettingsPanel({
     }
   };
 
-  const handleAvatarChange = async (file: File) => {
-    if (!dict) return;
-    const t = dict.profile.toasts;
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error(t.avatarFileTooLarge);
-      return;
-    }
-    setAvatarUploading(true);
-    try {
-      const oldAvatarUrl = user?.avatar;
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("feature", "avatar");
-      const uploadRes = await fetch("/api/upload", {
-        body: formData,
-        method: "POST",
-      });
-      if (!uploadRes.ok) {
-        toast.error(t.avatarUploadError);
-        return;
-      }
-      const { url } = (await uploadRes.json()) as { url?: string };
-      if (!url) {
-        toast.error(t.avatarUploadError);
-        return;
-      }
-      const updateRes = await fetch("/api/user/update", {
-        body: JSON.stringify({ avatarUrl: url }),
-        headers: { "Content-Type": "application/json" },
-        method: "PATCH",
-      });
-      if (!updateRes.ok) {
-        toast.error(t.avatarUploadError);
-        return;
-      }
-      await updateSession({
-        ...session,
-        user: { ...session?.user, image: url },
-      });
-      useUserStore.setState((s) => ({
-        user: s.user ? { ...s.user, avatar: url } : s.user,
-      }));
-      if (oldAvatarUrl?.includes("/api/upload")) {
-        void fetch(oldAvatarUrl, { method: "DELETE" }).catch(() => null);
-      }
-      toast.success(t.avatarUploadSuccess);
-    } catch {
-      toast.error(t.avatarUploadError);
-    } finally {
-      setAvatarUploading(false);
-    }
-  };
-
   const handleChangePassword = async () => {
     if (!dict) return;
     const t = dict.profile.toasts;
@@ -500,12 +446,11 @@ export function AccountSettingsPanel({
       {activeTab === "overview" && (
         <div className="space-y-6">
           <div className="flex flex-col gap-4 rounded-2xl bg-neutral-50 p-6 sm:flex-row sm:items-center">
-            <UserAvatar
-              height={64}
-              onAvatarChange={handleAvatarChange}
+            <AvatarEditor
+              imageEditorCopy={dict.imageEditor}
               showStatus
-              uploading={avatarUploading}
-              width={64}
+              size={96}
+              toastCopy={p.toasts}
             />
             <div className="flex-1">
               <p className="text-lg font-bold text-neutral-900">
