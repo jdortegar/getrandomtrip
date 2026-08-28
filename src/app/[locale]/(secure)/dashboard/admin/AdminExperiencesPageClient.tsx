@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Archive,
   ArrowRight,
@@ -26,13 +26,20 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   EXPERIENCE_SORT_DEFAULT,
   EXPERIENCE_SORT_INITIAL_ORDER,
+  parseExperienceSortBy,
+  parseExperienceSortOrder,
   type ExperienceSortBy,
   type ExperienceSortOrder,
 } from "@/lib/admin/experiencesSort";
 import type { AdminExperience } from "@/lib/admin/types";
-import { EXPERIENCE_LEVELS, getExperienceTypes } from "@/lib/constants/packages";
+import {
+  EXPERIENCE_LEVELS,
+  EXPERIENCE_TYPES,
+  getExperienceTypes,
+} from "@/lib/constants/packages";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
+import { useQuerySync } from "@/hooks/useQuerySync";
 import { cn } from "@/lib/utils";
 
 /** "PENDING" is a synthetic value spanning both pending-review statuses —
@@ -54,41 +61,92 @@ function isLockedForSelection(status: string): boolean {
   return status === "PENDING_REVIEW" || status === "PENDING_TRIPPER_REVIEW";
 }
 
+const STATUS_FILTER_VALUES: readonly StatusFilter[] = [
+  "ALL",
+  "PENDING",
+  "DRAFT",
+  "ACTIVE",
+  "INACTIVE",
+  "ARCHIVED",
+];
+
+/** Whitelist-validated URL param readers — a stale/tampered query string must
+ * never crash the page or reach the API with a bogus filter value. */
+function parseStatusFilter(value: string | null): StatusFilter {
+  return (STATUS_FILTER_VALUES as readonly string[]).includes(value ?? "")
+    ? (value as StatusFilter)
+    : "PENDING";
+}
+
+function parseTypeFilter(value: string | null): string {
+  return value && EXPERIENCE_TYPES.some((t) => t.value === value) ? value : "ALL";
+}
+
+function parseLevelFilter(value: string | null): string {
+  return value && EXPERIENCE_LEVELS.some((l) => l.value === value) ? value : "ALL";
+}
+
+function parsePage(value: string | null): number {
+  const n = Number(value);
+  return Number.isInteger(n) && n > 0 ? n : 1;
+}
+
 export function AdminExperiencesPageClient() {
   const copy = useDictionary((d) => d.adminPages.experiences);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const updateQuery = useQuerySync();
 
   const [experiences, setExperiences] = useState<AdminExperience[]>([]);
   const [total, setTotal] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => parsePage(searchParams.get("page")));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const hasLoadedOnce = useHasLoadedOnce(loading);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("PENDING");
-  const [typeFilter, setTypeFilter] = useState<string>("ALL");
-  const [levelFilter, setLevelFilter] = useState<string>("ALL");
-  const [sortBy, setSortBy] = useState<ExperienceSortBy>(
-    EXPERIENCE_SORT_DEFAULT.sortBy,
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(() =>
+    parseStatusFilter(searchParams.get("status")),
   );
-  const [sortOrder, setSortOrder] = useState<ExperienceSortOrder>(
-    EXPERIENCE_SORT_DEFAULT.sortOrder,
+  const [typeFilter, setTypeFilter] = useState<string>(() =>
+    parseTypeFilter(searchParams.get("type")),
   );
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [levelFilter, setLevelFilter] = useState<string>(() =>
+    parseLevelFilter(searchParams.get("level")),
+  );
+  const [sortBy, setSortBy] = useState<ExperienceSortBy>(() =>
+    parseExperienceSortBy(searchParams.get("sortBy")),
+  );
+  const [sortOrder, setSortOrder] = useState<ExperienceSortOrder>(() =>
+    parseExperienceSortOrder(searchParams.get("sortOrder")),
+  );
+  const [searchQuery, setSearchQuery] = useState(
+    () => searchParams.get("search") ?? "",
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    () => searchParams.get("search") ?? "",
+  );
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [isBulkArchiving, setIsBulkArchiving] = useState(false);
   const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
   const selectAllRef = useRef<HTMLInputElement>(null);
+  const isFirstSearchEffect = useRef(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    if (isFirstSearchEffect.current) {
+      isFirstSearchEffect.current = false;
+      return;
+    }
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      updateQuery({ search: searchQuery || undefined, page: undefined });
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const selectableVisible = experiences.filter((e) => !isLockedForSelection(e.status));
@@ -107,29 +165,40 @@ export function AdminExperiencesPageClient() {
     setStatusFilter(next);
     setSelectedIds(new Set());
     setPage(1);
+    updateQuery({ status: next === "PENDING" ? undefined : next, page: undefined });
   }
 
   function handleTypeChange(next: string) {
     setTypeFilter(next);
     setSelectedIds(new Set());
     setPage(1);
+    updateQuery({ type: next === "ALL" ? undefined : next, page: undefined });
   }
 
   function handleLevelChange(next: string) {
     setLevelFilter(next);
     setSelectedIds(new Set());
     setPage(1);
+    updateQuery({ level: next === "ALL" ? undefined : next, page: undefined });
   }
 
   function toggleSort(field: ExperienceSortBy) {
-    if (field === sortBy) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder(EXPERIENCE_SORT_INITIAL_ORDER[field]);
-    }
+    const nextOrder: ExperienceSortOrder =
+      field === sortBy
+        ? sortOrder === "asc"
+          ? "desc"
+          : "asc"
+        : EXPERIENCE_SORT_INITIAL_ORDER[field];
+    setSortBy(field);
+    setSortOrder(nextOrder);
     setSelectedIds(new Set());
     setPage(1);
+    updateQuery({
+      sortBy: field === EXPERIENCE_SORT_DEFAULT.sortBy ? undefined : field,
+      sortOrder:
+        nextOrder === EXPERIENCE_SORT_DEFAULT.sortOrder ? undefined : nextOrder,
+      page: undefined,
+    });
   }
 
   function clearFilters() {
@@ -140,11 +209,19 @@ export function AdminExperiencesPageClient() {
     setDebouncedSearch("");
     setSelectedIds(new Set());
     setPage(1);
+    updateQuery({
+      status: undefined,
+      type: undefined,
+      level: undefined,
+      search: undefined,
+      page: undefined,
+    });
   }
 
   function handlePageChange(next: number) {
     setPage(next);
     setSelectedIds(new Set());
+    updateQuery({ page: next === 1 ? undefined : String(next) });
   }
 
   function toggleSelectAll() {
@@ -391,6 +468,7 @@ export function AdminExperiencesPageClient() {
                 setSearchQuery(e.target.value);
                 setSelectedIds(new Set());
                 setPage(1);
+                updateQuery({ page: undefined });
               }}
               placeholder={copy.searchPlaceholder}
               type="text"

@@ -116,6 +116,9 @@ export function TripperSettingsSocialLinks({
   onChange,
 }: TripperSettingsSocialLinksProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [activeNetwork, setActiveNetwork] = useState<SocialNetwork | null>(
+    null,
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -131,6 +134,10 @@ export function TripperSettingsSocialLinks({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!isEditing) setActiveNetwork(null);
+  }, [isEditing]);
+
   const usedNetworks = new Set(links.map((l) => l.network));
   const availableNetworks = ALL_NETWORKS.filter((n) => !usedNetworks.has(n));
 
@@ -140,11 +147,13 @@ export function TripperSettingsSocialLinks({
 
   function removeLink(network: SocialNetwork) {
     onChange(links.filter((l) => l.network !== network));
+    setActiveNetwork((current) => (current === network ? null : current));
   }
 
   function addNetwork(network: SocialNetwork) {
     onChange([...links, { network, handle: "" }]);
     setIsDropdownOpen(false);
+    setActiveNetwork(network);
   }
 
   if (links.length === 0 && !isEditing) {
@@ -157,25 +166,38 @@ export function TripperSettingsSocialLinks({
         <div className="divide-y divide-neutral-100">
           {links.map((link) => {
             const config = SOCIAL_NETWORK_CONFIG[link.network];
+            const isRowActive =
+              isEditing &&
+              (activeNetwork === link.network || link.handle.trim() === "");
             return (
-              <div className="flex items-center gap-3 py-2.5" key={link.network}>
-                <NetworkBadge network={link.network} size={36} />
-                <span className="w-24 shrink-0 text-sm font-semibold text-neutral-700">
-                  {config.label}
-                </span>
-                {isEditing ? (
-                  <div className="flex flex-1 items-center gap-2">
-                    <div className="flex flex-1 items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-light-blue">
+              <div
+                className="flex flex-wrap items-center gap-x-3 gap-y-2 py-2.5"
+                key={link.network}
+              >
+                <div className="flex shrink-0 items-center gap-3">
+                  <NetworkBadge network={link.network} size={36} />
+                  <span className="w-24 shrink-0 text-sm font-semibold text-neutral-700">
+                    {config.label}
+                  </span>
+                </div>
+                {isRowActive ? (
+                  <div className="flex w-full items-center gap-2 sm:w-auto">
+                    <div className="inline-flex w-full items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-light-blue sm:w-64 sm:min-w-[200px]">
                       {config.prefix && (
                         <span className="text-sm text-neutral-400">
                           {config.prefix}
                         </span>
                       )}
                       <input
+                        autoFocus
                         className="w-full bg-transparent text-sm text-neutral-800 outline-none"
+                        onBlur={() => setActiveNetwork(null)}
                         onChange={(e) =>
                           updateHandle(link.network, e.target.value)
                         }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") e.currentTarget.blur();
+                        }}
                         placeholder={config.placeholder}
                         type="text"
                         value={link.handle}
@@ -188,6 +210,28 @@ export function TripperSettingsSocialLinks({
                       type="button"
                     >
                       <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : isEditing ? (
+                  <div className="group/row flex items-center gap-1.5">
+                    <button
+                      className="text-left"
+                      onClick={() => setActiveNetwork(link.network)}
+                      type="button"
+                    >
+                      <span className="text-sm text-neutral-600">
+                        {config.prefix}
+                        {link.handle}
+                      </span>
+                    </button>
+                    <button
+                      aria-label={config.label}
+                      className="relative flex h-4 w-4 shrink-0 items-center justify-center"
+                      onClick={() => removeLink(link.network)}
+                      type="button"
+                    >
+                      <Check className="h-4 w-4 text-green-600 transition-opacity group-hover/row:opacity-0" />
+                      <X className="absolute inset-0 h-4 w-4 text-red-500 opacity-0 transition-opacity group-hover/row:opacity-100" />
                     </button>
                   </div>
                 ) : (

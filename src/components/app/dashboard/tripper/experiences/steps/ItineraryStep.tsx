@@ -1,11 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { toast } from "sonner";
-import { validateImageSize } from "@/lib/utils/validateImageSize";
-import { X, ImagePlus } from "lucide-react";
-import Image from "next/image";
+import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { RichTextInput } from "@/components/ui/RichTextInput";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type {
@@ -24,9 +21,6 @@ interface Props {
   isReadOnly?: boolean;
 }
 
-const uploadTileClass =
-  "flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors";
-
 const EMPTY_DAY: ItineraryDayEntry = { title: "", description: "", image: null };
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
@@ -35,7 +29,6 @@ const req = <span className="text-red-500 ml-0.5">*</span>;
 export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSet, isReadOnly }: Props) {
   const { fields } = copy;
   const { onEntryImageSelect, onEntryImageRemove } = imageState;
-  const dayImageRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   function updateDay(
     index: number,
@@ -112,57 +105,17 @@ export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSe
               <label className="block text-sm font-normal text-gray-600">
                 {fields.dayImageLabel}
               </label>
-              <div className="flex items-start gap-3">
-                {day.image ? (
-                  <div className="relative h-24 w-24 shrink-0 rounded-xl overflow-hidden group">
-                    <Image
-                      src={day.image}
-                      alt={`Day ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                      unoptimized
-                    />
-                    <button
-                      type="button"
-                      onClick={() => onEntryImageRemove("itinerary", index)}
-                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-4 w-4 text-white" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => dayImageRefs.current[index]?.click()}
-                    className={uploadTileClass}
-                  >
-                    <ImagePlus className="h-5 w-5" />
-                    <span className="text-xs text-center leading-tight px-1">
-                      {fields.uploadImage}
-                    </span>
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
-              <p className="text-xs text-neutral-400">{fields.copyrightHint}</p>
-              <input
-                ref={(el) => { dayImageRefs.current[index] = el; }}
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const result = await validateImageSize(file, 800, 600);
-                  if (!result.valid) {
-                    toast.error(`${fields.imageTooSmall} — min 800 × 600 px (actual: ${result.width} × ${result.height} px)`);
-                    e.target.value = "";
-                    return;
-                  }
-                  onEntryImageSelect("itinerary", index, file);
-                  e.target.value = "";
-                }}
+              <ImageUploadTile
+                alt={`Day ${index + 1}`}
+                copyrightHint={fields.copyrightHint}
+                minHeight={600}
+                minWidth={800}
+                onRemove={() => onEntryImageRemove("itinerary", index)}
+                onSelect={(file) => onEntryImageSelect("itinerary", index, file)}
+                sizeHint={fields.entryImageSizeHint}
+                tooSmallLabel={fields.imageTooSmall}
+                uploadLabel={fields.uploadImage}
+                value={day.image}
               />
             </div>
           </div>

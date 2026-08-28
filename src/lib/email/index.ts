@@ -3,6 +3,7 @@ import AdminNewBooking, {
   subject as adminNewBookingSubject,
 } from "@/emails/AdminNewBooking";
 import AdminTripContactMessage from "@/emails/AdminTripContactMessage";
+import ContactFormSubmission from "@/emails/ContactFormSubmission";
 import ReviewApprovedForTripper, {
   subjects as reviewApprovedSubjects,
 } from "@/emails/ReviewApprovedForTripper";
@@ -1012,6 +1013,39 @@ export async function sendAdminTripContactMessage(params: {
         body: params.body,
         locale,
         subject: params.subject,
+      }),
+    },
+  });
+}
+
+/**
+ * Same await/throw contract as `sendAdminTripContactMessage`: the public
+ * contact form route awaits this and reports failure to the visitor, so it
+ * must not be fire-and-forgotten.
+ */
+export async function sendContactFormSubmission(params: {
+  attachments?: MailAttachment[];
+  email: string;
+  interest: string;
+  locale?: string | null;
+  message: string;
+  name: string;
+}): Promise<void> {
+  const locale = resolveLocale(params.locale);
+
+  await sendMail({
+    attachments: params.attachments,
+    to: "hola@getrandomtrip.com",
+    subject: `Contact form - ${params.interest}`,
+    replyTo: params.email,
+    content: {
+      react: React.createElement(ContactFormSubmission, {
+        attachmentName: params.attachments?.[0]?.filename,
+        email: params.email,
+        interest: params.interest,
+        locale,
+        message: params.message,
+        name: params.name,
       }),
     },
   });

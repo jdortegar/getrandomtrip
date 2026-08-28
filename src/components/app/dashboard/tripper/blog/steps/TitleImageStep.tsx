@@ -1,10 +1,8 @@
 "use client";
 
-import { useRef } from "react";
 import { useParams } from "next/navigation";
-import { ImagePlus, X } from "lucide-react";
-import Img from "@/components/common/Img";
 import { FormField } from "@/components/ui/FormField";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { getExcuseOptionsForType } from "@/lib/constants/packages";
 import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
@@ -28,7 +26,6 @@ const req = <span className="text-red-500 ml-0.5">*</span>;
 export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
-  const coverInputRef = useRef<HTMLInputElement>(null);
   const { fields } = copy;
   const { coverUploading, onCoverSelect, onCoverRemove } = imageState;
   const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
@@ -104,47 +101,20 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         </label>
         <p className="text-xs text-neutral-400 -mt-1">{fields.coverImageHint}</p>
 
-        {draft.coverUrl ? (
-          <div className={`group relative h-40 w-full max-w-md overflow-hidden rounded-xl border border-neutral-200${ch("coverUrl") ? ` ${ch("coverUrl")}` : ""}`}>
-            <Img
-              alt={fields.coverImage}
-              className="h-full w-full object-cover"
-              height={320}
-              src={draft.coverUrl}
-              width={448}
-            />
-            <button
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
-              onClick={onCoverRemove}
-              type="button"
-            >
-              <X className="h-5 w-5 text-white" />
-            </button>
-          </div>
-        ) : (
-          <button
-            className={`flex h-40 w-full max-w-md flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 transition-colors hover:border-gray-400 hover:text-gray-600${ch("coverUrl") ? ` ${ch("coverUrl")}` : ""}`}
-            disabled={coverUploading}
-            onClick={() => coverInputRef.current?.click()}
-            type="button"
-          >
-            <ImagePlus className="h-6 w-6" />
-            <span className="text-xs">
-              {coverUploading ? fields.uploading : fields.uploadImage}
-            </span>
-          </button>
-        )}
-
-        <input
-          accept="image/*"
-          className="sr-only"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.target.value = "";
-            if (file) onCoverSelect(file);
-          }}
-          ref={coverInputRef}
-          type="file"
+        <ImageUploadTile
+          alt={fields.coverImage}
+          className={ch("coverUrl")}
+          copyrightHint={fields.copyrightHint}
+          minHeight={720}
+          minWidth={1280}
+          onRemove={onCoverRemove}
+          onSelect={onCoverSelect}
+          sizeHint={fields.coverImageSizeHint}
+          tooSmallLabel={fields.imageTooSmall}
+          uploadLabel={fields.uploadImage}
+          uploading={coverUploading}
+          uploadingLabel={fields.uploading}
+          value={draft.coverUrl}
         />
       </div>
     </div>

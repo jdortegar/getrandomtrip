@@ -9,7 +9,8 @@ import type { AdminExperience } from "@/lib/admin/types";
 
 vi.mock("next/navigation", () => ({
   useParams: () => ({ locale: "es" }),
-  useRouter: () => ({ push: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 let container: HTMLDivElement;

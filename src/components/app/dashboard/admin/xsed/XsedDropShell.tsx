@@ -80,7 +80,11 @@ function resolveXsedStepContent(
   if (activeTab === "content") {
     if (substepId === "sections")
       return (
-        <XsedSectionsStep copy={dict.fields.sections} form={form} onChange={onChange} />
+        <XsedSectionsStep
+          copy={{ ...dict.fields.sections, uploadImage: dict.fields.uploadImage }}
+          form={form}
+          onChange={onChange}
+        />
       );
     if (substepId === "itinerary")
       return (
