@@ -3079,13 +3079,18 @@ export interface MarketingDictionary {
       socials: {
         facebook: string;
         instagram: string;
+        linkedin: string;
         x: string;
       };
     };
     form: {
+      attachment: string;
+      attachmentHint: string;
+      attachmentTooLarge: string;
       email: string;
       interest: string;
       interestOptions: {
+        cancellation: string;
         collaboration: string;
         other: string;
         partnerships: string;
@@ -3093,6 +3098,7 @@ export interface MarketingDictionary {
       };
       message: string;
       name: string;
+      removeAttachment: string;
       success: {
         description: string;
         title: string;

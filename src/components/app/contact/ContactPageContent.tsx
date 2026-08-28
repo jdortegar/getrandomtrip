@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { useState } from "react";
 import { ContactForm } from "@/components/app/contact/ContactForm";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
@@ -67,6 +67,14 @@ export function ContactPageContent({ copy }: ContactPageContentProps) {
           >
             <Facebook className="h-5 w-5" />
             <span>{copy.contact.socials.facebook}</span>
+          </Link>
+          <Link
+            className="flex items-center gap-2 text-neutral-700 underline-offset-2 hover:underline"
+            href="https://www.linkedin.com/company/getrandomtrip"
+            target="_blank"
+          >
+            <Linkedin className="h-5 w-5" />
+            <span>{copy.contact.socials.linkedin}</span>
           </Link>
         </div>
       </div>

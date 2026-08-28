@@ -4809,16 +4809,17 @@
     "intro": {
       "title": "Hablemos",
       "p1": "¿Tienes alguna pregunta sobre tu próximo Randomtrip o sobre cómo funcionan nuestros viajes sorpresa?",
-      "p2": "Completa el formulario o escribinos directamente a hola@randomtrip.com",
+      "p2": "Completa el formulario o escribinos directamente a hola@getrandomtrip.com",
       "p3": "¿Te interesa colaborar con Randomtrip o explorar oportunidades de publicidad o partnerships?",
-      "p4": "¡Nos encanta! Escribinos a partnerships@randomtrip.com."
+      "p4": "¡Nos encanta! Escribinos a partnerships@getrandomtrip.com."
     },
     "contact": {
       "heading": "Email",
-      "email": "contacto@randomtrip.com",
+      "email": "contacto@getrandomtrip.com",
       "socials": {
         "instagram": "getrandomtrip",
         "facebook": "getrandomtrip",
+        "linkedin": "getrandomtrip",
         "x": "X"
       },
       "socialsHeading": "Socials media"
@@ -4829,11 +4830,16 @@
       "interest": "¿Estás interesado en?",
       "interestOptions": {
         "trips": "Viajes sorpresa",
+        "cancellation": "Cancelaciones o problemas con el viaje",
         "collaboration": "Colaboraciones",
         "partnerships": "Partnerships",
         "other": "Otro"
       },
       "message": "Mensaje",
+      "attachment": "Adjuntar una foto o documento",
+      "attachmentHint": "Opcional. Nos ayuda a entender cancelaciones o problemas con el viaje más rápido. Máximo 5 MB.",
+      "attachmentTooLarge": "El archivo debe pesar menos de 5 MB.",
+      "removeAttachment": "Quitar adjunto",
       "success": {
         "title": "Consulta recibida",
         "description": "Te responderemos a la brevedad."
