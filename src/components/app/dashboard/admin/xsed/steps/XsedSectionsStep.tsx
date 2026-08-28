@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePlus, Loader2, X } from "lucide-react";
-import Img from "@/components/common/Img";
+import { useState } from "react";
+import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { RichTextInput } from "@/components/ui/RichTextInput";
 import type { AdminXsedDict } from "@/lib/types/dictionary";
 import type { XsedDropDraft, XsedSection, XsedSectionPhoto } from "@/types/xsed";
@@ -11,7 +11,7 @@ import type { XsedDropDraft, XsedSection, XsedSectionPhoto } from "@/types/xsed"
 interface Props {
   form: XsedDropDraft;
   onChange: (patch: Partial<XsedDropDraft>) => void;
-  copy: AdminXsedDict["form"]["fields"]["sections"];
+  copy: AdminXsedDict["form"]["fields"]["sections"] & { uploadImage: string };
 }
 
 const EMPTY_SECTION: XsedSection = { title: "", body: "", photos: [] };
@@ -41,7 +41,6 @@ function PhotoTile({
   onChange: (patch: Partial<XsedSectionPhoto>) => void;
   onRemove: () => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   async function handleFile(file: File) {
@@ -51,54 +50,17 @@ function PhotoTile({
       onChange({ url });
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
   return (
     <div className="flex flex-col gap-2 rounded-xl border border-gray-200 p-3">
-      {photo.url ? (
-        <div className="group relative h-32 w-full overflow-hidden rounded-lg">
-          <Img
-            alt=""
-            className="h-full w-full object-cover"
-            height={128}
-            src={photo.url}
-            unoptimized
-            width={300}
-          />
-          <button
-            className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
-            onClick={onRemove}
-            type="button"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-      ) : (
-        <button
-          className="flex h-32 w-full flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-neutral-400 transition-colors hover:border-gray-400 hover:text-neutral-600 disabled:opacity-50"
-          disabled={uploading}
-          onClick={() => inputRef.current?.click()}
-          type="button"
-        >
-          {uploading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <ImagePlus className="h-5 w-5" />
-          )}
-        </button>
-      )}
-
-      <input
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) void handleFile(f);
-        }}
-        ref={inputRef}
-        type="file"
+      <ImageUploadTile
+        onRemove={onRemove}
+        onSelect={handleFile}
+        uploadLabel={copy.uploadImage}
+        uploading={uploading}
+        value={photo.url}
       />
 
       <FormField
@@ -185,7 +147,7 @@ export function XsedSectionsStep({ form, onChange, copy }: Props) {
             />
 
             {section.photos.length > 0 && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="flex flex-wrap gap-3">
                 {section.photos.map((photo, photoIndex) => (
                   <PhotoTile
                     copy={copy}

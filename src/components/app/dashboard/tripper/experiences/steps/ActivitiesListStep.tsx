@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
-import { toast } from "sonner";
-import { validateImageSize } from "@/lib/utils/validateImageSize";
-import { X, ImagePlus } from "lucide-react";
-import Image from "next/image";
+import { useState, type KeyboardEvent } from "react";
+import { X } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { DurationInput } from "@/components/ui/DurationInput";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { RichTextInput } from "@/components/ui/RichTextInput";
 import type { FieldPeek } from "@/components/ui/field-peek";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
@@ -31,9 +29,6 @@ interface Props {
 const chipClass =
   "flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700";
 
-const uploadTileClass =
-  "flex h-24 w-24 shrink-0 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors";
-
 const EMPTY_ENTRY: ActivityEntry = {
   name: "",
   durationRhythm: null,
@@ -49,7 +44,6 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnl
   const { onEntryImageSelect, onEntryImageRemove } = imageState;
 
   const [tagInput, setTagInput] = useState("");
-  const entryImageRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   function addTag(raw: string) {
     const value = raw.trim().replace(/^#/, "");
@@ -172,57 +166,17 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnl
               <label className="block text-sm font-normal text-gray-600">
                 {fields.activityImageLabel}
               </label>
-              <div className="flex items-start gap-3">
-                {entry.image ? (
-                  <div className="relative h-24 w-24 shrink-0 rounded-xl overflow-hidden group">
-                    <Image
-                      src={entry.image}
-                      alt={`Activity ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                      unoptimized
-                    />
-                    <button
-                      type="button"
-                      onClick={() => onEntryImageRemove("activities", index)}
-                      className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-4 w-4 text-white" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => entryImageRefs.current[index]?.click()}
-                    className={uploadTileClass}
-                  >
-                    <ImagePlus className="h-5 w-5" />
-                    <span className="text-xs text-center leading-tight px-1">
-                      {fields.uploadImage}
-                    </span>
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-neutral-400">{fields.entryImageSizeHint}</p>
-              <p className="text-xs text-neutral-400">{fields.copyrightHint}</p>
-              <input
-                ref={(el) => { entryImageRefs.current[index] = el; }}
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  const result = await validateImageSize(file, 800, 600);
-                  if (!result.valid) {
-                    toast.error(`${fields.imageTooSmall} — min 800 × 600 px (actual: ${result.width} × ${result.height} px)`);
-                    e.target.value = "";
-                    return;
-                  }
-                  onEntryImageSelect("activities", index, file);
-                  e.target.value = "";
-                }}
+              <ImageUploadTile
+                alt={`Activity ${index + 1}`}
+                copyrightHint={fields.copyrightHint}
+                minHeight={600}
+                minWidth={800}
+                onRemove={() => onEntryImageRemove("activities", index)}
+                onSelect={(file) => onEntryImageSelect("activities", index, file)}
+                sizeHint={fields.entryImageSizeHint}
+                tooSmallLabel={fields.imageTooSmall}
+                uploadLabel={fields.uploadImage}
+                value={entry.image}
               />
             </div>
           </div>

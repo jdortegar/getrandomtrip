@@ -1,12 +1,9 @@
 "use client";
 
-import { useRef } from "react";
 import { useParams } from "next/navigation";
-import { Check, ImagePlus, X } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
+import { Check } from "lucide-react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { validateImageSize } from "@/lib/utils/validateImageSize";
+import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { DaysInput } from "@/components/ui/DaysInput";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
@@ -46,7 +43,6 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { onHeroSelect, onHeroRemove } = imageState;
-  const heroRef = useRef<HTMLInputElement>(null);
   // XSED Drop is fulfilled centrally by the admin team, not authored by individual trippers.
   const experienceTypes = getExperienceTypes(locale).filter(
     (t) => isAdmin || t.value !== "XSED",
@@ -191,55 +187,19 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
         </label>
         <p className="text-xs text-neutral-400 -mt-1">{copy.fields.heroImageHint}</p>
 
-        {form.heroImage ? (
-          <div className={`relative w-40 aspect-video rounded-lg overflow-hidden group shrink-0${ch("heroImage") ? ` ${ch("heroImage")}` : ""}`}>
-            <Image
-              src={form.heroImage}
-              alt="Hero"
-              fill
-              className="object-cover"
-              sizes="160px"
-              unoptimized
-            />
-            <button
-              type="button"
-              onClick={onHeroRemove}
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <X className="h-4 w-4 text-white" />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => heroRef.current?.click()}
-            className={`flex w-40 aspect-video flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-600 transition-colors shrink-0${ch("heroImage") ? ` ${ch("heroImage")}` : ""}`}
-          >
-            <ImagePlus className="h-5 w-5" />
-            <span className="text-xs">{copy.fields.uploadImage}</span>
-          </button>
-        )}
-
-        <p className="text-xs text-neutral-400">{copy.fields.heroImageSizeHint}</p>
-        <input
-          ref={heroRef}
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            const result = await validateImageSize(file, 1280, 720);
-            if (!result.valid) {
-              toast.error(`${copy.fields.imageTooSmall} — min 1280 × 720 px (actual: ${result.width} × ${result.height} px)`);
-              e.target.value = "";
-              return;
-            }
-            onHeroSelect(file);
-            e.target.value = "";
-          }}
+        <ImageUploadTile
+          alt="Hero"
+          className={ch("heroImage")}
+          copyrightHint={copy.fields.copyrightHint}
+          minHeight={720}
+          minWidth={1280}
+          onRemove={onHeroRemove}
+          onSelect={onHeroSelect}
+          sizeHint={copy.fields.heroImageSizeHint}
+          tooSmallLabel={copy.fields.imageTooSmall}
+          uploadLabel={copy.fields.uploadImage}
+          value={form.heroImage}
         />
-        <p className="text-xs text-neutral-400">{copy.fields.copyrightHint}</p>
       </div>
 
       {/* Blog post checkbox */}

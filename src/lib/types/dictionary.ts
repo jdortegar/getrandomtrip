@@ -98,6 +98,9 @@ export interface TripperBlogFormDict {
     subtitlePlaceholder: string;
     coverImage: string;
     coverImageHint: string;
+    coverImageSizeHint: string;
+    copyrightHint: string;
+    imageTooSmall: string;
     uploadImage: string;
     uploading: string;
     removeImage: string;
@@ -1182,6 +1185,9 @@ export interface AdminXsedDict {
       statusActive: string;
       statusDraft: string;
       heroImage: string;
+      heroImageSizeHint: string;
+      copyrightHint: string;
+      imageTooSmall: string;
       uploadImage: string;
       destinationCity: string;
       destinationCityPlaceholder: string;
