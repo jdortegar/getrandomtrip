@@ -191,7 +191,7 @@ export default function JourneyProgressSidebar({
     >
       {progressLabel && (
         <div className="flex items-center justify-between mb-6">
-          <span className="text-lg font-bold text-gray-900">
+          <span className="text-lg font-bold text-ink">
             {progressLabel}
           </span>
           <span className="text-lg font-bold text-secondary">{pct ?? 0}%</span>
@@ -274,7 +274,7 @@ export default function JourneyProgressSidebar({
                     <h2
                       className={cn("text-lg font-bold mb-6", {
                         "text-secondary": isActive && !isCompleted,
-                        "text-gray-900": isCompleted,
+                        "text-ink": isCompleted,
                         "text-gray-400": isUpcoming,
                       })}
                     >

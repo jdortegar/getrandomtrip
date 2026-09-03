@@ -276,10 +276,10 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
     <div className="space-y-6 text-left">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
@@ -395,7 +395,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {posts.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="mb-4 text-sm text-neutral-500">
+            <p className="mb-4 text-sm text-ink">
               {total === 0 && !hasActiveFilters
                 ? copy.emptyState.noPosts
                 : copy.emptyState.noMatch}
@@ -424,19 +424,19 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
                       type="checkbox"
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.post}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.format}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.updated}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.actions}
                   </th>
                 </tr>
@@ -472,11 +472,11 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
                         />
                       </td>
                       <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {post.title}
                         </p>
                         {post.subtitle && (
-                          <p className="mt-0.5 text-xs text-neutral-500">
+                          <p className="mt-0.5 text-xs text-ink">
                             {post.subtitle}
                           </p>
                         )}
@@ -492,7 +492,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
                           status={post.status}
                         />
                       </td>
-                      <td className="px-5 py-4 text-sm text-neutral-500">
+                      <td className="px-5 py-4 text-sm text-ink">
                         {new Date(post.updatedAt).toLocaleDateString(
                           dateLocale,
                           {

@@ -25,7 +25,7 @@ export function FeatureQuoteStep({ copy, draft, onChange, changedFieldSet, peek 
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-neutral-500 -mt-1">
+      <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[1]?.description}
       </p>
 

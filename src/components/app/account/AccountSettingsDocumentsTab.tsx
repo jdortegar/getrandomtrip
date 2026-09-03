@@ -193,7 +193,7 @@ export function AccountSettingsDocumentsTab({
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-neutral-900">
+        <h2 className="text-xl font-semibold text-ink">
           {copy.sections.travelDocs}
         </h2>
         {!isEditing ? (
@@ -225,7 +225,7 @@ export function AccountSettingsDocumentsTab({
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <CreditCard className="h-4 w-4" />
             </span>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
               {copy.sections.nationalId}
             </h3>
           </div>
@@ -274,7 +274,7 @@ export function AccountSettingsDocumentsTab({
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <BookOpen className="h-4 w-4" />
             </span>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
               {copy.sections.passport}
             </h3>
           </div>
@@ -323,11 +323,11 @@ export function AccountSettingsDocumentsTab({
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <Globe className="h-4 w-4" />
             </span>
-            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
               {copy.labels.approvedVisas}
             </h3>
           </div>
-          <p className="mb-3 text-sm text-neutral-500">
+          <p className="mb-3 text-sm text-ink">
             {copy.labels.approvedVisasHelper}
           </p>
 

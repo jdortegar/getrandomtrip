@@ -85,7 +85,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
       >
         <div className="flex items-center gap-3 flex-1">
           <div className="flex-1">
-            <h4 className="font-semibold text-neutral-900">{addon.title}</h4>
+            <h4 className="font-semibold text-ink">{addon.title}</h4>
             <p className="text-sm text-neutral-600 mt-0.5">
               {addon.shortDescription}
             </p>
@@ -93,7 +93,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-neutral-900">
+          <span className="text-sm font-medium text-ink">
             {addon.priceType === "currency"
               ? `USD ${addon.price}`
               : `${addon.price}%`}
@@ -102,7 +102,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
             animate={{ rotate: active ? 180 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            <ChevronDown className="w-5 h-5 text-neutral-500" />
+            <ChevronDown className="w-5 h-5 text-ink" />
           </motion.div>
         </div>
       </button>

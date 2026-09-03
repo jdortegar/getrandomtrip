@@ -76,7 +76,7 @@ export default function LevelCard({
     : `/experiences/by-type/${level.id}`;
   const shouldMinimize = minimizeAllFeatures;
   const isDark = variant === "dark";
-  const textColor = isDark ? "text-white" : "text-gray-900";
+  const textColor = isDark ? "text-white" : "text-ink";
   const bgColor = isDark ? "bg-primary" : "bg-white";
   const borderColor = selected
     ? "border-primary"

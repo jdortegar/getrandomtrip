@@ -70,9 +70,9 @@ export default function AddonsGallery() {
                 aria-expanded={isOpen}
                 className="w-full flex items-center justify-between p-4 text-left transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
-                <h3 className="text-base font-semibold text-neutral-900">
+                <h3 className="text-base font-semibold text-ink">
                   {cat}
-                  <span className="ml-2 text-sm text-neutral-500 font-normal">
+                  <span className="ml-2 text-sm text-ink font-normal">
                     ({grouped[cat].length})
                   </span>
                 </h3>
@@ -80,7 +80,7 @@ export default function AddonsGallery() {
                   animate={{ rotate: isOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ChevronDown className="w-5 h-5 text-neutral-500" />
+                  <ChevronDown className="w-5 h-5 text-ink" />
                 </motion.div>
               </button>
 

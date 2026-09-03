@@ -792,7 +792,7 @@ function CheckoutContent() {
               refineDetailEntries.length > 0 ? (
                 refineDetailEntries.map(({ key, label: detailLabel }) => (
                   <div
-                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-gray-900 text-sm"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
                     key={key}
                   >
                     <span>{detailLabel}</span>
@@ -855,7 +855,7 @@ function CheckoutContent() {
         activeFilters.length > 0 ? (
           activeFilters.map(({ id: filterId, label: filterLabel }) => (
             <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-gray-900 text-sm"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
               key={filterId}
             >
               <span>{filterLabel}</span>
@@ -882,7 +882,7 @@ function CheckoutContent() {
         selectedAddons.length > 0 ? (
           selectedAddons.map((addon) => (
             <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-gray-900 text-sm"
+              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
               key={addon.id}
             >
               <span>
@@ -903,7 +903,7 @@ function CheckoutContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-ground">
       <HeaderHero
         description={heroDescription}
         fallbackImage="/images/hero-image-1.jpeg"

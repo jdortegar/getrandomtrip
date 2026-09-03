@@ -43,7 +43,7 @@ export default function FaqSection({
             <AccordionTrigger className="flex items-center gap-3 py-4 text-left hover:no-underline [&[data-state=open]>svg]:rotate-180">
               <span
                 aria-hidden
-                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary text-neutral-900"
+                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary text-ink"
               >
                 <Img
                   alt="FAQ"
@@ -52,7 +52,7 @@ export default function FaqSection({
                   width={32}
                 />
               </span>
-              <span className="flex-1 text-left font-medium text-neutral-900">
+              <span className="flex-1 text-left font-medium text-ink">
                 {item.question}
               </span>
             </AccordionTrigger>

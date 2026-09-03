@@ -28,13 +28,13 @@ const PackageCard: React.FC<PackageCardProps> = ({
       <div className="p-8">
         {" "}
         {/* Increased padding */}
-        <h3 className="text-3xl font-serif text-gray-900 mb-3">{tier}</h3>{" "}
+        <h3 className="text-3xl font-serif text-ink mb-3">{tier}</h3>{" "}
         {/* Larger tier title */}
         <p className="text-gray-700 text-base mb-5 leading-relaxed">
           {description}
         </p>{" "}
         {/* Improved description typography */}
-        <div className="text-gray-900 text-4xl font-bold mb-5">
+        <div className="text-ink text-4xl font-bold mb-5">
           {price}
         </div>{" "}
         {/* Larger price */}

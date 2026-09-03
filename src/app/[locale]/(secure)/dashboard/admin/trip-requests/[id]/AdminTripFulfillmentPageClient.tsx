@@ -179,7 +179,7 @@ export function AdminTripFulfillmentPageClient({
   if (loading) return <LoadingSpinner />;
   if (notFound || !trip || !draft) {
     return (
-      <div className="p-8 text-center text-sm text-neutral-500">
+      <div className="p-8 text-center text-sm text-ink">
         {fulfillmentDict.errors.trip_not_found}
       </div>
     );

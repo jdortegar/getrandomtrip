@@ -100,7 +100,7 @@ export function TripSupportModal({
             <MessageCircle className="h-4 w-4 text-secondary" />
           </div>
           <div>
-            <DialogTitle className="text-xl font-semibold text-gray-900">
+            <DialogTitle className="text-xl font-semibold text-ink">
               {copy.support.heading}
             </DialogTitle>
             {user.email ? (
@@ -114,7 +114,7 @@ export function TripSupportModal({
 
       {sent ? (
         <div className="px-6 py-5">
-          <p className="text-sm font-semibold text-neutral-900">{copy.support.successTitle}</p>
+          <p className="text-sm font-semibold text-ink">{copy.support.successTitle}</p>
           <p className="mt-1 text-sm text-neutral-600">{copy.support.successBody}</p>
         </div>
       ) : (

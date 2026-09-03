@@ -15,7 +15,7 @@ export function TripperPackagesSummary({
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold text-neutral-900">{copy.title}</h2>
+        <h2 className="text-xl font-semibold text-ink">{copy.title}</h2>
         <Button asChild size="sm">
           <Link href="/dashboard/tripper/experiences">
             <Plus className="h-4 w-4" />
@@ -26,7 +26,7 @@ export function TripperPackagesSummary({
 
       {activeExperiences === 0 ? (
         <div className="text-center py-8">
-          <p className="text-neutral-500 mb-4">{copy.empty}</p>
+          <p className="text-ink mb-4">{copy.empty}</p>
           <Button asChild variant="outline">
             <Link href="/dashboard/tripper/experiences">
               <Plus className="h-4 w-4" />

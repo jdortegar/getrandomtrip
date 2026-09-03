@@ -28,7 +28,7 @@ export function JourneySectionCard({
     <section className={cn("bg-white rounded-lg shadow-md", className)}>
       <header className="flex items-center justify-between px-6 py-5">
         <div className="min-w-0">
-          <h2 className="text-xl font-medium font-barlow text-gray-900">
+          <h2 className="text-xl font-medium font-barlow text-ink">
             {title}
           </h2>
           {description && (
@@ -38,7 +38,7 @@ export function JourneySectionCard({
 
         {actionLabel && (
           <button
-            className="text-sm font-semibold text-gray-900 underline underline-offset-4"
+            className="text-sm font-semibold text-ink underline underline-offset-4"
             onClick={onActionClick ?? onToggle}
             type="button"
           >

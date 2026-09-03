@@ -130,7 +130,7 @@ export default function AvoidSearchModal({
         role="dialog"
       >
         <h2
-          className="text-base font-bold text-gray-900"
+          className="text-base font-bold text-ink"
           id="avoid-modal-title"
         >
           {labels.title}
@@ -159,7 +159,7 @@ export default function AvoidSearchModal({
 
         {(current.length > 0 || local.length > 0) && (
           <div className="mt-6 space-y-2">
-            <p className="text-sm font-semibold text-gray-900">
+            <p className="text-sm font-semibold text-ink">
               {labels.selectedDestinationsHeading}
             </p>
             <div className="flex flex-wrap gap-2">

@@ -14,8 +14,8 @@ interface BlogArticleProps {
 }
 
 const HEADING_CLASSNAME: Record<"h1" | "h2", string> = {
-  h1: "mb-8 font-barlow-condensed text-4xl font-bold uppercase leading-tight text-neutral-900 md:text-5xl",
-  h2: "mb-6 font-barlow-condensed text-2xl font-bold uppercase leading-tight text-neutral-900 md:text-3xl",
+  h1: "mb-8 font-barlow-condensed text-4xl font-bold uppercase leading-tight text-ink md:text-5xl",
+  h2: "mb-6 font-barlow-condensed text-2xl font-bold uppercase leading-tight text-ink md:text-3xl",
 };
 
 export default function BlogArticle({
@@ -44,7 +44,7 @@ export default function BlogArticle({
           dangerouslySetInnerHTML={{ __html: content }}
         />
       ) : emptyMessage ? (
-        <p className="text-neutral-500">{emptyMessage}</p>
+        <p className="text-ink">{emptyMessage}</p>
       ) : null}
     </article>
   );

@@ -67,7 +67,7 @@ export function DeleteUserModal({
             <Trash2 className="h-4 w-4 text-red-600" />
           </div>
           <div>
-            <DialogTitle className="text-xl font-semibold text-gray-900">
+            <DialogTitle className="text-xl font-semibold text-ink">
               {copy.modal.delete}
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-500">

@@ -56,7 +56,7 @@ export function JourneyActionBar({
     >
       {showClearAll ? (
         <button
-          className="text-sm font-medium text-gray-900 underline hover:no-underline"
+          className="text-sm font-medium text-ink underline hover:no-underline"
           onClick={onClearAll}
           type="button"
         >

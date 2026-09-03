@@ -153,7 +153,7 @@ export default function JourneyContentNavigation({
                       className={cn(
                         "text-sm font-medium transition-colors whitespace-nowrap",
                         {
-                          "text-gray-900": isActive,
+                          "text-ink": isActive,
                           "text-gray-500 hover:text-gray-700": !isActive,
                           "cursor-not-allowed opacity-60": !isClickable,
                           "cursor-pointer": isClickable,

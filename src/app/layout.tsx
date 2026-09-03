@@ -77,9 +77,9 @@ export default async function RootLayout({
     >
       <head>
         <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#fafafa" />
+        <meta name="theme-color" content="#f3f2ed" />
       </head>
-      <body className="bg-white text-neutral-900 antialiased overflow-x-hidden font-barlow">
+      <body className="bg-ground text-ink antialiased overflow-x-hidden font-barlow">
         <JsonLd schema={buildOrganizationSchema()} />
         <JsonLd schema={buildWebSiteSchema()} />
         <LenisProvider>{children}</LenisProvider>

@@ -380,10 +380,10 @@ export function AdminExperiencesPageClient() {
     <div className="space-y-10">
       {/* Section header */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.title}
         </h2>
       </div>
@@ -496,7 +496,7 @@ export function AdminExperiencesPageClient() {
           </div>
         )}
         {experiences.length === 0 ? (
-          <p className="py-16 text-center text-sm text-neutral-500">
+          <p className="py-16 text-center text-sm text-ink">
             {statusFilter === "PENDING" ? copy.emptyPending : copy.empty}
           </p>
         ) : (
@@ -532,7 +532,7 @@ export function AdminExperiencesPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.typeLevel}
                   </th>
                   <th aria-sort={ariaSortFor("status")} className="px-5 py-3 text-left">
@@ -553,7 +553,7 @@ export function AdminExperiencesPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.actions}
                   </th>
                 </tr>
@@ -592,18 +592,18 @@ export function AdminExperiencesPageClient() {
                         />
                       </td>
                       <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {item.title}
                         </p>
-                        <p className="mt-0.5 text-xs text-neutral-500">
+                        <p className="mt-0.5 text-xs text-ink">
                           {item.destinationCity
                             ? `${item.destinationCity}, ${item.destinationCountry}`
                             : "—"}
                         </p>
                       </td>
                       <td className="px-5 py-4">
-                        <p className="text-sm text-neutral-900">{item.owner.name}</p>
-                        <p className="mt-0.5 text-xs text-neutral-500">
+                        <p className="text-sm text-ink">{item.owner.name}</p>
+                        <p className="mt-0.5 text-xs text-ink">
                           {item.owner.email}
                         </p>
                       </td>
@@ -627,7 +627,7 @@ export function AdminExperiencesPageClient() {
                           {item.isFeatured ? st.featured : st.normal}
                         </p>
                       </td>
-                      <td className="px-5 py-4 text-sm text-neutral-500">
+                      <td className="px-5 py-4 text-sm text-ink">
                         {new Date(item.updatedAt).toLocaleDateString(dateLocale, {
                           day: "numeric",
                           month: "short",

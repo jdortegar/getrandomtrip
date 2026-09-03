@@ -153,10 +153,10 @@ export function AdminReviewsPageClient() {
   return (
     <div className="space-y-10">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.title}
         </h2>
       </div>
@@ -217,7 +217,7 @@ export function AdminReviewsPageClient() {
           </div>
         )}
         {reviews.length === 0 ? (
-          <p className="py-16 text-center text-sm text-neutral-500">
+          <p className="py-16 text-center text-sm text-ink">
             {copy.empty}
           </p>
         ) : (
@@ -234,7 +234,7 @@ export function AdminReviewsPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.review}
                   </th>
                   <th aria-sort={ariaSortFor("rating")} className="px-5 py-3 text-left">
@@ -246,7 +246,7 @@ export function AdminReviewsPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.status}
                   </th>
                   <th aria-sort={ariaSortFor("tripper")} className="px-5 py-3 text-left">
@@ -258,7 +258,7 @@ export function AdminReviewsPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.tripId}
                   </th>
                   <th aria-sort={ariaSortFor("created")} className="px-5 py-3 text-left">
@@ -270,7 +270,7 @@ export function AdminReviewsPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.actions}
                   </th>
                 </tr>
@@ -284,10 +284,10 @@ export function AdminReviewsPageClient() {
                       key={review.id}
                     >
                       <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {review.user.name}
                         </p>
-                        <p className="mt-0.5 text-xs text-neutral-500">
+                        <p className="mt-0.5 text-xs text-ink">
                           {review.user.email}
                         </p>
                       </td>
@@ -340,7 +340,7 @@ export function AdminReviewsPageClient() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-sm text-neutral-500">
+                      <td className="px-5 py-4 text-sm text-ink">
                         {review.tripperName ?? "Randomtrip"}
                       </td>
                       <td className="px-5 py-4 text-xs text-neutral-400">
@@ -352,7 +352,7 @@ export function AdminReviewsPageClient() {
                           "—"
                         )}
                       </td>
-                      <td className="px-5 py-4 text-sm text-neutral-500">
+                      <td className="px-5 py-4 text-sm text-ink">
                         {new Date(review.createdAt).toLocaleDateString(
                           dateLocale,
                           { day: "numeric", month: "short", year: "numeric" },

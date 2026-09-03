@@ -9,7 +9,7 @@ export function Label({ className, text }: LabelProps) {
   return (
     <div className={className}>
       <div className="rounded-md bg-feature px-3 py-1">
-        <span className="text-xs font-semibold uppercase text-gray-900">
+        <span className="text-xs font-semibold uppercase text-ink">
           {text}
         </span>
       </div>

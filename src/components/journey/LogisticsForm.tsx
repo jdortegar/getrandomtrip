@@ -65,7 +65,7 @@ export default function LogisticsForm() {
               },
             })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">
           Usaremos este punto para calcular rutas y tiempos.
@@ -90,7 +90,7 @@ export default function LogisticsForm() {
                 : ""
             }
             onChange={handleDateChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
           />
         </div>
         <div>
@@ -110,7 +110,7 @@ export default function LogisticsForm() {
                 : ""
             }
             onChange={handleDateChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
           />
         </div>
       </div>
@@ -142,7 +142,7 @@ export default function LogisticsForm() {
               },
             })
           }
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
         />
         <p className="mt-1 text-xs text-gray-500">Precio por persona.</p>
       </div>

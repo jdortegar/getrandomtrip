@@ -99,10 +99,10 @@ export function Toaster() {
           },
           classNames: {
             icon: "!m-0 !flex !h-[22px] !w-[22px] !items-center !justify-center",
-            title: "!text-[14px] !font-semibold !leading-[1.25] !text-[#111827]",
-            description: "!text-[13px] !text-[#737373]",
+            title: "!text-[14px] !font-semibold !leading-[1.25] !text-ink",
+            description: "!text-[13px] !text-ink",
             closeButton:
-              "!left-auto !top-[14px] !right-4 !h-[22px] !w-[22px] !transform-none !rounded-[6px] !border-0 !bg-transparent !text-[#a3a3a3] hover:!bg-[#f5f5f5]",
+              "!left-auto !top-[14px] !right-4 !h-[22px] !w-[22px] !transform-none !rounded-[6px] !border-0 !bg-transparent !text-ink hover:!bg-[#f5f5f5]",
           },
         }}
       />

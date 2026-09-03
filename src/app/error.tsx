@@ -29,7 +29,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
               <AlertTriangle className="w-10 h-10 text-red-600" />
             </div>
 
-            <h1 className="text-3xl font-bold text-neutral-900 mb-4">
+            <h1 className="text-3xl font-bold text-ink mb-4">
               Error Inesperado
             </h1>
 
@@ -56,12 +56,12 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           {process.env.NODE_ENV === "development" && (
             <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
               <details>
-                <summary className="cursor-pointer text-sm font-medium text-neutral-700 hover:text-neutral-900 mb-4">
+                <summary className="cursor-pointer text-sm font-medium text-neutral-700 hover:text-ink mb-4">
                   🔧 Detalles del error (solo en desarrollo)
                 </summary>
                 <div className="mt-4 p-4 bg-gray-50 rounded-md border border-gray-200">
                   <div className="mb-3">
-                    <span className="text-xs font-semibold text-neutral-500 uppercase">
+                    <span className="text-xs font-semibold text-ink uppercase">
                       Mensaje:
                     </span>
                     <p className="text-sm text-red-600 font-mono mt-1">
@@ -70,7 +70,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                   </div>
                   {error.digest && (
                     <div className="mb-3">
-                      <span className="text-xs font-semibold text-neutral-500 uppercase">
+                      <span className="text-xs font-semibold text-ink uppercase">
                         Digest:
                       </span>
                       <p className="text-sm text-neutral-600 font-mono mt-1">
@@ -80,7 +80,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                   )}
                   {error.stack && (
                     <div>
-                      <span className="text-xs font-semibold text-neutral-500 uppercase">
+                      <span className="text-xs font-semibold text-ink uppercase">
                         Stack Trace:
                       </span>
                       <pre className="mt-2 p-3 bg-neutral-900 text-green-400 rounded text-xs overflow-auto max-h-64 font-mono">

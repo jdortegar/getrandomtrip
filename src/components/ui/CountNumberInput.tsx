@@ -55,7 +55,7 @@ export function CountNumberInput({
         {label}
       </label>
       <input
-        className={`w-full bg-gray-100 outline-none px-6 py-4 rounded-xl text-gray-900 text-base tabular-nums${inputClassName ? ` ${inputClassName}` : ""}`}
+        className={`w-full bg-gray-100 outline-none px-6 py-4 rounded-xl text-ink text-base tabular-nums${inputClassName ? ` ${inputClassName}` : ""}`}
         id={id}
         inputMode="numeric"
         maxLength={2}

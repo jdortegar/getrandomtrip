@@ -12,7 +12,7 @@ export default function ReviewCard({ title, rating, excerpt, date }: Props) {
       <p className="mt-2 text-sm text-neutral-700 dark:text-neutral-300">
         {excerpt}
       </p>
-      {date && <div className="mt-2 text-xs text-neutral-500">{date}</div>}
+      {date && <div className="mt-2 text-xs text-ink">{date}</div>}
     </article>
   );
 }

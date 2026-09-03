@@ -97,7 +97,7 @@ export function NavbarProfile({
       {isOpen && (
         <div
           role="menu"
-          className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+          className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
         >
           <Link
             className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"

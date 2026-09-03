@@ -31,9 +31,9 @@ const buttonVariants = cva(
         ghost:
           "border-2 border-transparent hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "border-2 border-transparent text-primary underline-offset-4 hover:underline",
-        pill: "border-2 border-feature bg-feature text-gray-900 hover:bg-feature hover:border-feature rounded-full",
+        pill: "border-2 border-feature bg-feature text-ink hover:bg-feature hover:border-feature rounded-full",
         white:
-          "border-2 border-white bg-white hover:bg-white/90 hover:text-black",
+          "border-2 border-white bg-white hover:bg-white/90 hover:text-ink",
         feature: "border-2 border-feature bg-feature text-gray-800 hover:bg-feature hover:border-feature",
       },
       size: {

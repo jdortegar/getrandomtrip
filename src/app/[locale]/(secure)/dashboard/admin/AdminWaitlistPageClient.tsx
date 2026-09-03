@@ -267,7 +267,7 @@ export function AdminWaitlistPageClient() {
           </div>
         )}
         {entries.length === 0 ? (
-          <p className="py-16 text-center text-sm text-neutral-500">
+          <p className="py-16 text-center text-sm text-ink">
             {copy.empty}
           </p>
         ) : (
@@ -285,19 +285,19 @@ export function AdminWaitlistPageClient() {
                       type="checkbox"
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.name}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.email}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.joined}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.actions}
                   </th>
                 </tr>
@@ -322,7 +322,7 @@ export function AdminWaitlistPageClient() {
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {entry.email}
                     </td>
-                    <td className="px-5 py-4 text-sm text-neutral-500">
+                    <td className="px-5 py-4 text-sm text-ink">
                       {new Date(entry.createdAt).toLocaleDateString(dateLocale, {
                         day: "numeric",
                         month: "short",

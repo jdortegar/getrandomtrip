@@ -64,7 +64,7 @@ export function BlogIndexCard({
           <div
             className={cn(
               "absolute bottom-0 left-0 flex w-full flex-col gap-3 p-4 pb-6 text-left",
-              post.coverUrl ? "text-white" : "text-neutral-900",
+              post.coverUrl ? "text-white" : "text-ink",
             )}
           >
             {author?.avatarUrl && (
@@ -100,7 +100,7 @@ export function BlogIndexCard({
                   "font-barlow-condensed text-xl font-extrabold uppercase tracking-wide transition-colors sm:text-2xl md:text-3xl",
                   post.coverUrl
                     ? "text-white group-hover:text-blue-200"
-                    : "text-neutral-900 group-hover:text-blue-600",
+                    : "text-ink group-hover:text-blue-600",
                 )}
               >
                 {post.title}

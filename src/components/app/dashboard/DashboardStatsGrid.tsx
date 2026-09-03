@@ -53,7 +53,7 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
             key={card.key}
           >
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
                 {card.label}
               </p>
               <span
@@ -73,7 +73,7 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
             </div>
             <div className="flex items-stretch gap-3.5">
               <span className="w-1 rounded-full bg-feature" />
-              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-neutral-900">
+              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
                 {card.value}
               </p>
             </div>

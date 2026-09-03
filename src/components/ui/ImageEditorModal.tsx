@@ -170,11 +170,11 @@ export function ImageEditorModal({
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500" htmlFor="image-editor-zoom">
+            <label className="text-xs font-semibold uppercase tracking-wider text-ink" htmlFor="image-editor-zoom">
               {copy.zoomLabel}
             </label>
             <input
-              className="h-1.5 w-full cursor-pointer accent-gray-900"
+              className="h-1.5 w-full cursor-pointer accent-primary"
               id="image-editor-zoom"
               max={MAX_ZOOM}
               min={MIN_ZOOM}

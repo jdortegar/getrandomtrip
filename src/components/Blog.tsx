@@ -44,7 +44,7 @@ export default function Blog({
         >
           {eyebrow && (
             <motion.div
-              className="text-base font-bold uppercase tracking-[6px] text-secondary md:text-lg md:tracking-[9px]"
+              className="text-base font-bold uppercase tracking-[6px] text-primary md:text-lg md:tracking-[9px]"
               initial={{ opacity: 0, y: 40 }}
               transition={{ delay: 0.2, duration: 0.6 }}
               viewport={{ margin: "-100px", once: true }}
@@ -55,7 +55,7 @@ export default function Blog({
           )}
 
           <motion.h2
-            className="font-barlow-condensed mt-4 text-[50px] font-bold uppercase leading-none text-gray-900 md:text-[70px]"
+            className="font-barlow-condensed mt-4 text-[50px] font-bold uppercase leading-none text-ink md:text-[70px]"
             initial={{ opacity: 0, y: 60 }}
             transition={{ delay: 0.4, duration: 0.8 }}
             viewport={{ margin: "-100px", once: true }}
@@ -65,7 +65,7 @@ export default function Blog({
           </motion.h2>
 
           <motion.p
-            className="mx-auto mt-8 text-lg text-[#888] md:mx-0"
+            className="mx-auto mt-8 text-lg text-ink md:mx-0"
             initial={{ opacity: 0, y: 40 }}
             transition={{ delay: 0.6, duration: 0.6 }}
             viewport={{ margin: "-100px", once: true }}

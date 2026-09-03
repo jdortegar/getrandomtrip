@@ -299,7 +299,7 @@ export function BlogPostErrorView({
     <Section>
       <div className="mx-auto max-w-4xl">
         <div className="py-12 text-center">
-          <p className="mb-4 text-neutral-500">
+          <p className="mb-4 text-ink">
             {error ?? "El post que buscas no existe o ya no está disponible."}
           </p>
           <Link

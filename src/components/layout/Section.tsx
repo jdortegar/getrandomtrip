@@ -39,8 +39,8 @@ const Section = ({
   return (
     <section
       className={cn("relative ", {
-        "bg-white text-gray-900": variant === "default",
-        "bg-gray-50 text-gray-900": variant === "light",
+        "bg-white text-ink": variant === "default",
+        "bg-gray-50 text-ink": variant === "light",
         "bg-primary text-white": variant === "dark",
       })}
     >
@@ -71,7 +71,7 @@ const Section = ({
           <div className={cn("mb-14 ", fullWidth && "rt-container")}>
             {eyebrow && (
               <motion.div
-                className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-secondary"
+                className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-primary"
                 style={eyebrowColor ? { color: eyebrowColor } : undefined}
                 initial={{ y: 40, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}
@@ -86,7 +86,7 @@ const Section = ({
                 className={cn(
                   "font-barlow-condensed text-[50px] md:text-[70px] uppercase font-bold mt-4 leading-none",
                   {
-                    "text-gray-900":
+                    "text-ink":
                       variant === "default" || variant === "light",
                     "text-white": variant === "dark",
                   },
@@ -100,9 +100,9 @@ const Section = ({
             )}
             {subtitle && (
               <motion.p
-                className={cn("text-lg text-[#888] mx-auto mt-8 ", {
+                className={cn("text-lg text-ink mx-auto mt-8 ", {
                   "text-gray-700": variant === "default",
-                  "text-gray-900": variant === "light",
+                  "text-ink": variant === "light",
                   "text-white": variant === "dark",
                 })}
                 initial={{ y: 40, opacity: 0 }}

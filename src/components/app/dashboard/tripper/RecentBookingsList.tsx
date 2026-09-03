@@ -39,10 +39,10 @@ export function RecentBookingsList({
       {/* Brand section header — eyebrow + condensed heading */}
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Latest activity
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
@@ -57,7 +57,7 @@ export function RecentBookingsList({
       {/* Table */}
       <div className="divide-y divide-gray-100 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {bookings.length === 0 ? (
-          <p className="py-12 text-center text-neutral-500">{copy.empty}</p>
+          <p className="py-12 text-center text-ink">{copy.empty}</p>
         ) : (
           bookings.map((booking) => {
             const s = getStatusStyle(booking.status);
@@ -69,8 +69,8 @@ export function RecentBookingsList({
                     {booking.clientName.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-gray-900">{booking.clientName}</p>
-                    <p className="truncate text-sm text-neutral-500">{booking.experienceName}</p>
+                    <p className="truncate font-semibold text-ink">{booking.clientName}</p>
+                    <p className="truncate text-sm text-ink">{booking.experienceName}</p>
                   </div>
                   <span
                     className={`inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${s.badge}`}
@@ -84,7 +84,7 @@ export function RecentBookingsList({
                     <Calendar className="h-3 w-3 shrink-0" />
                     {formatDate(booking.date)}
                   </p>
-                  <p className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                  <p className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                     ${booking.amount.toLocaleString("es-AR")}
                   </p>
                 </div>
@@ -99,15 +99,15 @@ export function RecentBookingsList({
                       {booking.clientName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-gray-900">{booking.clientName}</p>
+                      <p className="truncate font-semibold text-ink">{booking.clientName}</p>
                       <p className="truncate text-sm text-neutral-600">{booking.experienceName}</p>
                     </div>
                   </div>
-                  <p className="flex items-center gap-1.5 text-[13px] text-neutral-500">
+                  <p className="flex items-center gap-1.5 text-[13px] text-ink">
                     <Calendar className="h-3.5 w-3.5 shrink-0 text-neutral-400" />
                     {formatDate(booking.date)}
                   </p>
-                  <p className="font-barlow-condensed text-[22px] font-bold leading-none text-gray-900">
+                  <p className="font-barlow-condensed text-[22px] font-bold leading-none text-ink">
                     ${booking.amount.toLocaleString("es-AR")}
                   </p>
                   <span

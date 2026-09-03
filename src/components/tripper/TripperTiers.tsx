@@ -26,7 +26,7 @@ export default function TripperTiers({
             key={t.key}
             className="flex h-full flex-col rounded-2xl border border-neutral-200 bg-white p-5 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
           >
-            <h4 className="font-semibold text-neutral-900">{t.title}</h4>
+            <h4 className="font-semibold text-ink">{t.title}</h4>
             <ul className="mt-3 flex-1 list-disc space-y-1 pl-5 text-sm text-neutral-800">
               {t.bullets.map((b, i) => (
                 <li key={i}>{b}</li>

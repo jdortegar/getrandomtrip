@@ -60,7 +60,7 @@ export default async function AboutUsPage(props: LocaleParams) {
     }));
 
   return (
-    <div className="bg-white font-barlow text-neutral-900">
+    <div className="bg-white font-barlow text-ink">
       <JsonLd schema={buildFAQPageSchema(aboutUs.faq.items)} />
       <Hero content={aboutUs.hero} scrollIndicator />
       <AboutUsValues items={aboutUs.valueProps.items} />

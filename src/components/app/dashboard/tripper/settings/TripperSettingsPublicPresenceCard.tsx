@@ -62,16 +62,16 @@ export function TripperSettingsPublicPresenceCard({
   return (
     <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-neutral-500">
+        <p className="mb-2 text-sm font-medium text-ink">
           {copy.bioLabel}
         </p>
         {isEditing ? (
@@ -95,7 +95,7 @@ export function TripperSettingsPublicPresenceCard({
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-neutral-500">
+        <p className="mb-2 text-sm font-medium text-ink">
           {copy.destinationsLabel}
         </p>
         <AccountSettingsTagList
@@ -110,7 +110,7 @@ export function TripperSettingsPublicPresenceCard({
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-neutral-500">
+        <p className="mb-2 text-sm font-medium text-ink">
           {copy.socialLinksLabel}
         </p>
         <TripperSettingsSocialLinks
@@ -125,7 +125,7 @@ export function TripperSettingsPublicPresenceCard({
       </div>
 
       <div>
-        <p className="mb-1 text-sm font-medium text-neutral-500">
+        <p className="mb-1 text-sm font-medium text-ink">
           {copy.travelerTypesLabel}
         </p>
         {!isEditing && (

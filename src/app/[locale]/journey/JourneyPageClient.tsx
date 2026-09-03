@@ -211,7 +211,7 @@ function JourneyPageContent({
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-ground">
       <HeaderHero
         description={journey.hero.description}
         fallbackImage="/images/hero-image-1.jpeg"

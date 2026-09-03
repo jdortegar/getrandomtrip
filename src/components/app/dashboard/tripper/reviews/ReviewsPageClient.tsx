@@ -260,10 +260,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   return (
     <div className="space-y-6 text-left">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.title}
         </h2>
       </div>
@@ -277,7 +277,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
               key={card.key}
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
                   {card.label}
                 </p>
                 <span
@@ -300,14 +300,14 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                 <div>
                   <p
                     className={cn(
-                      "font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-gray-900",
+                      "font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink",
                       card.valueClassName,
                     )}
                   >
                     {card.value}
                   </p>
                   {card.caption && (
-                    <p className="mt-1 text-xs text-neutral-500">
+                    <p className="mt-1 text-xs text-ink">
                       {card.caption}
                     </p>
                   )}
@@ -358,7 +358,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-5 py-4">
-          <h3 className="text-xl font-semibold text-neutral-900">
+          <h3 className="text-xl font-semibold text-ink">
             {copy.list.title}
           </h3>
         </div>
@@ -400,7 +400,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
               <p className="mb-2 text-sm font-semibold text-neutral-700">
                 {copy.emptyState.title}
               </p>
-              <p className="mx-auto max-w-md text-sm text-neutral-500">
+              <p className="mx-auto max-w-md text-sm text-ink">
                 {copy.emptyState.description}
               </p>
             </div>
@@ -415,11 +415,11 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-neutral-900">
+                          <p className="text-sm font-semibold text-ink">
                             {review.userName}
                           </p>
                           {(review.packageTitle || review.destination) && (
-                            <p className="mt-0.5 text-xs text-neutral-500">
+                            <p className="mt-0.5 text-xs text-ink">
                               {[review.packageTitle, review.destination]
                                 .filter(Boolean)
                                 .join(" • ")}
@@ -455,7 +455,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                         </div>
                       </div>
                       {review.title && (
-                        <p className="mt-2 text-sm font-medium text-neutral-900">
+                        <p className="mt-2 text-sm font-medium text-ink">
                           {review.title}
                         </p>
                       )}
@@ -473,7 +473,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                             "rounded-full px-3 py-1 text-xs font-semibold transition-colors disabled:opacity-50",
                             review.isPublic
                               ? "bg-green-100 text-green-700 hover:bg-green-200"
-                              : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200",
+                              : "bg-neutral-100 text-ink hover:bg-neutral-200",
                           )}
                           disabled={togglingId === review.id}
                           onClick={() => void togglePublish(review)}

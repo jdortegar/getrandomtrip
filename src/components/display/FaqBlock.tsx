@@ -33,7 +33,7 @@ export function FaqBlock({ copy }: FaqBlockProps) {
             {copy.title}
           </h2>
         </div>
-        <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
+        <p className="max-w-sm text-sm leading-relaxed text-ink">
           {copy.description}
         </p>
       </div>

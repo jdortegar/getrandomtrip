@@ -27,7 +27,7 @@ export default function TripperPlacesVisited({
             <li key={p.label} className="text-sm">
               <span className="font-medium">{p.label}</span>
               {p.lastTrip || p.trips ? (
-                <span className="text-neutral-500">
+                <span className="text-ink">
                   {" "}
                   ({p.lastTrip ? `Last Trip: ${p.lastTrip}` : ""}
                   {p.lastTrip && p.trips ? "; " : ""}

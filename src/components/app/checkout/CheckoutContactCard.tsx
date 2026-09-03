@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 // Mirrors FormField styles:
-//   input  → bg-gray-100 (#f3f4f6), rounded-xl (12px), px-6 py-4, text-base, text-gray-900
+//   input  → bg-gray-100 (#f3f4f6), rounded-xl (12px), px-6 py-4, text-base, text-ink
 //   label  → text-gray-600 (#4b5563), font-normal, text-base
 //   focus  → outline-2 primary (#0f5c60 — brand primary, was #111827)
 //   error  → text-red-600 (#dc2626)
@@ -328,7 +328,7 @@ export function CheckoutContactCard({
 
       {/* Payment section */}
       <div className="flex flex-col gap-4 border-t border-gray-200 pt-4">
-        <h3 className="text-xl font-semibold text-neutral-900">
+        <h3 className="text-xl font-semibold text-ink">
           {checkoutCopy.paymentTitle}
         </h3>
 
@@ -376,12 +376,12 @@ export function CheckoutContactCard({
 
       <div className="rounded-xl bg-neutral-100 p-4 text-sm">
         <div className="mb-2 flex items-center gap-2">
-          <Sparkle aria-hidden className="h-4 w-4 shrink-0 text-neutral-500" />
-          <span className="text-base font-bold text-gray-900">
+          <Sparkle aria-hidden className="h-4 w-4 shrink-0 text-ink" />
+          <span className="text-base font-bold text-ink">
             {isXsed ? summary?.xsedImportantTitle : summary?.importantTitle}
           </span>
         </div>
-        <ul className="list-outside list-disc space-y-1 pl-4 text-sm font-normal text-gray-900">
+        <ul className="list-outside list-disc space-y-1 pl-4 text-sm font-normal text-ink">
           {isXsed ? (
             <>
               <li>{summary?.xsedImportantNote1}</li>

@@ -197,11 +197,11 @@ export function JourneyFiltersForm({
             aria-hidden
             className="h-4 w-4 shrink-0 text-[#5B7A8C] fill-[#5B7A8C]"
           />
-          <span className="text-base font-bold text-gray-900">
+          <span className="text-base font-bold text-ink">
             {labelsProp.importantTitle}
           </span>
         </div>
-        <ul className="grid list-outside list-disc grid-cols-2 gap-x-6 gap-y-1 pl-4 text-sm font-normal text-gray-900">
+        <ul className="grid list-outside list-disc grid-cols-2 gap-x-6 gap-y-1 pl-4 text-sm font-normal text-ink">
           <li>{labelsProp.importantNote1}</li>
           <li>{labelsProp.importantNote2}</li>
           <li>{labelsProp.importantNote3}</li>
@@ -210,7 +210,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp.departPrefLabel}
         </h3>
         <FilterSeg
@@ -221,7 +221,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp.arrivePrefLabel}
         </h3>
         <FilterSeg
@@ -232,7 +232,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp.maxTravelTimeLabel}
         </h3>
         <FilterSeg
@@ -243,7 +243,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp.climateLabel}
         </h3>
         <div className="inline-flex flex-wrap gap-2">
@@ -268,7 +268,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp?.accommodationTypeLabel ??
             labelsProp?.filterOptions?.accommodationType?.label}
         </h3>
@@ -280,7 +280,7 @@ export function JourneyFiltersForm({
       </div>
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-ink">
           {labelsProp.avoidLabel}
         </h3>
         <p className="text-sm text-gray-500">{labelsProp.avoidHint}</p>
@@ -301,7 +301,7 @@ export function JourneyFiltersForm({
       {/*
       <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
         <button
-          className="text-sm font-medium text-gray-900 underline hover:no-underline"
+          className="text-sm font-medium text-ink underline hover:no-underline"
           onClick={onClear}
           type="button"
         >

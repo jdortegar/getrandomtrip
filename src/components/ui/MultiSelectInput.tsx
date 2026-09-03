@@ -114,7 +114,7 @@ export function MultiSelectInput({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="flex-1 bg-transparent outline-none text-sm text-gray-900 placeholder:text-gray-400"
+                className="flex-1 bg-transparent outline-none text-sm text-ink placeholder:text-gray-400"
               />
             </div>
 

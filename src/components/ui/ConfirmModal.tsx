@@ -81,10 +81,10 @@ export function ConfirmModal({
         >
           <Icon className={cn("h-5 w-5", toneStyles.iconColor)} />
         </div>
-        <DialogTitle className="text-2xl font-bold text-gray-900">
+        <DialogTitle className="text-2xl font-bold text-ink">
           {title}
         </DialogTitle>
-        <DialogDescription className="text-sm text-neutral-500">
+        <DialogDescription className="text-sm text-ink">
           {description}
         </DialogDescription>
       </DialogHeader>

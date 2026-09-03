@@ -26,7 +26,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {s?.interests && s.interests.length > 0 && (
           <div>
-            <h3 className="text-sm uppercase text-neutral-500 font-semibold mb-2">
+            <h3 className="text-sm uppercase text-ink font-semibold mb-2">
               Interests
             </h3>
             <ul className="space-y-1">
@@ -41,7 +41,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
 
         {s?.destinations && s.destinations.length > 0 && (
           <div>
-            <h3 className="text-sm uppercase text-neutral-500 font-semibold mb-2">
+            <h3 className="text-sm uppercase text-ink font-semibold mb-2">
               Destinations
             </h3>
             <ul className="space-y-1">
@@ -56,7 +56,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
 
         {s?.certifications && s.certifications.length > 0 && (
           <div>
-            <h3 className="text-sm uppercase text-neutral-500 font-semibold mb-2">
+            <h3 className="text-sm uppercase text-ink font-semibold mb-2">
               Certifications
             </h3>
             <ul className="space-y-1">
@@ -71,7 +71,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
 
         {s?.languages && s.languages.length > 0 && (
           <div>
-            <h3 className="text-sm uppercase text-neutral-500 font-semibold mb-2">
+            <h3 className="text-sm uppercase text-ink font-semibold mb-2">
               Languages
             </h3>
             <ul className="space-y-1">
@@ -86,7 +86,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
 
         {s?.partnerBadges && s.partnerBadges.length > 0 && (
           <div>
-            <h3 className="text-sm uppercase text-neutral-500 font-semibold mb-2">
+            <h3 className="text-sm uppercase text-ink font-semibold mb-2">
               Partners
             </h3>
             <div className="flex flex-wrap gap-4">

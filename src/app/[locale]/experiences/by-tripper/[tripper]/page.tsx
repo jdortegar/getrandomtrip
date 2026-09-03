@@ -118,7 +118,7 @@ export default async function Page(props: {
   );
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-ground">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="rt-container px-4 sm:px-6 lg:px-8 py-6">
@@ -143,7 +143,7 @@ export default async function Page(props: {
               />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-ink mb-2">
                 Paquetes de {dbTripper.name}
               </h1>
               <p className="text-gray-600 text-lg mb-4">
@@ -182,7 +182,7 @@ export default async function Page(props: {
         {allExperiences.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📦</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <h3 className="text-xl font-semibold text-ink mb-2">
               No hay experiencias disponibles
             </h3>
             <p className="text-gray-600 mb-6">
@@ -198,7 +198,7 @@ export default async function Page(props: {
               ({ type, experiences, totalExperiences }) => (
                 <div key={type}>
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900 capitalize">
+                    <h2 className="text-2xl font-bold text-ink capitalize">
                       {type.replace(/-/g, " ")} Experiences
                     </h2>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -243,7 +243,7 @@ export default async function Page(props: {
                             </div>
 
                             {/* Excuse as title */}
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="text-xl font-bold text-ink mb-2">
                               {pkg.excuseKey
                                 ? getExcuseTitle(pkg.excuseKey)
                                 : "Paquete Sorpresa"}

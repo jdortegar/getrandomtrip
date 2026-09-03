@@ -52,44 +52,44 @@ export function CheckoutPricingSummary({
   return (
     <div className="mt-6 border-t border-gray-200 pt-4">
       <div className="flex items-start justify-between gap-4">
-        <p className="font-barlow text-lg font-bold text-gray-900">
+        <p className="font-barlow text-lg font-bold text-ink">
           {checkoutCopy.summaryHeroPriceCaption}
         </p>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-gray-900">
+        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
           {usd(basePerPax)}
         </p>
       </div>
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <p className="font-barlow text-base font-bold text-gray-900">
+          <p className="font-barlow text-base font-bold text-ink">
             {checkoutCopy.filterFeeLabel}
           </p>
           <p className="mt-1 font-barlow text-sm font-normal text-gray-600">
             {filterFeeDescription}
           </p>
         </div>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-gray-900">
+        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
           {usd(filtersPerPax)}
         </p>
       </div>
 
       {addonsPerPaxCombined > 0 ? (
         <div className="mt-4 flex items-start justify-between gap-4">
-          <p className="font-barlow text-lg font-bold text-gray-900">
+          <p className="font-barlow text-lg font-bold text-ink">
             {checkoutCopy.addonsPerPersonLabel}
           </p>
-          <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-gray-900">
+          <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
             {usd(addonsPerPaxCombined)}
           </p>
         </div>
       ) : null}
 
       <div className="mt-4 flex items-start justify-between gap-4 border-t border-gray-200 pt-3">
-        <p className="font-barlow text-lg font-bold text-gray-900">
+        <p className="font-barlow text-lg font-bold text-ink">
           {checkoutCopy.subtotalPerPersonLabel}
         </p>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-gray-900">
+        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
           {usd(totalPerPax)}
         </p>
       </div>
@@ -98,7 +98,7 @@ export function CheckoutPricingSummary({
       <div className="mt-4">
         {!showPromocodeInput && !appliedPromocode ? (
           <Button
-            className="px-0 text-gray-700 hover:text-gray-900"
+            className="px-0 text-gray-700 hover:text-ink"
             onClick={onTogglePromocodeInput}
             size="sm"
             type="button"
@@ -112,7 +112,7 @@ export function CheckoutPricingSummary({
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <input
-                className="w-full rounded-xl bg-gray-100 px-6 py-4 text-base text-gray-900 outline-none placeholder:text-gray-400 focus:outline-2 focus:outline-gray-900"
+                className="w-full rounded-xl bg-gray-100 px-6 py-4 text-base text-ink outline-none placeholder:text-gray-400 focus:outline-2 focus:outline-gray-900"
                 disabled={promoLoading}
                 onChange={(e) => onPromocodeChange(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && onApplyPromocode()}
@@ -146,7 +146,7 @@ export function CheckoutPricingSummary({
                 {appliedPromocode}
               </p>
               <Button
-                className="h-auto p-0 text-gray-700 hover:text-gray-900"
+                className="h-auto p-0 text-gray-700 hover:text-ink"
                 disabled={promoLoading}
                 onClick={onRemovePromocode}
                 size="sm"
@@ -169,14 +169,14 @@ export function CheckoutPricingSummary({
 
       <div className="mt-5 flex items-start justify-between gap-4 border-t border-gray-200 pt-4">
         <div className="min-w-0 flex-1">
-          <p className="flex items-end gap-1 font-barlow-condensed text-3xl font-bold text-gray-900">
+          <p className="flex items-end gap-1 font-barlow-condensed text-3xl font-bold text-ink">
             {checkoutCopy.totalLabel}
             <span className="mt-1 font-barlow text-lg font-normal text-gray-600">
               {filterFeePaxLine}
             </span>
           </p>
         </div>
-        <p className="shrink-0 text-right font-barlow-condensed text-3xl font-bold text-gray-900">
+        <p className="shrink-0 text-right font-barlow-condensed text-3xl font-bold text-ink">
           {usd(promoDiscount > 0 ? discountedTotal : totalTrip)}
         </p>
       </div>

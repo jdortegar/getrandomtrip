@@ -100,7 +100,7 @@ export default function NewsletterBar() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-neutral-900 font-semibold hover:opacity-90 disabled:opacity-70"
+              className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-ink font-semibold hover:opacity-90 disabled:opacity-70"
             >
               {loading ? "Enviando..." : "SUSCRIBIRME"}
             </button>

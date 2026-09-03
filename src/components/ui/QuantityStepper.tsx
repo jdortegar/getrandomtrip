@@ -9,14 +9,14 @@ const stepperBtnClass = cn(
   "hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40",
 );
 
-const stepperLabelClass = "font-barlow font-medium text-gray-900 text-sm";
+const stepperLabelClass = "font-barlow font-medium text-ink text-sm";
 
 const stepperShellClass = cn(
   "flex h-10 items-center rounded-lg border border-gray-200 bg-white",
 );
 
 const stepperValueClass =
-  "min-w-10 text-center font-barlow font-bold text-gray-900 text-sm";
+  "min-w-10 text-center font-barlow font-bold text-ink text-sm";
 
 export interface QuantityStepperProps {
   ariaDecrease: string;

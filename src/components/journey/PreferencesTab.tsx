@@ -78,7 +78,7 @@ export default function PreferencesTab({
               onChange={(v) => setAndSync({ transport: v })}
               className="justify-center"
             />
-            <p className="text-xs text-neutral-500 text-center">
+            <p className="text-xs text-ink text-center">
               Tren y Barco/Crucero podrían requerir traslados extra.
             </p>
           </div>
@@ -134,7 +134,7 @@ export default function PreferencesTab({
             <h3 className="font-medium text-left">
               Destinos a evitar (opcional)
             </h3>
-            <p className="text-sm text-neutral-500 text-left mb-6">
+            <p className="text-sm text-ink text-left mb-6">
               Seleccioná hasta 15
             </p>
             <AvoidGrid

@@ -60,7 +60,7 @@ export function JourneyUserBadge({ labels }: JourneyUserBadgeProps) {
           {name ?? labels.guest}
         </span>
 
-        <span className="text-sm font-semibold text-neutral-900 leading-tight">
+        <span className="text-sm font-semibold text-ink leading-tight">
           {level}
         </span>
       </div>

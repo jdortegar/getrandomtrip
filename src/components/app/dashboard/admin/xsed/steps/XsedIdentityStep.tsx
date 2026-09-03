@@ -91,7 +91,7 @@ export function XsedIdentityStep({ form, onChange, copy }: Props) {
             }}
             placeholder={copy.destinationCountryPlaceholder}
             size="lg"
-            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-gray-900"
+            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-ink"
           />
         </div>
 
@@ -105,7 +105,7 @@ export function XsedIdentityStep({ form, onChange, copy }: Props) {
             onChange={(city) => onChange({ destinationCity: city })}
             placeholder={copy.destinationCityPlaceholder}
             size="lg"
-            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-gray-900"
+            className="bg-gray-100 border-0 rounded-xl placeholder:text-gray-400 text-ink"
           />
         </div>
       </div>

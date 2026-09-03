@@ -14,38 +14,34 @@ export default function Footer({ dict, locale }: FooterProps) {
   const f = dict.footer;
 
   return (
-    <footer className="relative overflow-hidden bg-primary text-white">
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary-900/50 via-primary-800/30 to-primary-900/50" />
-      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-primary-400/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
+    <footer className="relative overflow-hidden border-t border-gray-200 bg-ground text-primary">
+      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-secondary/10 blur-3xl" />
 
       <div className="relative">
-        <div className="h-px bg-linear-to-r from-transparent via-white/20 to-transparent" />
-
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-6">
             <div className="order-last flex flex-col gap-4 items-center justify-center sm:order-none sm:col-span-2 lg:items-start">
               <Img
                 alt={dict.common.siteName}
                 height={40}
-                src="/assets/logos/logo_white.svg"
+                src="/assets/logos/logo_getrandomtrip.png"
                 style={{ height: "auto" }}
                 width={240}
               />
               <div className="max-w-sm space-y-2 text-center md:text-left">
-                <p className="text-sm text-gray-400">{f.entityNotice}</p>
-                <p className="text-sm text-gray-400">{f.entityAddress}</p>
+                <p className="text-sm text-ink">{f.entityNotice}</p>
+                <p className="text-sm text-ink">{f.entityAddress}</p>
               </div>
             </div>
 
             <div className="text-center sm:text-left">
-              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-primary">
                 {f.quickLinksTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/about-us")}
                   >
                     {f.about}
@@ -53,7 +49,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/blog")}
                   >
                     {f.inspiration}
@@ -61,7 +57,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/faq")}
                   >
                     {f.faq}
@@ -71,13 +67,13 @@ export default function Footer({ dict, locale }: FooterProps) {
             </div>
 
             <div className="text-center sm:text-left">
-              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-primary">
                 {f.travelersTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/experiences/by-type/solo")}
                   >
                     {f.solo}
@@ -85,7 +81,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/experiences/by-type/couple")}
                   >
                     {f.couple}
@@ -93,7 +89,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 {/* <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/experiences/by-type/family")}
                   >
                     {f.family}
@@ -101,7 +97,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li> */}
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/experiences/by-type/group")}
                   >
                     {f.group}
@@ -109,7 +105,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 {/* <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(
                       locale,
                       "/experiences/by-type/honeymoon",
@@ -120,7 +116,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/experiences/by-type/paws")}
                   >
                     {f.paws}
@@ -130,13 +126,13 @@ export default function Footer({ dict, locale }: FooterProps) {
             </div>
 
             <div className="text-center sm:text-left">
-              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-primary">
                 {f.legalTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/terms")}
                   >
                     {f.termsOfService}
@@ -144,7 +140,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/privacy")}
                   >
                     {f.privacyPolicy}
@@ -152,7 +148,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/cookies")}
                   >
                     {f.cookiePolicy}
@@ -160,7 +156,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/refund")}
                   >
                     {f.refundPolicy}
@@ -170,13 +166,13 @@ export default function Footer({ dict, locale }: FooterProps) {
             </div>
 
             <div className="text-center sm:text-left">
-              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-white">
+              <h4 className="mb-6 text-sm font-semibold uppercase tracking-wider text-primary">
                 {f.contactTitle}
               </h4>
               <ul className="space-y-3">
                 <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/contact")}
                   >
                     {f.contact}
@@ -184,7 +180,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </li>
                 {/* <li>
                   <Link
-                    className="text-sm text-gray-300/90 transition-colors hover:underline hover:underline-offset-2"
+                    className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/support")}
                   >
                     {f.support}
@@ -195,7 +191,7 @@ export default function Footer({ dict, locale }: FooterProps) {
               <div className="mt-8 flex gap-4 justify-center sm:justify-start">
                 <a
                   aria-label={f.ariaFacebook}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-primary transition-all duration-300 hover:border-primary/40 hover:bg-secondary/10"
                   href="https://facebook.com/getrandomtrip"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -210,7 +206,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </a>
                 <a
                   aria-label={f.ariaInstagram}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-primary transition-all duration-300 hover:border-primary/40 hover:bg-secondary/10"
                   href="https://instagram.com/getrandomtrip"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -225,7 +221,7 @@ export default function Footer({ dict, locale }: FooterProps) {
                 </a>
                 <a
                   aria-label={f.ariaLinkedin}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm transition-all duration-300 hover:border-white/40 hover:bg-white/10"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-primary transition-all duration-300 hover:border-primary/40 hover:bg-secondary/10"
                   href="https://www.linkedin.com/company/getrandomtrip"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -243,13 +239,13 @@ export default function Footer({ dict, locale }: FooterProps) {
           </div>
         </div>
 
-        <div className="border-t border-white/10">
+        <div className="border-t border-gray-200">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-              <p className="font-nothing-you-could-do text-center text-lg text-gray-400">
+              <p className="font-nothing-you-could-do text-center text-lg text-ink">
                 {f.tagline}
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-ink">
                 © {year} {dict.common.siteName}. {f.copyright}
               </p>
             </div>

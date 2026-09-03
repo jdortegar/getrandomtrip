@@ -111,7 +111,7 @@ export function TeamSection({ content }: TeamSectionProps) {
 
                   {/* Back face */}
                   <div
-                    className="absolute inset-0 rounded-xl overflow-hidden bg-accent-cyan-800 flex flex-col p-6 sm:p-7 lg:p-8 text-left"
+                    className="absolute inset-0 rounded-xl overflow-hidden bg-primary flex flex-col p-6 sm:p-7 lg:p-8 text-left"
                     style={{
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
@@ -138,10 +138,10 @@ export function TeamSection({ content }: TeamSectionProps) {
               {/* Info row */}
               <div className="flex items-start justify-between gap-2 text-left px-4">
                 <div>
-                  <p className="font-barlow font-semibold text-2xl text-neutral-900 leading-tight">
+                  <p className="font-barlow font-semibold text-2xl text-ink leading-tight">
                     {member.name}
                   </p>
-                  <p className="font-barlow text-sm text-neutral-500">
+                  <p className="font-barlow text-sm text-ink">
                     {member.role}
                   </p>
                 </div>

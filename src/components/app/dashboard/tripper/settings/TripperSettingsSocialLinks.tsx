@@ -252,7 +252,7 @@ export function TripperSettingsSocialLinks({
       {isEditing && (
         <div className="relative mt-3" ref={dropdownRef}>
           <button
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm text-neutral-500 hover:border-gray-400 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm text-ink hover:border-gray-400 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={availableNetworks.length === 0}
             onClick={() => setIsDropdownOpen((v) => !v)}
             type="button"

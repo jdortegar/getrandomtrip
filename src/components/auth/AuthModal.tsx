@@ -425,7 +425,7 @@ export default function AuthModal({
             <h2 className="font-barlow-condensed text-3xl font-bold uppercase text-neutral-800">
               {mode === "login" ? t?.signIn : t?.createAccount}
             </h2>
-            <p className="mt-2 text-lg font-light text-neutral-500">
+            <p className="mt-2 text-lg font-light text-ink">
               {mode === "login" ? t?.loginSubtitle : t?.createAccountSubtitle}
             </p>
           </div>
@@ -601,10 +601,10 @@ export default function AuthModal({
                 {mode === "login" && (
                   <div className="flex flex-col gap-2 pt-1">
                     <div className="flex items-center justify-between gap-2">
-                      <label className="flex cursor-pointer items-center gap-2 text-md font-light text-[#344266]">
+                      <label className="flex cursor-pointer items-center gap-2 text-md font-light text-ink">
                         <input
                           checked={keepMeLoggedIn}
-                          className="h-4 w-4 accent-cyan-600 border-neutral-200 cursor-pointer border-2 padding-px"
+                          className="h-4 w-4 accent-primary border-neutral-200 cursor-pointer border-2 padding-px"
                           onChange={(event) =>
                             setKeepMeLoggedIn(event.target.checked)
                           }
@@ -614,7 +614,7 @@ export default function AuthModal({
                       </label>
                       {forgotState !== "sent" && (
                         <button
-                          className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="text-md font-light text-neutral-700 transition-colors hover:underline underline-offset-2 cursor-pointer hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
                           disabled={forgotState === "sending"}
                           onClick={handleForgotPassword}
                           type="button"
@@ -626,7 +626,7 @@ export default function AuthModal({
                       )}
                     </div>
                     {forgotState === "sent" && (
-                      <p className="text-sm font-light text-neutral-500">
+                      <p className="text-sm font-light text-ink">
                         {t?.forgotSentGeneric}
                       </p>
                     )}

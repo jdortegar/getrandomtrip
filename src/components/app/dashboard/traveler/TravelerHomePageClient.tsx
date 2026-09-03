@@ -136,10 +136,10 @@ export function TravelerHomePageClient({
         <div className="space-y-10 py-10">
           <section>
             <div className="mb-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
                 {eyebrow}
               </p>
-              <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
+              <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
                 {heading}
               </h2>
             </div>

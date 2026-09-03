@@ -57,10 +57,10 @@ export function TripperSettingsPublicUrlCard({
   return (
     <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
@@ -108,7 +108,7 @@ export function TripperSettingsPublicUrlCard({
 
       <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-4">
         <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-ink">
             {copy.visibilityLabel}
           </span>
           {!canToggleVisibility && (

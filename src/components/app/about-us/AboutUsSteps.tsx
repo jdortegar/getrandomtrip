@@ -58,7 +58,7 @@ export function AboutUsSteps({ content, cta, locale }: AboutUsStepsProps) {
                   width={icon.width}
                 />
               )}
-              <h3 className="font-barlow-condensed text-3xl font-semibold uppercase leading-none text-gray-900">
+              <h3 className="font-barlow-condensed text-3xl font-semibold uppercase leading-none text-ink">
                 {step.title}
               </h3>
               <p className="font-barlow text-lg text-neutral-600 leading-relaxed">

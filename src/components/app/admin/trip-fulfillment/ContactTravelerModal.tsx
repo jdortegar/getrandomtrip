@@ -109,7 +109,7 @@ export function ContactTravelerModal({
             <Mail className="h-4 w-4 text-secondary" />
           </div>
           <div>
-            <DialogTitle className="text-xl font-semibold text-gray-900">
+            <DialogTitle className="text-xl font-semibold text-ink">
               {copy.contactModal.title}
             </DialogTitle>
             <DialogDescription className="text-sm text-gray-500">
@@ -121,7 +121,7 @@ export function ContactTravelerModal({
 
       {sent ? (
         <div className="px-6 py-5">
-          <p className="text-sm font-semibold text-neutral-900">
+          <p className="text-sm font-semibold text-ink">
             {copy.contactModal.successTitle}
           </p>
           <p className="mt-1 text-sm text-neutral-600">
