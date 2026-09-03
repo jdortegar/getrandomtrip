@@ -14,17 +14,17 @@ const VARIANT_STYLES = {
   inline: {
     container: "flex overflow-x-auto border-b border-gray-200",
     indicator:
-      "absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-light-blue",
+      "absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-secondary",
     tab: "relative flex min-w-[8.5rem] flex-1 basis-0 cursor-pointer items-center justify-center gap-2 px-3 py-3 text-center text-sm transition-colors sm:min-w-0",
-    tabActive: "font-semibold text-light-blue",
+    tabActive: "font-semibold text-secondary",
     tabInactive: "text-neutral-500 hover:text-neutral-700",
   },
   marketing: {
-    container: "mb-20 flex justify-center gap-8 text-xl text-[#172C36]",
+    container: "mb-20 flex justify-center gap-8 text-xl text-primary",
     indicator:
-      "absolute -bottom-3 left-0 right-0 m-auto h-[2px] w-1/2 rounded-full bg-light-blue",
+      "absolute -bottom-3 left-0 right-0 m-auto h-[2px] w-1/2 rounded-full bg-secondary",
     tab: "relative cursor-pointer",
-    tabActive: "text-[#172C36]",
+    tabActive: "text-primary",
     tabInactive: "text-[#858585]",
   },
 };

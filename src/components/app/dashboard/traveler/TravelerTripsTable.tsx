@@ -111,7 +111,7 @@ export function TravelerTripsTable({
             <button
               className={`h-9 rounded-lg border px-4 text-[13px] font-medium transition-colors ${
                 filter === opt.id
-                  ? "border-light-blue bg-light-blue text-white"
+                  ? "border-secondary bg-secondary text-white"
                   : "border-gray-200 bg-white text-neutral-600 shadow-sm hover:border-gray-300"
               }`}
               key={opt.id}

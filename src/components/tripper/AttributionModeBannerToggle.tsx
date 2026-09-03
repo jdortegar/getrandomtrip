@@ -103,7 +103,7 @@ export function AttributionModeBannerToggle({
       <div className="rt-container flex flex-wrap items-center justify-center gap-2 px-4 py-2 text-center text-sm">
         <span>{message}</span>
         <button
-          className="font-semibold text-light-blue underline underline-offset-2 hover:text-light-blue/80 disabled:opacity-50"
+          className="font-semibold text-secondary underline underline-offset-2 hover:text-secondary/80 disabled:opacity-50"
           disabled={isPending}
           onClick={handleToggle}
           type="button"

@@ -140,7 +140,7 @@ export default function TripperSearchModal({
 
           <input
             aria-label="Buscar tripper por nombre"
-            className="w-full rounded-sm border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-light-blue focus:outline-none focus:ring-1 focus:ring-light-blue"
+            className="w-full rounded-sm border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Escribí un nombre..."
             type="search"
@@ -178,7 +178,7 @@ export default function TripperSearchModal({
                             </p>
                           )}
                         </div>
-                        <span className="shrink-0 text-sm text-light-blue">
+                        <span className="shrink-0 text-sm text-secondary">
                           Ver perfil →
                         </span>
                       </Link>

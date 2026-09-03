@@ -61,7 +61,7 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
     <section>
       {/* Brand section header */}
       <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {metricsCopy.sectionEyebrow ?? "This month"}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
@@ -85,13 +85,13 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                    card.gold ? "bg-yellow-400/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-light-blue",
+                      card.gold ? "text-yellow-500" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />

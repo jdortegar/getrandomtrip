@@ -83,6 +83,21 @@ html.lenis {
   --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-nothing-you-could-do: var(--font-nothing-you-could-do), cursive;
 
+  /* Secondary brand color — Mineral Sage */
+  --color-secondary: #a4b4aa;
+  --color-secondary-foreground: #111827;
+  --color-secondary-50: #f3f6f4;
+  --color-secondary-100: #e4eae6;
+  --color-secondary-200: #c9d6cd;
+  --color-secondary-300: #a4b4aa;
+  --color-secondary-400: #8aa091;
+  --color-secondary-500: #6c8577;
+  --color-secondary-600: #55695f;
+  --color-secondary-700: #42514a;
+  --color-secondary-800: #303b36;
+  --color-secondary-900: #1f2723;
+  --color-secondary-950: #121815;
+
   /* Primary brand color — Deep Teal */
   --color-primary: #0f5c60;
   --color-primary-foreground: #ffffff;
@@ -113,10 +128,6 @@ html.lenis {
 
   /* Simplified cyan color for direct use */
   --color-cyan: #4f96b6;
-
-  /* Light blue (carousel buttons, links) */
-  --color-light-blue: #4f96b6;
-  --color-light-blue-600: #3d7a94;
 
   --color-xsed: #d97e4a;
   --color-xsed-50: #fef2f2;

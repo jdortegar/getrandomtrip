@@ -62,7 +62,7 @@ export function TripperSettingsPublicPresenceCard({
   return (
     <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -76,7 +76,7 @@ export function TripperSettingsPublicPresenceCard({
         </p>
         {isEditing ? (
           <textarea
-            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-neutral-800 outline-none focus:border-light-blue"
+            className="w-full rounded-lg border border-gray-200 p-3 text-sm text-neutral-800 outline-none focus:border-secondary"
             onChange={(e) => onChange({ ...formData, bio: e.target.value })}
             placeholder={copy.bioPlaceholder}
             rows={4}

@@ -135,7 +135,7 @@ export function MultiSelectInput({
                     className={cn(
                       "flex items-center gap-2 px-4 py-2.5 text-sm cursor-pointer select-none transition-colors",
                       isSelected
-                        ? "text-light-blue bg-light-blue/10"
+                        ? "text-secondary bg-secondary/10"
                         : "text-gray-700 hover:bg-gray-50",
                     )}
                   >
@@ -143,7 +143,7 @@ export function MultiSelectInput({
                       className={cn(
                         "flex h-4 w-4 items-center justify-center rounded border transition-colors",
                         isSelected
-                          ? "border-light-blue bg-light-blue"
+                          ? "border-secondary bg-secondary"
                           : "border-gray-300",
                       )}
                     >

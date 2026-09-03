@@ -33,7 +33,7 @@ export function PresentTrippers({ content, trippers }: PresentTrippersProps) {
   return (
     <section className="bg-white py-24 md:py-32">
       <div className="rt-container mb-12 text-center">
-        <p className="font-barlow text-base font-bold uppercase tracking-[6px] text-light-blue">
+        <p className="font-barlow text-base font-bold uppercase tracking-[6px] text-secondary">
           {content.eyebrow}
         </p>
         <h2 className="mt-4 font-barlow-condensed text-[50px] font-bold uppercase leading-none text-gray-900 md:text-[70px]">

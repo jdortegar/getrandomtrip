@@ -32,7 +32,7 @@ export default function Paragraph({
           ))}
         </div>
         <div className="flex items-center justify-center mt-20">
-          <BrandingAnimation className=" text-light-blue" />
+          <BrandingAnimation className=" text-secondary" />
         </div>
       </div>
     </Section>

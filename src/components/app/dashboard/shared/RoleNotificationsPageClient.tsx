@@ -250,7 +250,7 @@ export function RoleNotificationsPageClient({
     <div className="space-y-6 text-left">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
             {copy.eyebrow}
           </p>
           <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -395,7 +395,7 @@ export function RoleNotificationsPageClient({
                           "grid h-9 w-9 shrink-0 place-items-center rounded-full",
                           isDanger
                             ? "bg-red-50 text-red-500"
-                            : "bg-light-blue/10 text-light-blue",
+                            : "bg-secondary/10 text-secondary",
                         )}
                       >
                         <Icon className="h-4 w-4" strokeWidth={1.8} />

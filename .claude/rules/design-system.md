@@ -14,15 +14,17 @@ paths:
 
 Seven canonical tokens — use nothing outside these and the Tailwind neutral scale:
 
-| Token     | Hex       | Tailwind               | Usage                                      |
-| --------- | --------- | ---------------------- | ------------------------------------------ |
-| Ink       | `#111827` | `gray-900`             | Headings, body text                        |
-| Deep Teal | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons |
-| Cyan      | `#4F96B6` | `text-light-blue`      | Eyebrows, icon pucks, links, publish state |
-| Sun       | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
-| Surface   | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
-| Ground    | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
-| Border    | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
+| Token        | Hex       | Tailwind               | Usage                                      |
+| ------------ | --------- | ---------------------- | ------------------------------------------ |
+| Ink          | `#111827` | `gray-900`             | Headings, body text                        |
+| Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons |
+| Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — eyebrows, underlines, arrow/dot buttons, links, icon pucks, publish state |
+| Sun          | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
+| Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
+| Ground       | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
+| Border       | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
+
+`--color-secondary` (Mineral Sage, `#A4B4AA`) is the source of truth in `src/app/globals.css`, with a full `50`–`950` scale for future use — but every call site uses the bare `secondary`/`bg-secondary`/`text-secondary` token, never a numbered shade. This is a deliberate choice: the bare tint is lighter than ideal text contrast on white (~2.2:1, below WCAG AA), but the numbered shades were dropped in favor of a single predictable token everywhere. Don't reintroduce `secondary-700`/`-800` at a call site — if contrast needs fixing, fix `--color-secondary` itself.
 
 No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add `dark:` variants.
 
@@ -35,7 +37,7 @@ No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add 
 | Section heading | `font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900` |
 | KPI value       | `font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900`   |
 | Price cell      | `font-barlow-condensed text-lg font-bold leading-none text-gray-900`          |
-| Eyebrow         | `text-xs font-semibold uppercase tracking-[0.18em] text-light-blue`          |
+| Eyebrow         | `text-xs font-semibold uppercase tracking-[0.18em] text-secondary`          |
 | Table header    | `text-[11px] font-semibold uppercase tracking-wider text-neutral-500`         |
 | Panel heading   | `text-xl font-semibold text-neutral-900`                                      |
 | Body / cell     | `text-sm text-neutral-700`                                                    |
@@ -53,7 +55,7 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
 ```tsx
 {/* Header-only */}
 <div>
-  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
     {copy.eyebrow}
   </p>
   <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -64,7 +66,7 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
 {/* Header + primary CTA (same row) */}
 <div className="flex items-end justify-between gap-4">
   <div>
-    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
       {copy.eyebrow}
     </p>
     <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -97,7 +99,7 @@ Rules:
     <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">
       {copy.label}
     </span>
-    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/10 text-secondary">
       <Icon className="h-4 w-4" />
     </span>
   </div>
@@ -111,7 +113,7 @@ Rules:
 </div>
 ```
 
-Icon puck colors: cyan (`bg-light-blue/10 text-light-blue`) for most stats; gold (`bg-yellow-400/15 text-yellow-600`) for rating only.
+Icon puck colors: sage (`bg-secondary/10 text-secondary`) for most stats; ochre (`bg-yellow-400/15 text-yellow-600`) for rating only.
 
 **Supporting strip** (secondary metrics row below KPI cards):
 

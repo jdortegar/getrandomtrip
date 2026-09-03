@@ -28,8 +28,8 @@ const TONE_STYLES: Record<
     confirmVariant: "destructive",
   },
   neutral: {
-    iconBg: "bg-light-blue/10",
-    iconColor: "text-light-blue",
+    iconBg: "bg-secondary/10",
+    iconColor: "text-secondary",
     confirmVariant: "default",
   },
 };

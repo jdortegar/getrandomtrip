@@ -127,7 +127,7 @@ export function TeamSection({ content }: TeamSectionProps) {
                     </p>
                     {/* Block 3: Tagline */}
                     {member.tagline && (
-                      <p className="font-barlow font-bold text-xl lg:text-2xl text-light-blue leading-snug mt-6">
+                      <p className="font-barlow font-bold text-xl lg:text-2xl text-secondary leading-snug mt-6">
                         {member.tagline}
                       </p>
                     )}

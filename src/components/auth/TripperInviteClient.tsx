@@ -168,7 +168,7 @@ function ExistingUserBranch({
       <CardShell>
         <Loader2
           aria-hidden
-          className="mx-auto mb-4 h-10 w-10 animate-spin text-light-blue"
+          className="mx-auto mb-4 h-10 w-10 animate-spin text-secondary"
         />
         <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
           {copy.loadingTitle}
@@ -305,7 +305,7 @@ function NewUserBranch({
 
   return (
     <CardShell>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
         {c.registerEyebrow}
       </p>
       <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">

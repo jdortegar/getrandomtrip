@@ -49,7 +49,7 @@ export function TripperSettingsAccountCard({
   return (
     <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -82,7 +82,7 @@ export function TripperSettingsAccountCard({
             <div
               className={cn(
                 "h-1.5 flex-1 rounded-full",
-                i <= tierIndex ? "bg-light-blue" : "bg-gray-200",
+                i <= tierIndex ? "bg-secondary" : "bg-gray-200",
               )}
               key={key}
             />

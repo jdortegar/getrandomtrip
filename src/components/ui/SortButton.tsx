@@ -55,7 +55,7 @@ export function SortButton({
       <Icon
         className={cn(
           "h-3.5 w-3.5 shrink-0",
-          active ? "text-light-blue" : "text-neutral-300",
+          active ? "text-secondary" : "text-neutral-300",
         )}
       />
     </button>

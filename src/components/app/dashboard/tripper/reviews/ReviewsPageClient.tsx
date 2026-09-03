@@ -260,7 +260,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   return (
     <div className="space-y-6 text-left">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -283,13 +283,13 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                    card.gold ? "bg-yellow-400/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-light-blue",
+                      card.gold ? "text-yellow-500" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />
@@ -409,7 +409,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
               {reviews.map((review) => (
                 <li className="px-5 py-5" key={review.id}>
                   <div className="flex items-start gap-4">
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-light-blue/10 font-barlow-condensed text-lg font-bold text-light-blue">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary/10 font-barlow-condensed text-lg font-bold text-secondary">
                       {review.userName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">

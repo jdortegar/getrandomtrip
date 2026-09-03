@@ -222,7 +222,7 @@ export function AccountSettingsDocumentsTab({
         {/* National ID */}
         <div className="rounded-xl border border-gray-200 bg-neutral-50 p-6">
           <div className="mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <CreditCard className="h-4 w-4" />
             </span>
             <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
@@ -271,7 +271,7 @@ export function AccountSettingsDocumentsTab({
         {/* Passport */}
         <div className="rounded-xl border border-gray-200 bg-neutral-50 p-6">
           <div className="mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <BookOpen className="h-4 w-4" />
             </span>
             <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
@@ -320,7 +320,7 @@ export function AccountSettingsDocumentsTab({
         {/* Approved Visas */}
         <div className="rounded-xl border border-gray-200 bg-neutral-50 p-6">
           <div className="mb-4 flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
               <Globe className="h-4 w-4" />
             </span>
             <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
@@ -357,7 +357,7 @@ export function AccountSettingsDocumentsTab({
               <div className="relative">
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
                 <input
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-800 outline-none focus:border-light-blue"
+                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-800 outline-none focus:border-secondary"
                   onChange={(e) => {
                     setVisaQuery(e.target.value);
                     setIsVisaDropdownOpen(true);

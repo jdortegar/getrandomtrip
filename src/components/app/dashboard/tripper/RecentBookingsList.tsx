@@ -39,7 +39,7 @@ export function RecentBookingsList({
       {/* Brand section header — eyebrow + condensed heading */}
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
             Latest activity
           </p>
           <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
@@ -48,7 +48,7 @@ export function RecentBookingsList({
         </div>
         <Link
           href={pathForLocale(locale as Locale, "/dashboard/tripper")}
-          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-light-blue hover:text-sky-700"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-secondary hover:text-sky-700"
         >
           {copy.viewAll} →
         </Link>
@@ -65,7 +65,7 @@ export function RecentBookingsList({
               <div key={booking.id} className="px-6 py-[18px]">
                 {/* Mobile layout */}
                 <div className="flex items-center gap-4 md:hidden">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-light-blue text-base font-semibold text-white">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary text-base font-semibold text-white">
                     {booking.clientName.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -95,7 +95,7 @@ export function RecentBookingsList({
                   style={{ gridTemplateColumns: "1fr 160px 120px 130px" }}
                 >
                   <div className="flex min-w-0 items-center gap-4">
-                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-light-blue text-lg font-semibold text-white">
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-secondary text-lg font-semibold text-white">
                       {booking.clientName.charAt(0).toUpperCase()}
                     </div>
                     <div className="min-w-0">

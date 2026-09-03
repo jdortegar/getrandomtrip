@@ -339,7 +339,7 @@ export function AccountSettingsPanel({
   if (!dict) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-light-blue border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-secondary border-t-transparent" />
       </div>
     );
   }
@@ -482,7 +482,7 @@ export function AccountSettingsPanel({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Calendar className="h-4 w-4 text-light-blue" />
+                <Calendar className="h-4 w-4 text-secondary" />
                 {p.labels.memberSince}
               </div>
               <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
@@ -492,7 +492,7 @@ export function AccountSettingsPanel({
             {isTripper && (
               <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
                 <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                  <Calendar className="h-4 w-4 text-light-blue" />
+                  <Calendar className="h-4 w-4 text-secondary" />
                   {p.labels.tripperSince}
                 </div>
                 <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
@@ -502,7 +502,7 @@ export function AccountSettingsPanel({
             )}
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Globe className="h-4 w-4 text-light-blue" />
+                <Globe className="h-4 w-4 text-secondary" />
                 {p.labels.totalTrips}
               </div>
               <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
@@ -511,7 +511,7 @@ export function AccountSettingsPanel({
             </div>
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
               <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Star className="h-4 w-4 text-light-blue" />
+                <Star className="h-4 w-4 text-secondary" />
                 {p.labels.avgRating}
               </div>
               <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
@@ -578,7 +578,7 @@ export function AccountSettingsPanel({
               value={detailsForm.email}
             />
 
-            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
               {p.labels.addressSection}
             </p>
             <FormField

@@ -53,7 +53,7 @@ export function UpcomingTripsList({
           {copy.upcomingTrips.title}
         </h2>
         <Link
-          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-light-blue hover:text-sky-700"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-secondary hover:text-sky-700"
           href={pathForLocale(locale as Locale, "/dashboard/traveler/trips")}
         >
           {copy.allTrips.viewMore} →

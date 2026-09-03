@@ -58,7 +58,7 @@ export const TravelerRosterSection = forwardRef<
   const submitted = travelers.filter((t) => t.status === "COMPLETE").length;
   const supportHref = pathForLocale(locale, SUPPORT_HREF);
   const supportLink = (
-    <Link className="text-light-blue underline" href={supportHref}>
+    <Link className="text-secondary underline" href={supportHref}>
       {copy.supportLinkLabel}
     </Link>
   );
@@ -79,7 +79,7 @@ export const TravelerRosterSection = forwardRef<
   return (
     <div className="w-full max-w-3xl text-left">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">

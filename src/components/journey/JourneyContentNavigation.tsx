@@ -118,7 +118,7 @@ export default function JourneyContentNavigation({
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full border transition-colors",
                         {
-                          "border-light-blue bg-light-blue text-white":
+                          "border-secondary bg-secondary text-white":
                             isActive || isCompleted,
                           "border-gray-300 bg-gray-100 text-gray-400 opacity-60":
                             !isActive && !isCompleted,

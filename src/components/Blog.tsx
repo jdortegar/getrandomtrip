@@ -44,7 +44,7 @@ export default function Blog({
         >
           {eyebrow && (
             <motion.div
-              className="text-base font-bold uppercase tracking-[6px] text-light-blue md:text-lg md:tracking-[9px]"
+              className="text-base font-bold uppercase tracking-[6px] text-secondary md:text-lg md:tracking-[9px]"
               initial={{ opacity: 0, y: 40 }}
               transition={{ delay: 0.2, duration: 0.6 }}
               viewport={{ margin: "-100px", once: true }}

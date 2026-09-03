@@ -473,7 +473,7 @@ const ctaSection: React.CSSProperties = {
 
 const ctaButton: React.CSSProperties = {
   backgroundColor: "#ffc500",
-  color: "#172c36",
+  color: "#0f5c60",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

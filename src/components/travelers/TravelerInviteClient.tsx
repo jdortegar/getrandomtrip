@@ -213,7 +213,7 @@ function InviteForm({
   return (
     <>
       <CardShell>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.landingEyebrow}
         </p>
         <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -270,7 +270,7 @@ function InviteForm({
               />
               <span>
                 {copy.landingConsentPrefix}
-                <Link className="text-light-blue underline" href={privacyHref}>
+                <Link className="text-secondary underline" href={privacyHref}>
                   {copy.landingConsentLinkLabel}
                 </Link>
                 {copy.landingConsentSuffix}

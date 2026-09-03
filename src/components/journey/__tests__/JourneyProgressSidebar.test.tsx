@@ -61,7 +61,7 @@ describe("JourneyProgressSidebar — completion overrides (opt-in, additive)", (
 
     // "Dates" (substepIndex 1, not the default-active first substep) has no
     // solid fill — it isn't marked complete by the internal search-param check.
-    expect(bulletClasses(container, "Dates")).not.toContain("bg-light-blue");
+    expect(bulletClasses(container, "Dates")).not.toContain("bg-secondary");
 
     act(() => root.unmount());
     container.remove();
@@ -71,7 +71,7 @@ describe("JourneyProgressSidebar — completion overrides (opt-in, additive)", (
     mockSearch = "originCountry=Argentina&originCity=Cordoba";
     const { container, root } = renderSidebar({});
 
-    expect(bulletClasses(container, "Origin")).toContain("bg-light-blue");
+    expect(bulletClasses(container, "Origin")).toContain("bg-secondary");
 
     act(() => root.unmount());
     container.remove();
@@ -84,11 +84,11 @@ describe("JourneyProgressSidebar — completion overrides (opt-in, additive)", (
     });
 
     // Overridden key reads complete...
-    expect(bulletClasses(container, "Origin")).toContain("bg-light-blue");
+    expect(bulletClasses(container, "Origin")).toContain("bg-secondary");
     // ...but a sibling substep not present in the override map keeps using
     // the internal search-param check (still incomplete here).
     expect(bulletClasses(container, "Dates")).toContain("border-gray-300");
-    expect(bulletClasses(container, "Dates")).not.toContain("bg-light-blue");
+    expect(bulletClasses(container, "Dates")).not.toContain("bg-secondary");
 
     act(() => root.unmount());
     container.remove();
@@ -100,7 +100,7 @@ describe("JourneyProgressSidebar — completion overrides (opt-in, additive)", (
       substepCompletionOverrides: { "details:origin": false },
     });
 
-    expect(bulletClasses(container, "Origin")).not.toContain("bg-light-blue");
+    expect(bulletClasses(container, "Origin")).not.toContain("bg-secondary");
 
     act(() => root.unmount());
     container.remove();

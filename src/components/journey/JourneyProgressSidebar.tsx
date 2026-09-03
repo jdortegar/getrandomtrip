@@ -194,7 +194,7 @@ export default function JourneyProgressSidebar({
           <span className="text-lg font-bold text-gray-900">
             {progressLabel}
           </span>
-          <span className="text-lg font-bold text-light-blue">{pct ?? 0}%</span>
+          <span className="text-lg font-bold text-secondary">{pct ?? 0}%</span>
         </div>
       )}
       <div className="relative pl-5">
@@ -231,7 +231,7 @@ export default function JourneyProgressSidebar({
                 {tabIndex < tabs.length - 1 && (
                   <div
                     className={cn("absolute left-[20px] top-10 w-0.5", {
-                      "bg-light-blue": isActive || isCompleted,
+                      "bg-secondary": isActive || isCompleted,
                       "bg-gray-300": !isActive && !isCompleted,
                     })}
                     style={{ bottom: "-2rem" }}
@@ -241,7 +241,7 @@ export default function JourneyProgressSidebar({
                 {/* Vertical line for last step: from circle down to last substep bullet */}
                 {tabIndex === lastTabIndex && hasSubsteps && isActive && (
                   <div
-                    className="absolute left-[20px] top-10 w-0.5 bg-light-blue z-10"
+                    className="absolute left-[20px] top-10 w-0.5 bg-secondary z-10"
                     style={{ height: lastTabLineHeight > 0 ? `${lastTabLineHeight}px` : 0 }}
                   />
                 )}
@@ -253,8 +253,8 @@ export default function JourneyProgressSidebar({
                       className={cn(
                         "relative w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all",
                         {
-                          "bg-light-blue text-white": isCompleted,
-                          "bg-white border-2 border-light-blue text-light-blue":
+                          "bg-secondary text-white": isCompleted,
+                          "bg-white border-2 border-secondary text-secondary":
                             isActive && !isCompleted,
                           "bg-white border-2 border-gray-300 text-gray-400":
                             !isActive && !isCompleted,
@@ -273,7 +273,7 @@ export default function JourneyProgressSidebar({
                   <div className="flex-1 pt-1">
                     <h2
                       className={cn("text-lg font-bold mb-6", {
-                        "text-light-blue": isActive && !isCompleted,
+                        "text-secondary": isActive && !isCompleted,
                         "text-gray-900": isCompleted,
                         "text-gray-400": isUpcoming,
                       })}
@@ -337,7 +337,7 @@ export default function JourneyProgressSidebar({
                               {/* Horizontal line connecting to vertical timeline */}
                               <div
                                 className={cn("absolute top-[7px] h-0.5", {
-                                  "bg-light-blue":
+                                  "bg-secondary":
                                     !isAddonsComingSoon &&
                                     (isSubstepActive || isSubstepCompleted),
                                   "bg-gray-300":
@@ -351,9 +351,9 @@ export default function JourneyProgressSidebar({
                               <div className="relative z-10 shrink-0 mt-1">
                                 <div
                                   className={cn("w-2 h-2 rounded-full", {
-                                    "bg-light-blue":
+                                    "bg-secondary":
                                       isSubstepCompleted && !isAddonsComingSoon,
-                                    "bg-white border border-light-blue":
+                                    "bg-white border border-secondary":
                                       isSubstepActive &&
                                       !isSubstepCompleted &&
                                       !isAddonsComingSoon,
@@ -370,7 +370,7 @@ export default function JourneyProgressSidebar({
                                   className={cn(
                                     "mb-1 flex flex-wrap items-center gap-2 text-sm font-bold uppercase",
                                     {
-                                      "text-light-blue":
+                                      "text-secondary":
                                         isSubstepActive && !isAddonsComingSoon,
                                       "text-gray-400":
                                         !isSubstepActive || isAddonsComingSoon,

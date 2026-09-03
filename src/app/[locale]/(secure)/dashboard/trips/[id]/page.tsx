@@ -563,7 +563,7 @@ function TripDetailsContent() {
                         </span>
                       )}
                     </span>
-                    <span className="text-xl font-bold text-light-blue">
+                    <span className="text-xl font-bold text-secondary">
                       ${totalTripUsd.toFixed(2)}
                     </span>
                   </div>
@@ -748,8 +748,8 @@ function TripDetailsContent() {
               </div>
 
               {/* Trip Info Card */}
-              <div className="rounded-2xl bg-light-blue/5 p-6 ring-1 ring-light-blue/20">
-                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-light-blue">
+              <div className="rounded-2xl bg-secondary/5 p-6 ring-1 ring-secondary/20">
+                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-secondary">
                   <Info className="h-4 w-4" />
                   {copy.tripInfoTitle}
                 </h3>

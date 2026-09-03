@@ -71,7 +71,7 @@ const Section = ({
           <div className={cn("mb-14 ", fullWidth && "rt-container")}>
             {eyebrow && (
               <motion.div
-                className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-light-blue"
+                className="text-base md:text-lg font-bold md:tracking-[9px] tracking-[6px] uppercase text-secondary"
                 style={eyebrowColor ? { color: eyebrowColor } : undefined}
                 initial={{ y: 40, opacity: 0 }}
                 whileInView={{ y: 0, opacity: 1 }}

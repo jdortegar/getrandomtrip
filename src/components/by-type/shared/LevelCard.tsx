@@ -79,9 +79,9 @@ export default function LevelCard({
   const textColor = isDark ? "text-white" : "text-gray-900";
   const bgColor = isDark ? "bg-primary" : "bg-white";
   const borderColor = selected
-    ? "border-[#172C36]"
+    ? "border-primary"
     : isDark
-      ? "border-[#172C36]"
+      ? "border-primary"
       : "border-transparent";
   const dividerColor = isDark ? "border-gray-700" : "border-gray-200";
   const priceDividerColor = "bg-yellow-400";
@@ -137,7 +137,7 @@ export default function LevelCard({
       {/* Selected Checkmark - Top Right */}
       {selected && (
         <div className="absolute right-[-9.8px] -top-2 z-10 @[250px]:right-[-14px] @[250px]:-top-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
         </div>

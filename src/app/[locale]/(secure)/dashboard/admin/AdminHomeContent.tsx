@@ -88,7 +88,7 @@ export function AdminHomeContent({
     <div className="space-y-10">
       {/* Stats section header */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -109,7 +109,7 @@ export function AdminHomeContent({
                 <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">
                   {card.label}
                 </span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/10 text-secondary">
                   <Icon className="h-4 w-4" />
                 </span>
               </div>
@@ -126,7 +126,7 @@ export function AdminHomeContent({
 
       {/* Pending actions panel */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
           {copy.pending.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">

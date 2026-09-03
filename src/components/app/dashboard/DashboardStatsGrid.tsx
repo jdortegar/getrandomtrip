@@ -59,13 +59,13 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
               <span
                 className={cn(
                   "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                  card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                  card.gold ? "bg-yellow-400/15" : "bg-secondary/10",
                 )}
               >
                 <Icon
                   className={cn(
                     "h-5 w-5",
-                    card.gold ? "text-yellow-500" : "text-light-blue",
+                    card.gold ? "text-yellow-500" : "text-secondary",
                   )}
                   strokeWidth={1.8}
                 />

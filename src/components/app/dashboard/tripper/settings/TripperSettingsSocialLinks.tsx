@@ -182,7 +182,7 @@ export function TripperSettingsSocialLinks({
                 </div>
                 {isRowActive ? (
                   <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <div className="inline-flex w-full items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-light-blue sm:w-64 sm:min-w-[200px]">
+                    <div className="inline-flex w-full items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-secondary sm:w-64 sm:min-w-[200px]">
                       {config.prefix && (
                         <span className="text-sm text-neutral-400">
                           {config.prefix}

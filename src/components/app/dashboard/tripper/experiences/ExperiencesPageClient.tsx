@@ -256,7 +256,7 @@ export default function ExperiencesPageClient({
       {/* Section header */}
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
             {copy.eyebrow}
           </p>
           <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
@@ -549,7 +549,7 @@ export default function ExperiencesPageClient({
                             {experience.isActive ? (
                               <EyeOff className="h-4 w-4" />
                             ) : (
-                              <Eye className="h-4 w-4 text-light-blue" />
+                              <Eye className="h-4 w-4 text-secondary" />
                             )}
                           </TableIconButton>
                           <TableIconButton

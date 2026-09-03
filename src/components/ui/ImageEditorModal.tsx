@@ -186,7 +186,7 @@ export function ImageEditorModal({
           </div>
 
           <button
-            className="flex w-fit items-center gap-1.5 text-sm font-medium text-light-blue hover:underline"
+            className="flex w-fit items-center gap-1.5 text-sm font-medium text-secondary hover:underline"
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >
@@ -198,7 +198,7 @@ export function ImageEditorModal({
         <div
           className={cn(
             "flex h-64 flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-center transition-colors",
-            isDraggingOver && "border-light-blue bg-light-blue/5",
+            isDraggingOver && "border-secondary bg-secondary/5",
           )}
           onDragLeave={(e) => {
             e.preventDefault();

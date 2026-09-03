@@ -83,7 +83,7 @@ export default function VerifyEmailClient({
           <>
             <Loader2
               aria-hidden
-              className="mx-auto mb-4 h-10 w-10 animate-spin text-light-blue"
+              className="mx-auto mb-4 h-10 w-10 animate-spin text-secondary"
             />
             <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
               {copy.verifyingTitle}
