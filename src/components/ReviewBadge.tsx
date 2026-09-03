@@ -16,7 +16,7 @@ export function ReviewBadge({ className, rating }: ReviewBadgeProps) {
       <span className="text-xs font-semibold text-white">{rating}</span>
       <svg
         aria-hidden
-        className="h-3 w-3 text-yellow-400"
+        className="h-3 w-3 text-feature"
         fill="currentColor"
         viewBox="0 0 20 20"
       >

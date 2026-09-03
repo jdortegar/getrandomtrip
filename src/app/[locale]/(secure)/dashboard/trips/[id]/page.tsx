@@ -506,7 +506,7 @@ function TripDetailsContent() {
                         key={i}
                         className={`h-5 w-5 ${
                           i < (trip.customerRating || 0)
-                            ? "text-yellow-500 fill-current"
+                            ? "text-feature fill-current"
                             : "text-gray-300"
                         }`}
                       />

@@ -19,12 +19,12 @@ Seven canonical tokens — use nothing outside these and the Tailwind neutral sc
 | Ink          | `#111827` | `gray-900`             | Headings, body text                        |
 | Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons |
 | Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — eyebrows, underlines, arrow/dot buttons, links, icon pucks, publish state |
-| Sun          | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
+| Ochre        | `#E5A51C` | `bg-feature` / `text-feature` | Brand feature/accent — high-emphasis CTA (`feature`/`pill` Button variants), KPI accent bar |
 | Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
 | Ground       | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
 | Border       | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
 
-`--color-secondary` (Mineral Sage, `#A4B4AA`) is the source of truth in `src/app/globals.css`, with a full `50`–`950` scale for future use — but every call site uses the bare `secondary`/`bg-secondary`/`text-secondary` token, never a numbered shade. This is a deliberate choice: the bare tint is lighter than ideal text contrast on white (~2.2:1, below WCAG AA), but the numbered shades were dropped in favor of a single predictable token everywhere. Don't reintroduce `secondary-700`/`-800` at a call site — if contrast needs fixing, fix `--color-secondary` itself.
+`--color-secondary` (Mineral Sage, `#A4B4AA`) and `--color-feature` (Ochre, `#E5A51C`) are the source of truth in `src/app/globals.css`, each with a full `50`–`950` scale for future use — but every call site uses the bare token (`secondary`/`bg-secondary`/`text-secondary`, `feature`/`bg-feature`/`text-feature`), never a numbered shade. This is a deliberate choice: the bare tints are lighter than ideal text contrast on white (~2.2:1, below WCAG AA), but the numbered shades were dropped in favor of a single predictable token everywhere, matching how `primary` already works. Don't reintroduce a `-700`/`-800` suffix at a call site — if contrast needs fixing, fix the base variable itself. `--color-feature` also replaces Tailwind's default `yellow-400`/`-500`/`-600` wherever those were used as the brand accent (Button's `feature`/`pill` variants, KPI accent bars, star ratings) — the unrelated warning-badge yellows (`yellow-50/100/200/300/800/900`, e.g. `RemovableTag`'s `warning` variant, preview-mode banners) are untouched and stay generic Tailwind yellow.
 
 No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add `dark:` variants.
 
@@ -103,9 +103,9 @@ Rules:
       <Icon className="h-4 w-4" />
     </span>
   </div>
-  {/* Bottom: yellow accent bar + Barlow Condensed value */}
+  {/* Bottom: ochre accent bar + Barlow Condensed value */}
   <div className="flex items-stretch gap-3">
-    <div className="w-1 shrink-0 self-stretch rounded-full bg-yellow-400" />
+    <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
     <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900">
       {value}
     </span>
@@ -113,7 +113,7 @@ Rules:
 </div>
 ```
 
-Icon puck colors: sage (`bg-secondary/10 text-secondary`) for most stats; ochre (`bg-yellow-400/15 text-yellow-600`) for rating only.
+Icon puck colors: sage (`bg-secondary/10 text-secondary`) for most stats; ochre (`bg-feature/15 text-feature`) for rating only.
 
 **Supporting strip** (secondary metrics row below KPI cards):
 

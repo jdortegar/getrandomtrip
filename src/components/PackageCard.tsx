@@ -21,7 +21,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
   onButtonClick,
 }) => {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-yellow-500 group">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-feature group">
       <div className="relative h-56 w-full">
         <Image src={image} alt={tier} layout="fill" objectFit="cover" />
       </div>
@@ -47,7 +47,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
               {/* Align items to start for better icon alignment */}
               {/* Custom checkmark icon */}
               <svg
-                className="w-5 h-5 mr-3 text-yellow-600 shrink-0"
+                className="w-5 h-5 mr-3 text-feature shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"

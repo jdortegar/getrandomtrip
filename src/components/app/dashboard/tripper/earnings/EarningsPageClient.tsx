@@ -165,20 +165,20 @@ export function EarningsPageClient({
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-secondary/10",
+                    card.gold ? "bg-feature/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-secondary",
+                      card.gold ? "text-feature" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />
                 </span>
               </div>
               <div className="flex items-stretch gap-3.5">
-                <span className="w-1 rounded-full bg-yellow-400" />
+                <span className="w-1 rounded-full bg-feature" />
                 <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-gray-900">
                   {card.value}
                 </p>

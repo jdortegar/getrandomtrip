@@ -114,7 +114,7 @@ export default function ReviewFormClient({
                 <Star
                   className={`h-8 w-8 transition-colors ${
                     star <= (hoveredRating || rating)
-                      ? "text-yellow-400 fill-yellow-400"
+                      ? "text-feature fill-feature"
                       : "text-neutral-300"
                   }`}
                 />

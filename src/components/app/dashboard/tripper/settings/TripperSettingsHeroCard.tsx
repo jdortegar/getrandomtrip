@@ -123,7 +123,7 @@ export function TripperSettingsHeroCard({
               ? { backgroundImage: `url(${formData.heroImage})` }
               : {
                   background:
-                    "linear-gradient(135deg, #0f2a36 0%, #1a4a62 40%, #2d6a8f 70%, #4f96b6 100%)",
+                    "linear-gradient(135deg, var(--color-primary-950) 0%, var(--color-primary-800) 40%, var(--color-primary-600) 70%, var(--color-primary) 100%)",
                 }
           }
         >

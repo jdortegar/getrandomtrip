@@ -162,7 +162,7 @@ const receiptLinkText: React.CSSProperties = {
 };
 
 const receiptLinkAnchor: React.CSSProperties = {
-  color: "#4F96B6",
+  color: "#a4b4aa",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "13px",
   fontWeight: "600",

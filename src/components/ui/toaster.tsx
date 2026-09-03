@@ -8,7 +8,7 @@ const TONE_ICON: Record<ToastTone, { bg: string; fg: string; glyph: string }> = 
   success: { bg: "#16a34a", fg: "#fff", glyph: "✓" },
   error: { bg: "#dc2626", fg: "#fff", glyph: "×" },
   warning: { bg: "#eab308", fg: "#1f2937", glyph: "!" },
-  info: { bg: "#4f96b6", fg: "#fff", glyph: "i" },
+  info: { bg: "var(--color-secondary)", fg: "#fff", glyph: "i" },
 };
 
 function ToneIcon({ tone }: { tone: ToastTone }) {
@@ -82,7 +82,7 @@ export function Toaster() {
           },
           actionButtonStyle: {
             background: "transparent",
-            color: "#4f96b6",
+            color: "var(--color-secondary)",
             fontSize: "13px",
             fontWeight: 600,
             textDecoration: "underline",

@@ -114,7 +114,7 @@ export function AdminHomeContent({
                 </span>
               </div>
               <div className="flex items-stretch gap-3">
-                <div className="w-1 shrink-0 self-stretch rounded-full bg-yellow-400" />
+                <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
                 <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900">
                   {card.value}
                 </span>

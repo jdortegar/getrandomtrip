@@ -84,7 +84,7 @@ export default function LevelCard({
       ? "border-primary"
       : "border-transparent";
   const dividerColor = isDark ? "border-gray-700" : "border-gray-200";
-  const priceDividerColor = "bg-yellow-400";
+  const priceDividerColor = "bg-feature";
   const secondaryTextColor = isDark ? "text-white" : "text-gray-600";
 
   // Minimize mode: hide all features until expanded.
@@ -270,7 +270,7 @@ export default function LevelCard({
         <div className="mt-4 flex justify-center @[250px]:mt-6">
           <button
             aria-label={isExpanded ? "Collapse features" : "Expand features"}
-            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400 rounded-full p-2 transition-transform"
+            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-feature rounded-full p-2 transition-transform"
             onClick={handleExpandClick}
             type="button"
           >

@@ -72,7 +72,7 @@ interface KpiCard {
 
 function npsColor(nps: number): string {
   if (nps >= 50) return "text-green-600";
-  if (nps >= 0) return "text-yellow-600";
+  if (nps >= 0) return "text-feature";
   return "text-red-600";
 }
 
@@ -283,20 +283,20 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-secondary/10",
+                    card.gold ? "bg-feature/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-secondary",
+                      card.gold ? "text-feature" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />
                 </span>
               </div>
               <div className="flex items-stretch gap-3.5">
-                <span className="w-1 rounded-full bg-yellow-400" />
+                <span className="w-1 rounded-full bg-feature" />
                 <div>
                   <p
                     className={cn(
@@ -433,7 +433,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                                 className={cn(
                                   "h-4 w-4",
                                   i < review.rating
-                                    ? "fill-current text-yellow-500"
+                                    ? "fill-current text-feature"
                                     : "text-neutral-300",
                                 )}
                                 key={i}
