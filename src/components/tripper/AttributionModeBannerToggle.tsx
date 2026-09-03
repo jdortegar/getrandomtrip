@@ -81,7 +81,7 @@ export function AttributionModeBannerToggle({
 
   if (catalogOptOut) {
     return (
-      <div className="w-full bg-gray-900 text-white">
+      <div className="w-full bg-primary text-white">
         <div className="rt-container flex flex-wrap items-center justify-center gap-2 px-4 py-2 text-center text-sm">
           <span>{copy.bannerRandomtripModeMessage}</span>
         </div>
@@ -99,7 +99,7 @@ export function AttributionModeBannerToggle({
       : copy.bannerSwitchToTripper.replace("{name}", tripperName);
 
   return (
-    <div className="w-full bg-gray-900 text-white">
+    <div className="w-full bg-primary text-white">
       <div className="rt-container flex flex-wrap items-center justify-center gap-2 px-4 py-2 text-center text-sm">
         <span>{message}</span>
         <button

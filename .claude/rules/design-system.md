@@ -12,16 +12,17 @@ paths:
 
 ## Color Tokens
 
-Six canonical tokens — use nothing outside these and the Tailwind neutral scale:
+Seven canonical tokens — use nothing outside these and the Tailwind neutral scale:
 
-| Token   | Hex       | Tailwind               | Usage                                      |
-| ------- | --------- | ---------------------- | ------------------------------------------ |
-| Ink     | `#111827` | `gray-900`             | Headings, primary buttons, body text       |
-| Cyan    | `#4F96B6` | `text-light-blue`      | Eyebrows, icon pucks, links, publish state |
-| Sun     | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
-| Surface | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
-| Ground  | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
-| Border  | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
+| Token     | Hex       | Tailwind               | Usage                                      |
+| --------- | --------- | ---------------------- | ------------------------------------------ |
+| Ink       | `#111827` | `gray-900`             | Headings, body text                        |
+| Deep Teal | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons |
+| Cyan      | `#4F96B6` | `text-light-blue`      | Eyebrows, icon pucks, links, publish state |
+| Sun       | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
+| Surface   | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
+| Ground    | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
+| Border    | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
 
 No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add `dark:` variants.
 

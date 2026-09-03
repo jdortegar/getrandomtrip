@@ -33,7 +33,7 @@ export function TripperViewToggle({
           className={cn(
             "cursor-pointer rounded-sm px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[1px] transition-colors sm:px-4 sm:py-1.5 sm:text-xs sm:tracking-[1.5px]",
             value === mode
-              ? "bg-gray-900 text-white"
+              ? "bg-primary text-white"
               : "text-gray-900 hover:bg-gray-100",
           )}
           onClick={() => onChange(mode)}

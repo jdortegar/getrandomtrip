@@ -83,20 +83,20 @@ html.lenis {
   --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-nothing-you-could-do: var(--font-nothing-you-could-do), cursive;
 
-  /* Primary Ocean Deep Blue Color */
-  --color-primary: #111827;
+  /* Primary brand color — Deep Teal */
+  --color-primary: #0f5c60;
   --color-primary-foreground: #ffffff;
-  --color-primary-50: #f0f4f8;
-  --color-primary-100: #d9e2ec;
-  --color-primary-200: #bcccdc;
-  --color-primary-300: #9fb3c8;
-  --color-primary-400: #829ab1;
-  --color-primary-500: #627d98;
-  --color-primary-600: #486581;
-  --color-primary-700: #334e68;
-  --color-primary-800: #243b53;
-  --color-primary-900: #102a43;
-  --color-primary-950: #0a1c2e;
+  --color-primary-50: #eaf4f4;
+  --color-primary-100: #d2e7e7;
+  --color-primary-200: #a6d0cf;
+  --color-primary-300: #79b8b7;
+  --color-primary-400: #4da09f;
+  --color-primary-500: #2e7f7e;
+  --color-primary-600: #1d6566;
+  --color-primary-700: #0f5c60;
+  --color-primary-800: #0b484b;
+  --color-primary-900: #073536;
+  --color-primary-950: #042121;
 
   /* Accent Cyan Color */
   --color-accent-cyan: #4f96b6;

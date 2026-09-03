@@ -227,7 +227,7 @@ export function TripperSettingsHeroCard({
                 {copy.cancel}
               </Button>
               <Button
-                className="border-gray-900 bg-gray-900 px-3 hover:border-gray-800 hover:bg-gray-800 sm:px-6"
+                className="border-primary bg-primary px-3 hover:border-primary-800 hover:bg-primary-800 sm:px-6"
                 disabled={isSaving}
                 onClick={onSave}
                 onPointerDown={stopPropagation}

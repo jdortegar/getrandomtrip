@@ -48,7 +48,7 @@ export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
           }}
         >
           <button
-            className="group flex aspect-269/230 w-full cursor-pointer flex-col justify-between rounded-lg bg-slate-900 p-4 md:p-5 lg:p-6 text-left transition-all hover:bg-slate-800"
+            className="group flex aspect-269/230 w-full cursor-pointer flex-col justify-between rounded-lg bg-primary p-4 md:p-5 lg:p-6 text-left transition-all hover:bg-primary-800"
             onClick={() => setSearchOpen(true)}
             type="button"
           >

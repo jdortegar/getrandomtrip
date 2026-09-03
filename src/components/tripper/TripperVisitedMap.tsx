@@ -43,7 +43,7 @@ export default function TripperVisitedMap({
     : [0, 0];
 
   return (
-    <section className="bg-gray-900 text-white rt-container px-4 md:px-8 py-12">
+    <section className="bg-primary text-white rt-container px-4 md:px-8 py-12">
       {!hasPlaces ? (
         <div className="rounded-xl border border-gray-700 bg-gray-800 p-6 text-gray-300">
           Aún no hay lugares visitados para mostrar.

@@ -265,7 +265,7 @@ export default function ExperiencesPageClient({
         </div>
         <Button
           asChild
-          className="h-11 shrink-0 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-gray-800"
+          className="h-11 shrink-0 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
         >
           <Link href={`${basePath}/new`}>
             <Plus className="mr-2 h-4 w-4" />

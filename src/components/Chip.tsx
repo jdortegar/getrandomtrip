@@ -32,7 +32,7 @@ export default function Chip({
 
   const variantClasses = {
     default: active
-      ? "bg-gray-900 text-white border-gray-900"
+      ? "bg-primary text-white border-primary"
       : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-200",
     outline: active
       ? "bg-primary text-white border-primary shadow-sm"

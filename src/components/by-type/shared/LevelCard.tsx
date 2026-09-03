@@ -77,7 +77,7 @@ export default function LevelCard({
   const shouldMinimize = minimizeAllFeatures;
   const isDark = variant === "dark";
   const textColor = isDark ? "text-white" : "text-gray-900";
-  const bgColor = isDark ? "bg-gray-900" : "bg-white";
+  const bgColor = isDark ? "bg-primary" : "bg-white";
   const borderColor = selected
     ? "border-[#172C36]"
     : isDark

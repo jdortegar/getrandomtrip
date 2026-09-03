@@ -41,8 +41,8 @@ export default function TripperHeroContent({
 }: TripperHeroContentProps) {
   const avatarSizeClass =
     variant === "overlay"
-      ? "h-32 w-32 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl sm:h-40 sm:w-40 md:h-52 md:w-52"
-      : "-mt-12 h-24 w-24 shrink-0 overflow-hidden rounded-full bg-slate-800 ring-4 ring-white shadow-2xl";
+      ? "h-32 w-32 shrink-0 overflow-hidden rounded-full bg-primary-800 ring-4 ring-white shadow-2xl sm:h-40 sm:w-40 md:h-52 md:w-52"
+      : "-mt-12 h-24 w-24 shrink-0 overflow-hidden rounded-full bg-primary-800 ring-4 ring-white shadow-2xl";
 
   return (
     <div
@@ -50,7 +50,7 @@ export default function TripperHeroContent({
         "flex flex-col items-center gap-4",
         variant === "overlay"
           ? "rt-container sm:gap-8 md:flex-row md:items-end md:justify-left lg:gap-12"
-          : "bg-slate-950 px-4 pb-10 text-center",
+          : "bg-primary-950 px-4 pb-10 text-center",
         className,
       )}
     >

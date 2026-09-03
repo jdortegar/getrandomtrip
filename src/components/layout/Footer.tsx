@@ -14,9 +14,9 @@ export default function Footer({ dict, locale }: FooterProps) {
   const f = dict.footer;
 
   return (
-    <footer className="relative overflow-hidden bg-gray-900 text-white">
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-gray-900/50 via-gray-800/30 to-gray-900/50" />
-      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
+    <footer className="relative overflow-hidden bg-primary text-white">
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary-900/50 via-primary-800/30 to-primary-900/50" />
+      <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-primary-400/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
 
       <div className="relative">

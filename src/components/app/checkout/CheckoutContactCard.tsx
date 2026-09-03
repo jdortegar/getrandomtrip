@@ -17,14 +17,18 @@ import { StripePaymentForm } from "./StripePaymentForm";
 // Mirrors FormField styles:
 //   input  → bg-gray-100 (#f3f4f6), rounded-xl (12px), px-6 py-4, text-base, text-gray-900
 //   label  → text-gray-600 (#4b5563), font-normal, text-base
-//   focus  → outline-2 primary (#111827)
+//   focus  → outline-2 primary (#0f5c60 — brand primary, was #111827)
 //   error  → text-red-600 (#dc2626)
-//   tabs   → gray-100 unselected / gray-900 selected (matches primary Button)
+//   tabs   → gray-100 unselected / primary selected (matches app's bg-primary Button)
+//
+// Stripe Elements renders in a sandboxed iframe, so these must stay literal
+// hex — CSS custom properties from globals.css (`--color-primary`) don't
+// reach it. Keep in sync with `--color-primary` by hand.
 const stripeAppearance: Appearance = {
   theme: "flat",
   variables: {
     // Colors
-    colorPrimary: "#111827",
+    colorPrimary: "#0f5c60",
     colorBackground: "#f3f4f6",
     colorText: "#111827",
     colorTextSecondary: "#4b5563",
@@ -47,7 +51,7 @@ const stripeAppearance: Appearance = {
     gridRowSpacing: "24px",
     gridColumnSpacing: "24px",
     // Focus ring — matches app's focus-visible ring
-    focusOutline: "2px solid #111827",
+    focusOutline: "2px solid #0f5c60",
     focusBoxShadow: "none",
   },
   rules: {
@@ -70,7 +74,7 @@ const stripeAppearance: Appearance = {
     ".Input:focus": {
       backgroundColor: "#f3f4f6",
       boxShadow: "none",
-      outline: "2px solid #111827",
+      outline: "2px solid #0f5c60",
       outlineOffset: "-2px",
     },
     ".Input--invalid": {
@@ -116,13 +120,13 @@ const stripeAppearance: Appearance = {
       color: "#111827",
     },
     ".Tab--selected": {
-      backgroundColor: "#111827",
+      backgroundColor: "#0f5c60",
       color: "#ffffff",
       boxShadow: "none",
     },
     ".Tab:focus": {
       boxShadow: "none",
-      outline: "2px solid #111827",
+      outline: "2px solid #0f5c60",
       outlineOffset: "2px",
     },
     ".TabLabel": {
@@ -149,7 +153,7 @@ const stripeAppearance: Appearance = {
     // ─── Stripe internal buttons (Link "Use this card", etc.) ──────────────
     // Matches app primary Button: bg-primary, text-white, Barlow semibold uppercase
     ".Button": {
-      backgroundColor: "#111827",
+      backgroundColor: "#0f5c60",
       color: "#ffffff",
       borderRadius: "3px",
       border: "2px solid #ffffff",
@@ -161,11 +165,11 @@ const stripeAppearance: Appearance = {
       transition: "background-color 0.15s ease",
     },
     ".Button:hover": {
-      backgroundColor: "#1f2937",
+      backgroundColor: "#0b484b",
     },
     ".Button:focus": {
       boxShadow: "none",
-      outline: "2px solid #111827",
+      outline: "2px solid #0f5c60",
       outlineOffset: "2px",
     },
     ".Button:disabled": {
