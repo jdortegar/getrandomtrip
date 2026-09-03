@@ -80,7 +80,7 @@ export default function ResetPasswordClient({
       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-10 shadow-sm">
         {(state === "form" || state === "submitting") && (
           <>
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
               {copy.title}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">{copy.subtitle}</p>
@@ -106,7 +106,7 @@ export default function ResetPasswordClient({
                 autoComplete="new-password"
                 required
               />
-              <p className="text-xs text-neutral-500">{copy.policyHint}</p>
+              <p className="text-xs text-ink">{copy.policyHint}</p>
 
               {fieldError && (
                 <div
@@ -135,7 +135,7 @@ export default function ResetPasswordClient({
               aria-hidden
               className="mx-auto mb-4 h-10 w-10 text-green-600"
             />
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
               {copy.successTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">
@@ -153,7 +153,7 @@ export default function ResetPasswordClient({
               aria-hidden
               className="mx-auto mb-4 h-10 w-10 text-red-600"
             />
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
               {copy.errorTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">

@@ -27,7 +27,7 @@ export default function TripperSidebar() {
               <li key={link.name} className="mb-2">
                 <Link
                   href={link.href}
-                  className={`block p-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                  className={`block p-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                     isActive
                       ? "bg-blue-500 text-white"
                       : "text-gray-700 hover:bg-gray-100"

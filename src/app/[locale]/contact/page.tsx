@@ -42,7 +42,7 @@ export default async function ContactPage(props: LocaleParams) {
         title={c.hero.title}
         videoSrc="/videos/hero-video-1.mp4"
       />
-      <div className="bg-neutral-50 text-neutral-900">
+      <div className="bg-neutral-50 text-ink">
         <section className="py-20">
           <div className="container mx-auto max-w-6xl px-4">
             <ContactPageContent copy={c} />

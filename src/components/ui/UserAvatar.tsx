@@ -101,7 +101,7 @@ export function UserAvatar({
             />
           )}
           <button
-            className="group relative block h-full w-full rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed cursor-pointer"
+            className="group relative block h-full w-full rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed cursor-pointer"
             disabled={uploading}
             onClick={() => (onClick ? onClick() : inputRef.current?.click())}
             type="button"

@@ -182,7 +182,7 @@ export function TripperSettingsSocialLinks({
                 </div>
                 {isRowActive ? (
                   <div className="flex w-full items-center gap-2 sm:w-auto">
-                    <div className="inline-flex w-full items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-light-blue sm:w-64 sm:min-w-[200px]">
+                    <div className="inline-flex w-full items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 focus-within:border-secondary sm:w-64 sm:min-w-[200px]">
                       {config.prefix && (
                         <span className="text-sm text-neutral-400">
                           {config.prefix}
@@ -252,7 +252,7 @@ export function TripperSettingsSocialLinks({
       {isEditing && (
         <div className="relative mt-3" ref={dropdownRef}>
           <button
-            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm text-neutral-500 hover:border-gray-400 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2 text-sm text-ink hover:border-gray-400 hover:text-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
             disabled={availableNetworks.length === 0}
             onClick={() => setIsDropdownOpen((v) => !v)}
             type="button"

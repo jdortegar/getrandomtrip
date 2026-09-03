@@ -90,7 +90,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
     >
       {selected && (
         <div className="absolute right-[-14px] top-0 z-30">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
         </div>
@@ -100,7 +100,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         className={cn(
           "relative rounded-2xl overflow-hidden transition-all duration-300",
           fill && "h-full w-full",
-          selected && "ring-4 ring-[#172C36]",
+          selected && "ring-4 ring-primary",
         )}
       >
         <Image

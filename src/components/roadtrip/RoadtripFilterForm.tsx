@@ -273,7 +273,7 @@ export default function RoadtripFilterForm() {
 
               <button
                 onClick={goToAddOns}
-                className="inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-6 py-3 font-bold text-gray-900 hover:bg-[#EACD65] transition-colors"
+                className="inline-flex items-center justify-center rounded-full bg-[#D4AF37] px-6 py-3 font-bold text-ink hover:bg-[#EACD65] transition-colors"
               >
                 Continuar a Add-ons →
               </button>

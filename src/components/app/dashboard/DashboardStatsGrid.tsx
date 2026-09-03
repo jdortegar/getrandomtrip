@@ -53,27 +53,27 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
             key={card.key}
           >
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
                 {card.label}
               </p>
               <span
                 className={cn(
                   "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                  card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                  card.gold ? "bg-feature/15" : "bg-secondary/10",
                 )}
               >
                 <Icon
                   className={cn(
                     "h-5 w-5",
-                    card.gold ? "text-yellow-500" : "text-light-blue",
+                    card.gold ? "text-feature" : "text-secondary",
                   )}
                   strokeWidth={1.8}
                 />
               </span>
             </div>
             <div className="flex items-stretch gap-3.5">
-              <span className="w-1 rounded-full bg-yellow-400" />
-              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-neutral-900">
+              <span className="w-1 rounded-full bg-feature" />
+              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
                 {card.value}
               </p>
             </div>

@@ -314,7 +314,7 @@ function TripDetailsContent() {
               {/* Trip Overview */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                  <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
                     {copy.detailsTitle}
                   </h2>
                   <StatusBadge
@@ -355,34 +355,34 @@ function TripDetailsContent() {
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="h-4 w-4 text-neutral-500" />
+                      <MapPin className="h-4 w-4 text-ink" />
                       <span className="text-xs text-neutral-600">
                         {copy.departureFromLabel}
                       </span>
                     </div>
-                    <p className="font-medium text-neutral-900">
+                    <p className="font-medium text-ink">
                       {trip.originCity}, {trip.originCountry}
                     </p>
                   </div>
 
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
-                      <Users className="h-4 w-4 text-neutral-500" />
+                      <Users className="h-4 w-4 text-ink" />
                       <span className="text-xs text-neutral-600">
                         {copy.passengersLabel}
                       </span>
                     </div>
-                    <p className="font-medium text-neutral-900">{trip.pax}</p>
+                    <p className="font-medium text-ink">{trip.pax}</p>
                   </div>
 
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="h-4 w-4 text-neutral-500" />
+                      <Calendar className="h-4 w-4 text-ink" />
                       <span className="text-xs text-neutral-600">
                         {copy.datesLabel}
                       </span>
                     </div>
-                    <p className="font-medium text-neutral-900 text-sm">
+                    <p className="font-medium text-ink text-sm">
                       {new Date(trip.startDate).toLocaleDateString()} →{" "}
                       {new Date(trip.endDate).toLocaleDateString()}
                     </p>
@@ -390,12 +390,12 @@ function TripDetailsContent() {
 
                   <div className="p-3 bg-gray-50 rounded-md">
                     <div className="flex items-center gap-2 mb-1">
-                      <Moon className="h-4 w-4 text-neutral-500" />
+                      <Moon className="h-4 w-4 text-ink" />
                       <span className="text-xs text-neutral-600">
                         {copy.nightsLabel}
                       </span>
                     </div>
-                    <p className="font-medium text-neutral-900">
+                    <p className="font-medium text-ink">
                       {trip.nights}
                     </p>
                   </div>
@@ -430,7 +430,7 @@ function TripDetailsContent() {
 
               {/* Filters & Preferences */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
                   {copy.filtersTitle} ({filterChips.length})
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -474,7 +474,7 @@ function TripDetailsContent() {
               {/* Add-ons */}
               {addonChips.length > 0 && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
                     {copy.addonsTitle} ({addonChips.length})
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -497,7 +497,7 @@ function TripDetailsContent() {
               {/* Customer Review */}
               {trip.customerRating && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
                     {copy.reviewTitle}
                   </h3>
                   <div className="flex items-center gap-2 mb-3">
@@ -506,12 +506,12 @@ function TripDetailsContent() {
                         key={i}
                         className={`h-5 w-5 ${
                           i < (trip.customerRating || 0)
-                            ? "text-yellow-500 fill-current"
+                            ? "text-feature fill-current"
                             : "text-gray-300"
                         }`}
                       />
                     ))}
-                    <span className="font-semibold text-neutral-900">
+                    <span className="font-semibold text-ink">
                       {(trip.customerRating ?? 0).toFixed(1)}
                     </span>
                   </div>
@@ -526,7 +526,7 @@ function TripDetailsContent() {
             <div className="space-y-6">
               {/* Pricing Summary */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
                   {copy.costsTitle}
                 </h3>
                 <div className="space-y-3">
@@ -534,7 +534,7 @@ function TripDetailsContent() {
                     <span className="text-sm text-neutral-600">
                       {copy.basePriceLabel}
                     </span>
-                    <span className="font-semibold text-neutral-900">
+                    <span className="font-semibold text-ink">
                       ${basePriceTotal.toFixed(2)}
                     </span>
                   </div>
@@ -542,7 +542,7 @@ function TripDetailsContent() {
                     <span className="text-sm text-neutral-600">
                       {copy.filtersCostLabel}
                     </span>
-                    <span className="font-semibold text-neutral-900">
+                    <span className="font-semibold text-ink">
                       ${filtersCostTotal.toFixed(2)}
                     </span>
                   </div>
@@ -550,12 +550,12 @@ function TripDetailsContent() {
                     <span className="text-sm text-neutral-600">
                       {copy.addonsCostLabel}
                     </span>
-                    <span className="font-semibold text-neutral-900">
+                    <span className="font-semibold text-ink">
                       ${addonsCostTotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-2">
-                    <span className="text-sm font-semibold text-neutral-900">
+                    <span className="text-sm font-semibold text-ink">
                       {copy.totalTripLabel}
                       {isEstimate && (
                         <span className="ml-1 text-xs font-normal text-neutral-400">
@@ -563,7 +563,7 @@ function TripDetailsContent() {
                         </span>
                       )}
                     </span>
-                    <span className="text-xl font-bold text-light-blue">
+                    <span className="text-xl font-bold text-secondary">
                       ${totalTripUsd.toFixed(2)}
                     </span>
                   </div>
@@ -579,7 +579,7 @@ function TripDetailsContent() {
               {/* Payment Info */}
               {trip.payment && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                  <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
                     {copy.paymentInfoTitle}
                   </h3>
                   <div className="space-y-3">
@@ -594,7 +594,7 @@ function TripDetailsContent() {
                         <span className="text-neutral-600">
                           {copy.amountLabel}
                         </span>
-                        <span className="font-semibold text-neutral-900">
+                        <span className="font-semibold text-ink">
                           ${(trip.payment?.amount ?? 0).toFixed(2)}
                         </span>
                       </div>
@@ -602,7 +602,7 @@ function TripDetailsContent() {
                         <span className="text-neutral-600">
                           {copy.providerLabel}
                         </span>
-                        <span className="font-medium text-neutral-900 capitalize">
+                        <span className="font-medium text-ink capitalize">
                           {trip.payment.provider}
                         </span>
                       </div>
@@ -611,7 +611,7 @@ function TripDetailsContent() {
                           <span className="text-neutral-600">
                             {copy.paymentIdLabel}
                           </span>
-                          <span className="font-mono text-xs text-neutral-900">
+                          <span className="font-mono text-xs text-ink">
                             {trip.payment.providerPaymentId.slice(0, 12)}...
                           </span>
                         </div>
@@ -620,7 +620,7 @@ function TripDetailsContent() {
                         <span className="text-neutral-600">
                           {copy.dateLabel}
                         </span>
-                        <span className="text-neutral-900">
+                        <span className="text-ink">
                           {new Date(
                             trip.payment.createdAt,
                           ).toLocaleDateString()}
@@ -633,7 +633,7 @@ function TripDetailsContent() {
 
               {/* Trip Timeline */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
                   {copy.timelineTitle}
                 </h3>
                 <div className="space-y-4">
@@ -642,7 +642,7 @@ function TripDetailsContent() {
                       <CheckCircle className="h-4 w-4 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-neutral-900">
+                      <p className="font-medium text-ink">
                         {copy.tripCreatedLabel}
                       </p>
                       <p className="text-sm text-neutral-600">
@@ -657,7 +657,7 @@ function TripDetailsContent() {
                         <CreditCard className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900">
+                        <p className="font-medium text-ink">
                           {copy.paymentConfirmedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
@@ -673,7 +673,7 @@ function TripDetailsContent() {
                         <Eye className="h-4 w-4 text-purple-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900">
+                        <p className="font-medium text-ink">
                           {copy.timelineDestinationRevealedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
@@ -691,7 +691,7 @@ function TripDetailsContent() {
                         <CheckCircle className="h-4 w-4 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-neutral-900">
+                        <p className="font-medium text-ink">
                           {copy.tripCompletedLabel}
                         </p>
                         <p className="text-sm text-neutral-600">
@@ -704,13 +704,13 @@ function TripDetailsContent() {
               </div>
               {/* Actions */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-gray-900">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
                   {copy.actionsTitle}
                 </h3>
                 <div className="space-y-3">
                   {trip.status === "COMPLETED" && !trip.customerRating && (
                     <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                      <p className="text-sm font-medium text-neutral-900">
+                      <p className="text-sm font-medium text-ink">
                         {dict.tripReview.emailHintTitle}
                       </p>
                       <p className="mt-1 text-xs text-gray-500">
@@ -748,8 +748,8 @@ function TripDetailsContent() {
               </div>
 
               {/* Trip Info Card */}
-              <div className="rounded-2xl bg-light-blue/5 p-6 ring-1 ring-light-blue/20">
-                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-light-blue">
+              <div className="rounded-2xl bg-secondary/5 p-6 ring-1 ring-secondary/20">
+                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-secondary">
                   <Info className="h-4 w-4" />
                   {copy.tripInfoTitle}
                 </h3>

@@ -48,14 +48,14 @@ function FilterDropdownCard({
       )}
     >
       <div className="flex justify-between gap-1 items-center w-full">
-        <p className="text-base font-semibold text-neutral-900 md:text-xl">
+        <p className="text-base font-semibold text-ink md:text-xl">
           {title}
         </p>
-        <span className="pointer-events-none text-neutral-900">
+        <span className="pointer-events-none text-ink">
           <ChevronDown className="h-4 w-4 md:h-5 md:w-5" />
         </span>
       </div>
-      <p className="text-xs text-neutral-500">{subtitle}</p>
+      <p className="text-xs text-ink">{subtitle}</p>
       {children}
     </div>
   );

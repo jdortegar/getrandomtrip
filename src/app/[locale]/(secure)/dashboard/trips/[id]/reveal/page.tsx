@@ -161,7 +161,7 @@ function RevealContent() {
             transition={{ duration: 0.5 }}
           >
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-50 border border-yellow-200">
-              <Sparkles className="h-6 w-6 text-yellow-500" />
+              <Sparkles className="h-6 w-6 text-feature" />
             </div>
           </motion.div>
         ) : (

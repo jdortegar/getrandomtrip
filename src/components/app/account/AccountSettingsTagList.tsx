@@ -56,7 +56,7 @@ export function AccountSettingsTagList({
       {editing && (
         <span className="flex items-center gap-1.5">
           <input
-            className="h-8 w-32 rounded-full border border-dashed border-gray-300 bg-transparent px-3 text-sm text-neutral-700 outline-none focus:border-light-blue"
+            className="h-8 w-32 rounded-full border border-dashed border-gray-300 bg-transparent px-3 text-sm text-neutral-700 outline-none focus:border-secondary"
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
@@ -65,7 +65,7 @@ export function AccountSettingsTagList({
           />
           <button
             aria-label={addAriaLabel}
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-light-blue text-white transition-opacity hover:opacity-90"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-white transition-opacity hover:opacity-90"
             onClick={submitDraft}
             type="button"
           >

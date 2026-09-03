@@ -66,8 +66,8 @@ export function UsersTableRow({
         />
       </td>
       <td className="px-5 py-4">
-        <p className="text-sm font-semibold text-neutral-900">{user.name}</p>
-        <p className="mt-0.5 text-xs text-neutral-500">{user.email}</p>
+        <p className="text-sm font-semibold text-ink">{user.name}</p>
+        <p className="mt-0.5 text-xs text-ink">{user.email}</p>
       </td>
       <td className="px-5 py-4">
         <div className="flex flex-wrap gap-1">
@@ -81,15 +81,15 @@ export function UsersTableRow({
           ))}
         </div>
       </td>
-      <td className="px-5 py-4 text-sm text-neutral-500">
+      <td className="px-5 py-4 text-sm text-ink">
         {user.roles.includes("TRIPPER")
           ? `${toCommissionPercent(user.commission)}%`
           : "—"}
       </td>
-      <td className="px-5 py-4 text-sm text-neutral-500">
+      <td className="px-5 py-4 text-sm text-ink">
         {user.tripperSlug ?? "—"}
       </td>
-      <td className="px-5 py-4 text-sm text-neutral-500">
+      <td className="px-5 py-4 text-sm text-ink">
         {new Date(user.createdAt).toLocaleDateString(dateLocale, {
           day: "numeric",
           month: "short",

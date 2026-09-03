@@ -133,14 +133,14 @@ export default function TripperSearchModal({
             >
               Busca tu Tripper
             </h2>
-            <p className="mt-2 text-lg font-light text-neutral-500">
+            <p className="mt-2 text-lg font-light text-ink">
               Encuentra el experto perfecto para tu aventura
             </p>
           </div>
 
           <input
             aria-label="Buscar tripper por nombre"
-            className="w-full rounded-sm border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-light-blue focus:outline-none focus:ring-1 focus:ring-light-blue"
+            className="w-full rounded-sm border border-gray-200 px-3 py-2 text-sm text-ink placeholder:text-gray-500 focus:border-secondary focus:outline-none focus:ring-1 focus:ring-secondary"
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Escribí un nombre..."
             type="search"
@@ -169,7 +169,7 @@ export default function TripperSearchModal({
                           name={tripper.name}
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate font-semibold text-gray-900">
+                          <p className="truncate font-semibold text-ink">
                             {tripper.name}
                           </p>
                           {tripper.bio && (
@@ -178,7 +178,7 @@ export default function TripperSearchModal({
                             </p>
                           )}
                         </div>
-                        <span className="shrink-0 text-sm text-light-blue">
+                        <span className="shrink-0 text-sm text-secondary">
                           Ver perfil →
                         </span>
                       </Link>
@@ -191,7 +191,7 @@ export default function TripperSearchModal({
 
           <div className="mt-6 flex items-center justify-center border-t border-gray-200 pt-6">
             <Link
-              className="text-sm font-medium text-gray-900 underline hover:no-underline"
+              className="text-sm font-medium text-ink underline hover:no-underline"
               href="/trippers"
               onClick={onClose}
             >

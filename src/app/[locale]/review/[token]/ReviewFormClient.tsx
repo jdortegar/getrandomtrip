@@ -30,7 +30,7 @@ export default function ReviewFormClient({
   if (submitted) {
     return (
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
-        <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+        <h2 className="text-xl font-semibold text-ink mb-2">
           {copy.successTitle}
         </h2>
         <p className="text-sm text-neutral-600">{copy.successMessage}</p>
@@ -114,7 +114,7 @@ export default function ReviewFormClient({
                 <Star
                   className={`h-8 w-8 transition-colors ${
                     star <= (hoveredRating || rating)
-                      ? "text-yellow-400 fill-yellow-400"
+                      ? "text-feature fill-feature"
                       : "text-neutral-300"
                   }`}
                 />

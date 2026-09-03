@@ -17,7 +17,7 @@ const cardClassName = cn(
 
 const titleClassName = "font-normal text-gray-500 text-base";
 
-const valueClassName = "font-medium text-gray-900 text-base";
+const valueClassName = "font-medium text-ink text-base";
 
 export function CheckoutIconValueCard({
   className,

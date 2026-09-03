@@ -140,7 +140,7 @@ export default function DashboardTabs() {
                   <div className="text-sm text-neutral-600">
                     Cuenta regresiva
                   </div>
-                  <div className="mt-2 text-2xl font-bold tracking-wider text-neutral-900">
+                  <div className="mt-2 text-2xl font-bold tracking-wider text-ink">
                     {left}
                   </div>
                 </div>

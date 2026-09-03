@@ -66,7 +66,7 @@ export function XsedAccommodationStep({ form, onChange, copy }: Props) {
                 <div className="relative">
                   <input
                     id={`xsed-hotel-location-${index}`}
-                    className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 pr-16 rounded-xl text-gray-900 w-full text-base"
+                    className="bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 pr-16 rounded-xl text-ink w-full text-base"
                     placeholder={copy.hotelLocationPlaceholder}
                     value={entry.hotelLocation}
                     onChange={(e) => updateEntry(index, "hotelLocation", e.target.value)}

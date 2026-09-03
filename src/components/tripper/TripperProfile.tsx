@@ -70,7 +70,7 @@ export default function TripperProfile({ t }: { t: Tripper }) {
               <a
                 href="#planner"
                 aria-label={`Planear un Randomtrip con ${t.name.split(" ")[0]}`}
-                className="inline-flex items-center justify-center rounded-full bg-white text-[#07143A] px-6 py-3 font-semibold shadow hover:-translate-y-0.5 transition"
+                className="inline-flex items-center justify-center rounded-full bg-white text-ink px-6 py-3 font-semibold shadow hover:-translate-y-0.5 transition"
               >
                 Randomtrip ft. {t.name.split(" ")[0]}
               </a>
@@ -104,7 +104,7 @@ export default function TripperProfile({ t }: { t: Tripper }) {
       {/* Tarjeta INTERESTS / DESTINATIONS a la derecha */}
       {(t.interests?.length || t.destinations?.length) && (
         <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:-mt-6 pb-8">
-          <div className="md:ml-auto md:w-[520px] bg-white text-gray-900 rounded-xl border border-gray-200 shadow-sm p-5">
+          <div className="md:ml-auto md:w-[520px] bg-white text-ink rounded-xl border border-gray-200 shadow-sm p-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h4 className="text-xs font-bold tracking-wide text-gray-600">

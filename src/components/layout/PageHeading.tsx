@@ -13,7 +13,7 @@ export function PageHeading({
 }: PageHeadingProps) {
   return (
     <div className={cn("mb-8", className)}>
-      <h1 className="mb-2 font-barlow-condensed text-4xl sm:text-7xl font-bold leading-none text-neutral-900">
+      <h1 className="mb-2 font-barlow-condensed text-4xl sm:text-7xl font-bold leading-none text-ink">
         {title}
       </h1>
       {description ? (

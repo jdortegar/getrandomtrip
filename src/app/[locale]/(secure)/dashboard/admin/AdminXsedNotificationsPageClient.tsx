@@ -97,7 +97,7 @@ export function AdminXsedNotificationsPageClient() {
           </div>
         )}
         {entries.length === 0 ? (
-          <p className="py-16 text-center text-sm text-neutral-500">
+          <p className="py-16 text-center text-sm text-ink">
             {copy.empty}
           </p>
         ) : (
@@ -105,16 +105,16 @@ export function AdminXsedNotificationsPageClient() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.email}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.locale}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.joined}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.actions}
                   </th>
                 </tr>
@@ -128,7 +128,7 @@ export function AdminXsedNotificationsPageClient() {
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {entry.locale ?? "—"}
                     </td>
-                    <td className="px-5 py-4 text-sm text-neutral-500">
+                    <td className="px-5 py-4 text-sm text-ink">
                       {new Date(entry.createdAt).toLocaleDateString(dateLocale, {
                         day: "numeric",
                         month: "short",

@@ -8,7 +8,7 @@ export default function TripperClosing() {
     },
   ];
   return (
-    <section className="py-16 bg-gray-900 text-white border-t border-gray-700">
+    <section className="py-16 bg-primary text-white border-t border-gray-700">
       <div className="rt-container px-4 md:px-8">
         <h2
           className="text-3xl md:text-4xl font-bold text-center mb-10"

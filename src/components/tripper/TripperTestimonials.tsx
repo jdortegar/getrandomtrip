@@ -17,7 +17,7 @@ export default function TripperTestimonials({
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className="rounded-xl border border-gray-700 p-6 bg-gray-900 shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition"
+              className="rounded-xl border border-gray-700 p-6 bg-primary shadow-sm hover:-translate-y-0.5 hover:shadow-lg transition"
             >
               <p className="italic text-gray-300">“{t.quote}”</p>
               <p className="mt-4 text-sm text-gray-400">— {t.author}</p>

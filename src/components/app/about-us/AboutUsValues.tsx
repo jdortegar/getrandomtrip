@@ -47,7 +47,7 @@ export function AboutUsValues({ items }: AboutUsValuesProps) {
                   )}
                 </div>
 
-                <p className="text-left font-barlow text-lg text-[#888] leading-relaxed">
+                <p className="text-left font-barlow text-lg text-ink leading-relaxed">
                   {item.copy}
                 </p>
               </article>

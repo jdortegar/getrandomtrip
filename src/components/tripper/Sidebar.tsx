@@ -72,7 +72,7 @@ export default function Sidebar() {
         {navGroups.map((group) => (
           <div key={group.name} className="mb-6">
             {group.name !== "General" && (
-              <h3 className="text-xs font-semibold text-neutral-500 uppercase mb-2 px-3">
+              <h3 className="text-xs font-semibold text-ink uppercase mb-2 px-3">
                 {group.name}
               </h3>
             )}

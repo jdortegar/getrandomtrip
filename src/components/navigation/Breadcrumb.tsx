@@ -28,13 +28,13 @@ export default function Breadcrumb({ className, items }: BreadcrumbProps) {
         const isLast = index === items.length - 1;
         const segment = item.href ? (
           <Link
-            className="inline-flex items-center gap-1 transition-colors hover:text-neutral-900"
+            className="inline-flex items-center gap-1 transition-colors hover:text-ink"
             href={item.href}
           >
             {item.label}
           </Link>
         ) : (
-          <span className="font-medium capitalize text-neutral-900">
+          <span className="font-medium capitalize text-ink">
             {item.label.toLowerCase()}
           </span>
         );

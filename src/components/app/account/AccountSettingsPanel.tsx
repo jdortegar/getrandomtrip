@@ -339,7 +339,7 @@ export function AccountSettingsPanel({
   if (!dict) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-light-blue border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-secondary border-t-transparent" />
       </div>
     );
   }
@@ -386,12 +386,12 @@ export function AccountSettingsPanel({
   function renderTabHeader(title: string, tab: TabId) {
     if (!EDITABLE_TABS.includes(tab)) {
       return (
-        <h2 className="text-xl font-semibold text-neutral-900">{title}</h2>
+        <h2 className="text-xl font-semibold text-ink">{title}</h2>
       );
     }
     return (
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-neutral-900">{title}</h2>
+        <h2 className="text-xl font-semibold text-ink">{title}</h2>
         {!isDetailsEditing ? (
           <Button
             disabled={profileLoading || !profileMe}
@@ -453,10 +453,10 @@ export function AccountSettingsPanel({
               toastCopy={p.toasts}
             />
             <div className="flex-1">
-              <p className="text-lg font-bold text-neutral-900">
+              <p className="text-lg font-bold text-ink">
                 {currentUser?.name || p.header.userFallback}
               </p>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-ink">
                 {currentUser?.email || p.header.emailFallback}
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -481,40 +481,40 @@ export function AccountSettingsPanel({
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Calendar className="h-4 w-4 text-light-blue" />
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink">
+                <Calendar className="h-4 w-4 text-secondary" />
                 {p.labels.memberSince}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
                 {memberSince || "—"}
               </span>
             </div>
             {isTripper && (
               <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                  <Calendar className="h-4 w-4 text-light-blue" />
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink">
+                  <Calendar className="h-4 w-4 text-secondary" />
                   {p.labels.tripperSince}
                 </div>
-                <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
+                <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
                   {tripperSince || "—"}
                 </span>
               </div>
             )}
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Globe className="h-4 w-4 text-light-blue" />
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink">
+                <Globe className="h-4 w-4 text-secondary" />
                 {p.labels.totalTrips}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
                 {stats.totalTrips}
               </span>
             </div>
             <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200">
-              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
-                <Star className="h-4 w-4 text-light-blue" />
+              <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-ink">
+                <Star className="h-4 w-4 text-secondary" />
                 {p.labels.avgRating}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-gray-900">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
                 {stats.averageRating > 0
                   ? stats.averageRating.toFixed(1)
                   : "—"}
@@ -578,7 +578,7 @@ export function AccountSettingsPanel({
               value={detailsForm.email}
             />
 
-            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+            <p className="pt-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               {p.labels.addressSection}
             </p>
             <FormField
@@ -650,7 +650,7 @@ export function AccountSettingsPanel({
           {renderTabHeader(p.preferencesSectionTitle, "preferences")}
           <div className="space-y-6">
             <div>
-              <p className="mb-2 text-sm font-medium text-neutral-500">
+              <p className="mb-2 text-sm font-medium text-ink">
                 {p.labels.travelerType}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -676,7 +676,7 @@ export function AccountSettingsPanel({
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-medium text-neutral-500">
+              <p className="mb-2 text-sm font-medium text-ink">
                 {p.labels.interests}
               </p>
               <AccountSettingsTagList
@@ -701,7 +701,7 @@ export function AccountSettingsPanel({
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-medium text-neutral-500">
+              <p className="mb-2 text-sm font-medium text-ink">
                 {p.labels.dislikes}
               </p>
               <AccountSettingsTagList
@@ -732,7 +732,7 @@ export function AccountSettingsPanel({
       {activeTab === "security" && (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-neutral-900">
+            <h2 className="text-xl font-semibold text-ink">
               {p.sections.security}
             </h2>
             <Button
@@ -795,7 +795,7 @@ export function AccountSettingsPanel({
       {/* Payments */}
       {activeTab === "payments" && (
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-xl font-semibold text-neutral-900">
+          <h2 className="mb-4 text-xl font-semibold text-ink">
             {p.sections.payments}
           </h2>
           <EmptyState subtitle={p.comingSoonDescription} title={p.comingSoon} />

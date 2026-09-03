@@ -32,7 +32,7 @@ function renderBoldTitleMessage(template: string, title: string) {
   return (
     <>
       {before}
-      <strong className="font-semibold text-gray-900">{title}</strong>
+      <strong className="font-semibold text-ink">{title}</strong>
       {after}
     </>
   );
@@ -256,16 +256,16 @@ export default function ExperiencesPageClient({
       {/* Section header */}
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
         <Button
           asChild
-          className="h-11 shrink-0 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-gray-800"
+          className="h-11 shrink-0 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
         >
           <Link href={`${basePath}/new`}>
             <Plus className="mr-2 h-4 w-4" />
@@ -376,7 +376,7 @@ export default function ExperiencesPageClient({
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {experiences.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="mb-4 text-sm text-neutral-500">
+            <p className="mb-4 text-sm text-ink">
               {total === 0 && !hasActiveFilters
                 ? copy.emptyState.noExperiences
                 : copy.emptyState.noMatch}
@@ -405,28 +405,28 @@ export default function ExperiencesPageClient({
                       type="checkbox"
                     />
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.package}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.typeLevel}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.duration}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.capacity}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.price}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.updated}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.actions}
                   </th>
                 </tr>
@@ -458,10 +458,10 @@ export default function ExperiencesPageClient({
                       </td>
                       {/* Experience */}
                       <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {experience.title}
                         </p>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-ink">
                           {experience.destinationCity},{" "}
                           {experience.destinationCountry}
                         </p>
@@ -505,7 +505,7 @@ export default function ExperiencesPageClient({
 
                       {/* Price */}
                       <td className="px-5 py-4">
-                        <span className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                        <span className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                           {experience.pricingByType
                             ? `USD ${Math.min(
                                 ...Object.values(experience.pricingByType),
@@ -515,7 +515,7 @@ export default function ExperiencesPageClient({
                       </td>
 
                       {/* Updated */}
-                      <td className="px-5 py-4 text-sm text-neutral-500">
+                      <td className="px-5 py-4 text-sm text-ink">
                         {new Date(experience.updatedAt).toLocaleDateString(
                           locale.startsWith("en") ? "en-US" : "es-ES",
                           {
@@ -549,7 +549,7 @@ export default function ExperiencesPageClient({
                             {experience.isActive ? (
                               <EyeOff className="h-4 w-4" />
                             ) : (
-                              <Eye className="h-4 w-4 text-light-blue" />
+                              <Eye className="h-4 w-4 text-secondary" />
                             )}
                           </TableIconButton>
                           <TableIconButton

@@ -80,7 +80,7 @@ export default function LightboxCarousel({
           <div className="relative overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-lg">
             <button
               aria-label={ariaCloseLabel}
-              className="absolute right-2 top-2 z-10 rounded-md p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900"
+              className="absolute right-2 top-2 z-10 rounded-md p-2 text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-ink"
               onClick={() => setLightboxImage(null)}
               type="button"
             >

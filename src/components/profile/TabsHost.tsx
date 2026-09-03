@@ -7,7 +7,7 @@ import OverviewTab from "./tabs/OverviewTab";
 import { PublicProfile } from "@/lib/profile";
 
 const LoadingState = () => (
-  <div className="p-6 text-sm text-neutral-500">Cargando…</div>
+  <div className="p-6 text-sm text-ink">Cargando…</div>
 );
 
 const ReviewsTab = dynamic(() => import("./tabs/ReviewsTab"), {

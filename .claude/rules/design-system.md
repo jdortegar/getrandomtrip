@@ -12,18 +12,34 @@ paths:
 
 ## Color Tokens
 
-Six canonical tokens — use nothing outside these and the Tailwind neutral scale:
+Seven canonical tokens — use nothing outside these and the Tailwind neutral scale:
 
-| Token   | Hex       | Tailwind               | Usage                                      |
-| ------- | --------- | ---------------------- | ------------------------------------------ |
-| Ink     | `#111827` | `gray-900`             | Headings, primary buttons, body text       |
-| Cyan    | `#4F96B6` | `text-light-blue`      | Eyebrows, icon pucks, links, publish state |
-| Sun     | `#FCD34D` | `yellow-400`           | KPI accent bar only — never full-bleed     |
-| Surface | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
-| Ground  | `#F9FAFB` | `gray-50`              | Page background, table header rows         |
-| Border  | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
+| Token        | Hex       | Tailwind               | Usage                                      |
+| ------------ | --------- | ---------------------- | ------------------------------------------ |
+| Ink          | `#383838` | `bg-ink` / `text-ink`  | Headings, body text                        |
+| Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons, eyebrows, underlines, carousel arrow/dot buttons, focus states |
+| Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — sections/containers, icon-puck washes, links, publish state |
+| Ochre        | `#E5A51C` | `bg-feature` / `text-feature` | Brand feature/accent — high-emphasis CTA (`feature`/`pill` Button variants), KPI accent bar |
+| Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
+| Ground       | `#F3F2ED` | `bg-ground`            | Off-White — page background (`<body>`, full-page wrappers), not card surfaces |
+| Border       | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
 
-No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add `dark:` variants.
+`--color-secondary` (Mineral Sage, `#A4B4AA`) and `--color-feature` (Ochre, `#E5A51C`) are the source of truth in `src/app/globals.css`, each with a full `50`–`950` scale for future use — but every call site uses the bare token (`secondary`/`bg-secondary`/`text-secondary`, `feature`/`bg-feature`/`text-feature`), never a numbered shade. This is a deliberate choice: the bare tints are lighter than ideal text contrast on white (~2.2:1, below WCAG AA), but the numbered shades were dropped in favor of a single predictable token everywhere, matching how `primary` already works. Don't reintroduce a `-700`/`-800` suffix at a call site — if contrast needs fixing, fix the base variable itself. `--color-feature` also replaces Tailwind's default `yellow-400`/`-500`/`-600` wherever those were used as the brand accent (Button's `feature`/`pill` variants, KPI accent bars, star ratings) — the unrelated warning-badge yellows (`yellow-50/100/200/300/800/900`, e.g. `RemovableTag`'s `warning` variant, preview-mode banners) are untouched and stay generic Tailwind yellow.
+
+### Color balance — per the brand book, not a suggestion
+
+The brand book specifies a usage ratio, and **Deep Teal is the one most often gotten wrong**: it reads as a strong, saturated color, so it's tempting to reach for it as a full-bleed background (nav bar, footer, hero bands, section fills). Don't — the book explicitly caps it at **5–10%** of any view, reserved for **text, headings, navigation labels, icons, borders, and focus/hover states** — never as the dominant fill of a large area.
+
+| Color | Share | Role |
+| --- | --- | --- |
+| Ground (Off-White) | 60% | The main canvas — page background, together with photography |
+| Secondary (Mineral Sage) | 30% | Sections, containers, subtle/layered backgrounds |
+| Primary (Deep Teal) | 5–10% | Text, headings, navigation, icons, borders, focus states — **not** a big-area fill |
+| Feature (Ochre) | 0–5% | CTAs, highlights, moments that need attention — used even more sparingly than primary |
+
+Concretely: `bg-primary` on a `<header>`/`<footer>`/full-width `<section>` is a violation. Use `bg-ground` (or `bg-secondary` for a "some areas, sections, containers" moment) for that large surface, and reserve `text-primary`/`border-primary`/`hover:bg-secondary` for the text, icons, and interactive accents living on top of it. `Navbar.tsx`'s solid-scroll state and `Footer.tsx` were both fixed to this rule — treat them as the reference implementation.
+
+No dark mode. `<body>` is locked to `bg-ground text-ink`. Never add `dark:` variants.
 
 ---
 
@@ -31,12 +47,12 @@ No dark mode. `<body>` is locked to `bg-neutral-50 text-neutral-900`. Never add 
 
 | Role            | Classes                                                                       |
 | --------------- | ----------------------------------------------------------------------------- |
-| Section heading | `font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900` |
-| KPI value       | `font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900`   |
-| Price cell      | `font-barlow-condensed text-lg font-bold leading-none text-gray-900`          |
-| Eyebrow         | `text-xs font-semibold uppercase tracking-[0.18em] text-light-blue`          |
+| Section heading | `font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink` |
+| KPI value       | `font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink`   |
+| Price cell      | `font-barlow-condensed text-lg font-bold leading-none text-ink`          |
+| Eyebrow         | `text-xs font-semibold uppercase tracking-[0.18em] text-primary`          |
 | Table header    | `text-[11px] font-semibold uppercase tracking-wider text-neutral-500`         |
-| Panel heading   | `text-xl font-semibold text-neutral-900`                                      |
+| Panel heading   | `text-xl font-semibold text-ink`                                      |
 | Body / cell     | `text-sm text-neutral-700`                                                    |
 | Caption / sub   | `text-xs text-neutral-500`                                                    |
 | Label           | `text-sm font-medium text-neutral-500`                                        |
@@ -52,10 +68,10 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
 ```tsx
 {/* Header-only */}
 <div>
-  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
     {copy.eyebrow}
   </p>
-  <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+  <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
     {copy.heading}
   </h2>
 </div>
@@ -63,15 +79,15 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
 {/* Header + primary CTA (same row) */}
 <div className="flex items-end justify-between gap-4">
   <div>
-    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
       {copy.eyebrow}
     </p>
-    <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+    <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
       {copy.heading}
     </h2>
   </div>
   <Link href={copy.ctaHref}>
-    <Button className="h-11 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white">
+    <Button className="h-11 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white">
       {copy.ctaLabel}
     </Button>
   </Link>
@@ -96,21 +112,21 @@ Rules:
     <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">
       {copy.label}
     </span>
-    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/10 text-secondary">
       <Icon className="h-4 w-4" />
     </span>
   </div>
-  {/* Bottom: yellow accent bar + Barlow Condensed value */}
+  {/* Bottom: ochre accent bar + Barlow Condensed value */}
   <div className="flex items-stretch gap-3">
-    <div className="w-1 shrink-0 self-stretch rounded-full bg-yellow-400" />
-    <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900">
+    <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
+    <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink">
       {value}
     </span>
   </div>
 </div>
 ```
 
-Icon puck colors: cyan (`bg-light-blue/10 text-light-blue`) for most stats; gold (`bg-yellow-400/15 text-yellow-600`) for rating only.
+Icon puck colors: sage (`bg-secondary/10 text-secondary`) for most stats; ochre (`bg-feature/15 text-feature`) for rating only.
 
 **Supporting strip** (secondary metrics row below KPI cards):
 
@@ -119,7 +135,7 @@ Icon puck colors: cyan (`bg-light-blue/10 text-light-blue`) for most stats; gold
   {metrics.map((m, i) => (
     <div key={i} className="flex flex-1 items-center justify-between px-6 py-4 border-l border-gray-200 first:border-l-0">
       <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">{m.label}</span>
-      <span className="font-barlow-condensed text-3xl font-extrabold text-gray-900">{m.value}</span>
+      <span className="font-barlow-condensed text-3xl font-extrabold text-ink">{m.value}</span>
     </div>
   ))}
 </div>
@@ -160,8 +176,8 @@ Do NOT use `GlassCard` for dashboard pages — it belongs to marketing/public pa
 
 Column rules:
 - **All columns left-aligned** — no center, no right-align on data columns.
-- **Title cell**: `font-semibold text-sm text-neutral-900` + subtitle below in `text-xs text-neutral-500 mt-0.5`.
-- **Price cell**: `font-barlow-condensed text-lg font-bold leading-none text-gray-900`.
+- **Title cell**: `font-semibold text-sm text-ink` + subtitle below in `text-xs text-neutral-500 mt-0.5`.
+- **Price cell**: `font-barlow-condensed text-lg font-bold leading-none text-ink`.
 - **Date cell**: `text-sm text-neutral-500`, format as "Jun 18, 2026".
 - Always `overflow-hidden` on the wrapper and `overflow-x-auto` on the inner container.
 
@@ -247,7 +263,7 @@ Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip tre
 
 ### Toggleable filter chip (viewer clicks to select/deselect)
 
-Use `Chip` from `@/components/Chip` for any single- or multi-select toggle — traveler-type pickers, addon selectors, segmented filters. Its `active` boolean is the on/off state; don't hand-roll `active ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 bg-white text-neutral-500"` inline at a new call site.
+Use `Chip` from `@/components/Chip` for any single- or multi-select toggle — traveler-type pickers, addon selectors, segmented filters. Its `active` boolean is the on/off state; don't hand-roll `active ? "border-primary bg-primary text-white" : "border-gray-200 bg-white text-neutral-500"` inline at a new call site.
 
 ```tsx
 <Chip active={isSelected} onClick={() => toggle(key)}>
@@ -301,7 +317,7 @@ Use `<RowActions>` from `@/components/common/RowActions` only for simple edit/de
 
 ## Buttons / Links
 
-- Primary CTA (ink): `h-11 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white`
+- Primary CTA (ink): `h-11 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white`
 - Navigation action: `<Button asChild variant="ghost">` wrapping `<Link>`
 - Panel CTA: `<Button asChild size="sm">`
 - Never use raw styled `<a>` or `<Link>` for actions — always go through `Button`

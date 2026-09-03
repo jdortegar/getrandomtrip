@@ -75,13 +75,13 @@ export function DurationInput({
           onChange={handleValueChange}
           type="text"
           value={raw}
-          className="min-w-0 flex-1 bg-transparent outline-none pl-6 pr-2 py-4 text-gray-900 text-base tabular-nums"
+          className="min-w-0 flex-1 bg-transparent outline-none pl-6 pr-2 py-4 text-ink text-base tabular-nums"
         />
         <div className="w-px h-6 bg-gray-300 shrink-0" />
         <select
           value={unit}
           onChange={handleUnitChange}
-          className="bg-transparent outline-none pl-3 pr-6 py-4 text-gray-900 text-base appearance-none cursor-pointer"
+          className="bg-transparent outline-none pl-3 pr-6 py-4 text-ink text-base appearance-none cursor-pointer"
         >
           {units.map((u) => (
             <option key={u.value} value={u.value}>

@@ -40,7 +40,7 @@ const AddonOption: React.FC<AddonOptionProps> = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggle(id)} // Handle toggle via checkbox directly as well
-          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          className="h-5 w-5 text-primary focus:ring-primary border-gray-300 rounded"
         />
       </div>
     </div>

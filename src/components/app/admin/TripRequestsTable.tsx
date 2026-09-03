@@ -57,7 +57,7 @@ export function TripRequestsTable({
         </div>
       )}
       {trips.length === 0 ? (
-        <p className="py-16 text-center text-sm text-neutral-500">
+        <p className="py-16 text-center text-sm text-ink">
           {copy.empty}
         </p>
       ) : (
@@ -119,7 +119,7 @@ export function TripRequestsTable({
                     order={sortOrder}
                   />
                 </th>
-                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                   {cols.actions}
                 </th>
               </tr>

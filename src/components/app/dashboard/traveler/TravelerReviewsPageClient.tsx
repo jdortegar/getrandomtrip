@@ -55,10 +55,10 @@ export function TravelerReviewsPageClient({
   return (
     <div className="space-y-6 text-left">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.title}
         </h2>
         <p className="mt-2 text-sm text-neutral-600">{copy.description}</p>
@@ -66,18 +66,18 @@ export function TravelerReviewsPageClient({
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink">
             {copy.kpis.totalReviewed}
           </p>
-          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-gray-900">
+          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-ink">
             {completedWithToken.filter((t) => t.reviewSubmittedAt).length}
           </p>
         </div>
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink">
             {copy.kpis.averageRating}
           </p>
-          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-gray-900">
+          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-ink">
             {pendingCount > 0 ? pendingCount : "—"}
           </p>
         </div>
@@ -85,7 +85,7 @@ export function TravelerReviewsPageClient({
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-100 px-5 py-4">
-          <h3 className="text-sm font-semibold text-neutral-900">
+          <h3 className="text-sm font-semibold text-ink">
             {copy.listTitle}
           </h3>
         </div>
@@ -96,7 +96,7 @@ export function TravelerReviewsPageClient({
             <p className="mb-2 text-sm font-semibold text-neutral-700">
               {copy.emptyTitle}
             </p>
-            <p className="text-sm text-neutral-500">{copy.emptyDescription}</p>
+            <p className="text-sm text-ink">{copy.emptyDescription}</p>
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
@@ -108,10 +108,10 @@ export function TravelerReviewsPageClient({
                   key={trip.id}
                 >
                   <div>
-                    <p className="text-sm font-semibold text-neutral-900">
+                    <p className="text-sm font-semibold text-ink">
                       {trip.type} · {trip.level}
                     </p>
-                    <p className="mt-0.5 text-xs text-neutral-500">
+                    <p className="mt-0.5 text-xs text-ink">
                       {new Date(trip.endDate).toLocaleDateString(dateLocale)}
                     </p>
                   </div>
@@ -123,7 +123,7 @@ export function TravelerReviewsPageClient({
                     </span>
                   ) : (
                     <a
-                      className="inline-flex items-center gap-1.5 rounded-full bg-yellow-400 px-3 py-1 text-xs font-semibold text-gray-900 transition-colors hover:bg-yellow-500"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-feature px-3 py-1 text-xs font-semibold text-ink transition-colors hover:bg-feature"
                       href={`/${locale}/review/${trip.reviewToken}`}
                     >
                       <Star className="h-3.5 w-3.5" />

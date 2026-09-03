@@ -42,7 +42,7 @@ const ink = "#111827";
 const ink50 = "#f0f4f8";
 const ink100 = "#d9e2ec";
 const ink500 = "#627d98";
-const sun = "#fcd34d";
+const feature = "#e5a51c";
 const textOnSun = "#1f2937";
 const neutral50 = "#fafafa";
 const neutral100 = "#f5f5f5";
@@ -549,7 +549,7 @@ const eyebrowStyle: React.CSSProperties = {
   fontSize: "12px",
   letterSpacing: "0.18em",
   textTransform: "uppercase",
-  color: sun,
+  color: feature,
   fontWeight: 600,
   margin: "0 0 10px",
 };
@@ -658,8 +658,8 @@ const skippedNoticeStyle: React.CSSProperties = {
 const ctaButtonStyle: React.CSSProperties = {
   display: "inline-block",
   textAlign: "center",
-  backgroundColor: sun,
-  border: `2px solid ${sun}`,
+  backgroundColor: feature,
+  border: `2px solid ${feature}`,
   borderRadius: 6,
   padding: "15px 40px",
   fontFamily: "'Barlow', Arial, sans-serif",
@@ -694,7 +694,7 @@ const footerBrandStyle: React.CSSProperties = {
   textTransform: "uppercase",
   fontSize: "15px",
   letterSpacing: "0.06em",
-  color: sun,
+  color: feature,
   textAlign: "center",
   margin: "0 0 16px",
 };

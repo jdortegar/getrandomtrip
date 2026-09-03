@@ -83,40 +83,53 @@ html.lenis {
   --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-nothing-you-could-do: var(--font-nothing-you-could-do), cursive;
 
-  /* Primary Ocean Deep Blue Color */
-  --color-primary: #111827;
+  /* Ink — text / near-black */
+  --color-ink: #383838;
+
+  /* Feature brand color — Ochre */
+  --color-feature: #e5a51c;
+  --color-feature-foreground: #1f2937;
+
+  /* shadcn's generic "accent" hover token (ghost buttons, dialog close,
+     command palette) was never defined — those hover states were silent
+     no-ops. Wire it to the brand: a light Mineral Sage wash with Deep Teal
+     text, matching the "focus/hover state" role primary is reserved for. */
+  --color-accent: var(--color-secondary-100);
+  --color-accent-foreground: var(--color-primary);
+
+  /* Ground — Off-White. Page background / table header rows only, not
+     card surfaces (Surface stays white). */
+  --color-ground: #f3f2ed;
+
+  /* Secondary brand color — Mineral Sage */
+  --color-secondary: #a4b4aa;
+  --color-secondary-foreground: #111827;
+  --color-secondary-50: #f3f6f4;
+  --color-secondary-100: #e4eae6;
+  --color-secondary-200: #c9d6cd;
+  --color-secondary-300: #a4b4aa;
+  --color-secondary-400: #8aa091;
+  --color-secondary-500: #6c8577;
+  --color-secondary-600: #55695f;
+  --color-secondary-700: #42514a;
+  --color-secondary-800: #303b36;
+  --color-secondary-900: #1f2723;
+  --color-secondary-950: #121815;
+
+  /* Primary brand color — Deep Teal */
+  --color-primary: #0f5c60;
   --color-primary-foreground: #ffffff;
-  --color-primary-50: #f0f4f8;
-  --color-primary-100: #d9e2ec;
-  --color-primary-200: #bcccdc;
-  --color-primary-300: #9fb3c8;
-  --color-primary-400: #829ab1;
-  --color-primary-500: #627d98;
-  --color-primary-600: #486581;
-  --color-primary-700: #334e68;
-  --color-primary-800: #243b53;
-  --color-primary-900: #102a43;
-  --color-primary-950: #0a1c2e;
-
-  /* Accent Cyan Color */
-  --color-accent-cyan: #4f96b6;
-  --color-accent-cyan-50: #e6f2f7;
-  --color-accent-cyan-100: #cce5ef;
-  --color-accent-cyan-200: #99cbd9;
-  --color-accent-cyan-300: #66b1c3;
-  --color-accent-cyan-400: #4f96b6;
-  --color-accent-cyan-500: #4f96b6;
-  --color-accent-cyan-600: #3d7a94;
-  --color-accent-cyan-700: #2e5e72;
-  --color-accent-cyan-800: #1f4250;
-  --color-accent-cyan-900: #102628;
-
-  /* Simplified cyan color for direct use */
-  --color-cyan: #4f96b6;
-
-  /* Light blue (carousel buttons, links) */
-  --color-light-blue: #4f96b6;
-  --color-light-blue-600: #3d7a94;
+  --color-primary-50: #eaf4f4;
+  --color-primary-100: #d2e7e7;
+  --color-primary-200: #a6d0cf;
+  --color-primary-300: #79b8b7;
+  --color-primary-400: #4da09f;
+  --color-primary-500: #2e7f7e;
+  --color-primary-600: #1d6566;
+  --color-primary-700: #0f5c60;
+  --color-primary-800: #0b484b;
+  --color-primary-900: #073536;
+  --color-primary-950: #042121;
 
   --color-xsed: #d97e4a;
   --color-xsed-50: #fef2f2;

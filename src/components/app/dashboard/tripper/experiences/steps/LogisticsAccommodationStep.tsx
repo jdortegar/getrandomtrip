@@ -60,7 +60,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange, peek }: Props
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-neutral-500 -mt-1">
+      <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>
 
@@ -69,7 +69,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange, peek }: Props
           <div key={index} className="space-y-4">
             {index > 0 && (
               <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                <span className="text-sm text-neutral-500">
+                <span className="text-sm text-ink">
                   {fields.addAccommodation} {index + 1}
                 </span>
                 <button
@@ -138,7 +138,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange, peek }: Props
       <button
         type="button"
         onClick={addEntry}
-        className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-neutral-500 hover:border-gray-400 hover:text-neutral-700 transition-colors"
+        className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-ink hover:border-gray-400 hover:text-neutral-700 transition-colors"
       >
         + {fields.addAccommodation}
       </button>

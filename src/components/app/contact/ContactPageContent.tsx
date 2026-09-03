@@ -17,10 +17,10 @@ export function ContactPageContent({ copy }: ContactPageContentProps) {
     return (
       <div className="flex min-h-[340px] items-center justify-center rounded-xl px-6 py-16 text-center">
         <div>
-          <h3 className="font-barlow-condensed text-5xl font-bold text-neutral-900">
+          <h3 className="font-barlow-condensed text-5xl font-bold text-ink">
             {copy.form.success.title}
           </h3>
-          <p className="mt-4 text-base text-neutral-500">
+          <p className="mt-4 text-base text-ink">
             {copy.form.success.description}
           </p>
         </div>
@@ -43,12 +43,12 @@ export function ContactPageContent({ copy }: ContactPageContentProps) {
           {copy.intro.p4}
         </p>
 
-        <h3 className="mb-3 font-barlow-condensed text-4xl font-semibold text-neutral-900">
+        <h3 className="mb-3 font-barlow-condensed text-4xl font-semibold text-ink">
           {copy.contact.heading}
         </h3>
         <p className="mb-8 text-base text-neutral-600">{copy.contact.email}</p>
 
-        <h3 className="mb-3 font-barlow-condensed text-4xl font-semibold text-neutral-900">
+        <h3 className="mb-3 font-barlow-condensed text-4xl font-semibold text-ink">
           {copy.contact.socialsHeading}
         </h3>
         <div className="space-y-2">

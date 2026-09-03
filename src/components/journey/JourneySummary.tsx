@@ -515,11 +515,11 @@ export default function JourneySummary({
     activeFilters.length > 0 ||
     (JOURNEY_ADDONS_ENABLED && selectedAddons.length > 0);
 
-  const sectionTitleClass = "text-base font-bold text-gray-900";
-  const detailClass = "text-sm font-normal text-gray-900";
+  const sectionTitleClass = "text-base font-bold text-ink";
+  const detailClass = "text-sm font-normal text-ink";
   const captionClass = "text-xs font-normal text-gray-500";
   const actionButtonClass =
-    "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200";
+    "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-ink hover:bg-gray-200";
 
   return (
     <aside
@@ -528,7 +528,7 @@ export default function JourneySummary({
         className,
       )}
     >
-      <h2 className="text-xl font-bold text-gray-900">{summary.title}</h2>
+      <h2 className="text-xl font-bold text-ink">{summary.title}</h2>
 
       {/* Tipo de viaje */}
       <div className="flex items-stretch justify-between gap-3 border-b border-gray-200 pb-4">
@@ -666,7 +666,7 @@ export default function JourneySummary({
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     {refineDetailEntries.map(({ key, label }) => (
                       <div
-                        className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                        className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-ink"
                         key={key}
                       >
                         <span>{label}</span>
@@ -715,7 +715,7 @@ export default function JourneySummary({
           {originCity && originCountry ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-gray-900" />
+                <MapPin className="h-4 w-4 shrink-0 text-ink" />
                 <p className={detailClass}>
                   {originCity}, {originCountry}.
                 </p>
@@ -751,7 +751,7 @@ export default function JourneySummary({
           {startDate && nights > 0 ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <Calendar className="h-4 w-4 shrink-0 text-gray-900" />
+                <Calendar className="h-4 w-4 shrink-0 text-ink" />
                 <p className={detailClass}>
                   {formatDatesSummary(
                     startDate,
@@ -792,7 +792,7 @@ export default function JourneySummary({
           {transportLabel && TransportIcon ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <TransportIcon className="h-4 w-4 shrink-0 text-gray-900" />
+                <TransportIcon className="h-4 w-4 shrink-0 text-ink" />
                 <p className={detailClass}>
                   {transportLabel}
                   <span className="font-normal text-gray-500">
@@ -838,7 +838,7 @@ export default function JourneySummary({
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 {activeFilters.map(({ id, kind, label, value }) => (
                   <div
-                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                    className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-ink"
                     key={id}
                   >
                     <span>{label}</span>
@@ -892,7 +892,7 @@ export default function JourneySummary({
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   {selectedAddons.map((addon) => (
                     <div
-                      className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-gray-900"
+                      className="inline-flex w-fit items-center gap-1.5 rounded-md bg-gray-100 px-2 py-1 text-xs font-normal text-ink"
                       key={addon.id}
                     >
                       <span>
@@ -940,58 +940,58 @@ export default function JourneySummary({
       {hasAnySummary && (
         <div className="">
           <div className="flex gap-4 items-start justify-between">
-            <p className="font-barlow font-semibold text-sm text-gray-900">
+            <p className="font-barlow font-semibold text-sm text-ink">
               {totalsLabels.summaryHeroPriceCaption}
             </p>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
               {checkoutUsd(paymentTotals.basePerPax)}
             </p>
           </div>
 
           <div className="mt-4 flex gap-4 items-start justify-between">
             <div className="min-w-0 flex-1">
-              <p className="font-barlow font-semibold text-sm text-gray-900">
+              <p className="font-barlow font-semibold text-sm text-ink">
                 {totalsLabels.filterFeeLabel}
               </p>
               <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
                 {filterFeeDescription}
               </p>
             </div>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
               {checkoutUsd(paymentTotals.filtersPerPax)}
             </p>
           </div>
 
           {addonsPerPaxCombined > 0 ? (
             <div className="mt-4 flex gap-4 items-start justify-between">
-              <p className="font-barlow font-semibold text-sm text-gray-900">
+              <p className="font-barlow font-semibold text-sm text-ink">
                 {totalsLabels.addonsPerPersonLabel}
               </p>
-              <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+              <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
                 {checkoutUsd(addonsPerPaxCombined)}
               </p>
             </div>
           ) : null}
 
           <div className="border-gray-200 border-t mt-4 flex gap-4 items-center justify-between pt-3">
-            <p className="font-barlow font-bold text-base text-gray-900">
+            <p className="font-barlow font-bold text-base text-ink">
               {totalsLabels.subtotalPerPersonLabel}
             </p>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-gray-900">
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-ink">
               {checkoutUsd(paymentTotals.totalPerPax)}
             </p>
           </div>
 
           <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
             <div className="min-w-0 flex-1">
-              <p className="font-barlow-condensed font-bold text-3xl text-gray-900">
+              <p className="font-barlow-condensed font-bold text-3xl text-ink">
                 {totalsLabels.totalLabel}
               </p>
               <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
                 {filterFeePaxLine}
               </p>
             </div>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-gray-900">
+            <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
               {checkoutUsd(paymentTotals.totalTrip)}
             </p>
           </div>
@@ -1005,11 +1005,11 @@ export default function JourneySummary({
             aria-hidden
             className="h-4 w-4 shrink-0 text-[#5B7A8C] fill-[#5B7A8C]"
           />
-          <span className="text-base font-bold text-gray-900">
+          <span className="text-base font-bold text-ink">
             {summary.importantTitle}
           </span>
         </div>
-        <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-gray-900">
+        <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-ink">
           <li>{summary.importantNote1}</li>
           <li>{summary.importantNote2}</li>
           <li>{summary.importantNote3}</li>

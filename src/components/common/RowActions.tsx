@@ -28,7 +28,7 @@ export function RowActions({
       {editHref ? (
         <Button
           asChild
-          className="h-8 w-8 p-0 text-neutral-500 hover:text-neutral-900"
+          className="h-8 w-8 p-0 text-ink hover:text-ink"
           size="sm"
           title={editTitle}
           variant="ghost"
@@ -41,8 +41,8 @@ export function RowActions({
         <Button
           className={
             editActive
-              ? "h-8 w-8 p-0 text-neutral-900"
-              : "h-8 w-8 p-0 text-neutral-500 hover:text-neutral-900"
+              ? "h-8 w-8 p-0 text-ink"
+              : "h-8 w-8 p-0 text-ink hover:text-ink"
           }
           onClick={onEdit}
           size="sm"

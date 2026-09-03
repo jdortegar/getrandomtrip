@@ -22,10 +22,10 @@ export function TripRequestsTableRow({
   return (
     <tr className="transition-colors hover:bg-gray-50">
       <td className="px-5 py-4">
-        <p className="text-sm font-semibold text-neutral-900">
+        <p className="text-sm font-semibold text-ink">
           {trip.user.name}
         </p>
-        <p className="mt-0.5 text-xs text-neutral-500">{trip.user.email}</p>
+        <p className="mt-0.5 text-xs text-ink">{trip.user.email}</p>
       </td>
       <td className="px-5 py-4 text-sm text-neutral-700">
         {formatAdminDate(trip.startDate)}
@@ -35,7 +35,7 @@ export function TripRequestsTableRow({
       </td>
       <td className="px-5 py-4">
         <p className="text-sm text-neutral-700">{trip.type}</p>
-        <p className="mt-0.5 text-xs text-neutral-500">{trip.level}</p>
+        <p className="mt-0.5 text-xs text-ink">{trip.level}</p>
       </td>
       <td className="px-5 py-4">
         <StatusBadge

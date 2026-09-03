@@ -57,7 +57,7 @@ export function XsedInternalHero({
 
   return (
     <section
-      className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-slate-950 text-white"
+      className="relative h-[60vh] min-h-[520px] w-full overflow-hidden bg-primary-950 text-white"
       style={maxHeight ? { maxHeight } : undefined}
     >
       <VideoBackground fallbackImage={backgroundImage} videoSrc={videoSrc} />

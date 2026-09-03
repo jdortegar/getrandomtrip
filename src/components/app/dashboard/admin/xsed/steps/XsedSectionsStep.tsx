@@ -116,7 +116,7 @@ export function XsedSectionsStep({ form, onChange, copy }: Props) {
           <div className="space-y-4" key={index}>
             {index > 0 && (
               <div className="flex items-center justify-between border-t border-gray-100 pt-2">
-                <span className="text-sm text-neutral-500">
+                <span className="text-sm text-ink">
                   {copy.sectionLabel} {index + 1}
                 </span>
                 <button
@@ -162,7 +162,7 @@ export function XsedSectionsStep({ form, onChange, copy }: Props) {
             )}
 
             <button
-              className="w-full rounded-xl border border-dashed border-gray-300 py-3 text-sm text-neutral-500 transition-colors hover:border-gray-400 hover:text-neutral-700"
+              className="w-full rounded-xl border border-dashed border-gray-300 py-3 text-sm text-ink transition-colors hover:border-gray-400 hover:text-neutral-700"
               onClick={() => addPhoto(index)}
               type="button"
             >
@@ -173,7 +173,7 @@ export function XsedSectionsStep({ form, onChange, copy }: Props) {
       </div>
 
       <button
-        className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-neutral-500 transition-colors hover:border-gray-400 hover:text-neutral-700"
+        className="w-full rounded-xl border border-dashed border-gray-300 py-4 text-sm text-ink transition-colors hover:border-gray-400 hover:text-neutral-700"
         onClick={addSection}
         type="button"
       >

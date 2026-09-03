@@ -73,7 +73,7 @@ export function XsedNotifyForm({
     ? "border-white bg-transparent text-white placeholder:text-white focus-visible:ring-white/40"
     : "border-neutral-300 bg-white text-neutral-800 placeholder:text-neutral-400 focus-visible:ring-xsed/40";
 
-  const helperColorClasses = isDark ? "text-white" : "text-neutral-500";
+  const helperColorClasses = isDark ? "text-white" : "text-ink";
 
   return (
     <motion.div

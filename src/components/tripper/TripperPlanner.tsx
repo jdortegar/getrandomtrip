@@ -109,7 +109,7 @@ export default function TripperPlanner({
                 visitedCountries.map((c) => (
                   <span
                     key={c}
-                    className="inline-flex items-center gap-1.5 text-sm text-neutral-500"
+                    className="inline-flex items-center gap-1.5 text-sm text-ink"
                   >
                     <CountryFlag className="shrink-0" country={c} title={c} />
                     <span className="uppercase">{c}</span>
@@ -125,7 +125,7 @@ export default function TripperPlanner({
             <h3 className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-neutral-700">
               Áreas de expertise
             </h3>
-            <ul className="mt-3 list-inside list-disc space-y-1 text-left text-sm text-neutral-500">
+            <ul className="mt-3 list-inside list-disc space-y-1 text-left text-sm text-ink">
               {expertiseAreas.length > 0 ? (
                 expertiseAreas.map((area) => (
                   <li key={area} className="uppercase">
@@ -145,7 +145,7 @@ export default function TripperPlanner({
             <h3 className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-neutral-700">
               ¿Desde dónde viajas?
             </h3>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-ink">
               {firstName} diseñará tu experiencia desde tu ciudad de origen
             </p>
           </div>

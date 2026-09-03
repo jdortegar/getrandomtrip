@@ -132,7 +132,7 @@ export default function AvoidGrid({
           className={`grid w-full grid-cols-4 ${showImages ? "gap-4" : "gap-2"}`}
         >
           {suggestions.length === 0 ? (
-            <div className="col-span-4 py-8 text-center text-neutral-500">
+            <div className="col-span-4 py-8 text-center text-ink">
               {hasLoaded ? labels.empty : labels.loading}
             </div>
           ) : (

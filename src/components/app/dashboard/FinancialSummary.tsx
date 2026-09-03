@@ -14,7 +14,7 @@ export function FinancialSummary({
 }: FinancialSummaryProps) {
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-      <h3 className="text-lg font-semibold text-neutral-900 mb-4">
+      <h3 className="text-lg font-semibold text-ink mb-4">
         {copy.financialSummary.title}
       </h3>
       <div className="space-y-3">
@@ -22,7 +22,7 @@ export function FinancialSummary({
           <span className="text-sm text-neutral-600">
             {copy.financialSummary.totalSpent}
           </span>
-          <span className="font-bold text-neutral-900">
+          <span className="font-bold text-ink">
             ${(stats.totalSpent ?? 0).toFixed(2)}
           </span>
         </div>
@@ -30,7 +30,7 @@ export function FinancialSummary({
           <span className="text-sm text-neutral-600">
             {copy.financialSummary.completedPayments}
           </span>
-          <span className="font-bold text-neutral-900">
+          <span className="font-bold text-ink">
             {
               payments.filter(
                 (payment) =>
@@ -44,7 +44,7 @@ export function FinancialSummary({
           <span className="text-sm text-neutral-600">
             {copy.financialSummary.pendingPayments}
           </span>
-          <span className="font-bold text-neutral-900">
+          <span className="font-bold text-ink">
             {payments.filter((payment) => payment.status === "PENDING").length}
           </span>
         </div>

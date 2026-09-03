@@ -89,7 +89,7 @@ function BrandingAnimation({
           }}
         />
         <div className="relative">
-          <motion.span className="font-nothing-you-could-do text-yellow-400 text-xl md:text-2xl lg:text-5xl xl:text-5xl inline-flex">
+          <motion.span className="font-nothing-you-could-do text-feature text-xl md:text-2xl lg:text-5xl xl:text-5xl inline-flex">
             {BRANDING_REPEAT_TEXT.split("").map((char, index) => (
               <motion.span
                 key={index}

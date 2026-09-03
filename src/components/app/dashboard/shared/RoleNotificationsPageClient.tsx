@@ -250,16 +250,16 @@ export function RoleNotificationsPageClient({
     <div className="space-y-6 text-left">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
             {copy.pageTitle}
           </h2>
         </div>
         {unreadTotal > 0 && (
           <Button
-            className="h-11 shrink-0 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-gray-800"
+            className="h-11 shrink-0 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
             disabled={isBusy}
             onClick={markAllRead}
           >
@@ -322,7 +322,7 @@ export function RoleNotificationsPageClient({
             <p className="mb-2 text-sm font-semibold text-neutral-700">
               {copy.emptyStateTitle}
             </p>
-            <p className="text-sm text-neutral-500">{emptyStateBody}</p>
+            <p className="text-sm text-ink">{emptyStateBody}</p>
           </div>
         ) : (
           <>
@@ -335,7 +335,7 @@ export function RoleNotificationsPageClient({
                 ref={selectAllRef}
                 type="checkbox"
               />
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-ink">
                 {copy.table.selectAll}
               </span>
             </div>
@@ -395,7 +395,7 @@ export function RoleNotificationsPageClient({
                           "grid h-9 w-9 shrink-0 place-items-center rounded-full",
                           isDanger
                             ? "bg-red-50 text-red-500"
-                            : "bg-light-blue/10 text-light-blue",
+                            : "bg-secondary/10 text-secondary",
                         )}
                       >
                         <Icon className="h-4 w-4" strokeWidth={1.8} />
@@ -407,13 +407,13 @@ export function RoleNotificationsPageClient({
                             "text-sm leading-snug",
                             isRead
                               ? "font-normal text-neutral-700"
-                              : "font-semibold text-neutral-900",
+                              : "font-semibold text-ink",
                           )}
                         >
                           {title}
                         </p>
                         {body && (
-                          <p className="mt-0.5 text-sm leading-snug text-neutral-500">
+                          <p className="mt-0.5 text-sm leading-snug text-ink">
                             {body}
                           </p>
                         )}

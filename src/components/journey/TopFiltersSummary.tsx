@@ -42,7 +42,7 @@ function Chip({
       className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${
         muted
           ? "bg-neutral-100 text-neutral-600 border-neutral-200"
-          : "bg-white text-neutral-900 border-neutral-300"
+          : "bg-white text-ink border-neutral-300"
       }`}
     >
       {children}
@@ -196,7 +196,7 @@ export default function TopFiltersSummary() {
           <button
             type="button"
             onClick={goPrefs}
-            className="inline-flex items-center px-3 py-1 rounded-full text-sm border bg-white text-neutral-900 border-neutral-300"
+            className="inline-flex items-center px-3 py-1 rounded-full text-sm border bg-white text-ink border-neutral-300"
           >
             +{hiddenCount} más
           </button>

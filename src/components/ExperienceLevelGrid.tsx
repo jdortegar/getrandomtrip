@@ -30,7 +30,7 @@ export default function ExperienceLevelGrid({
           className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl"
         >
           <div className="grow p-6">
-            <h3 className="mb-2 text-2xl font-bold text-gray-900">
+            <h3 className="mb-2 text-2xl font-bold text-ink">
               {level.title}
             </h3>
             <p className="mb-4 text-sm text-gray-600">{level.tagline ?? ""}</p>

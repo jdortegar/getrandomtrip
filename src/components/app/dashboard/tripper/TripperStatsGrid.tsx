@@ -61,10 +61,10 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
     <section>
       {/* Brand section header */}
       <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {metricsCopy.sectionEyebrow ?? "This month"}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-neutral-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {metricsCopy.sectionTitle ?? "Your performance"}
         </h2>
       </div>
@@ -79,27 +79,27 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
               className="flex flex-col gap-5 rounded-2xl bg-white p-6 font-barlow shadow-sm ring-1 ring-gray-200"
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
                   {card.label}
                 </p>
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                    card.gold ? "bg-feature/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-light-blue",
+                      card.gold ? "text-feature" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />
                 </span>
               </div>
               <div className="flex items-stretch gap-3.5">
-                <span className="w-1 rounded-full bg-yellow-400" />
-                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-neutral-900">
+                <span className="w-1 rounded-full bg-feature" />
+                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
                   {card.value}
                 </p>
               </div>
@@ -140,13 +140,13 @@ function Metric({
         divider && "border-t border-gray-200 sm:border-l sm:border-t-0",
       )}
     >
-      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
         {label}
       </span>
       <span
         className={cn(
           "flex items-center gap-1.5 font-barlow-condensed text-3xl font-extrabold leading-none",
-          trend ? "text-green-600" : "text-neutral-900",
+          trend ? "text-green-600" : "text-ink",
         )}
       >
         {trend && <TrendingUp className="h-[18px] w-[18px] text-green-500" />}

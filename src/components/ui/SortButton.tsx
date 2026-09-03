@@ -46,7 +46,7 @@ export function SortButton({
       aria-pressed={ariaPressed}
       className={cn(
         "inline-flex cursor-pointer items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider transition-colors",
-        active ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700",
+        active ? "text-ink" : "text-ink hover:text-neutral-700",
       )}
       onClick={onSort}
       type="button"
@@ -55,7 +55,7 @@ export function SortButton({
       <Icon
         className={cn(
           "h-3.5 w-3.5 shrink-0",
-          active ? "text-light-blue" : "text-neutral-300",
+          active ? "text-secondary" : "text-neutral-300",
         )}
       />
     </button>

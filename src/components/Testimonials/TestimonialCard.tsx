@@ -25,13 +25,13 @@ export function TestimonialCard({
 
   return (
     <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 text-center shadow-sm">
-      <p className="mb-6 font-barlow text-lg leading-relaxed text-[#888]">
+      <p className="mb-6 font-barlow text-lg leading-relaxed text-ink">
         &quot;{quote}&quot;
       </p>
 
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#333] font-barlow text-base font-semibold text-white">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary font-barlow text-base font-semibold text-white">
             {avatarUrl ? (
               <Img
                 alt={author}
@@ -45,8 +45,8 @@ export function TestimonialCard({
             )}
           </div>
           <div className="flex flex-col items-start text-left font-barlow">
-            <h4 className="font-semibold text-xl text-[#333]">{author}</h4>
-            <p className="text-xs font-medium text-[#666]">
+            <h4 className="font-semibold text-xl text-ink">{author}</h4>
+            <p className="text-xs font-medium text-ink">
               <span className="inline-flex items-center gap-1.5">
                 {(countryCode || country) && (
                   <CountryFlag

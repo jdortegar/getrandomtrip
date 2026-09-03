@@ -67,7 +67,7 @@ export function FullPageStatusLayout({
                 </div>
               </div>
 
-              <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
+              <h2 className="mb-4 text-3xl font-bold text-ink md:text-4xl">
                 {title}
               </h2>
 

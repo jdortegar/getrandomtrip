@@ -13,7 +13,7 @@ export default function SectionHeading({
   return (
     <header className={`${alignCls} max-w-prose`}>
       {eyebrow && (
-        <div className="mb-2 text-xs uppercase tracking-[0.18em] text-neutral-500">
+        <div className="mb-2 text-xs uppercase tracking-[0.18em] text-ink">
           {eyebrow}
         </div>
       )}

@@ -101,10 +101,10 @@ const EmblaCarousel = ({
           className={cn(
             "h-2 rounded-full transition-all",
             i === selectedIndex
-              ? cn("w-8", !accentColor && "bg-light-blue")
+              ? cn("w-8", !accentColor && "bg-primary")
               : cn(
                   "w-2",
-                  !accentColor && "bg-light-blue/30 hover:bg-light-blue/50",
+                  !accentColor && "bg-primary/30 hover:bg-primary/50",
                 ),
           )}
           style={

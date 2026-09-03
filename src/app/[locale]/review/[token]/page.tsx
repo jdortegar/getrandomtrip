@@ -64,7 +64,7 @@ export default async function ReviewPage({ params }: PageProps) {
         <Section>
           <div className="max-w-md mx-auto">
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm text-center">
-              <h2 className="text-xl font-semibold text-neutral-900 mb-2">
+              <h2 className="text-xl font-semibold text-ink mb-2">
                 {copy.successTitle}
               </h2>
               <p className="text-sm text-neutral-600">{copy.successMessage}</p>

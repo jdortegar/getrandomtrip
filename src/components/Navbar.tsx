@@ -94,9 +94,17 @@ export default function Navbar({
   const headerClass = cn(
     "duration-500 ease-in-out h-16 top-0 transition-all z-50",
     backgroundPrimary
-      ? "bg-primary ring-1 ring-black/10 shadow-sm sticky text-primary-foreground w-full"
+      ? "bg-ground ring-1 ring-gray-200 shadow-sm sticky text-primary w-full"
       : "absolute backdrop-blur-md bg-white/0 inset-x-0 text-white",
   );
+  // Solid state sits on the new Off-White ground — Deep Teal is reserved for
+  // text/icons/focus states there, never as a big-area fill (brand book
+  // "0-5% Ochre / 5-10% Deep Teal" ratio). The transparent hero-overlay
+  // state keeps white-on-photo, so its hover wash and wordmark stay as-is.
+  const iconHoverClass = backgroundPrimary ? "hover:bg-secondary/10" : "hover:bg-white/10";
+  const wordmarkSrc = backgroundPrimary
+    ? "/assets/logos/logo_getrandomtrip.png"
+    : "/assets/logos/logo_getrandomtrip_1.png";
 
   const desktopLinks = NAV_LINKS.filter(
     (link) => link.displayPosition === "navbar",
@@ -122,7 +130,7 @@ export default function Navbar({
               alt="Randomtrip"
               height={50}
               priority
-              src="/assets/logos/logo_getrandomtrip_1.png"
+              src={wordmarkSrc}
               style={{ height: "auto" }}
               width={180}
               className="hidden sm:block"
@@ -133,7 +141,7 @@ export default function Navbar({
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
             <button
               aria-label={nav?.search ?? "Search"}
-              className="p-2 rounded-lg hover:bg-white/10"
+              className={cn("p-2 rounded-lg", iconHoverClass)}
               onClick={() => {}}
               type="button"
             >
@@ -154,7 +162,7 @@ export default function Navbar({
           <div className="flex items-center gap-2">
             <a
               aria-label={nav?.whatsApp ?? "WhatsApp"}
-              className="p-2 rounded-lg hover:bg-white/10"
+              className={cn("p-2 rounded-lg", iconHoverClass)}
               href="https://wa.me/526241928208"
               rel="noopener"
               target="_blank"
@@ -168,7 +176,7 @@ export default function Navbar({
                 aria-expanded={mobileMenu.isOpen}
                 aria-haspopup="menu"
                 aria-label={nav?.openMenu ?? "Open menu"}
-                className="p-2 rounded-lg hover:bg-white/10"
+                className={cn("p-2 rounded-lg", iconHoverClass)}
                 onClick={mobileMenu.toggle}
                 type="button"
               >
@@ -178,7 +186,7 @@ export default function Navbar({
               {mobileMenu.isOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                  className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
                 >
                   {/* navbar links: hidden on desktop (already in the nav bar), visible on mobile */}
                   <div className="lg:hidden">
@@ -219,7 +227,7 @@ export default function Navbar({
             {!isAuthed && (
               <button
                 aria-label={nav?.signIn ?? "Sign in"}
-                className="p-2 rounded-lg hover:bg-white/10"
+                className={cn("p-2 rounded-lg", iconHoverClass)}
                 onClick={() => openLogin()}
               >
                 <User className="h-5 w-5" />
@@ -240,7 +248,7 @@ export default function Navbar({
                 aria-expanded={languageMenu.isOpen}
                 aria-haspopup="menu"
                 aria-label={nav?.selectLanguage ?? "Select language"}
-                className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/10"
+                className={cn("flex items-center gap-2 p-2 rounded-lg", iconHoverClass)}
                 onClick={languageMenu.toggle}
                 type="button"
               >
@@ -253,7 +261,7 @@ export default function Navbar({
               {languageMenu.isOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 mt-3 w-40 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-neutral-900"
+                  className="absolute right-0 mt-3 w-40 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
                 >
                   {(["es", "en"] as const).map((loc) => (
                     <button

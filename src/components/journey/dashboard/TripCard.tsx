@@ -9,14 +9,14 @@ export default function TripCard({ trip }: { trip: Trip }) {
     <div className="rounded-xl ring-1 ring-neutral-200 bg-white overflow-hidden shadow-sm">
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_320px] gap-0">
         <div className="p-4">
-          <div className="text-xs text-neutral-500">
+          <div className="text-xs text-ink">
             {trip.status === "upcoming"
               ? "Próximo"
               : trip.status === "past"
                 ? "Completado"
                 : "Cancelado"}
           </div>
-          <div className="mt-1 text-base font-semibold text-neutral-900">
+          <div className="mt-1 text-base font-semibold text-ink">
             {trip.title}
           </div>
           {trip.subtitle && (
@@ -34,7 +34,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
 
           <button
             type="button"
-            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm text-neutral-900 hover:bg-neutral-50"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm text-ink hover:bg-neutral-50"
           >
             Ver detalles <ExternalLink size={16} />
           </button>

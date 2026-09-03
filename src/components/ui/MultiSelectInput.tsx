@@ -114,7 +114,7 @@ export function MultiSelectInput({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={searchPlaceholder}
-                className="flex-1 bg-transparent outline-none text-sm text-gray-900 placeholder:text-gray-400"
+                className="flex-1 bg-transparent outline-none text-sm text-ink placeholder:text-gray-400"
               />
             </div>
 
@@ -135,7 +135,7 @@ export function MultiSelectInput({
                     className={cn(
                       "flex items-center gap-2 px-4 py-2.5 text-sm cursor-pointer select-none transition-colors",
                       isSelected
-                        ? "text-light-blue bg-light-blue/10"
+                        ? "text-secondary bg-secondary/10"
                         : "text-gray-700 hover:bg-gray-50",
                     )}
                   >
@@ -143,7 +143,7 @@ export function MultiSelectInput({
                       className={cn(
                         "flex h-4 w-4 items-center justify-center rounded border transition-colors",
                         isSelected
-                          ? "border-light-blue bg-light-blue"
+                          ? "border-secondary bg-secondary"
                           : "border-gray-300",
                       )}
                     >
