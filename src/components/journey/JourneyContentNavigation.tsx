@@ -118,7 +118,7 @@ export default function JourneyContentNavigation({
                       className={cn(
                         "flex h-6 w-6 items-center justify-center rounded-full border transition-colors",
                         {
-                          "border-light-blue bg-light-blue text-white":
+                          "border-primary bg-primary text-white":
                             isActive || isCompleted,
                           "border-gray-300 bg-gray-100 text-gray-400 opacity-60":
                             !isActive && !isCompleted,
@@ -153,7 +153,7 @@ export default function JourneyContentNavigation({
                       className={cn(
                         "text-sm font-medium transition-colors whitespace-nowrap",
                         {
-                          "text-gray-900": isActive,
+                          "text-ink": isActive,
                           "text-gray-500 hover:text-gray-700": !isActive,
                           "cursor-not-allowed opacity-60": !isClickable,
                           "cursor-pointer": isClickable,

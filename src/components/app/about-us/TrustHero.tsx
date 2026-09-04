@@ -57,7 +57,7 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
             <Button
               asChild
               aria-label={content.ctaAriaLabel}
-              className="mt-6 text-gray-900"
+              className="mt-6 text-ink"
               size="lg"
               variant="white"
             >

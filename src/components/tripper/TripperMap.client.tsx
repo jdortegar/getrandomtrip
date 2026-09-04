@@ -47,7 +47,7 @@ export default function TripperMap({ places, className, height = 420 }: Props) {
                 <div className="space-y-1">
                   <div className="font-semibold">{p.label}</div>
                   {(p.lastTrip || p.trips) && (
-                    <div className="text-xs text-neutral-500">
+                    <div className="text-xs text-ink">
                       {p.lastTrip ? `Último viaje: ${p.lastTrip}` : null}
                       {p.lastTrip && p.trips ? " · " : null}
                       {p.trips ? `Nº de viajes: ${p.trips}` : null}

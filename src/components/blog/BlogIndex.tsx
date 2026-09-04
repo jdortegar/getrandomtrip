@@ -190,7 +190,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                 <GlassCard>
                   <div className="p-12 text-center">
                     <Book className="mx-auto mb-4 h-16 w-16 text-neutral-400" />
-                    <p className="mb-2 text-lg text-neutral-500">
+                    <p className="mb-2 text-lg text-ink">
                       {copy.emptyTitle}
                     </p>
                     <p className="text-sm text-neutral-400">
@@ -225,7 +225,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                   )}
 
                   {!hasMore && blogs.length > 0 && (
-                    <div className="py-8 text-center text-neutral-500">
+                    <div className="py-8 text-center text-ink">
                       <p>{copy.seenAll}</p>
                     </div>
                   )}

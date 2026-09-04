@@ -23,7 +23,7 @@ interface TripperSettingsAccountCardProps {
 
 function AdminSetBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-[6px] border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-neutral-500">
+    <span className="inline-flex items-center gap-1 rounded-[6px] border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-ink">
       <Lock className="h-3 w-3" />
       {label}
     </span>
@@ -49,16 +49,16 @@ export function TripperSettingsAccountCard({
   return (
     <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
 
       <div>
-        <p className="text-sm font-medium text-neutral-500">
+        <p className="text-sm font-medium text-ink">
           {copy.emailLabel}
         </p>
         <p className="mt-1 text-sm text-neutral-800">{email}</p>
@@ -66,12 +66,12 @@ export function TripperSettingsAccountCard({
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-sm font-medium text-neutral-500">
+          <p className="text-sm font-medium text-ink">
             {copy.tierLabel}
           </p>
           <AdminSetBadge label={copy.adminSet} />
         </div>
-        <p className="text-sm font-semibold text-gray-900">
+        <p className="text-sm font-semibold text-ink">
           {tierLabels[tierKey]}
         </p>
         <p className="mt-1 text-xs text-neutral-400">
@@ -82,7 +82,7 @@ export function TripperSettingsAccountCard({
             <div
               className={cn(
                 "h-1.5 flex-1 rounded-full",
-                i <= tierIndex ? "bg-light-blue" : "bg-gray-200",
+                i <= tierIndex ? "bg-secondary" : "bg-gray-200",
               )}
               key={key}
             />
@@ -92,15 +92,15 @@ export function TripperSettingsAccountCard({
 
       <div>
         <div className="mb-1 flex items-center justify-between">
-          <p className="text-sm font-medium text-neutral-500">
+          <p className="text-sm font-medium text-ink">
             {copy.commissionLabel}
           </p>
           <AdminSetBadge label={copy.adminSet} />
         </div>
-        <p className="font-barlow-condensed text-4xl font-extrabold leading-none text-gray-900">
+        <p className="font-barlow-condensed text-4xl font-extrabold leading-none text-ink">
           {commissionPct}%
         </p>
-        <p className="mt-2 text-xs text-neutral-500">{copy.commissionHelper}</p>
+        <p className="mt-2 text-xs text-ink">{copy.commissionHelper}</p>
       </div>
     </div>
   );

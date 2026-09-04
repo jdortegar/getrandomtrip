@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/Button";
 import type { TripperAttributionDict } from "@/lib/types/dictionary";
 
 type DisplayMode = "tripper" | "randomtrip";
@@ -81,7 +82,7 @@ export function AttributionModeBannerToggle({
 
   if (catalogOptOut) {
     return (
-      <div className="w-full bg-gray-900 text-white">
+      <div className="w-full bg-primary text-white">
         <div className="rt-container flex flex-wrap items-center justify-center gap-2 px-4 py-2 text-center text-sm">
           <span>{copy.bannerRandomtripModeMessage}</span>
         </div>
@@ -99,17 +100,18 @@ export function AttributionModeBannerToggle({
       : copy.bannerSwitchToTripper.replace("{name}", tripperName);
 
   return (
-    <div className="w-full bg-gray-900 text-white">
+    <div className="w-full bg-primary text-white">
       <div className="rt-container flex flex-wrap items-center justify-center gap-2 px-4 py-2 text-center text-sm">
         <span>{message}</span>
-        <button
-          className="font-semibold text-light-blue underline underline-offset-2 hover:text-light-blue/80 disabled:opacity-50"
+        <Button
+          className="min-h-0 gap-0 p-0 normal-case leading-normal tracking-normal text-ground underline underline-offset-2 hover:text-feature"
           disabled={isPending}
           onClick={handleToggle}
           type="button"
+          variant="link"
         >
           {actionLabel}
-        </button>
+        </Button>
       </div>
     </div>
   );

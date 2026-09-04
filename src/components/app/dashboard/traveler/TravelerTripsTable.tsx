@@ -88,7 +88,7 @@ export function TravelerTripsTable({
           <p className="text-sm font-semibold text-neutral-700">
             {copy.upcomingTrips.emptyTitle}
           </p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="mt-1 text-sm text-ink">
             {copy.upcomingTrips.emptyMessage}
           </p>
         </div>
@@ -111,7 +111,7 @@ export function TravelerTripsTable({
             <button
               className={`h-9 rounded-lg border px-4 text-[13px] font-medium transition-colors ${
                 filter === opt.id
-                  ? "border-light-blue bg-light-blue text-white"
+                  ? "border-secondary bg-secondary text-white"
                   : "border-gray-200 bg-white text-neutral-600 shadow-sm hover:border-gray-300"
               }`}
               key={opt.id}
@@ -133,22 +133,22 @@ export function TravelerTripsTable({
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Trip
                 </th>
-                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 sm:table-cell">
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink sm:table-cell">
                   Destination
                 </th>
-                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 md:table-cell">
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink md:table-cell">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5" />
                     Date
                   </span>
                 </th>
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Status
                 </th>
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Actions
                 </th>
               </tr>
@@ -157,7 +157,7 @@ export function TravelerTripsTable({
               {trips.length === 0 ? (
                 <tr>
                   <td
-                    className="px-5 py-10 text-center text-sm text-neutral-500"
+                    className="px-5 py-10 text-center text-sm text-ink"
                     colSpan={5}
                   >
                     No trips match this filter.
@@ -183,28 +183,28 @@ export function TravelerTripsTable({
                     >
                       {/* Trip */}
                       <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {travelerTypeTitle}
                         </p>
-                        <p className="mt-0.5 text-xs text-neutral-500">
+                        <p className="mt-0.5 text-xs text-ink">
                           {levelName}
                         </p>
                       </td>
 
                       {/* Destination */}
                       <td className="hidden px-5 py-4 sm:table-cell">
-                        <p className="text-sm font-semibold text-neutral-900">
+                        <p className="text-sm font-semibold text-ink">
                           {trip.actualDestination ??
                             copy.allTrips.emptyDestination}
                         </p>
-                        <p className="mt-0.5 flex items-center gap-1 text-xs text-neutral-500">
+                        <p className="mt-0.5 flex items-center gap-1 text-xs text-ink">
                           <MapPin className="h-3 w-3 shrink-0" />
                           {trip.city}, {trip.country}
                         </p>
                       </td>
 
                       {/* Date */}
-                      <td className="hidden px-5 py-4 text-sm text-neutral-500 md:table-cell">
+                      <td className="hidden px-5 py-4 text-sm text-ink md:table-cell">
                         {startDate}
                       </td>
 

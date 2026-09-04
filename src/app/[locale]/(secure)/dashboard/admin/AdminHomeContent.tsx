@@ -88,10 +88,10 @@ export function AdminHomeContent({
     <div className="space-y-10">
       {/* Stats section header */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
@@ -106,16 +106,16 @@ export function AdminHomeContent({
               key={card.key}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink">
                   {card.label}
                 </span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-light-blue/10 text-light-blue">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary/10 text-secondary">
                   <Icon className="h-4 w-4" />
                 </span>
               </div>
               <div className="flex items-stretch gap-3">
-                <div className="w-1 shrink-0 self-stretch rounded-full bg-yellow-400" />
-                <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-gray-900">
+                <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
+                <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink">
                   {card.value}
                 </span>
               </div>
@@ -126,10 +126,10 @@ export function AdminHomeContent({
 
       {/* Pending actions panel */}
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.pending.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.pending.heading}
         </h2>
       </div>
@@ -142,7 +142,7 @@ export function AdminHomeContent({
           >
             <span className="text-sm text-neutral-700">{row.label}</span>
             <span className="flex items-center gap-3">
-              <span className="font-barlow-condensed text-lg font-bold text-gray-900">
+              <span className="font-barlow-condensed text-lg font-bold text-ink">
                 {row.count}
               </span>
               <ChevronRight className="h-4 w-4 text-neutral-400" />

@@ -39,7 +39,7 @@ export function LegalDocumentPage({
             <section key={index}>
               <h2
                 className={cn(
-                  "mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900",
+                  "mb-3 font-barlow-condensed text-xl font-semibold text-ink",
                 )}
               >
                 {section.title}
@@ -68,7 +68,7 @@ export function LegalDocumentPage({
           <section className="mt-10 border-t border-neutral-200 pt-8">
             <h2
               className={cn(
-                "mb-3 font-barlow-condensed text-xl font-semibold text-neutral-900",
+                "mb-3 font-barlow-condensed text-xl font-semibold text-ink",
               )}
             >
               {doc.contactBlock.title}

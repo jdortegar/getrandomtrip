@@ -75,7 +75,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
 
   return (
     <div className="space-y-5">
-      <p className="text-sm text-neutral-500 -mt-1">
+      <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>
 

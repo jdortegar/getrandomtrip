@@ -15,7 +15,7 @@ export default function TabsNav({ onChange }: { onChange: (t: Tab) => void }) {
           <button
             key={tab}
             onClick={() => setActive(tab)}
-            className={`rounded-full px-3 py-1 text-sm ${active === tab ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900" : "hover:bg-neutral-100 dark:hover:bg-white/10"}`}
+            className={`rounded-full px-3 py-1 text-sm ${active === tab ? "bg-neutral-900 text-white dark:bg-white dark:text-ink" : "hover:bg-neutral-100 dark:hover:bg-white/10"}`}
             aria-current={active === tab ? "page" : undefined}
           >
             {tab}

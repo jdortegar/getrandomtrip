@@ -134,13 +134,13 @@ export function AdminReviewActionsBar({
         className="max-w-md"
       >
         <DialogHeader>
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-light-blue/10">
-            <Send className="h-5 w-5 text-light-blue" />
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
+            <Send className="h-5 w-5 text-secondary" />
           </div>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogTitle className="text-2xl font-bold text-ink">
             {copy.sendConfirmTitle}
           </DialogTitle>
-          <DialogDescription className="text-sm text-neutral-500">
+          <DialogDescription className="text-sm text-ink">
             {copy.sendConfirmBody}
           </DialogDescription>
         </DialogHeader>
@@ -190,13 +190,13 @@ export function AdminReviewActionsBar({
         className="max-w-md"
       >
         <DialogHeader>
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-light-blue/10">
-            <Check className="h-5 w-5 text-light-blue" />
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
+            <Check className="h-5 w-5 text-secondary" />
           </div>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogTitle className="text-2xl font-bold text-ink">
             {copy.approveConfirmTitle}
           </DialogTitle>
-          <DialogDescription className="text-sm text-neutral-500">
+          <DialogDescription className="text-sm text-ink">
             {copy.approveConfirmBody}
           </DialogDescription>
         </DialogHeader>
@@ -252,10 +252,10 @@ export function AdminReviewActionsBar({
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50">
             <X className="h-5 w-5 text-red-600" />
           </div>
-          <DialogTitle className="text-2xl font-bold text-gray-900">
+          <DialogTitle className="text-2xl font-bold text-ink">
             {copy.rejectConfirmTitle}
           </DialogTitle>
-          <DialogDescription className="text-sm text-neutral-500">
+          <DialogDescription className="text-sm text-ink">
             {copy.rejectConfirmBody}
           </DialogDescription>
         </DialogHeader>

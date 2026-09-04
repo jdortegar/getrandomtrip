@@ -47,14 +47,14 @@ export function XsedSummary({
   const total = XSED_PRICE_PER_PERSON * pax;
   const { saturday, sunday } = getNextWeekend();
 
-  const sectionTitleClass = "text-base font-bold text-gray-900";
-  const detailClass = "text-sm font-normal text-gray-900";
+  const sectionTitleClass = "text-base font-bold text-ink";
+  const detailClass = "text-sm font-normal text-ink";
   const actionButtonClass =
-    "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-gray-900 hover:bg-gray-200";
+    "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-ink hover:bg-gray-200";
 
   return (
     <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80">
-      <h2 className="text-xl font-bold text-gray-900">Resumen</h2>
+      <h2 className="text-xl font-bold text-ink">Resumen</h2>
 
       {/* Producto */}
       <div className="border-b border-gray-200 pb-4">
@@ -71,7 +71,7 @@ export function XsedSummary({
       <div className="border-b border-gray-200 pb-4">
         <p className={sectionTitleClass}>Fecha</p>
         <div className="mt-2 flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 shrink-0 text-gray-900" />
+          <CalendarDays className="h-4 w-4 shrink-0 text-ink" />
           <p className={detailClass}>
             {formatDay(saturday)} · {formatDay(sunday)}
           </p>
@@ -85,7 +85,7 @@ export function XsedSummary({
           {originCity && originCountry ? (
             <>
               <div className="flex min-w-0 flex-1 items-center gap-2">
-                <MapPin className="h-4 w-4 shrink-0 text-gray-900" />
+                <MapPin className="h-4 w-4 shrink-0 text-ink" />
                 <p className={detailClass}>
                   {originCity}, {originCountry}.
                 </p>
@@ -132,24 +132,24 @@ export function XsedSummary({
       {/* Totals */}
       <div>
         <div className="flex gap-4 items-start justify-between">
-          <p className="font-barlow font-semibold text-sm text-gray-900">
+          <p className="font-barlow font-semibold text-sm text-ink">
             Precio por persona
           </p>
-          <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-gray-900">
+          <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
             USD {XSED_PRICE_PER_PERSON}
           </p>
         </div>
 
         <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
           <div className="min-w-0 flex-1">
-            <p className="font-barlow-condensed font-bold text-3xl text-gray-900">
+            <p className="font-barlow-condensed font-bold text-3xl text-ink">
               Total
             </p>
             <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
               {pax} persona{pax !== 1 ? "s" : ""}
             </p>
           </div>
-          <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-gray-900">
+          <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
             USD {total}
           </p>
         </div>
@@ -162,9 +162,9 @@ export function XsedSummary({
             aria-hidden
             className="h-4 w-4 shrink-0 text-[#5B7A8C] fill-[#5B7A8C]"
           />
-          <span className="text-base font-bold text-gray-900">Importante</span>
+          <span className="text-base font-bold text-ink">Importante</span>
         </div>
-        <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-gray-900">
+        <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-ink">
           <li>El destino es una sorpresa revelada el día del drop.</li>
           <li>
             El precio final será confirmado por el equipo una vez asignado el

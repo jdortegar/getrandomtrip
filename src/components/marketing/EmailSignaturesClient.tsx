@@ -97,7 +97,7 @@ export function EmailSignaturesClient({
 
         <section className="mt-14 space-y-10 border-t border-neutral-200 pt-12">
           <div>
-            <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-neutral-900 md:text-xl">
+            <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-ink md:text-xl">
               {copy.option1Title}
             </h2>
             <p className="mb-4 text-sm text-neutral-600">
@@ -116,7 +116,7 @@ export function EmailSignaturesClient({
             >
               {copy.copyButton}
             </Button>
-            <p className="mb-2 mt-8 text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <p className="mb-2 mt-8 text-xs font-medium uppercase tracking-wide text-ink">
               {copy.previewHeading}
             </p>
             {/* Static table HTML from lib/helpers/emailSignatureHtml */}
@@ -130,7 +130,7 @@ export function EmailSignaturesClient({
           </div>
 
           <div>
-            <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-neutral-900 md:text-xl">
+            <h2 className="mb-2 font-barlow-condensed text-lg font-semibold text-ink md:text-xl">
               {copy.option2Title}
             </h2>
             <p className="mb-4 text-sm text-neutral-600">
@@ -149,7 +149,7 @@ export function EmailSignaturesClient({
             >
               {copy.copyButton}
             </Button>
-            <p className="mb-2 mt-8 text-xs font-medium uppercase tracking-wide text-neutral-500">
+            <p className="mb-2 mt-8 text-xs font-medium uppercase tracking-wide text-ink">
               {copy.previewHeading}
             </p>
             <div

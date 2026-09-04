@@ -57,7 +57,7 @@ export function BulkDeleteUsersModal({
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-100">
             <Trash2 className="h-4 w-4 text-red-600" />
           </div>
-          <DialogTitle className="text-xl font-semibold text-gray-900">
+          <DialogTitle className="text-xl font-semibold text-ink">
             {copy.bulkActions.confirmTitle.replace("{count}", String(count))}
           </DialogTitle>
         </div>
@@ -67,7 +67,7 @@ export function BulkDeleteUsersModal({
         <DialogDescription className="text-sm text-neutral-600">
           {copy.bulkActions.confirmBody}
         </DialogDescription>
-        <label className="mt-4 block text-xs font-medium text-neutral-500">
+        <label className="mt-4 block text-xs font-medium text-ink">
           {copy.bulkActions.typeToConfirmLabel}
         </label>
         <input

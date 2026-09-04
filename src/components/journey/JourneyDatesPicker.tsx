@@ -169,7 +169,7 @@ export function JourneyDatesPicker({
       {/*
       <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
         <button
-          className="text-sm font-medium text-gray-900 underline hover:no-underline"
+          className="text-sm font-medium text-ink underline hover:no-underline"
           onClick={handleClearAll}
           type="button"
         >

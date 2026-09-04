@@ -26,7 +26,7 @@ export function TripperUnavailableNotice({
 
   return (
     <main className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-white px-6 py-24 text-center">
-      <h1 className="font-barlow-condensed text-4xl font-extrabold uppercase text-gray-900">
+      <h1 className="font-barlow-condensed text-4xl font-extrabold uppercase text-ink">
         {copy.title}
       </h1>
       <p className="max-w-md text-base text-gray-500">{description}</p>

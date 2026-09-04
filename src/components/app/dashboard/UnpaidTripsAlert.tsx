@@ -66,13 +66,13 @@ export function UnpaidTripsAlert({
     <section>
       {/* Section header */}
       <div className="mb-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {trips.length} pending
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.unpaidTrips.title}
         </h2>
-        <p className="mt-2 text-sm text-neutral-500">{copy.unpaidTrips.message}</p>
+        <p className="mt-2 text-sm text-ink">{copy.unpaidTrips.message}</p>
       </div>
 
       {/* Panel card */}
@@ -84,22 +84,22 @@ export function UnpaidTripsAlert({
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Trip
                 </th>
-                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 sm:table-cell">
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink sm:table-cell">
                   Origin
                 </th>
-                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 md:table-cell">
+                <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink md:table-cell">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5" />
                     Date
                   </span>
                 </th>
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Amount
                 </th>
-                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
                   Actions
                 </th>
               </tr>
@@ -137,10 +137,10 @@ export function UnpaidTripsAlert({
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-neutral-900">
+                          <p className="text-sm font-semibold text-ink">
                             {travelerTypeTitle}
                           </p>
-                          <p className="mt-0.5 text-xs text-neutral-500">
+                          <p className="mt-0.5 text-xs text-ink">
                             {levelName}
                           </p>
                           <p className="mt-1 font-mono text-[10px] text-neutral-400">
@@ -159,13 +159,13 @@ export function UnpaidTripsAlert({
                     </td>
 
                     {/* Date */}
-                    <td className="hidden px-5 py-4 text-sm text-neutral-500 md:table-cell">
+                    <td className="hidden px-5 py-4 text-sm text-ink md:table-cell">
                       {start}
                     </td>
 
                     {/* Amount */}
                     <td className="px-5 py-4">
-                      <p className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                      <p className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                         {usd(total)}
                       </p>
                     </td>

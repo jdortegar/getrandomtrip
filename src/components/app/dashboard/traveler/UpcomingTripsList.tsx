@@ -49,11 +49,11 @@ export function UpcomingTripsList({
   return (
     <section>
       <div className="mb-5 flex items-end justify-between gap-4">
-        <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.upcomingTrips.title}
         </h2>
         <Link
-          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-light-blue hover:text-sky-700"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-secondary hover:text-sky-700"
           href={pathForLocale(locale as Locale, "/dashboard/traveler/trips")}
         >
           {copy.allTrips.viewMore} →
@@ -66,7 +66,7 @@ export function UpcomingTripsList({
             <p className="text-sm font-semibold text-neutral-700">
               {copy.upcomingTrips.emptyTitle}
             </p>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-ink">
               {copy.upcomingTrips.emptyMessage}
             </p>
             <Button asChild className="mt-1" size="sm">
@@ -104,10 +104,10 @@ export function UpcomingTripsList({
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-neutral-900">
+                      <p className="truncate text-sm font-semibold text-ink">
                         {trip.actualDestination ?? copy.allTrips.emptyDestination}
                       </p>
-                      <p className="mt-0.5 truncate text-xs text-neutral-500">
+                      <p className="mt-0.5 truncate text-xs text-ink">
                         {travelerTypeTitle} · {levelName}
                       </p>
                     </div>
@@ -151,7 +151,7 @@ export function UpcomingTripsList({
                       </TableIconLink>
                     </div>
                   </div>
-                  <div className="mt-2 flex items-center gap-3 text-xs text-neutral-500">
+                  <div className="mt-2 flex items-center gap-3 text-xs text-ink">
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3 w-3 shrink-0" />
                       {copy.allTrips.from} {trip.city}, {trip.country}

@@ -35,7 +35,7 @@ export default function BlogCard({ post }: BlogCardProps) {
       <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-t from-black/75 to-transparent" />
 
       <div className="pointer-events-none absolute bottom-0 left-0 z-20 w-full p-5 text-white md:p-7">
-        <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
+        <span className="text-feature text-xs font-semibold uppercase tracking-[0.4em]">
           {post.category}
         </span>
         <h3 className="mt-2 font-barlow-condensed text-xl font-bold leading-tight md:text-2xl">

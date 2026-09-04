@@ -55,13 +55,13 @@ export function XsedDropBody({ content }: XsedDropBodyProps) {
     <>
       {content.map((section) => (
         <div key={section.id} className="text-left mb-12 container mx-auto">
-          <h3 className="mb-2 font-barlow-condensed font-bold uppercase leading-tight text-neutral-900 md:text-3xl">
+          <h3 className="mb-2 font-barlow-condensed font-bold uppercase leading-tight text-ink md:text-3xl">
             {section.title}
           </h3>
           <div
             className={cn(
-              "max-w-none prose prose-a:text-light-blue prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left",
-              "hover:prose-a:text-light-blue-600",
+              "max-w-none prose prose-a:text-secondary prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left",
+              "hover:prose-a:text-secondary",
             )}
             dangerouslySetInnerHTML={{ __html: section.content }}
           />

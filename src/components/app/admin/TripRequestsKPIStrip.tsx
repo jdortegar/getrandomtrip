@@ -26,10 +26,10 @@ export function TripRequestsKPIStrip({ counts, labels }: TripRequestsKPIStripPro
           className="flex flex-1 items-center justify-between border-l border-gray-200 px-6 py-4 first:border-l-0"
           key={m.key}
         >
-          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">
+          <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink">
             {m.label}
           </span>
-          <span className="font-barlow-condensed text-3xl font-extrabold text-gray-900">
+          <span className="font-barlow-condensed text-3xl font-extrabold text-ink">
             {m.value}
           </span>
         </div>

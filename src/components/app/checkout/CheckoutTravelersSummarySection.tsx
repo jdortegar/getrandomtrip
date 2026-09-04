@@ -66,7 +66,7 @@ export function CheckoutTravelersSummarySection({
         <p className={tileLabelClassName}>{checkoutCopy.travelersTileTitle}</p>
         <div className="mt-1 flex items-center gap-2">
           <User aria-hidden className="h-4 w-4 shrink-0 text-gray-600" />
-          <p className="text-base font-medium text-gray-900">{summaryLine}</p>
+          <p className="text-base font-medium text-ink">{summaryLine}</p>
         </div>
       </div>
       {partyEditable ? (

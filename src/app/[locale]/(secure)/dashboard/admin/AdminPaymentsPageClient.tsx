@@ -64,10 +64,10 @@ export function AdminPaymentsPageClient() {
   return (
     <div className="space-y-10">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.title}
         </h2>
       </div>
@@ -91,7 +91,7 @@ export function AdminPaymentsPageClient() {
           </div>
         )}
         {payments.length === 0 ? (
-          <p className="py-16 text-center text-sm text-neutral-500">
+          <p className="py-16 text-center text-sm text-ink">
             {copy.empty}
           </p>
         ) : (
@@ -99,22 +99,22 @@ export function AdminPaymentsPageClient() {
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.paymentId}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.traveler}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.amount}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.provider}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.created}
                   </th>
                 </tr>
@@ -122,19 +122,19 @@ export function AdminPaymentsPageClient() {
               <tbody className="divide-y divide-gray-50">
                 {payments.map((payment) => (
                   <tr className="transition-colors hover:bg-gray-50" key={payment.id}>
-                    <td className="px-5 py-4 text-xs text-neutral-500">
+                    <td className="px-5 py-4 text-xs text-ink">
                       {payment.id}
                     </td>
                     <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-neutral-900">
+                      <p className="text-sm font-semibold text-ink">
                         {payment.user.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-neutral-500">
+                      <p className="mt-0.5 text-xs text-ink">
                         {payment.user.email}
                       </p>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                      <span className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                         {payment.amount} {payment.currency}
                       </span>
                     </td>
@@ -148,7 +148,7 @@ export function AdminPaymentsPageClient() {
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {payment.provider}
                     </td>
-                    <td className="px-5 py-4 text-sm text-neutral-500">
+                    <td className="px-5 py-4 text-sm text-ink">
                       {new Date(payment.createdAt).toLocaleDateString(dateLocale, {
                         day: "numeric",
                         month: "short",

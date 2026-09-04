@@ -170,11 +170,11 @@ export function ImageEditorModal({
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500" htmlFor="image-editor-zoom">
+            <label className="text-xs font-semibold uppercase tracking-wider text-ink" htmlFor="image-editor-zoom">
               {copy.zoomLabel}
             </label>
             <input
-              className="h-1.5 w-full cursor-pointer accent-gray-900"
+              className="h-1.5 w-full cursor-pointer accent-primary"
               id="image-editor-zoom"
               max={MAX_ZOOM}
               min={MIN_ZOOM}
@@ -186,7 +186,7 @@ export function ImageEditorModal({
           </div>
 
           <button
-            className="flex w-fit items-center gap-1.5 text-sm font-medium text-light-blue hover:underline"
+            className="flex w-fit items-center gap-1.5 text-sm font-medium text-secondary hover:underline"
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >
@@ -198,7 +198,7 @@ export function ImageEditorModal({
         <div
           className={cn(
             "flex h-64 flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-center transition-colors",
-            isDraggingOver && "border-light-blue bg-light-blue/5",
+            isDraggingOver && "border-secondary bg-secondary/5",
           )}
           onDragLeave={(e) => {
             e.preventDefault();

@@ -41,7 +41,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
 
   return (
     <section
-      className="relative bg-slate-950 pt-16 text-white md:pt-0"
+      className="relative bg-primary-950 pt-16 text-white md:pt-0"
       id="tripper-hero"
     >
       <div
@@ -62,7 +62,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
           sizes="100vw"
           src={bannerSrc}
         />
-        <div className="absolute inset-0 bg-linear-to-b from-slate-950/50 to-slate-950/80" />
+        <div className="absolute inset-0 bg-linear-to-b from-primary-950/50 to-primary-950/80" />
 
         {/* md+: 16:9 at 1280px is 720px tall — taller than the old 70vh
             floor, so the overlay content still fits unchanged. */}

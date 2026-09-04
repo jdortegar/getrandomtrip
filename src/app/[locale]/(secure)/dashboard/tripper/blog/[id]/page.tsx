@@ -62,7 +62,7 @@ function EditBlogContent() {
       <Section>
         <div className="mx-auto max-w-full">
           <div className="mb-6">
-            <h1 className="text-xl font-semibold text-neutral-900">
+            <h1 className="text-xl font-semibold text-ink">
               {blogsCopy.composer.editLoading.title}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">
@@ -84,7 +84,7 @@ function EditBlogContent() {
       <Section>
         <div className="mx-auto max-w-full">
           <div className="mb-6">
-            <h1 className="text-xl font-semibold text-neutral-900">
+            <h1 className="text-xl font-semibold text-ink">
               {blogsCopy.composer.editNotFound.title}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">{description}</p>

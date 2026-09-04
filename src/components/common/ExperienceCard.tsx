@@ -46,7 +46,7 @@ export default function ExperienceCard({
       <div className="p-4 md:p-5 flex flex-col h-full">
         {/* Header */}
         <div className="mb-3">
-          <h3 className="text-base md:text-lg font-semibold text-neutral-900">
+          <h3 className="text-base md:text-lg font-semibold text-ink">
             {title}
           </h3>
           {subtitle && (
@@ -58,7 +58,7 @@ export default function ExperienceCard({
         {(priceLabel || priceFootnote) && (
           <div className="mb-3">
             {priceLabel && (
-              <div className="text-sm font-medium text-neutral-900">
+              <div className="text-sm font-medium text-ink">
                 {priceLabel}
               </div>
             )}

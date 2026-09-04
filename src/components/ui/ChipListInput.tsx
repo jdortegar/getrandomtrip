@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 
 const inputClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-gray-900 w-full text-base";
+  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-ink w-full text-base";
 
 export interface ChipListInputProps {
   id: string;

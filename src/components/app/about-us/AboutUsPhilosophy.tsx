@@ -60,7 +60,7 @@ export function AboutUsPhilosophy({
 
         {/* Text */}
         <div className="text-left flex flex-col justify-center gap-6 md:px-10 py-16 lg:px-16 order-first md:order-0">
-          <h2 className="font-barlow-condensed font-bold text-[70px] uppercase leading-tight text-gray-900">
+          <h2 className="font-barlow-condensed font-bold text-[70px] uppercase leading-tight text-ink">
             {content.sectionTitle}
           </h2>
 

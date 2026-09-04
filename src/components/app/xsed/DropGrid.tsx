@@ -25,7 +25,7 @@ export function DropGrid({ content, drops }: DropGridProps) {
             <span className="text-xsed">{content.titleHighlight}</span>
           </h2>
         </div>
-        <p className="max-w-sm text-sm leading-relaxed text-neutral-500 md:text-right">
+        <p className="max-w-sm text-sm leading-relaxed text-ink md:text-right">
           {content.description}
         </p>
       </div>

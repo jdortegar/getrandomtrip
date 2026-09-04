@@ -52,10 +52,10 @@ export default function AddonDetail({
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
-        <div className="text-neutral-900">
+        <div className="text-ink">
           <h3 className="text-lg font-semibold">{addon.title}</h3>
           <p className="text-sm text-neutral-600">{addon.shortDescription}</p>
-          <p className="text-sm text-neutral-500 mt-1">
+          <p className="text-sm text-ink mt-1">
             {addon.longDescription}
           </p>
         </div>
@@ -70,8 +70,8 @@ export default function AddonDetail({
 
       {/* Price */}
       <div className="mt-4">
-        <div className="text-sm font-medium text-neutral-900">Precio</div>
-        <div className="text-lg font-semibold text-neutral-900">
+        <div className="text-sm font-medium text-ink">Precio</div>
+        <div className="text-lg font-semibold text-ink">
           USD ${addon.price}
         </div>
       </div>
@@ -79,12 +79,12 @@ export default function AddonDetail({
       {/* Cantidad */}
       {isAvailableForLevel && (
         <div className="mt-4 flex items-center gap-3">
-          <span className="text-sm font-medium text-neutral-900">Cantidad</span>
+          <span className="text-sm font-medium text-ink">Cantidad</span>
           <div className="inline-flex items-center rounded-lg border border-neutral-300">
             <button onClick={dec} className="p-2" aria-label="Disminuir">
               <Minus size={16} />
             </button>
-            <span className="px-4 text-neutral-900">{qty}</span>
+            <span className="px-4 text-ink">{qty}</span>
             <button onClick={inc} className="p-2" aria-label="Aumentar">
               <Plus size={16} />
             </button>

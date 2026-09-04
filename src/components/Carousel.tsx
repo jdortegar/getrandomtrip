@@ -317,7 +317,7 @@ const CarouselPrevious = React.forwardRef<
     return (
       <Button
         aria-label="Previous slide"
-        className="h-8 w-8 rounded-full bg-light-blue text-white hover:bg-[#367A95] md:h-10 md:w-10"
+        className="h-8 w-8 rounded-full bg-primary text-white hover:bg-primary-800 md:h-10 md:w-10"
         disabled={!canScrollPrev}
         onClick={scrollPrev}
         size="icon"
@@ -344,7 +344,7 @@ const CarouselNext = React.forwardRef<
     return (
       <Button
         ref={ref}
-        className="h-8 w-8 rounded-full bg-light-blue text-white hover:bg-[#367A95] md:h-10 md:w-10"
+        className="h-8 w-8 rounded-full bg-primary text-white hover:bg-primary-800 md:h-10 md:w-10"
         data-slot="carousel-next"
         disabled={!canScrollNext}
         onClick={scrollNext}
@@ -391,8 +391,8 @@ const CarouselDots = React.forwardRef<
           className={cn(
             "h-2 w-2 rounded-full transition-all",
             selectedIndex === index
-              ? "w-8 bg-light-blue"
-              : "bg-light-blue/30 hover:bg-light-blue/50",
+              ? "w-8 bg-primary"
+              : "bg-primary/30 hover:bg-primary/50",
           )}
           onClick={() => scrollTo(index)}
           type="button"
@@ -546,7 +546,7 @@ function Carousel({
               >
                 <h3
                   className={cn(
-                    "mx-auto max-w-sm text-center text-[28px] font-light leading-[45px] text-neutral-900",
+                    "mx-auto max-w-sm text-center text-[28px] font-light leading-[45px] text-ink",
                     classes?.title,
                   )}
                 >

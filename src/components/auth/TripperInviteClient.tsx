@@ -96,7 +96,7 @@ function ErrorCard({
   return (
     <CardShell>
       <XCircle aria-hidden className="mx-auto mb-4 h-10 w-10 text-red-600" />
-      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
         {copy.errorTitle}
       </h1>
       <p className="mt-2 text-sm text-neutral-600">{reasonCopy[reason]}</p>
@@ -168,9 +168,9 @@ function ExistingUserBranch({
       <CardShell>
         <Loader2
           aria-hidden
-          className="mx-auto mb-4 h-10 w-10 animate-spin text-light-blue"
+          className="mx-auto mb-4 h-10 w-10 animate-spin text-secondary"
         />
-        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
           {copy.loadingTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">{copy.loadingBody}</p>
@@ -185,7 +185,7 @@ function ExistingUserBranch({
           aria-hidden
           className="mx-auto mb-4 h-10 w-10 text-green-600"
         />
-        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
           {c.grantedTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">{c.grantedBody}</p>
@@ -290,7 +290,7 @@ function NewUserBranch({
           aria-hidden
           className="mx-auto mb-4 h-10 w-10 text-green-600"
         />
-        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
           {copy.registerSuccessTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
@@ -305,10 +305,10 @@ function NewUserBranch({
 
   return (
     <CardShell>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
         {c.registerEyebrow}
       </p>
-      <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+      <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
         {c.registerTitle}
       </h1>
       <p className="mt-2 text-sm text-neutral-600">{c.registerSubtitle}</p>
@@ -382,7 +382,7 @@ function NewUserBranch({
             type="email"
             value={email}
           />
-          <p className="mt-1.5 text-xs text-neutral-500">
+          <p className="mt-1.5 text-xs text-ink">
             {copy.emailLockedNote}
           </p>
         </div>

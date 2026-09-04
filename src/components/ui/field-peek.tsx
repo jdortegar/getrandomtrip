@@ -40,9 +40,9 @@ export function resolvePeekDisplay<Value extends string | number | readonly stri
 }
 
 const PEEK_TOOLTIP_BASE =
-  "pointer-events-none absolute z-20 whitespace-nowrap rounded-[4px] bg-gray-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100";
+  "pointer-events-none absolute z-20 whitespace-nowrap rounded-[4px] bg-primary px-2 py-1 text-[11px] font-medium text-white opacity-0 transition-opacity group-hover:opacity-100";
 
-const PEEK_ARROW_BASE = "absolute border-4 border-transparent border-t-gray-900";
+const PEEK_ARROW_BASE = "absolute border-4 border-transparent border-t-primary";
 
 export interface PeekToggleButtonProps {
   peek: FieldPeek;

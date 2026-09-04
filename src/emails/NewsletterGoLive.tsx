@@ -350,7 +350,7 @@ const chooseSection: React.CSSProperties = {
 
 const eyebrow: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#4f96b6",
+  color: "#a4b4aa",
   fontSize: "12px",
   fontWeight: "700",
   letterSpacing: "6px",
@@ -473,7 +473,7 @@ const ctaSection: React.CSSProperties = {
 
 const ctaButton: React.CSSProperties = {
   backgroundColor: "#ffc500",
-  color: "#172c36",
+  color: "#0f5c60",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

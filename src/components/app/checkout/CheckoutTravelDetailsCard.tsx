@@ -135,7 +135,7 @@ export function CheckoutTravelDetailsCard({
             <p className="text-base text-gray-500">
               {checkoutCopy.summaryHeroPriceCaption}
             </p>
-            <p className="font-barlow-condensed text-3xl font-bold text-gray-900">
+            <p className="font-barlow-condensed text-3xl font-bold text-ink">
               {usd(pricePerPerson)}
             </p>
           </div>

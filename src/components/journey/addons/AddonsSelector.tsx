@@ -135,7 +135,7 @@ export function AddonsSelector({
               key={cat}
             >
               <div className="border-b border-gray-100 bg-gray-50 px-4 py-3">
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-ink">
                   {labels.addonLabels?.[groupedAddons[cat][0]?.id]?.category ??
                     groupedAddons[cat][0]?.category ??
                     cat}
@@ -176,7 +176,7 @@ export function AddonsSelector({
           ))}
           <div className="mt-8 flex items-center justify-center gap-10 border-t border-gray-200 pt-6">
             <button
-              className="text-sm font-medium text-gray-900 underline hover:no-underline"
+              className="text-sm font-medium text-ink underline hover:no-underline"
               onClick={handleClear}
               type="button"
             >

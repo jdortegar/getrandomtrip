@@ -16,7 +16,7 @@ export default function EmptyState({
       <div className="p-6 flex items-center justify-between">
         <div>
           <div className="text-sm text-neutral-600">{title}</div>
-          <div className="text-xs text-neutral-500">
+          <div className="text-xs text-ink">
             Guarda favoritos o comienza un plan.
           </div>
         </div>

@@ -53,11 +53,11 @@ export default function ThreeColumns({ items }: ThreeColumnsProps) {
 
           {/* Content */}
           <div className="flex flex-col gap-3 p-6 text-center">
-            <h3 className="font-barlow text-xl font-bold uppercase text-[#282828]">
+            <h3 className="font-barlow text-xl font-bold uppercase text-ink">
               {item.title}
             </h3>
             <p
-              className="font-barlow text-lg text-[#888]"
+              className="font-barlow text-lg text-ink"
               dangerouslySetInnerHTML={{
                 __html: item.description,
               }}

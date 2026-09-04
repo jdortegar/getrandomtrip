@@ -29,7 +29,7 @@ export default function KPIGrid() {
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {items.map((it) => (
         <div key={it.label} className="p-4 bg-white rounded-2xl shadow">
-          <div className="text-sm text-neutral-500">{it.label}</div>
+          <div className="text-sm text-ink">{it.label}</div>
           <div className="text-2xl font-semibold mt-1">{it.value}</div>
         </div>
       ))}

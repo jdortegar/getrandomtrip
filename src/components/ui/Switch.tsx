@@ -15,7 +15,7 @@ export function Switch({ checked, disabled, id, onCheckedChange }: SwitchProps) 
       aria-checked={checked}
       className={cn(
         "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-        checked ? "bg-light-blue" : "bg-gray-200",
+        checked ? "bg-secondary" : "bg-gray-200",
         disabled && "cursor-not-allowed opacity-50",
       )}
       disabled={disabled}

@@ -168,7 +168,7 @@ export function XsedBookClient({
   }, [originCity, originCountry, pax, locale, router, session, sessionStatus]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-ground">
       <XsedInternalHero
         content={{
           description: book.hero.description,

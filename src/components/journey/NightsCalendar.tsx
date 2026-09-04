@@ -102,7 +102,7 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
 
   const modifiersStyles = {
     range: {
-      backgroundColor: "#111827",
+      backgroundColor: "var(--color-primary)",
       color: "white",
       fontWeight: "bold",
       borderRadius: "100%",

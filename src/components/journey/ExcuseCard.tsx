@@ -50,7 +50,7 @@ export default function ExcuseCard({
     >
       {selected && (
         <div className="absolute right-[-9.8px] top-0 z-30 @[250px]:right-[-14px]">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#172C36]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
         </div>
@@ -58,7 +58,7 @@ export default function ExcuseCard({
       <div
         className={cn(
           "relative h-full w-full text-left overflow-hidden rounded-2xl transition-all duration-300 border-4 ",
-          selected ? "border-[#172C36]" : "border-transparent",
+          selected ? "border-primary" : "border-transparent",
         )}
       >
         <Img

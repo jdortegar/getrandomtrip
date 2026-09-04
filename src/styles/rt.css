@@ -17,15 +17,15 @@
 
 /* Títulos y texto */
 .rt-h1 {
-  @apply text-2xl font-semibold text-neutral-900;
+  @apply text-2xl font-semibold text-ink;
 }
 
 .rt-h2 {
-  @apply text-lg font-semibold text-neutral-900;
+  @apply text-lg font-semibold text-ink;
 }
 
 .rt-subtle {
-  @apply text-sm text-neutral-500;
+  @apply text-sm text-ink;
 }
 
 /* Botones */
@@ -73,7 +73,7 @@
 }
 
 .rt-stat .l {
-  @apply text-sm text-neutral-500;
+  @apply text-sm text-ink;
 }
 
 /* Badges */

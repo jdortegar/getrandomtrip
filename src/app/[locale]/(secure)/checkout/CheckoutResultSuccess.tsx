@@ -262,7 +262,7 @@ export default function CheckoutResultSuccess({
                     <p className="text-base text-gray-500">
                       {labels.totalPaidLabel}
                     </p>
-                    <p className="font-barlow-condensed text-3xl font-bold text-gray-900">
+                    <p className="font-barlow-condensed text-3xl font-bold text-ink">
                       {tripData.payment.currency.toUpperCase()}{" "}
                       {tripData.payment.amount}
                     </p>
@@ -271,14 +271,14 @@ export default function CheckoutResultSuccess({
                   <div className="mt-1 flex flex-col gap-1 text-sm text-gray-600">
                     <span>
                       {labels.xsedReferenceLabel}{" "}
-                      <span className="font-bold text-gray-900">
+                      <span className="font-bold text-ink">
                         {tripData.trip.id}
                       </span>
                       {tripData.payment.receiptUrl && (
                         <>
                           {" · "}
                           <a
-                            className="text-light-blue underline transition-colors hover:text-light-blue/80"
+                            className="text-secondary underline transition-colors hover:text-secondary/80"
                             href={tripData.payment.receiptUrl}
                             rel="noopener noreferrer"
                             target="_blank"

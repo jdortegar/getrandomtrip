@@ -120,7 +120,7 @@ export function TravelHero({
             <TravelButton
               variant="outline"
               size="lg"
-              className="min-w-[200px] border-white text-white hover:bg-white hover:text-gray-900"
+              className="min-w-[200px] border-white text-white hover:bg-white hover:text-ink"
             >
               Learn More
             </TravelButton>

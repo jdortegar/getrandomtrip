@@ -14,7 +14,7 @@ export default function GlassCard({
 }: GlassCardProps) {
   return (
     <Tag
-      className={`rounded-2xl bg-white/95 backdrop-blur-md ring-1 ring-neutral-200 shadow-sm text-neutral-900 ${className}`}
+      className={`rounded-2xl bg-white/95 backdrop-blur-md ring-1 ring-neutral-200 shadow-sm text-ink ${className}`}
     >
       {children}
     </Tag>

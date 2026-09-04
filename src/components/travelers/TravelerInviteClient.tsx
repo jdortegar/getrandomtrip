@@ -78,7 +78,7 @@ function ErrorCard({
   return (
     <CardShell>
       <XCircle aria-hidden className="mx-auto mb-4 h-10 w-10 text-red-600" />
-      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
         {copy.landingErrorTitle}
       </h1>
       <p className="mt-2 text-sm text-neutral-600">{reasonCopy[reason]}</p>
@@ -197,7 +197,7 @@ function InviteForm({
           aria-hidden
           className="mx-auto mb-4 h-10 w-10 text-green-600"
         />
-        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-gray-900">
+        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
           {copy.landingSuccessTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
@@ -213,10 +213,10 @@ function InviteForm({
   return (
     <>
       <CardShell>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.landingEyebrow}
         </p>
-        <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.landingHeading}
         </h1>
         <p className="mt-4 text-left text-sm text-neutral-600">
@@ -248,7 +248,7 @@ function InviteForm({
           </div>
         ) : (
           <form className="mt-6 space-y-5 text-left" onSubmit={handleSubmit}>
-            <h2 className="font-barlow-condensed text-xl font-extrabold uppercase text-gray-900">
+            <h2 className="font-barlow-condensed text-xl font-extrabold uppercase text-ink">
               {copy.landingStep2Heading}
             </h2>
             <FormField
@@ -270,7 +270,7 @@ function InviteForm({
               />
               <span>
                 {copy.landingConsentPrefix}
-                <Link className="text-light-blue underline" href={privacyHref}>
+                <Link className="text-secondary underline" href={privacyHref}>
                   {copy.landingConsentLinkLabel}
                 </Link>
                 {copy.landingConsentSuffix}

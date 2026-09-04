@@ -58,7 +58,7 @@ export const TravelerRosterSection = forwardRef<
   const submitted = travelers.filter((t) => t.status === "COMPLETE").length;
   const supportHref = pathForLocale(locale, SUPPORT_HREF);
   const supportLink = (
-    <Link className="text-light-blue underline" href={supportHref}>
+    <Link className="text-secondary underline" href={supportHref}>
       {copy.supportLinkLabel}
     </Link>
   );
@@ -79,10 +79,10 @@ export const TravelerRosterSection = forwardRef<
   return (
     <div className="w-full max-w-3xl text-left">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
@@ -92,7 +92,7 @@ export const TravelerRosterSection = forwardRef<
 
       {roster.locked ? (
         <div className="mt-6 flex items-center gap-2.5 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-neutral-700">
-          <Lock aria-hidden className="h-4 w-4 shrink-0 text-neutral-500" />
+          <Lock aria-hidden className="h-4 w-4 shrink-0 text-ink" />
           <span>
             {
               copy.lockedBanner
@@ -125,7 +125,7 @@ export const TravelerRosterSection = forwardRef<
                   .replace("{days}", "7")
               : null}
           </span>
-          <span className="ml-auto whitespace-nowrap font-semibold text-gray-900">
+          <span className="ml-auto whitespace-nowrap font-semibold text-ink">
             {copy.progressLabel
               .replace("{submitted}", String(submitted))
               .replace("{cap}", String(roster.cap))}

@@ -32,7 +32,7 @@ const cardVariants = cva(
         lg: "p-8",
       },
       interactive: {
-        true: "cursor-pointer hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2",
+        true: "cursor-pointer hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         false: "",
       },
     },

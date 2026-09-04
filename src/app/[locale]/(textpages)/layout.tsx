@@ -6,7 +6,7 @@ export default function TextPagesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("bg-white font-barlow text-neutral-900")}>
+    <div className={cn("bg-white font-barlow text-ink")}>
       {children}
     </div>
   );

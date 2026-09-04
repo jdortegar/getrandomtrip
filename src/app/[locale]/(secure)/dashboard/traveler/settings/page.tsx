@@ -65,10 +65,10 @@ export default async function TravelerSettingsPage(props: {
       <div className="rt-container text-left">
         <div className="space-y-10">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               {copy.eyebrow}
             </p>
-            <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+            <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
               {copy.heading}
             </h1>
           </div>

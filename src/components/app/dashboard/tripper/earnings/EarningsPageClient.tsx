@@ -132,16 +132,16 @@ export function EarningsPageClient({
     <div className="space-y-6 text-left">
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-light-blue">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-gray-900">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
         {earnings.length > 0 && (
           <Button
-            className="h-11 shrink-0 rounded-sm border-2 border-gray-900 bg-gray-900 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-gray-800"
+            className="h-11 shrink-0 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
             onClick={handleExportCsv}
           >
             <Download className="mr-2 h-4 w-4" />
@@ -159,27 +159,27 @@ export function EarningsPageClient({
               key={card.key}
             >
               <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-ink">
                   {card.label}
                 </p>
                 <span
                   className={cn(
                     "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                    card.gold ? "bg-yellow-400/15" : "bg-light-blue/10",
+                    card.gold ? "bg-feature/15" : "bg-secondary/10",
                   )}
                 >
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      card.gold ? "text-yellow-500" : "text-light-blue",
+                      card.gold ? "text-feature" : "text-secondary",
                     )}
                     strokeWidth={1.8}
                   />
                 </span>
               </div>
               <div className="flex items-stretch gap-3.5">
-                <span className="w-1 rounded-full bg-yellow-400" />
-                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-gray-900">
+                <span className="w-1 rounded-full bg-feature" />
+                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
                   {card.value}
                 </p>
               </div>
@@ -190,7 +190,7 @@ export function EarningsPageClient({
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-5 py-4">
-          <h3 className="text-xl font-semibold text-neutral-900">
+          <h3 className="text-xl font-semibold text-ink">
             {copy.table.title}
           </h3>
         </div>
@@ -199,7 +199,7 @@ export function EarningsPageClient({
             <p className="mb-2 text-sm font-semibold text-neutral-700">
               {copy.emptyState.title}
             </p>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-ink">
               {copy.emptyState.description}
             </p>
           </div>
@@ -208,25 +208,25 @@ export function EarningsPageClient({
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.month}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.bookings}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.base}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.bonus}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.total}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.status}
                   </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {copy.table.payout}
                   </th>
                 </tr>
@@ -237,7 +237,7 @@ export function EarningsPageClient({
                     className="transition-colors hover:bg-gray-50"
                     key={earning.id}
                   >
-                    <td className="px-5 py-4 text-sm font-semibold capitalize text-neutral-900">
+                    <td className="px-5 py-4 text-sm font-semibold capitalize text-ink">
                       {earning.month}
                     </td>
                     <td className="px-5 py-4 text-sm text-neutral-700">
@@ -250,7 +250,7 @@ export function EarningsPageClient({
                       {formatUSD(earning.bonusUSD)}
                     </td>
                     <td className="px-5 py-4">
-                      <span className="font-barlow-condensed text-lg font-bold leading-none text-gray-900">
+                      <span className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                         {formatUSD(earning.totalUSD)}
                       </span>
                     </td>
@@ -260,7 +260,7 @@ export function EarningsPageClient({
                         status={earning.status}
                       />
                     </td>
-                    <td className="px-5 py-4 text-sm text-neutral-500">
+                    <td className="px-5 py-4 text-sm text-ink">
                       {earning.payoutDate
                         ? new Date(earning.payoutDate).toLocaleDateString(
                             dateLocale,

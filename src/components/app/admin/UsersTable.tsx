@@ -60,7 +60,7 @@ export function UsersTable({
         </div>
       )}
       {users.length === 0 ? (
-        <p className="py-16 text-center text-sm text-neutral-500">
+        <p className="py-16 text-center text-sm text-ink">
           {copy.empty}
         </p>
       ) : (
@@ -80,7 +80,7 @@ export function UsersTable({
                 </th>
                 {headers.map((h) => (
                   <th
-                    className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500"
+                    className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink"
                     key={h}
                   >
                     {h}

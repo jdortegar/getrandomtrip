@@ -29,7 +29,7 @@ export function ExperienceTypePills({
         ))}
       </div>
       {levelLabel && (
-        <p className="mt-1 text-xs text-neutral-500">{levelLabel}</p>
+        <p className="mt-1 text-xs text-ink">{levelLabel}</p>
       )}
     </div>
   );
