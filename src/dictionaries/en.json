@@ -218,27 +218,14 @@
           ]
         },
         {
-          "id": "content",
-          "label": "Content",
-          "substeps": [
-            { "id": "sections", "title": "Sections", "description": "" },
-            { "id": "itinerary", "title": "Itinerary", "description": "" },
-            { "id": "inclusions", "title": "Inclusions / Exclusions", "description": "" }
-          ]
-        },
-        {
-          "id": "gallery",
-          "label": "Gallery",
-          "substeps": [
-            { "id": "images", "title": "Images", "description": "" }
-          ]
-        },
-        {
           "id": "logistics",
           "label": "Logistics",
           "substeps": [
             { "id": "accommodation", "title": "Accommodation", "description": "" },
-            { "id": "activities", "title": "Activities", "description": "" }
+            { "id": "dinner", "title": "Dinner", "description": "" },
+            { "id": "activity", "title": "Activity", "description": "" },
+            { "id": "itinerary", "title": "Itinerary", "description": "" },
+            { "id": "inclusions", "title": "Inclusions / Exclusions", "description": "" }
           ]
         }
       ],
@@ -303,8 +290,9 @@
           "hotelDaysPlaceholder": "E.g. 1"
         },
         "activities": {
-          "name": "Activity",
-          "namePlaceholder": "E.g. City tour...",
+          "name": "Name",
+          "dinnerNamePlaceholder": "E.g. Dinner at El Mirador restaurant...",
+          "activityNamePlaceholder": "E.g. City tour...",
           "duration": "Duration",
           "durationUnits": {
             "min": { "label": "min", "hint": "minutes" },
@@ -314,26 +302,14 @@
           "description": "Description",
           "descriptionPlaceholder": "E.g. you'll get to ride a horse during this activity...",
           "risks": "Safety notes",
-          "risksPlaceholder": "E.g. safety considerations guests should be aware of...",
-          "activityLabel": "Activity",
-          "remove": "Remove",
-          "addActivity": "Add activity"
+          "risksPlaceholder": "E.g. safety considerations guests should be aware of..."
         },
         "sections": {
-          "sectionLabel": "Section",
-          "sectionTitle": "Section title",
-          "sectionTitlePlaceholder": "E.g. The hotel",
-          "sectionBody": "Content",
-          "sectionBodyPlaceholder": "Tell us the details of this section...",
-          "addSection": "Add section",
-          "removeSection": "Remove",
-          "photoCredit": "Photo credit",
-          "photoCreditPlaceholder": "PH by...",
-          "addPhoto": "Add photo",
-          "removePhoto": "Remove photo"
-        },
-        "gallery": {
-          "hint": "Upload the photos that will show in the drop's public gallery.",
+          "title": "Title",
+          "titlePlaceholder": "E.g. The hotel",
+          "content": "Content",
+          "contentPlaceholder": "Tell us the details...",
+          "images": "Images",
           "addImage": "Add image",
           "uploading": "Uploading…",
           "removeImageAria": "Remove image"

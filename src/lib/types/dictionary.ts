@@ -1228,7 +1228,8 @@ export interface AdminXsedDict {
       };
       activities: {
         name: string;
-        namePlaceholder: string;
+        dinnerNamePlaceholder: string;
+        activityNamePlaceholder: string;
         duration: string;
         durationUnits: {
           min: { label: string; hint: string };
@@ -1239,25 +1240,13 @@ export interface AdminXsedDict {
         descriptionPlaceholder: string;
         risks: string;
         risksPlaceholder: string;
-        activityLabel: string;
-        remove: string;
-        addActivity: string;
       };
       sections: {
-        sectionLabel: string;
-        sectionTitle: string;
-        sectionTitlePlaceholder: string;
-        sectionBody: string;
-        sectionBodyPlaceholder: string;
-        addSection: string;
-        removeSection: string;
-        photoCredit: string;
-        photoCreditPlaceholder: string;
-        addPhoto: string;
-        removePhoto: string;
-      };
-      gallery: {
-        hint: string;
+        title: string;
+        titlePlaceholder: string;
+        content: string;
+        contentPlaceholder: string;
+        images: string;
         addImage: string;
         uploading: string;
         removeImageAria: string;

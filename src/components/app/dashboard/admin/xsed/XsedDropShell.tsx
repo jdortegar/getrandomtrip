@@ -13,10 +13,9 @@ import type { XsedDropDraft } from "@/types/xsed";
 import { EMPTY_XSED_DRAFT } from "@/types/xsed";
 import type { AdminXsedDict } from "@/lib/types/dictionary";
 import { XsedIdentityStep } from "./steps/XsedIdentityStep";
-import { XsedSectionsStep } from "./steps/XsedSectionsStep";
-import { XsedGalleryStep } from "./steps/XsedGalleryStep";
 import { XsedAccommodationStep } from "./steps/XsedAccommodationStep";
-import { XsedActivitiesStep } from "./steps/XsedActivitiesStep";
+import { XsedDinnerStep } from "./steps/XsedDinnerStep";
+import { XsedActivityStep } from "./steps/XsedActivityStep";
 import { XsedItineraryStep } from "./steps/XsedItineraryStep";
 import { XsedInclusionsStep } from "./steps/XsedInclusionsStep";
 
@@ -32,12 +31,6 @@ interface XsedDropShellProps {
 const AUTOSAVE_DELAY_MS = 2000;
 const SAVED_RESET_MS = 3000;
 
-// Tabs with no required fields are vacuously "complete" from the start —
-// gate their checkmark on visitation too, mirroring NewBlogPostShell's
-// OPTIONAL_TABS_REQUIRE_VISIT so a fresh draft doesn't show every tab
-// checked before the admin has even opened it.
-const OPTIONAL_TABS_REQUIRE_VISIT = new Set(["content", "gallery", "logistics"]);
-
 // Dummy labels — JourneyContentNavigation requires this prop but hideProfile=true hides the badge.
 const DUMMY_USER_BADGE_LABELS = {
   guest: "",
@@ -52,6 +45,20 @@ const DUMMY_USER_BADGE_LABELS = {
 };
 
 
+function isSectionFilled(section: XsedDropDraft["sections"][number] | undefined): boolean {
+  return !!(section && section.title.trim() && section.body.trim());
+}
+
+function isActivityEntryFilled(entry: XsedDropDraft["activities"][number] | undefined): boolean {
+  return !!(
+    entry &&
+    entry.name.trim() &&
+    entry.durationRhythm &&
+    entry.description.trim() &&
+    entry.risks.trim()
+  );
+}
+
 function isXsedTabComplete(tabId: string, form: XsedDropDraft): boolean {
   switch (tabId) {
     case "main":
@@ -61,6 +68,36 @@ function isXsedTabComplete(tabId: string, form: XsedDropDraft): boolean {
         form.destinationCity.trim() &&
         form.destinationCountry.trim()
       );
+    case "logistics": {
+      const hotel = form.hotels[0];
+      const accommodationComplete = !!(
+        hotel &&
+        hotel.hotelName.trim() &&
+        hotel.hotelStars.trim() &&
+        hotel.hotelLocation.trim() &&
+        hotel.hotelDays.trim() &&
+        isSectionFilled(form.sections[0])
+      );
+      const dinnerComplete =
+        isActivityEntryFilled(form.activities[0]) && isSectionFilled(form.sections[1]);
+      const activityComplete =
+        isActivityEntryFilled(form.activities[1]) && isSectionFilled(form.sections[2]);
+      const itineraryComplete =
+        form.itinerary.length > 0 &&
+        form.itinerary.every((day) => day.title.trim() && day.description.trim());
+      const inclusionsComplete =
+        form.inclusions.length > 0 &&
+        form.inclusions.every((v) => v.trim()) &&
+        form.exclusions.length > 0 &&
+        form.exclusions.every((v) => v.trim());
+      return (
+        accommodationComplete &&
+        dinnerComplete &&
+        activityComplete &&
+        itineraryComplete &&
+        inclusionsComplete
+      );
+    }
     default:
       return true;
   }
@@ -77,11 +114,33 @@ function resolveXsedStepContent(
     if (substepId === "identity")
       return <XsedIdentityStep copy={dict.fields} form={form} onChange={onChange} />;
   }
-  if (activeTab === "content") {
-    if (substepId === "sections")
+  if (activeTab === "logistics") {
+    if (substepId === "accommodation")
       return (
-        <XsedSectionsStep
-          copy={{ ...dict.fields.sections, uploadImage: dict.fields.uploadImage }}
+        <XsedAccommodationStep
+          copy={dict.fields.accommodation}
+          sectionsCopy={dict.fields.sections}
+          imageCopy={dict.fields}
+          form={form}
+          onChange={onChange}
+        />
+      );
+    if (substepId === "dinner")
+      return (
+        <XsedDinnerStep
+          copy={dict.fields.activities}
+          sectionsCopy={dict.fields.sections}
+          imageCopy={dict.fields}
+          form={form}
+          onChange={onChange}
+        />
+      );
+    if (substepId === "activity")
+      return (
+        <XsedActivityStep
+          copy={dict.fields.activities}
+          sectionsCopy={dict.fields.sections}
+          imageCopy={dict.fields}
           form={form}
           onChange={onChange}
         />
@@ -102,20 +161,6 @@ function resolveXsedStepContent(
           form={form}
           onChange={onChange}
         />
-      );
-  }
-  if (activeTab === "gallery") {
-    if (substepId === "images")
-      return <XsedGalleryStep copy={dict.fields.gallery} form={form} onChange={onChange} />;
-  }
-  if (activeTab === "logistics") {
-    if (substepId === "accommodation")
-      return (
-        <XsedAccommodationStep copy={dict.fields.accommodation} form={form} onChange={onChange} />
-      );
-    if (substepId === "activities")
-      return (
-        <XsedActivitiesStep copy={dict.fields.activities} form={form} onChange={onChange} />
       );
   }
   return null;
@@ -157,15 +202,6 @@ export function XsedDropShell({
   );
   const [form, setForm] = useState<XsedDropDraft>(
     initialDraft ?? EMPTY_XSED_DRAFT,
-  );
-  // Editing an existing drop means the admin already went through the whole
-  // flow once — mark every tab as visited so optional tabs (content, gallery,
-  // logistics) show their checkmark immediately instead of only after being
-  // opened.
-  const [visitedTabIds, setVisitedTabIds] = useState<Set<string>>(() =>
-    initialDraft
-      ? new Set(tabs.map((t) => t.id))
-      : new Set([tabs[0]?.id ?? "main"]),
   );
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [saveError, setSaveError] = useState<string | undefined>(undefined);
@@ -282,7 +318,6 @@ export function XsedDropShell({
   function handleTabChange(tabId: string) {
     if (!canNavigateTo()) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     const firstSubstep =
       tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
@@ -292,7 +327,6 @@ export function XsedDropShell({
   function handleStepClick(tabId: string, substepId?: string) {
     if (!canNavigateTo()) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     setOpenSectionId(
       substepId ??
         tabs.find((t) => t.id === tabId)?.substeps[0]?.id ??
@@ -302,15 +336,8 @@ export function XsedDropShell({
 
   const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
-    () =>
-      tabs
-        .filter((t) => {
-          if (!isXsedTabComplete(t.id, form)) return false;
-          if (OPTIONAL_TABS_REQUIRE_VISIT.has(t.id)) return visitedTabIds.has(t.id);
-          return true;
-        })
-        .map((t) => t.id),
-    [tabs, form, visitedTabIds],
+    () => tabs.filter((t) => isXsedTabComplete(t.id, form)).map((t) => t.id),
+    [tabs, form],
   );
 
   const currentTab = tabs.find((t) => t.id === activeTab);

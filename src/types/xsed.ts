@@ -24,7 +24,11 @@ export interface XsedDropDraft {
   destinationCountry: string;
   hotels: AccommodationEntry[];
   activities: ActivityEntry[];
-  /** Repeatable narrative sections rendered on the public drop page. */
+  /**
+   * Title/content/photos block for each fixed item, in lockstep with
+   * `hotels`/`activities`: index 0 = accommodation, 1 = dinner, 2 = activity.
+   * Rendered as narrative sections on the public drop page.
+   */
   sections: XsedSection[];
   /** Public gallery image URLs (multi-upload grid). */
   gallery: string[];
@@ -39,6 +43,8 @@ export interface XsedDropDraft {
   exclusions: string[];
 }
 
+export const EMPTY_XSED_SECTION: XsedSection = { title: "", body: "", photos: [] };
+
 export const EMPTY_XSED_DRAFT: XsedDropDraft = {
   status: "DRAFT",
   titleInternal: "",
@@ -47,8 +53,15 @@ export const EMPTY_XSED_DRAFT: XsedDropDraft = {
   destinationCity: "",
   destinationCountry: "",
   hotels: [{ hotelName: "", hotelStars: "", hotelLocation: "", hotelDays: "", hotelLink: "", referredLink: "" }],
-  activities: [{ name: "", durationRhythm: null, description: "", risks: "", image: null }],
-  sections: [{ title: "", body: "", photos: [] }],
+  activities: [
+    { name: "", durationRhythm: null, description: "", risks: "", image: null },
+    { name: "", durationRhythm: null, description: "", risks: "", image: null },
+  ],
+  sections: [
+    { title: "", body: "", photos: [] },
+    { title: "", body: "", photos: [] },
+    { title: "", body: "", photos: [] },
+  ],
   gallery: [],
   itinerary: [{ title: "", description: "", image: null }],
   inclusions: [],

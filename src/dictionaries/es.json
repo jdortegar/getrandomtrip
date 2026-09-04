@@ -218,27 +218,14 @@
           ]
         },
         {
-          "id": "content",
-          "label": "Contenido",
-          "substeps": [
-            { "id": "sections", "title": "Secciones", "description": "" },
-            { "id": "itinerary", "title": "Itinerario", "description": "" },
-            { "id": "inclusions", "title": "Incluye / No incluye", "description": "" }
-          ]
-        },
-        {
-          "id": "gallery",
-          "label": "Galería",
-          "substeps": [
-            { "id": "images", "title": "Imágenes", "description": "" }
-          ]
-        },
-        {
           "id": "logistics",
           "label": "Logística",
           "substeps": [
             { "id": "accommodation", "title": "Alojamiento", "description": "" },
-            { "id": "activities", "title": "Actividades", "description": "" }
+            { "id": "dinner", "title": "Cena", "description": "" },
+            { "id": "activity", "title": "Actividad", "description": "" },
+            { "id": "itinerary", "title": "Itinerario", "description": "" },
+            { "id": "inclusions", "title": "Incluye / No incluye", "description": "" }
           ]
         }
       ],
@@ -303,8 +290,9 @@
           "hotelDaysPlaceholder": "Ej: 1"
         },
         "activities": {
-          "name": "Actividad",
-          "namePlaceholder": "Ej: City tour...",
+          "name": "Nombre",
+          "dinnerNamePlaceholder": "Ej: Cena en restaurante El Mirador...",
+          "activityNamePlaceholder": "Ej: City tour...",
           "duration": "Duración",
           "durationUnits": {
             "min": { "label": "min", "hint": "minutos" },
@@ -314,26 +302,14 @@
           "description": "Descripción",
           "descriptionPlaceholder": "Ej: en la actividad podrás montar a caballo...",
           "risks": "Cuidados",
-          "risksPlaceholder": "Ej: cuidados que deberían tener...",
-          "activityLabel": "Actividad",
-          "remove": "Eliminar",
-          "addActivity": "Agregar actividad"
+          "risksPlaceholder": "Ej: cuidados que deberían tener..."
         },
         "sections": {
-          "sectionLabel": "Sección",
-          "sectionTitle": "Título de la sección",
-          "sectionTitlePlaceholder": "Ej: El hotel",
-          "sectionBody": "Contenido",
-          "sectionBodyPlaceholder": "Contanos los detalles de esta sección...",
-          "addSection": "Agregar sección",
-          "removeSection": "Eliminar",
-          "photoCredit": "Crédito de la foto",
-          "photoCreditPlaceholder": "PH by...",
-          "addPhoto": "Agregar foto",
-          "removePhoto": "Eliminar foto"
-        },
-        "gallery": {
-          "hint": "Sube las fotos que se van a mostrar en la galería pública del drop.",
+          "title": "Título",
+          "titlePlaceholder": "Ej: El hotel",
+          "content": "Contenido",
+          "contentPlaceholder": "Contanos los detalles...",
+          "images": "Imágenes",
           "addImage": "Agregar imagen",
           "uploading": "Subiendo…",
           "removeImageAria": "Eliminar imagen"

@@ -3,24 +3,38 @@
 import { MapPin, Search } from "lucide-react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import type { AdminXsedDict } from "@/lib/types/dictionary";
-import type { AccommodationEntry, XsedDropDraft } from "@/types/xsed";
+import type { AccommodationEntry, XsedDropDraft, XsedSection } from "@/types/xsed";
+import { EMPTY_XSED_SECTION } from "@/types/xsed";
+import { XsedSectionFields } from "./XsedSectionFields";
 
 interface Props {
   form: XsedDropDraft;
   onChange: (patch: Partial<XsedDropDraft>) => void;
   copy: AdminXsedDict["form"]["fields"]["accommodation"];
+  sectionsCopy: AdminXsedDict["form"]["fields"]["sections"];
+  imageCopy: Pick<
+    AdminXsedDict["form"]["fields"],
+    "heroImageSizeHint" | "copyrightHint" | "imageTooSmall"
+  >;
 }
 
 const STAR_OPTIONS = [1, 2, 3, 4, 5];
 
 // XSED drops are single-night — always exactly one accommodation entry, no
-// add/remove repeater like the tripper experience form has.
-export function XsedAccommodationStep({ form, onChange, copy }: Props) {
+// add/remove repeater like the tripper experience form has. Its narrative
+// title/content/photos live at sections[0] (see types/xsed.ts).
+export function XsedAccommodationStep({ form, onChange, copy, sectionsCopy, imageCopy }: Props) {
   function updateEntry(index: number, key: keyof AccommodationEntry, value: string) {
     const updated = form.hotels.map((entry, i) =>
       i === index ? { ...entry, [key]: value } : entry,
     );
     onChange({ hotels: updated });
+  }
+
+  function updateSection(patch: Partial<XsedSection>) {
+    const sections = form.sections.slice();
+    sections[0] = { ...(sections[0] ?? EMPTY_XSED_SECTION), ...patch };
+    onChange({ sections });
   }
 
   return (
@@ -92,6 +106,16 @@ export function XsedAccommodationStep({ form, onChange, copy }: Props) {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="border-t border-gray-100 pt-6">
+        <XsedSectionFields
+          idPrefix="xsed-hotel-section"
+          entry={form.sections[0] ?? EMPTY_XSED_SECTION}
+          onChange={updateSection}
+          copy={sectionsCopy}
+          imageCopy={imageCopy}
+        />
       </div>
     </div>
   );
