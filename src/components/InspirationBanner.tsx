@@ -62,7 +62,7 @@ export default function InspirationBanner({
           {/* Left Side - Text Content */}
           <div className="flex flex-col gap-3 md:gap-2">
             {eyebrow && (
-              <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
+              <span className="text-feature text-xs font-semibold uppercase tracking-[0.4em]">
                 {eyebrow}
               </span>
             )}

@@ -46,8 +46,8 @@ export function DashboardNavTabs({ tabs }: DashboardNavTabsProps) {
                 TAB_WIDTH,
                 TAB_MIN_HEIGHT,
                 active
-                  ? "bg-secondary text-white shadow-md focus-visible:ring-white"
-                  : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:text-gray-700 hover:shadow-md focus-visible:ring-secondary",
+                  ? "bg-primary text-white shadow-md focus-visible:ring-white"
+                  : "bg-white text-gray-500 shadow-sm ring-1 ring-gray-100 hover:text-gray-700 hover:shadow-md focus-visible:ring-primary",
               )}
               href={tab.href}
             >
@@ -61,7 +61,7 @@ export function DashboardNavTabs({ tabs }: DashboardNavTabsProps) {
                   <Icon
                     className={cn(
                       "h-5 w-5",
-                      active ? "text-secondary" : "text-gray-600",
+                      active ? "text-primary" : "text-gray-600",
                     )}
                   />
                 </span>

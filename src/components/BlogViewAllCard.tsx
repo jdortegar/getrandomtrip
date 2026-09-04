@@ -27,7 +27,7 @@ export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
 
       {/* Content */}
       <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-start justify-end p-5 text-white md:p-7">
-        <span className="text-amber-300 text-xs font-semibold uppercase tracking-[0.4em]">
+        <span className="text-feature text-xs font-semibold uppercase tracking-[0.4em]">
           Blog
         </span>
         <h3 className="mt-2 font-barlow-condensed text-xl font-bold leading-tight md:text-2xl">
