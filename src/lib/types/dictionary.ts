@@ -1181,9 +1181,6 @@ export interface AdminXsedDict {
       titleInternalPlaceholder: string;
       slug: string;
       slugHint: string;
-      status: string;
-      statusActive: string;
-      statusDraft: string;
       heroImage: string;
       heroImageSizeHint: string;
       copyrightHint: string;
@@ -1216,15 +1213,6 @@ export interface AdminXsedDict {
       accommodation: {
         hotelName: string;
         hotelNamePlaceholder: string;
-        hotelStars: string;
-        hotelStarsPlaceholder: string;
-        hotelStarsHint: string;
-        hotelStarsSingular: string;
-        hotelStarsPlural: string;
-        hotelLocation: string;
-        hotelLocationPlaceholder: string;
-        hotelDays: string;
-        hotelDaysPlaceholder: string;
       };
       activities: {
         name: string;
@@ -1250,6 +1238,16 @@ export interface AdminXsedDict {
         addImage: string;
         uploading: string;
         removeImageAria: string;
+      };
+      contact: {
+        name: string;
+        namePlaceholder: string;
+        phone: string;
+        phonePlaceholder: string;
+        address: string;
+        addressPlaceholder: string;
+        hour: string;
+        hourPlaceholder: string;
       };
     };
   };

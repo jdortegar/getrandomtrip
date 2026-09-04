@@ -244,9 +244,6 @@
         "titleInternalPlaceholder": "E.g. Buenos Aires mystery weekend",
         "slug": "Slug",
         "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
-        "status": "Status",
-        "statusActive": "Active",
-        "statusDraft": "Draft",
         "heroImage": "Hero image",
         "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
         "copyrightHint": "Only use images you own or are licensed to use.",
@@ -278,16 +275,7 @@
         },
         "accommodation": {
           "hotelName": "Hotel name *",
-          "hotelNamePlaceholder": "E.g. Boutique...",
-          "hotelStars": "Stars *",
-          "hotelStarsPlaceholder": "Select",
-          "hotelStarsHint": "Accommodation category",
-          "hotelStarsSingular": "star",
-          "hotelStarsPlural": "stars",
-          "hotelLocation": "Location *",
-          "hotelLocationPlaceholder": "Search location...",
-          "hotelDays": "Nights",
-          "hotelDaysPlaceholder": "E.g. 1"
+          "hotelNamePlaceholder": "E.g. Boutique..."
         },
         "activities": {
           "name": "Name",
@@ -313,6 +301,16 @@
           "addImage": "Add image",
           "uploading": "Uploading…",
           "removeImageAria": "Remove image"
+        },
+        "contact": {
+          "name": "Contact name",
+          "namePlaceholder": "E.g. John Smith",
+          "phone": "Phone",
+          "phonePlaceholder": "E.g. +1 555 123 4567",
+          "address": "Address",
+          "addressPlaceholder": "E.g. 123 Main St",
+          "hour": "Hour",
+          "hourPlaceholder": "E.g. Check-in 15:00"
         }
       }
     },
@@ -2805,7 +2803,7 @@
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, USA.",
     "entityNotice": "Randomtrip and getrandomtrip.com are brands operated by Randomtrip Inc.",
-    "tagline": "Where the routine ends, the adventure begins.",
+    "tagline": "Wander begin where certainty ends",
     "copyright": "All rights reserved."
   },
   "legalCookies": {

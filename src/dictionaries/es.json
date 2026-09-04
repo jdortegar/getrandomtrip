@@ -244,9 +244,6 @@
         "titleInternalPlaceholder": "Ej: fin de semana misterioso en Buenos Aires",
         "slug": "Slug",
         "slugHint": "Identificador URL, ej: patagonia-2026",
-        "status": "Estado",
-        "statusActive": "Activo",
-        "statusDraft": "Borrador",
         "heroImage": "Imagen principal",
         "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
         "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
@@ -278,16 +275,7 @@
         },
         "accommodation": {
           "hotelName": "Nombre del hotel *",
-          "hotelNamePlaceholder": "Ej: Boutique...",
-          "hotelStars": "Estrellas *",
-          "hotelStarsPlaceholder": "Seleccionar",
-          "hotelStarsHint": "Categoría del alojamiento",
-          "hotelStarsSingular": "estrella",
-          "hotelStarsPlural": "estrellas",
-          "hotelLocation": "Ubicación *",
-          "hotelLocationPlaceholder": "Buscar location...",
-          "hotelDays": "Noches",
-          "hotelDaysPlaceholder": "Ej: 1"
+          "hotelNamePlaceholder": "Ej: Boutique..."
         },
         "activities": {
           "name": "Nombre",
@@ -313,6 +301,16 @@
           "addImage": "Agregar imagen",
           "uploading": "Subiendo…",
           "removeImageAria": "Eliminar imagen"
+        },
+        "contact": {
+          "name": "Nombre de contacto",
+          "namePlaceholder": "Ej: Juan Pérez",
+          "phone": "Teléfono",
+          "phonePlaceholder": "Ej: +54 9 11 1234-5678",
+          "address": "Dirección",
+          "addressPlaceholder": "Ej: Av. Siempre Viva 742",
+          "hour": "Horario",
+          "hourPlaceholder": "Ej: Check-in 15:00"
         }
       }
     },
@@ -2805,7 +2803,7 @@
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, EE. UU.",
     "entityNotice": "Randomtrip y getrandomtrip.com son marcas operadas por Randomtrip Inc.",
-    "tagline": "Donde termina la rutina, comienza la aventura.",
+    "tagline": "Vagar comienza donde termina la certeza.",
     "copyright": "Todos los derechos reservados."
   },
   "legalCookies": {

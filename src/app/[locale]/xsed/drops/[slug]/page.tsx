@@ -23,7 +23,7 @@ export default async function XsedInternalPage({ params }: Props) {
 
   const drop = await findActiveXsedExperienceBySlug(slug);
 
-  if (!drop || drop.status !== "ACTIVE") notFound();
+  if (!drop) notFound();
 
   const normalizedLocale = hasLocale(rawLocale) ? rawLocale : "es";
   const [dropTestimonials, dict] = await Promise.all([

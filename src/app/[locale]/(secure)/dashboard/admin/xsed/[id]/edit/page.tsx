@@ -8,9 +8,8 @@ import type {
   ItineraryDayEntry,
   XsedDropDraft,
   XsedDropStatus,
-  XsedSection,
 } from "@/types/xsed";
-import { EMPTY_XSED_DRAFT } from "@/types/xsed";
+import { EMPTY_XSED_DRAFT, normalizeXsedSection } from "@/types/xsed";
 import { XsedDropShell } from "@/components/app/dashboard/admin/xsed/XsedDropShell";
 
 function toDateInput(d: Date | null | undefined): string {
@@ -46,7 +45,7 @@ export default async function EditXsedDropPage(props: {
     hotels: Array.isArray(drop.hotels) ? (drop.hotels as unknown as AccommodationEntry[]) : EMPTY_XSED_DRAFT.hotels,
     activities: Array.isArray(drop.activities) ? (drop.activities as unknown as ActivityEntry[]) : EMPTY_XSED_DRAFT.activities,
     sections: Array.isArray(drop.sections) && drop.sections.length > 0
-      ? (drop.sections as unknown as XsedSection[])
+      ? drop.sections.map(normalizeXsedSection)
       : EMPTY_XSED_DRAFT.sections,
     gallery: Array.isArray(drop.gallery) ? (drop.gallery as string[]) : [],
     itinerary: Array.isArray(drop.itinerary) && drop.itinerary.length > 0

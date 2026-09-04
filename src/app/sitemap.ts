@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_LOCALE, LOCALES } from "@/lib/i18n/config";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
-import { PUBLIC_XSED_GRID_STATUSES } from "@/lib/data/xsed";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
 const BASE_URL =
@@ -96,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { tripperSlug: true, updatedAt: true },
     }),
     prisma.experience.findMany({
-      where: { type: { has: "XSED" }, status: { in: PUBLIC_XSED_GRID_STATUSES }, slug: { not: null } },
+      where: { type: { has: "XSED" }, slug: { not: null } },
       select: { slug: true, updatedAt: true },
     }),
   ]);

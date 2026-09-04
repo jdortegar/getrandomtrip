@@ -73,9 +73,7 @@ function isXsedTabComplete(tabId: string, form: XsedDropDraft): boolean {
       const accommodationComplete = !!(
         hotel &&
         hotel.hotelName.trim() &&
-        hotel.hotelStars.trim() &&
-        hotel.hotelLocation.trim() &&
-        hotel.hotelDays.trim() &&
+        form.sections[0]?.contact.address.trim() &&
         isSectionFilled(form.sections[0])
       );
       const dinnerComplete =
@@ -121,6 +119,7 @@ function resolveXsedStepContent(
           copy={dict.fields.accommodation}
           sectionsCopy={dict.fields.sections}
           imageCopy={dict.fields}
+          contactCopy={dict.fields.contact}
           form={form}
           onChange={onChange}
         />
@@ -131,6 +130,7 @@ function resolveXsedStepContent(
           copy={dict.fields.activities}
           sectionsCopy={dict.fields.sections}
           imageCopy={dict.fields}
+          contactCopy={dict.fields.contact}
           form={form}
           onChange={onChange}
         />
@@ -141,6 +141,7 @@ function resolveXsedStepContent(
           copy={dict.fields.activities}
           sectionsCopy={dict.fields.sections}
           imageCopy={dict.fields}
+          contactCopy={dict.fields.contact}
           form={form}
           onChange={onChange}
         />
