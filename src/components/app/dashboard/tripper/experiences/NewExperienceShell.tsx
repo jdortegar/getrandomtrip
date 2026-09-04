@@ -121,9 +121,6 @@ async function uploadImageFile(file: File): Promise<string> {
   return data.url;
 }
 
-/** Tabs where isExperienceTabComplete() is vacuously true (no required fields) — see NewExperienceShell's completedTabIds. */
-const OPTIONAL_TABS_REQUIRE_VISIT = new Set(["logistics"]);
-
 const ADMIN_TAB: { id: string; label: string; substeps: { description: string; id: string; title: string }[] } = {
   id: "admin-review",
   label: "Admin",
@@ -176,18 +173,6 @@ export function NewExperienceShell({
 
   const [activeTab, setActiveTab] = useState(resolvedTabId);
   const [openSectionId, setOpenSectionId] = useState(resolvedSection);
-  // Tabs the user has actually opened — some tabs (e.g. logistics) have no
-  // required fields, so isExperienceTabComplete() is vacuously true for them
-  // from the start. Gate the "completed" checkmark on visitation too, so an
-  // untouched optional step doesn't show as done before the user opens it.
-  // Editing an existing draft means the tripper already went through the
-  // whole flow once — a blank optional step there was a deliberate final
-  // choice, not "not started" — so treat every tab as visited already.
-  const [visitedTabIds, setVisitedTabIds] = useState<Set<string>>(() =>
-    initialDraft
-      ? new Set(effectiveTabs.map((t) => t.id))
-      : new Set([resolvedTabId]),
-  );
   const [form, setForm] = useState<ExperienceFormDraft>(
     initialDraft ?? EMPTY_DRAFT,
   );
@@ -395,7 +380,6 @@ export function NewExperienceShell({
   function handleTabChange(tabId: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     const firstSubstep =
       effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
@@ -415,7 +399,6 @@ export function NewExperienceShell({
   function handleStepClick(tabId: string, substepId?: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     setOpenSectionId(
       substepId ?? effectiveTabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "",
     );
@@ -600,19 +583,9 @@ export function NewExperienceShell({
   const completedTabIds = useMemo(
     () =>
       effectiveTabs
-        .filter((t) => {
-          if (t.id === "admin-review") return false;
-          if (!isExperienceTabComplete(t.id, form)) return false;
-          // Tabs with no required fields (e.g. logistics) are always
-          // "complete" for navigation-gating purposes, but that shouldn't
-          // draw a checkmark before the user has actually opened them.
-          if (OPTIONAL_TABS_REQUIRE_VISIT.has(t.id)) {
-            return visitedTabIds.has(t.id);
-          }
-          return true;
-        })
+        .filter((t) => t.id !== "admin-review" && isExperienceTabComplete(t.id, form))
         .map((t) => t.id),
-    [effectiveTabs, form, visitedTabIds],
+    [effectiveTabs, form],
   );
 
   // Review-note banner: rejection note (DRAFT) or approval note (ACTIVE), shown until dismissed.

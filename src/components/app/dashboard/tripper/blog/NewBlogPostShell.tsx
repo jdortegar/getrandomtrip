@@ -83,11 +83,6 @@ const EMPTY_DRAFT: BlogFormDraft = {
 const AUTOSAVE_DELAY_MS = 2000;
 const MAX_BLOG_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
 
-// Tabs with no required fields are vacuously "complete" from the start —
-// gate their checkmark on visitation too, mirroring NewExperienceShell's
-// OPTIONAL_TABS_REQUIRE_VISIT for the "logistics" tab.
-const OPTIONAL_TABS_REQUIRE_VISIT = new Set(["content", "faq", "gallery"]);
-
 function validateFileSize(file: File): boolean {
   return file.size <= MAX_BLOG_IMAGE_BYTES;
 }
@@ -131,13 +126,6 @@ export function NewBlogPostShell({
   const [activeTab, setActiveTab] = useState(tabs[0]?.id ?? "general");
   const [openSectionId, setOpenSectionId] = useState(
     tabs[0]?.substeps[0]?.id ?? "",
-  );
-  // Editing an existing post means the tripper already went through the
-  // whole flow once — mark every tab as visited so optional tabs (content,
-  // faq, gallery) show their checkmark immediately instead of only after
-  // being opened, mirroring NewExperienceShell's same convention.
-  const [visitedTabIds, setVisitedTabIds] = useState<Set<string>>(() =>
-    initialDraft ? new Set(tabs.map((t) => t.id)) : new Set([tabs[0]?.id ?? "general"]),
   );
   const [draft, setDraft] = useState<BlogFormDraft>(initialDraft ?? EMPTY_DRAFT);
 
@@ -247,7 +235,6 @@ export function NewBlogPostShell({
   function handleTabChange(tabId: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     const firstSubstep = tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "";
     setOpenSectionId(firstSubstep);
     scrollToContent();
@@ -256,7 +243,6 @@ export function NewBlogPostShell({
   function handleStepClick(tabId: string, substepId?: string) {
     if (!canNavigateTo(tabId)) return;
     setActiveTab(tabId);
-    setVisitedTabIds((prev) => new Set(prev).add(tabId));
     setOpenSectionId(substepId ?? tabs.find((t) => t.id === tabId)?.substeps[0]?.id ?? "");
     scrollToContent();
   }
@@ -408,15 +394,8 @@ export function NewBlogPostShell({
 
   const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
-    () =>
-      tabs
-        .filter((t) => {
-          if (!isBlogTabComplete(t.id, draft)) return false;
-          if (OPTIONAL_TABS_REQUIRE_VISIT.has(t.id)) return visitedTabIds.has(t.id);
-          return true;
-        })
-        .map((t) => t.id),
-    [tabs, draft, visitedTabIds],
+    () => tabs.filter((t) => isBlogTabComplete(t.id, draft)).map((t) => t.id),
+    [tabs, draft],
   );
 
   return (
