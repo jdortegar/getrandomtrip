@@ -20,11 +20,6 @@ export function getBlogCompleteness(
   return { complete: missing.length === 0, missing };
 }
 
-/**
- * Tabs with no required fields are vacuously "complete" — see
- * NewBlogPostShell's completedTabIds for how this pairs with visitedTabIds
- * so an untouched optional tab doesn't show a checkmark prematurely.
- */
 export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean {
   switch (tabId) {
     case "general":
@@ -40,7 +35,9 @@ export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean 
         draft.sections.some((s) => s.title.trim() || s.description.trim())
       );
     case "faq":
+      return draft.faq.length > 0 && draft.faq.every((f) => f.question.trim() && f.answer.trim());
     case "gallery":
+      // Multi-image upload — zero images is a valid, complete state.
       return true;
     default:
       return false;

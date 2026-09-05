@@ -218,27 +218,14 @@
           ]
         },
         {
-          "id": "content",
-          "label": "Contenido",
-          "substeps": [
-            { "id": "sections", "title": "Secciones", "description": "" },
-            { "id": "itinerary", "title": "Itinerario", "description": "" },
-            { "id": "inclusions", "title": "Incluye / No incluye", "description": "" }
-          ]
-        },
-        {
-          "id": "gallery",
-          "label": "Galería",
-          "substeps": [
-            { "id": "images", "title": "Imágenes", "description": "" }
-          ]
-        },
-        {
           "id": "logistics",
           "label": "Logística",
           "substeps": [
             { "id": "accommodation", "title": "Alojamiento", "description": "" },
-            { "id": "activities", "title": "Actividades", "description": "" }
+            { "id": "dinner", "title": "Cena", "description": "" },
+            { "id": "activity", "title": "Actividad", "description": "" },
+            { "id": "itinerary", "title": "Itinerario", "description": "" },
+            { "id": "inclusions", "title": "Incluye / No incluye", "description": "" }
           ]
         }
       ],
@@ -257,9 +244,6 @@
         "titleInternalPlaceholder": "Ej: fin de semana misterioso en Buenos Aires",
         "slug": "Slug",
         "slugHint": "Identificador URL, ej: patagonia-2026",
-        "status": "Estado",
-        "statusActive": "Activo",
-        "statusDraft": "Borrador",
         "heroImage": "Imagen principal",
         "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
         "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
@@ -291,20 +275,12 @@
         },
         "accommodation": {
           "hotelName": "Nombre del hotel *",
-          "hotelNamePlaceholder": "Ej: Boutique...",
-          "hotelStars": "Estrellas *",
-          "hotelStarsPlaceholder": "Seleccionar",
-          "hotelStarsHint": "Categoría del alojamiento",
-          "hotelStarsSingular": "estrella",
-          "hotelStarsPlural": "estrellas",
-          "hotelLocation": "Ubicación *",
-          "hotelLocationPlaceholder": "Buscar location...",
-          "hotelDays": "Noches",
-          "hotelDaysPlaceholder": "Ej: 1"
+          "hotelNamePlaceholder": "Ej: Boutique..."
         },
         "activities": {
-          "name": "Actividad",
-          "namePlaceholder": "Ej: City tour...",
+          "name": "Nombre",
+          "dinnerNamePlaceholder": "Ej: Cena en restaurante El Mirador...",
+          "activityNamePlaceholder": "Ej: City tour...",
           "duration": "Duración",
           "durationUnits": {
             "min": { "label": "min", "hint": "minutos" },
@@ -314,29 +290,27 @@
           "description": "Descripción",
           "descriptionPlaceholder": "Ej: en la actividad podrás montar a caballo...",
           "risks": "Cuidados",
-          "risksPlaceholder": "Ej: cuidados que deberían tener...",
-          "activityLabel": "Actividad",
-          "remove": "Eliminar",
-          "addActivity": "Agregar actividad"
+          "risksPlaceholder": "Ej: cuidados que deberían tener..."
         },
         "sections": {
-          "sectionLabel": "Sección",
-          "sectionTitle": "Título de la sección",
-          "sectionTitlePlaceholder": "Ej: El hotel",
-          "sectionBody": "Contenido",
-          "sectionBodyPlaceholder": "Contanos los detalles de esta sección...",
-          "addSection": "Agregar sección",
-          "removeSection": "Eliminar",
-          "photoCredit": "Crédito de la foto",
-          "photoCreditPlaceholder": "PH by...",
-          "addPhoto": "Agregar foto",
-          "removePhoto": "Eliminar foto"
-        },
-        "gallery": {
-          "hint": "Sube las fotos que se van a mostrar en la galería pública del drop.",
+          "title": "Título",
+          "titlePlaceholder": "Ej: El hotel",
+          "content": "Contenido",
+          "contentPlaceholder": "Contanos los detalles...",
+          "images": "Imágenes",
           "addImage": "Agregar imagen",
           "uploading": "Subiendo…",
           "removeImageAria": "Eliminar imagen"
+        },
+        "contact": {
+          "name": "Nombre de contacto",
+          "namePlaceholder": "Ej: Juan Pérez",
+          "phone": "Teléfono",
+          "phonePlaceholder": "Ej: +54 9 11 1234-5678",
+          "address": "Dirección",
+          "addressPlaceholder": "Ej: Av. Siempre Viva 742",
+          "hour": "Horario",
+          "hourPlaceholder": "Ej: Check-in 15:00"
         }
       }
     },
@@ -2829,7 +2803,7 @@
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, EE. UU.",
     "entityNotice": "Randomtrip y getrandomtrip.com son marcas operadas por Randomtrip Inc.",
-    "tagline": "Donde termina la rutina, comienza la aventura.",
+    "tagline": "Vagar comienza donde termina la certeza.",
     "copyright": "Todos los derechos reservados."
   },
   "legalCookies": {

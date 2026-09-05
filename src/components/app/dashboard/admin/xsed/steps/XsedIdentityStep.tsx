@@ -24,7 +24,6 @@ async function uploadXsedImage(file: File): Promise<string | null> {
 }
 
 export function XsedIdentityStep({ form, onChange, copy }: Props) {
-  const isActive = form.status === "ACTIVE";
   const [countryCode, setCountryCode] = useState("");
   const [heroUploading, setHeroUploading] = useState(false);
 
@@ -112,36 +111,6 @@ export function XsedIdentityStep({ form, onChange, copy }: Props) {
       <p className="text-xs text-neutral-400 -mt-3">
         {copy.destinationHiddenHint}
       </p>
-
-      <div className="flex items-center justify-between">
-        <span className="block font-normal text-gray-600 text-base">{copy.status}</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={isActive}
-          onClick={() =>
-            onChange({ status: isActive ? "DRAFT" : "ACTIVE" })
-          }
-          className="flex items-center gap-2 group"
-        >
-          <span
-            className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-              isActive ? "bg-green-500" : "bg-gray-300"
-            }`}
-          >
-            <span
-              className={`h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform ${
-                isActive ? "translate-x-[18px]" : "translate-x-[3px]"
-              }`}
-            />
-          </span>
-          <span
-            className={`text-xs font-medium ${isActive ? "text-green-600" : "text-gray-400"}`}
-          >
-            {isActive ? copy.statusActive : copy.statusDraft}
-          </span>
-        </button>
-      </div>
     </div>
   );
 }
