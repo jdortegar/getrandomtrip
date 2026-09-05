@@ -43,7 +43,7 @@ export default function BlogCard({ post }: BlogCardProps) {
         </h3>
         <Button
           asChild
-          className="pointer-events-auto relative mt-4 h-9 border-white/50 bg-transparent px-4 text-xs font-medium hover:bg-white/10 mr-auto! w-fit"
+          className="pointer-events-auto relative mt-4 h-9 bg-transparent px-4 text-xs font-medium mr-auto! w-fit"
           variant="outline"
         >
           {/* The full-card Link above already provides the accessible path
