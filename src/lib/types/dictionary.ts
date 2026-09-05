@@ -1181,9 +1181,6 @@ export interface AdminXsedDict {
       titleInternalPlaceholder: string;
       slug: string;
       slugHint: string;
-      status: string;
-      statusActive: string;
-      statusDraft: string;
       heroImage: string;
       heroImageSizeHint: string;
       copyrightHint: string;
@@ -1216,19 +1213,11 @@ export interface AdminXsedDict {
       accommodation: {
         hotelName: string;
         hotelNamePlaceholder: string;
-        hotelStars: string;
-        hotelStarsPlaceholder: string;
-        hotelStarsHint: string;
-        hotelStarsSingular: string;
-        hotelStarsPlural: string;
-        hotelLocation: string;
-        hotelLocationPlaceholder: string;
-        hotelDays: string;
-        hotelDaysPlaceholder: string;
       };
       activities: {
         name: string;
-        namePlaceholder: string;
+        dinnerNamePlaceholder: string;
+        activityNamePlaceholder: string;
         duration: string;
         durationUnits: {
           min: { label: string; hint: string };
@@ -1239,28 +1228,26 @@ export interface AdminXsedDict {
         descriptionPlaceholder: string;
         risks: string;
         risksPlaceholder: string;
-        activityLabel: string;
-        remove: string;
-        addActivity: string;
       };
       sections: {
-        sectionLabel: string;
-        sectionTitle: string;
-        sectionTitlePlaceholder: string;
-        sectionBody: string;
-        sectionBodyPlaceholder: string;
-        addSection: string;
-        removeSection: string;
-        photoCredit: string;
-        photoCreditPlaceholder: string;
-        addPhoto: string;
-        removePhoto: string;
-      };
-      gallery: {
-        hint: string;
+        title: string;
+        titlePlaceholder: string;
+        content: string;
+        contentPlaceholder: string;
+        images: string;
         addImage: string;
         uploading: string;
         removeImageAria: string;
+      };
+      contact: {
+        name: string;
+        namePlaceholder: string;
+        phone: string;
+        phonePlaceholder: string;
+        address: string;
+        addressPlaceholder: string;
+        hour: string;
+        hourPlaceholder: string;
       };
     };
   };

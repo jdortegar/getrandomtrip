@@ -1,17 +1,7 @@
-import type {
-  ExperienceStatus,
-  Prisma,
-  TripRequestStatus,
-} from "@prisma/client";
+import type { Prisma, TripRequestStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import type { DropEntry } from "@/types/core";
-
-export const PUBLIC_XSED_GRID_STATUSES: ExperienceStatus[] = [
-  "ACTIVE",
-  "INACTIVE",
-  "ARCHIVED",
-];
 
 const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
   "SAVED",
@@ -27,7 +17,6 @@ const xsedListSelect = {
   maxSpots: true,
   revealAt: true,
   slug: true,
-  status: true,
   titleInternal: true,
   teaser: true,
   tripDate: true,
@@ -47,7 +36,6 @@ export type XsedListRow = Prisma.ExperienceGetPayload<{
 const xsedDetailSelect = {
   id: true,
   slug: true,
-  status: true,
   titleInternal: true,
   teaser: true,
   heroImage: true,
@@ -101,7 +89,6 @@ export async function findUpcomingActiveXsedExperiences(
   return prisma.experience.findMany({
     where: {
       type: { has: "XSED" },
-      status: "ACTIVE",
       OR: [{ tripDate: { gte: now } }, { tripDate: null }],
     },
     orderBy: [{ tripDate: "asc" }, { createdAt: "desc" }],
@@ -111,7 +98,7 @@ export async function findUpcomingActiveXsedExperiences(
 
 export async function findLatestActiveXsedExperience(): Promise<XsedListRow | null> {
   return prisma.experience.findFirst({
-    where: { type: { has: "XSED" }, status: "ACTIVE" },
+    where: { type: { has: "XSED" } },
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
@@ -119,7 +106,7 @@ export async function findLatestActiveXsedExperience(): Promise<XsedListRow | nu
 
 export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
   return prisma.experience.findMany({
-    where: { type: { has: "XSED" }, status: { in: PUBLIC_XSED_GRID_STATUSES } },
+    where: { type: { has: "XSED" } },
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
@@ -203,15 +190,13 @@ function toDropEntry(drop: XsedListRow, locale: string): DropEntry {
   const maxSpots = drop.maxSpots;
   const isCapacitySoldOut =
     maxSpots != null && maxSpots > 0 && soldCount >= maxSpots;
-  const isStatusSoldOut =
-    drop.status === "INACTIVE" || drop.status === "ARCHIVED";
 
   return {
     date: formatDropGridDate(drop.tripDate, locale),
     image: drop.heroImage ?? "/images/drops/drops-mendoza.jpg",
     number: parseDropNumber(drop.slug),
     slug: drop.slug ?? "",
-    soldOut: isCapacitySoldOut || isStatusSoldOut,
+    soldOut: isCapacitySoldOut,
     // titleInternal is the primary source going forward — the admin XSED
     // authoring form no longer has a `teaser` field. teaser is kept as a
     // fallback only for drops authored before this migration.

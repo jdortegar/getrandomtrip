@@ -62,7 +62,16 @@ export function isExperienceTabComplete(
         form.destinationCity
       );
     case "logistics":
-      return true;
+      return (
+        form.accommodations.length > 0 &&
+        form.accommodations.every(
+          (a) =>
+            a.hotelName.trim() &&
+            a.hotelLink.trim() &&
+            a.referredLink.trim() &&
+            a.hotelDays.trim(),
+        )
+      );
     case "activities":
       return !!form.activities[0]?.name;
     default:

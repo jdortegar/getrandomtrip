@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { XsedDropBody } from "@/components/app/xsed/XsedDropBody";
-import LightboxCarousel from "@/components/media/LightboxCarousel";
 import Breadcrumb from "@/components/navigation/Breadcrumb";
 import Section from "@/components/layout/Section";
 import { hasLocale } from "@/lib/i18n/config";
@@ -24,7 +23,7 @@ export default async function XsedInternalPage({ params }: Props) {
 
   const drop = await findActiveXsedExperienceBySlug(slug);
 
-  if (!drop || drop.status !== "ACTIVE") notFound();
+  if (!drop) notFound();
 
   const normalizedLocale = hasLocale(rawLocale) ? rawLocale : "es";
   const [dropTestimonials, dict] = await Promise.all([
@@ -59,8 +58,6 @@ export default async function XsedInternalPage({ params }: Props) {
     images: section.photos.map((p) => ({ url: p.url, caption: p.credit })),
   }));
 
-  const galleryImages = (drop.gallery ?? []).map((url) => ({ url }));
-
   const heroContent = {
     dropNumber,
     date,
@@ -80,9 +77,6 @@ export default async function XsedInternalPage({ params }: Props) {
         />
         <XsedDropBody content={article} />
       </Section>
-      {galleryImages.length > 0 && (
-        <LightboxCarousel images={galleryImages} className="bg-gray-100" />
-      )}
       <Testimonials
         title={dict.xsedPage.testimonials.title}
         subtitle={dict.xsedPage.testimonials.subtitle}
