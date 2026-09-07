@@ -11,8 +11,12 @@ import {
   type FieldPeek,
 } from "./field-peek";
 
-const formControlClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-ink w-full text-base";
+const formControlClass = cn(
+  "bg-white border border-gray-200 outline-none px-6 py-4 rounded-xl text-base text-ink w-full",
+  "placeholder:text-gray-500",
+  "focus:border-primary focus:ring-2 focus:ring-primary/20",
+  "disabled:cursor-not-allowed disabled:opacity-50",
+);
 
 const formLabelClass = "block font-normal text-gray-600 text-base";
 

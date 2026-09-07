@@ -26,7 +26,7 @@ const buttonVariants = cva(
         outline:
           "relative isolate overflow-hidden border-2 border-white/50 text-white bg-background shadow-xs hover:border-primary hover:text-white before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-primary before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100 dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "bg-white text-secondary-foreground hover:bg-secondary/80  border-primary border-2 text-primary",
+          "relative isolate overflow-hidden border-2 border-primary bg-white text-primary hover:border-primary hover:text-white before:absolute before:inset-0 before:-z-10 before:origin-left before:scale-x-0 before:bg-primary before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100",
         tertiary: "border-2 border-xsed bg-xsed text-white hover:bg-xsed/90",
         ghost:
           "border-2 border-transparent hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",

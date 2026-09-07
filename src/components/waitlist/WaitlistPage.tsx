@@ -166,7 +166,7 @@ export function WaitlistPage({
                 onClick={onOpenLogin}
                 size="md"
                 type="button"
-                variant="link"
+                variant="secondary"
               >
                 <span>{dict.loginAction}</span>
               </Button>
