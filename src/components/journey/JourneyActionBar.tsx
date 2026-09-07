@@ -16,6 +16,8 @@ interface JourneyActionBarLabels {
 interface JourneyActionBarProps {
   backHref?: string;
   canContinue: boolean;
+  /** When false, the last-step CTA stays visible but disabled. Defaults to true. */
+  canFinalize?: boolean;
   /** Overrides the root's margin/padding classes — default fits the journey/XSED flows. */
   className?: string;
   isAllStepsComplete: boolean;
@@ -35,6 +37,7 @@ interface JourneyActionBarProps {
 export function JourneyActionBar({
   backHref,
   canContinue,
+  canFinalize = true,
   className,
   isAllStepsComplete,
   isSavingAndRedirecting,
@@ -99,7 +102,7 @@ export function JourneyActionBar({
 
       {isAllStepsComplete && (
         <Button
-          disabled={isSavingAndRedirecting}
+          disabled={isSavingAndRedirecting || !canFinalize}
           onClick={onGoToCheckout}
           size="sm"
           variant="default"

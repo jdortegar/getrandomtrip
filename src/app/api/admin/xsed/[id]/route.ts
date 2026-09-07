@@ -5,6 +5,7 @@ import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { canPublishXsedDrop, resolveXsedPublishFields } from "@/lib/helpers/xsed-form";
 import { buildRevealAt } from "@/lib/xsed/revealAt";
 
 export const dynamic = "force-dynamic";
@@ -94,19 +95,16 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
 
     const body = await req.json();
 
-    // Status gate: activating requires destination fields to be non-empty
+    // Status gate: activating requires the General-tab publish fields
     const incomingStatus = body.status as string | undefined;
     if (incomingStatus === "ACTIVE") {
-      const effectiveCity =
-        (body.destinationCity as string | undefined) ?? existing.destinationCity ?? "";
-      const effectiveCountry =
-        (body.destinationCountry as string | undefined) ?? existing.destinationCountry ?? "";
-
-      if (!effectiveCity.trim() || !effectiveCountry.trim()) {
+      const publishFields = resolveXsedPublishFields(body, existing);
+      if (!canPublishXsedDrop(publishFields)) {
         return NextResponse.json(
           {
             error: "validation_failed",
-            message: "destinationCity and destinationCountry are required to activate a drop",
+            message:
+              "titleInternal, tripDate, destinationCity and destinationCountry are required to activate a drop",
           },
           { status: 422 },
         );

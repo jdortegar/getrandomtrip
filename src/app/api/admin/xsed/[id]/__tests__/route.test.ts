@@ -163,6 +163,8 @@ describe("PUT /api/admin/xsed/[id]", () => {
       ownerId: "admin-1",
       destinationCity: "", // empty
       destinationCountry: "Spain",
+      titleInternal: "Drop",
+      tripDate: "2026-09-06",
     };
     (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(existingDrop);
 
@@ -173,7 +175,47 @@ describe("PUT /api/admin/xsed/[id]", () => {
     expect(prisma.experience.update).not.toHaveBeenCalled();
   });
 
-  it("returns 200 when setting status=ACTIVE with destination populated", async () => {
+  it("returns 422 when setting status=ACTIVE without titleInternal", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "drop-id",
+      type: "XSED",
+      status: "DRAFT",
+      ownerId: "admin-1",
+      destinationCity: "Madrid",
+      destinationCountry: "Spain",
+      titleInternal: "",
+      tripDate: "2026-09-06",
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PUT(makeRequest("PUT", { status: "ACTIVE" }), routeParams);
+    expect(res.status).toBe(422);
+    expect(prisma.experience.update).not.toHaveBeenCalled();
+  });
+
+  it("returns 422 when setting status=ACTIVE without tripDate", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "drop-id",
+      type: "XSED",
+      status: "DRAFT",
+      ownerId: "admin-1",
+      destinationCity: "Madrid",
+      destinationCountry: "Spain",
+      titleInternal: "Drop",
+      tripDate: null,
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PUT(makeRequest("PUT", { status: "ACTIVE" }), routeParams);
+    expect(res.status).toBe(422);
+    expect(prisma.experience.update).not.toHaveBeenCalled();
+  });
+
+  it("returns 200 when setting status=ACTIVE with General fields populated", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(adminSession());
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
     const existingDrop = {
@@ -183,6 +225,8 @@ describe("PUT /api/admin/xsed/[id]", () => {
       ownerId: "admin-1",
       destinationCity: "Buenos Aires",
       destinationCountry: "Argentina",
+      titleInternal: "BA drop",
+      tripDate: "2026-09-06",
     };
     (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(existingDrop);
     const updatedDrop = { ...existingDrop, status: "ACTIVE" };
