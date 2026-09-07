@@ -19,7 +19,11 @@ const baseTooltip = {
   showSuggestion: "Click to see admin's suggestion",
 };
 
-function PeekHarness({ originalValue = "Original description" }: { originalValue?: string }) {
+function PeekHarness({
+  originalValue = "Original description",
+}: {
+  originalValue?: string;
+}) {
   const [active, setActive] = useState(false);
   const peek: FieldPeek = {
     originalValue,
@@ -39,6 +43,22 @@ function PeekHarness({ originalValue = "Original description" }: { originalValue
   );
 }
 
+describe("TextAreaInput chrome", () => {
+  it("matches FormField control styles (white surface, gray border, rounded-xl)", () => {
+    harness.render(
+      <TextAreaInput id="d1" label="Field" onChange={() => {}} value="" />,
+    );
+    const textarea = harness.container.querySelector(
+      "textarea",
+    ) as HTMLTextAreaElement;
+    expect(textarea.className).toContain("bg-white");
+    expect(textarea.className).toContain("border-gray-200");
+    expect(textarea.className).toContain("rounded-xl");
+    expect(textarea.className).not.toContain("bg-gray-100");
+    expect(textarea.className).not.toContain("rounded-sm");
+  });
+});
+
 describe("TextAreaInput peek", () => {
   it("renders no peek toggle when peek prop is not provided", () => {
     harness.render(
@@ -50,9 +70,13 @@ describe("TextAreaInput peek", () => {
 
   it("renders an EyeOff toggle by default showing the admin's suggestion, char count reflects displayed value", () => {
     harness.render(<PeekHarness />);
-    const textarea = harness.container.querySelector("textarea") as HTMLTextAreaElement;
+    const textarea = harness.container.querySelector(
+      "textarea",
+    ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("Suggested description");
-    expect(harness.container.querySelector("svg.lucide-eye-off")).not.toBeNull();
+    expect(
+      harness.container.querySelector("svg.lucide-eye-off"),
+    ).not.toBeNull();
     expect(harness.container.textContent ?? "").toContain(
       `${"Suggested description".length} /`,
     );
@@ -60,10 +84,14 @@ describe("TextAreaInput peek", () => {
 
   it("toggling swaps the displayed value to the original with line-through and updates char count", () => {
     harness.render(<PeekHarness />);
-    const button = harness.container.querySelector('[role="button"]') as HTMLElement;
+    const button = harness.container.querySelector(
+      '[role="button"]',
+    ) as HTMLElement;
     harness.click(button);
 
-    const textarea = harness.container.querySelector("textarea") as HTMLTextAreaElement;
+    const textarea = harness.container.querySelector(
+      "textarea",
+    ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("Original description");
     expect(textarea.className).toContain("line-through");
     expect(harness.container.querySelector("svg.lucide-eye")).not.toBeNull();
@@ -74,10 +102,14 @@ describe("TextAreaInput peek", () => {
 
   it("shows a muted italic placeholder when the original value is empty", () => {
     harness.render(<PeekHarness originalValue="" />);
-    const button = harness.container.querySelector('[role="button"]') as HTMLElement;
+    const button = harness.container.querySelector(
+      '[role="button"]',
+    ) as HTMLElement;
     harness.click(button);
 
-    const textarea = harness.container.querySelector("textarea") as HTMLTextAreaElement;
+    const textarea = harness.container.querySelector(
+      "textarea",
+    ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("");
     expect(textarea.placeholder).toBe("(no content)");
     expect(textarea.className).toContain("italic");
