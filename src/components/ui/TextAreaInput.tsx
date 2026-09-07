@@ -3,12 +3,19 @@
 import * as React from "react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { PeekToggleButton, resolvePeekDisplay, type FieldPeek } from "./field-peek";
+import {
+  PeekToggleButton,
+  resolvePeekDisplay,
+  type FieldPeek,
+} from "./field-peek";
+import { formControlClass, formLabelClass } from "./formControlClass";
 
 const DEFAULT_MAX = 280;
 
-export interface TextAreaInputProps
-  extends Omit<React.ComponentProps<"textarea">, "id" | "maxLength"> {
+export interface TextAreaInputProps extends Omit<
+  React.ComponentProps<"textarea">,
+  "id" | "maxLength"
+> {
   id: string;
   label: ReactNode;
   maxLength?: number;
@@ -33,23 +40,24 @@ export function TextAreaInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
+      <label className={formLabelClass} htmlFor={id}>
         {label}
       </label>
       <div className="relative">
         <textarea
-          id={id}
-          maxLength={maxLength}
-          value={displayValue}
-          onChange={onChange}
-          placeholder={isEmpty ? peek?.emptyLabel : placeholder}
           className={cn(
-            "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-sm text-ink w-full text-base resize-none min-h-[160px]",
+            formControlClass,
+            "min-h-[160px] resize-none",
             showPeek && "pr-12",
             peek?.active && !isEmpty && "line-through",
             isEmpty && "italic",
             className,
           )}
+          id={id}
+          maxLength={maxLength}
+          onChange={onChange}
+          placeholder={isEmpty ? peek?.emptyLabel : placeholder}
+          value={displayValue}
           {...rest}
         />
         {showPeek ? <PeekToggleButton peek={peek} position="textarea" /> : null}

@@ -1157,6 +1157,16 @@ export interface AdminXsedDict {
       next: string;
       viewCheckout: string;
     };
+    publish: {
+      confirmBody: string;
+      confirmTitle: string;
+      submitLabel: string;
+    };
+    save: {
+      confirmBody: string;
+      confirmTitle: string;
+      submitLabel: string;
+    };
     contentTabs: Array<{
       id: string;
       label: string;

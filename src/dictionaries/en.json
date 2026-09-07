@@ -209,6 +209,16 @@
         "next": "Next",
         "viewCheckout": "Save drop"
       },
+      "publish": {
+        "submitLabel": "Publish",
+        "confirmTitle": "Publish this drop?",
+        "confirmBody": "It will go live immediately."
+      },
+      "save": {
+        "submitLabel": "Save changes",
+        "confirmTitle": "Save these changes?",
+        "confirmBody": "The changes will apply immediately."
+      },
       "contentTabs": [
         {
           "id": "main",

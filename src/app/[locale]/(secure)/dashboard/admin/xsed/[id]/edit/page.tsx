@@ -2,14 +2,9 @@ import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { prisma } from "@/lib/prisma";
-import type {
-  AccommodationEntry,
-  ActivityEntry,
-  ItineraryDayEntry,
-  XsedDropDraft,
-  XsedDropStatus,
-} from "@/types/xsed";
-import { EMPTY_XSED_DRAFT, normalizeXsedSection } from "@/types/xsed";
+import type { XsedDropDraft, XsedDropStatus } from "@/types/xsed";
+import { EMPTY_XSED_DRAFT } from "@/types/xsed";
+import { normalizeXsedDraft } from "@/lib/helpers/xsed-form";
 import { XsedDropShell } from "@/components/app/dashboard/admin/xsed/XsedDropShell";
 
 function toDateInput(d: Date | null | undefined): string {
@@ -34,7 +29,7 @@ export default async function EditXsedDropPage(props: {
     notFound();
   }
 
-  const draft: XsedDropDraft = {
+  const draft: XsedDropDraft = normalizeXsedDraft({
     ...EMPTY_XSED_DRAFT,
     status: (drop.status as XsedDropStatus) ?? "DRAFT",
     titleInternal: drop.titleInternal ?? "",
@@ -42,18 +37,14 @@ export default async function EditXsedDropPage(props: {
     tripDate: toDateInput(drop.tripDate),
     destinationCity: drop.destinationCity ?? "",
     destinationCountry: drop.destinationCountry ?? "",
-    hotels: Array.isArray(drop.hotels) ? (drop.hotels as unknown as AccommodationEntry[]) : EMPTY_XSED_DRAFT.hotels,
-    activities: Array.isArray(drop.activities) ? (drop.activities as unknown as ActivityEntry[]) : EMPTY_XSED_DRAFT.activities,
-    sections: Array.isArray(drop.sections) && drop.sections.length > 0
-      ? drop.sections.map(normalizeXsedSection)
-      : EMPTY_XSED_DRAFT.sections,
-    gallery: Array.isArray(drop.gallery) ? (drop.gallery as string[]) : [],
-    itinerary: Array.isArray(drop.itinerary) && drop.itinerary.length > 0
-      ? (drop.itinerary as unknown as ItineraryDayEntry[])
-      : EMPTY_XSED_DRAFT.itinerary,
-    inclusions: Array.isArray(drop.inclusions) ? (drop.inclusions as string[]) : [],
-    exclusions: Array.isArray(drop.exclusions) ? (drop.exclusions as string[]) : [],
-  };
+    hotels: Array.isArray(drop.hotels) ? drop.hotels : EMPTY_XSED_DRAFT.hotels,
+    activities: Array.isArray(drop.activities) ? drop.activities : EMPTY_XSED_DRAFT.activities,
+    sections: Array.isArray(drop.sections) ? drop.sections : EMPTY_XSED_DRAFT.sections,
+    gallery: Array.isArray(drop.gallery) ? drop.gallery : [],
+    itinerary: Array.isArray(drop.itinerary) ? drop.itinerary : EMPTY_XSED_DRAFT.itinerary,
+    inclusions: Array.isArray(drop.inclusions) ? drop.inclusions : [],
+    exclusions: Array.isArray(drop.exclusions) ? drop.exclusions : [],
+  });
 
   return (
     <XsedDropShell

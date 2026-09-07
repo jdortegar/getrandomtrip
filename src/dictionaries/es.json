@@ -209,6 +209,16 @@
         "next": "Siguiente",
         "viewCheckout": "Guardar drop"
       },
+      "publish": {
+        "submitLabel": "Publicar",
+        "confirmTitle": "¿Publicar este drop?",
+        "confirmBody": "Se publicará de inmediato."
+      },
+      "save": {
+        "submitLabel": "Guardar cambios",
+        "confirmTitle": "¿Guardar los cambios?",
+        "confirmBody": "Los cambios se aplicarán de inmediato."
+      },
       "contentTabs": [
         {
           "id": "main",

@@ -10,11 +10,7 @@ import {
   resolvePeekDisplay,
   type FieldPeek,
 } from "./field-peek";
-
-const formControlClass =
-  "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-ink w-full text-base";
-
-const formLabelClass = "block font-normal text-gray-600 text-base";
+import { formControlClass, formLabelClass } from "./formControlClass";
 
 export interface FormFieldProps extends Omit<
   React.ComponentProps<"input">,
