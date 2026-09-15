@@ -103,7 +103,7 @@ export default function Navbar({
   // state keeps white-on-photo, so its hover wash and wordmark stay as-is.
   const iconHoverClass = backgroundPrimary ? "hover:bg-secondary/10" : "hover:bg-white/10";
   const wordmarkSrc = backgroundPrimary
-    ? "/assets/logos/logo_getrandomtrip.png"
+    ? "/assets/logos/logo_getrandomtrip.svg"
     : "/assets/logos/logo_getrandomtrip_1.png";
 
   const desktopLinks = NAV_LINKS.filter(
