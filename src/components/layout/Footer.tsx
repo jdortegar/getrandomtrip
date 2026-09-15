@@ -24,7 +24,7 @@ export default function Footer({ dict, locale }: FooterProps) {
               <Img
                 alt={dict.common.siteName}
                 height={40}
-                src="/assets/logos/logo_getrandomtrip.png"
+                src="/assets/logos/logo_randomtrip.svg"
                 style={{ height: "auto" }}
                 width={240}
               />
