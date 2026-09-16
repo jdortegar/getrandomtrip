@@ -1,7 +1,6 @@
 import {
   Bell,
   Briefcase,
-  Compass,
   CreditCard,
   LayoutDashboard,
   Newspaper,
@@ -55,14 +54,6 @@ export function buildAdminNavTabs(
       href: base("/reviews"),
       icon: Star,
       label: copy.reviews,
-    },
-    {
-      // Points at the /xsed index (which redirects to /xsed/new) rather than
-      // /xsed/new directly, so the tab's active-match prefix ("/xsed/") also
-      // covers /xsed/[id]/edit — matching the old sidebar's behavior.
-      href: base("/xsed"),
-      icon: Compass,
-      label: copy.xsed,
     },
     {
       // Non-exact so /blog/[id] review pages keep this tab active.

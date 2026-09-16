@@ -16,9 +16,9 @@ const copy: AdminDashboardDict["nav"] = {
 };
 
 describe("buildAdminNavTabs", () => {
-  it("returns 10 tabs in the documented order", () => {
+  it("returns 9 tabs in the documented order", () => {
     const tabs = buildAdminNavTabs(copy, "es");
-    expect(tabs).toHaveLength(10);
+    expect(tabs).toHaveLength(9);
     expect(tabs.map((t) => t.label)).toEqual([
       copy.dashboard,
       copy.tripRequests,
@@ -26,7 +26,6 @@ describe("buildAdminNavTabs", () => {
       copy.newExperience,
       copy.payments,
       copy.reviews,
-      copy.xsed,
       copy.blog,
       copy.notifications,
       copy.settings,
@@ -42,7 +41,6 @@ describe("buildAdminNavTabs", () => {
       "/dashboard/admin/experiences/new",
       "/dashboard/admin/payments",
       "/dashboard/admin/reviews",
-      "/dashboard/admin/xsed",
       "/dashboard/admin/blog",
       "/dashboard/admin/notifications",
       "/dashboard/admin/settings",
@@ -52,8 +50,7 @@ describe("buildAdminNavTabs", () => {
   it("prefixes hrefs with the locale for non-default locales", () => {
     const tabs = buildAdminNavTabs(copy, "en");
     expect(tabs[0]?.href).toBe("/en/dashboard/admin");
-    expect(tabs[6]?.href).toBe("/en/dashboard/admin/xsed");
-    expect(tabs[7]?.href).toBe("/en/dashboard/admin/blog");
+    expect(tabs[6]?.href).toBe("/en/dashboard/admin/blog");
   });
 
   it("places the New Experience tab right after the Experiences list tab; list tab is exact, new tab is not", () => {
