@@ -474,6 +474,7 @@ export function NewBlogPostShell({
               }
               changedFields={changedFields}
               originalDraft={originalDraft}
+              isAdmin={mode !== undefined && mode !== "tripper"}
             />
           </div>
         </div>

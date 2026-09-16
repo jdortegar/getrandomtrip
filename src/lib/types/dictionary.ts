@@ -107,6 +107,8 @@ export interface TripperBlogFormDict {
     travelType: string;
     travelTypePlaceholder: string;
     travelTypeHint: string;
+    level: string;
+    levelNone: string;
     excuseKey: string;
     excuseKeyPlaceholder: string;
     excuseKeyHint: string;

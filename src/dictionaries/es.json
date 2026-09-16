@@ -3752,6 +3752,8 @@
         "travelType": "Tipo de viaje",
         "travelTypePlaceholder": "Seleccionar tipo de viaje...",
         "travelTypeHint": "Puede elegir 1 o +",
+        "level": "Nivel",
+        "levelNone": "Ninguno",
         "excuseKey": "Excusa del viaje",
         "excuseKeyPlaceholder": "Selecciona una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",

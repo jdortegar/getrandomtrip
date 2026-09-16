@@ -41,6 +41,8 @@ interface BlogFormContentProps {
   changedFields?: string[];
   /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
   originalDraft?: BlogFormDraft;
+  /** XSED is fulfilled centrally by the admin team — only admins can tag a blog post as XSED. */
+  isAdmin?: boolean;
 }
 
 function resolveStepContent(
@@ -54,6 +56,7 @@ function resolveStepContent(
   makePeek?: (field: keyof BlogFormDraft, diffKey?: string) => FieldPeek | undefined,
   makeSectionPeek?: (index: number, entryKey: "title" | "description") => FieldPeek | undefined,
   makeFaqPeek?: (index: number, entryKey: "question" | "answer") => FieldPeek | undefined,
+  isAdmin?: boolean,
 ): React.ReactNode {
   if (activeTab === "general") {
     if (substepId === "title-image") {
@@ -65,6 +68,7 @@ function resolveStepContent(
           imageState={imageState}
           changedFieldSet={changedFieldSet}
           peek={makePeek}
+          isAdmin={isAdmin}
         />
       );
     }
@@ -157,6 +161,7 @@ export function BlogFormContent({
   reviewActionsSlot,
   changedFields,
   originalDraft,
+  isAdmin,
 }: BlogFormContentProps) {
   // Build a Set for fast lookup of changed field names
   const changedFieldSet = changedFields && changedFields.length > 0
@@ -261,6 +266,7 @@ export function BlogFormContent({
                 makePeek,
                 makeSectionPeek,
                 makeFaqPeek,
+                isAdmin,
               )}
             </fieldset>
           </JourneyDropdown>

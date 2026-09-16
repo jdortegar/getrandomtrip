@@ -47,6 +47,9 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
   const experienceTypes = getExperienceTypes(locale).filter(
     (t) => isAdmin || t.value !== "XSED",
   );
+  const experienceLevels = EXPERIENCE_LEVELS.filter(
+    (l) => isAdmin || l.value !== "xsed",
+  );
   const excuseOptions = getExcuseOptionsForType(form.type, locale);
   const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
@@ -57,6 +60,13 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
 
   const handleLevelChange = (value: string) => {
     onChange("level", value);
+    // XSED is the type/level marker every downstream query (public drop pages,
+    // pricing, admin listing) keys off `type` containing "XSED" — keep it in
+    // sync so a level="xsed" experience is never created without it.
+    if (value === "xsed") {
+      onChange("type", ["XSED"]);
+      onChange("excuseKey", []);
+    }
     const fixedNights = MAX_NIGHTS_BY_LEVEL[value];
     if (fixedNights != null) {
       onChange("minNights", fixedNights);
@@ -111,7 +121,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
           value={form.level}
           onChange={(e) => handleLevelChange(e.target.value)}
         >
-          {EXPERIENCE_LEVELS.map((level) => (
+          {experienceLevels.map((level) => (
             <option key={level.value} value={level.value}>
               {level.label}
             </option>
