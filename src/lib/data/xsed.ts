@@ -259,3 +259,68 @@ export async function getPublicDropEntries(
     .map((drop) => toDropEntry(drop, locale));
   return { drops, hasMore: offset + limit < filtered.length };
 }
+
+const xsedBlogPostSelect = {
+  id: true,
+  slug: true,
+  title: true,
+  coverUrl: true,
+  publishedAt: true,
+  createdAt: true,
+} as const;
+
+type XsedBlogPostRow = Prisma.BlogPostGetPayload<{ select: typeof xsedBlogPostSelect }>;
+
+/**
+ * XSED grid entries sourced from BlogPost (tagged via `travelType: ["XSED"]`,
+ * stamped automatically when a level="xsed" experience's "create blog post"
+ * checkbox is used). This is a purely editorial/archive listing — no
+ * booking flow or live capacity of its own, so soldOut never applies here.
+ * `number` is a display-only ordinal (newest = highest), not a stored drop
+ * number.
+ */
+function toXsedBlogDropEntry(
+  blog: XsedBlogPostRow,
+  position: number,
+  total: number,
+  locale: string,
+): DropEntry {
+  return {
+    date: formatDropGridDate(blog.publishedAt ?? blog.createdAt, locale),
+    image: blog.coverUrl || "/images/drops/drops-mendoza.jpg",
+    number: total - position,
+    slug: blog.slug ?? blog.id,
+    title: blog.title,
+  };
+}
+
+async function findPublicXsedBlogPosts(): Promise<XsedBlogPostRow[]> {
+  return prisma.blogPost.findMany({
+    where: {
+      travelType: { has: "XSED" },
+      status: "PUBLISHED",
+      isActive: true,
+      isReviewCopy: false,
+    },
+    orderBy: { createdAt: "desc" },
+    select: xsedBlogPostSelect,
+  });
+}
+
+export async function getXsedBlogDropsForGrid(locale: string): Promise<DropEntry[]> {
+  const posts = await findPublicXsedBlogPosts();
+  return posts.map((post, i) => toXsedBlogDropEntry(post, i, posts.length, locale));
+}
+
+export async function getPublicXsedBlogDropEntries(
+  locale: string,
+  offset: number = 0,
+  limit: number = 6,
+): Promise<{ drops: DropEntry[]; hasMore: boolean }> {
+  const posts = await findPublicXsedBlogPosts();
+  const page = posts.slice(offset, offset + limit);
+  const drops = page.map((post, i) =>
+    toXsedBlogDropEntry(post, offset + i, posts.length, locale),
+  );
+  return { drops, hasMore: offset + limit < posts.length };
+}

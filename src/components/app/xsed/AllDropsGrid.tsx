@@ -8,13 +8,11 @@ import { DropCard } from "./DropCard";
 import Section from "@/components/layout/Section";
 
 interface AllDropsGridProps {
-  excludeId?: string;
   initialDrops: DropEntry[];
   initialHasMore: boolean;
 }
 
 export function AllDropsGrid({
-  excludeId,
   initialDrops,
   initialHasMore,
 }: AllDropsGridProps) {
@@ -32,7 +30,6 @@ export function AllDropsGrid({
       offset: String(drops.length),
       limit: "6",
     });
-    if (excludeId) params.set("excludeId", excludeId);
     const res = await fetch(`/api/xsed/drops?${params}`);
     const data: { drops: DropEntry[]; hasMore: boolean } = await res.json();
     setDrops((prev) => [...prev, ...data.drops]);

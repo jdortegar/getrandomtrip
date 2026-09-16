@@ -12,7 +12,7 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
   return (
     <Link
       className={cn("flex flex-col text-left group", featured && "md:h-full")}
-      href={`/xsed/drops/${drop.slug}`}
+      href={`/blog/${drop.slug}`}
     >
       <div
         className={cn(
