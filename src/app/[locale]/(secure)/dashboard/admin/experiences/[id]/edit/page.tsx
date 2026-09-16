@@ -47,14 +47,6 @@ export default async function AdminEditExperiencePage(props: {
     redirect(`/${locale}/dashboard/admin/experiences/${params.id}`);
   }
 
-  // XSED drops are also tagged source=RANDOMTRIP (see backfill-experience-source.ts)
-  // but have their own dedicated editor with XSED-only fields (titleInternal, slug,
-  // tripDate, revealAt, ...) that this generic shell does not render — routing them
-  // here would silently null those fields out on save.
-  if (Array.isArray(pkg.type) && pkg.type.includes("XSED")) {
-    redirect(`/${locale}/dashboard/admin/xsed/${params.id}/edit`);
-  }
-
   const initialDraft: ExperienceFormDraft = {
     status: pkg.status,
     title: pkg.title,
