@@ -250,3 +250,175 @@ When a tripper rejects an admin's review copy, the copy row MUST reach a termina
 | `PATCH /api/admin/blogs/[id]/start-edit` \| `send-to-tripper` | ADMIN | Creates review copy, `PENDING_REVIEW → PENDING_TRIPPER_REVIEW`, sets `reviewLockedBy`; blocked if already locked |
 | `PATCH /api/tripper/blogs/[id]/approve-copy` | TRIPPER | Copy overwrites original atomically, `PENDING_TRIPPER_REVIEW → PUBLISHED` |
 | `PATCH /api/tripper/blogs/[id]/reject-copy` | TRIPPER | `PENDING_TRIPPER_REVIEW → DRAFT`, copy reaches terminal state |
+
+---
+
+# blog-review-flow-v2: RandomTrip Ownership & Auto-Publish Specification
+
+## Change: `randomtrip-blog-ownership`
+
+Adds a `RANDOMTRIP` ownership path to `BlogPost`, mirroring the equivalent `Experience.source` mechanism (see `experience-review-lifecycle`/`experience-randomtrip-ownership`). A RANDOMTRIP-sourced post is owned by a dedicated pseudo-user, not by whichever admin created it, and skips the tripper review pipeline entirely.
+
+## MODIFIED Requirements
+
+### Requirement: Blog Status State Machine (Extended — RANDOMTRIP bypass)
+
+In addition to the v1 transitions, the system MUST support a `DRAFT → PUBLISHED` direct transition for `BlogPost` rows with `source: RANDOMTRIP`, bypassing `PENDING_REVIEW` entirely — there is no review step for admin-owned content. This transition MUST NOT be reachable for `source: TRIPPER` rows, which keep the full v1 pipeline unchanged.
+
+#### Scenario: RANDOMTRIP post auto-publishes on submit
+
+- GIVEN a `BlogPost` in `DRAFT` with `source: RANDOMTRIP`
+- WHEN the submit endpoint is called
+- THEN status becomes `PUBLISHED` directly, `isActive` is set `true`, and `publishedAt` is set
+- AND the post never occupies `PENDING_REVIEW`
+- AND no "submitted for review" notification is sent
+
+#### Scenario: TRIPPER post is unaffected
+
+- GIVEN a `BlogPost` in `DRAFT` with `source: TRIPPER`
+- WHEN the submit endpoint is called
+- THEN status becomes `PENDING_REVIEW`, identical to pre-change behavior
+
+---
+
+### Requirement: Auto-Revert to DRAFT on Published Content Edit (Amended — RANDOMTRIP exempt)
+
+The existing `Auto-Revert to DRAFT` requirement MUST NOT apply to `source: RANDOMTRIP` posts. Editing a published RANDOMTRIP post's content MUST leave it `PUBLISHED` and `isActive: true` — there is no review step to re-enter.
+
+#### Scenario: Editing a published RANDOMTRIP post does not unpublish it
+
+- GIVEN a `BlogPost` in `PUBLISHED` status with `source: RANDOMTRIP`
+- WHEN its title or content changes via a PATCH
+- THEN status remains `PUBLISHED` and `isActive` remains `true`
+
+---
+
+## ADDED Requirements
+
+### Requirement: BlogPost Ownership Source
+
+`BlogPost` MUST carry a `source: BlogSource` field with values `TRIPPER | RANDOMTRIP`, defaulting to `TRIPPER`, derived exclusively from the authenticated caller's role at creation time — never trusted from the request body — mirroring `Experience.source` exactly.
+
+#### Scenario: Source derived from admin caller
+
+- GIVEN an authenticated ADMIN calls the blog creation endpoint
+- WHEN the row is created
+- THEN `source` is persisted as `RANDOMTRIP` regardless of any `source` value present in the request body
+
+---
+
+### Requirement: RandomTrip Pseudo-User Ownership
+
+`Experience.ownerId` and `BlogPost.authorId` MUST be set to a dedicated "RandomTrip" system user's id (seeded via `scripts/seed-randomtrip-user.ts`, no password, `roles: ["ADMIN"]`, no `tripperSlug`) whenever the row's `source` is `RANDOMTRIP` — never to the individual admin account that triggered creation. `Experience.createdById` / `BlogPost.createdById` (added to `BlogPost` by this change, mirroring the existing `Experience` field) MUST be set to the real creating admin's id, for audit purposes only — it MUST NOT be used for access control or public attribution.
+
+This decouples brand-owned content from any individual admin's account lifecycle: both `owner`/`author` relations cascade-delete their content, so without this indirection, deleting an admin's account would delete every RANDOMTRIP row they ever created.
+
+#### Scenario: New RANDOMTRIP post owned by the pseudo-user
+
+- GIVEN an authenticated ADMIN creates a new blog post
+- WHEN the row is created
+- THEN `authorId` is the RandomTrip pseudo-user's id, and `createdById` is the real admin's id
+
+#### Scenario: Admin's own "My Blog" list no longer shows their RANDOMTRIP posts
+
+- GIVEN an admin created a RANDOMTRIP post (now owned by the pseudo-user)
+- WHEN that admin views their personal blog list (`GET /api/tripper/blogs`, scoped by `authorId === caller.id`)
+- THEN the post does not appear there — it is visible only from the admin-wide list (`GET /api/admin/blogs`)
+
+---
+
+### Requirement: Any Admin May Manage a RANDOMTRIP Post
+
+`GET`/`PATCH`/`DELETE /api/tripper/blogs/[id]` and `POST /api/tripper/blogs/[id]/submit` MUST authorize the request when either the caller is the post's `authorId` (owner) OR the caller has the ADMIN role AND the post's `source` is `RANDOMTRIP` — mirroring the equivalent `isOwner || isAdminOnRandomtrip` check on the experience routes. This MUST NOT extend to `source: TRIPPER` posts, which remain owner-only.
+
+#### Scenario: A different admin can edit a RANDOMTRIP post
+
+- GIVEN admin B (not the original creator) is authenticated as ADMIN
+- WHEN admin B calls GET/PATCH on a `BlogPost` with `source: RANDOMTRIP`
+- THEN the request succeeds regardless of who created it
+
+#### Scenario: A non-owning admin cannot edit a TRIPPER post
+
+- GIVEN an ADMIN who is not the post's author
+- WHEN that admin calls PATCH on a `BlogPost` with `source: TRIPPER`
+- THEN the request MUST return 404 ("not found or access denied")
+
+---
+
+### Requirement: One-Time Ownership Backfill
+
+A one-time, idempotent migration (`scripts/backfill-randomtrip-ownership.ts`) MUST, for every existing row with `source: RANDOMTRIP` across `Experience` and `BlogPost`: (1) where `createdById` is null, set it to the row's current `ownerId`/`authorId`; then (2) set `ownerId`/`authorId` to the RandomTrip pseudo-user's id.
+
+#### Scenario: Existing RANDOMTRIP rows repointed without losing creator history
+
+- GIVEN a RANDOMTRIP experience created before this change, with `ownerId` = admin A and `createdById: null`
+- WHEN the migration runs
+- THEN `createdById` becomes admin A's id, and `ownerId` becomes the RandomTrip pseudo-user's id
+
+---
+
+### Requirement: Admin-Only "New Post" Creation Route
+
+The system MUST provide a dedicated `/dashboard/admin/blog/new` route (`NewBlogPostShell` with `mode: "adminCreate"`), distinct from the tripper's own `/dashboard/tripper/blog/new`. The admin nav's "New Post" tab MUST link to this route, not the tripper route.
+
+In `adminCreate` mode: the finalize CTA MUST read "Publish" (not "Submit for review"), the confirm-modal copy MUST state the post publishes immediately as a RandomTrip post skipping review, and the tripper-note field MUST NOT be shown (there is no reviewer to address).
+
+#### Scenario: Admin nav does not send an admin to a tripper-branded URL
+
+- GIVEN an admin clicks "New Post" in the admin nav
+- WHEN the page loads
+- THEN the URL is `/dashboard/admin/blog/new`, not `/dashboard/tripper/blog/new`
+
+#### Scenario: New-post copy reflects auto-publish, not review
+
+- GIVEN an admin is on the last step of `/dashboard/admin/blog/new` with a complete draft
+- WHEN the admin views the finalize button and its confirm modal
+- THEN the button reads "Publish" and the modal states the post goes live immediately, with no tripper-note input shown
+
+---
+
+### Requirement: Admin Blog List Defaults to All
+
+The admin blog list (`AdminBlogPageClient`) MUST default to the "All" tab, not "Pending". Since RANDOMTRIP posts never enter `PENDING_REVIEW`, a "Pending"-first default would hide them from the admin entirely on first load. The list MUST also render an Edit action for `source: RANDOMTRIP` rows (which have nothing to "review"), linking to the shared `/dashboard/tripper/blog/[id]` edit page.
+
+#### Scenario: Newly-published RANDOMTRIP post is visible without switching tabs
+
+- GIVEN an admin just published a new RANDOMTRIP post
+- WHEN that admin opens `/dashboard/admin/blog`
+- THEN the post is visible immediately, on the default "All" tab
+
+#### Scenario: RANDOMTRIP row shows an Edit action, not a Review action
+
+- GIVEN a `PUBLISHED` `BlogPost` with `source: RANDOMTRIP` in the admin blog list
+- WHEN the admin views that row's actions
+- THEN an Edit icon linking to `/dashboard/tripper/blog/[id]` is shown, not a Review action
+
+---
+
+### Requirement: RandomTrip Attribution Has No Public Profile Link
+
+The public post-attribution UI (`TripperMottoBanner`) MUST render the attribution as plain text, not a link to `/trippers/[slug]`, when the author has no `tripperSlug` — which is always true for the RandomTrip pseudo-user by design (it is not a real tripper and has no public profile page).
+
+#### Scenario: RANDOMTRIP post attribution is not a dead link
+
+- GIVEN a published `BlogPost` with `source: RANDOMTRIP` (author = RandomTrip pseudo-user, no `tripperSlug`)
+- WHEN a visitor views the post's feature-quote attribution
+- THEN the attribution text renders without a link
+
+---
+
+## Schema Delta (blog-review-flow-v2 additions)
+
+| Change | Detail |
+|--------|--------|
+| `BlogSource` enum | ADDED — `TRIPPER \| RANDOMTRIP` |
+| `BlogPost.source` | ADDED as `BlogSource @default(TRIPPER)` |
+| `BlogPost.createdById` | ADDED as `String?`, relation `BlogCreatedBy`, `onDelete: SetNull` |
+
+## API Contracts (blog-review-flow-v2 additions)
+
+| Endpoint | Auth | Behavior |
+|----------|------|----------|
+| `POST /api/tripper/blogs` | TRIPPER or ADMIN | `source`/`authorId`/`createdById` server-derived from caller role, per Ownership requirements above |
+| `GET/PATCH/DELETE /api/tripper/blogs/[id]` | Owner OR (ADMIN AND `source: RANDOMTRIP`) | See "Any Admin May Manage a RANDOMTRIP Post" |
+| `POST /api/tripper/blogs/[id]/submit` | Owner OR (ADMIN AND `source: RANDOMTRIP`) | `DRAFT → PUBLISHED` direct for RANDOMTRIP; `DRAFT → PENDING_REVIEW` for TRIPPER |
