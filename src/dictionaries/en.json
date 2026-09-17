@@ -3891,7 +3891,7 @@
         "description": "What your travelers say"
       },
       "blogs": {
-        "title": "My Posts",
+        "title": "My Blog",
         "description": "Manage your blog and share your experiences"
       },
       "notifications": {
@@ -3924,7 +3924,7 @@
       "earningsSub": "Detailed analytics",
       "reviews": "Reviews & NPS",
       "reviewsSub": "View feedback",
-      "blogs": "My Posts",
+      "blogs": "My Blog",
       "blogsSub": "Manage blog",
       "newPost": "New Post",
       "settings": "Settings",
