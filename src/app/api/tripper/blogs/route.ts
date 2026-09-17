@@ -10,6 +10,7 @@ import { authOptions } from "@/lib/auth";
 import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
 import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
+import { getRandomtripUserId } from "@/lib/randomtrip-user";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -190,6 +191,9 @@ export async function POST(request: NextRequest) {
     // source is server-derived from the caller's role only — never trusted
     // from the request body — mirrors /api/tripper/experiences.
     const isAdmin = getAppRoles(user).includes("admin");
+    // RANDOMTRIP posts are owned by the RandomTrip pseudo-user, not whichever
+    // admin clicked create — createdById keeps the real creator for audit.
+    const authorId = isAdmin ? await getRandomtripUserId() : user.id;
 
     const baseSlug = slugify(title) || "post";
     let slug = baseSlug;
@@ -203,7 +207,8 @@ export async function POST(request: NextRequest) {
 
     const blog = await prisma.blogPost.create({
       data: {
-        authorId: user.id,
+        authorId,
+        createdById: user.id,
         title,
         slug,
         subtitle: subtitle || null,

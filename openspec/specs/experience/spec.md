@@ -1207,3 +1207,55 @@ After all changes, `npm run typecheck` and `npm run lint` MUST pass with zero er
 - GIVEN `PENDING_TRIPPER_REVIEW` is added to `ExperienceStatus`
 - WHEN `npm run typecheck` runs
 - THEN no unhandled union member errors are reported
+
+---
+
+# experience-randomtrip-ownership Specification
+
+## Change: `randomtrip-blog-ownership` (shared with `BlogPost`; see `blog-review-flow-v2`)
+
+Introduces a dedicated "RandomTrip" pseudo-user as the true owner of every `source: RANDOMTRIP` row, replacing the prior behavior where `ownerId` was simply whichever admin account triggered creation. `Experience.owner` cascade-deletes its experiences on account deletion — this change decouples brand-owned content from any individual admin's account lifecycle.
+
+## MODIFIED Requirements
+
+### Requirement: Role-Aware Experience Creation Endpoint (Amended — pseudo-user ownership)
+
+For an ADMIN caller, `POST /api/tripper/experiences` MUST set `ownerId` to the RandomTrip pseudo-user's id (seeded via `scripts/seed-randomtrip-user.ts`), not the calling admin's own id. `createdById` MUST still be set to the calling admin's id, as before — it now serves as the only record of who actually triggered creation.
+
+#### Scenario: Admin-created experience is owned by the pseudo-user, not the admin
+
+- GIVEN an authenticated ADMIN submits the New Experience form
+- WHEN the creation request succeeds
+- THEN `ownerId` is the RandomTrip pseudo-user's id and `createdById` is the admin's own id
+
+#### Scenario: Admin's own "My Experiences" list no longer shows their RANDOMTRIP experiences
+
+- GIVEN an admin created a RANDOMTRIP experience (now owned by the pseudo-user)
+- WHEN that admin views their personal experiences list (scoped by `ownerId === caller.id`)
+- THEN the experience does not appear there — it is visible only from the admin-wide `/dashboard/admin/experiences` list
+
+---
+
+## ADDED Requirements
+
+### Requirement: Any Admin May Manage a RANDOMTRIP Experience
+
+`GET`/`PATCH /api/tripper/experiences/[id]` (and the submit endpoint) MUST authorize the request when either the caller is the experience's `ownerId` OR the caller has the ADMIN role AND the experience's `source` is `RANDOMTRIP`. This MUST NOT extend to `source: TRIPPER` rows, which remain owner-only.
+
+#### Scenario: A different admin can edit a RANDOMTRIP experience
+
+- GIVEN admin B (not the original creator) is authenticated as ADMIN
+- WHEN admin B calls PATCH on an `Experience` with `source: RANDOMTRIP`
+- THEN the request succeeds regardless of who created it
+
+---
+
+### Requirement: One-Time Ownership Backfill (shared migration)
+
+See `blog-review-flow-v2`'s "One-Time Ownership Backfill" requirement — `scripts/backfill-randomtrip-ownership.ts` covers both `Experience` and `BlogPost` in a single run, preserving `createdById` before repointing `ownerId`.
+
+#### Scenario: Existing XSED experiences repointed without losing creator history
+
+- GIVEN a RANDOMTRIP experience created before this change, with `ownerId` = admin A and `createdById: null`
+- WHEN the migration runs
+- THEN `createdById` becomes admin A's id, and `ownerId` becomes the RandomTrip pseudo-user's id

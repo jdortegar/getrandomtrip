@@ -1,14 +1,25 @@
 # Feature Spec: XSED
 
 **Priority:** 6 — Secondary curated drop product  
-**Routes:** `/xsed`, `/xsed/book`, `/xsed/drops`, `/xsed/drops/[slug]`, `/dashboard/admin/xsed/new`, `/dashboard/admin/xsed/[id]/edit`  
-**Last audited:** 2026-08-16
+**Routes:** `/xsed`, `/xsed/book`, `/xsed/drops`, `/xsed/drops/[slug]`, `/dashboard/admin/experiences/new` (level `xsed` — current path for authoring a drop's sale/capacity record), `/dashboard/admin/xsed/new`, `/dashboard/admin/xsed/[id]/edit` (legacy drop-content editor, still live — see 2026-09-17 note below)  
+**Last audited:** 2026-09-17
 
 ---
 
 ## Product Context
 
 XSED is a curated-drop product: a single surprise overnight trip with limited spots (typically 10), a short booking window, and the destination revealed 48 hours before departure. It is booked independently of the main journey flow.
+
+---
+
+## 2026-09-17 Changes
+
+- **Public drop listings now source from the blog archive, not `Experience`.** `getXsedBlogDropsForGrid`/`getPublicXsedBlogDropEntries` (`src/lib/data/xsed.ts`) read published `BlogPost` rows tagged `travelType: ["XSED"]` — the "create blog post" checkbox on an XSED experience is what stamps a post this way. `/xsed` and `/xsed/drops` were repointed to these; the old Experience-sourced `getXsedDropsForGrid`/`getPublicDropEntries` are now dead code. `soldOut` was dropped from this listing entirely — it's an archival/editorial view of past drops, not a live sale surface, so capacity has no meaning there.
+- **Admin XSED creation is moving to the generic Experience flow.** An admin now authors an XSED drop's sale/capacity record via `/dashboard/admin/experiences/new` with level `xsed` (same route/form as any other RandomTrip experience — see the `experience` spec's `experience-randomtrip-ownership` section), not the dedicated `/dashboard/admin/xsed/new` wizard. The dedicated XSED admin routes (`XsedDropShell`, drop-content editing: hotels, itinerary, sections) remain live and unchanged for now — they still own the rich drop-content fields the generic Experience form doesn't have — but are expected to be deprecated once that content model migrates too. The admin nav's dead "XSED" sidebar tab (Gap, below) was removed rather than fixed, since the flow it pointed at is being phased out.
+- **`level: "xsed"` now prices correctly.** `getBasePricePerPerson` already returns a flat $250/person for XSED regardless of level, but the RANDOMTRIP auto-publish pricing step filtered `"XSED"` out of `type[]` before pricing it, leaving `pricingByType` empty and tripping the "unpriceable" guard on every XSED submission from the generic wizard. Fixed by removing that filter.
+- **Any admin can now edit an XSED experience via the generic editor**, not just its creator — `/dashboard/admin/experiences/[id]/edit` no longer redirects XSED-typed rows to the dedicated `/dashboard/admin/xsed/[id]/edit` editor; the generic PATCH route's `!== undefined` guards on the 16 XSED-only fields (`titleInternal`, `slug`, `tripDate`, `revealAt`, `maxSpots`, etc.) prevent the generic form from nulling them out on save, since it doesn't send them.
+- **XSED level is now taggable on the tripper blog composer, admin-only** — `TitleImageStep`'s "Level" select (None/XSED) is gated by the real session role (`isAdmin` derived from `session.user.roles`, not shell `mode`), since blogs — unlike experiences — have no separate admin-only composer route.
+- **Logistics step no longer blocks on an empty Refer Code/Link** — `isExperienceTabComplete`'s "logistics" case required `referredLink`, a field the UI never marked as required and never listed as missing; this blocked "Next" on the New Experience wizard for any drop without an affiliate code.
 
 ---
 
@@ -54,7 +65,7 @@ What works end-to-end today:
 
 | Severity | Issue |
 |----------|-------|
-| CRITICAL | XSED list page in admin sidebar is a live 404 — the sidebar link does not render the list |
+| RESOLVED (2026-09-17) | ~~XSED list page in admin sidebar is a live 404~~ — the dead tab was removed from the admin nav rather than fixed, since drop creation is moving to `/dashboard/admin/experiences/new` (level `xsed`) |
 | CRITICAL | Wrong role guard on XSED admin layout — a tripper can reach `/dashboard/admin/xsed/new` directly by URL |
 | HIGH | `/xsed/book` does not enforce capacity — if the drop has 10 spots and 10 are booked, the form still accepts submissions |
 | HIGH | No real-time spot availability shown on the booking form — user can initiate payment only to be rejected if capacity is reached |

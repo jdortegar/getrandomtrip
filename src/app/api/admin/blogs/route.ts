@@ -36,6 +36,11 @@ export async function GET(request: NextRequest) {
     // Comma-separated to support the "pending" tab, which spans two statuses
     // (PENDING_REVIEW, PENDING_TRIPPER_REVIEW).
     const filterStatus = searchParams.get("status");
+    // "level" is XSED-only for now — BlogPost has no dedicated level column,
+    // XSED is tracked via the travelType marker (mirrors GET /api/tripper/blogs).
+    const filterLevel = searchParams.get("level");
+    const filterTravelType = searchParams.get("travelType");
+    const filterSearch = searchParams.get("search");
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
     const limit = Math.min(
       MAX_LIMIT,
@@ -48,6 +53,14 @@ export async function GET(request: NextRequest) {
     const where: Record<string, any> = { isReviewCopy: false };
     if (filterAuthorId) where.authorId = filterAuthorId;
     if (filterStatus) where.status = { in: filterStatus.split(",") };
+    if (filterLevel === "xsed") {
+      where.travelType = { has: "XSED" };
+    } else if (filterTravelType) {
+      where.travelType = { has: filterTravelType };
+    }
+    if (filterSearch) {
+      where.title = { contains: filterSearch, mode: "insensitive" };
+    }
 
     const [blogs, total, pendingCount] = await Promise.all([
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

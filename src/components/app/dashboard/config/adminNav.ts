@@ -63,10 +63,7 @@ export function buildAdminNavTabs(
       label: copy.blog,
     },
     {
-      // Blog posts share a single creation route with the tripper dashboard
-      // (source is server-derived from the caller's role) — there's no
-      // separate /dashboard/admin/blog/new page to link to.
-      href: pathForLocale(locale, "/dashboard/tripper/blog/new"),
+      href: base("/blog/new"),
       icon: FilePlus2,
       label: copy.newPost,
     },

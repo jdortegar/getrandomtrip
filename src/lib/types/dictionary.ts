@@ -1083,6 +1083,7 @@ export interface AdminDashboardDict {
   pageHeadings: {
     blog: { description: string; title: string };
     blogDetail: { description: string; title: string };
+    blogNew: { description: string; title: string };
     experiences: { description: string; title: string };
     experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
@@ -1095,6 +1096,11 @@ export interface AdminDashboardDict {
     xsedNew: { description: string; title: string };
   };
   newExperience: {
+    submitLabel: string;
+    confirmTitle: string;
+    confirmBody: string;
+  };
+  newBlogPost: {
     submitLabel: string;
     confirmTitle: string;
     confirmBody: string;
@@ -1428,10 +1434,33 @@ export interface AdminPagesDict {
     actions: {
       review: string;
       edit: string;
+      delete: string;
+      deleteConfirm: string;
+      lockedForDeletion: string;
     };
     tabs: {
       all: string;
       pending: string;
+    };
+    filters: {
+      allExperiences: string;
+      allTravelTypes: string;
+      clearFilters: string;
+      searchPlaceholder: string;
+      of: string;
+      count: string;
+    };
+    bulkActions: {
+      deleteSelected: string;
+      confirmTitle: string;
+      confirmBody: string;
+      cancel: string;
+      confirm: string;
+      partialFailure: string;
+    };
+    table: {
+      selectAll: string;
+      selectRow: string;
     };
   };
   reviews: {

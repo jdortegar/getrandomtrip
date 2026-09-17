@@ -1,7 +1,7 @@
 # GetRandomTrip — Product Specification
 
-**Last updated:** 2026-05-22  
-**Stack:** Next.js 14 (App Router) · TypeScript 5 · Prisma 7 · PostgreSQL · Stripe · NextAuth 4  
+**Last updated:** 2026-09-17  
+**Stack:** Next.js 16 (App Router) · TypeScript 5 · Prisma 7 · PostgreSQL · Stripe · NextAuth 4  
 **Deployed:** https://getrandomtrip.netlify.app/
 
 ---
@@ -292,7 +292,8 @@ Full platform management at `/(secure)/dashboard/admin/`:
 
 **Blogs**
 
-- Manage all blog posts across trippers
+- Manage all blog posts, both tripper-authored and RandomTrip-owned (admin-created, auto-published, no review step — see `blog-review-flow` spec)
+- Author a new RandomTrip-owned post directly via `/dashboard/admin/blog/new`
 
 **XSED Notifications**
 
@@ -307,7 +308,7 @@ Full platform management at `/(secure)/dashboard/admin/`:
 
 ## 4. Content & Blog System
 
-- Blog posts authored by trippers
+- Blog posts authored by trippers, or by admins on behalf of RandomTrip (owned by a dedicated system user, not the individual admin — auto-published, skipping tripper review)
 - Accessible at `/blog` and `/blog/[slug]`
 - Rich HTML content with support for images, videos, galleries
 - Tags and travel type categorization

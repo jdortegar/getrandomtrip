@@ -109,6 +109,7 @@ model User {
   tripperReviews          Review[]             @relation("TripperReviews")
   likedExperiences        ExperienceLike[]
   blogPosts               BlogPost[]           @relation("BlogAuthor")
+  blogPostsCreated        BlogPost[]           @relation("BlogCreatedBy")
   experiencesCreated      Experience[]         @relation("ExperienceCreatedBy")
   experiencesUpdated      Experience[]         @relation("ExperienceUpdatedBy")
   notifications           Notification[]
@@ -564,9 +565,11 @@ model BlogPost {
   reviewLockedBy String? // admin id holding the edit soft-lock
   changedFields  String[] @default([]) // fields the admin changed (copy -> tripper diff)
   isDiscarded    Boolean  @default(false) // rejected-copy tombstone
+  createdById    String? // Real account that clicked "create" — distinct from authorId, which is the pseudo RandomTrip user for RANDOMTRIP-sourced posts
 
   // Relations
-  author User @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  author    User  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdBy User? @relation("BlogCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@map("blog_posts")
 }

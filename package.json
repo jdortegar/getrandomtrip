@@ -19,6 +19,8 @@
     "db:studio": "prisma studio",
     "db:grant-all-roles": "npx tsx scripts/grant-all-roles-to-all-users.ts",
     "db:backfill-source": "npx tsx scripts/backfill-experience-source.ts",
+    "db:seed-randomtrip-user": "npx tsx scripts/seed-randomtrip-user.ts",
+    "db:backfill-randomtrip-ownership": "npx tsx scripts/backfill-randomtrip-ownership.ts",
     "db:backfill-email-verified": "npx tsx scripts/backfill-email-verified.ts",
     "db:backfill-tripper-since": "npx tsx scripts/backfill-tripper-since.ts",
     "db:backfill-tripper-hero-crop": "npx tsx scripts/backfill-tripper-hero-crop.ts",

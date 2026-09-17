@@ -1,9 +1,9 @@
 # Feature Spec: Admin Dashboard
 
 **Priority:** 4 — Operations and review  
-**Routes:** `/dashboard/admin`, `/dashboard/admin/experiences/*`, `/dashboard/admin/packages`, `/dashboard/admin/payments`, `/dashboard/admin/reviews`, `/dashboard/admin/settings`, `/dashboard/admin/settings/users/[id]/edit`, `/dashboard/admin/xsed-notifications`, `/dashboard/admin/xsed/*`  
-**Last audited:** 2026-08-18  
-**Related capabilities:** `admin-user-edit-page`, `tripper-price-override`
+**Routes:** `/dashboard/admin`, `/dashboard/admin/experiences/*`, `/dashboard/admin/blog`, `/dashboard/admin/blog/new`, `/dashboard/admin/blog/[id]`, `/dashboard/admin/packages`, `/dashboard/admin/payments`, `/dashboard/admin/reviews`, `/dashboard/admin/settings`, `/dashboard/admin/settings/users/[id]/edit`, `/dashboard/admin/xsed-notifications`, `/dashboard/admin/xsed/*` (legacy drop-content editor — see `06-xsed.md`)  
+**Last audited:** 2026-09-17  
+**Related capabilities:** `admin-user-edit-page`, `tripper-price-override`, `blog-review-flow`
 
 ---
 
@@ -25,8 +25,8 @@ What works end-to-end today:
   - **Features tab** — two independent toggles backed by the singleton `SiteSetting` row, each with its own save/error state (`GET`/`PATCH /api/admin/site-settings`):
     - **Waitlist gate** (`gateEnabled`, default on) — when on, only signed-in users who are `admin`/`tripper` or hold a site-access grant (`User.siteAccessGrantedAt`) pass the marketing gate (`GateAwareChrome.tsx`); everyone else sees the public waitlist page instead of the site.
     - **XSED window validation** (`xsedWindowEnforcementEnabled`, default on) — when on, `/xsed/book` only renders the booking form during the Sunday 16-20hs local-time window (`isLocalWindowOpen()`); when off, the window check is bypassed for everyone, in addition to the pre-existing admin-role and `XSED_BYPASS_WINDOW`-env-var bypasses (all three bypasses are independent ORs — any one of them opens the page).
-- **XSED drop management** — Admin can create (`/dashboard/admin/xsed/new`) and edit (`/dashboard/admin/xsed/[id]/edit`) XSED drops. Full form with date, pricing, capacity, and destination fields.
-- **Blog moderation** — `/dashboard/admin/blog` lists tripper blog posts with status filter (dropdown, not tabs), search-by-title, and server-side pagination; the "pending" badge comes from a separate dataset-wide query, not the paginated result set.
+- **XSED drop management** — Drop-content authoring (hotels, itinerary, sections) still goes through `/dashboard/admin/xsed/new`/`[id]/edit`, but a drop's sale/capacity record is now created via `/dashboard/admin/experiences/new` with level `xsed` (2026-09-17 — see `06-xsed.md`), not the dedicated wizard. The admin nav's XSED sidebar tab was removed.
+- **Blog moderation** — `/dashboard/admin/blog` lists blog posts across both ownership sources (tripper-submitted and RandomTrip-owned), defaulting to an "All" tab rather than "Pending" (2026-09-17 — RANDOMTRIP posts auto-publish and never enter `PENDING_REVIEW`, so a pending-first default hid them). RANDOMTRIP rows get an Edit action (linking to the shared `/dashboard/tripper/blog/[id]` editor) instead of the Review action pending-review rows get. A dedicated `/dashboard/admin/blog/new` route (2026-09-17) lets an admin author a new RandomTrip-owned post directly, with "Publish" copy instead of "Submit for review" — see `blog-review-flow`'s `blog-review-flow-v2` section for the full ownership/auto-publish model.
 
 ---
 

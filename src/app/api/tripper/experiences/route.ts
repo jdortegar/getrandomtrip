@@ -10,6 +10,7 @@ import { authOptions } from "@/lib/auth";
 import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getTripperExperiences } from "@/lib/db/tripper-queries";
 import { prisma } from "@/lib/prisma";
+import { getRandomtripUserId } from "@/lib/randomtrip-user";
 import type { ExperienceFormDraft } from "@/types/tripper";
 
 export const dynamic = "force-dynamic";
@@ -85,10 +86,13 @@ export async function POST(request: NextRequest) {
     // source is server-derived from the caller's role only — never trusted
     // from the request body (ExperienceFormDraft has no `source` field).
     const isAdmin = getAppRoles(user).includes("admin");
+    // RANDOMTRIP rows are owned by the RandomTrip pseudo-user, not whichever
+    // admin clicked create — createdById keeps the real creator for audit.
+    const ownerId = isAdmin ? await getRandomtripUserId() : user.id;
 
     const experience = await prisma.experience.create({
       data: {
-        ownerId: user.id,
+        ownerId,
         createdById: user.id,
         status: "DRAFT",
         source: isAdmin ? "RANDOMTRIP" : "TRIPPER",

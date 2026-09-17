@@ -44,7 +44,7 @@ describe("buildAdminNavTabs", () => {
       "/dashboard/admin/payments",
       "/dashboard/admin/reviews",
       "/dashboard/admin/blog",
-      "/dashboard/tripper/blog/new",
+      "/dashboard/admin/blog/new",
       "/dashboard/admin/notifications",
       "/dashboard/admin/settings",
     ]);

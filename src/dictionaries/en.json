@@ -101,6 +101,10 @@
         "title": "Post review",
         "description": "Review the post before approving it."
       },
+      "blogNew": {
+        "title": "New Post",
+        "description": "Create a post published by RandomTrip."
+      },
       "home": {
         "title": "Admin Dashboard",
         "description": "Platform overview at a glance."
@@ -150,6 +154,11 @@
     "editExperience": {
       "confirmTitle": "Save these changes?",
       "confirmBody": "The changes will apply immediately to the published experience."
+    },
+    "newBlogPost": {
+      "submitLabel": "Publish",
+      "confirmTitle": "Publish this post?",
+      "confirmBody": "It will go live immediately as a RandomTrip post, skipping review."
     }
   },
   "adminXsed": {
@@ -566,11 +575,34 @@
       },
       "actions": {
         "review": "Review",
-        "edit": "Edit"
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this post? This cannot be undone.",
+        "lockedForDeletion": "Cannot delete while a review decision is pending"
       },
       "tabs": {
         "all": "All",
         "pending": "Pending review"
+      },
+      "filters": {
+        "allExperiences": "All experiences",
+        "allTravelTypes": "All types",
+        "clearFilters": "Clear filters",
+        "searchPlaceholder": "Search by title…",
+        "of": "of",
+        "count": "posts"
+      },
+      "bulkActions": {
+        "deleteSelected": "Delete ({count})",
+        "confirmTitle": "Delete {count} posts?",
+        "confirmBody": "This cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "partialFailure": "Deleted {success} of {total} posts — {failed} failed."
+      },
+      "table": {
+        "selectAll": "Select all posts",
+        "selectRow": "Select post"
       }
     },
     "reviews": {

@@ -101,6 +101,10 @@
         "title": "Revisión de post",
         "description": "Revisa el post antes de aprobarlo."
       },
+      "blogNew": {
+        "title": "Nuevo Post",
+        "description": "Crea un post publicado por RandomTrip."
+      },
       "home": {
         "title": "Panel de Admin",
         "description": "Resumen general de la plataforma."
@@ -150,6 +154,11 @@
     "editExperience": {
       "confirmTitle": "¿Guardar los cambios?",
       "confirmBody": "Los cambios se aplicarán de inmediato a la experiencia publicada."
+    },
+    "newBlogPost": {
+      "submitLabel": "Publicar",
+      "confirmTitle": "¿Publicar este post?",
+      "confirmBody": "Se publicará de inmediato como un post de RandomTrip, sin pasar por revisión."
     }
   },
   "adminXsed": {
@@ -566,11 +575,34 @@
       },
       "actions": {
         "review": "Revisar",
-        "edit": "Editar"
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
+        "lockedForDeletion": "No se puede eliminar mientras hay una revisión pendiente"
       },
       "tabs": {
         "all": "Todos",
         "pending": "Pendientes de revisión"
+      },
+      "filters": {
+        "allExperiences": "Todas las experiencias",
+        "allTravelTypes": "Todos los tipos",
+        "clearFilters": "Limpiar filtros",
+        "searchPlaceholder": "Buscar por título…",
+        "of": "de",
+        "count": "posts"
+      },
+      "bulkActions": {
+        "deleteSelected": "Eliminar ({count})",
+        "confirmTitle": "¿Eliminar {count} posts?",
+        "confirmBody": "Esta acción no se puede deshacer.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar",
+        "partialFailure": "Se eliminaron {success} de {total} posts — {failed} fallaron."
+      },
+      "table": {
+        "selectAll": "Seleccionar todos los posts",
+        "selectRow": "Seleccionar post"
       }
     },
     "reviews": {

@@ -15,6 +15,7 @@ const headings: AdminDashboardDict["pageHeadings"] = {
   notifications: { title: "Notifications", description: "Notifications desc" },
   blog: { title: "Blog", description: "Blog desc" },
   blogDetail: { title: "Post Review", description: "Post review desc" },
+  blogNew: { title: "New Post", description: "New post desc" },
 };
 
 describe("resolveAdminPageHeading", () => {
@@ -94,5 +95,11 @@ describe("resolveAdminPageHeading", () => {
     expect(
       resolveAdminPageHeading("/dashboard/admin/blog/abc123", headings),
     ).toEqual(headings.blogDetail);
+  });
+
+  it("resolves the New Post heading, distinct from the review detail heading", () => {
+    expect(
+      resolveAdminPageHeading("/dashboard/admin/blog/new", headings),
+    ).toEqual(headings.blogNew);
   });
 });
