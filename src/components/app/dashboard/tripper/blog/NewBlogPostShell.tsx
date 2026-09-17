@@ -63,6 +63,10 @@ interface NewBlogPostShellProps {
   changedFields?: string[];
   /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
   originalDraft?: BlogFormDraft;
+  /** True when the logged-in user has the admin role — independent of `mode`, since
+   * (unlike experiences) there's no dedicated admin composer route for blogs; an
+   * admin's own tripper-mode blog pages still need to show admin-only fields. */
+  isAdmin?: boolean;
 }
 
 const EMPTY_DRAFT: BlogFormDraft = {
@@ -119,6 +123,7 @@ export function NewBlogPostShell({
   reviewLeftSlot,
   changedFields,
   originalDraft,
+  isAdmin: isAdminProp,
 }: NewBlogPostShellProps) {
   const router = useRouter();
   const tabs = dict.contentTabs;
@@ -474,7 +479,7 @@ export function NewBlogPostShell({
               }
               changedFields={changedFields}
               originalDraft={originalDraft}
-              isAdmin={mode !== undefined && mode !== "tripper"}
+              isAdmin={isAdminProp ?? (mode !== undefined && mode !== "tripper")}
             />
           </div>
         </div>
