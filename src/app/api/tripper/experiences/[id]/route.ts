@@ -299,23 +299,36 @@ export async function PATCH(
         arrivePref: arrivePref ?? "any",
         season: Array.isArray(season) ? season : [],
         tripperNote: tripperNote ?? null,
-        titleInternal: titleInternal || null,
-        slug: slug || null,
-        tripDate: tripDate ? new Date(tripDate as string) : null,
-        revealAt: revealAt ? new Date(revealAt as string) : null,
-        minSpots: minSpots != null ? Number(minSpots) : null,
-        maxSpots: maxSpots != null ? Number(maxSpots) : null,
-        currency: (currency as string) || "USD",
-        cancellationPolicy: cancellationPolicy || null,
-        weatherPolicy: weatherPolicy || null,
-        accessibilityNotes: accessibilityNotes || null,
-        safetyNotes: safetyNotes || null,
-        revealCopy: revealCopy || null,
-        preRevealCopy: preRevealCopy || null,
-        packingHints: packingHints || null,
-        whatsappMessageTemplate: whatsappMessageTemplate || null,
-        adminNotes: adminNotes || null,
-        supplierNotes: supplierNotes || null,
+        // XSED-only fields — not part of the generic experience form's shape,
+        // so a PATCH from it omits them entirely. Only write when explicitly
+        // present in the body; otherwise preserve whatever's already on the row.
+        ...(titleInternal !== undefined && { titleInternal: titleInternal || null }),
+        ...(slug !== undefined && { slug: slug || null }),
+        ...(tripDate !== undefined && {
+          tripDate: tripDate ? new Date(tripDate as string) : null,
+        }),
+        ...(revealAt !== undefined && {
+          revealAt: revealAt ? new Date(revealAt as string) : null,
+        }),
+        ...(minSpots !== undefined && {
+          minSpots: minSpots != null ? Number(minSpots) : null,
+        }),
+        ...(maxSpots !== undefined && {
+          maxSpots: maxSpots != null ? Number(maxSpots) : null,
+        }),
+        ...(currency !== undefined && { currency: (currency as string) || "USD" }),
+        ...(cancellationPolicy !== undefined && { cancellationPolicy: cancellationPolicy || null }),
+        ...(weatherPolicy !== undefined && { weatherPolicy: weatherPolicy || null }),
+        ...(accessibilityNotes !== undefined && { accessibilityNotes: accessibilityNotes || null }),
+        ...(safetyNotes !== undefined && { safetyNotes: safetyNotes || null }),
+        ...(revealCopy !== undefined && { revealCopy: revealCopy || null }),
+        ...(preRevealCopy !== undefined && { preRevealCopy: preRevealCopy || null }),
+        ...(packingHints !== undefined && { packingHints: packingHints || null }),
+        ...(whatsappMessageTemplate !== undefined && {
+          whatsappMessageTemplate: whatsappMessageTemplate || null,
+        }),
+        ...(adminNotes !== undefined && { adminNotes: adminNotes || null }),
+        ...(supplierNotes !== undefined && { supplierNotes: supplierNotes || null }),
       },
     });
 

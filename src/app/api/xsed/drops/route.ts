@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getPublicDropEntries } from "@/lib/data/xsed";
+import { getPublicXsedBlogDropEntries } from "@/lib/data/xsed";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,7 +10,6 @@ export async function GET(request: Request) {
     Math.max(1, Number(searchParams.get("limit") ?? 6)),
   );
 
-  const excludeId = searchParams.get("excludeId") ?? undefined;
-  const result = await getPublicDropEntries(locale, offset, limit, excludeId);
+  const result = await getPublicXsedBlogDropEntries(locale, offset, limit);
   return NextResponse.json(result);
 }

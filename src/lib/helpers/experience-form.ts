@@ -65,11 +65,7 @@ export function isExperienceTabComplete(
       return (
         form.accommodations.length > 0 &&
         form.accommodations.every(
-          (a) =>
-            a.hotelName.trim() &&
-            a.hotelLink.trim() &&
-            a.referredLink.trim() &&
-            a.hotelDays.trim(),
+          (a) => a.hotelName.trim() && a.hotelLink.trim() && a.hotelDays.trim(),
         )
       );
     case "activities":

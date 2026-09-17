@@ -84,7 +84,7 @@ describe("AdminBlogPageClient — refetch keeps chrome mounted and dims the pane
 
     const select = container.querySelector("select") as HTMLSelectElement;
     act(() => {
-      select.value = "all";
+      select.value = "pending";
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
@@ -117,7 +117,7 @@ describe("AdminBlogPageClient — refetch error keeps chrome mounted", () => {
 
     const select = container.querySelector("select") as HTMLSelectElement;
     await act(async () => {
-      select.value = "all";
+      select.value = "pending";
       select.dispatchEvent(new Event("change", { bubbles: true }));
       await Promise.resolve();
     });

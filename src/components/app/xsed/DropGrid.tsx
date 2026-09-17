@@ -31,14 +31,22 @@ export function DropGrid({ content, drops }: DropGridProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {drops.map((drop, index) => (
-          <div
-            key={drop.number}
-            className={index === 0 ? "md:col-span-2 md:row-span-2" : ""}
-          >
-            <DropCard drop={drop} featured={index === 0} />
-          </div>
-        ))}
+        {drops.map((drop, index) => {
+          // The featured 2x2 cell relies on the other row-1 items (columns
+          // 2-4) to establish row height via CSS grid's implicit row sizing —
+          // with fewer than 3 drops there's nothing to size against and the
+          // spanned cell collapses to ~0 height (DropCard's featured variant
+          // uses min-h-0 to let flex-1 size the image, so nothing rescues it).
+          const isFeatured = index === 0 && drops.length >= 3;
+          return (
+            <div
+              key={drop.number}
+              className={isFeatured ? "md:col-span-2 md:row-span-2" : ""}
+            >
+              <DropCard drop={drop} featured={isFeatured} />
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-12 flex justify-center">

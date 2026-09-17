@@ -7,6 +7,7 @@ import Link from "next/link";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
 import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import type { BlogPost } from "@/types/blog";
@@ -114,6 +115,8 @@ function EditBlogContent() {
       key={post.id}
       locale={locale}
       userBadgeLabels={userBadgeLabels}
+      isAdmin={session?.user ? hasRoleAccess(session.user, "admin") : false}
+      source={post.source}
     />
   );
 }

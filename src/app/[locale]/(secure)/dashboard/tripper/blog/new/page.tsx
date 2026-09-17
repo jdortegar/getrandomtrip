@@ -34,6 +34,7 @@ export default async function NewBlogPostPage(props: {
       dict={dict.tripperBlogs.form}
       locale={locale}
       userBadgeLabels={dict.journey.userBadge}
+      isAdmin={hasRoleAccess(user, "admin")}
     />
   );
 }

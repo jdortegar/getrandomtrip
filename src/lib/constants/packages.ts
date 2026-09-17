@@ -85,6 +85,7 @@ export const EXPERIENCE_LEVELS = [
   { value: "explora-plus", label: "Explora+" },
   { value: "bivouac", label: "Bivouac" },
   { value: "atelier-getaway", label: "Atelier Getaway" },
+  { value: "xsed", label: "XSED" },
 ] as const;
 
 export const EXPERIENCE_STATUSES = [
@@ -140,4 +141,5 @@ export const MAX_NIGHTS_BY_LEVEL: Record<string, number | null> = {
   "explora-plus": 4,
   bivouac: 5,
   "atelier-getaway": null,
+  xsed: 1,
 };

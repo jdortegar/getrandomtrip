@@ -1,6 +1,6 @@
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { getPublicDropEntries, getCurrentXsedDrop } from "@/lib/data/xsed";
+import { getPublicXsedBlogDropEntries, getCurrentXsedDrop } from "@/lib/data/xsed";
 import { AllDropsGrid } from "@/components/app/xsed/AllDropsGrid";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { CountDown } from "@/components/app/xsed/CountDown";
@@ -17,11 +17,10 @@ export default async function XsedDropsPage(props: LocaleParams) {
   const dict = await getDictionary(normalizedLocale);
 
   const currentDrop = await getCurrentXsedDrop();
-  const { drops, hasMore } = await getPublicDropEntries(
+  const { drops, hasMore } = await getPublicXsedBlogDropEntries(
     normalizedLocale,
     0,
     6,
-    currentDrop?.id,
   );
   const xsedTestimonials = await getAllXsedTestimonials();
 
@@ -32,11 +31,7 @@ export default async function XsedDropsPage(props: LocaleParams) {
         dropsPage={dict.xsedDropsPage}
         hero={dict.xsedPage.hero}
       />
-      <AllDropsGrid
-        excludeId={currentDrop?.id}
-        initialDrops={drops}
-        initialHasMore={hasMore}
-      />
+      <AllDropsGrid initialDrops={drops} initialHasMore={hasMore} />
       {currentDrop ? (
         <CountDown
           dropSlug={currentDrop.slug}

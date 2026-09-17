@@ -31,7 +31,11 @@ export default async function TripperBlogPage(props: {
 
   return (
     <Section>
-      <BlogPageClient dict={dict.tripperBlogs} locale={locale} />
+      <BlogPageClient
+        dict={dict.tripperBlogs}
+        locale={locale}
+        isAdmin={hasRoleAccess(user, "admin")}
+      />
     </Section>
   );
 }

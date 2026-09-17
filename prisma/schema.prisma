@@ -525,6 +525,7 @@ model BlogPost {
   status   BlogStatus @default(DRAFT)
   isActive Boolean    @default(true) // visibility toggle, decoupled from status — mirrors Experience.isActive
   format   BlogFormat @default(ARTICLE)
+  source   BlogSource @default(TRIPPER) // immutable ownership signal, server-derived at create — mirrors Experience.source
 
   // Basic info
   title    String
@@ -644,6 +645,11 @@ enum BlogFormat {
   PHOTO
   VIDEO
   MIXED
+}
+
+enum BlogSource {
+  TRIPPER
+  RANDOMTRIP
 }
 
 enum NotificationType {

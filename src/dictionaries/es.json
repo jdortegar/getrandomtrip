@@ -89,7 +89,8 @@
       "reviews": "Reseñas",
       "xsed": "Nuevo XSED Drop",
       "notifications": "Notificaciones",
-      "blog": "Blog"
+      "blog": "Blog",
+      "newPost": "Nuevo Post"
     },
     "pageHeadings": {
       "blog": {
@@ -564,7 +565,8 @@
         "PUBLISHED": "Publicado"
       },
       "actions": {
-        "review": "Revisar"
+        "review": "Revisar",
+        "edit": "Editar"
       },
       "tabs": {
         "all": "Todos",
@@ -2813,7 +2815,7 @@
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, EE. UU.",
     "entityNotice": "Randomtrip y getrandomtrip.com son marcas operadas por Randomtrip Inc.",
-    "tagline": "Vagar comienza donde termina la certeza.",
+    "tagline": "El asombro empieza donde termina la certeza.",
     "copyright": "Todos los derechos reservados."
   },
   "legalCookies": {
@@ -3665,6 +3667,9 @@
       "cancel": "Cancelar",
       "submitConfirmTitle": "¿Enviar a revisión?",
       "submitConfirmBody": "Tu post quedará bloqueado mientras el admin lo revisa. Agrega lo que necesite saber.",
+      "editSubmit": "Guardar cambios",
+      "saveChangesConfirmTitle": "¿Guardar estos cambios?",
+      "saveChangesConfirmBody": "Los cambios se aplicarán de inmediato al post publicado.",
       "tripperNoteLabel": "Nota para el admin",
       "tripperNoteOptional": "(opcional)",
       "tripperNotePlaceholder": "Cualquier cosa que el revisor deba saber sobre este post…",
@@ -3752,6 +3757,8 @@
         "travelType": "Tipo de viaje",
         "travelTypePlaceholder": "Seleccionar tipo de viaje...",
         "travelTypeHint": "Puede elegir 1 o +",
+        "level": "Nivel",
+        "levelNone": "Ninguno",
         "excuseKey": "Excusa del viaje",
         "excuseKeyPlaceholder": "Selecciona una excusa",
         "excuseKeyHint": "La excusa que el cliente usa para justificar el viaje ante terceros",
@@ -3788,12 +3795,12 @@
         "saveError": "No se pudo guardar"
       }
     },
-    "title": "MIS POSTS",
+    "title": "MI BLOG",
     "eyebrow": "Tu contenido",
     "description": "Gestiona tu blog y comparte tus experiencias",
     "filters": {
       "allStatuses": "Todos los estados",
-      "allFormats": "Todos los formatos",
+      "allExperiences": "Todas las experiencias",
       "allTravelTypes": "Todos los tipos",
       "clearFilters": "Limpiar filtros",
       "of": "de",
@@ -3889,7 +3896,7 @@
         "description": "Lo que dicen tus viajeros"
       },
       "blogs": {
-        "title": "Mis Posts",
+        "title": "Mi Blog",
         "description": "Gestiona tu blog y comparte tus experiencias"
       },
       "notifications": {
@@ -3920,7 +3927,7 @@
       "earningsSub": "Análisis detallado",
       "reviews": "Reseñas & NPS",
       "reviewsSub": "Ver feedback",
-      "blogs": "Mis Posts",
+      "blogs": "Mi Blog",
       "blogsSub": "Gestionar blog",
       "newPost": "Nuevo Post",
       "experiences": "Mis Experiencias",

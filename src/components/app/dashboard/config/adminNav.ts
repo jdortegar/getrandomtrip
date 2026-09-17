@@ -1,8 +1,8 @@
 import {
   Bell,
   Briefcase,
-  Compass,
   CreditCard,
+  FilePlus2,
   LayoutDashboard,
   Newspaper,
   Package,
@@ -57,18 +57,18 @@ export function buildAdminNavTabs(
       label: copy.reviews,
     },
     {
-      // Points at the /xsed index (which redirects to /xsed/new) rather than
-      // /xsed/new directly, so the tab's active-match prefix ("/xsed/") also
-      // covers /xsed/[id]/edit — matching the old sidebar's behavior.
-      href: base("/xsed"),
-      icon: Compass,
-      label: copy.xsed,
-    },
-    {
       // Non-exact so /blog/[id] review pages keep this tab active.
       href: base("/blog"),
       icon: Newspaper,
       label: copy.blog,
+    },
+    {
+      // Blog posts share a single creation route with the tripper dashboard
+      // (source is server-derived from the caller's role) — there's no
+      // separate /dashboard/admin/blog/new page to link to.
+      href: pathForLocale(locale, "/dashboard/tripper/blog/new"),
+      icon: FilePlus2,
+      label: copy.newPost,
     },
     {
       audience: "ADMIN",

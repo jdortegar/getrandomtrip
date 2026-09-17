@@ -63,6 +63,13 @@ interface NewBlogPostShellProps {
   changedFields?: string[];
   /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
   originalDraft?: BlogFormDraft;
+  /** True when the logged-in user has the admin role — independent of `mode`, since
+   * (unlike experiences) there's no dedicated admin composer route for blogs; an
+   * admin's own tripper-mode blog pages still need to show admin-only fields. */
+  isAdmin?: boolean;
+  /** The post's ownership source (see BlogPost.source). Combined with `isAdmin` and
+   * `initialDraft.status` to detect editing an already-live RANDOMTRIP post. */
+  source?: "TRIPPER" | "RANDOMTRIP";
 }
 
 const EMPTY_DRAFT: BlogFormDraft = {
@@ -119,6 +126,8 @@ export function NewBlogPostShell({
   reviewLeftSlot,
   changedFields,
   originalDraft,
+  isAdmin: isAdminProp,
+  source,
 }: NewBlogPostShellProps) {
   const router = useRouter();
   const tabs = dict.contentTabs;
@@ -268,16 +277,24 @@ export function NewBlogPostShell({
     setDraft(EMPTY_DRAFT);
   }
 
+  // Editing an already-published RANDOMTRIP post: there is no review step —
+  // it's already live — so saving just PATCHes and redirects, mirroring
+  // NewExperienceShell's isEditingLiveRandomtrip.
+  const isEditingLiveRandomtrip =
+    !!isAdminProp && source === "RANDOMTRIP" && draft.status === "published";
+
   // Submitting for review is the sole finalize action in the wizard, for
   // both a brand-new post and editing an existing DRAFT — mirrors
   // NewExperienceShell's tripper-mode finalize (always available regardless
   // of new/edit), no separate "just save as draft" path. Blocked while
   // read-only (status already PENDING_REVIEW/PENDING_TRIPPER_REVIEW) — the
   // submit route itself is DRAFT-only and would 409 otherwise.
-  const canFinalize = mode === "tripper" && !isFinishing && !isReadOnly;
+  const canFinalize =
+    mode === "tripper" && !isEditingLiveRandomtrip && !isFinishing && !isReadOnly;
+  const canSaveChanges = isEditingLiveRandomtrip && !isFinishing && !isReadOnly;
 
   function handleRequestSubmit() {
-    if (!canFinalize) return;
+    if (!canFinalize && !canSaveChanges) return;
     setSubmitNote(draft.tripperNote ?? "");
     setShowSubmitConfirm(true);
   }
@@ -293,6 +310,11 @@ export function NewBlogPostShell({
     try {
       await persistDraft(finalDraft);
       if (!draftIdRef.current) throw new Error("Failed to save draft");
+
+      if (isEditingLiveRandomtrip) {
+        router.push(pathForLocale(locale as Locale, "/dashboard/tripper/blog"));
+        return;
+      }
 
       const submitRes = await fetch(
         `/api/tripper/blogs/${draftIdRef.current}/submit`,
@@ -398,6 +420,15 @@ export function NewBlogPostShell({
     [tabs, draft],
   );
 
+  // Editing an already-live RANDOMTRIP post swaps in "Save Changes" copy
+  // instead of "Submit for review" — there is nothing left to submit.
+  const effectiveDict = isEditingLiveRandomtrip
+    ? {
+        ...dict,
+        actionBar: { ...dict.actionBar, submitForReview: dict.editSubmit },
+      }
+    : dict;
+
   return (
     <div className="bg-gray-50">
       <JourneyContentNavigation
@@ -455,7 +486,7 @@ export function NewBlogPostShell({
           <div className="min-w-0 flex-1">
             <BlogFormContent
               activeTab={activeTab}
-              copy={dict}
+              copy={effectiveDict}
               draft={draft}
               imageState={imageState}
               isFinishing={isFinishing}
@@ -474,6 +505,7 @@ export function NewBlogPostShell({
               }
               changedFields={changedFields}
               originalDraft={originalDraft}
+              isAdmin={isAdminProp ?? (mode !== undefined && mode !== "tripper")}
             />
           </div>
         </div>
@@ -490,12 +522,13 @@ export function NewBlogPostShell({
             <Check className="h-5 w-5 text-secondary" />
           </div>
           <DialogTitle className="text-2xl font-bold text-ink">
-            {dict.submitConfirmTitle}
+            {isEditingLiveRandomtrip ? dict.saveChangesConfirmTitle : dict.submitConfirmTitle}
           </DialogTitle>
           <DialogDescription className="text-sm text-ink">
-            {dict.submitConfirmBody}
+            {isEditingLiveRandomtrip ? dict.saveChangesConfirmBody : dict.submitConfirmBody}
           </DialogDescription>
         </DialogHeader>
+        {!isEditingLiveRandomtrip && (
         <div className="mt-2 flex flex-col gap-1.5">
           <label htmlFor="blog-submit-note" className="text-sm font-medium text-gray-700">
             {dict.tripperNoteLabel}{" "}
@@ -512,6 +545,7 @@ export function NewBlogPostShell({
           />
           <p className="text-xs text-neutral-400">{dict.tripperNoteHint}</p>
         </div>
+        )}
         <DialogFooter className="mt-6">
           <Button
             variant="secondary"
@@ -521,7 +555,7 @@ export function NewBlogPostShell({
             {dict.cancel}
           </Button>
           <Button onClick={() => void confirmSubmit()} disabled={isFinishing}>
-            {isFinishing ? dict.saving : dict.actionBar.submitForReview}
+            {isFinishing ? dict.saving : effectiveDict.actionBar.submitForReview}
           </Button>
         </DialogFooter>
       </Modal>

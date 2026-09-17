@@ -1,11 +1,12 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { FormField } from "@/components/ui/FormField";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
-import { getExcuseOptionsForType } from "@/lib/constants/packages";
+import { EXPERIENCE_LEVELS, getExcuseOptionsForType } from "@/lib/constants/packages";
 import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
+import { cn } from "@/lib/utils";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 import type { FieldPeek } from "@/components/ui/field-peek";
@@ -19,11 +20,15 @@ interface Props {
   changedFieldSet?: Set<string>;
   /** Builds the peek toggle for an eligible field; `undefined` when peek is not available. */
   peek?: (field: keyof BlogFormDraft, diffKey?: string) => FieldPeek | undefined;
+  /** XSED is fulfilled centrally by the admin team — only admins can tag a blog post as XSED. */
+  isAdmin?: boolean;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek }: Props) {
+const XSED_LEVEL = EXPERIENCE_LEVELS.find((l) => l.value === "xsed");
+
+export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek, isAdmin }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { fields } = copy;
@@ -39,6 +44,22 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
   const handleTravelTypeChange = (value: string[]) => {
     onChange("travelType", value);
     onChange("excuseKey", []);
+  };
+
+  // XSED is the same marker Experience.type uses for drops (see AboutExperienceStep) —
+  // BlogPost has no dedicated `level` column, so this reuses `travelType` exclusively:
+  // picking XSED here replaces whatever traveler types were selected, matching how
+  // level="xsed" forces type=["XSED"] on the experience form. This is the only level
+  // that maps to anything on BlogPost, so it's the only option offered below.
+  const isXsedLevel = draft.travelType.includes("XSED");
+
+  const handleLevelChange = (value: string) => {
+    if (value === "xsed") {
+      onChange("travelType", ["XSED"]);
+      onChange("excuseKey", []);
+    } else {
+      onChange("travelType", []);
+    }
   };
 
   return (
@@ -67,7 +88,7 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         peek={peek?.("subtitle")}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className={cn("grid grid-cols-1 gap-4", isAdmin ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
         <div className="flex flex-col gap-1">
           <MultiSelectInput
             id="blog-travel-type"
@@ -80,6 +101,19 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
           />
           <p className="text-xs text-neutral-400">{fields.travelTypeHint}</p>
         </div>
+
+        {isAdmin && XSED_LEVEL && (
+          <FormSelectField
+            id="blog-level"
+            label={fields.level}
+            className={cn("bg-gray-100 border-transparent px-4 py-3.5", ch("travelType"))}
+            value={isXsedLevel ? "xsed" : ""}
+            onChange={(e) => handleLevelChange(e.target.value)}
+          >
+            <option value="">{fields.levelNone}</option>
+            <option value={XSED_LEVEL.value}>{XSED_LEVEL.label}</option>
+          </FormSelectField>
+        )}
 
         <MultiSelectInput
           id="blog-excuse"

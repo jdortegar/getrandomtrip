@@ -43,6 +43,7 @@ export interface BlogPost {
   faq?: { items?: { question: string; answer: string }[] } | null;
   tags: string[];
   format: string;
+  source?: "TRIPPER" | "RANDOMTRIP";
   seo?: {
     title?: string;
     description?: string;
@@ -256,7 +257,11 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
           attributionOverride={quoteBlock?.cite}
           authorName={blog.author.name}
           authorSlug={blog.author.slug}
-          avatarUrl={blog.author.avatarUrl}
+          avatarUrl={
+            blog.source === "RANDOMTRIP"
+              ? "/assets/icons/isologo.png"
+              : blog.author.avatarUrl
+          }
           backgroundImageUrl={blog.coverUrl ?? ""}
           motto={quoteBlock?.text || blog.author.motto || ""}
           specialization={blog.author.specialization}

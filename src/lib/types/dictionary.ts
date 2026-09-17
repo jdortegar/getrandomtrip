@@ -62,6 +62,9 @@ export interface TripperBlogFormDict {
   cancel: string;
   submitConfirmTitle: string;
   submitConfirmBody: string;
+  editSubmit: string;
+  saveChangesConfirmTitle: string;
+  saveChangesConfirmBody: string;
   tripperNoteLabel: string;
   tripperNoteOptional: string;
   tripperNotePlaceholder: string;
@@ -107,6 +110,8 @@ export interface TripperBlogFormDict {
     travelType: string;
     travelTypePlaceholder: string;
     travelTypeHint: string;
+    level: string;
+    levelNone: string;
     excuseKey: string;
     excuseKeyPlaceholder: string;
     excuseKeyHint: string;
@@ -159,7 +164,7 @@ export interface TripperBlogsDict {
   };
   eyebrow: string;
   filters: {
-    allFormats: string;
+    allExperiences: string;
     allStatuses: string;
     allTravelTypes: string;
     clearFilters: string;
@@ -1067,6 +1072,7 @@ export interface AdminDashboardDict {
     dashboard: string;
     experiences: string;
     newExperience: string;
+    newPost: string;
     notifications: string;
     payments: string;
     reviews: string;
@@ -1421,6 +1427,7 @@ export interface AdminPagesDict {
     };
     actions: {
       review: string;
+      edit: string;
     };
     tabs: {
       all: string;

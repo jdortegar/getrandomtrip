@@ -119,19 +119,18 @@ export async function POST(
 
     // RANDOMTRIP rows skip admin review (where pricingByType is normally set),
     // so derive it here from the same fixed-config preset the admin review
-    // pre-fills — no commission add-on.
+    // pre-fills — no commission add-on. XSED prices flat via
+    // getBasePricePerPerson (levelId is ignored for it), same as any other type.
     const pricingByType = isRandomtrip
       ? Object.fromEntries(
           (Array.isArray(experience.type) ? experience.type : [])
-            .filter((t) => t !== "XSED")
             .map((t) => [t, getBasePricePerPerson(t, experience.level)]),
         )
       : undefined;
 
     // Guard: a RANDOMTRIP row auto-publishes with no human review step, so it
-    // must never go ACTIVE unpriced (e.g. the type selector allows picking
-    // "XSED" in the generic wizard, leaving no non-XSED type to derive a price
-    // from) or priced at 0 (an unrecognized type/level combo).
+    // must never go ACTIVE unpriced or priced at 0 (an unrecognized type/level
+    // combo).
     if (
       isRandomtrip &&
       (Object.keys(pricingByType!).length === 0 ||

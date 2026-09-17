@@ -36,6 +36,7 @@ export interface BlogPost {
   travelType: string[];
   format: BlogFormat;
   status: BlogStatus;
+  source?: "TRIPPER" | "RANDOMTRIP";
   /** Visibility toggle, decoupled from status — a PUBLISHED post can be hidden without losing approval history. */
   isActive: boolean;
   seo?: { title?: string; description?: string; keywords?: string[] };

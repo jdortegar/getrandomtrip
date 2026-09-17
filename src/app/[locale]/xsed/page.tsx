@@ -10,7 +10,7 @@ import Testimonials from "@/components/Testimonials/Testimonials";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
 import { DropGrid } from "@/components/app/xsed/DropGrid";
-import { getCurrentXsedDrop, getXsedDropsForGrid } from "@/lib/data/xsed";
+import { getCurrentXsedDrop, getXsedBlogDropsForGrid } from "@/lib/data/xsed";
 import { getAllXsedTestimonials } from "@/lib/xsed/get-xsed-drop-testimonials";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildFAQPageSchema } from "@/lib/seo/schemas";
@@ -43,10 +43,7 @@ export default async function XsedPage(props: LocaleParams) {
   const normalizedLocale = hasLocale(locale) ? locale : "es";
   const dict = await getDictionary(normalizedLocale);
   const currentDrop = await getCurrentXsedDrop();
-  const allGridDrops = await getXsedDropsForGrid(
-    currentDrop?.id ?? null,
-    normalizedLocale,
-  );
+  const allGridDrops = await getXsedBlogDropsForGrid(normalizedLocale);
   const gridDrops = allGridDrops.slice(0, 5);
   const xsedTestimonials = await getAllXsedTestimonials();
 
