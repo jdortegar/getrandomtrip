@@ -9,7 +9,7 @@ import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
-import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -187,6 +187,10 @@ export async function POST(request: NextRequest) {
     const travelTypeValue = normalizeStringArray(travelType);
     const excuseKeyValue = normalizeStringArray(excuseKey);
 
+    // source is server-derived from the caller's role only — never trusted
+    // from the request body — mirrors /api/tripper/experiences.
+    const isAdmin = getAppRoles(user).includes("admin");
+
     const baseSlug = slugify(title) || "post";
     let slug = baseSlug;
     let suffix = 0;
@@ -213,6 +217,7 @@ export async function POST(request: NextRequest) {
         format: prismaFormat,
         coverUrl: coverUrl || null,
         seo: seo || null,
+        source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
       },
       select: {
         id: true,

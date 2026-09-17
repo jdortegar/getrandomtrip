@@ -1,8 +1,9 @@
 // ============================================================================
 // POST /api/tripper/blogs/[id]/submit
-// Transitions a DRAFT blog post to PENDING_REVIEW.
+// Transitions a DRAFT blog post to PENDING_REVIEW — or, for a RANDOMTRIP
+// (admin-created) post, straight to PUBLISHED, mirroring the experience
+// submit route's auto-publish-skips-review behavior.
 // Auth: tripper role + ownership
-// No source/pricing branch — unlike experience, blogs have a single target.
 // ============================================================================
 
 import { NextResponse } from "next/server";
@@ -47,6 +48,7 @@ export async function POST(
       title: string;
       coverUrl: string | null;
       content: string | null;
+      source: "TRIPPER" | "RANDOMTRIP";
     } | null;
 
     if (!blog) {
@@ -76,6 +78,11 @@ export async function POST(
       );
     }
 
+    // RANDOMTRIP (admin-created) posts skip PENDING_REVIEW entirely — there's
+    // no human review step, so this IS the publish action.
+    const isRandomtrip = blog.source === "RANDOMTRIP";
+    const targetStatus = isRandomtrip ? "PUBLISHED" : "PENDING_REVIEW";
+
     // Transition status and clean up any discarded tombstone copy from a
     // prior tripper rejection cycle.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -98,12 +105,18 @@ export async function POST(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return (tx.blogPost.update as any)({
         where: { id: params.id },
-        data: { status: "PENDING_REVIEW", reviewNote: null },
+        data: {
+          status: targetStatus,
+          reviewNote: null,
+          ...(isRandomtrip && { isActive: true, publishedAt: new Date() }),
+        },
         select: { id: true, status: true },
       });
     }) as { id: string; status: string };
 
-    sendBlogSubmitted(updated.id, user.id);
+    if (targetStatus === "PENDING_REVIEW") {
+      sendBlogSubmitted(updated.id, user.id);
+    }
 
     return NextResponse.json({ blog: updated });
   } catch (error) {
