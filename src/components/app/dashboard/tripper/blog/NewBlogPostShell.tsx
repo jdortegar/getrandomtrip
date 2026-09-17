@@ -20,11 +20,10 @@ import type { BlogFormDraft } from "@/types/blog";
 import { buildBlogSubmitPayload, isBlogTabComplete } from "@/lib/helpers/blog-form";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
-import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { Locale } from "@/lib/i18n/config";
 import {
   isEditingExisting as computeIsEditingExisting,
   resolveBlogPersistTarget,
+  resolveBlogPublishRedirectPath,
   resolveFinalizeCopy,
   shouldShowTripperNoteField,
   shouldSkipAutosave,
@@ -321,7 +320,7 @@ export function NewBlogPostShell({
       if (!draftIdRef.current) throw new Error("Failed to save draft");
 
       if (isEditingLiveRandomtrip) {
-        router.push(pathForLocale(locale as Locale, "/dashboard/tripper/blog"));
+        router.push(resolveBlogPublishRedirectPath(mode, locale));
         return;
       }
 
@@ -343,7 +342,7 @@ export function NewBlogPostShell({
       // Stay in the loading state through navigation — router.push doesn't
       // synchronously unmount this component, so resetting isFinishing here
       // would flash the button back to its idle label for a moment first.
-      router.push(pathForLocale(locale as Locale, "/dashboard/tripper/blog"));
+      router.push(resolveBlogPublishRedirectPath(mode, locale));
     } catch (err) {
       console.error(err);
       setSubmitFailed(true);

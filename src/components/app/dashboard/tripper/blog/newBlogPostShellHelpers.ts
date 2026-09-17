@@ -1,6 +1,21 @@
 export type BlogShellMode = "tripper" | "adminCreate" | "adminEdit" | "adminReadOnly";
 
 /**
+ * Where to redirect after a successful publish/save — mirrors
+ * NewExperienceShell's resolvePublishRedirectPath. An admin creating or
+ * editing a RANDOMTRIP post lands back on the admin blog list, not the
+ * tripper's own "My Blog" page.
+ */
+export function resolveBlogPublishRedirectPath(
+  mode: BlogShellMode,
+  locale: string,
+): string {
+  return mode === "adminCreate"
+    ? `/${locale}/dashboard/admin/blog`
+    : `/${locale}/dashboard/tripper/blog`;
+}
+
+/**
  * True only in `adminReadOnly` — the tripper reviewing an admin's proposed
  * copy, or an admin viewing a not-yet-locked original, must never trigger
  * the debounced autosave loop.
