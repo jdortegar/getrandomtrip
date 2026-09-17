@@ -470,11 +470,36 @@ export function NewExperienceShell({
         if (!res.ok) throw new Error("Failed to save draft");
       }
 
+      const maybeCreateBlogPost = async () => {
+        if (!finalForm.createBlogPost) return;
+        try {
+          await fetch("/api/tripper/blogs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: finalForm.title,
+              subtitle: finalForm.teaser || null,
+              content: finalForm.description || null,
+              coverUrl: finalForm.heroImage || null,
+              tags: finalForm.tags,
+              travelType: finalForm.type || null,
+              excuseKey: finalForm.excuseKey[0] ?? null,
+              status: "draft",
+              format: "article",
+            }),
+          });
+        } catch {
+          // non-fatal
+        }
+      };
+
       // Editing an already-live RANDOMTRIP row: the PATCH above already
       // persisted the changes. There is no PENDING_REVIEW step to enter —
       // /submit would 409 since the row isn't DRAFT — so this IS the save
-      // action; skip straight to the redirect.
+      // action; skip straight to the redirect. Blog creation still applies —
+      // the checkbox is available in this mode too.
       if (isEditingLiveRandomtrip) {
+        await maybeCreateBlogPost();
         router.push(resolvePublishRedirectPath(mode, locale));
         return;
       }
@@ -495,27 +520,7 @@ export function NewExperienceShell({
         throw new Error(body.error ?? "Submit failed");
       }
 
-      if (finalForm.createBlogPost) {
-        try {
-          await fetch("/api/tripper/blogs", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              title: finalForm.title,
-              subtitle: finalForm.teaser || null,
-              content: finalForm.description || null,
-              coverUrl: finalForm.heroImage || null,
-              tags: finalForm.tags,
-              travelType: finalForm.type || null,
-              excuseKey: finalForm.excuseKey[0] ?? null,
-              status: "draft",
-              format: "article",
-            }),
-          });
-        } catch {
-          // non-fatal
-        }
-      }
+      await maybeCreateBlogPost();
 
       // Stay in the loading state through navigation — router.push doesn't
       // synchronously unmount this component, so resetting isSubmitting here
