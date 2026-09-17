@@ -565,7 +565,8 @@
         "PUBLISHED": "Published"
       },
       "actions": {
-        "review": "Review"
+        "review": "Review",
+        "edit": "Edit"
       },
       "tabs": {
         "all": "All",

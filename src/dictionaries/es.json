@@ -565,7 +565,8 @@
         "PUBLISHED": "Publicado"
       },
       "actions": {
-        "review": "Revisar"
+        "review": "Revisar",
+        "edit": "Editar"
       },
       "tabs": {
         "all": "Todos",

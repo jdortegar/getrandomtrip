@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Pencil } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import { Pagination } from "@/components/ui/Pagination";
@@ -157,16 +157,22 @@ export function AdminBlogPageClient() {
               <tbody className="divide-y divide-gray-50">
                 {blogs.map((item) => {
                   const isPending = PENDING_STATUSES.has(item.status);
+                  // RANDOMTRIP (admin-created) posts skip PENDING_REVIEW and
+                  // auto-publish — there's nothing to "review" for them, so
+                  // they get a direct edit link instead of the review flow.
+                  const isRandomtrip = item.source === "RANDOMTRIP";
                   return (
                     <tr
                       className={cn(
                         "transition-colors hover:bg-gray-50",
-                        isPending && "cursor-pointer",
+                        (isPending || isRandomtrip) && "cursor-pointer",
                       )}
                       key={item.id}
                       onClick={() => {
                         if (isPending) {
                           router.push(`/${locale}/dashboard/admin/blog/${item.id}`);
+                        } else if (isRandomtrip) {
+                          router.push(`/${locale}/dashboard/tripper/blog/${item.id}`);
                         }
                       }}
                     >
@@ -209,6 +215,14 @@ export function AdminBlogPageClient() {
                             title={act.review}
                           >
                             <ArrowRight className="h-4 w-4" />
+                          </TableIconLink>
+                        )}
+                        {isRandomtrip && (
+                          <TableIconLink
+                            href={`/${locale}/dashboard/tripper/blog/${item.id}`}
+                            title={act.edit}
+                          >
+                            <Pencil className="h-4 w-4" />
                           </TableIconLink>
                         )}
                       </td>

@@ -112,6 +112,7 @@ export interface AdminBlog {
   coverUrl: string | null;
   status: string;
   format: string;
+  source: "TRIPPER" | "RANDOMTRIP";
   tags: string[];
   travelType: string | null;
   excuseKey: string | null;

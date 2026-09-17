@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
           coverUrl: true,
           status: true,
           format: true,
+          source: true,
           tags: true,
           travelType: true,
           excuseKey: true,

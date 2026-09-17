@@ -40,7 +40,7 @@ export async function POST(
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const blog = await (prisma.blogPost.findFirst as any)({
-      where: { id: params.id, authorId: user.id, isReviewCopy: false },
+      where: { id: params.id, isReviewCopy: false },
     }) as {
       id: string;
       authorId: string;
@@ -51,7 +51,13 @@ export async function POST(
       source: "TRIPPER" | "RANDOMTRIP";
     } | null;
 
-    if (!blog) {
+    // Owner may always submit their own post. An admin may additionally
+    // submit any RANDOMTRIP (admin-owned) post regardless of who created it.
+    const isOwner = blog?.authorId === user.id;
+    const isAdminOnRandomtrip =
+      hasRoleAccess(user, "admin") && blog?.source === "RANDOMTRIP";
+
+    if (!blog || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },

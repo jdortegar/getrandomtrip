@@ -1424,6 +1424,7 @@ export interface AdminPagesDict {
     };
     actions: {
       review: string;
+      edit: string;
     };
     tabs: {
       all: string;

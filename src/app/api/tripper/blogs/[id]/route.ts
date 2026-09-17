@@ -49,19 +49,18 @@ export async function GET(
 
     const blogId = params.id;
 
-    // Find blog and verify ownership. Review copies (isReviewCopy: true)
-    // share authorId with the original and must never be reachable through
-    // the tripper's own edit routes — they only exist on admin review
-    // surfaces until resolved.
+    // Find blog. Review copies (isReviewCopy: true) share authorId with the
+    // original and must never be reachable through the tripper's own edit
+    // routes — they only exist on admin review surfaces until resolved.
     const blog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
-        authorId: user.id,
         isReviewCopy: false,
       },
       select: {
         id: true,
         authorId: true,
+        source: true,
         title: true,
         subtitle: true,
         tagline: true,
@@ -94,7 +93,14 @@ export async function GET(
       },
     });
 
-    if (!blog) {
+    // Owner may always fetch their own post. An admin may additionally fetch
+    // any RANDOMTRIP (admin-owned) post regardless of who created it — never
+    // for TRIPPER posts, which stay behind the tripper's own edit routes.
+    const isOwner = blog?.authorId === user.id;
+    const isAdminOnRandomtrip =
+      hasRoleAccess(user, "admin") && blog?.source === "RANDOMTRIP";
+
+    if (!blog || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },
@@ -148,17 +154,23 @@ export async function PATCH(
 
     const blogId = params.id;
 
-    // Verify blog exists and belongs to user. Review copies must never be
-    // reachable through this route (see GET above).
+    // Verify blog exists. Review copies must never be reachable through this
+    // route (see GET above).
     const existingBlog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
-        authorId: user.id,
         isReviewCopy: false,
       },
     });
 
-    if (!existingBlog) {
+    // Owner may always edit their own post. An admin may additionally edit
+    // any RANDOMTRIP (admin-owned) post regardless of who created it — same
+    // bypass as GET above.
+    const isOwner = existingBlog?.authorId === user.id;
+    const isAdminOnRandomtrip =
+      hasRoleAccess(user, "admin") && existingBlog?.source === "RANDOMTRIP";
+
+    if (!existingBlog || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },
@@ -368,17 +380,22 @@ export async function DELETE(
 
     const blogId = params.id;
 
-    // Find blog and verify ownership. Review copies must never be reachable
-    // through this route (see GET above).
+    // Find blog. Review copies must never be reachable through this route
+    // (see GET above).
     const existingBlog = await prisma.blogPost.findFirst({
       where: {
         id: blogId,
-        authorId: user.id,
         isReviewCopy: false,
       },
     });
 
-    if (!existingBlog) {
+    // Owner may always delete their own post. An admin may additionally
+    // delete any RANDOMTRIP (admin-owned) post — same bypass as GET/PATCH.
+    const isOwner = existingBlog?.authorId === user.id;
+    const isAdminOnRandomtrip =
+      hasRoleAccess(user, "admin") && existingBlog?.source === "RANDOMTRIP";
+
+    if (!existingBlog || (!isOwner && !isAdminOnRandomtrip)) {
       return NextResponse.json(
         { error: "Blog post not found or access denied" },
         { status: 404 },
