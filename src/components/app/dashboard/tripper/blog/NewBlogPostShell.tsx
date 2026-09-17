@@ -25,9 +25,12 @@ import type { Locale } from "@/lib/i18n/config";
 import {
   isEditingExisting as computeIsEditingExisting,
   resolveBlogPersistTarget,
+  resolveFinalizeCopy,
+  shouldShowTripperNoteField,
   shouldSkipAutosave,
   shouldSwapFooterForReviewActions,
   type BlogShellMode,
+  type FinalizeCopy,
 } from "./newBlogPostShellHelpers";
 
 export type { BlogShellMode } from "./newBlogPostShellHelpers";
@@ -67,6 +70,8 @@ interface NewBlogPostShellProps {
    * (unlike experiences) there's no dedicated admin composer route for blogs; an
    * admin's own tripper-mode blog pages still need to show admin-only fields. */
   isAdmin?: boolean;
+  /** Overrides the finalize CTA label + confirm-modal copy (e.g. adminCreate's "Publish"). Falls back to tripper defaults. */
+  finalizeCopy?: FinalizeCopy;
   /** The post's ownership source (see BlogPost.source). Combined with `isAdmin` and
    * `initialDraft.status` to detect editing an already-live RANDOMTRIP post. */
   source?: "TRIPPER" | "RANDOMTRIP";
@@ -127,6 +132,7 @@ export function NewBlogPostShell({
   changedFields,
   originalDraft,
   isAdmin: isAdminProp,
+  finalizeCopy,
   source,
 }: NewBlogPostShellProps) {
   const router = useRouter();
@@ -290,7 +296,10 @@ export function NewBlogPostShell({
   // read-only (status already PENDING_REVIEW/PENDING_TRIPPER_REVIEW) — the
   // submit route itself is DRAFT-only and would 409 otherwise.
   const canFinalize =
-    mode === "tripper" && !isEditingLiveRandomtrip && !isFinishing && !isReadOnly;
+    (mode === "tripper" || mode === "adminCreate") &&
+    !isEditingLiveRandomtrip &&
+    !isFinishing &&
+    !isReadOnly;
   const canSaveChanges = isEditingLiveRandomtrip && !isFinishing && !isReadOnly;
 
   function handleRequestSubmit() {
@@ -420,14 +429,24 @@ export function NewBlogPostShell({
     [tabs, draft],
   );
 
+  // Finalize CTA label + confirm-modal copy — falls back to the tripper
+  // defaults unless an override (e.g. adminCreate's "Publish") is passed.
   // Editing an already-live RANDOMTRIP post swaps in "Save Changes" copy
-  // instead of "Submit for review" — there is nothing left to submit.
-  const effectiveDict = isEditingLiveRandomtrip
+  // instead — there is nothing left to "publish".
+  const resolvedFinalizeCopy = isEditingLiveRandomtrip
+    ? {
+        submitLabel: dict.editSubmit,
+        confirmTitle: dict.saveChangesConfirmTitle,
+        confirmBody: dict.saveChangesConfirmBody,
+      }
+    : resolveFinalizeCopy(dict, finalizeCopy);
+  const effectiveDict = finalizeCopy || isEditingLiveRandomtrip
     ? {
         ...dict,
-        actionBar: { ...dict.actionBar, submitForReview: dict.editSubmit },
+        actionBar: { ...dict.actionBar, submitForReview: resolvedFinalizeCopy.submitLabel },
       }
     : dict;
+  const showTripperNoteField = shouldShowTripperNoteField(mode) && !isEditingLiveRandomtrip;
 
   return (
     <div className="bg-gray-50">
@@ -522,13 +541,13 @@ export function NewBlogPostShell({
             <Check className="h-5 w-5 text-secondary" />
           </div>
           <DialogTitle className="text-2xl font-bold text-ink">
-            {isEditingLiveRandomtrip ? dict.saveChangesConfirmTitle : dict.submitConfirmTitle}
+            {resolvedFinalizeCopy.confirmTitle}
           </DialogTitle>
           <DialogDescription className="text-sm text-ink">
-            {isEditingLiveRandomtrip ? dict.saveChangesConfirmBody : dict.submitConfirmBody}
+            {resolvedFinalizeCopy.confirmBody}
           </DialogDescription>
         </DialogHeader>
-        {!isEditingLiveRandomtrip && (
+        {showTripperNoteField && (
         <div className="mt-2 flex flex-col gap-1.5">
           <label htmlFor="blog-submit-note" className="text-sm font-medium text-gray-700">
             {dict.tripperNoteLabel}{" "}
@@ -555,7 +574,7 @@ export function NewBlogPostShell({
             {dict.cancel}
           </Button>
           <Button onClick={() => void confirmSubmit()} disabled={isFinishing}>
-            {isFinishing ? dict.saving : effectiveDict.actionBar.submitForReview}
+            {isFinishing ? dict.saving : resolvedFinalizeCopy.submitLabel}
           </Button>
         </DialogFooter>
       </Modal>

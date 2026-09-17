@@ -101,6 +101,10 @@
         "title": "Post review",
         "description": "Review the post before approving it."
       },
+      "blogNew": {
+        "title": "New Post",
+        "description": "Create a post published by RandomTrip."
+      },
       "home": {
         "title": "Admin Dashboard",
         "description": "Platform overview at a glance."
@@ -150,6 +154,11 @@
     "editExperience": {
       "confirmTitle": "Save these changes?",
       "confirmBody": "The changes will apply immediately to the published experience."
+    },
+    "newBlogPost": {
+      "submitLabel": "Publish",
+      "confirmTitle": "Publish this post?",
+      "confirmBody": "It will go live immediately as a RandomTrip post, skipping review."
     }
   },
   "adminXsed": {

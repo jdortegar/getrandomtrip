@@ -1,4 +1,4 @@
-export type BlogShellMode = "tripper" | "adminEdit" | "adminReadOnly";
+export type BlogShellMode = "tripper" | "adminCreate" | "adminEdit" | "adminReadOnly";
 
 /**
  * True only in `adminReadOnly` — the tripper reviewing an admin's proposed
@@ -11,16 +11,55 @@ export function shouldSkipAutosave(mode: BlogShellMode): boolean {
 
 /**
  * True whenever the shell was opened against an existing post (tripper's
- * own edit page) rather than the "new" post flow — autosave is for creation
- * only; an edit page disables it entirely, regardless of status, and relies
- * on an explicit "Finish" click. `adminEdit` (review-copy editing) is a
- * different, nested flow and keeps its own always-on autosave.
+ * own edit page, or an admin's RANDOMTRIP edit page) rather than the "new"
+ * post flow — autosave is for creation only; an edit page disables it
+ * entirely, regardless of status, and relies on an explicit "Finish"/"Save
+ * Changes" click. `adminEdit` (review-copy editing) is a different, nested
+ * flow and keeps its own always-on autosave.
  */
 export function isEditingExisting(
   mode: BlogShellMode,
   hasInitialDraftId: boolean,
 ): boolean {
-  return hasInitialDraftId && mode === "tripper";
+  return hasInitialDraftId && (mode === "tripper" || mode === "adminCreate");
+}
+
+export interface FinalizeCopy {
+  submitLabel: string;
+  confirmTitle: string;
+  confirmBody: string;
+}
+
+export interface FinalizeCopyDict {
+  submitConfirmTitle: string;
+  submitConfirmBody: string;
+  actionBar: { submitForReview: string };
+}
+
+/**
+ * Resolves the finalize CTA label + confirm-modal copy. Falls back to the
+ * tripper dictionary defaults when no `finalizeCopy` override is passed —
+ * tripper mode must see identical copy to before this change. Mirrors
+ * NewExperienceShell's resolveFinalizeCopy exactly.
+ */
+export function resolveFinalizeCopy(
+  dict: FinalizeCopyDict,
+  finalizeCopy?: FinalizeCopy,
+): FinalizeCopy {
+  return {
+    submitLabel: finalizeCopy?.submitLabel ?? dict.actionBar.submitForReview,
+    confirmTitle: finalizeCopy?.confirmTitle ?? dict.submitConfirmTitle,
+    confirmBody: finalizeCopy?.confirmBody ?? dict.submitConfirmBody,
+  };
+}
+
+/**
+ * The tripper-note textarea (submit confirm modal) only makes sense when a
+ * tripper is addressing an admin reviewer — admin-created (RANDOMTRIP) posts
+ * have no reviewer to note, so it is hidden for `adminCreate` only.
+ */
+export function shouldShowTripperNoteField(mode: BlogShellMode): boolean {
+  return mode !== "adminCreate";
 }
 
 /**

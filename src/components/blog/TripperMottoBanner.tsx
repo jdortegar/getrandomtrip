@@ -45,12 +45,20 @@ export default function TripperMottoBanner({
         </blockquote>
         <footer className="flex flex-col items-center gap-4">
           <cite className="not-italic">
-            <Link
-              className="font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-white hover:underline md:text-base"
-              href={`/trippers/${authorSlug}`}
-            >
-              {attribution}
-            </Link>
+            {authorSlug ? (
+              <Link
+                className="font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-white hover:underline md:text-base"
+                href={`/trippers/${authorSlug}`}
+              >
+                {attribution}
+              </Link>
+            ) : (
+              // No public profile to link to (e.g. the RandomTrip pseudo-user
+              // that owns RANDOMTRIP-sourced content) — plain text instead.
+              <span className="font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-white md:text-base">
+                {attribution}
+              </span>
+            )}
           </cite>
           <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white">
             {avatarUrl ? (
