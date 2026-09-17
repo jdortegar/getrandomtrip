@@ -575,11 +575,34 @@
       },
       "actions": {
         "review": "Review",
-        "edit": "Edit"
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this post? This cannot be undone.",
+        "lockedForDeletion": "Cannot delete while a review decision is pending"
       },
       "tabs": {
         "all": "All",
         "pending": "Pending review"
+      },
+      "filters": {
+        "allExperiences": "All experiences",
+        "allTravelTypes": "All types",
+        "clearFilters": "Clear filters",
+        "searchPlaceholder": "Search by title…",
+        "of": "of",
+        "count": "posts"
+      },
+      "bulkActions": {
+        "deleteSelected": "Delete ({count})",
+        "confirmTitle": "Delete {count} posts?",
+        "confirmBody": "This cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete",
+        "partialFailure": "Deleted {success} of {total} posts — {failed} failed."
+      },
+      "table": {
+        "selectAll": "Select all posts",
+        "selectRow": "Select post"
       }
     },
     "reviews": {

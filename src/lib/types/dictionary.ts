@@ -1434,10 +1434,33 @@ export interface AdminPagesDict {
     actions: {
       review: string;
       edit: string;
+      delete: string;
+      deleteConfirm: string;
+      lockedForDeletion: string;
     };
     tabs: {
       all: string;
       pending: string;
+    };
+    filters: {
+      allExperiences: string;
+      allTravelTypes: string;
+      clearFilters: string;
+      searchPlaceholder: string;
+      of: string;
+      count: string;
+    };
+    bulkActions: {
+      deleteSelected: string;
+      confirmTitle: string;
+      confirmBody: string;
+      cancel: string;
+      confirm: string;
+      partialFailure: string;
+    };
+    table: {
+      selectAll: string;
+      selectRow: string;
     };
   };
   reviews: {
