@@ -204,6 +204,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
           slug: blog.author.slug,
         }}
         coverUrl={blog.coverUrl}
+        isRandomtrip={blog.source === "RANDOMTRIP"}
         subtitle={blog.subtitle || blog.tagline || ""}
         title={blog.title}
       />
