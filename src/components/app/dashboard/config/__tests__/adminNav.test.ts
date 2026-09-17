@@ -12,13 +12,14 @@ const copy: AdminDashboardDict["nav"] = {
   reviews: "Reviews",
   xsed: "TGIS Drops",
   blog: "Blog",
+  newPost: "New Post",
   notifications: "Notifications",
 };
 
 describe("buildAdminNavTabs", () => {
-  it("returns 9 tabs in the documented order", () => {
+  it("returns 10 tabs in the documented order", () => {
     const tabs = buildAdminNavTabs(copy, "es");
-    expect(tabs).toHaveLength(9);
+    expect(tabs).toHaveLength(10);
     expect(tabs.map((t) => t.label)).toEqual([
       copy.dashboard,
       copy.tripRequests,
@@ -27,6 +28,7 @@ describe("buildAdminNavTabs", () => {
       copy.payments,
       copy.reviews,
       copy.blog,
+      copy.newPost,
       copy.notifications,
       copy.settings,
     ]);
@@ -42,6 +44,7 @@ describe("buildAdminNavTabs", () => {
       "/dashboard/admin/payments",
       "/dashboard/admin/reviews",
       "/dashboard/admin/blog",
+      "/dashboard/tripper/blog/new",
       "/dashboard/admin/notifications",
       "/dashboard/admin/settings",
     ]);

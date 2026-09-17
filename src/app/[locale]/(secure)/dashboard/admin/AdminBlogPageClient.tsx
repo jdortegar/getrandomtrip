@@ -34,7 +34,9 @@ export function AdminBlogPageClient() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const hasLoadedOnce = useHasLoadedOnce(loading);
-  const [tab, setTab] = useState<Tab>("pending");
+  // Defaults to "all" — RANDOMTRIP (admin-created) posts skip PENDING_REVIEW
+  // entirely and auto-publish, so a "pending"-first default would hide them.
+  const [tab, setTab] = useState<Tab>("all");
 
   async function fetchBlogs() {
     setLoading(true);

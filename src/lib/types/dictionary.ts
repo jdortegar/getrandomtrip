@@ -1069,6 +1069,7 @@ export interface AdminDashboardDict {
     dashboard: string;
     experiences: string;
     newExperience: string;
+    newPost: string;
     notifications: string;
     payments: string;
     reviews: string;
