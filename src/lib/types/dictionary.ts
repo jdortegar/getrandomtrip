@@ -161,7 +161,7 @@ export interface TripperBlogsDict {
   };
   eyebrow: string;
   filters: {
-    allFormats: string;
+    allExperiences: string;
     allStatuses: string;
     allTravelTypes: string;
     clearFilters: string;

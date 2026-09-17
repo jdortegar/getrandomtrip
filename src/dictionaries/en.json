@@ -3790,12 +3790,12 @@
         "saveError": "Could not save"
       }
     },
-    "title": "MY POSTS",
+    "title": "MY BLOG",
     "eyebrow": "Your content",
     "description": "Manage your blog and share your experiences",
     "filters": {
       "allStatuses": "All statuses",
-      "allFormats": "All formats",
+      "allExperiences": "All experiences",
       "allTravelTypes": "All types",
       "clearFilters": "Clear filters",
       "of": "of",

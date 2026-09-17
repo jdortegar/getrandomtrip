@@ -43,16 +43,18 @@ const SEARCH_DEBOUNCE_MS = 350;
 interface BlogPageClientProps {
   dict: TripperBlogsDict;
   locale: string;
+  /** Level filter (XSED) is admin-only — trippers can never own an XSED-tagged post. */
+  isAdmin?: boolean;
 }
 
-export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
+export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientProps) {
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const [isPending, startTransition] = useTransition();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [selectedFormat, setSelectedFormat] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,7 +78,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
   }, []);
 
   const hasActiveFilters =
-    selectedFormat !== "all" ||
+    selectedLevel !== "all" ||
     selectedStatus !== "all" ||
     selectedTravelType !== "all" ||
     searchQuery !== "";
@@ -96,7 +98,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
         limit: String(PAGE_SIZE),
       });
       if (selectedStatus !== "all") params.set("status", selectedStatus);
-      if (selectedFormat !== "all") params.set("format", selectedFormat);
+      if (selectedLevel !== "all") params.set("level", selectedLevel);
       if (selectedTravelType !== "all") params.set("travelType", selectedTravelType);
       if (debouncedSearch) params.set("search", debouncedSearch);
 
@@ -110,14 +112,14 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
     } finally {
       setLoading(false);
     }
-  }, [page, selectedStatus, selectedFormat, selectedTravelType, debouncedSearch]);
+  }, [page, selectedStatus, selectedLevel, selectedTravelType, debouncedSearch]);
 
   useEffect(() => {
     void fetchBlogs();
   }, [fetchBlogs]);
 
   function clearFilters() {
-    setSelectedFormat("all");
+    setSelectedLevel("all");
     setSelectedStatus("all");
     setSelectedTravelType("all");
     setSearchQuery("");
@@ -137,7 +139,7 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
     };
   }
 
-  const setSelectedFormatAndClear = updateFilter(setSelectedFormat);
+  const setSelectedLevelAndClear = updateFilter(setSelectedLevel);
   const setSelectedStatusAndClear = updateFilter(setSelectedStatus);
   const setSelectedTravelTypeAndClear = updateFilter(setSelectedTravelType);
 
@@ -314,21 +316,19 @@ export function BlogPageClient({ dict: copy, locale }: BlogPageClientProps) {
               </option>
             ))}
           </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedFormatAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedFormat}
-          >
-            <option value="all">{copy.filters.allFormats}</option>
-            {BLOG_FORMATS.map((format) => (
-              <option key={format} value={format}>
-                {formatLabel(format)}
-              </option>
-            ))}
-          </Select>
+          {isAdmin && (
+            <Select
+              className={SELECT_CLASS}
+              onChange={(e) => {
+                setSelectedLevelAndClear(e.target.value);
+                scrollToFilters();
+              }}
+              value={selectedLevel}
+            >
+              <option value="all">{copy.filters.allExperiences}</option>
+              <option value="xsed">XSED</option>
+            </Select>
+          )}
           <Select
             className={SELECT_CLASS}
             onChange={(e) => {

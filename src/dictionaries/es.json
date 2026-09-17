@@ -3790,12 +3790,12 @@
         "saveError": "No se pudo guardar"
       }
     },
-    "title": "MIS POSTS",
+    "title": "MI BLOG",
     "eyebrow": "Tu contenido",
     "description": "Gestiona tu blog y comparte tus experiencias",
     "filters": {
       "allStatuses": "Todos los estados",
-      "allFormats": "Todos los formatos",
+      "allExperiences": "Todas las experiencias",
       "allTravelTypes": "Todos los tipos",
       "clearFilters": "Limpiar filtros",
       "of": "de",
