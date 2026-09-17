@@ -32,12 +32,17 @@ interface BlogPostHeroProps {
     slug: string;
     location?: string;
   };
+  /** RANDOMTRIP-owned posts have no real tripper behind them — the author
+   * avatar/actions row and the "RANDOMTRIP-ME con [author]!" CTA (which would
+   * link to a nonexistent /trippers/[slug] profile) don't apply. */
+  isRandomtrip?: boolean;
 }
 
 export default function BlogPostHero({
   author,
   className,
   coverUrl,
+  isRandomtrip,
   subtitle,
   title,
 }: BlogPostHeroProps) {
@@ -82,65 +87,69 @@ export default function BlogPostHero({
           {byline}
         </p>
 
-        {/* Author row: avatar, name, location (flag style from tripper), actions, FOLLOW */}
-        <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8 ">
-          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
-            {author.avatarUrl ? (
-              <Image
-                alt={author.name}
-                className="object-cover"
-                fill
-                sizes="64px"
-                src={author.avatarUrl}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
-                {author.name.charAt(0)}
+        {!isRandomtrip && (
+          <>
+            {/* Author row: avatar, name, location (flag style from tripper), actions, FOLLOW */}
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8 ">
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full md:h-23 md:w-23">
+                {author.avatarUrl ? (
+                  <Image
+                    alt={author.name}
+                    className="object-cover"
+                    fill
+                    sizes="64px"
+                    src={author.avatarUrl}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center font-barlow-condensed rounded-full bg-linear-to-br from-blue-500 to-purple-600 font-bold text-white text-4xl">
+                    {author.name.charAt(0)}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-3">
-              <p className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
-                {author.name}
-              </p>
-              <div className="flex items-center gap-3">
-                <button
-                  aria-label="Compartir"
-                  className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
-                  type="button"
-                >
-                  <Share2 className="h-5 w-5" />
-                </button>
-                <button
-                  aria-label="Guardar"
-                  className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
-                  type="button"
-                >
-                  <Heart className="h-5 w-5" />
-                </button>
+              <div>
+                <div className="flex items-center gap-3">
+                  <p className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
+                    {author.name}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      aria-label="Compartir"
+                      className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
+                      type="button"
+                    >
+                      <Share2 className="h-5 w-5" />
+                    </button>
+                    <button
+                      aria-label="Guardar"
+                      className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
+                      type="button"
+                    >
+                      <Heart className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {tripperLocation && (
+                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
+                    {countryForFlag && (
+                      <CountryFlag
+                        className="inline-block shrink-0 align-baseline"
+                        country={countryForFlag}
+                        title={tripperLocation}
+                      />
+                    )}
+                    <span>{tripperLocation.toUpperCase()}</span>
+                  </div>
+                )}
               </div>
             </div>
-
-            {tripperLocation && (
-              <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
-                {countryForFlag && (
-                  <CountryFlag
-                    className="inline-block shrink-0 align-baseline"
-                    country={countryForFlag}
-                    title={tripperLocation}
-                  />
-                )}
-                <span>{tripperLocation.toUpperCase()}</span>
-              </div>
-            )}
-          </div>
-        </div>
-        <Button asChild size="lg" variant="feature" className="w-fit">
-          <Link href={`/trippers/${author.slug}`}>
-            RANDOMTRIP-ME con {author.name}!
-          </Link>
-        </Button>
+            <Button asChild size="lg" variant="feature" className="w-fit">
+              <Link href={`/trippers/${author.slug}`}>
+                RANDOMTRIP-ME con {author.name}!
+              </Link>
+            </Button>
+          </>
+        )}
       </div>
     </section>
   );
