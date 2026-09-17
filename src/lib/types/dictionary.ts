@@ -62,6 +62,9 @@ export interface TripperBlogFormDict {
   cancel: string;
   submitConfirmTitle: string;
   submitConfirmBody: string;
+  editSubmit: string;
+  saveChangesConfirmTitle: string;
+  saveChangesConfirmBody: string;
   tripperNoteLabel: string;
   tripperNoteOptional: string;
   tripperNotePlaceholder: string;

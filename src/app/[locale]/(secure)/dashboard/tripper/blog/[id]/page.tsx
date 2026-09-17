@@ -116,6 +116,7 @@ function EditBlogContent() {
       locale={locale}
       userBadgeLabels={userBadgeLabels}
       isAdmin={session?.user ? hasRoleAccess(session.user, "admin") : false}
+      source={post.source}
     />
   );
 }

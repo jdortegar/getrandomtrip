@@ -243,7 +243,14 @@ export async function PATCH(
       (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
       (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
 
-    const revertToDraft = existingBlog.status === "PUBLISHED" && contentChanged;
+    // RANDOMTRIP posts skip review entirely (see BlogPost.source), so editing
+    // a live one must not silently unpublish it — only TRIPPER posts revert
+    // to DRAFT on content change, forcing a re-review. Mirrors the
+    // experience PATCH route's identical guard.
+    const revertToDraft =
+      existingBlog.status === "PUBLISHED" &&
+      contentChanged &&
+      existingBlog.source === "TRIPPER";
 
     // Convert string enums to uppercase for Prisma
     const { slugify } = await import("@/lib/helpers/slugify");
