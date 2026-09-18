@@ -65,7 +65,7 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
       container.querySelector(`#${TRIPPER_TRAVELER_TYPES_ANCHOR_ID}`),
     ).not.toBeNull();
     // The carousel underneath still renders a full row of fallback cards
-    // rather than nothing — every card links to the base RandomTrip catalog.
+    // rather than nothing — every card links to the base Randomtrip catalog.
     expect(
       container.querySelector('a[href="/experiences/by-type/couple?catalog=randomtrip"]'),
     ).not.toBeNull();

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
     }
 
     // Lookup TripRequest by reviewToken — include experience owner to derive
-    // tripperId for RandomTrips that use a tripper-owned experience.
+    // tripperId for Randomtrips that use a tripper-owned experience.
     const tripRequest = await prisma.tripRequest.findUnique({
       where: { reviewToken: token },
       select: {
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
 
     const notificationTitle = tripper?.name
       ? `Nueva reseña para ${tripper.name}`
-      : "Nueva reseña (RandomTrip)";
+      : "Nueva reseña (Randomtrip)";
 
     // Fetch all admin user ids for notifications
     const admins = await prisma.user.findMany({

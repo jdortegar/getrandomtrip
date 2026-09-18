@@ -50,12 +50,12 @@ Reproduced with `git stash` applied (baseline, before any of this change's edits
 | Role-Aware Experience Creation Endpoint | Commission omitted for admin-created rows | No commission field exists in form (dead code, confirmed by design.md); enforced via reviews attribution tests instead | ⚠️ PARTIAL (see WARNING below — spec wording vs. implemented reality) |
 | XSED Ownership Backfill | Existing XSED drops backfilled | `scripts/__tests__/backfill-experience-source.test.ts` > "updates only exact XSED array-element matches" | ✅ COMPLIANT (unit-level; NOT run against real DB — see WARNING) |
 | XSED Ownership Backfill | Non-XSED rows unaffected | same test, `where: { type: { has: "XSED" } }` scoping asserted | ✅ COMPLIANT (unit-level) |
-| Status State Machine (Extended) | Admin/RandomTrip creation skips PENDING_REVIEW | `submit/__tests__/route.test.ts` (RANDOMTRIP → ACTIVE, no email call) | ✅ COMPLIANT |
+| Status State Machine (Extended) | Admin/Randomtrip creation skips PENDING_REVIEW | `submit/__tests__/route.test.ts` (RANDOMTRIP → ACTIVE, no email call) | ✅ COMPLIANT |
 | Status State Machine (Extended) | Tripper-created rows cannot reach ACTIVE directly | same file (TRIPPER → PENDING_REVIEW unchanged) | ✅ COMPLIANT |
 | Status State Machine (Extended) | Other pre-existing transitions (approve/reject/copy paths) | 7 pre-existing passing tests in same file, unmodified | ✅ COMPLIANT (regression-safe) |
 | Dual-Locale Dictionary Coverage | New admin copy present in both locales | `npm run typecheck` (0 errors) + manual JSON parity check (script below) | ✅ COMPLIANT |
 | Attribution via Experience Source | Tripper-sourced attributes owner | `reviews/__tests__/route.test.ts` > "attributes tripperId from experience.ownerId when source is TRIPPER" | ✅ COMPLIANT |
-| Attribution via Experience Source | RandomTrip-sourced attributes no tripper | same file > "...even if owner.roles includes TRIPPER" | ✅ COMPLIANT |
+| Attribution via Experience Source | Randomtrip-sourced attributes no tripper | same file > "...even if owner.roles includes TRIPPER" | ✅ COMPLIANT |
 | Attribution via Experience Source | Existing tripperId path unaffected | same file > "uses TripRequest.tripperId directly...does not consult experience.source" | ✅ COMPLIANT |
 
 **Compliance summary**: 13/14 scenarios fully compliant, 1 PARTIAL (commission — spec text is stale relative to a design.md-documented reconciliation, not a code defect).

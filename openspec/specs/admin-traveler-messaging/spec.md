@@ -8,7 +8,7 @@ New capability (no prior spec exists). Lets an admin compose and send a branded,
 
 ### Requirement: Compose Modal With Prefilled Localized Content
 
-The system MUST open a compose modal, built from the existing `Modal`/`FormField`/`TextAreaInput` primitives, prefilled with a localized subject and body (greeting uses `trip.user.name`, sign-off "the GetRandomTrip team") — nothing blank by default. The body MUST be plain text only, rendered by the email template as paragraphs split on newlines; no rich text editor, no HTML input, no sanitization surface.
+The system MUST open a compose modal, built from the existing `Modal`/`FormField`/`TextAreaInput` primitives, prefilled with a localized subject and body (greeting uses `trip.user.name`, sign-off "the GetRandomtrip team") — nothing blank by default. The body MUST be plain text only, rendered by the email template as paragraphs split on newlines; no rich text editor, no HTML input, no sanitization surface.
 
 #### Scenario: Modal opens with both fields prefilled
 - GIVEN an admin clicks "Contact traveler" on the fulfillment header

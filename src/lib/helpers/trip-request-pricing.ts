@@ -48,7 +48,7 @@ function coerceTransport(raw: string | undefined): string {
  *
  * `overrides` is REQUIRED (not optional) so TypeScript surfaces every call
  * site that needs to load tripper overrides first — pass `null` explicitly
- * for RandomTrip-owned trips (no tripper attribution).
+ * for Randomtrip-owned trips (no tripper attribution).
  */
 export function paymentTotalsInputFromTripRequest(
   trip: TripRequestPricingFields,

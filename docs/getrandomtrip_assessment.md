@@ -1,10 +1,10 @@
-# Assessment Técnico (Actualizado) — GetRandomTrip
+# Assessment Técnico (Actualizado) — GetRandomtrip
 
 > Estado al día de hoy tras el trabajo reciente (login/profile flow, TripperGuard, /u/[handle], migración `<img>`→`<Image>`, contraste y layout, `next.config.js`, tipos del store y Navbar).
 
 ## 📌 Resumen ejecutivo
 
-GetRandomTrip presenta una base sólida con **Next.js 14 (App Router)**, una **UI consistente con Tailwind**, y **flujos de sesión** más claros (auto–redirect por rol, edición de perfil, vista pública por handle y guardas de Tripper). El foco ahora pasa de “hacerlo funcionar” a **cerrar deuda técnica** (seguridad, QA, SEO/Performance, observabilidad) y **terminar el MVP** end‑to‑end: funnels de compra, onboarding, y tooling de Tripper (Tripper OS).
+GetRandomtrip presenta una base sólida con **Next.js 14 (App Router)**, una **UI consistente con Tailwind**, y **flujos de sesión** más claros (auto–redirect por rol, edición de perfil, vista pública por handle y guardas de Tripper). El foco ahora pasa de “hacerlo funcionar” a **cerrar deuda técnica** (seguridad, QA, SEO/Performance, observabilidad) y **terminar el MVP** end‑to‑end: funnels de compra, onboarding, y tooling de Tripper (Tripper OS).
 
 **Prioridades inmediatas (1–2 sprints):**
 

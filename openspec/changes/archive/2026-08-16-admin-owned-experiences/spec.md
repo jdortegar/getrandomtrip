@@ -84,7 +84,7 @@ A one-time, idempotent migration MUST set `source: RANDOMTRIP` on every existing
 The system MUST enforce the following lifecycle for Experience records:
 
 - `DRAFT` → `PENDING_REVIEW` (tripper submits; INACTIVE copy cleaned up if present)
-- `DRAFT` → `ACTIVE` (admin/RandomTrip creation auto-publish; `source: RANDOMTRIP` only)
+- `DRAFT` → `ACTIVE` (admin/Randomtrip creation auto-publish; `source: RANDOMTRIP` only)
 - `PENDING_REVIEW` → `ACTIVE` (admin approves directly, no copy)
 - `PENDING_REVIEW` → `DRAFT` (admin rejects directly)
 - `PENDING_REVIEW` → `PENDING_TRIPPER_REVIEW` (admin edits + sends copy to tripper)
@@ -130,7 +130,7 @@ No other direct transitions are permitted. The `DRAFT → ACTIVE` transition MUS
 - WHEN a request attempts to set status directly to `PENDING_REVIEW` without going through `DRAFT`
 - THEN the API MUST return a 422 error
 
-#### Scenario: Admin/RandomTrip creation skips PENDING_REVIEW
+#### Scenario: Admin/Randomtrip creation skips PENDING_REVIEW
 
 - GIVEN an ADMIN caller creates a new generic experience
 - WHEN the creation request succeeds
@@ -199,7 +199,7 @@ When a `TripRequest.tripperId` is null, the system MUST derive `effectiveTripper
 - WHEN a review is submitted via `POST /api/reviews`
 - THEN the created `Review.tripperId` is `"t1"`
 
-#### Scenario: RandomTrip-sourced experience attributes no tripper
+#### Scenario: Randomtrip-sourced experience attributes no tripper
 
 - GIVEN a `TripRequest` with `tripperId: null` linked to an `Experience` with `source: "RANDOMTRIP"`
 - WHEN a review is submitted via `POST /api/reviews`

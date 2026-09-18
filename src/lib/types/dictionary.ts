@@ -2139,7 +2139,7 @@ export interface InviteTravelersDict {
  * Site-wide tripper attribution copy (design ADR-8/ADR-9): the carousel's
  * non-offered-type fallback CTA, and the persistent tripper-vs-general
  * experiences banner + toggle. Copy is framed around *which experiences*
- * are shown (tripper-curated vs. RandomTrip's general catalog), never
+ * are shown (tripper-curated vs. Randomtrip's general catalog), never
  * around pricing — the underlying mechanism does affect price overrides,
  * but that's an implementation detail, not something surfaced to the
  * visitor. Kept as its own top-level section (not nested under `trippers`
@@ -2148,12 +2148,12 @@ export interface InviteTravelersDict {
  */
 export interface TripperAttributionDict {
   /** Fallback CTA/description shown on a carousel card for a type the attributed tripper doesn't offer. */
-  visitRandomTripExperiences: string;
+  visitRandomtripExperiences: string;
   /** Banner copy while browsing tripper-curated experiences. Contains a literal "{name}" placeholder. */
   bannerTripperModeMessage: string;
-  /** Banner copy after switching to RandomTrip's general experiences. */
+  /** Banner copy after switching to Randomtrip's general experiences. */
   bannerRandomtripModeMessage: string;
-  /** Toggle label: tripper-curated experiences -> general RandomTrip experiences. */
+  /** Toggle label: tripper-curated experiences -> general Randomtrip experiences. */
   bannerSwitchToRandomtrip: string;
   /** Toggle label: general experiences -> back to the tripper's curated experiences. Contains a literal "{name}" placeholder. */
   bannerSwitchToTripper: string;
@@ -2884,7 +2884,7 @@ export interface MarketingDictionary {
     tripperBadge: {
       curatedBy: string;
       byTripper: string;
-      /** Shown on a carousel card in place of the tripper badge when the attributed tripper doesn't offer this type/level — it's still bookable, just priced/fulfilled by RandomTrip directly. */
+      /** Shown on a carousel card in place of the tripper badge when the attributed tripper doesn't offer this type/level — it's still bookable, just priced/fulfilled by Randomtrip directly. */
       byRandomtrip: string;
     };
     userNamePlaceholder: string;

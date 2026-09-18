@@ -140,7 +140,7 @@ interface JourneySummaryProps {
   summary: JourneySummaryDict;
   /** Checkout-aligned filter breakdown + subtotal/total labels (journey.checkout). */
   totalsLabels: JourneyTotalsLabels;
-  /** Requesting tripper's price overrides, or `null` for no tripper / RandomTrip-owned journeys. */
+  /** Requesting tripper's price overrides, or `null` for no tripper / Randomtrip-owned journeys. */
   tripperPriceOverrides?: TripperPriceOverrides | null;
 }
 

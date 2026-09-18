@@ -24,7 +24,7 @@ export const COOKIE_MAX_AGE = 30 * 24 * 60 * 60;
 /**
  * Separate, longer-lived "last seen tripper" cookie (review finding #4).
  * `GRT_TRIPPER_COOKIE` is the LIVE pricing/attribution signal — it's cleared
- * outright by the mode-toggle's "switch to RandomTrip" action, and re-reading
+ * outright by the mode-toggle's "switch to Randomtrip" action, and re-reading
  * it after that clears the banner's "switch back to {tripper}" control with
  * no way to recover it short of re-clicking the original referral link.
  *
@@ -86,7 +86,7 @@ export function lastSeenCookieOptions(): {
   return cookieOptionsWithMaxAge(LAST_SEEN_COOKIE_MAX_AGE);
 }
 
-/** Reads the `ATTRIBUTION_ENABLED` feature flag. Off = never write/trust the cookie (base RandomTrip catalog only, never a wrong price). */
+/** Reads the `ATTRIBUTION_ENABLED` feature flag. Off = never write/trust the cookie (base Randomtrip catalog only, never a wrong price). */
 export function isAttributionEnabled(): boolean {
   return process.env.ATTRIBUTION_ENABLED === "true";
 }

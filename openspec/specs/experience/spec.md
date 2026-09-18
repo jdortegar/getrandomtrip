@@ -143,7 +143,7 @@ A one-time, idempotent migration MUST set `source: RANDOMTRIP` on every existing
 The system MUST enforce the following lifecycle for Experience records:
 
 - `DRAFT` → `PENDING_REVIEW` (tripper submits)
-- `DRAFT` → `ACTIVE` (admin/RandomTrip creation auto-publish; `source: RANDOMTRIP` only)
+- `DRAFT` → `ACTIVE` (admin/Randomtrip creation auto-publish; `source: RANDOMTRIP` only)
 - `PENDING_REVIEW` → `ACTIVE` (admin approves)
 - `PENDING_REVIEW` → `DRAFT` (admin rejects)
 - `ACTIVE` → `DRAFT` (tripper edits; reverts to draft, loses ACTIVE)
@@ -184,7 +184,7 @@ No other direct transitions are permitted. `INACTIVE` and `ARCHIVED` transitions
 - WHEN a request attempts to set status directly to `PENDING_REVIEW` without going through `DRAFT`
 - THEN the API MUST return a 422 error
 
-#### Scenario: Admin/RandomTrip creation skips PENDING_REVIEW
+#### Scenario: Admin/Randomtrip creation skips PENDING_REVIEW
 
 - GIVEN an ADMIN caller creates a new generic experience
 - WHEN the creation request succeeds
@@ -1214,19 +1214,19 @@ After all changes, `npm run typecheck` and `npm run lint` MUST pass with zero er
 
 ## Change: `randomtrip-blog-ownership` (shared with `BlogPost`; see `blog-review-flow-v2`)
 
-Introduces a dedicated "RandomTrip" pseudo-user as the true owner of every `source: RANDOMTRIP` row, replacing the prior behavior where `ownerId` was simply whichever admin account triggered creation. `Experience.owner` cascade-deletes its experiences on account deletion — this change decouples brand-owned content from any individual admin's account lifecycle.
+Introduces a dedicated "Randomtrip" pseudo-user as the true owner of every `source: RANDOMTRIP` row, replacing the prior behavior where `ownerId` was simply whichever admin account triggered creation. `Experience.owner` cascade-deletes its experiences on account deletion — this change decouples brand-owned content from any individual admin's account lifecycle.
 
 ## MODIFIED Requirements
 
 ### Requirement: Role-Aware Experience Creation Endpoint (Amended — pseudo-user ownership)
 
-For an ADMIN caller, `POST /api/tripper/experiences` MUST set `ownerId` to the RandomTrip pseudo-user's id (seeded via `scripts/seed-randomtrip-user.ts`), not the calling admin's own id. `createdById` MUST still be set to the calling admin's id, as before — it now serves as the only record of who actually triggered creation.
+For an ADMIN caller, `POST /api/tripper/experiences` MUST set `ownerId` to the Randomtrip pseudo-user's id (seeded via `scripts/seed-randomtrip-user.ts`), not the calling admin's own id. `createdById` MUST still be set to the calling admin's id, as before — it now serves as the only record of who actually triggered creation.
 
 #### Scenario: Admin-created experience is owned by the pseudo-user, not the admin
 
 - GIVEN an authenticated ADMIN submits the New Experience form
 - WHEN the creation request succeeds
-- THEN `ownerId` is the RandomTrip pseudo-user's id and `createdById` is the admin's own id
+- THEN `ownerId` is the Randomtrip pseudo-user's id and `createdById` is the admin's own id
 
 #### Scenario: Admin's own "My Experiences" list no longer shows their RANDOMTRIP experiences
 
@@ -1258,4 +1258,4 @@ See `blog-review-flow-v2`'s "One-Time Ownership Backfill" requirement — `scrip
 
 - GIVEN a RANDOMTRIP experience created before this change, with `ownerId` = admin A and `createdById: null`
 - WHEN the migration runs
-- THEN `createdById` becomes admin A's id, and `ownerId` becomes the RandomTrip pseudo-user's id
+- THEN `createdById` becomes admin A's id, and `ownerId` becomes the Randomtrip pseudo-user's id

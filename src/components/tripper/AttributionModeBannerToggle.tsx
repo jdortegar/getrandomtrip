@@ -68,7 +68,7 @@ export function AttributionModeBannerToggle({
   };
 
   // `?catalog=randomtrip` (design ADR-8) is the by-type page's own,
-  // per-request opt-out into base RandomTrip pricing for a single
+  // per-request opt-out into base Randomtrip pricing for a single
   // non-offered type — read here via `useSearchParams()` (not prop-drilled
   // from the layout, which never receives `searchParams` for pages further
   // down the tree) so the banner's message can't contradict the page

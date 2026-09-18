@@ -30,7 +30,7 @@ interface LevelCardProps {
   navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
   selected?: boolean;
-  /** When set (and `tripperBadge` is not), renders the RandomTrip isologo + "BY RANDOMTRIP" — this level isn't offered by the attributed tripper, but is still bookable at RandomTrip's base price. */
+  /** When set (and `tripperBadge` is not), renders the Randomtrip isologo + "BY RANDOMTRIP" — this level isn't offered by the attributed tripper, but is still bookable at Randomtrip's base price. */
   showRandomtripBadge?: boolean;
   travelerType?: string;
   /** Tripper branding — when defined, renders "BY TRIPPER {name}" on this card (curated journey, level the tripper actually offers). */
@@ -143,7 +143,7 @@ export default function LevelCard({
         </div>
       )}
 
-      {/* Tripper / RandomTrip badge — text only, no avatar/isologo (dense card). */}
+      {/* Tripper / Randomtrip badge — text only, no avatar/isologo (dense card). */}
       {(tripperBadge || showRandomtripBadge) && (
         <p
           className={cn(

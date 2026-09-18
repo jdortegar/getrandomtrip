@@ -43,7 +43,7 @@ afterEach(() => {
  *
  * Nothing is ever dropped from the carousel: a type the tripper doesn't
  * offer stays visible, loses the tripper badge, gets a "RANDOMTRIP" label
- * instead, and links into that type's base-priced RandomTrip flow via
+ * instead, and links into that type's base-priced Randomtrip flow via
  * `?catalog=randomtrip` — a dedicated single "browse everything" fallback
  * card was tried and reverted (it read as a second, competing escape hatch
  * next to the attribution banner's own toggle).

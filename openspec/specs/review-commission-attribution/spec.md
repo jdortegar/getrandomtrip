@@ -16,7 +16,7 @@ When a `TripRequest.tripperId` is null, the system MUST derive `effectiveTripper
 - WHEN a review is submitted via `POST /api/reviews`
 - THEN the created `Review.tripperId` is `"t1"`
 
-#### Scenario: RandomTrip-sourced experience attributes no tripper
+#### Scenario: Randomtrip-sourced experience attributes no tripper
 
 - GIVEN a `TripRequest` with `tripperId: null` linked to an `Experience` with `source: "RANDOMTRIP"`
 - WHEN a review is submitted via `POST /api/reviews`

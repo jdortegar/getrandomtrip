@@ -37,7 +37,7 @@
 |----------|--------|----------|
 | 1.1 — Admin notified on new review | COMPLIANT | `route.ts:127-138` — `tx.notification.createMany` creates a record for every admin with `type: REVIEW_SUBMITTED`, `audience: ADMIN`, `isRead: false` |
 | 1.2 — Notification includes tripper name | COMPLIANT | `route.ts:95-97` — `notificationTitle = "Nueva reseña para ${tripper.name}"` when tripper found |
-| 1.3 — Notification for RandomTrip | COMPLIANT | `route.ts:97` — falls back to `"Nueva reseña (RandomTrip)"` when `effectiveTripperId` is null |
+| 1.3 — Notification for Randomtrip | COMPLIANT | `route.ts:97` — falls back to `"Nueva reseña (Randomtrip)"` when `effectiveTripperId` is null |
 | 1.4 — Notification created atomically with review | COMPLIANT | `route.ts:106-139` — review creation + TripRequest update + notification all inside `prisma.$transaction` |
 
 No automated test coverage for Domain 1 scenarios — existing tests fail before reaching the notification path due to residual mock issue (see C2).
@@ -58,7 +58,7 @@ Note: Admin UI also conditionally exposes an `isPublic` action button for platfo
 | Scenario | Status | Evidence |
 |----------|--------|----------|
 | 3.1 — Tripper notified on approval | COMPLIANT | `route.ts:76-93` — `wasJustApproved` guard; creates `REVIEW_APPROVED` notification and calls `sendReviewApprovedForTripper` fire-and-forget |
-| 3.2 — No notification for RandomTrip review | COMPLIANT | `route.ts:77` — guard `review.tripperId` is truthy; skips entire block if null |
+| 3.2 — No notification for Randomtrip review | COMPLIANT | `route.ts:77` — guard `review.tripperId` is truthy; skips entire block if null |
 | 3.3 — No notification on un-approval | COMPLIANT | `route.ts:76` — `wasJustApproved = !existing.isApproved && body.isApproved`; only fires when transition is `false → true` |
 
 No automated test coverage for Domain 3 scenarios.

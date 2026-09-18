@@ -19,9 +19,9 @@ const fetchMock = vi.fn();
 (globalThis as any).fetch = fetchMock;
 
 const COPY = {
-  visitRandomTripExperiences: "Ver experiencias RandomTrip",
+  visitRandomtripExperiences: "Ver experiencias Randomtrip",
   bannerTripperModeMessage: "Estás viendo experiencias curadas por {name}",
-  bannerRandomtripModeMessage: "Estás viendo las experiencias generales de RandomTrip",
+  bannerRandomtripModeMessage: "Estás viendo las experiencias generales de Randomtrip",
   bannerSwitchToRandomtrip: "Ver experiencias generales",
   bannerSwitchToTripper: "Volver a {name}",
 };
@@ -76,7 +76,7 @@ describe("AttributionModeBannerToggle — initialMode (review finding #4)", () =
         tripperSlug="maria"
       />,
     );
-    expect(container.textContent).toContain("experiencias generales de RandomTrip");
+    expect(container.textContent).toContain("experiencias generales de Randomtrip");
     expect(container.textContent).toContain("Volver a Maria");
   });
 });
@@ -140,7 +140,7 @@ describe("AttributionModeBannerToggle — ?catalog=randomtrip consistency (revie
       />,
     );
 
-    expect(container.textContent).toContain("experiencias generales de RandomTrip");
+    expect(container.textContent).toContain("experiencias generales de Randomtrip");
     expect(container.textContent).not.toContain("curadas por Maria");
     expect(container.querySelector("button")).toBeNull();
   });

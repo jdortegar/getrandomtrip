@@ -66,7 +66,7 @@ Every read site that affects price or referral eligibility (trip-request creatio
 - THEN it returns `not_found`/`inactive` and attribution resolves to "none"
 
 ## Requirement: Deleted Referrer — Permanent Attribution Loss (Settled)
-`User.referredByTripperId` MUST use `onDelete: SetNull`. If a referring tripper's account is deleted, every traveler they referred permanently loses that attribution with no historical snapshot; RandomTrip retains 100% of any of those travelers' future bookings. This is intentional, not a defect, and MUST NOT be replaced by a snapshot/ledger mechanism in this change.
+`User.referredByTripperId` MUST use `onDelete: SetNull`. If a referring tripper's account is deleted, every traveler they referred permanently loses that attribution with no historical snapshot; Randomtrip retains 100% of any of those travelers' future bookings. This is intentional, not a defect, and MUST NOT be replaced by a snapshot/ledger mechanism in this change.
 
 #### Scenario: Referrer deletion nulls attribution with no trace
 - GIVEN a traveler with `referredByTripperId` pointing to tripper T

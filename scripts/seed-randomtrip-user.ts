@@ -1,5 +1,5 @@
 /**
- * One-time seed: creates (or verifies) the "RandomTrip" pseudo-user — the
+ * One-time seed: creates (or verifies) the "Randomtrip" pseudo-user — the
  * account that owns all RANDOMTRIP-sourced Experience and BlogPost rows,
  * instead of whichever admin happened to click "create". This decouples
  * brand-owned content from any individual admin's account lifecycle (both
@@ -32,7 +32,7 @@ export async function seedRandomtripUser(client: PrismaClient = prisma) {
     update: {},
     create: {
       email: RANDOMTRIP_USER_EMAIL,
-      name: "RandomTrip",
+      name: "Randomtrip",
       password: null,
       roles: ["ADMIN"],
       emailVerified: new Date(),

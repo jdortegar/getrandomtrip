@@ -55,7 +55,7 @@ export default function TypePlanner({
   // ("essenza", "explora", "atelier", ...); `level.id` is a `LevelSlug`
   // ("modo-explora", "atelier-getaway", ...) — both must normalize to the
   // same canonical `PriceLevelId` before comparing, or "explora"/"atelier"
-  // would never match and always read as RandomTrip's even when the tripper
+  // would never match and always read as Randomtrip's even when the tripper
   // does offer them.
   const normalizedAllowedLevelIds = allowedLevelIds
     ? new Set(

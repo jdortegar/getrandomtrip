@@ -74,7 +74,7 @@ No server-side tests for review page (page is a server component; client form ha
 | 4.6 Rating not integer → 400 | PASS | `Number.isInteger()` check | PASS |
 | 4.7 Empty content → 400 | PASS | `!content` check | PASS |
 | 4.8 tripperId from TripRequest | PASS | `tripperId: tripRequest.tripperId ?? null` | PASS |
-| 4.9 tripperId null for RandomTrip | PASS | Nullable propagation | PASS |
+| 4.9 tripperId null for Randomtrip | PASS | Nullable propagation | PASS |
 | 4.10 No session required | PASS | No `getServerSession` in route | PASS |
 
 ### Domain 5 — Admin Review Moderation

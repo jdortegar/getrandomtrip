@@ -6,7 +6,7 @@ import {
 
 /**
  * Loads a tripper's stored price overrides for resolution. `tripperId ===
- * null` means the booking is RandomTrip-owned (no tripper attribution) — the
+ * null` means the booking is Randomtrip-owned (no tripper attribution) — the
  * spec requires this to NEVER apply any override, so it short-circuits to
  * `null` with no db hit at all.
  */

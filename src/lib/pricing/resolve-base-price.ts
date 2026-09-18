@@ -28,7 +28,7 @@ function isTravelerTypeSlug(value: string): value is TravelerTypeSlug {
  *
  * - `xsed` is a flat-rate product: it never consults overrides and always
  *   resolves from the catalog (`getBasePricePerPerson` short-circuits it).
- * - `overrides` MUST be `null` for RandomTrip-owned bookings (no tripper
+ * - `overrides` MUST be `null` for Randomtrip-owned bookings (no tripper
  *   attribution) — callers pass `null` explicitly, never omit the field.
  * - Unknown type/level pairs resolve to `{ offered: false, price: 0 }`,
  *   matching `getBasePricePerPerson`'s existing "unknown -> 0" semantics.

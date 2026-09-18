@@ -109,7 +109,7 @@ async function postWelcomeMessage(channels: any, guild: any) {
 
   const embed = new EmbedBuilder()
     .setColor(0x3498db)
-    .setTitle("👋 Welcome to GetRandomTrip Community!")
+    .setTitle("👋 Welcome to GetRandomtrip Community!")
     .setDescription(
       `We're excited to have you join our community of adventurous travelers!`,
     )
@@ -339,7 +339,7 @@ async function postIntroductionsTemplate(channels: any, guild: any) {
         value: "Solo, couple, family, or with friends?",
       },
       {
-        name: "🎲 What brought you to GetRandomTrip?",
+        name: "🎲 What brought you to GetRandomtrip?",
         value: "How did you find us?",
       },
       {
@@ -374,13 +374,13 @@ async function postFAQMessage(channels: any, guild: any) {
   const embed1 = new EmbedBuilder()
     .setColor(0x3498db)
     .setTitle("📚 Frequently Asked Questions")
-    .setDescription("**About GetRandomTrip**");
+    .setDescription("**About GetRandomtrip**");
 
   const embed2 = new EmbedBuilder().setColor(0x3498db).addFields(
     {
-      name: "❓ What is GetRandomTrip?",
+      name: "❓ What is GetRandomtrip?",
       value:
-        "GetRandomTrip is a mystery travel booking platform. Choose your preferences, and we reveal a surprise destination!",
+        "GetRandomtrip is a mystery travel booking platform. Choose your preferences, and we reveal a surprise destination!",
     },
     {
       name: "🎲 How does it work?",
@@ -456,7 +456,7 @@ async function postAnnouncementExample(channels: any, guild: any) {
 
   const embed = new EmbedBuilder()
     .setColor(0x2ecc71)
-    .setTitle("🎉 Welcome to GetRandomTrip Discord!")
+    .setTitle("🎉 Welcome to GetRandomtrip Discord!")
     .setDescription(
       "We're excited to launch our official Discord community!\n\n" +
         "This is where you'll find:\n" +

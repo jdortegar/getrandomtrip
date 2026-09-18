@@ -1,4 +1,4 @@
-# AGENTS.md — GetRandomTrip
+# AGENTS.md — GetRandomtrip
 
 > AI agent configuration for this repository. These instructions apply to all
 > coding agents (Claude Code, Cursor, Codex, etc.).
@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-**GetRandomTrip** is a mystery travel platform. Clients configure a trip budget
+**GetRandomtrip** is a mystery travel platform. Clients configure a trip budget
 and preferences, then receive a surprise destination curated by a *Tripper*
 (travel expert). Deployed on Netlify: <https://getrandomtrip.netlify.app/>.
 

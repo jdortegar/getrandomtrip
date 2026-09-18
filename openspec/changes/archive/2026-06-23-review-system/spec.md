@@ -134,7 +134,7 @@ This spec describes the behavioral requirements for the review-system change: wh
 1. The endpoint MUST be public — no session or auth token required.
 2. A valid request body contains: `token` (string), `rating` (integer 1–5), `content` (non-empty string), and optionally `title` (string).
 3. On success: a `Review` record MUST be created with `isApproved: false` and `isPublic: false`. The `TripRequest.reviewSubmittedAt` MUST be set to the current timestamp in the same transaction.
-4. `Review.tripperId` MUST be populated from `TripRequest.tripperId`. If the TripRequest has no tripper (RandomTrip), `tripperId` is null.
+4. `Review.tripperId` MUST be populated from `TripRequest.tripperId`. If the TripRequest has no tripper (Randomtrip), `tripperId` is null.
 5. `Review.tripRequestId` MUST be set to the resolved TripRequest's id.
 6. Duplicate submission (same token, `reviewSubmittedAt` already set): MUST return HTTP 409.
 7. Non-existent token: MUST return HTTP 404.
@@ -178,7 +178,7 @@ This spec describes the behavioral requirements for the review-system change: wh
 - When: the review is created
 - Then: `Review.tripperId = "tripper-uuid"`
 
-**Scenario 4.9 — tripperId null (RandomTrip)**
+**Scenario 4.9 — tripperId null (Randomtrip)**
 - Given: a TripRequest with `tripperId = null` resolved by the token
 - When: the review is created
 - Then: `Review.tripperId = null`
@@ -196,7 +196,7 @@ This spec describes the behavioral requirements for the review-system change: wh
 1. Review records created via the new submission flow MUST appear in the admin reviews list at `/dashboard/admin/reviews/`.
 2. The existing approve and hide/show toggle actions MUST continue to function for new Review records.
 3. Each Review record in the admin list MUST expose the associated `tripRequestId` to allow tracing back to the originating trip.
-4. The admin list MUST show the tripper name (or "RandomTrip" / equivalent) for each review where `tripperId` is set.
+4. The admin list MUST show the tripper name (or "Randomtrip" / equivalent) for each review where `tripperId` is set.
 
 ### Acceptance Scenarios
 
@@ -370,7 +370,7 @@ The following are explicitly NOT covered by this spec:
 - Replying to reviews
 - Rate limiting or CAPTCHA on `POST /api/reviews`
 - Email preview or test rendering
-- Homepage testimonials from RandomTrip reviews (noted in proposal goals but not specced here — no exploration data on the homepage testimonials component was provided)
+- Homepage testimonials from Randomtrip reviews (noted in proposal goals but not specced here — no exploration data on the homepage testimonials component was provided)
 
 ---
 

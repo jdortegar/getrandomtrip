@@ -18,11 +18,11 @@ import TripStartVouchers, { subjects as tripStartVouchersSubjects } from "../src
 const templates: Record<string, { element: React.ReactElement; subject: string }> = {
   NewsletterGoLive: {
     element: React.createElement(NewsletterGoLive),
-    subject: "Tu próxima aventura te espera — GetRandomTrip",
+    subject: "Tu próxima aventura te espera — GetRandomtrip",
   },
   XsedCampaign: {
     element: React.createElement(XsedCampaign),
-    subject: "Tu próximo XSED te está esperando — GetRandomTrip",
+    subject: "Tu próximo XSED te está esperando — GetRandomtrip",
   },
   ExperienceApproved: {
     element: React.createElement(ExperienceApproved, {

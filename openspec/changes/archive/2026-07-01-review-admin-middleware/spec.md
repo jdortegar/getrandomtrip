@@ -32,7 +32,7 @@ A review in state `isApproved: false` is invisible to the tripper. A review in s
 
 1. When a `Review` record is created via `POST /api/reviews`, an in-app `Notification` record MUST be created for each user with the `ADMIN` role.
 2. The notification MUST use `NotificationType.REVIEW_SUBMITTED` and `NotificationAudience.ADMIN`.
-3. The notification `title` MUST identify the tripper name (or "RandomTrip" if `tripperId` is null).
+3. The notification `title` MUST identify the tripper name (or "Randomtrip" if `tripperId` is null).
 4. The notification `metadata` MUST include the `reviewId` to enable direct linking from the admin dashboard.
 5. The review creation and notification creation MUST occur in the same `prisma.$transaction`.
 
@@ -46,9 +46,9 @@ A review in state `isApproved: false` is invisible to the tripper. A review in s
 - Given: the review is linked to a tripper (`tripperId` is set)
 - Then: the notification `title` includes the tripper's name
 
-**Scenario 1.3 — Notification for RandomTrip**
-- Given: the review has `tripperId: null` (RandomTrip)
-- Then: the notification `title` identifies the review as "RandomTrip" or equivalent
+**Scenario 1.3 — Notification for Randomtrip**
+- Given: the review has `tripperId: null` (Randomtrip)
+- Then: the notification `title` identifies the review as "Randomtrip" or equivalent
 
 **Scenario 1.4 — Notification created atomically with review**
 - Given: `POST /api/reviews` with a valid payload
@@ -96,7 +96,7 @@ A review in state `isApproved: false` is invisible to the tripper. A review in s
 1. When `Review.isApproved` transitions from `false` to `true`, an in-app `Notification` record MUST be created for the tripper (`Review.tripperId`).
 2. An email (`ReviewApprovedForTripper`) MUST be sent to the tripper's email address at the same time.
 3. The notification MUST use `NotificationType.REVIEW_APPROVED` and `NotificationAudience.TRIPPER`.
-4. If `Review.tripperId` is null (RandomTrip), no tripper notification or email is sent.
+4. If `Review.tripperId` is null (Randomtrip), no tripper notification or email is sent.
 5. When `Review.isApproved` transitions from `true` to `false` (un-approval), no notification is sent to the tripper.
 
 ### Acceptance Scenarios
@@ -106,7 +106,7 @@ A review in state `isApproved: false` is invisible to the tripper. A review in s
 - When: admin sets `isApproved: true`
 - Then: a `Notification` record is created for user "t1" with `type: REVIEW_APPROVED`; an email is dispatched to that tripper
 
-**Scenario 3.2 — No notification for RandomTrip review**
+**Scenario 3.2 — No notification for Randomtrip review**
 - Given: a `Review` with `tripperId: null`
 - When: admin sets `isApproved: true`
 - Then: no `Notification` record is created; no email is dispatched

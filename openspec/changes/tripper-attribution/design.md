@@ -106,7 +106,7 @@ inbound request ──> proxy.ts (Edge)
    ┌────────────────────────────────────────────────────┘
    ▼
 Node read site ──> readAttributionSlug() ──> getTripperJourneyContext(slug)
-                        not_found/inactive ──> base RandomTrip catalog
+                        not_found/inactive ──> base Randomtrip catalog
                         ok ──> priceOverrides / allowedTypes / branding
                                      └──> charge time: resolveBasePricePerPerson(overrides) re-derived
 ```
@@ -178,7 +178,7 @@ available && tripperSlug      -> /experiences/by-type/{slug}?tripper={tripperSlu
 available && !tripperSlug     -> /experiences/by-type/{slug}
 !available (tripper context)  -> /experiences/by-type/{slug}?catalog=randomtrip
 ```
-Unavailable cards render `dict.tripperAttribution.visitRandomTripExperiences` as the CTA label and suppress `tripperBadge` (it is not that tripper's offer).
+Unavailable cards render `dict.tripperAttribution.visitRandomtripExperiences` as the CTA label and suppress `tripperBadge` (it is not that tripper's offer).
 
 ### Self-referral guard
 Single choke point: `stampReferral(userId, referrerId)` in `attribution-server.ts`, mirroring `stampSiteAccess` (`accessInviteTokens.ts:139-144`):
@@ -232,7 +232,7 @@ Applied to `getTripperJourneyContext` (`src/lib/db/tripper-queries.ts`) and `rea
 
 ## Migration / Rollout
 
-Additive nullable column; backfills as `null`. Feature-flag the proxy block via `ATTRIBUTION_ENABLED` — off = no cookie written = base RandomTrip catalog, never a wrong price. Migration ships before the register picker. Rollback leaves the column in place.
+Additive nullable column; backfills as `null`. Feature-flag the proxy block via `ATTRIBUTION_ENABLED` — off = no cookie written = base Randomtrip catalog, never a wrong price. Migration ships before the register picker. Rollback leaves the column in place.
 
 ## Open Questions — RESOLVED
 

@@ -1,6 +1,6 @@
 # 🔒 Discord Work Channels Guide
 
-Internal team channels for GetRandomTrip staff collaboration.
+Internal team channels for GetRandomtrip staff collaboration.
 
 ---
 

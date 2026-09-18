@@ -71,7 +71,7 @@ export default async function TravelerTypePage(props: {
   }
 
   // `?catalog=randomtrip` is a per-request, reversible opt-out into base
-  // RandomTrip pricing — read here by the page, not by the proxy, so it
+  // Randomtrip pricing — read here by the page, not by the proxy, so it
   // never touches the `grt_tripper` cookie itself (design ADR-8).
   //
   // The attribution resolution (cookie read + possible DB call) doesn't

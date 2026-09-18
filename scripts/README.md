@@ -1,6 +1,6 @@
 # Discord Server Setup Script
 
-Automated script to create a complete Discord community for GetRandomTrip.
+Automated script to create a complete Discord community for GetRandomtrip.
 
 ## 🚀 Quick Start
 
@@ -164,7 +164,7 @@ Lock these channels to read-only:
 In `#welcome`, create a pinned message:
 
 ```
-👋 Welcome to GetRandomTrip Community, @everyone!
+👋 Welcome to GetRandomtrip Community, @everyone!
 
 We're excited to have you join our community of adventurous travelers!
 

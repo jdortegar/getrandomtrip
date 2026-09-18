@@ -1,4 +1,4 @@
-# GetRandomTrip — Product Specification
+# GetRandomtrip — Product Specification
 
 **Last updated:** 2026-09-17  
 **Stack:** Next.js 16 (App Router) · TypeScript 5 · Prisma 7 · PostgreSQL · Stripe · NextAuth 4  
@@ -8,7 +8,7 @@
 
 ## 1. Overview
 
-GetRandomTrip is a mystery travel platform. Clients configure a trip budget, dates, and preferences but never choose the destination — trippers (travel experts) match and fulfill requests with curated experience packages. The destination is revealed 48 hours before departure.
+GetRandomtrip is a mystery travel platform. Clients configure a trip budget, dates, and preferences but never choose the destination — trippers (travel experts) match and fulfill requests with curated experience packages. The destination is revealed 48 hours before departure.
 
 ---
 
@@ -292,8 +292,8 @@ Full platform management at `/(secure)/dashboard/admin/`:
 
 **Blogs**
 
-- Manage all blog posts, both tripper-authored and RandomTrip-owned (admin-created, auto-published, no review step — see `blog-review-flow` spec)
-- Author a new RandomTrip-owned post directly via `/dashboard/admin/blog/new`
+- Manage all blog posts, both tripper-authored and Randomtrip-owned (admin-created, auto-published, no review step — see `blog-review-flow` spec)
+- Author a new Randomtrip-owned post directly via `/dashboard/admin/blog/new`
 
 **XSED Notifications**
 
@@ -308,7 +308,7 @@ Full platform management at `/(secure)/dashboard/admin/`:
 
 ## 4. Content & Blog System
 
-- Blog posts authored by trippers, or by admins on behalf of RandomTrip (owned by a dedicated system user, not the individual admin — auto-published, skipping tripper review)
+- Blog posts authored by trippers, or by admins on behalf of Randomtrip (owned by a dedicated system user, not the individual admin — auto-published, skipping tripper review)
 - Accessible at `/blog` and `/blog/[slug]`
 - Rich HTML content with support for images, videos, galleries
 - Tags and travel type categorization

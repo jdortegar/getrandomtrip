@@ -103,7 +103,7 @@
       },
       "blogNew": {
         "title": "Nuevo Post",
-        "description": "Crea un post publicado por RandomTrip."
+        "description": "Crea un post publicado por Randomtrip."
       },
       "home": {
         "title": "Panel de Admin",
@@ -123,7 +123,7 @@
       },
       "experiencesNew": {
         "title": "Nueva experiencia",
-        "description": "Crea una experiencia genérica publicada por RandomTrip."
+        "description": "Crea una experiencia genérica publicada por Randomtrip."
       },
       "experiencesDetail": {
         "title": "Revisión de experiencia",
@@ -149,7 +149,7 @@
     "newExperience": {
       "submitLabel": "Publicar",
       "confirmTitle": "¿Publicar esta experiencia?",
-      "confirmBody": "Se publicará de inmediato como una experiencia de RandomTrip, sin pasar por revisión."
+      "confirmBody": "Se publicará de inmediato como una experiencia de Randomtrip, sin pasar por revisión."
     },
     "editExperience": {
       "confirmTitle": "¿Guardar los cambios?",
@@ -158,7 +158,7 @@
     "newBlogPost": {
       "submitLabel": "Publicar",
       "confirmTitle": "¿Publicar este post?",
-      "confirmBody": "Se publicará de inmediato como un post de RandomTrip, sin pasar por revisión."
+      "confirmBody": "Se publicará de inmediato como un post de Randomtrip, sin pasar por revisión."
     }
   },
   "adminXsed": {
@@ -3629,7 +3629,7 @@
       "bodyLabel": "Mensaje",
       "bodyPlaceholder": "Escribí tu mensaje…",
       "prefillSubject": "Novedades sobre tu viaje",
-      "prefillBody": "Hola {{userName}},\n\n\n\nSaludos,\nEl equipo de GetRandomTrip",
+      "prefillBody": "Hola {{userName}},\n\n\n\nSaludos,\nEl equipo de GetRandomtrip",
       "send": "Enviar mensaje",
       "sending": "Enviando…",
       "cancel": "Cancelar",
@@ -5162,10 +5162,10 @@
     "savingAction": "Guardando…"
   },
   "tripperAttribution": {
-    "visitRandomTripExperiences": "Visitar experiencias RandomTrip",
+    "visitRandomtripExperiences": "Visitar experiencias Randomtrip",
     "bannerTripperModeMessage": "Estás viendo experiencias curadas por {name}.",
-    "bannerRandomtripModeMessage": "Estás viendo experiencias generales de RandomTrip.",
-    "bannerSwitchToRandomtrip": "Ver experiencias generales de RandomTrip",
+    "bannerRandomtripModeMessage": "Estás viendo experiencias generales de Randomtrip.",
+    "bannerSwitchToRandomtrip": "Ver experiencias generales de Randomtrip",
     "bannerSwitchToTripper": "Volver a experiencias de {name}"
   }
 }

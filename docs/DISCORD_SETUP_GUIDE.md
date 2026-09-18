@@ -102,7 +102,7 @@ Go to these channels and disable "Send Messages" for @everyone:
 Paste this in `#welcome`:
 
 ```
-👋 Welcome to GetRandomTrip Community, @everyone!
+👋 Welcome to GetRandomtrip Community, @everyone!
 
 We're excited to have you join our community of adventurous travelers!
 

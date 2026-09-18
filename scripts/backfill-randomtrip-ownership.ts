@@ -1,16 +1,16 @@
 /**
  * One-time backfill: repoints every existing RANDOMTRIP-sourced Experience
- * and BlogPost row to the "RandomTrip" pseudo-user (see
+ * and BlogPost row to the "Randomtrip" pseudo-user (see
  * seed-randomtrip-user.ts) instead of whichever admin account created it.
  *
  * Two steps per model, in order:
  *   1. Where createdById is still null, set it to the row's current
  *      owner/author — preserves "who really created this" before that field
  *      gets overwritten.
- *   2. Set owner/author to the RandomTrip user id for every RANDOMTRIP row.
+ *   2. Set owner/author to the Randomtrip user id for every RANDOMTRIP row.
  *
  * Idempotent: safe to re-run — step 1 only touches null createdById rows,
- * step 2 sets the same value again on rows already pointing at RandomTrip.
+ * step 2 sets the same value again on rows already pointing at Randomtrip.
  *
  * Run: npx tsx scripts/backfill-randomtrip-ownership.ts
  */

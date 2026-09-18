@@ -89,7 +89,7 @@ const ICON_BY_SLUG: Record<LevelSlug, string> = {
  * Levels for a traveler type from experience-levels (content) + traveler-types (price).
  *
  * `overrides` is the requesting tripper's price overrides (or `null`/omitted
- * for no tripper / RandomTrip-owned journeys) — pass it explicitly so a
+ * for no tripper / Randomtrip-owned journeys) — pass it explicitly so a
  * display surface can't silently fall back to the global catalog by omission.
  */
 export function getLevelsForType(
@@ -179,7 +179,7 @@ function getPlannerPriceCopy(
  * Levels in planner shape (for TypePlanner / LevelCard). Uses experience-levels + price + excuses.
  *
  * `overrides` is the requesting tripper's price overrides (or `null` for no
- * tripper / RandomTrip-owned journeys) — pass it explicitly so a display
+ * tripper / Randomtrip-owned journeys) — pass it explicitly so a display
  * surface can't silently fall back to the global catalog by omission.
  */
 export function getPlannerLevelsForType(

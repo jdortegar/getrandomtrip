@@ -5,7 +5,7 @@ export const RANDOMTRIP_USER_EMAIL = "randomtrip@getrandomtrip.com";
 let cachedId: string | null = null;
 
 /**
- * Resolves the "RandomTrip" pseudo-user id — the owner/author of every
+ * Resolves the "Randomtrip" pseudo-user id — the owner/author of every
  * RANDOMTRIP-sourced Experience/BlogPost, regardless of which admin created
  * it (see scripts/seed-randomtrip-user.ts). Cached per server instance since
  * this row is effectively immutable.

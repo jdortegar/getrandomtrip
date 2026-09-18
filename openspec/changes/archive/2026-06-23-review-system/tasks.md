@@ -60,7 +60,7 @@ Chain strategy: size-exception
 - [x] 5.3 `src/lib/helpers/Tripper.ts` — Refactor `getAllTestimonialsForTripper()` from sync to async; call `getApprovedReviewsForTripper()` and merge with or replace hardcoded testimonials. Satisfies Scenarios 6.1, 6.4.
 - [x] 5.4 `src/app/[locale]/trippers/[tripper]/page.tsx` — Await the now-async `getAllTestimonialsForTripper()`; pass DB-backed reviews to the reviews section. Render empty state when array is empty. Satisfies Scenarios 6.1, 6.4.
 - [x] 5.5 `src/app/[locale]/(secure)/dashboard/tripper/reviews/page.tsx` — Wire Review model records (from `getTripperReviews()`) alongside legacy `customerRating`/`customerFeedback` TripRequest fields. Both sources must coexist in the rendered output. Satisfies Scenarios 7.1, 7.2.
-- [x] 5.6 Admin reviews page (`src/app/[locale]/(secure)/dashboard/admin/(shell)/reviews/` + `AdminReviewsPageClient.tsx`) — Surface `tripRequestId` (or a derived link) and tripper name (or "RandomTrip") in the review table row. Satisfies Scenarios 5.1, 5.2, 5.3, 5.4.
+- [x] 5.6 Admin reviews page (`src/app/[locale]/(secure)/dashboard/admin/(shell)/reviews/` + `AdminReviewsPageClient.tsx`) — Surface `tripRequestId` (or a derived link) and tripper name (or "Randomtrip") in the review table row. Satisfies Scenarios 5.1, 5.2, 5.3, 5.4.
 
 ## Phase 6: Dead Code Removal + Final Verification
 
