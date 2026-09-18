@@ -23,7 +23,6 @@ type NavLink = {
   href: string;
   labelKey: NavKeys;
   ariaKey: NavKeys;
-  displayPosition: "navbar" | "button";
 };
 
 const NAV_LINKS: NavLink[] = [
@@ -31,37 +30,31 @@ const NAV_LINKS: NavLink[] = [
     href: "/trippers",
     labelKey: "labelTrippers",
     ariaKey: "ariaLabelTrippers",
-    displayPosition: "navbar",
   },
   {
     href: "/experiences",
     labelKey: "labelExperiences",
     ariaKey: "ariaLabelExperiences",
-    displayPosition: "navbar",
   },
   {
     href: "/xsed",
     labelKey: "labelXsed",
     ariaKey: "ariaLabelXsed",
-    displayPosition: "navbar",
   },
   {
     href: "/blog",
     labelKey: "labelInspiration",
     ariaKey: "ariaLabelInspiration",
-    displayPosition: "button",
   },
   {
     href: "/about-us",
     labelKey: "labelNosotros",
     ariaKey: "ariaLabelNosotros",
-    displayPosition: "button",
   },
   {
     href: "/contact",
     labelKey: "labelContact",
     ariaKey: "ariaLabelContact",
-    displayPosition: "button",
   },
 ];
 
@@ -106,10 +99,6 @@ export default function Navbar({
     ? "/assets/logos/logo_getrandomtrip.svg"
     : "/assets/logos/logo_getrandomtrip_1.png";
 
-  const desktopLinks = NAV_LINKS.filter(
-    (link) => link.displayPosition === "navbar",
-  );
-
   return (
     <>
       <header className={headerClass} data-site-header>
@@ -137,8 +126,8 @@ export default function Navbar({
             />
           </Link>
 
-          {/* Desktop nav — navbar links only */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
+          {/* Desktop nav — visible from xl (1280px) up */}
+          <div className="hidden xl:flex items-center gap-6 text-sm font-medium">
             <button
               aria-label={nav?.search ?? "Search"}
               className={cn("p-2 rounded-lg", iconHoverClass)}
@@ -147,7 +136,7 @@ export default function Navbar({
             >
               <Search className="h-5 w-5" />
             </button>
-            {desktopLinks.map((link) => (
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 aria-label={nav?.[link.ariaKey]}
@@ -170,8 +159,8 @@ export default function Navbar({
               <Phone className="h-5 w-5" />
             </a>
 
-            {/* Hamburger — always present; shows all links (navbar links included for mobile) */}
-            <div className="relative" ref={mobileMenu.menuRef}>
+            {/* Hamburger — visible below xl (1280px); desktop nav shows all links */}
+            <div className="relative xl:hidden" ref={mobileMenu.menuRef}>
               <button
                 aria-expanded={mobileMenu.isOpen}
                 aria-haspopup="menu"
@@ -188,38 +177,18 @@ export default function Navbar({
                   role="menu"
                   className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
                 >
-                  {/* navbar links: hidden on desktop (already in the nav bar), visible on mobile */}
-                  <div className="lg:hidden">
-                    {NAV_LINKS.filter(
-                      (l) => l.displayPosition === "navbar",
-                    ).map((link) => (
-                      <Link
-                        key={link.href}
-                        aria-label={nav?.[link.ariaKey]}
-                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                        href={pathForLocale(currentLocale, link.href)}
-                        role="menuitem"
-                        onClick={mobileMenu.close}
-                      >
-                        {nav?.[link.labelKey]}
-                      </Link>
-                    ))}
-                  </div>
-                  {/* button links: always in the hamburger */}
-                  {NAV_LINKS.filter((l) => l.displayPosition === "button").map(
-                    (link) => (
-                      <Link
-                        key={link.href}
-                        aria-label={nav?.[link.ariaKey]}
-                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                        href={pathForLocale(currentLocale, link.href)}
-                        role="menuitem"
-                        onClick={mobileMenu.close}
-                      >
-                        {nav?.[link.labelKey]}
-                      </Link>
-                    ),
-                  )}
+                  {NAV_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      aria-label={nav?.[link.ariaKey]}
+                      className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
+                      href={pathForLocale(currentLocale, link.href)}
+                      role="menuitem"
+                      onClick={mobileMenu.close}
+                    >
+                      {nav?.[link.labelKey]}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
