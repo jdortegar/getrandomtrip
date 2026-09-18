@@ -13,7 +13,7 @@ export default function ProfileStats({
   f: number;
 }) {
   return (
-    <section className="rt-stats my-6">
+    <section className="rt-stats my-6" data-component="ProfileStats">
       <StatCard label="Reservas (12m)" value={b} />
       <StatCard label="Gasto total" value={formatUSD(spendUSD)} />
       <StatCard label="Reseñas" value={r} />

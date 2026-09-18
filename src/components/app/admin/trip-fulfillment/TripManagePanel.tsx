@@ -46,7 +46,7 @@ export function TripManagePanel({
   trip,
 }: TripManagePanelProps) {
   return (
-    <div className={styles.fieldGroup}>
+    <div className={styles.fieldGroup} data-component="TripManagePanel">
       <FormSelectField
         id="fulfillment-trip-status"
         label={copy.statusLabel}

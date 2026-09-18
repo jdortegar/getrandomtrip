@@ -128,7 +128,7 @@ const EmblaCarousel = ({
     : undefined;
 
   return (
-    <div className="@container mx-auto w-full overflow-x-clip">
+    <div className="@container mx-auto w-full overflow-x-clip" data-component="EmblaCarousel">
       {arrows && (
         <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>
       )}

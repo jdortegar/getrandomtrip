@@ -24,7 +24,7 @@ interface AboutUsValuesProps {
 
 export function AboutUsValues({ items }: AboutUsValuesProps) {
   return (
-    <Section>
+    <Section data-component="AboutUsValues">
       <div className="rt-container">
         <div className="grid grid-cols-1 gap-2 md:gap-12 md:grid-cols-3">
           {items.map((item, i) => {

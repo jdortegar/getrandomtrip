@@ -64,7 +64,7 @@ export default function JourneyContentNavigation({
 
   return (
     <nav
-      className={cn("w-full bg-white border-b border-gray-200 py-4", className)}
+      className={cn("w-full bg-white border-b border-gray-200 py-4", className)} data-component="JourneyContentNavigation"
     >
       <div className="container mx-auto md:px-4">
         <div

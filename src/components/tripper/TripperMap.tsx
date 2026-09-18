@@ -21,7 +21,7 @@ export default function TripperMap({
 }: TripperMapProps) {
   return (
     <section
-      className={`w-full rounded-xl border border-slate-200 bg-white p-4 ${className}`}
+      className={`w-full rounded-xl border border-slate-200 bg-white p-4 ${className}`} data-component="TripperMap"
     >
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-slate-900">

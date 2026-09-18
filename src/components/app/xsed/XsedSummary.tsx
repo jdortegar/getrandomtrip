@@ -53,7 +53,7 @@ export function XsedSummary({
     "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-ink hover:bg-gray-200";
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80">
+    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80" data-component="XsedSummary">
       <h2 className="text-xl font-bold text-ink">Resumen</h2>
 
       {/* Producto */}

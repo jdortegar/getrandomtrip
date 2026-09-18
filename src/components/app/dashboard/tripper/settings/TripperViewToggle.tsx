@@ -24,7 +24,7 @@ export function TripperViewToggle({
   return (
     <div
       className="flex w-fit self-start items-center gap-1 rounded-sm border-2 border-gray-900 p-1"
-      role="group"
+      role="group" data-component="TripperViewToggle"
     >
       {options.map(({ mode, label }) => (
         <button

@@ -49,11 +49,11 @@ export function TravelerReviewsPageClient({
   ).length;
 
   if (loading) {
-    return <DashboardSkeleton />;
+    return <DashboardSkeleton data-component="TravelerReviewsPageClient" />;
   }
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="TravelerReviewsPageClient">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}

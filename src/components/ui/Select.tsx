@@ -10,7 +10,7 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, children, placeholder, ...props }, ref) => {
     return (
-      <div className="relative">
+      <div className="relative" data-component="Select">
         <select
           className={cn(
             "flex h-10 w-full rounded-md border border-gray-200 bg-white pl-3 pr-8 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none",
@@ -58,5 +58,5 @@ export const SelectItem = ({
 }: {
   value: string;
   children: React.ReactNode;
-}) => <option value={value}>{children}</option>;
+}) => <option value={value} data-component="SelectItem">{children}</option>;
 export const SelectValue = ({ placeholder }: { placeholder?: string }) => null;

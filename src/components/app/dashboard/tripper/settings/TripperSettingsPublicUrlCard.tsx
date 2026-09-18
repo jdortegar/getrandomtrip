@@ -55,7 +55,7 @@ export function TripperSettingsPublicUrlCard({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+    <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200" data-component="TripperSettingsPublicUrlCard">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}

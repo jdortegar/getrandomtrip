@@ -29,7 +29,7 @@ export function TableLoadingOverlay({
         "transition-opacity",
         className,
         isLoading && "pointer-events-none opacity-50",
-      )}
+      )} data-component="TableLoadingOverlay"
     >
       {children}
     </div>

@@ -44,7 +44,7 @@ export default function RefineDetailsCard({
         className,
       )}
       onClick={onClick}
-      type="button"
+      type="button" data-component="RefineDetailsCard"
     >
       {selected && (
         <div className="absolute right-[-9.8px] top-0 z-30 @[250px]:right-[-14px]">

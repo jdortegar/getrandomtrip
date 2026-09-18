@@ -20,7 +20,7 @@ export function TripRequestsTableRow({
   tripStatusLabels,
 }: TripRequestsTableRowProps) {
   return (
-    <tr className="transition-colors hover:bg-gray-50">
+    <tr className="transition-colors hover:bg-gray-50" data-component="TripRequestsTableRow">
       <td className="px-5 py-4">
         <p className="text-sm font-semibold text-ink">
           {trip.user.name}

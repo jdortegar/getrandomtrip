@@ -187,7 +187,7 @@ export default function JourneyProgressSidebar({
       className={cn(
         "w-full md:w-80 shrink-0 bg-white p-6 rounded-lg shadow-md",
         className,
-      )}
+      )} data-component="JourneyProgressSidebar"
     >
       {progressLabel && (
         <div className="flex items-center justify-between mb-6">

@@ -57,7 +57,7 @@ export default function BlogPostHero({
       className={cn(
         "relative flex min-h-[80vh] flex-col justify-center overflow-hidden",
         className,
-      )}
+      )} data-component="BlogPostHero"
     >
       <div className="absolute inset-0">
         <Image

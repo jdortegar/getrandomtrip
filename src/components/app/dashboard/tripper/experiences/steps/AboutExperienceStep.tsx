@@ -84,7 +84,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
   const maxNightsAllowed = MAX_NIGHTS_BY_LEVEL[form.level];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="AboutExperienceStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>

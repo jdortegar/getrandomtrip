@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 export default function MinimalHeader() {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-black/30 backdrop-blur border-b border-white/10">
+    <header className="fixed inset-x-0 top-0 z-50 bg-black/30 backdrop-blur border-b border-white/10" data-component="MinimalHeader">
       <div className="rt-container px-4 h-14 flex items-center justify-between">
         <Link href="/" className="text-white font-semibold tracking-wide">
           <span className="sr-only">Randomtrip Home</span>

@@ -15,7 +15,7 @@ interface Props {
 
 export function CapacityPricingStep({ copy, form, onChange }: Props) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="CapacityPricingStep">
       <FormField
         id="price-estimated-cost"
         label={copy.fields.estimatedCost}

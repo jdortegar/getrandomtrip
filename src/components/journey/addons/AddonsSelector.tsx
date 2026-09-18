@@ -123,7 +123,7 @@ export function AddonsSelector({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="AddonsSelector">
       <p className="text-sm text-gray-500">{labels.addonsHint}</p>
       {categories.length === 0 ? (
         <p className="text-sm text-gray-500">{labels.addonsEmptyMessage}</p>

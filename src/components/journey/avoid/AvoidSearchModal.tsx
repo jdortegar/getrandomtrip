@@ -117,7 +117,7 @@ export default function AvoidSearchModal({
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center p-4" data-component="AvoidSearchModal">
       <div
         aria-hidden
         className="absolute inset-0 bg-black/50"

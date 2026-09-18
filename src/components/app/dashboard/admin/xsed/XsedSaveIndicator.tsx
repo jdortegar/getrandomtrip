@@ -10,7 +10,7 @@ interface XsedSaveIndicatorProps {
 export function XsedSaveIndicator({ labels, status }: XsedSaveIndicatorProps) {
   if (status === "idle") return null;
   return (
-    <div className="flex items-center gap-1.5 text-gray-400 text-xs">
+    <div className="flex items-center gap-1.5 text-gray-400 text-xs" data-component="XsedSaveIndicator">
       {status === "saving" && <Loader2 className="h-3 w-3 animate-spin" />}
       {status === "saved" && <Check className="h-3 w-3 text-green-500" />}
       {status === "error" && <AlertCircle className="h-3 w-3 text-red-400" />}

@@ -115,7 +115,7 @@ export function NavMobileDrawer({
       className={cn(
         "fixed inset-0 z-50 flex flex-col bg-ground xl:hidden",
         isOpen ? "animate-drawer-panel-in" : "animate-drawer-panel-out",
-      )}
+      )} data-component="NavMobileDrawer"
     >
       <div className="flex h-[60px] shrink-0 items-center justify-between border-b border-secondary-200 bg-ground px-4">
         <Img

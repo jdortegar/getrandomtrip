@@ -45,5 +45,5 @@ export default function TripperOffset({
     [h],
   );
 
-  return <div style={style}>{children}</div>;
+  return <div style={style} data-component="TripperOffset">{children}</div>;
 }

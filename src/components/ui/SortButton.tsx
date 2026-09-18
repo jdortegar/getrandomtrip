@@ -49,7 +49,7 @@ export function SortButton({
         active ? "text-ink" : "text-ink hover:text-neutral-700",
       )}
       onClick={onSort}
-      type="button"
+      type="button" data-component="SortButton"
     >
       {label}
       <Icon

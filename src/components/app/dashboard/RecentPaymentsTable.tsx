@@ -15,7 +15,7 @@ export function RecentPaymentsTable({
   const recentPayments = payments.slice(0, 5);
 
   return (
-    <div>
+    <div data-component="RecentPaymentsTable">
       <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-ink">

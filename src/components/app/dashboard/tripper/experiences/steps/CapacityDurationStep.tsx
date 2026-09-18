@@ -31,7 +31,7 @@ export function CapacityDurationStep({ copy, form, onChange }: Props) {
       : null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="CapacityDurationStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>

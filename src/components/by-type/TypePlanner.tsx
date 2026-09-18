@@ -126,7 +126,7 @@ export default function TypePlanner({
       subtitle={content.subtitle}
       title={content.title}
       id="type-planner"
-      fullWidth
+      fullWidth data-component="TypePlanner"
     >
       {contentElement}
     </Section>

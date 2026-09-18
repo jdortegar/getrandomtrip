@@ -46,7 +46,7 @@ export function TripRequestsTable({
   return (
     <TableLoadingOverlay
       className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-      isLoading={isLoading}
+      isLoading={isLoading} data-component="TripRequestsTable"
     >
       {error && (
         <div

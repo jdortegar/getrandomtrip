@@ -784,7 +784,7 @@ export default function JourneyMainContent({
   };
 
   return (
-    <div className={cn("flex-1 min-h-0 flex flex-col", className)}>
+    <div className={cn("flex-1 min-h-0 flex flex-col", className)} data-component="JourneyMainContent">
       <div className="flex-1" id="journey-actions">
         {renderContent()}
       </div>

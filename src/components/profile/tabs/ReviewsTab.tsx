@@ -7,7 +7,7 @@ type Props = { data: PublicProfile };
 export default function ReviewsTab({ data }: Props) {
   const reviews = data.reviews ?? [];
   return (
-    <section aria-labelledby="reviews-heading">
+    <section aria-labelledby="reviews-heading" data-component="ReviewsTab">
       <h2 id="reviews-heading" className="sr-only">
         Reseñas
       </h2>

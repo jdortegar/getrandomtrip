@@ -9,5 +9,5 @@ interface TripperUnreadDotProps {
 export function TripperUnreadDot({
   variant = "absolute",
 }: TripperUnreadDotProps) {
-  return <DashboardUnreadDot audience="TRIPPER" variant={variant} />;
+  return <DashboardUnreadDot audience="TRIPPER" variant={variant} data-component="TripperUnreadDot" />;
 }

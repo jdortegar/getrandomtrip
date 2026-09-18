@@ -32,7 +32,7 @@ export function SecondaryHero({
         "relative flex h-screen flex-col overflow-hidden",
         className,
       )}
-      id={id || "secondary-hero"}
+      id={id || "secondary-hero"} data-component="SecondaryHero"
     >
       <div
         aria-hidden

@@ -32,7 +32,7 @@ interface TrustHeroProps {
 
 export function TrustHero({ content, locale }: TrustHeroProps) {
   return (
-    <section className="relative min-h-[60vh] w-full overflow-hidden">
+    <section className="relative min-h-[60vh] w-full overflow-hidden" data-component="TrustHero">
       <SafeImage
         alt=""
         aria-hidden="true"

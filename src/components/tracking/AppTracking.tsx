@@ -84,7 +84,7 @@ function AppTracking() {
           `,
         }}
       />
-      <noscript>
+      <noscript data-component="AppTracking">
         <iframe
           height="0"
           src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}

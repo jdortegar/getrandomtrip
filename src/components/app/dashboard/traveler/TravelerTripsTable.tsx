@@ -82,7 +82,7 @@ export function TravelerTripsTable({
   // no matches, not that the account has no trips at all.
   if (filter === "all" && total === 0) {
     return (
-      <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-white py-16 text-center shadow-sm">
+      <div className="flex flex-col items-center gap-4 rounded-xl border border-gray-200 bg-white py-16 text-center shadow-sm" data-component="TravelerTripsTable">
         <Plane className="h-14 w-14 text-neutral-300" />
         <div>
           <p className="text-sm font-semibold text-neutral-700">
@@ -103,7 +103,7 @@ export function TravelerTripsTable({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="TravelerTripsTable">
       {/* Filter row */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">

@@ -52,7 +52,7 @@ export default function TripperHeroContent({
           ? "rt-container sm:gap-8 md:flex-row md:items-end md:justify-left lg:gap-12"
           : "bg-primary-950 px-4 pb-10 text-center",
         className,
-      )}
+      )} data-component="TripperHeroContent"
     >
       <div className={cn("relative", avatarSizeClass)}>
         <SafeImage

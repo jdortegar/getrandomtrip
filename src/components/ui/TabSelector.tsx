@@ -61,7 +61,7 @@ export function TabSelector({
   const styles = VARIANT_STYLES[variant];
 
   return (
-    <div className={cn(styles.container, className)}>
+    <div className={cn(styles.container, className)} data-component="TabSelector">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         const Icon = tab.icon;

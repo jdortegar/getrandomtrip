@@ -12,7 +12,7 @@ export default function EmptyState({
   ctaHref: string;
 }) {
   return (
-    <GlassCard>
+    <GlassCard data-component="EmptyState">
       <div className="p-6 flex items-center justify-between">
         <div>
           <div className="text-sm text-neutral-600">{title}</div>

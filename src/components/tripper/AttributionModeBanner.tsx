@@ -38,7 +38,7 @@ export async function AttributionModeBanner({ copy }: AttributionModeBannerProps
           copy={copy}
           initialMode="tripper"
           tripperName={liveContext.name}
-          tripperSlug={liveSlug}
+          tripperSlug={liveSlug} data-component="AttributionModeBanner"
         />
       );
     }
@@ -53,7 +53,7 @@ export async function AttributionModeBanner({ copy }: AttributionModeBannerProps
           copy={copy}
           initialMode="randomtrip"
           tripperName={lastSeenContext.name}
-          tripperSlug={lastSeenSlug}
+          tripperSlug={lastSeenSlug} data-component="AttributionModeBanner"
         />
       );
     }

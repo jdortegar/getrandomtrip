@@ -24,7 +24,7 @@ export default function TripperMap({ places, className, height = 420 }: Props) {
   return (
     <div
       className={className}
-      style={{ height, borderRadius: 12, overflow: "hidden" }}
+      style={{ height, borderRadius: 12, overflow: "hidden" }} data-component="TripperMap"
     >
       <MapContainer
         style={{ height: "100%", width: "100%" }}

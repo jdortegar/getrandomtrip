@@ -13,7 +13,7 @@ export function TripperPackagesSummary({
   copy,
 }: TripperPackagesSummaryProps) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm" data-component="TripperPackagesSummary">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-ink">{copy.title}</h2>
         <Button asChild size="sm">

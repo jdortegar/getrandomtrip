@@ -120,7 +120,7 @@ export function JourneyDatesPicker({
   };
 
   return (
-    <div>
+    <div data-component="JourneyDatesPicker">
       <div className="flex flex-wrap gap-2">
         <div
           aria-label={`${tripNights + 1} ${labels.daysLabel}, ${tripNights} ${labels.nightsLabel}`}

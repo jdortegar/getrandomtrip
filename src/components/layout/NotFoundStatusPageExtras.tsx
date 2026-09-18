@@ -17,7 +17,7 @@ export function NotFoundStatusExploreAndTip({
 }: NotFoundStatusPageExtrasProps) {
   return (
     <>
-      <div className="border-t border-neutral-200 pt-8">
+      <div className="border-t border-neutral-200 pt-8" data-component="NotFoundStatusExploreAndTip">
         <p className="mb-4 text-sm text-gray-600">{nf.exploreSections}</p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
@@ -51,7 +51,7 @@ export function NotFoundStatusExploreAndTip({
         </div>
       </div>
 
-      <div className="mt-8 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-4">
+      <div className="mt-8 rounded-xl border border-primary/20 bg-linear-to-r from-primary/5 to-primary/10 p-4" data-component="NotFoundStatusExploreAndTip">
         <p className="flex items-center gap-2 text-sm text-gray-700">
           <MapPin className="h-4 w-4 shrink-0 text-primary" />
           <span>
@@ -68,7 +68,7 @@ export function NotFoundStatusHelpLine({
   nf,
 }: NotFoundStatusPageExtrasProps) {
   return (
-    <p className="flex items-center justify-center gap-2 text-sm text-gray-600">
+    <p className="flex items-center justify-center gap-2 text-sm text-gray-600" data-component="NotFoundStatusHelpLine">
       <HelpCircle className="h-4 w-4" />
       {nf.needHelp}{" "}
       <Link

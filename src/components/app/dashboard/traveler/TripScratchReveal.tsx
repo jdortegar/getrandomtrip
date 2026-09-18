@@ -213,7 +213,7 @@ export function TripScratchReveal({ tripId, children, copy, onComplete }: TripSc
   return (
     <div
       ref={containerRef}
-      className={`${styles.scratchWrap} ${!revealed ? styles.heroGated : ""}`}
+      className={`${styles.scratchWrap} ${!revealed ? styles.heroGated : ""}`} data-component="TripScratchReveal"
     >
       <div
         className={`${styles.scratchContent} ${revealed ? styles.scratchContentRevealed : ""}`}

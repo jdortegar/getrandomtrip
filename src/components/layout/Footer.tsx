@@ -14,7 +14,7 @@ export default function Footer({ dict, locale }: FooterProps) {
   const f = dict.footer;
 
   return (
-    <footer className="relative overflow-hidden border-t border-gray-200 bg-ground text-primary">
+    <footer className="relative overflow-hidden border-t border-gray-200 bg-ground text-primary" data-component="Footer">
       <div className="pointer-events-none absolute left-0 top-0 h-96 w-96 rounded-full bg-secondary/10 blur-3xl" />
 
       <div className="relative">

@@ -31,7 +31,7 @@ export function TripDangerZone({ copy, onDelete }: TripDangerZoneProps) {
 
   if (deleteConfirming) {
     return (
-      <div className={styles.dangerCard}>
+      <div className={styles.dangerCard} data-component="TripDangerZone">
         <div className={styles.dangerText}>
           <AlertTriangle className={styles.dangerIcon} />
           <div>
@@ -65,7 +65,7 @@ export function TripDangerZone({ copy, onDelete }: TripDangerZoneProps) {
   }
 
   return (
-    <div className={styles.dangerCard}>
+    <div className={styles.dangerCard} data-component="TripDangerZone">
       <div className={styles.dangerText}>
         <AlertTriangle className={styles.dangerIcon} />
         <div>

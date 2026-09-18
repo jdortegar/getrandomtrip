@@ -65,7 +65,7 @@ export function TripEssentialsStrip({
   travelType,
 }: TripEssentialsStripProps) {
   return (
-    <div className={styles.essentials}>
+    <div className={styles.essentials} data-component="TripEssentialsStrip">
       <EssentialItem
         icon={<Moon aria-hidden="true" />}
         label={copy.lengthLabel}

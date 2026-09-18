@@ -41,7 +41,7 @@ export function DashboardPageHeading({ role }: DashboardPageHeadingProps) {
     <PageHeading
       className="text-center"
       description={description}
-      title={title}
+      title={title} data-component="DashboardPageHeading"
     />
   );
 }

@@ -39,7 +39,7 @@ interface AboutUsStepsProps {
 
 export function AboutUsSteps({ content, cta, locale }: AboutUsStepsProps) {
   return (
-    <Section title={content.sectionTitle} eyebrow={content.eyebrow}>
+    <Section title={content.sectionTitle} eyebrow={content.eyebrow} data-component="AboutUsSteps">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 mt-4 px-10">
         {content.items.map((step, i) => {
           const icon = ICONS[i];

@@ -24,7 +24,7 @@ export function TravelerNotificationsPageClient(
   return (
     <RoleNotificationsPageClient
       {...props}
-      resolveHref={resolveClientNotificationHref}
+      resolveHref={resolveClientNotificationHref} data-component="TravelerNotificationsPageClient"
     />
   );
 }

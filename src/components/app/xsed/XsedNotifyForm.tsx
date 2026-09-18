@@ -80,7 +80,7 @@ export function XsedNotifyForm({
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-2xl"
       initial={{ opacity: 0, y: 40 }}
-      transition={{ delay: 1.2, duration: 0.6 }}
+      transition={{ delay: 1.2, duration: 0.6 }} data-component="XsedNotifyForm"
     >
       <form
         className={cn(

@@ -132,7 +132,7 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
-        }}
+        }} data-component="Carousel"
       >
         <div
           ref={ref}
@@ -157,7 +157,7 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel();
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
+    <div ref={carouselRef} className="overflow-hidden" data-component="CarouselContent">
       <div
         ref={ref}
         className={cn(
@@ -188,7 +188,7 @@ const CarouselItem = React.forwardRef<
         orientation === "horizontal" ? "pl-4" : "pt-4",
         className,
       )}
-      {...props}
+      {...props} data-component="CarouselItem"
     />
   );
 });
@@ -217,7 +217,7 @@ const CarouselPrevious = React.forwardRef<
         className,
       )}
       aria-label="Previous slide"
-      {...props}
+      {...props} data-component="CarouselPrevious"
     >
       <ArrowLeft className="h-6 w-6 stroke-neutral-900" />
       <span className="sr-only">Previous slide</span>
@@ -249,7 +249,7 @@ const CarouselNext = React.forwardRef<
         className,
       )}
       aria-label="Next slide"
-      {...props}
+      {...props} data-component="CarouselNext"
     >
       <ArrowRight className="h-6 w-6 stroke-neutral-900" />
       <span className="sr-only">Next slide</span>

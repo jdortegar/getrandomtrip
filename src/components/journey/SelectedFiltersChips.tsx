@@ -74,7 +74,7 @@ export default function SelectedFiltersChips() {
   });
 
   return (
-    <div className="max-w-[200px] mx-auto">
+    <div className="max-w-[200px] mx-auto" data-component="SelectedFiltersChips">
       <div className="mb-2 flex items-center justify-center w-full mx-auto">
         <span className="text-xs text-neutral-600 font-medium">
           Filtros Premium ({items.length - 1})

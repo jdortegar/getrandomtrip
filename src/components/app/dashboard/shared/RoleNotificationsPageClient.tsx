@@ -247,7 +247,7 @@ export function RoleNotificationsPageClient({
     status === "all" ? copy.emptyState : copy.emptyStateFiltered;
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="RoleNotificationsPageClient">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

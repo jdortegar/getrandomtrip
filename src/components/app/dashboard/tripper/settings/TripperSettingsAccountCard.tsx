@@ -47,7 +47,7 @@ export function TripperSettingsAccountCard({
   const commissionPct = Math.round(commission * 100);
 
   return (
-    <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
+    <div className="flex flex-col gap-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200" data-component="TripperSettingsAccountCard">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}

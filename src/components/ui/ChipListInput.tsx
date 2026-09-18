@@ -42,7 +42,7 @@ export function ChipListInput({
     }
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-component="ChipListInput">
       <label className="block font-semibold text-gray-800 text-base" htmlFor={id}>
         {label}
       </label>

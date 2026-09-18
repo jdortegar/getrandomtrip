@@ -125,7 +125,7 @@ export default function AvoidGrid({
   }, [originCountry, originCity, level, tripperExperienceDestinations]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="AvoidGrid">
       <div className="w-full">
         {/* Grid: 3 col mobile, 4 col desktop */}
         <div

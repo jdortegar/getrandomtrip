@@ -41,7 +41,7 @@ export function ImageUploadTileGroup({
   const canAddMore = max == null || values.length < max;
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5" data-component="ImageUploadTileGroup">
       <div className="flex flex-wrap gap-3">
         {values.map((value, index) => (
           <ImageUploadTile

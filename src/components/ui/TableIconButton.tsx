@@ -27,7 +27,7 @@ export function TableIconButton({
   title,
 }: TableIconButtonProps) {
   return (
-    <div className="group relative">
+    <div className="group relative" data-component="TableIconButton">
       <button
         className={`${BASE} disabled:opacity-40 ${
           danger
@@ -56,7 +56,7 @@ interface TableIconLinkProps {
 
 export function TableIconLink({ children, href, onClick, title }: TableIconLinkProps) {
   return (
-    <div className="group relative">
+    <div className="group relative" data-component="TableIconLink">
       <Link
         className={`${BASE} hover:border-gray-300 hover:bg-neutral-100 hover:text-ink`}
         href={href}

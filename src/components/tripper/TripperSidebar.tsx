@@ -18,7 +18,7 @@ export default function TripperSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white p-4 shadow-md fixed h-full">
+    <aside className="w-64 bg-white p-4 shadow-md fixed h-full" data-component="TripperSidebar">
       <nav>
         <ul>
           {navLinks.map((link) => {

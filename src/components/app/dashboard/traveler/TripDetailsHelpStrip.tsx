@@ -16,7 +16,7 @@ interface TripDetailsHelpStripProps {
  */
 export function TripDetailsHelpStrip({ copy, onOpen }: TripDetailsHelpStripProps) {
   return (
-    <section className={styles.block}>
+    <section className={styles.block} data-component="TripDetailsHelpStrip">
       <div className={styles.help}>
         <div className={styles.helpText}>
           <h3 className={styles.cond}>{copy.support.heading}</h3>

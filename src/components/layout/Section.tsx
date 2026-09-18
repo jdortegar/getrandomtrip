@@ -42,7 +42,7 @@ const Section = ({
         "bg-white text-ink": variant === "default",
         "bg-gray-50 text-ink": variant === "light",
         "bg-primary text-white": variant === "dark",
-      })}
+      })} data-component="Section"
     >
       {backgroundImage && (
         <div className="absolute inset-0 z-0">

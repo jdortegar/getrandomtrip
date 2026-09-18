@@ -26,7 +26,7 @@ export function Modal({
   showCloseButton = true,
 }: ModalProps) {
   return (
-    <Dialog onOpenChange={onOpenChange} open={open}>
+    <Dialog onOpenChange={onOpenChange} open={open} data-component="Modal">
       <DialogContent
         className={cn(
           "z-1100 gap-0 rounded-2xl border-gray-100 bg-white shadow-xl",

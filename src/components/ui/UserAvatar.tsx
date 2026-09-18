@@ -88,7 +88,7 @@ export function UserAvatar({
   );
 
   return (
-    <div className="relative" style={{ height, width }}>
+    <div className="relative" style={{ height, width }} data-component="UserAvatar">
       {onClick || onAvatarChange ? (
         <>
           {onAvatarChange && (

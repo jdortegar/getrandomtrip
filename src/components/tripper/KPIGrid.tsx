@@ -26,7 +26,7 @@ export default function KPIGrid() {
   ];
 
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" data-component="KPIGrid">
       {items.map((it) => (
         <div key={it.label} className="p-4 bg-white rounded-2xl shadow">
           <div className="text-sm text-ink">{it.label}</div>

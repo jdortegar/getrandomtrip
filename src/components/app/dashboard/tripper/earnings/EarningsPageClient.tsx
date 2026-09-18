@@ -129,7 +129,7 @@ export function EarningsPageClient({
   ];
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="EarningsPageClient">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

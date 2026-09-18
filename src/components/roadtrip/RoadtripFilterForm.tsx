@@ -81,7 +81,7 @@ export default function RoadtripFilterForm() {
   };
 
   return (
-    <section className="container mx-auto px-4 pt-24 md:pt-28 pb-12">
+    <section className="container mx-auto px-4 pt-24 md:pt-28 pb-12" data-component="RoadtripFilterForm">
       {/* Tabs header */}
       <div className="mb-6 flex flex-wrap gap-2">
         {[

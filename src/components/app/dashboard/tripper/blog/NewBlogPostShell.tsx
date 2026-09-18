@@ -448,7 +448,7 @@ export function NewBlogPostShell({
   const showTripperNoteField = shouldShowTripperNoteField(mode) && !isEditingLiveRandomtrip;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50" data-component="NewBlogPostShell">
       <JourneyContentNavigation
         activeTab={activeTab}
         className="py-6"

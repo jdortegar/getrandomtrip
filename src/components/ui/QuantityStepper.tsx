@@ -39,7 +39,7 @@ export function QuantityStepper({
   value,
 }: QuantityStepperProps) {
   return (
-    <div className="flex items-center justify-between py-3">
+    <div className="flex items-center justify-between py-3" data-component="QuantityStepper">
       <span className={stepperLabelClass}>{label}</span>
       <div className={stepperShellClass}>
         <button

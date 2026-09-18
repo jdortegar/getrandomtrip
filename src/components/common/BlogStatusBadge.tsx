@@ -28,5 +28,5 @@ export function BlogStatusBadge({ label, status }: BlogStatusBadgeProps) {
   const normalizedStatus = status.toUpperCase();
   const styles = STATUS_STYLES[normalizedStatus] ?? STATUS_STYLES.DRAFT;
 
-  return <StatusIndicatorBadge label={label} styles={styles} />;
+  return <StatusIndicatorBadge label={label} styles={styles} data-component="BlogStatusBadge" />;
 }

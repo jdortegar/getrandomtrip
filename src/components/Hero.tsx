@@ -45,7 +45,7 @@ const Hero: React.FC<HeroProps> = ({
       className={cn(
         "relative h-screen flex flex-col overflow-hidden",
         className,
-      )}
+      )} data-component="Hero"
     >
       <VideoBackground
         fallbackImage={content.fallbackImage}

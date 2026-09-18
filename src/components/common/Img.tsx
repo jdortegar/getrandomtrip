@@ -52,7 +52,7 @@ export default function Img({
         className={`flex items-center justify-center bg-neutral-200 ${className ?? ""}`}
         style={isAbsolutelyPositioned ? undefined : { width: w, height: h }}
         role="img"
-        aria-label={alt}
+        aria-label={alt} data-component="Img"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -82,7 +82,7 @@ export default function Img({
         setErrored(true);
         onError?.();
       }}
-      {...rest}
+      {...rest} data-component="Img"
     />
   );
 }

@@ -77,7 +77,7 @@ export const TravelerRosterSection = forwardRef<
     : null;
 
   return (
-    <div className="w-full max-w-3xl text-left">
+    <div className="w-full max-w-3xl text-left" data-component="TravelerRosterSection">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}

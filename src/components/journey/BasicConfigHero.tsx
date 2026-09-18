@@ -27,7 +27,7 @@ export default function BasicConfigHero() {
       id="basic-config-hero"
       className="h-[50vh]!"
       titleClassName="text-4xl!"
-      scrollIndicator={false}
+      scrollIndicator={false} data-component="BasicConfigHero"
     />
   );
 }

@@ -78,7 +78,7 @@ export function PeekToggleButton({ peek, position }: PeekToggleButtonProps) {
       : cn(PEEK_ARROW_BASE, "right-3 top-full");
 
   return (
-    <span className={wrapperClass}>
+    <span className={wrapperClass} data-component="PeekToggleButton">
       {/*
         Not a native <button>: this toggle lives inside the review-copy
         screen's `<fieldset disabled>` (ExperienceFormContent.tsx), which per

@@ -214,7 +214,7 @@ export function CheckoutContactCard({
       className={cn(
         "flex flex-col gap-6 rounded-2xl bg-white p-5 shadow-md",
         "ring-1 ring-gray-100",
-      )}
+      )} data-component="CheckoutContactCard"
     >
       <h2 className="font-barlow-condensed text-4xl font-bold uppercase">
         {checkoutCopy.contactTitle}

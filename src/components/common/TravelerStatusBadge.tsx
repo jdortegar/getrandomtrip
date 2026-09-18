@@ -27,5 +27,5 @@ export function TravelerStatusBadge({
 }: TravelerStatusBadgeProps) {
   const styles = STATUS_STYLES[status] ?? STATUS_STYLES.PENDING;
 
-  return <StatusIndicatorBadge label={label} styles={styles} />;
+  return <StatusIndicatorBadge label={label} styles={styles} data-component="TravelerStatusBadge" />;
 }

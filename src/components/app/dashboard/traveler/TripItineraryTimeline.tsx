@@ -26,7 +26,7 @@ export function TripItineraryTimeline({
   startDate,
 }: TripItineraryTimelineProps) {
   return (
-    <section className={styles.block} id="itinerary">
+    <section className={styles.block} id="itinerary" data-component="TripItineraryTimeline">
       <SectionHead
         eyebrow={copy.itinerary.eyebrow}
         heading={copy.itinerary.heading}

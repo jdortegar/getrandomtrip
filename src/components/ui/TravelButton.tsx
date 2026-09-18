@@ -55,7 +55,7 @@ const TravelButton = forwardRef<HTMLButtonElement, TravelButtonProps>(
       <button
         className={cn(travelButtonVariants({ variant, size, className }))}
         ref={ref}
-        {...props}
+        {...props} data-component="TravelButton"
       />
     );
   },

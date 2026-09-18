@@ -6,7 +6,7 @@ import { ExternalLink } from "lucide-react";
 
 export default function TripCard({ trip }: { trip: Trip }) {
   return (
-    <div className="rounded-xl ring-1 ring-neutral-200 bg-white overflow-hidden shadow-sm">
+    <div className="rounded-xl ring-1 ring-neutral-200 bg-white overflow-hidden shadow-sm" data-component="TripCard">
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_320px] gap-0">
         <div className="p-4">
           <div className="text-xs text-ink">

@@ -34,7 +34,7 @@ export function BlogReviewActionsBar({
     // covers this bar's top edge, leaving only its bottom border visible.
     <div
       className="sticky z-30 w-full border-b border-amber-200 bg-amber-50"
-      style={{ top: "var(--rt-header-h, 64px)" }}
+      style={{ top: "var(--rt-header-h, 64px)" }} data-component="BlogReviewActionsBar"
     >
       <div className="rt-container flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-col gap-2">

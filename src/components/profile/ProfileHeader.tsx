@@ -25,7 +25,7 @@ export default function ProfileHeader({
   socials,
 }: Props) {
   return (
-    <header className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-white/10 dark:bg-neutral-900">
+    <header className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-white/10 dark:bg-neutral-900" data-component="ProfileHeader">
       {/* Cover */}
       <div className="relative h-48 w-full md:h-64">
         <Image

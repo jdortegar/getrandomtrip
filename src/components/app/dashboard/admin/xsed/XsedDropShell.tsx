@@ -156,7 +156,7 @@ export function XsedDropShell({
   const hasValues = !!form.titleInternal;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50" data-component="XsedDropShell">
       <JourneyContentNavigation
         activeTab={activeTab}
         className="py-6"
