@@ -257,7 +257,7 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
       );
     }
 
-    it("RANDOMTRIP experience finalizes straight to ACTIVE, skipping PENDING_REVIEW (Scenario: Admin/RandomTrip creation skips PENDING_REVIEW)", async () => {
+    it("RANDOMTRIP experience finalizes straight to ACTIVE, skipping PENDING_REVIEW (Scenario: Admin/Randomtrip creation skips PENDING_REVIEW)", async () => {
       (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockSession("admin-1"),
       );

@@ -529,7 +529,7 @@ export const getTripperJourneyContext = cache(
       // For each type, collect distinct non-null levels of experiences that
       // include that type — badge signal only (nothing is hidden on it), so
       // a display surface can tell "this level is BY {tripper}" from "this
-      // level falls back to RandomTrip's own base price".
+      // level falls back to Randomtrip's own base price".
       const allowedLevelsByType: Record<string, string[]> = {};
       for (const type of allowedTypes) {
         const levels = [

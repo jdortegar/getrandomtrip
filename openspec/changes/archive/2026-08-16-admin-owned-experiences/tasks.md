@@ -1,4 +1,4 @@
-# Tasks: Admin-Owned (RandomTrip) Experiences
+# Tasks: Admin-Owned (Randomtrip) Experiences
 
 ## Review Workload Forecast
 
@@ -43,7 +43,7 @@ Single PR per user's explicit choice. If the actual diff crosses ~400 lines duri
 ## Phase 3: Auto-Publish & RANDOMTRIP Pricing in Submit Finalizer
 
 - [x] 3.1 RED — extended `src/app/api/tripper/experiences/[id]/submit/__tests__/route.test.ts` with failing cases: (a) `source: RANDOMTRIP` → `ACTIVE`, no `sendExperienceSubmitted` call, no `PENDING_REVIEW`; (b) `source: TRIPPER` → unchanged existing behavior; (c) RANDOMTRIP `pricingByType` derived per non-XSED `type` from `getBasePricePerPerson(type, level)`, XSED excluded from a mixed-type row.
-- [x] 3.2 GREEN — `src/app/api/tripper/experiences/[id]/submit/route.ts`: reads `source`/`level` on the loaded experience; branches `targetStatus = source === "RANDOMTRIP" ? "ACTIVE" : "PENDING_REVIEW"`; gates `sendExperienceSubmitted` to only fire when `targetStatus === "PENDING_REVIEW"`; derives `pricingByType` for RANDOMTRIP via `getBasePricePerPerson` (no commission add-on). Satisfies spec "Admin/RandomTrip creation skips PENDING_REVIEW", "Tripper-created rows cannot reach ACTIVE directly". 12/12 passing (7 pre-existing + 5 new).
+- [x] 3.2 GREEN — `src/app/api/tripper/experiences/[id]/submit/route.ts`: reads `source`/`level` on the loaded experience; branches `targetStatus = source === "RANDOMTRIP" ? "ACTIVE" : "PENDING_REVIEW"`; gates `sendExperienceSubmitted` to only fire when `targetStatus === "PENDING_REVIEW"`; derives `pricingByType` for RANDOMTRIP via `getBasePricePerPerson` (no commission add-on). Satisfies spec "Admin/Randomtrip creation skips PENDING_REVIEW", "Tripper-created rows cannot reach ACTIVE directly". 12/12 passing (7 pre-existing + 5 new).
 - [x] 3.3 REFACTOR — confirmed `getExperienceCompleteness` still runs unconditionally before the branch for both source types (unchanged position in the route); no bypass.
 
 ## Phase 4: Reviews Commission Attribution

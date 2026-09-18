@@ -1,14 +1,14 @@
-# Proposal: Admin-Owned (RandomTrip) Experiences
+# Proposal: Admin-Owned (Randomtrip) Experiences
 
 ## Intent
 
-Today every `Experience` is owned by a `User`, created via one of two paths: a tripper's `POST /api/tripper/experiences` (own `ownerId`, goes through the `DRAFT → PENDING_REVIEW → ACTIVE` approval pipeline) or an admin's `POST /api/admin/xsed` (own `ownerId`, `type: ["XSED"]`, self-published). There is no way for an admin to create a **generic (non-XSED) experience owned by RandomTrip itself** rather than by a specific tripper. This change adds that capability and introduces a single, immutable ownership signal (`source`) to replace the current implicit, drift-prone `owner.roles` check.
+Today every `Experience` is owned by a `User`, created via one of two paths: a tripper's `POST /api/tripper/experiences` (own `ownerId`, goes through the `DRAFT → PENDING_REVIEW → ACTIVE` approval pipeline) or an admin's `POST /api/admin/xsed` (own `ownerId`, `type: ["XSED"]`, self-published). There is no way for an admin to create a **generic (non-XSED) experience owned by Randomtrip itself** rather than by a specific tripper. This change adds that capability and introduces a single, immutable ownership signal (`source`) to replace the current implicit, drift-prone `owner.roles` check.
 
 ## Scope
 
 ### In Scope
 
-- New admin "New Experience" flow producing generic experiences owned by RandomTrip.
+- New admin "New Experience" flow producing generic experiences owned by Randomtrip.
 - Add `source: ExperienceSource` enum (`TRIPPER | RANDOMTRIP`) to the `Experience` model — distinct from `type: String[]` (travel category).
 - Admin-created generic experiences auto-publish `DRAFT → ACTIVE` (no `PENDING_REVIEW`), mirroring XSED self-publish.
 - Make `POST /api/tripper/experiences` and its multi-step "New Experience" form **role-aware** and reuse them for the admin flow (no parallel endpoint).
@@ -34,7 +34,7 @@ Today every `Experience` is owned by a `User`, created via one of two paths: a t
 
 ### Modified Capabilities
 
-- `experience-approval-flow` (or equivalent existing spec): admin/RandomTrip creation path auto-publishes; commission conditional; `source` becomes the ownership source of truth for review attribution.
+- `experience-approval-flow` (or equivalent existing spec): admin/Randomtrip creation path auto-publishes; commission conditional; `source` becomes the ownership source of truth for review attribution.
 
 ## Approach
 

@@ -1,6 +1,6 @@
 # 🎉 Complete Discord Setup Guide
 
-Your all-in-one guide to set up the GetRandomTrip Discord server from scratch!
+Your all-in-one guide to set up the GetRandomtrip Discord server from scratch!
 
 ---
 
@@ -28,7 +28,7 @@ npm run discord:setup-messages
 **Create Bot:**
 
 1. Go to https://discord.com/developers/applications
-2. Click "New Application" → Name it "GetRandomTrip Bot"
+2. Click "New Application" → Name it "GetRandomtrip Bot"
 3. Go to "Bot" section → "Add Bot"
 4. Copy the **Bot Token** (keep it secret!)
 
@@ -133,7 +133,7 @@ npm run discord:setup-messages
 ### 📊 Complete Server Structure
 
 ```
-GetRandomTrip Discord
+GetRandomtrip Discord
 │
 ├── 🏠 WELCOME & INFO (4 channels)
 │   ├── #welcome ⭐ Auto-posted welcome message
@@ -213,7 +213,7 @@ Template embed with:
 
 Comprehensive FAQ with:
 
-- About GetRandomTrip
+- About GetRandomtrip
 - How it works
 - Pricing info
 - Cancellation policies

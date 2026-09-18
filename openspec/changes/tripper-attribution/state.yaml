@@ -140,7 +140,7 @@ resolved_decisions:
       ADR-1: User.referredByTripperId onDelete: SetNull, no historical
       snapshot/ledger. If a referring tripper's account is deleted, every
       traveler they referred permanently loses that attribution with no
-      surviving record; RandomTrip keeps 100% of those travelers' future
+      surviving record; Randomtrip keeps 100% of those travelers' future
       bookings. Deliberate — confirmed by user directly, not just the
       recommended default.
   - id: 2
@@ -291,7 +291,7 @@ revisions:
       created and mounted in layout.tsx via a new banner prop on
       GateAwareChrome. Mid-session copy revision: banner/toggle copy was
       changed to remove all pricing language in favor of framing the toggle
-      as tripper-curated vs. RandomTrip general experiences, per direct user
+      as tripper-curated vs. Randomtrip general experiences, per direct user
       feedback during the same apply session. Strict TDD followed for the
       one new pure-logic unit (traveler-card.ts); component/page-wiring
       layers verified via full regression + typecheck per the design's own

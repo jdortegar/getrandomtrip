@@ -213,7 +213,7 @@ describe("POST /api/reviews", () => {
     );
   });
 
-  it("attributes no tripper (tripperId: null) when source is RANDOMTRIP, even if owner.roles includes TRIPPER (Scenario: RandomTrip-sourced experience attributes no tripper)", async () => {
+  it("attributes no tripper (tripperId: null) when source is RANDOMTRIP, even if owner.roles includes TRIPPER (Scenario: Randomtrip-sourced experience attributes no tripper)", async () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       ...baseTripRequest,
       tripperId: null,

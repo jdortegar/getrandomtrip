@@ -59,7 +59,7 @@ The `review-admin-middleware` spec is a behavioral refinement of `review-system`
 
 ### Phase 3: API — Review Submission ✅ (1/1 tasks complete)
 - `POST /api/reviews` extended to create `Notification` records for all admin users within the same `prisma.$transaction`
-- Notification `title` includes tripper name or "RandomTrip" fallback
+- Notification `title` includes tripper name or "Randomtrip" fallback
 - `metadata` includes `reviewId` for direct admin linking
 
 ### Phase 4: API — Admin Reviews ✅ (4/4 tasks complete)

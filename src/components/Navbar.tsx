@@ -3,12 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Phone, User, Search, Menu, Globe } from "lucide-react";
+import { Phone, User, Menu, Globe } from "lucide-react";
 import { useUserStore } from "@/store/slices/userStore";
 import { useScrollDetection } from "@/hooks/useScrollDetection";
 import AuthModal from "@/components/auth/AuthModal";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { NavbarProfile, type NavbarProfileLabels } from "./NavbarProfile";
+import { NavMobileDrawer, DRAWER_ID } from "./NavMobileDrawer";
 import { useMenuState } from "@/hooks/useMenuState";
 import { COOKIE_LOCALE, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -17,13 +18,12 @@ import { cn } from "@/lib/utils";
 
 export type NavbarVariant = "overlay" | "auto" | "solid";
 
-type NavKeys = keyof NonNullable<Dictionary["nav"]>;
+export type NavKeys = keyof NonNullable<Dictionary["nav"]>;
 
-type NavLink = {
+export type NavLink = {
   href: string;
   labelKey: NavKeys;
   ariaKey: NavKeys;
-  displayPosition: "navbar" | "button";
 };
 
 const NAV_LINKS: NavLink[] = [
@@ -31,37 +31,31 @@ const NAV_LINKS: NavLink[] = [
     href: "/trippers",
     labelKey: "labelTrippers",
     ariaKey: "ariaLabelTrippers",
-    displayPosition: "navbar",
   },
   {
     href: "/experiences",
     labelKey: "labelExperiences",
     ariaKey: "ariaLabelExperiences",
-    displayPosition: "navbar",
   },
   {
     href: "/xsed",
     labelKey: "labelXsed",
     ariaKey: "ariaLabelXsed",
-    displayPosition: "navbar",
   },
   {
     href: "/blog",
     labelKey: "labelInspiration",
     ariaKey: "ariaLabelInspiration",
-    displayPosition: "button",
   },
   {
     href: "/about-us",
     labelKey: "labelNosotros",
     ariaKey: "ariaLabelNosotros",
-    displayPosition: "button",
   },
   {
     href: "/contact",
     labelKey: "labelContact",
     ariaKey: "ariaLabelContact",
-    displayPosition: "button",
   },
 ];
 
@@ -73,6 +67,7 @@ export interface NavbarProps {
 }
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+const WHATSAPP_URL = "https://wa.me/526241928208";
 
 export default function Navbar({
   backgroundPrimary = false,
@@ -90,6 +85,14 @@ export default function Navbar({
   const currentLocale: Locale = localeProp ?? "es";
   const nav = dict?.nav;
   const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
+  const currentPath = pathWithoutLocale(pathname);
+  const isActive = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
+
+  const switchLocale = (loc: Locale) => {
+    document.cookie = `${COOKIE_LOCALE}=${loc}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
+    const pathWithout = pathWithoutLocale(pathname);
+    router.push(pathForLocale(loc, pathWithout || "/"));
+  };
 
   const headerClass = cn(
     "duration-500 ease-in-out h-16 top-0 transition-all z-50",
@@ -105,10 +108,6 @@ export default function Navbar({
   const wordmarkSrc = backgroundPrimary
     ? "/assets/logos/logo_getrandomtrip.svg"
     : "/assets/logos/logo_getrandomtrip_1.png";
-
-  const desktopLinks = NAV_LINKS.filter(
-    (link) => link.displayPosition === "navbar",
-  );
 
   return (
     <>
@@ -137,97 +136,54 @@ export default function Navbar({
             />
           </Link>
 
-          {/* Desktop nav — navbar links only */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium">
-            <button
-              aria-label={nav?.search ?? "Search"}
-              className={cn("p-2 rounded-lg", iconHoverClass)}
-              onClick={() => {}}
-              type="button"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-            {desktopLinks.map((link) => (
-              <Link
-                key={link.href}
-                aria-label={nav?.[link.ariaKey]}
-                className="hover:underline underline-offset-4 uppercase text-base font-barlow"
-                href={pathForLocale(currentLocale, link.href)}
-              >
-                {nav?.[link.labelKey]}
-              </Link>
-            ))}
+          {/* Desktop nav — visible from xl (1280px) up */}
+          <div className="hidden xl:flex items-center gap-6 text-sm font-medium">
+            {NAV_LINKS.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  aria-current={active ? "page" : undefined}
+                  aria-label={nav?.[link.ariaKey]}
+                  className={cn(
+                    "hover:underline underline-offset-4 uppercase text-base font-barlow",
+                    active && "underline",
+                  )}
+                  href={pathForLocale(currentLocale, link.href)}
+                >
+                  {nav?.[link.labelKey]}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2">
             <a
               aria-label={nav?.whatsApp ?? "WhatsApp"}
               className={cn("p-2 rounded-lg", iconHoverClass)}
-              href="https://wa.me/526241928208"
+              href={WHATSAPP_URL}
               rel="noopener"
               target="_blank"
             >
               <Phone className="h-5 w-5" />
             </a>
 
-            {/* Hamburger — always present; shows all links (navbar links included for mobile) */}
-            <div className="relative" ref={mobileMenu.menuRef}>
-              <button
-                aria-expanded={mobileMenu.isOpen}
-                aria-haspopup="menu"
-                aria-label={nav?.openMenu ?? "Open menu"}
-                className={cn("p-2 rounded-lg", iconHoverClass)}
-                onClick={mobileMenu.toggle}
-                type="button"
-              >
-                <Menu className="h-5 w-5" />
-              </button>
-
-              {mobileMenu.isOpen && (
-                <div
-                  role="menu"
-                  className="absolute right-0 mt-3 w-48 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
-                >
-                  {/* navbar links: hidden on desktop (already in the nav bar), visible on mobile */}
-                  <div className="lg:hidden">
-                    {NAV_LINKS.filter(
-                      (l) => l.displayPosition === "navbar",
-                    ).map((link) => (
-                      <Link
-                        key={link.href}
-                        aria-label={nav?.[link.ariaKey]}
-                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                        href={pathForLocale(currentLocale, link.href)}
-                        role="menuitem"
-                        onClick={mobileMenu.close}
-                      >
-                        {nav?.[link.labelKey]}
-                      </Link>
-                    ))}
-                  </div>
-                  {/* button links: always in the hamburger */}
-                  {NAV_LINKS.filter((l) => l.displayPosition === "button").map(
-                    (link) => (
-                      <Link
-                        key={link.href}
-                        aria-label={nav?.[link.ariaKey]}
-                        className="block px-4 py-2 text-sm rounded hover:bg-neutral-50"
-                        href={pathForLocale(currentLocale, link.href)}
-                        role="menuitem"
-                        onClick={mobileMenu.close}
-                      >
-                        {nav?.[link.labelKey]}
-                      </Link>
-                    ),
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Hamburger — visible below xl (1280px); desktop nav shows all links */}
+            <button
+              aria-controls={mobileMenu.isOpen ? DRAWER_ID : undefined}
+              aria-expanded={mobileMenu.isOpen}
+              aria-label={nav?.openMenu ?? "Open menu"}
+              className={cn("p-2 rounded-lg xl:hidden", iconHoverClass)}
+              onClick={mobileMenu.toggle}
+              type="button"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
 
             {!isAuthed && (
               <button
                 aria-label={nav?.signIn ?? "Sign in"}
-                className={cn("p-2 rounded-lg", iconHoverClass)}
+                className={cn("hidden xl:block p-2 rounded-lg", iconHoverClass)}
                 onClick={() => openLogin()}
               >
                 <User className="h-5 w-5" />
@@ -243,7 +199,7 @@ export default function Navbar({
               />
             )}
 
-            <div className="relative" ref={languageMenu.menuRef}>
+            <div className="relative hidden xl:flex" ref={languageMenu.menuRef}>
               <button
                 aria-expanded={languageMenu.isOpen}
                 aria-haspopup="menu"
@@ -274,9 +230,7 @@ export default function Navbar({
                       )}
                       onClick={() => {
                         languageMenu.close();
-                        document.cookie = `${COOKIE_LOCALE}=${loc}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
-                        const pathWithout = pathWithoutLocale(pathname);
-                        router.push(pathForLocale(loc, pathWithout || "/"));
+                        switchLocale(loc);
                       }}
                     >
                       {LOCALE_LABELS[loc]}
@@ -288,6 +242,19 @@ export default function Navbar({
           </div>
         </nav>
       </header>
+
+      <NavMobileDrawer
+        currentLocale={currentLocale}
+        isActive={isActive}
+        isAuthed={isAuthed}
+        isOpen={mobileMenu.isOpen}
+        links={NAV_LINKS}
+        nav={nav}
+        onClose={mobileMenu.close}
+        onLocaleChange={switchLocale}
+        onSignIn={() => openLogin()}
+        whatsappHref={WHATSAPP_URL}
+      />
 
       <AuthModal
         defaultMode={mode}

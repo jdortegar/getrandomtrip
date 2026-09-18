@@ -253,7 +253,7 @@ When a tripper rejects an admin's review copy, the copy row MUST reach a termina
 
 ---
 
-# blog-review-flow-v2: RandomTrip Ownership & Auto-Publish Specification
+# blog-review-flow-v2: Randomtrip Ownership & Auto-Publish Specification
 
 ## Change: `randomtrip-blog-ownership`
 
@@ -307,9 +307,9 @@ The existing `Auto-Revert to DRAFT` requirement MUST NOT apply to `source: RANDO
 
 ---
 
-### Requirement: RandomTrip Pseudo-User Ownership
+### Requirement: Randomtrip Pseudo-User Ownership
 
-`Experience.ownerId` and `BlogPost.authorId` MUST be set to a dedicated "RandomTrip" system user's id (seeded via `scripts/seed-randomtrip-user.ts`, no password, `roles: ["ADMIN"]`, no `tripperSlug`) whenever the row's `source` is `RANDOMTRIP` — never to the individual admin account that triggered creation. `Experience.createdById` / `BlogPost.createdById` (added to `BlogPost` by this change, mirroring the existing `Experience` field) MUST be set to the real creating admin's id, for audit purposes only — it MUST NOT be used for access control or public attribution.
+`Experience.ownerId` and `BlogPost.authorId` MUST be set to a dedicated "Randomtrip" system user's id (seeded via `scripts/seed-randomtrip-user.ts`, no password, `roles: ["ADMIN"]`, no `tripperSlug`) whenever the row's `source` is `RANDOMTRIP` — never to the individual admin account that triggered creation. `Experience.createdById` / `BlogPost.createdById` (added to `BlogPost` by this change, mirroring the existing `Experience` field) MUST be set to the real creating admin's id, for audit purposes only — it MUST NOT be used for access control or public attribution.
 
 This decouples brand-owned content from any individual admin's account lifecycle: both `owner`/`author` relations cascade-delete their content, so without this indirection, deleting an admin's account would delete every RANDOMTRIP row they ever created.
 
@@ -317,7 +317,7 @@ This decouples brand-owned content from any individual admin's account lifecycle
 
 - GIVEN an authenticated ADMIN creates a new blog post
 - WHEN the row is created
-- THEN `authorId` is the RandomTrip pseudo-user's id, and `createdById` is the real admin's id
+- THEN `authorId` is the Randomtrip pseudo-user's id, and `createdById` is the real admin's id
 
 #### Scenario: Admin's own "My Blog" list no longer shows their RANDOMTRIP posts
 
@@ -347,13 +347,13 @@ This decouples brand-owned content from any individual admin's account lifecycle
 
 ### Requirement: One-Time Ownership Backfill
 
-A one-time, idempotent migration (`scripts/backfill-randomtrip-ownership.ts`) MUST, for every existing row with `source: RANDOMTRIP` across `Experience` and `BlogPost`: (1) where `createdById` is null, set it to the row's current `ownerId`/`authorId`; then (2) set `ownerId`/`authorId` to the RandomTrip pseudo-user's id.
+A one-time, idempotent migration (`scripts/backfill-randomtrip-ownership.ts`) MUST, for every existing row with `source: RANDOMTRIP` across `Experience` and `BlogPost`: (1) where `createdById` is null, set it to the row's current `ownerId`/`authorId`; then (2) set `ownerId`/`authorId` to the Randomtrip pseudo-user's id.
 
 #### Scenario: Existing RANDOMTRIP rows repointed without losing creator history
 
 - GIVEN a RANDOMTRIP experience created before this change, with `ownerId` = admin A and `createdById: null`
 - WHEN the migration runs
-- THEN `createdById` becomes admin A's id, and `ownerId` becomes the RandomTrip pseudo-user's id
+- THEN `createdById` becomes admin A's id, and `ownerId` becomes the Randomtrip pseudo-user's id
 
 ---
 
@@ -361,7 +361,7 @@ A one-time, idempotent migration (`scripts/backfill-randomtrip-ownership.ts`) MU
 
 The system MUST provide a dedicated `/dashboard/admin/blog/new` route (`NewBlogPostShell` with `mode: "adminCreate"`), distinct from the tripper's own `/dashboard/tripper/blog/new`. The admin nav's "New Post" tab MUST link to this route, not the tripper route.
 
-In `adminCreate` mode: the finalize CTA MUST read "Publish" (not "Submit for review"), the confirm-modal copy MUST state the post publishes immediately as a RandomTrip post skipping review, and the tripper-note field MUST NOT be shown (there is no reviewer to address).
+In `adminCreate` mode: the finalize CTA MUST read "Publish" (not "Submit for review"), the confirm-modal copy MUST state the post publishes immediately as a Randomtrip post skipping review, and the tripper-note field MUST NOT be shown (there is no reviewer to address).
 
 #### Scenario: Admin nav does not send an admin to a tripper-branded URL
 
@@ -395,13 +395,13 @@ The admin blog list (`AdminBlogPageClient`) MUST default to the "All" tab, not "
 
 ---
 
-### Requirement: RandomTrip Attribution Has No Public Profile Link
+### Requirement: Randomtrip Attribution Has No Public Profile Link
 
-The public post-attribution UI (`TripperMottoBanner`) MUST render the attribution as plain text, not a link to `/trippers/[slug]`, when the author has no `tripperSlug` — which is always true for the RandomTrip pseudo-user by design (it is not a real tripper and has no public profile page).
+The public post-attribution UI (`TripperMottoBanner`) MUST render the attribution as plain text, not a link to `/trippers/[slug]`, when the author has no `tripperSlug` — which is always true for the Randomtrip pseudo-user by design (it is not a real tripper and has no public profile page).
 
 #### Scenario: RANDOMTRIP post attribution is not a dead link
 
-- GIVEN a published `BlogPost` with `source: RANDOMTRIP` (author = RandomTrip pseudo-user, no `tripperSlug`)
+- GIVEN a published `BlogPost` with `source: RANDOMTRIP` (author = Randomtrip pseudo-user, no `tripperSlug`)
 - WHEN a visitor views the post's feature-quote attribution
 - THEN the attribution text renders without a link
 

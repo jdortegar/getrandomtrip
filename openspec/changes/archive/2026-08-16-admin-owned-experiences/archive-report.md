@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The `admin-owned-experiences` change is complete and fully implemented. It introduces an immutable `Experience.source` field (enum `TRIPPER | RANDOMTRIP`) that cleanly separates ownership domains, enables admins to create generic RandomTrip-owned experiences via a role-aware endpoint, auto-publishes admin-created experiences directly to `ACTIVE` (bypassing `PENDING_REVIEW`), backfills existing XSED drops to `source: RANDOMTRIP`, and refactors review commission attribution to use `source` instead of the mutable `owner.roles` field.
+The `admin-owned-experiences` change is complete and fully implemented. It introduces an immutable `Experience.source` field (enum `TRIPPER | RANDOMTRIP`) that cleanly separates ownership domains, enables admins to create generic Randomtrip-owned experiences via a role-aware endpoint, auto-publishes admin-created experiences directly to `ACTIVE` (bypassing `PENDING_REVIEW`), backfills existing XSED drops to `source: RANDOMTRIP`, and refactors review commission attribution to use `source` instead of the mutable `owner.roles` field.
 
 All 34 tasks completed. 278 tests passing (no regressions). Zero type errors. Schema migration and backfill run successfully against the real Neon database.
 

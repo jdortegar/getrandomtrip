@@ -565,7 +565,7 @@ model BlogPost {
   reviewLockedBy String? // admin id holding the edit soft-lock
   changedFields  String[] @default([]) // fields the admin changed (copy -> tripper diff)
   isDiscarded    Boolean  @default(false) // rejected-copy tombstone
-  createdById    String? // Real account that clicked "create" — distinct from authorId, which is the pseudo RandomTrip user for RANDOMTRIP-sourced posts
+  createdById    String? // Real account that clicked "create" — distinct from authorId, which is the pseudo Randomtrip user for RANDOMTRIP-sourced posts
 
   // Relations
   author    User  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
@@ -587,7 +587,7 @@ enum UserRole {
 enum OwnerType {
   CUSTOMER // Regular user creating their own trip
   TRIPPER // Tripper creating a template/featured trip
-  ADMIN // RandomTrip admin creating trips
+  ADMIN // Randomtrip admin creating trips
 }
 
 enum TripRequestStatus {

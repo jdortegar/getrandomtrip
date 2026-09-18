@@ -29,7 +29,7 @@
 
 ## Phase 3: API — Review Submission (admin notification)
 
-- [ ] 3.1 `src/app/api/reviews/route.ts` — Extend the existing `prisma.$transaction` in `POST` handler to also create a `Notification` record for every user with `ADMIN` role. Fields: `type: REVIEW_SUBMITTED`, `audience: ADMIN`, `isRead: false`, `title` includes tripper name or "RandomTrip". Include `reviewId` in `metadata`. Satisfies Scenarios 1.1, 1.2, 1.3, 1.4.
+- [ ] 3.1 `src/app/api/reviews/route.ts` — Extend the existing `prisma.$transaction` in `POST` handler to also create a `Notification` record for every user with `ADMIN` role. Fields: `type: REVIEW_SUBMITTED`, `audience: ADMIN`, `isRead: false`, `title` includes tripper name or "Randomtrip". Include `reviewId` in `metadata`. Satisfies Scenarios 1.1, 1.2, 1.3, 1.4.
 
 ---
 

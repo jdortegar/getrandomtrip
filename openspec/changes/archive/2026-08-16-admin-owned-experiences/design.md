@@ -1,4 +1,4 @@
-# Design: Admin-Owned (RandomTrip) Experiences
+# Design: Admin-Owned (Randomtrip) Experiences
 
 ## Technical Approach
 

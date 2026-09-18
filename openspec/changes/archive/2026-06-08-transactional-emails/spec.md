@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines the complete behavior of the transactional email catalogue added to GetRandomTrip. This is a new capability — no prior spec exists for this domain.
+Defines the complete behavior of the transactional email catalogue added to GetRandomtrip. This is a new capability — no prior spec exists for this domain.
 
 ---
 

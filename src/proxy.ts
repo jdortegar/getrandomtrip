@@ -123,7 +123,7 @@ export async function applyAttribution(
   // Only a genuinely NEW referral (`"set"`, not `"keep"`'s exp refresh)
   // overwrites the longer-lived "last seen tripper" signal (review finding
   // #4) — this is what lets the banner still offer "switch back to X" after
-  // the visitor later toggles to RandomTrip mode and the live cookie above
+  // the visitor later toggles to Randomtrip mode and the live cookie above
   // gets cleared.
   if (action.kind === "set") {
     const lastSeenSigned = await signAttribution(

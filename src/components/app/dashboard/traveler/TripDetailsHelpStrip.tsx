@@ -11,7 +11,7 @@ interface TripDetailsHelpStripProps {
 
 /**
  * Dark support-contact CTA strip (design.md ADR-4). Repurposed from the
- * prototype's "Message your Tripper" into a traveler → GetRandomTrip
+ * prototype's "Message your Tripper" into a traveler → GetRandomtrip
  * support action (Resolved Decision #4) — the button opens `TripSupportModal`.
  */
 export function TripDetailsHelpStrip({ copy, onOpen }: TripDetailsHelpStripProps) {

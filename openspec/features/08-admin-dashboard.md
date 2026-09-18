@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Internal operations tool for the GetRandomTrip team. Admins manage trip requests, review and approve or reject tripper experiences, view users, monitor payments, and manage XSED drops. Not exposed to clients or trippers.
+Internal operations tool for the GetRandomtrip team. Admins manage trip requests, review and approve or reject tripper experiences, view users, monitor payments, and manage XSED drops. Not exposed to clients or trippers.
 
 ## What's Implemented
 

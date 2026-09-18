@@ -550,7 +550,7 @@ export function AdminSidebar() {
         <p className="font-barlow-condensed text-sm font-extrabold uppercase tracking-widest text-gray-900">
           Admin Panel
         </p>
-        <p className="mt-0.5 text-xs text-gray-400">GetRandomTrip</p>
+        <p className="mt-0.5 text-xs text-gray-400">GetRandomtrip</p>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2">
         {links.map((link) => (

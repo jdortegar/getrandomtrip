@@ -45,7 +45,7 @@ export const readAttributionSlug = cache(async (): Promise<string | null> => {
 /**
  * Reads and verifies the separate, longer-lived `grt_tripper_last_seen`
  * cookie (review finding #4) — survives the mode-toggle's "switch to
- * RandomTrip" action (which only clears `grt_tripper`), so
+ * Randomtrip" action (which only clears `grt_tripper`), so
  * `AttributionModeBanner` can still offer "switch back to {name}" on a
  * fresh render even when there is no live pricing cookie. Never used for
  * pricing/referral decisions — UI-only.
@@ -61,7 +61,7 @@ export const readLastSeenTripperSlug = cache(
  * Re-validates a slug's liveness via `getTripperJourneyContext` and returns
  * the branding/pricing context only when the tripper is still `ok`
  * (active + found). `not_found`/`inactive` collapse to `null` — the caller
- * falls back to the base RandomTrip catalog, never a stale price.
+ * falls back to the base Randomtrip catalog, never a stale price.
  *
  * `getTripperJourneyContext` now re-throws on an unexpected DB error instead
  * of swallowing it into `{ status: "not_found" }` (review finding #7 — that

@@ -20,7 +20,7 @@ interface AttributionModeBannerProps {
  *
  * Falls back to the longer-lived `grt_tripper_last_seen` cookie (review
  * finding #4) when there is no LIVE `grt_tripper` cookie — this is what lets
- * a visitor who toggled to RandomTrip mode (which clears the live cookie
+ * a visitor who toggled to Randomtrip mode (which clears the live cookie
  * outright) still see a "switch back to {name}" control on a later render,
  * instead of the banner disappearing with no way back short of re-clicking
  * the original referral link.

@@ -14,7 +14,7 @@ Per-tripper override pricing is fully integrated. Admins can set per-tripper lev
 - **Storage** — Per-tripper overrides stored as JSON on `User.tripperPriceOverrides`.
 - **Resolution** — Pure resolver function `resolveBasePricePerPerson` (override-first, catalog-fallback, tripper-aware).
 - **Funnel coverage** — Journey cards, summary sidebar, and checkout all resolve via the same function.
-- **RandomTrip exclusion** — Bookings with no tripper attribution always use the global catalog.
+- **Randomtrip exclusion** — Bookings with no tripper attribution always use the global catalog.
 
 ---
 
@@ -37,7 +37,7 @@ Per-tripper override pricing is fully integrated. Admins can set per-tripper lev
 2. Traveler books that pair
 3. All displays and charges resolve to the global catalog value for that pair
 
-**RandomTrip-owned booking (no tripper):**
+**Randomtrip-owned booking (no tripper):**
 1. Booking created without tripper attribution (`TripRequest.tripperId` null)
 2. All pricing resolves to the global catalog only; no override data is consulted
 
@@ -77,10 +77,10 @@ Every price display (`/journey` cards, sidebar totals, checkout UI) also resolve
 #### Requirement: Transitive Consistency
 The displayed price shown to the traveler matches what will be charged at the money call site, because both use the same resolver against the same override data. A gap in coverage leaves two prices on the same screen.
 
-### RandomTrip Exclusion (Implemented)
+### Randomtrip Exclusion (Implemented)
 
 #### Requirement: No Tripper Attribution = No Override
-When `TripRequest.tripperId` is null, the loader returns null immediately (no DB hit). The resolver falls back to the global catalog. Override data is never consulted for RandomTrip bookings.
+When `TripRequest.tripperId` is null, the loader returns null immediately (no DB hit). The resolver falls back to the global catalog. Override data is never consulted for Randomtrip bookings.
 
 ---
 
@@ -141,7 +141,7 @@ The write API validates all overrides atomically before any write:
 
 - Pencil → edit page → set override → save → checkout → verify charged amount matches override
 - Tripper without override still charges catalog price
-- RandomTrip-owned booking (no tripper param) always charges catalog price
+- Randomtrip-owned booking (no tripper param) always charges catalog price
 - Grid distinguishes not-offered from 0 override visually
 
 ---

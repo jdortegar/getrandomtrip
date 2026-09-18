@@ -120,7 +120,7 @@ export default function BudgetStep({
         )
       : tripperPriceOverrides;
   // Levels are never hidden — a level the tripper hasn't priced already
-  // falls back to RandomTrip's base price inside `getPlannerContentForType`
+  // falls back to Randomtrip's base price inside `getPlannerContentForType`
   // (via `resolveBasePricePerPerson`), so every level for the selected type
   // stays bookable.
   const plannerContent = hasTravelType

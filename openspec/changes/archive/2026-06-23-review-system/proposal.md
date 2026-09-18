@@ -21,7 +21,7 @@ Meanwhile, `TripRequest.customerRating` / `customerFeedback` was used as a stopg
 1. Enable customers to submit reviews via a token-based email link — no login required.
 2. Wire the existing admin moderation UI to real review data.
 3. Display approved tripper reviews on the tripper public profile.
-4. Display approved RandomTrip reviews on the homepage testimonials.
+4. Display approved Randomtrip reviews on the homepage testimonials.
 5. Remove dead code from the inline review form (Fix #5 PATCH endpoint).
 
 ---

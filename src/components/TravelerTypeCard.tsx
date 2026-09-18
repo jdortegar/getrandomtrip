@@ -29,7 +29,7 @@ interface TravelerTypeCardProps {
   title?: string;
   /** When defined (curated journey), renders tripper attribution mid-card. */
   tripperBadge?: { name: string; avatarUrl: string | null };
-  /** When set (and `tripperBadge` is not), renders the RandomTrip isologo + this label ("BY RANDOMTRIP") instead — this type/level isn't offered by the attributed tripper, but is still bookable through RandomTrip's own catalog. */
+  /** When set (and `tripperBadge` is not), renders the Randomtrip isologo + this label ("BY RANDOMTRIP") instead — this type/level isn't offered by the attributed tripper, but is still bookable through Randomtrip's own catalog. */
   randomtripBadgeLabel?: string;
   width?: number;
   /** When true, the card content is wrapped to the top of the card. */

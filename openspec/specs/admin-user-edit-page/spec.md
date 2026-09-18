@@ -59,7 +59,7 @@ All new UI strings (panel titles, toggle labels, grid headers, "not offered" cop
 Per-tripper level × traveler-type price overrides that supersede the global `PRICE_BY_TYPE_AND_LEVEL` catalog at checkout, stored as a nullable JSON map on `User.tripperPriceOverrides`.
 
 #### Requirement: Override Resolution Everywhere in the Funnel
-The tripper-attributed base price MUST resolve via override-first, catalog-fallback at every point in the funnel: level-selection cards (`/journey`), running-total sidebar, and checkout. A tripper-attributed trip uses the override; a RandomTrip-owned trip (no tripper attribution) always uses the global catalog.
+The tripper-attributed base price MUST resolve via override-first, catalog-fallback at every point in the funnel: level-selection cards (`/journey`), running-total sidebar, and checkout. A tripper-attributed trip uses the override; a Randomtrip-owned trip (no tripper attribution) always uses the global catalog.
 
 #### Requirement: Storage Shape
 `User.tripperPriceOverrides: Partial<Record<TravelerTypeSlug, Partial<Record<PriceLevelId, number>>>>`. Absent keys = inherit. Only cells with explicit overrides are stored; clearing a cell deletes the key.
@@ -77,7 +77,7 @@ Base price per person resolution adds tripper awareness. Instead of a global-onl
 #### Requirement: Call-Site Wiring
 Every money call site (`POST /api/stripe/payment-intent`, `apply-promo`, `remove-promo`) loads the tripper's overrides and resolves via the pure resolver. Display sites (`/journey` level cards, `JourneySummary`, checkout) also resolve via the same function, passed the tripper's overrides from journey context. `GET /api/trips` and `GET /api/trips/[id]` return a resolved `basePriceUsd` so the client never needs to recalculate.
 
-#### Requirement: RandomTrip-Owned Exclusion
+#### Requirement: Randomtrip-Owned Exclusion
 Bookings with no tripper attribution (`TripRequest.tripperId` null) always use the global catalog, regardless of any override data that exists for any tripper.
 
 ---

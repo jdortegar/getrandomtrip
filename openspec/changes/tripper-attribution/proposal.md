@@ -1,10 +1,10 @@
 # Proposal: Site-Wide Tripper Attribution
 
-Supersedes the paused `tripper-referral-commission` exploration (originally captured in engram, obs #521 — kept there for historical reference, not duplicated here) by answering its open questions: attribution lives on `User.referredByTripperId`, policy is **first-touch permanent**, window is **account lifetime** (not time-boxed), duplicate-link exposure resolves first-write-wins (same precedent as `TripRequest.tripperId`). **Commission calculation (1%/2%/3% rates, RandomTrip-revenue modeling, ledger) stays OUT of scope** — this change only builds the attribution foundation that feature depends on.
+Supersedes the paused `tripper-referral-commission` exploration (originally captured in engram, obs #521 — kept there for historical reference, not duplicated here) by answering its open questions: attribution lives on `User.referredByTripperId`, policy is **first-touch permanent**, window is **account lifetime** (not time-boxed), duplicate-link exposure resolves first-write-wins (same precedent as `TripRequest.tripperId`). **Commission calculation (1%/2%/3% rates, Randomtrip-revenue modeling, ledger) stays OUT of scope** — this change only builds the attribution foundation that feature depends on.
 
 ## Intent
 
-Two catalogs exist — the RandomTrip global marketplace and a tripper's curated/priced catalog — but there is no durable notion of "which catalog am I in." Active-tripper state is read client-side from `?tripper=` in `JourneyPageClient.tsx` and is lost the moment the user navigates away; `by-type` never had it. Consequences today: attribution-carrying links break on the very carousel meant to promote them, non-offered traveler types are silently dropped, and there is no user-level referral record for commissions to ever hang off.
+Two catalogs exist — the Randomtrip global marketplace and a tripper's curated/priced catalog — but there is no durable notion of "which catalog am I in." Active-tripper state is read client-side from `?tripper=` in `JourneyPageClient.tsx` and is lost the moment the user navigates away; `by-type` never had it. Consequences today: attribution-carrying links break on the very carousel meant to promote them, non-offered traveler types are silently dropped, and there is no user-level referral record for commissions to ever hang off.
 
 ## Scope
 
@@ -16,7 +16,7 @@ Two catalogs exist — the RandomTrip global marketplace and a tripper's curated
 4. **Shared attribution helper** — because `proxy.ts`'s matcher excludes `/api`, force-derivation and validation live in a helper (`src/lib/tripper/attribution.ts` + `attribution-server.ts`) callable from both `proxy.ts` and API route handlers. Not "in middleware."
 5. **`User.referredByTripperId`** — new self-referential FK, written **exactly once at signup**, never overwritten (follows the documented `tripperSince` / `siteAccessGrantedAt` "set once, never overwritten" convention in `model User`).
 6. **Register-modal tripper picker** — plain `<select>` in `src/components/auth/AuthModal.tsx` using its existing `useState` + `<FormField>` pattern (**no react-hook-form**, no combobox — neither exists to reuse). Pre-filled from the active-tripper resolution when present. Includes an explicit **"None"** option so "no referrer" is a deliberate, validated choice rather than an empty state — mirrors the "not offered vs explicit zero" distinction already shipped in the price-override grid. "None" freezes the field to `null`, which per item 3 means the cookie force-clears on every future authenticated visit for that user.
-7. **Carousel fixes (per-card, not a mode switch)** — `TravelerTypesCarousel.tsx:82-86` href must actually carry attribution for offered types (broken today even for available ones); `filterCarouselCards` (`src/lib/utils/traveler-card.ts:86-100`) stops dropping non-offered types and instead renders them with a distinct localized label ("Visit RandomTrip experiences") linking to plain `by-type/{slug}?catalog=randomtrip` **without** triggering account-level force-attribution for that one click — a reversible, per-query opt-out.
+7. **Carousel fixes (per-card, not a mode switch)** — `TravelerTypesCarousel.tsx:82-86` href must actually carry attribution for offered types (broken today even for available ones); `filterCarouselCards` (`src/lib/utils/traveler-card.ts:86-100`) stops dropping non-offered types and instead renders them with a distinct localized label ("Visit Randomtrip experiences") linking to plain `by-type/{slug}?catalog=randomtrip` **without** triggering account-level force-attribution for that one click — a reversible, per-query opt-out.
 8. **Persistent mode banner + toggle** — shown when the active-tripper cookie doesn't match what's rendered; toggles `grt_tripper` only. Fully localized via `es.json`/`en.json` + `dictionary.ts` per `.claude/rules/i18n-and-types.md`. `TripperPreviewBanner.tsx` is a usable *shape* but is hardcoded Spanish — **do not copy its pattern**.
 9. **Retire** the client-side `?tripper=` reading in `JourneyPageClient.tsx` (~144-173). It must not run alongside the new mechanism.
 10. **Defensive invariants** (built in from the start, not bolted on):
@@ -28,7 +28,7 @@ Two catalogs exist — the RandomTrip global marketplace and a tripper's curated
 
 ### Out of Scope
 
-- Referral **commission calculation and payouts** (the 1%/2%/3% tier rates, "RandomTrip revenue" modeling, `ReferralCommission` ledger, payout UI) — deferred to a follow-up change that consumes this foundation.
+- Referral **commission calculation and payouts** (the 1%/2%/3% tier rates, "Randomtrip revenue" modeling, `ReferralCommission` ledger, payout UI) — deferred to a follow-up change that consumes this foundation.
 - Changes to `resolveBasePricePerPerson` — already satisfies its invariant.
 - Migrating `TripRequest.tripperId` semantics — untouched; per-request attribution stays as-is.
 - Retro-attributing existing users (`referredByTripperId` backfills as `null`).
@@ -40,7 +40,7 @@ Two catalogs exist — the RandomTrip global marketplace and a tripper's curated
 - `tripper-attribution`: pricing-session cookie lifecycle, anonymous vs authenticated resolution precedence, permanent user-level referral capture, validation invariants.
 
 ### Modified Capabilities
-- `tripper`: public tripper surfaces must carry attribution across navigation; carousel renders non-offered types as RandomTrip fallbacks instead of dropping them.
+- `tripper`: public tripper surfaces must carry attribution across navigation; carousel renders non-offered types as Randomtrip fallbacks instead of dropping them.
 - `tripper-price-override`: overrides now apply from a persisted session cookie, not only from a `?tripper=`-carrying URL; adds the read-time liveness + charge-time re-derivation invariants.
 - `auth-verification`: registration captures a validated referring tripper (or explicit None) exactly once.
 
@@ -61,7 +61,7 @@ First self-referential FK in this schema — no in-schema precedent for *self*-r
 | **`SetNull`** | Traveler survives; referral becomes `null` (= no attribution) | **CHOSEN** — matches `TripRequest.tripper:180` |
 | Soft-delete + keep FK | Preserves historical credit for future commission audits | Deferred — belongs to the commission ledger change |
 
-**Decision (confirmed by user)**: `onDelete: SetNull`, no historical snapshot. If a referring tripper's account is deleted, every traveler they referred permanently loses that attribution with no surviving record — RandomTrip keeps the full amount on any of that traveler's future bookings. This is deliberate: no commission is owed to a deleted account, and there is no obligation to preserve historical referral records. A future commission-ledger change would snapshot `referrerId` + rate per payment row independently, if ever needed — not this change's job.
+**Decision (confirmed by user)**: `onDelete: SetNull`, no historical snapshot. If a referring tripper's account is deleted, every traveler they referred permanently loses that attribution with no surviving record — Randomtrip keeps the full amount on any of that traveler's future bookings. This is deliberate: no commission is owed to a deleted account, and there is no obligation to preserve historical referral records. A future commission-ledger change would snapshot `referrerId` + rate per payment row independently, if ever needed — not this change's job.
 
 ## Affected Areas
 
@@ -98,7 +98,7 @@ First self-referential FK in this schema — no in-schema precedent for *self*-r
 
 ## Rollback Plan
 
-1. Feature-flag the proxy cookie logic (`ATTRIBUTION_ENABLED`); disabling reverts to no-attribution (base RandomTrip catalog) — the safest default, never a wrong price.
+1. Feature-flag the proxy cookie logic (`ATTRIBUTION_ENABLED`); disabling reverts to no-attribution (base Randomtrip catalog) — the safest default, never a wrong price.
 2. Revert commits for carousel/`by-type`/banner independently — they are behaviorally additive.
 3. The Prisma migration is additive and nullable: leave the column in place on rollback (no down-migration needed); drop the JWT claim and the dropdown, and the field simply goes unread.
 4. `JourneyPageClient.tsx` retirement is the only removal — restore in the same revert if the cookie path is rolled back.
@@ -114,8 +114,8 @@ First self-referential FK in this schema — no in-schema precedent for *self*-r
 - [ ] Active tripper survives navigation across `/journey`, `/experiences/by-type/*`, `/trippers/*` and page reloads.
 - [ ] A signed-in user with a frozen referral sees that referral's pricing even when arriving via a different tripper's `?tripper=` link.
 - [ ] `referredByTripperId` is set exactly once at signup, is never mutated by banner toggles, and rejects self-referral server-side.
-- [ ] Non-offered traveler types render a localized RandomTrip fallback card (es + en) instead of disappearing; offered types link with attribution intact.
-- [ ] A hand-edited/forged `grt_tripper` cookie yields base RandomTrip pricing, never another tripper's overrides.
+- [ ] Non-offered traveler types render a localized Randomtrip fallback card (es + en) instead of disappearing; offered types link with attribution intact.
+- [ ] A hand-edited/forged `grt_tripper` cookie yields base Randomtrip pricing, never another tripper's overrides.
 - [ ] A deactivated or role-demoted tripper resolves as "no attribution" at read time.
 - [ ] `proxy.ts` performs zero DB queries and remains on the Edge runtime.
 - [ ] `npm run typecheck` and `npm run test` pass; no hardcoded user-visible strings introduced.
@@ -124,7 +124,7 @@ First self-referential FK in this schema — no in-schema precedent for *self*-r
 
 | # | Decision |
 |---|---|
-| 1 | ADR-1: `onDelete: SetNull`, no historical snapshot — deleted tripper's referrals silently lose attribution, RandomTrip keeps full future earn. |
+| 1 | ADR-1: `onDelete: SetNull`, no historical snapshot — deleted tripper's referrals silently lose attribution, Randomtrip keeps full future earn. |
 | 2 | Cookie TTL: 30 days (design ADR-4, confirmed). |
 | 3 | `/trippers/[slug]` browsing itself sets pricing attribution — intended, not a bug (confirmed). The banner+toggle is what makes it visible/reversible. |
 | 4 | Delivery: chained PRs, `feature-branch-chain` strategy (confirmed) — PR1 Foundation+Security, PR2 Server wiring+APIs, PR3 Carousel/page wiring+Banner. |

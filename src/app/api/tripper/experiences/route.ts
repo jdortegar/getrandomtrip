@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     // source is server-derived from the caller's role only — never trusted
     // from the request body (ExperienceFormDraft has no `source` field).
     const isAdmin = getAppRoles(user).includes("admin");
-    // RANDOMTRIP rows are owned by the RandomTrip pseudo-user, not whichever
+    // RANDOMTRIP rows are owned by the Randomtrip pseudo-user, not whichever
     // admin clicked create — createdById keeps the real creator for audit.
     const ownerId = isAdmin ? await getRandomtripUserId() : user.id;
 

@@ -1,4 +1,4 @@
-# GetRandomTrip — Feature Spec Index
+# GetRandomtrip — Feature Spec Index
 
 Last updated: 2026-06-08
 

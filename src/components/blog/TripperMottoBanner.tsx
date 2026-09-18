@@ -53,7 +53,7 @@ export default function TripperMottoBanner({
                 {attribution}
               </Link>
             ) : (
-              // No public profile to link to (e.g. the RandomTrip pseudo-user
+              // No public profile to link to (e.g. the Randomtrip pseudo-user
               // that owns RANDOMTRIP-sourced content) — plain text instead.
               <span className="font-barlow-condensed text-sm font-semibold uppercase tracking-wide text-white md:text-base">
                 {attribution}

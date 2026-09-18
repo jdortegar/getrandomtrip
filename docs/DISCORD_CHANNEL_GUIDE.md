@@ -14,7 +14,7 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 - Welcome message with server overview
 - Quick start guide (numbered steps)
 - Links to important channels
-- GetRandomTrip website link
+- GetRandomtrip website link
 
 **Setup:**
 
@@ -27,7 +27,7 @@ Complete guide to each channel's purpose, content guidelines, and moderation tip
 **Example Message:**
 
 ```
-👋 Welcome to GetRandomTrip Community!
+👋 Welcome to GetRandomtrip Community!
 
 🚀 Get Started:
 1️⃣ Read <#rules>
@@ -181,7 +181,7 @@ Tell us:
 ✈️ Where are you from?
 🌍 Favorite place you've visited?
 🎒 Solo, couple, family, or friends traveler?
-🎲 What brought you to GetRandomTrip?
+🎲 What brought you to GetRandomtrip?
 ```
 
 ---
@@ -559,7 +559,7 @@ Day 2: ...
 **Purpose:** Product questions and onboarding  
 **Expected Content:**
 
-- How GetRandomTrip works
+- How GetRandomtrip works
 - Booking process questions
 - Feature explanations
 - Payment questions

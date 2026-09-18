@@ -20,7 +20,7 @@ import {
 } from "./tripper-price-overrides.server";
 
 describe("loadTripperPriceOverrides", () => {
-  it("returns null with NO db hit when tripperId is null (RandomTrip-owned booking)", async () => {
+  it("returns null with NO db hit when tripperId is null (Randomtrip-owned booking)", async () => {
     const result = await loadTripperPriceOverrides(null);
     expect(result).toBeNull();
     expect(findUniqueMock).not.toHaveBeenCalled();

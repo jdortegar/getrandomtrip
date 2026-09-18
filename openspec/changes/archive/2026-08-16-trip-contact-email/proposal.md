@@ -95,7 +95,7 @@ Single commit / single PR — `git revert` restores the `mailto:` link. The new 
 | 1 | Branded via existing `EmailLayout`, same shell as every other transactional email. Not raw/unbranded. |
 | 2 | Rendered in `resolveLocale(trip.user.locale)` — the traveler's stored preference, like `sendBookingConfirmed`. Not the admin's dashboard locale. |
 | 3 | Plain text only, paragraphs split on newlines. No rich text, no HTML input — no sanitization work. Compose field is the existing `TextAreaInput`. |
-| 4 | Subject **and** body are prefilled and localized (greeting uses `trip.user.name`, sign-off from "the GetRandomTrip team"). Nothing blank by default. |
+| 4 | Subject **and** body are prefilled and localized (greeting uses `trip.user.name`, sign-off from "the GetRandomtrip team"). Nothing blank by default. |
 | 5 | `replyTo` = the sending admin's own email (looked up from `adminId`), not a shared inbox. Mirrors the `mailto:` behavior being replaced. |
 | 6 | Synchronous, `await`-ed send so the modal reports a real result. Deliberately diverges from the 23 fire-and-forget `send*` functions, which have nobody watching. |
 | 7 | New Prisma model required; write-only audit. No GET endpoint, no history list, no viewer in this change. |

@@ -21,8 +21,8 @@ const copy = {
 
 /** Generic fallback subject — the route always sends the admin's own subject instead. */
 export const subjects = {
-  es: "Un mensaje del equipo de GetRandomTrip",
-  en: "A message from the GetRandomTrip team",
+  es: "Un mensaje del equipo de GetRandomtrip",
+  en: "A message from the GetRandomtrip team",
 };
 
 /** Splits raw text on newlines, trims each line, and drops blank lines. */

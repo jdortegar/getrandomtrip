@@ -113,7 +113,7 @@ resolved_decisions:
     status: final
     summary: >-
       Modal opens with BOTH subject and body prefilled and localized (greeting
-      uses trip.user.name, sign-off from "the GetRandomTrip team"). Admin edits
+      uses trip.user.name, sign-off from "the GetRandomtrip team"). Admin edits
       before sending; nothing blank by default.
   - id: 5
     status: final

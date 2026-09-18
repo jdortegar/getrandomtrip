@@ -185,4 +185,4 @@ This change completes the full SDD workflow:
 
 None. The change is fully archived and closed. The codebase is ready for deployment.
 
-If follow-up work is needed, create a new `/sdd-new` change with a distinct scope (e.g., "review-system-homepage" for RandomTrip review testimonials on the homepage, or "review-system-analytics" for admin review metrics).
+If follow-up work is needed, create a new `/sdd-new` change with a distinct scope (e.g., "review-system-homepage" for Randomtrip review testimonials on the homepage, or "review-system-analytics" for admin review metrics).

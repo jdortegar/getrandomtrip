@@ -12,7 +12,7 @@ paths:
 
 ## Color Tokens
 
-Seven canonical tokens — use nothing outside these and the Tailwind neutral scale:
+Eight canonical tokens — use nothing outside these and the Tailwind neutral scale:
 
 | Token        | Hex       | Tailwind               | Usage                                      |
 | ------------ | --------- | ---------------------- | ------------------------------------------ |
@@ -20,6 +20,7 @@ Seven canonical tokens — use nothing outside these and the Tailwind neutral sc
 | Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons, eyebrows, underlines, carousel arrow/dot buttons, focus states |
 | Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — sections/containers, icon-puck washes, links, publish state |
 | Ochre        | `#E5A51C` | `bg-feature` / `text-feature` | Brand feature/accent — high-emphasis CTA (`feature`/`pill` Button variants), KPI accent bar |
+| XSED Orange  | `#D97E4A` | `bg-xsed` / `text-xsed` / `border-xsed` | XSED sub-brand accent — scoped to `src/components/app/xsed/**` and the `tertiary` Button variant; never used as a general-purpose accent outside the XSED line |
 | Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
 | Ground       | `#F3F2ED` | `bg-ground`            | Off-White — page background (`<body>`, full-page wrappers), not card surfaces |
 | Border       | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |

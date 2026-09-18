@@ -2,7 +2,7 @@
  * Discord Server Setup Script
  *
  * This script automates the creation of channels, roles, and permissions
- * for the GetRandomTrip Discord community.
+ * for the GetRandomtrip Discord community.
  *
  * Prerequisites:
  * 1. Create a bot in Discord Developer Portal
@@ -170,14 +170,14 @@ const channels: ChannelDefinition[] = [
     type: ChannelType.GuildText,
     category: "WELCOME & INFO",
     topic:
-      "👋 Welcome to GetRandomTrip! Start here for server rules and how to get started.",
+      "👋 Welcome to GetRandomtrip! Start here for server rules and how to get started.",
   },
   {
     name: "announcements",
     type: ChannelType.GuildText,
     category: "WELCOME & INFO",
     topic:
-      "📢 Official updates, new features, and important news from GetRandomTrip.",
+      "📢 Official updates, new features, and important news from GetRandomtrip.",
   },
   {
     name: "rules",
@@ -354,19 +354,19 @@ const channels: ChannelDefinition[] = [
     name: "how-it-works",
     type: ChannelType.GuildText,
     category: "GETRANDOMTRIP",
-    topic: "❓ Questions about how GetRandomTrip works.",
+    topic: "❓ Questions about how GetRandomtrip works.",
   },
   {
     name: "feature-requests",
     type: ChannelType.GuildText,
     category: "GETRANDOMTRIP",
-    topic: "💡 Suggest new features and improvements for GetRandomTrip.",
+    topic: "💡 Suggest new features and improvements for GetRandomtrip.",
   },
   {
     name: "feedback",
     type: ChannelType.GuildText,
     category: "GETRANDOMTRIP",
-    topic: "💬 Share your GetRandomTrip experience and feedback.",
+    topic: "💬 Share your GetRandomtrip experience and feedback.",
   },
   {
     name: "bookings-support",

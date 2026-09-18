@@ -38,7 +38,7 @@ describe("resolveBasePricePerPerson", () => {
     expect(result).toEqual({ offered: false, price: 0, source: "not-offered" });
   });
 
-  it("uses only the global catalog when overrides is null (RandomTrip-owned booking)", () => {
+  it("uses only the global catalog when overrides is null (Randomtrip-owned booking)", () => {
     const result = resolveBasePricePerPerson({
       levelId: "bivouac",
       overrides: null,

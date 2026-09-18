@@ -18,7 +18,8 @@
     "labelContact": "Contact",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Open navigation menu",
-    "search": "Search",
+    "closeMenu": "Close menu",
+    "menuLabel": "Navigation menu",
     "selectLanguage": "Select language",
     "signIn": "Sign in",
     "whatsApp": "WhatsApp"
@@ -103,7 +104,7 @@
       },
       "blogNew": {
         "title": "New Post",
-        "description": "Create a post published by RandomTrip."
+        "description": "Create a post published by Randomtrip."
       },
       "home": {
         "title": "Admin Dashboard",
@@ -123,7 +124,7 @@
       },
       "experiencesNew": {
         "title": "New Experience",
-        "description": "Create a generic experience published by RandomTrip."
+        "description": "Create a generic experience published by Randomtrip."
       },
       "experiencesDetail": {
         "title": "Experience Review",
@@ -149,7 +150,7 @@
     "newExperience": {
       "submitLabel": "Publish",
       "confirmTitle": "Publish this experience?",
-      "confirmBody": "It will go live immediately as a RandomTrip experience, skipping review."
+      "confirmBody": "It will go live immediately as a Randomtrip experience, skipping review."
     },
     "editExperience": {
       "confirmTitle": "Save these changes?",
@@ -158,7 +159,7 @@
     "newBlogPost": {
       "submitLabel": "Publish",
       "confirmTitle": "Publish this post?",
-      "confirmBody": "It will go live immediately as a RandomTrip post, skipping review."
+      "confirmBody": "It will go live immediately as a Randomtrip post, skipping review."
     }
   },
   "adminXsed": {
@@ -3629,7 +3630,7 @@
       "bodyLabel": "Message",
       "bodyPlaceholder": "Write your message…",
       "prefillSubject": "An update about your trip",
-      "prefillBody": "Hi {{userName}},\n\n\n\nBest,\nThe GetRandomTrip team",
+      "prefillBody": "Hi {{userName}},\n\n\n\nBest,\nThe GetRandomtrip team",
       "send": "Send message",
       "sending": "Sending…",
       "cancel": "Cancel",
@@ -5162,10 +5163,10 @@
     "savingAction": "Saving…"
   },
   "tripperAttribution": {
-    "visitRandomTripExperiences": "Visit RandomTrip experiences",
+    "visitRandomtripExperiences": "Visit Randomtrip experiences",
     "bannerTripperModeMessage": "You're viewing experiences curated by {name}.",
-    "bannerRandomtripModeMessage": "You're viewing general RandomTrip experiences.",
-    "bannerSwitchToRandomtrip": "View general RandomTrip experiences",
+    "bannerRandomtripModeMessage": "You're viewing general Randomtrip experiences.",
+    "bannerSwitchToRandomtrip": "View general Randomtrip experiences",
     "bannerSwitchToTripper": "Switch back to {name}'s experiences"
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Discord Work Channels Setup Script
  *
- * Creates internal team/work channels for GetRandomTrip staff.
+ * Creates internal team/work channels for GetRandomtrip staff.
  * These channels are private and only visible to specific roles.
  *
  * Prerequisites:
