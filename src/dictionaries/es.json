@@ -18,7 +18,8 @@
     "labelContact": "Contacto",
     "ariaLabelLogo": "Randomtrip",
     "openMenu": "Abrir menú de navegación",
-    "search": "Buscar",
+    "closeMenu": "Cerrar menú",
+    "menuLabel": "Menú de navegación",
     "selectLanguage": "Seleccionar idioma",
     "signIn": "Iniciar sesión",
     "whatsApp": "WhatsApp"

@@ -2188,6 +2188,7 @@ export interface MarketingDictionary {
     ariaLabelTripbuddy: string;
     ariaLabelTrippers: string;
     ariaLabelXsed: string;
+    closeMenu: string;
     labelBitacoras: string;
     labelContact: string;
     labelExperiences: string;
@@ -2196,8 +2197,8 @@ export interface MarketingDictionary {
     labelTrippers: string;
     labelTripbuddy: string;
     labelXsed: string;
+    menuLabel: string;
     openMenu: string;
-    search: string;
     selectLanguage: string;
     signIn: string;
     whatsApp: string;
