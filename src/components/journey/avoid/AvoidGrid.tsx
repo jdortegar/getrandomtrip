@@ -127,12 +127,12 @@ export default function AvoidGrid({
   return (
     <div className="space-y-4">
       <div className="w-full">
-        {/* Grid 3 filas x 4 col */}
+        {/* Grid: 3 col mobile, 4 col desktop */}
         <div
-          className={`grid w-full grid-cols-4 ${showImages ? "gap-4" : "gap-2"}`}
+          className={`grid w-full grid-cols-3 md:grid-cols-4 ${showImages ? "gap-4" : "gap-2"}`}
         >
           {suggestions.length === 0 ? (
-            <div className="col-span-4 py-8 text-center text-ink">
+            <div className="col-span-3 py-8 text-center text-ink md:col-span-4">
               {hasLoaded ? labels.empty : labels.loading}
             </div>
           ) : (
