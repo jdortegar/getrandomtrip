@@ -100,7 +100,7 @@ export function ExplorationSection({
       eyebrow={eyebrow}
       subtitle={subtitle}
       title={title}
-      fullWidth
+      fullWidth data-component="ExplorationSection"
     >
       {/* Tab Navigation */}
       <motion.div

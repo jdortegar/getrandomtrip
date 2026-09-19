@@ -52,7 +52,7 @@ export function JourneyUserBadge({ labels }: JourneyUserBadgeProps) {
   const level = getTripLevel(completedTrips, labels.levels);
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3" data-component="JourneyUserBadge">
       <UserAvatar height={40} width={40} />
 
       <div className="flex flex-col">

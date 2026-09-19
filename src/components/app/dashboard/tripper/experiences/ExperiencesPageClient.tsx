@@ -249,10 +249,10 @@ export default function ExperiencesPageClient({
     });
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner data-component="ExperiencesPageClient" />;
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="ExperiencesPageClient">
       {/* Section header */}
       <div className="flex items-end justify-between gap-4">
         <div>

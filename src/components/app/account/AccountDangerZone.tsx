@@ -66,7 +66,7 @@ export function AccountDangerZone({ copy }: AccountDangerZoneProps) {
 
   if (confirming) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-5 rounded-xl border border-red-200 bg-red-50 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-5 rounded-xl border border-red-200 bg-red-50 p-5" data-component="AccountDangerZone">
         <div className="flex max-w-[60ch] items-start gap-3">
           <AlertTriangle className="mt-0.5 h-[18px] w-[18px] shrink-0 text-red-600" />
           <div>
@@ -100,7 +100,7 @@ export function AccountDangerZone({ copy }: AccountDangerZoneProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-5 rounded-xl border border-red-200 bg-red-50 p-5">
+    <div className="flex flex-wrap items-center justify-between gap-5 rounded-xl border border-red-200 bg-red-50 p-5" data-component="AccountDangerZone">
       <div className="flex max-w-[60ch] items-start gap-3">
         <AlertTriangle className="mt-0.5 h-[18px] w-[18px] shrink-0 text-red-600" />
         <div>

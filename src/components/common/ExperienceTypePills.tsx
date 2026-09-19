@@ -17,7 +17,7 @@ export function ExperienceTypePills({
     : null;
 
   return (
-    <div>
+    <div data-component="ExperienceTypePills">
       <div className="flex flex-wrap gap-1">
         {types.map((t) => (
           <span

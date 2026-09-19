@@ -86,7 +86,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       )}
       onClick={handleClick}
       style={fill ? undefined : { height, width }}
-      {...(isButton ? { disabled, type: "button" as const } : { href })}
+      {...(isButton ? { disabled, type: "button" as const } : { href })} data-component="TravelerTypeCard"
     >
       {selected && (
         <div className="absolute right-[-14px] top-0 z-30">

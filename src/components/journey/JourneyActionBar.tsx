@@ -55,7 +55,7 @@ export function JourneyActionBar({
       className={cn(
         "flex items-center justify-center gap-4 sm:gap-10 mt-8 pt-6 border-t border-gray-200",
         className,
-      )}
+      )} data-component="JourneyActionBar"
     >
       {showClearAll ? (
         <button

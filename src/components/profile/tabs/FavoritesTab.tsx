@@ -7,7 +7,7 @@ type Props = { data: PublicProfile };
 export default function FavoritesTab({ data }: Props) {
   const favorites = data.favorites ?? [];
   return (
-    <section aria-labelledby="favorites-heading">
+    <section aria-labelledby="favorites-heading" data-component="FavoritesTab">
       <h2 id="favorites-heading" className="sr-only">
         Favoritos
       </h2>

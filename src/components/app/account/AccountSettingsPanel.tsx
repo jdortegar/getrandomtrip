@@ -338,7 +338,7 @@ export function AccountSettingsPanel({
 
   if (!dict) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="flex min-h-[40vh] items-center justify-center" data-component="AccountSettingsPanel">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-secondary border-t-transparent" />
       </div>
     );
@@ -429,7 +429,7 @@ export function AccountSettingsPanel({
     securityForm.newPassword !== securityForm.confirmPassword;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="AccountSettingsPanel">
       <TabSelector
         activeTab={activeTab}
         layoutId="accountSettingsActiveTab"

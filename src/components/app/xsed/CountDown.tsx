@@ -208,7 +208,7 @@ export function CountDown({
       fullWidth={true}
       id="xsed"
       title={`${copy.title} <span class="text-xsed">${titleHighlight}</span>`}
-      subtitle={phase === "open" ? copy.openSubtitle : copy.subtitle}
+      subtitle={phase === "open" ? copy.openSubtitle : copy.subtitle} data-component="CountDown"
     >
       {/* Drop status row */}
       <motion.div

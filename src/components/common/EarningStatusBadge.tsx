@@ -23,5 +23,5 @@ interface EarningStatusBadgeProps {
 export function EarningStatusBadge({ label, status }: EarningStatusBadgeProps) {
   const styles = STATUS_STYLES[status] ?? STATUS_STYLES.pending;
 
-  return <StatusIndicatorBadge label={label} styles={styles} />;
+  return <StatusIndicatorBadge label={label} styles={styles} data-component="EarningStatusBadge" />;
 }

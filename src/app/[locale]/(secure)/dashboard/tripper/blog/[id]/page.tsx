@@ -22,6 +22,7 @@ function EditBlogContent() {
   const locale = useLocale();
   const blogsCopy = useDictionary((d) => d.tripperBlogs);
   const userBadgeLabels = useDictionary((d) => d.journey.userBadge);
+  const publishCopy = useDictionary((d) => d.adminDashboard.newBlogPost);
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<Partial<BlogPost> | null>(null);
@@ -117,6 +118,10 @@ function EditBlogContent() {
       userBadgeLabels={userBadgeLabels}
       isAdmin={session?.user ? hasRoleAccess(session.user, "admin") : false}
       source={post.source}
+      // A RANDOMTRIP-sourced draft has no human reviewer — finalizing it
+      // publishes directly (see /api/tripper/blogs/[id]/submit), so the CTA
+      // must say "Publish", not the tripper default "Submit for review".
+      finalizeCopy={post.source === "RANDOMTRIP" ? publishCopy : undefined}
     />
   );
 }

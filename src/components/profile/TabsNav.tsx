@@ -9,7 +9,7 @@ export default function TabsNav({ onChange }: { onChange: (t: Tab) => void }) {
   useEffect(() => onChange(active), [active, onChange]);
 
   return (
-    <div className="sticky top-16 z-10 -mt-2 mb-4 border-b border-neutral-200 bg-white/70 backdrop-blur dark:border-white/10 dark:bg-neutral-900/70">
+    <div className="sticky top-16 z-10 -mt-2 mb-4 border-b border-neutral-200 bg-white/70 backdrop-blur dark:border-white/10 dark:bg-neutral-900/70" data-component="TabsNav">
       <div className="mx-auto flex rt-container gap-4 px-2 py-2">
         {TABS.map((tab) => (
           <button

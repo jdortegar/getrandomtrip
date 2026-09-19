@@ -32,11 +32,11 @@ export function TripDocumentsTable({
   removingId,
 }: TripDocumentsTableProps) {
   if (documents.length === 0) {
-    return <p className={styles.panelDesc}>{copy.documentsEmpty}</p>;
+    return <p className={styles.panelDesc} data-component="TripDocumentsTable">{copy.documentsEmpty}</p>;
   }
 
   return (
-    <div className={styles.tableWrap}>
+    <div className={styles.tableWrap} data-component="TripDocumentsTable">
       <table className={styles.docsTable}>
         <thead>
           <tr>

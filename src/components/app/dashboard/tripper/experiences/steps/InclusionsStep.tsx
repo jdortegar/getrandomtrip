@@ -17,7 +17,7 @@ export function InclusionsStep({ copy, form, onChange }: Props) {
   const { fields } = copy;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="InclusionsStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[3]?.substeps[2]?.description}
       </p>

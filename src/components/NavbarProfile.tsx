@@ -79,7 +79,7 @@ export function NavbarProfile({
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative" ref={menuRef} data-component="NavbarProfile">
       <button
         aria-label={labels.ariaOpenProfileMenu}
         aria-haspopup="menu"

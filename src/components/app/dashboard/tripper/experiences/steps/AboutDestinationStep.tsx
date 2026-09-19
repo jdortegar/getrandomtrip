@@ -26,7 +26,7 @@ export function AboutDestinationStep({ copy, form, onChange, changedFieldSet }: 
   const ch = (f: string) => changedFieldSet?.has(f) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="AboutDestinationStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[1]?.description}
       </p>

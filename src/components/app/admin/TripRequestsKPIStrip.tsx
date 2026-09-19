@@ -20,7 +20,7 @@ export function TripRequestsKPIStrip({ counts, labels }: TripRequestsKPIStripPro
     { key: "COMPLETED", label: labels.COMPLETED, value: counts.COMPLETED },
   ];
   return (
-    <div className="flex overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div className="flex overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200" data-component="TripRequestsKPIStrip">
       {metrics.map((m) => (
         <div
           className="flex flex-1 items-center justify-between border-l border-gray-200 px-6 py-4 first:border-l-0"

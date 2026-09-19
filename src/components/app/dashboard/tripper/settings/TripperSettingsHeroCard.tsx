@@ -112,7 +112,7 @@ export function TripperSettingsHeroCard({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200" data-component="TripperSettingsHeroCard">
       <div className="relative aspect-[16/9] w-full">
         {/* Image surface — plain object-cover, no client-side position math:
             the server bakes the final 16:9 crop, this just displays it. */}

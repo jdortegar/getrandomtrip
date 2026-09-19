@@ -8,7 +8,7 @@ interface TripCardProps {
 
 const TripCard: React.FC<TripCardProps> = ({ title, imageUrl }) => {
   return (
-    <div className="relative overflow-hidden h-96 w-full cursor-pointer group">
+    <div className="relative overflow-hidden h-96 w-full cursor-pointer group" data-component="TripCard">
       <Image
         src={imageUrl}
         alt={title}

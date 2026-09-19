@@ -59,7 +59,7 @@ export function LogisticsAccommodationStep({ copy, form, onChange, peek }: Props
     peek?.(index, key) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="LogisticsAccommodationStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>

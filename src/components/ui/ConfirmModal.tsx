@@ -70,7 +70,7 @@ export function ConfirmModal({
       open={open}
       onOpenChange={onOpenChange}
       showCloseButton
-      className="max-w-md"
+      className="max-w-md" data-component="ConfirmModal"
     >
       <DialogHeader>
         <div

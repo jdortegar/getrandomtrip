@@ -18,7 +18,7 @@ export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
   const copy = useDictionary((d) => d.trippers.grid);
 
   return (
-    <div className=" py-16 container mx-auto px-4 md:px-20">
+    <div className=" py-16 container mx-auto px-4 md:px-20" data-component="TopTrippersGrid">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {trippers.map((tripper, i) => (
           <motion.div

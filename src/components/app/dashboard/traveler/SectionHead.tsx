@@ -15,7 +15,7 @@ interface SectionHeadProps {
  */
 export function SectionHead({ eyebrow, heading, lede }: SectionHeadProps) {
   return (
-    <div className={styles.sectionHead}>
+    <div className={styles.sectionHead} data-component="SectionHead">
       <div>
         <p className={styles.eyebrow}>{eyebrow}</p>
         <h2 className={`${styles.heading} ${styles.headingSection} ${styles.cond}`}>

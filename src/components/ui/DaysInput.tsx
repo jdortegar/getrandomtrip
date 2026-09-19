@@ -39,7 +39,7 @@ export function DaysInput({ id, hintTemplate, label, value, onChange, className,
   }
 
   return (
-    <div className={`flex flex-col gap-2 ${className ?? "w-fit"}`}>
+    <div className={`flex flex-col gap-2 ${className ?? "w-fit"}`} data-component="DaysInput">
       <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
         {label}
       </label>

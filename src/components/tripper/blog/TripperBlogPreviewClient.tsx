@@ -105,12 +105,12 @@ export function TripperBlogPreviewClient() {
   }, [post?.coverUrl, post?.blocks]);
 
   if (loading || sessionStatus === "loading") {
-    return <LoadingSpinner />;
+    return <LoadingSpinner data-component="TripperBlogPreviewClient" />;
   }
 
   if (error || !post) {
     return (
-      <Section>
+      <Section data-component="TripperBlogPreviewClient">
         <div className="rt-container max-w-3xl py-12">
           <p className="mb-6 text-sm text-neutral-600">
             {error ?? tripperBlogs.composer.editNotFound.descriptionFallback}
@@ -137,7 +137,7 @@ export function TripperBlogPreviewClient() {
   })();
 
   return (
-    <div className="flex flex-col mb-10">
+    <div className="flex flex-col mb-10" data-component="TripperBlogPreviewClient">
       <div className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-950">
         {tripperBlogs.previewPage.banner}
         {" · "}

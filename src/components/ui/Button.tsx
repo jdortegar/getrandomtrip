@@ -82,7 +82,7 @@ function Button({
       className={cn(buttonVariants({ className, size, variant }))}
       data-slot="button"
       onClick={handleClick}
-      {...props}
+      {...props} data-component="Button"
     />
   );
 }

@@ -116,7 +116,7 @@ export default function CitySelector({
   };
 
   return (
-    <div className={cn("relative", containerClassName)} ref={ref}>
+    <div className={cn("relative", containerClassName)} ref={ref} data-component="CitySelector">
       <div className="relative">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
         <Input

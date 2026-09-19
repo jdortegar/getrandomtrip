@@ -40,7 +40,7 @@ export function FaqStep({ copy, draft, onChange, changedFieldSet, peek }: Props)
   }
 
   return (
-    <div className={`space-y-5 ${changedFieldSet?.has("faq") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
+    <div className={`space-y-5 ${changedFieldSet?.has("faq") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`} data-component="FaqStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>

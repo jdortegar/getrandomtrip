@@ -137,7 +137,7 @@ export default function BudgetStep({
     : accordionValue;
 
   return (
-    <div>
+    <div data-component="BudgetStep">
       <Accordion
         collapsible
         onValueChange={onAccordionValueChange}

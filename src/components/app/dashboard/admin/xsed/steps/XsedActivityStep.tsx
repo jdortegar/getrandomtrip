@@ -57,7 +57,7 @@ export function XsedActivityStep({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="XsedActivityStep">
       <XsedActivityEntryFields
         idPrefix="xsed-activity"
         namePlaceholder={copy.activityNamePlaceholder}

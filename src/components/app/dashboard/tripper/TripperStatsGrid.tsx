@@ -58,7 +58,7 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
   ];
 
   return (
-    <section>
+    <section data-component="TripperStatsGrid">
       {/* Brand section header */}
       <div className="mb-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

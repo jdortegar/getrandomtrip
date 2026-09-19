@@ -39,7 +39,7 @@ export function TextAreaInput({
   const length = typeof displayValue === "string" ? displayValue.length : 0;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-component="TextAreaInput">
       <label className={formLabelClass} htmlFor={id}>
         {label}
       </label>

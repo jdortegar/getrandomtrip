@@ -40,7 +40,7 @@ export default function AvatarWithFallback({
 
   if (!src || imageError) {
     return (
-      <div className={fallbackClasses}>
+      <div className={fallbackClasses} data-component="AvatarWithFallback">
         <User
           className={`${size === "sm" ? "w-4 h-4" : size === "md" ? "w-6 h-6" : size === "lg" ? "w-8 h-8" : "w-12 h-12"}`}
         />
@@ -49,7 +49,7 @@ export default function AvatarWithFallback({
   }
 
   return (
-    <div className={`relative ${baseClasses} overflow-hidden`}>
+    <div className={`relative ${baseClasses} overflow-hidden`} data-component="AvatarWithFallback">
       {imageLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
       )}

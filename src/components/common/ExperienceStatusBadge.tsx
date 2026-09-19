@@ -38,5 +38,5 @@ export function ExperienceStatusBadge({
 }: ExperienceStatusBadgeProps) {
   const styles = STATUS_STYLES[status] ?? STATUS_STYLES.DRAFT;
 
-  return <StatusIndicatorBadge label={label} styles={styles} />;
+  return <StatusIndicatorBadge label={label} styles={styles} data-component="ExperienceStatusBadge" />;
 }

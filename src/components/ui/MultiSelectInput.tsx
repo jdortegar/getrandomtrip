@@ -57,7 +57,7 @@ export function MultiSelectInput({
     : options;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-component="MultiSelectInput">
       {label && (
         <label
           className="block font-normal text-gray-600 text-base"

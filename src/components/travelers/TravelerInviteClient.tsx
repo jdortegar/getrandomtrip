@@ -37,7 +37,7 @@ export default function TravelerInviteClient({
   token,
 }: TravelerInviteClientProps) {
   if (!resolution.ok) {
-    return <ErrorCard copy={copy} reason={resolution.reason} />;
+    return <ErrorCard copy={copy} reason={resolution.reason} data-component="TravelerInviteClient" />;
   }
 
   return (
@@ -46,7 +46,7 @@ export default function TravelerInviteClient({
       buyerFirstName={resolution.buyerFirstName}
       copy={copy}
       locale={locale}
-      token={token}
+      token={token} data-component="TravelerInviteClient"
     />
   );
 }

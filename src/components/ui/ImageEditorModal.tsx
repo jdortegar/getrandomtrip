@@ -140,7 +140,7 @@ export function ImageEditorModal({
   }
 
   return (
-    <Modal className="max-w-3xl gap-4 p-6" onOpenChange={onOpenChange} open={open}>
+    <Modal className="max-w-3xl gap-4 p-6" onOpenChange={onOpenChange} open={open} data-component="ImageEditorModal">
       <DialogHeader>
         <DialogTitle>{copy.title}</DialogTitle>
       </DialogHeader>

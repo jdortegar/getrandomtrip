@@ -21,7 +21,7 @@ export default function TripperCard({
   className,
 }: TripperCardProps) {
   return (
-    <Link href={`/trippers/${href}`} className="block relative">
+    <Link href={`/trippers/${href}`} className="block relative" data-component="TripperCard">
       <div
         className={cn(
           "group rounded-lg overflow-hidden shadow-xl bg-white aspect-269/230 w-full relative block origin-center",

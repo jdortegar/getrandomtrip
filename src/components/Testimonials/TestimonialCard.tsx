@@ -24,7 +24,7 @@ export function TestimonialCard({
   const initial = getInitial(author);
 
   return (
-    <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 text-center shadow-sm">
+    <div className="relative flex h-full min-h-[250px] flex-col justify-around overflow-visible rounded-md border border-neutral-200 bg-white p-6 text-center shadow-sm" data-component="TestimonialCard">
       <p className="mb-6 font-barlow text-lg leading-relaxed text-ink">
         &quot;{quote}&quot;
       </p>

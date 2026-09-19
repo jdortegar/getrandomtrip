@@ -8,7 +8,7 @@ export function XsedIntro() {
   const copy = useDictionary((d) => d.home.exploration.xsedIntro);
 
   return (
-    <div className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg">
+    <div className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg" data-component="XsedIntro">
       {/* Background image */}
       <div className="relative">
         <div

@@ -17,7 +17,7 @@ export default function BackgroundVideo({
 }: Props) {
   return (
     <div
-      className={clsx("absolute inset-0 overflow-hidden isolate", className)}
+      className={clsx("absolute inset-0 overflow-hidden isolate", className)} data-component="BackgroundVideo"
     >
       <video
         className="h-full w-full object-cover pointer-events-none"

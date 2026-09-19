@@ -24,7 +24,7 @@ export function RowActions({
   onEdit,
 }: RowActionsProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1" data-component="RowActions">
       {editHref ? (
         <Button
           asChild

@@ -52,7 +52,7 @@ export function PriceOverrideGrid({
   onResetCell,
 }: PriceOverrideGridProps) {
   return (
-    <div className={styles.panel}>
+    <div className={styles.panel} data-component="PriceOverrideGrid">
       <div className={styles.panelBody}>
         <div className={styles.sectionHeadingRow}>
           <div>

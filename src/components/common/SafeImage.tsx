@@ -101,7 +101,7 @@ export default function SafeImage({
             : { width: width ?? 800, height: height ?? 600 }
         }
         role="img"
-        aria-label={alt}
+        aria-label={alt} data-component="SafeImage"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -127,7 +127,7 @@ export default function SafeImage({
         onError={handleError}
         sizes={sizes}
         priority={priority}
-        {...rest}
+        {...rest} data-component="SafeImage"
       />
     ) : (
       <Image
@@ -139,7 +139,7 @@ export default function SafeImage({
         onError={handleError}
         sizes={sizes}
         priority={priority}
-        {...rest}
+        {...rest} data-component="SafeImage"
       />
     );
   }
@@ -155,7 +155,7 @@ export default function SafeImage({
       unoptimized={true} // Since this is a fallback, we don't want Next.js optimization
       style={
         fill ? { width: "100%", height: "100%", objectFit: "cover" } : undefined
-      }
+      } data-component="SafeImage"
     />
   );
 }

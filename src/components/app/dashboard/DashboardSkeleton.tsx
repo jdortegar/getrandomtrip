@@ -35,7 +35,7 @@ interface DashboardSkeletonProps {
 export function DashboardSkeleton({ variant = "full" }: DashboardSkeletonProps) {
   if (variant === "home") {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8" data-component="DashboardSkeleton">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           <StatCardSkeleton />
           <StatCardSkeleton />
@@ -49,7 +49,7 @@ export function DashboardSkeleton({ variant = "full" }: DashboardSkeletonProps) 
 
   if (variant === "trips") {
     return (
-      <div className="space-y-8">
+      <div className="space-y-8" data-component="DashboardSkeleton">
         <div className="space-y-2">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="h-8 w-48" />
@@ -62,7 +62,7 @@ export function DashboardSkeleton({ variant = "full" }: DashboardSkeletonProps) 
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-component="DashboardSkeleton">
       {/* Stats grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <StatCardSkeleton />

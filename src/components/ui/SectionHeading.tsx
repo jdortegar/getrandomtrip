@@ -11,7 +11,7 @@ export default function SectionHeading({
 }) {
   const alignCls = align === "center" ? "text-center mx-auto" : "text-left";
   return (
-    <header className={`${alignCls} max-w-prose`}>
+    <header className={`${alignCls} max-w-prose`} data-component="SectionHeading">
       {eyebrow && (
         <div className="mb-2 text-xs uppercase tracking-[0.18em] text-ink">
           {eyebrow}

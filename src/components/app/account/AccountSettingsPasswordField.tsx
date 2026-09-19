@@ -34,7 +34,7 @@ export function AccountSettingsPasswordField({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       type="password"
-      value={value}
+      value={value} data-component="AccountSettingsPasswordField"
     />
   );
 }

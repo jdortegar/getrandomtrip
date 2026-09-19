@@ -16,7 +16,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   inputClassName = "",
 }) => {
   return (
-    <div>
+    <div data-component="DatePicker">
       <label
         htmlFor={label.toLowerCase().replace(/\s/g, "-")}
         className="block text-sm font-medium text-gray-700 mb-1"

@@ -28,7 +28,7 @@ export function XsedActivityEntryFields({ idPrefix, namePlaceholder, entry, onCh
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="XsedActivityEntryFields">
       <div className="grid grid-cols-2 gap-4">
         <FormField
           id={`${idPrefix}-name`}

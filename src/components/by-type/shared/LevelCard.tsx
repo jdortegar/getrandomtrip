@@ -124,7 +124,7 @@ export default function LevelCard({
         className,
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
-      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
+      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }} data-component="LevelCard"
     >
       {/* Featured Badge - Top Left */}
       {featured && (

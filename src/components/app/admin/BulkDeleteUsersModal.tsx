@@ -50,7 +50,7 @@ export function BulkDeleteUsersModal({
         }
       }}
       open={open}
-      showCloseButton
+      showCloseButton data-component="BulkDeleteUsersModal"
     >
       <DialogHeader className="shrink-0 border-b border-gray-200 px-6 py-4 text-left">
         <div className="flex items-center gap-3">

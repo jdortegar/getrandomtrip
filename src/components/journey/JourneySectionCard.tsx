@@ -25,7 +25,7 @@ export function JourneySectionCard({
   const hasBody = Boolean(children);
 
   return (
-    <section className={cn("bg-white rounded-lg shadow-md", className)}>
+    <section className={cn("bg-white rounded-lg shadow-md", className)} data-component="JourneySectionCard">
       <header className="flex items-center justify-between px-6 py-5">
         <div className="min-w-0">
           <h2 className="text-xl font-medium font-barlow text-ink">

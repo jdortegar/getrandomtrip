@@ -49,7 +49,7 @@ export function UsersTable({
   return (
     <TableLoadingOverlay
       className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-      isLoading={isLoading}
+      isLoading={isLoading} data-component="UsersTable"
     >
       {error && (
         <div

@@ -89,7 +89,7 @@ export default function CountrySelector({
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} data-component="CountrySelector">
       <div className="relative">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
         <Input

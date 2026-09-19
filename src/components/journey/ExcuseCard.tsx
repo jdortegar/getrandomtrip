@@ -46,7 +46,7 @@ export default function ExcuseCard({
         "@container group relative block origin-center aspect-[293.95/347.82] w-full py-3 cursor-pointer",
         className,
       )}
-      onClick={onClick}
+      onClick={onClick} data-component="ExcuseCard"
     >
       {selected && (
         <div className="absolute right-[-9.8px] top-0 z-30 @[250px]:right-[-14px]">

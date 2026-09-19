@@ -26,7 +26,7 @@ const AddonOption: React.FC<AddonOptionProps> = ({
             ? "border-blue-500 bg-blue-50 ring-2 ring-blue-500"
             : "border-gray-300 bg-white hover:border-gray-100"
         }`}
-      onClick={() => onToggle(id)}
+      onClick={() => onToggle(id)} data-component="AddonOption"
     >
       <div>
         <h4 className="text-lg font-medium text-gray-800">{title}</h4>

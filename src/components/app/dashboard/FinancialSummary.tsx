@@ -13,7 +13,7 @@ export function FinancialSummary({
   stats,
 }: FinancialSummaryProps) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm" data-component="FinancialSummary">
       <h3 className="text-lg font-semibold text-ink mb-4">
         {copy.financialSummary.title}
       </h3>

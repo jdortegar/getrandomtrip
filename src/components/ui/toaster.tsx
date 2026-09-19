@@ -39,7 +39,7 @@ export function Toaster() {
     <>
       {/* toast() with no explicit type renders no [data-icon] node at all, so the
           "default" tone is drawn via ::before instead of the icons prop. */}
-      <style>{`
+      <style data-component="Toaster">{`
         [data-sonner-toast]:not([data-type])::before {
           content: "";
           display: block;

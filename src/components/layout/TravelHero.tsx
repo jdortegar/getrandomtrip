@@ -73,7 +73,7 @@ export function TravelHero({
       className={cn(
         "relative min-h-screen flex items-center justify-center overflow-hidden",
         className,
-      )}
+      )} data-component="TravelHero"
     >
       {/* Background Image */}
       {backgroundImage && (

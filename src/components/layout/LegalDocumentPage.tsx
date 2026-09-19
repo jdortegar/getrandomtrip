@@ -32,7 +32,7 @@ export function LegalDocumentPage({
         className={cn(
           "container mx-auto max-w-4xl px-4 py-12 text-neutral-700",
           "md:px-20 md:py-16",
-        )}
+        )} data-component="LegalDocumentPage"
       >
         <div className="space-y-8">
           {doc.sections.map((section, index) => (

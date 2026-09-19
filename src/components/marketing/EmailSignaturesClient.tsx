@@ -85,7 +85,7 @@ export function EmailSignaturesClient({
         className={cn(
           "container mx-auto max-w-3xl px-4 py-12 text-neutral-700",
           "md:px-20 md:py-16",
-        )}
+        )} data-component="EmailSignaturesClient"
       >
         <div className="space-y-4 font-barlow leading-relaxed">
           {copy.introParagraphs.map((paragraph, index) => (

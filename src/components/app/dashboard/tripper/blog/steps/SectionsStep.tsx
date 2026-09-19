@@ -43,7 +43,7 @@ export function SectionsStep({ copy, draft, onChange, changedFieldSet, peek }: P
   }
 
   return (
-    <div className={`space-y-5 ${changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
+    <div className={`space-y-5 ${changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`} data-component="SectionsStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[1]?.substeps[0]?.description}
       </p>

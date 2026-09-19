@@ -9,12 +9,12 @@ export default function HeaderGate() {
   const pathNoLocale = pathWithoutLocale(pathname);
 
   if (pathNoLocale === "/experiences/build/basic-config") {
-    return <Navbar variant="solid" />;
+    return <Navbar variant="solid" data-component="HeaderGate" />;
   }
 
   if (pathNoLocale.startsWith("/experiences/by-type")) {
     return null;
   }
 
-  return <Navbar />;
+  return <Navbar data-component="HeaderGate" />;
 }

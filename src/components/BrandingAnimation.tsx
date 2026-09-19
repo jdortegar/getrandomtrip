@@ -41,7 +41,7 @@ function BrandingAnimation({
             delayChildren: textAnimationDelay,
           },
         },
-      }}
+      }} data-component="BrandingAnimation"
     >
       <motion.span className="font-barlow-condensed text-[16px] md:text-[18px] lg:text-[30px] font-semibold  uppercase tracking-[6px] inline-flex">
         {BRANDING_TEXT.split("").map((char, index) => (

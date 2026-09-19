@@ -16,7 +16,7 @@ export default function ProgressBar({
       aria-valuemin={1}
       aria-valuenow={currentStep}
       className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-200"
-      role="progressbar"
+      role="progressbar" data-component="ProgressBar"
     >
       <div
         className="h-full rounded-full bg-primary transition-all duration-300"

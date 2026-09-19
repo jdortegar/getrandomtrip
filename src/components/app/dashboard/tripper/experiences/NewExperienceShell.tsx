@@ -627,7 +627,7 @@ export function NewExperienceShell({
   const showTripperNoteField = shouldShowTripperNoteField(mode);
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50" data-component="NewExperienceShell">
       <JourneyContentNavigation
         activeTab={activeTab}
         className="py-6"

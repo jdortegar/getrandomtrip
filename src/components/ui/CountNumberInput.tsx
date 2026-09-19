@@ -47,7 +47,7 @@ export function CountNumberInput({
   }
 
   return (
-    <div className={`flex flex-col gap-2 ${className ?? "w-fit"}`}>
+    <div className={`flex flex-col gap-2 ${className ?? "w-fit"}`} data-component="CountNumberInput">
       <label
         className="block font-normal text-gray-600 text-base"
         htmlFor={id}

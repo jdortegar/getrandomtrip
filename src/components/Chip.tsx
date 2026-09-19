@@ -59,7 +59,7 @@ export default function Chip({
         variantClasses[variant],
         disabledClasses,
         className,
-      )}
+      )} data-component="Chip"
     >
       {children}
     </button>

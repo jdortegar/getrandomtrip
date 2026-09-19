@@ -115,7 +115,7 @@ export function BlogFilterHeader({
       className={cn(
         "flex flex-col gap-3 border-b border-neutral-200 pb-4 md:flex-row md:flex-wrap md:items-center",
         className,
-      )}
+      )} data-component="BlogFilterHeader"
     >
       <FilterDropdownCard
         subtitle={labels.travelTypeSubtitle}

@@ -23,7 +23,7 @@ export function FaqBlock({ copy }: FaqBlockProps) {
   }));
 
   return (
-    <Section className="pt-0!">
+    <Section className="pt-0!" data-component="FaqBlock">
       <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between text-left w-full flex-wrap">
         <div className="max-w-2xl font-barlow-condensed lg:whitespace-nowrap">
           <p className=" text-xl font-light uppercase tracking-widest text-xsed">

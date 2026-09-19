@@ -36,11 +36,11 @@ export function DashboardUnreadDot({
 
   if (variant === "inline") {
     return (
-      <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-red-500" />
+      <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-red-500" data-component="DashboardUnreadDot" />
     );
   }
 
   return (
-    <span className="absolute -right-0.25 -top-0.25 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
+    <span className="absolute -right-0.25 -top-0.25 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" data-component="DashboardUnreadDot" />
   );
 }

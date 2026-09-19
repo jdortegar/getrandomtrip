@@ -29,7 +29,7 @@ export default function BlogArticle({
   const Heading = headingLevel;
 
   return (
-    <article className={cn("text-left", className)}>
+    <article className={cn("text-left", className)} data-component="BlogArticle">
       {showTitle ? (
         <Heading className={HEADING_CLASSNAME[headingLevel]}>{title}</Heading>
       ) : title ? (

@@ -111,7 +111,7 @@ export default function Navbar({
 
   return (
     <>
-      <header className={headerClass} data-site-header>
+      <header className={headerClass} data-site-header data-component="Navbar">
         <nav className="rt-container h-16 flex items-center justify-between gap-1">
           <Link
             aria-label={nav?.ariaLabelLogo ?? "Randomtrip"}

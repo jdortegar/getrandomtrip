@@ -66,7 +66,7 @@ export function TripFulfillmentHeader({
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }} data-component="TripFulfillmentHeader">
         <Link className={styles.backLink} href={`/${locale}/dashboard/admin/trip-requests`}>
           <ArrowLeft />
           {copy.back}
@@ -81,7 +81,7 @@ export function TripFulfillmentHeader({
         </button>
       </div>
 
-      <div className={styles.header}>
+      <div className={styles.header} data-component="TripFulfillmentHeader">
         <div className={styles.headerTitleBlock}>
           <p className={styles.eyebrow}>{copy.eyebrow}</p>
           <h1 className={`${styles.pageTitle} ${styles.cond}`}>{title}</h1>

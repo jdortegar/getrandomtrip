@@ -38,7 +38,7 @@ export default function TabsHost({ data }: { data: PublicProfile }) {
   return (
     <>
       <TabsNav onChange={setActiveTab} />
-      <div className="mt-6">
+      <div className="mt-6" data-component="TabsHost">
         <ActiveComponent data={data} />
       </div>
     </>

@@ -24,7 +24,7 @@ export function FeatureQuoteStep({ copy, draft, onChange, changedFieldSet, peek 
   const blocksRing = changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="FeatureQuoteStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[1]?.description}
       </p>

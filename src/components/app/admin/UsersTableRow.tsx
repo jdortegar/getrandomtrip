@@ -53,7 +53,7 @@ export function UsersTableRow({
     user.roles.includes("TRIPPER") || user.roles.includes("ADMIN");
   const isInviting = invitingId === user.id;
   return (
-    <tr className="transition-colors hover:bg-gray-50">
+    <tr className="transition-colors hover:bg-gray-50" data-component="UsersTableRow">
       <td className="px-5 py-4">
         <input
           aria-label={copy.selectRow}

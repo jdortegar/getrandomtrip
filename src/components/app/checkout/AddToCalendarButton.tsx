@@ -70,7 +70,7 @@ export function AddToCalendarButton({
       className="flex items-center gap-1.5 text-blue-500 underline underline-offset-2"
       href={href}
       rel="noopener noreferrer"
-      target="_blank"
+      target="_blank" data-component="AddToCalendarButton"
     >
       <Calendar className="h-4 w-4 shrink-0 text-gray-500" />
       {formattedDate}

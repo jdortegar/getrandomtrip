@@ -84,7 +84,7 @@ export default function ExcuseStep({
 
   if (shouldShowNoExcuseMessage) {
     return (
-      <div className="min-w-0 w-full">
+      <div className="min-w-0 w-full" data-component="ExcuseStep">
         <div className="rounded-xl border border-neutral-200 bg-white p-8 text-center">
           <p className="text-gray-600">{labels.refineDetailsStepDescription}</p>
           <p className="mt-2 text-sm text-gray-500">
@@ -96,7 +96,7 @@ export default function ExcuseStep({
   }
 
   return (
-    <div className="min-w-0 w-full">
+    <div className="min-w-0 w-full" data-component="ExcuseStep">
       <Accordion
         collapsible
         onValueChange={onAccordionValueChange}

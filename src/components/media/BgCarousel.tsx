@@ -28,7 +28,7 @@ export default function BgCarousel({
   }, [interval, images.length]);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10">
+    <div className="pointer-events-none fixed inset-0 -z-10" data-component="BgCarousel">
       {images.map((src, i) => (
         <Img
           key={src + i}

@@ -231,7 +231,7 @@ export function ExperienceFormContent({
     : getMissingFields(activeTab, form, copy.fields as Record<string, string>);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-component="ExperienceFormContent">
       <Accordion
         type="single"
         collapsible
