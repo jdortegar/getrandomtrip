@@ -9,8 +9,9 @@ export type BlogShellMode = "tripper" | "adminCreate" | "adminEdit" | "adminRead
 export function resolveBlogPublishRedirectPath(
   mode: BlogShellMode,
   locale: string,
+  source?: "TRIPPER" | "RANDOMTRIP",
 ): string {
-  return mode === "adminCreate"
+  return mode === "adminCreate" || source === "RANDOMTRIP"
     ? `/${locale}/dashboard/admin/blog`
     : `/${locale}/dashboard/tripper/blog`;
 }
@@ -70,11 +71,16 @@ export function resolveFinalizeCopy(
 
 /**
  * The tripper-note textarea (submit confirm modal) only makes sense when a
- * tripper is addressing an admin reviewer — admin-created (RANDOMTRIP) posts
- * have no reviewer to note, so it is hidden for `adminCreate` only.
+ * tripper is addressing an admin reviewer — a RANDOMTRIP post has no
+ * reviewer (it publishes directly, skipping review) regardless of which
+ * mode/page finalizes it, so it's hidden for `adminCreate` or any
+ * RANDOMTRIP-sourced post.
  */
-export function shouldShowTripperNoteField(mode: BlogShellMode): boolean {
-  return mode !== "adminCreate";
+export function shouldShowTripperNoteField(
+  mode: BlogShellMode,
+  source?: "TRIPPER" | "RANDOMTRIP",
+): boolean {
+  return mode !== "adminCreate" && source !== "RANDOMTRIP";
 }
 
 /**

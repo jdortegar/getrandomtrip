@@ -320,7 +320,7 @@ export function NewBlogPostShell({
       if (!draftIdRef.current) throw new Error("Failed to save draft");
 
       if (isEditingLiveRandomtrip) {
-        router.push(resolveBlogPublishRedirectPath(mode, locale));
+        router.push(resolveBlogPublishRedirectPath(mode, locale, source));
         return;
       }
 
@@ -342,7 +342,7 @@ export function NewBlogPostShell({
       // Stay in the loading state through navigation — router.push doesn't
       // synchronously unmount this component, so resetting isFinishing here
       // would flash the button back to its idle label for a moment first.
-      router.push(resolveBlogPublishRedirectPath(mode, locale));
+      router.push(resolveBlogPublishRedirectPath(mode, locale, source));
     } catch (err) {
       console.error(err);
       setSubmitFailed(true);
@@ -445,7 +445,8 @@ export function NewBlogPostShell({
         actionBar: { ...dict.actionBar, submitForReview: resolvedFinalizeCopy.submitLabel },
       }
     : dict;
-  const showTripperNoteField = shouldShowTripperNoteField(mode) && !isEditingLiveRandomtrip;
+  const showTripperNoteField =
+    shouldShowTripperNoteField(mode, source) && !isEditingLiveRandomtrip;
 
   return (
     <div className="bg-gray-50" data-component="NewBlogPostShell">
