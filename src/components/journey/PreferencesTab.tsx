@@ -64,7 +64,7 @@ export default function PreferencesTab({
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10" data-component="PreferencesTab">
       {/* Transporte (obligatorio) */}
       <div className="space-y-6 bg-white p-4 rounded-lg border border-gray-200">
         <div className="flex justify-center">

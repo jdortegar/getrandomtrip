@@ -71,13 +71,13 @@ export function TravelerTripsPageClient({
   }
 
   if (loading) {
-    return <DashboardSkeleton variant="trips" />;
+    return <DashboardSkeleton variant="trips" data-component="TravelerTripsPageClient" />;
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <div className="space-y-10 py-10 text-left">
+    <div className="space-y-10 py-10 text-left" data-component="TravelerTripsPageClient">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {pageCopy.eyebrow}

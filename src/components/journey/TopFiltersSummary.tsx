@@ -160,7 +160,7 @@ export default function TopFiltersSummary() {
 
   if (onlyTransport) {
     return (
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between" data-component="TopFiltersSummary">
         <div className="flex flex-wrap gap-2">
           {items.map((it) => (
             <span key={it.key}>{it.node}</span>
@@ -179,7 +179,7 @@ export default function TopFiltersSummary() {
   }
 
   return (
-    <div className="mb-3 flex items-center justify-between">
+    <div className="mb-3 flex items-center justify-between" data-component="TopFiltersSummary">
       <div className="flex flex-wrap gap-2">
         {visible.map((it) => (
           <button

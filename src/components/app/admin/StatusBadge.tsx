@@ -40,7 +40,7 @@ export function StatusBadge({
         "inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em]",
         badge,
         className,
-      )}
+      )} data-component="StatusBadge"
     >
       <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dot)} />
       {label}

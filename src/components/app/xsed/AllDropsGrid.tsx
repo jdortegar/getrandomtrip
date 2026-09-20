@@ -38,7 +38,7 @@ export function AllDropsGrid({
   }
 
   return (
-    <Section>
+    <Section data-component="AllDropsGrid">
       {/* Filter bar */}
       {/* <div className="mb-8 flex items-center gap-3">
         <button

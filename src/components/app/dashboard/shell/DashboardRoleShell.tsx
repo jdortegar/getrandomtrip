@@ -26,7 +26,7 @@ export function DashboardRoleShell({ role }: DashboardRoleShellProps) {
         : buildAdminNavTabs(adminNav, locale);
 
   return (
-    <div className="bg-neutral-50 pb-6 pt-8 sm:pb-10 sm:pt-16">
+    <div className="bg-neutral-50 pb-6 pt-8 sm:pb-10 sm:pt-16" data-component="DashboardRoleShell">
       <div className="rt-container">
         <DashboardPageHeading role={role} />
       </div>

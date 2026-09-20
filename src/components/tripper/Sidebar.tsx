@@ -56,7 +56,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-neutral-900 text-white p-4 flex flex-col shadow-lg">
+    <aside className="fixed left-0 top-0 h-full w-64 bg-neutral-900 text-white p-4 flex flex-col shadow-lg" data-component="Sidebar">
       {/* Logo */}
       <div className="flex items-center justify-center h-16 mb-6">
         <Image

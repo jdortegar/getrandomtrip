@@ -157,7 +157,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             : null;
 
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5">
+      <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5" data-component="TravelerRow">
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-sm font-semibold text-ink">
             <span

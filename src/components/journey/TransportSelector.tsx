@@ -155,7 +155,7 @@ function TransportSelector({
   }, [commitSwap, draggedId, dragOverId]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-component="TransportSelector">
       <div className="flex flex-wrap items-center justify-center gap-4">
         {orderedOptions.map((id, index) => {
           const option = optionsById[id];

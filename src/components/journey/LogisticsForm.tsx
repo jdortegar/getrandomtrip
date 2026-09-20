@@ -43,7 +43,7 @@ export default function LogisticsForm() {
   };
 
   return (
-    <div className="mt-4 space-y-4">
+    <div className="mt-4 space-y-4" data-component="LogisticsForm">
       {/* Origen -> usamos city.name para no romper el tipo Logistics */}
       <div>
         <label

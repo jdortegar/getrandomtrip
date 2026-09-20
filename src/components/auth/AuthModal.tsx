@@ -402,7 +402,7 @@ export default function AuthModal({
         if (e.target === e.currentTarget) {
           handleClose();
         }
-      }}
+      }} data-component="AuthModal"
     >
       <div className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl border border-gray-200">
         {/* Close button */}

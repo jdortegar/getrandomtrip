@@ -39,7 +39,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
     const { displayValue, isEmpty } = resolvePeekDisplay(peek, value);
 
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2" data-component="FormField">
         <label className={formLabelClass} htmlFor={id}>
           {label}
         </label>
@@ -99,7 +99,7 @@ export const FormSelectField = React.forwardRef<
   ref,
 ) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-component="FormSelectField">
       <label className={formLabelClass} htmlFor={id}>
         {label}
       </label>

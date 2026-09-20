@@ -12,7 +12,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   return (
     <button
       {...props}
-      className={`bg-[#D97E4A] text-white font-bold uppercase tracking-wider py-3 px-8 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary focus:ring-[#D4AF37] disabled:opacity-50 disabled:scale-100 ${className}`}
+      className={`bg-[#D97E4A] text-white font-bold uppercase tracking-wider py-3 px-8 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-primary focus:ring-[#D4AF37] disabled:opacity-50 disabled:scale-100 ${className}`} data-component="PrimaryButton"
     >
       {children}
     </button>

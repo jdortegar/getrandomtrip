@@ -265,7 +265,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
           }
           backgroundImageUrl={blog.coverUrl ?? ""}
           motto={quoteBlock?.text || blog.author.motto || ""}
-          specialization={blog.author.specialization}
+          specialization={blog.author.specialization} data-component="BlogPostClient"
         />
       )}
 
@@ -282,7 +282,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
             href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
             subtitle: "Explora más contenido",
             title: "Ver Todo",
-          }}
+          }} data-component="BlogPostClient"
         />
       )}
 
@@ -302,7 +302,7 @@ export function BlogPostErrorView({
   locale: string;
 }) {
   return (
-    <Section>
+    <Section data-component="BlogPostErrorView">
       <div className="mx-auto max-w-4xl">
         <div className="py-12 text-center">
           <p className="mb-4 text-ink">
@@ -323,7 +323,7 @@ export function BlogPostErrorView({
 
 export function BlogPostLoading() {
   return (
-    <Section>
+    <Section data-component="BlogPostLoading">
       <div className="mx-auto max-w-4xl">
         <LoadingSpinner />
       </div>

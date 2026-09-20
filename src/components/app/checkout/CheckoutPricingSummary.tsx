@@ -50,7 +50,7 @@ export function CheckoutPricingSummary({
   const discountedTotal = totalTrip - promoDiscount;
 
   return (
-    <div className="mt-6 border-t border-gray-200 pt-4">
+    <div className="mt-6 border-t border-gray-200 pt-4" data-component="CheckoutPricingSummary">
       <div className="flex items-start justify-between gap-4">
         <p className="font-barlow text-lg font-bold text-ink">
           {checkoutCopy.summaryHeroPriceCaption}

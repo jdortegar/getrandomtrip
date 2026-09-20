@@ -18,7 +18,7 @@ export default function BgVideo({
   blur = false,
 }: Props) {
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10">
+    <div className="pointer-events-none fixed inset-0 -z-10" data-component="BgVideo">
       <video
         autoPlay
         loop

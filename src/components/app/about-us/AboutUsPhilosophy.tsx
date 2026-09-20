@@ -31,7 +31,7 @@ export function AboutUsPhilosophy({
   imageClassName,
 }: AboutUsPhilosophyProps) {
   return (
-    <Section className="py-0" id={id}>
+    <Section className="py-0" id={id} data-component="AboutUsPhilosophy">
       <div className="rt-container grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
         {/* Image */}
         <div

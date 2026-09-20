@@ -16,7 +16,7 @@ interface Props {
 // XsedSectionFields, which owns the rest of that item's title/content/photos.
 export function XsedContactFields({ idPrefix, contact, onChange, copy }: Props) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="XsedContactFields">
       <div className="grid grid-cols-2 gap-4">
         <FormField
           id={`${idPrefix}-contact-name`}

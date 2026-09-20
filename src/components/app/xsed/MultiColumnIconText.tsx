@@ -14,7 +14,7 @@ const ICONS: Record<XsedPageDict["iconText"]["items"][number]["icon"], string> =
 
 export function MultiColumnIconText({ content }: MultiColumnIconTextProps) {
   return (
-    <section className="bg-[#D97E4A] py-20 text-white">
+    <section className="bg-[#D97E4A] py-20 text-white" data-component="MultiColumnIconText">
       <div className="rt-container">
         <div className="grid grid-cols-1 gap-14 md:grid-cols-3 md:gap-16">
           {content.items.map((item) => (

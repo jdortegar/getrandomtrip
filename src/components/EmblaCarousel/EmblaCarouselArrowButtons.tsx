@@ -69,7 +69,7 @@ export const PrevButton = (props: PropType) => {
       )}
       disabled={disabled}
       type="button"
-      {...restProps}
+      {...restProps} data-component="PrevButton"
     >
       <ChevronLeft className="size-5 text-white" />
     </button>
@@ -89,7 +89,7 @@ export const NextButton = (props: PropType) => {
       )}
       disabled={disabled}
       type="button"
-      {...restProps}
+      {...restProps} data-component="NextButton"
     >
       <ChevronRight className="size-5 text-white" />
     </button>

@@ -21,7 +21,6 @@ interface TypePlannerProps {
   allowedLevelIds?: string[];
   compact?: boolean;
   content: TypePlannerContent;
-  minimizeAllFeatures?: boolean;
   navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
@@ -36,7 +35,6 @@ export default function TypePlanner({
   allowedLevelIds,
   compact = false,
   content,
-  minimizeAllFeatures = false,
   navigateOnCardClick = false,
   onSelect,
   selectedLevel: externalSelectedLevel,
@@ -89,7 +87,6 @@ export default function TypePlanner({
               <LevelCard
                 featured={isFeatured}
                 level={level}
-                minimizeAllFeatures={minimizeAllFeatures}
                 navigateOnCardClick={navigateOnCardClick}
                 onSelect={handleLevelSelect}
                 selected={selectedLevel === level.id}
@@ -126,7 +123,7 @@ export default function TypePlanner({
       subtitle={content.subtitle}
       title={content.title}
       id="type-planner"
-      fullWidth
+      fullWidth data-component="TypePlanner"
     >
       {contentElement}
     </Section>

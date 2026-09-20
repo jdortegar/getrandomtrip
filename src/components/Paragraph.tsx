@@ -19,7 +19,7 @@ export default function Paragraph({
   className = "",
 }: ParagraphProps) {
   return (
-    <Section eyebrow={content.eyebrow} title={content.title}>
+    <Section eyebrow={content.eyebrow} title={content.title} data-component="Paragraph">
       <div>
         <div className="prose prose-md md:max-w-3/4 mx-auto text-center border-gray-200 text-gray-700">
           {content.paragraphs.map((paragraph, index) => (
@@ -32,7 +32,7 @@ export default function Paragraph({
           ))}
         </div>
         <div className="flex items-center justify-center mt-20">
-          <BrandingAnimation className=" text-secondary" />
+          <BrandingAnimation className="text-primary" />
         </div>
       </div>
     </Section>

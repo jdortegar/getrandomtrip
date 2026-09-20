@@ -50,7 +50,7 @@ export default function ActivityFeed() {
       className="bg-neutral-800 p-6 rounded-2xl shadow-sm border border-neutral-700 mt-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
+      transition={{ duration: 0.5, delay: 0.2 }} data-component="ActivityFeed"
     >
       <h3 className="text-xl font-bold text-white mb-4">Última Actividad</h3>
       <ul className="space-y-4">

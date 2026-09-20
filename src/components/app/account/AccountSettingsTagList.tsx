@@ -40,7 +40,7 @@ export function AccountSettingsTagList({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2" data-component="AccountSettingsTagList">
       {items.map((item) => (
         <RemovableTag
           key={item}

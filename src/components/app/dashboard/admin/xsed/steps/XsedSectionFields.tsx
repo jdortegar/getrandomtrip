@@ -51,7 +51,7 @@ export function XsedSectionFields({ idPrefix, entry, onChange, copy, imageCopy }
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-component="XsedSectionFields">
       <FormField
         id={`${idPrefix}-title`}
         label={copy.title}

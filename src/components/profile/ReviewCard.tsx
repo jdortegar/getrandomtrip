@@ -1,7 +1,7 @@
 type Props = { title: string; rating: number; excerpt: string; date?: string };
 export default function ReviewCard({ title, rating, excerpt, date }: Props) {
   return (
-    <article className="rounded-2xl border border-neutral-200 p-4 shadow-sm dark:border-white/10">
+    <article className="rounded-2xl border border-neutral-200 p-4 shadow-sm dark:border-white/10" data-component="ReviewCard">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold">{title}</h4>
         <div aria-label={`Rating ${rating} de 5`} className="text-amber-500">

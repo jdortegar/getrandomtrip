@@ -42,7 +42,7 @@ export default function TripperHero({ tripper }: TripperHeroProps) {
   return (
     <section
       className="relative bg-primary-950 pt-16 text-white md:pt-0"
-      id="tripper-hero"
+      id="tripper-hero" data-component="TripperHero"
     >
       <div
         id="hero-sentinel"

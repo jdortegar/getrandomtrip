@@ -10,7 +10,7 @@ type Props = {
 
 export default function OverviewTab({ data }: Props) {
   return (
-    <section className="grid gap-6 lg:grid-cols-3">
+    <section className="grid gap-6 lg:grid-cols-3" data-component="OverviewTab">
       <div className="lg:col-span-2 space-y-6">
         <div className="rounded-2xl border border-neutral-200 p-5 dark:border-white/10">
           <h3 className="text-lg font-semibold">Preferencias</h3>

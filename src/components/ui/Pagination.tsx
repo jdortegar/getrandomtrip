@@ -28,7 +28,7 @@ export function Pagination({
     .replace("{totalPages}", String(totalPages));
 
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-center justify-between gap-3" data-component="Pagination">
       <button
         className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-50"
         disabled={page <= 1}

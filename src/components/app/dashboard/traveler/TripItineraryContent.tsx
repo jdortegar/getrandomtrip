@@ -87,7 +87,7 @@ export function TripItineraryContent() {
 
   if (loading || !copy) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center bg-white" data-component="TripItineraryContent">
         <LoadingSpinner />
       </div>
     );
@@ -101,7 +101,7 @@ export function TripItineraryContent() {
 
   if (isPreReveal) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-3xl px-6 py-10" data-component="TripItineraryContent">
         <div className="mb-6">
           <Button asChild size="sm" variant="ghost">
             <Link href={`/${locale}/dashboard/trips/${tripId}`}>
@@ -130,7 +130,7 @@ export function TripItineraryContent() {
   const origin = resolveTripOrigin(trip);
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-component="TripItineraryContent">
       <TripScratchReveal copy={copy.scratch} onComplete={handleScratchComplete} tripId={tripId}>
         <TripDetailsHero copy={copy.hero} locale={locale} trip={trip} />
       </TripScratchReveal>

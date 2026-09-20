@@ -9,7 +9,7 @@ interface ConfettiProps {
 }
 
 function Confetti({ delay, duration = 250, speed = 3 }: ConfettiProps) {
-  return <Realistic autorun={{ delay, duration, speed }} />;
+  return <Realistic autorun={{ delay, duration, speed }} data-component="Confetti" />;
 }
 
 export default Confetti;

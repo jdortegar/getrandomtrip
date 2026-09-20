@@ -26,7 +26,7 @@ export function RoleAccessPanel({
   tripper,
 }: RoleAccessPanelProps) {
   return (
-    <div className={styles.panel}>
+    <div className={styles.panel} data-component="RoleAccessPanel">
       <div className={styles.panelBody}>
         <div className={styles.sectionHeadingRow}>
           <div>

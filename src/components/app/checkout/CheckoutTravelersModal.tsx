@@ -64,7 +64,7 @@ export function CheckoutTravelersModal({
       className={cn("p-6 sm:max-w-md")}
       onOpenChange={onOpenChange}
       open={open}
-      showCloseButton={false}
+      showCloseButton={false} data-component="CheckoutTravelersModal"
     >
       <DialogTitle className="sr-only">{copy.dialogTitle}</DialogTitle>
 

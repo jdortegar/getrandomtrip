@@ -157,11 +157,11 @@ export function TripperSettingsSocialLinks({
   }
 
   if (links.length === 0 && !isEditing) {
-    return <p className="text-sm italic text-neutral-400">{copy.noLinks}</p>;
+    return <p className="text-sm italic text-neutral-400" data-component="TripperSettingsSocialLinks">{copy.noLinks}</p>;
   }
 
   return (
-    <div>
+    <div data-component="TripperSettingsSocialLinks">
       {links.length > 0 && (
         <div className="divide-y divide-neutral-100">
           {links.map((link) => {

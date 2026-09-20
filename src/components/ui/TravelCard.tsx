@@ -48,7 +48,7 @@ const TravelCard = forwardRef<HTMLDivElement, TravelCardProps>(
     <div
       ref={ref}
       className={cn(travelCardVariants({ variant, padding, className }))}
-      {...props}
+      {...props} data-component="TravelCard"
     />
   ),
 );
@@ -62,7 +62,7 @@ const TravelCardHeader = forwardRef<
   <div
     ref={ref}
     className={cn("flex flex-col space-y-1.5 pb-4", className)}
-    {...props}
+    {...props} data-component="TravelCardHeader"
   />
 ));
 
@@ -78,7 +78,7 @@ const TravelCardTitle = forwardRef<
       "text-2xl font-semibold leading-none tracking-tight",
       className,
     )}
-    {...props}
+    {...props} data-component="TravelCardTitle"
   />
 ));
 
@@ -91,7 +91,7 @@ const TravelCardDescription = forwardRef<
   <p
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
-    {...props}
+    {...props} data-component="TravelCardDescription"
   />
 ));
 
@@ -101,7 +101,7 @@ const TravelCardContent = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("pt-0", className)} {...props} />
+  <div ref={ref} className={cn("pt-0", className)} {...props} data-component="TravelCardContent" />
 ));
 
 TravelCardContent.displayName = "TravelCardContent";
@@ -113,7 +113,7 @@ const TravelCardFooter = forwardRef<
   <div
     ref={ref}
     className={cn("flex items-center pt-4", className)}
-    {...props}
+    {...props} data-component="TravelCardFooter"
   />
 ));
 

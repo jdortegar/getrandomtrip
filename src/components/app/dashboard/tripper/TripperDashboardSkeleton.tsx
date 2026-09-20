@@ -44,7 +44,7 @@ function BookingRowSkeleton() {
 
 export function TripperDashboardSkeleton() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-10" data-component="TripperDashboardSkeleton">
       {/* Stats section */}
       <div className="space-y-4">
         {/* Eyebrow + heading */}

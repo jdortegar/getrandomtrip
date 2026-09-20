@@ -191,7 +191,7 @@ export function AccountSettingsDocumentsTab({
   ).slice(0, 20);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm" data-component="AccountSettingsDocumentsTab">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-ink">
           {copy.sections.travelDocs}

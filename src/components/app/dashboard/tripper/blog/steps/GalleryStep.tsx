@@ -21,7 +21,7 @@ export function GalleryStep({ copy, draft, imageState, changedFieldSet }: Props)
     // Gallery images fold into the server-side "blocks" column alongside
     // the quote and sections — no per-image peek (images aren't text to
     // compare), just a ring highlight on the whole section when it changed.
-    <div className={`space-y-5 ${changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`}>
+    <div className={`space-y-5 ${changedFieldSet?.has("blocks") ? "ring-2 ring-amber-400 rounded-xl p-2" : ""}`} data-component="GalleryStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[3]?.substeps[0]?.description}
       </p>

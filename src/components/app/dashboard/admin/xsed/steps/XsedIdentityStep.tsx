@@ -39,7 +39,7 @@ export function XsedIdentityStep({ copy, form, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="XsedIdentityStep">
       <FormField
         id="xsed-titleInternal"
         label={copy.titleInternal}

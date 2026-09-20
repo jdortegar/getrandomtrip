@@ -47,7 +47,7 @@ export function UpcomingTripsList({
     .slice(0, 4);
 
   return (
-    <section>
+    <section data-component="UpcomingTripsList">
       <div className="mb-5 flex items-end justify-between gap-4">
         <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
           {copy.upcomingTrips.title}

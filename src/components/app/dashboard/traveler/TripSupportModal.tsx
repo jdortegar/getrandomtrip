@@ -92,7 +92,7 @@ export function TripSupportModal({
         if (!nextOpen) onClose();
       }}
       open={open}
-      showCloseButton
+      showCloseButton data-component="TripSupportModal"
     >
       <DialogHeader className="shrink-0 border-b border-gray-200 px-6 py-4 text-left">
         <div className="flex items-center gap-3">

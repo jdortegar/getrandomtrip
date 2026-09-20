@@ -190,7 +190,7 @@ export function JourneyFiltersForm({
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" data-component="JourneyFiltersForm">
       <div className="rounded-lg bg-[#E8F4FC] p-4 text-sm">
         <div className="mb-2 flex items-center gap-2">
           <Sparkle

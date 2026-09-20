@@ -109,7 +109,7 @@ export default function TripperIntroVideoGate({
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed inset-0 z-80 flex items-center justify-center p-4"
+      className="fixed inset-0 z-80 flex items-center justify-center p-4" data-component="TripperIntroVideoGate"
     >
       {/* Backdrop */}
       <div

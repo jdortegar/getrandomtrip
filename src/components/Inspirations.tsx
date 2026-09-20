@@ -1,6 +1,6 @@
 export default function Inspirations({ type }: { type: string }) {
   return (
-    <section className="container mx-auto px-4 py-16 space-y-12">
+    <section className="container mx-auto px-4 py-16 space-y-12" data-component="Inspirations">
       <div className="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <h2 className="text-2xl md:text-3xl font-semibold">

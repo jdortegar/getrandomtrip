@@ -15,7 +15,7 @@ export function ContactPageContent({ copy }: ContactPageContentProps) {
 
   if (isSubmitted)
     return (
-      <div className="flex min-h-[340px] items-center justify-center rounded-xl px-6 py-16 text-center">
+      <div className="flex min-h-[340px] items-center justify-center rounded-xl px-6 py-16 text-center" data-component="ContactPageContent">
         <div>
           <h3 className="font-barlow-condensed text-5xl font-bold text-ink">
             {copy.form.success.title}
@@ -28,7 +28,7 @@ export function ContactPageContent({ copy }: ContactPageContentProps) {
     );
 
   return (
-    <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-12 md:grid-cols-2" data-component="ContactPageContent">
       <div>
         <p className="mb-5 text-base leading-relaxed text-neutral-600">
           {copy.intro.p1}

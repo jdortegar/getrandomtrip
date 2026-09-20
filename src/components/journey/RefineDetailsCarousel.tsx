@@ -38,7 +38,7 @@ export function RefineDetailsCarousel({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className="w-full"
+      className="w-full" data-component="RefineDetailsCarousel"
     >
       <EmblaCarousel
         slidesPerView={itemsPerView}

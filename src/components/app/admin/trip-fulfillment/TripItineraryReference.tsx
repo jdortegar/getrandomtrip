@@ -48,7 +48,7 @@ export function TripItineraryReference({
     : null;
 
   return (
-    <div className={`${styles.panel} ${styles.panelReference}`}>
+    <div className={`${styles.panel} ${styles.panelReference}`} data-component="TripItineraryReference">
       <div className={styles.panelBody}>
         <div className={styles.sectionHeadingRow}>
           <div>

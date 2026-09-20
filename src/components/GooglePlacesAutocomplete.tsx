@@ -37,11 +37,11 @@ const GooglePlacesAutocomplete: React.FC<GooglePlacesAutocompleteProps> = ({
   };
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return <div data-component="GooglePlacesAutocomplete">Loading...</div>;
   }
 
   return (
-    <div>
+    <div data-component="GooglePlacesAutocomplete">
       <label
         htmlFor={label.toLowerCase().replace(/\s/g, "-")}
         className="block text-sm font-medium text-gray-700 mb-1"

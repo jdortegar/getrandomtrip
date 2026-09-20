@@ -14,7 +14,7 @@ interface DropGridProps {
 
 export function DropGrid({ content, drops }: DropGridProps) {
   return (
-    <Section>
+    <Section data-component="DropGrid">
       <div className="mb-12 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">
         <div className="font-barlow-condensed">
           <p className="text-xl font-light uppercase tracking-widest text-xsed">

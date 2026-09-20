@@ -19,7 +19,7 @@ export function LenisProvider({ children }: LenisProviderProps) {
         lerp: 0.08,
         smoothWheel: true,
       }}
-      root
+      root data-component="LenisProvider"
     >
       {children}
     </ReactLenis>

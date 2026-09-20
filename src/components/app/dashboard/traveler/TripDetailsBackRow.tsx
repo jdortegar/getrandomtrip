@@ -18,7 +18,7 @@ interface TripDetailsBackRowProps {
  */
 export function TripDetailsBackRow({ copy, locale, tripId }: TripDetailsBackRowProps) {
   return (
-    <div className={styles.backrow}>
+    <div className={styles.backrow} data-component="TripDetailsBackRow">
       <Link className={styles.backlink} href={`/${locale}/dashboard/trips/${tripId}`}>
         <ArrowLeft aria-hidden="true" />
         {copy.backToTrip}

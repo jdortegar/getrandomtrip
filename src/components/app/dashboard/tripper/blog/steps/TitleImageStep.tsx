@@ -63,7 +63,7 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="TitleImageStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>

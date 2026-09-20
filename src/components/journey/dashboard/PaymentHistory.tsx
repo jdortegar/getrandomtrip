@@ -8,7 +8,7 @@ import { PaymentItem } from "./types";
 
 export default function PaymentHistory({ items }: { items: PaymentItem[] }) {
   return (
-    <GlassCard>
+    <GlassCard data-component="PaymentHistory">
       <div className="p-5">
         <h3 className="text-base font-semibold text-ink">
           Historial de pagos

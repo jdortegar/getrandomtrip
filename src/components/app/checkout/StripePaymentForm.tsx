@@ -110,7 +110,7 @@ export function StripePaymentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" data-component="StripePaymentForm">
       <PaymentElement
         options={{
           layout: "tabs",

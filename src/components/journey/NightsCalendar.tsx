@@ -110,7 +110,7 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
   };
 
   return (
-    <div>
+    <div data-component="NightsCalendar">
       {/* <h3 className="font-semibold">Duración de la aventura</h3> */}
       <div className="flex flex-wrap gap-2 mb-3">
         {options.map((n) => (

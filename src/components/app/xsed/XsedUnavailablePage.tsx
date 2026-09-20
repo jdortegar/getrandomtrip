@@ -19,7 +19,7 @@ export function XsedUnavailablePage() {
         helper: unavailable.subheading,
         submitLabel: unavailable.notifyLabel,
         title: unavailable.heading,
-      }}
+      }} data-component="XsedUnavailablePage"
     />
   );
 }

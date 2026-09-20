@@ -17,7 +17,7 @@ export default function TripperSpecialties({ tripper }: { tripper: Tripper }) {
   return (
     <section
       id="travel-specialties"
-      className="rt-container px-4 md:px-8 py-12"
+      className="rt-container px-4 md:px-8 py-12" data-component="TripperSpecialties"
     >
       <h2 className="text-2xl md:text-3xl font-semibold mb-6">
         Travel Specialties

@@ -70,7 +70,7 @@ export default function LightboxCarousel({
           aria-label={ariaViewLargeLabel}
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          role="dialog"
+          role="dialog" data-component="LightboxCarousel"
         >
           <div
             aria-hidden

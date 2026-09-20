@@ -31,7 +31,7 @@ export function PresentTrippers({ content, trippers }: PresentTrippersProps) {
   if (trippers.length === 0) return null;
 
   return (
-    <section className="bg-white py-24 md:py-32">
+    <section className="bg-white py-24 md:py-32" data-component="PresentTrippers">
       <div className="rt-container mb-12 text-center">
         <p className="font-barlow text-base font-bold uppercase tracking-[6px] text-primary">
           {content.eyebrow}

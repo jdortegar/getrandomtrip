@@ -16,7 +16,7 @@ export default function TripperTiers({
   const tiers = getTiersForDisplay(type, locale);
 
   return (
-    <section className="rt-container px-4 py-10 md:px-8">
+    <section className="rt-container px-4 py-10 md:px-8" data-component="TripperTiers">
       <h2 className="text-xl font-medium">
         Selecciona tu Nivel de Experiencia
       </h2>

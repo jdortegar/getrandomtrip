@@ -39,7 +39,7 @@ export function TopTrippersGrid({
           : "sm:grid-cols-1";
 
   return (
-    <div className="rt-container">
+    <div className="rt-container" data-component="TopTrippersGrid">
       <motion.div
         className={`grid gap-4 grid-cols-1 ${smGridCols} justify-center`}
         initial={{ opacity: 0, y: 20 }}

@@ -25,7 +25,7 @@ export function TripperCarouselCard({
         "group flex flex-col md:flex-row overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-gray-100",
         className,
       )}
-      href={`/trippers/${tripperSlug}`}
+      href={`/trippers/${tripperSlug}`} data-component="TripperCarouselCard"
     >
       {/* Photo panel */}
       <div className="relative w-full aspect-square md:w-1/2 md:shrink-0 overflow-hidden">

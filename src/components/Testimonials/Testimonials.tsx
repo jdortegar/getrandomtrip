@@ -43,7 +43,7 @@ export default function Testimonials({
       eyebrowColor={featureColor}
       subtitle={resolvedSubtitle}
       title={resolvedTitle}
-      fullWidth
+      fullWidth data-component="Testimonials"
     >
       <EmblaCarousel
         accentColor={featureColor}

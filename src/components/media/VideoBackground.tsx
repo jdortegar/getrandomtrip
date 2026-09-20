@@ -20,7 +20,7 @@ export default function VideoBackground({
   return (
     <div
       className={cn("absolute inset-0 w-full h-full", className)}
-      aria-hidden
+      aria-hidden data-component="VideoBackground"
     >
       {fallbackImage && (
         <div

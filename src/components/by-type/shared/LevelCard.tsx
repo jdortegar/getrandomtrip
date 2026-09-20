@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Clock,
   Globe,
   Plane,
   Truck,
-  ChevronDown,
   Check,
   Bed,
   Gift,
@@ -25,7 +23,6 @@ import { useDictionary } from "@/hooks/useDictionary";
 interface LevelCardProps {
   featured?: boolean;
   level: Level;
-  minimizeAllFeatures?: boolean;
   /** When true, card click navigates to the CTA `href` instead of calling `onSelect`. */
   navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
@@ -44,18 +41,23 @@ const FEATURE_ICONS: Record<
   React.ComponentType<{ className?: string }>
 > = {
   Duración: Clock,
+  Duration: Clock,
   Destinos: Globe,
+  Destinations: Globe,
   Transporte: Truck,
+  Transport: Truck,
   Alojamiento: Bed,
+  Accommodation: Bed,
   Beneficios: Gift,
+  Benefits: Gift,
   Extras: Sparkles,
   Fechas: Calendar,
+  Dates: Calendar,
 };
 
 export default function LevelCard({
   featured = false,
   level,
-  minimizeAllFeatures = false,
   navigateOnCardClick = false,
   onSelect,
   selected = false,
@@ -66,7 +68,6 @@ export default function LevelCard({
   className,
 }: LevelCardProps) {
   const router = useRouter();
-  const [isExpanded, setIsExpanded] = useState(false);
   const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
   const byRandomtripLabel = useDictionary(
     (d) => d.journey.tripperBadge.byRandomtrip,
@@ -74,7 +75,6 @@ export default function LevelCard({
   const ctaHref = travelerType
     ? `/journey?travelType=${travelerType}&experience=${level.id}`
     : `/experiences/by-type/${level.id}`;
-  const shouldMinimize = minimizeAllFeatures;
   const isDark = variant === "dark";
   const textColor = isDark ? "text-white" : "text-ink";
   const bgColor = isDark ? "bg-primary" : "bg-white";
@@ -87,20 +87,6 @@ export default function LevelCard({
   const priceDividerColor = "bg-feature";
   const secondaryTextColor = isDark ? "text-white" : "text-gray-600";
 
-  // Minimize mode: hide all features until expanded.
-  // Default mode: show first 3 features when collapsed, all when expanded.
-  const displayFeatures = shouldMinimize
-    ? isExpanded
-      ? level.features
-      : []
-    : isExpanded
-      ? level.features
-      : level.features.slice(0, 3);
-
-  const hasMoreFeatures = shouldMinimize
-    ? level.features.length > 0
-    : level.features.length > 3;
-
   const handleClick = () => {
     if (navigateOnCardClick) {
       router.push(ctaHref);
@@ -109,14 +95,10 @@ export default function LevelCard({
     onSelect?.(level.id);
   };
 
-  const handleExpandClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click when clicking expand button
-    setIsExpanded(!isExpanded);
-  };
   return (
     <div
       className={cn(
-        "relative flex h-full w-full flex-col justify-center rounded-xl border-4 px-4 py-8 transition-all duration-300 min-h-[540px] @[350px]:min-h-[690px] @[250px]:px-6 @[250px]:py-12",
+        "relative flex h-full w-full flex-col rounded-xl border-4 px-5 pb-5 pt-[22px] transition-all duration-300 @[250px]:px-6 @[250px]:pb-6 @[250px]:pt-[26px]",
         bgColor,
         borderColor,
         featured && "shadow-lg",
@@ -124,7 +106,7 @@ export default function LevelCard({
         className,
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
-      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
+      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }} data-component="LevelCard"
     >
       {/* Featured Badge - Top Left */}
       {featured && (
@@ -160,7 +142,7 @@ export default function LevelCard({
       {/* Eyebrow Text */}
       <p
         className={cn(
-          "mb-2 font-barlow font-bold uppercase tracking-[4.2px] text-xs @[250px]:mb-3 @[250px]:tracking-[6px] text-center",
+          "mb-2.5 font-barlow font-bold uppercase tracking-[0.24em] text-[0.68rem] @[250px]:mb-3 @[250px]:tracking-[6px] text-center",
           secondaryTextColor,
         )}
       >
@@ -172,18 +154,18 @@ export default function LevelCard({
       <div className="mb-3 flex-wrap flex items-end gap-3">
         <h3
           className={cn(
-            "flex-1 font-barlow-condensed font-extrabold uppercase text-left text-[2.1rem] @[250px]:text-5xl",
+            "min-w-0 font-barlow-condensed font-extrabold uppercase text-left text-[1.95rem] @[250px]:text-[2.35rem]",
             "leading-none",
             textColor,
           )}
         >
           {level.name}
         </h3>
-        <div className="flex gap-3 flex-1 items-stretch">
+        <div className="flex gap-3 items-stretch">
           <div
             className={cn(" w-px shrink-0 self-stretch", priceDividerColor)}
           />
-          <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.7875rem] @[250px]:text-lg">
+          <div className="flex flex-col justify-start items-start font-barlow font-semibold text-left text-[0.9rem] @[250px]:text-base">
             {level.priceLabel ? (
               <span className={cn("leading-none whitespace-nowrap", textColor)}>
                 {level.priceLabel}
@@ -194,8 +176,8 @@ export default function LevelCard({
             </span>
             <span
               className={cn(
-                "whitespace-pre-line text-left leading-tight text-[0.525rem] @[250px]:text-xs",
-                textColor,
+                "whitespace-pre-line text-left leading-tight text-[0.62rem]",
+                secondaryTextColor,
               )}
             >
               {level.priceFootnote}
@@ -207,7 +189,7 @@ export default function LevelCard({
       {/* Description */}
       <p
         className={cn(
-          "mb-4 text-left text-[0.6125rem] @[250px]:mb-6 @[250px]:text-sm",
+          "mb-3.5 text-left text-pretty leading-relaxed text-[0.82rem]",
           isDark ? "text-white" : "text-gray-700",
         )}
       >
@@ -216,85 +198,53 @@ export default function LevelCard({
 
       {/* Features */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <AnimatePresence initial={false}>
-          {displayFeatures.map((feature, index) => {
-            const IconComponent = FEATURE_ICONS[feature.title] || Globe;
-            const isLast = index === displayFeatures.length - 1;
-            const isNewFeature = index >= 3 && isExpanded;
+        {level.features.map((feature, index) => {
+          const IconComponent = FEATURE_ICONS[feature.title] || Globe;
+          const isLast = index === level.features.length - 1;
 
-            return (
-              <motion.div
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                initial={isNewFeature ? { opacity: 0, height: 0 } : false}
-                key={feature.title}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              >
-                <div className="flex items-center gap-3 py-3 @[250px]:gap-4 @[250px]:py-4">
-                  {/* Icon on the left */}
-                  <IconComponent
+          return (
+            <div key={feature.title}>
+              <div className="flex items-start gap-3 py-[9px]">
+                {/* Icon on the left, aligned to the label's cap-height */}
+                <IconComponent
+                  className={cn(
+                    "mt-0.5 h-[18px] w-[18px] shrink-0",
+                    secondaryTextColor,
+                  )}
+                />
+                {/* Text content on the right */}
+                <div className="flex flex-1 flex-col justify-start items-start">
+                  <span
                     className={cn(
-                      "h-4 w-4 shrink-0 @[250px]:h-6 @[250px]:w-6",
+                      "mb-[3px] uppercase tracking-wider leading-none text-[0.6rem]",
                       secondaryTextColor,
                     )}
-                  />
-                  {/* Text content on the right */}
-                  <div className="flex flex-1 flex-col justify-start items-start">
-                    <span
-                      className={cn(
-                        "mb-0.5 uppercase tracking-wider leading-none text-[0.525rem] @[250px]:mb-1 @[250px]:text-xs",
-                        secondaryTextColor,
-                      )}
-                    >
-                      {feature.title}
-                    </span>
-                    <p
-                      className={cn(
-                        "font-medium leading-tight text-left text-[0.7rem] @[250px]:text-base",
-                        textColor,
-                      )}
-                    >
-                      {feature.description}
-                    </p>
-                  </div>
+                  >
+                    {feature.title}
+                  </span>
+                  <p
+                    className={cn(
+                      "font-medium leading-tight text-left text-[0.86rem] @[250px]:text-[0.9rem]",
+                      textColor,
+                    )}
+                  >
+                    {feature.description}
+                  </p>
                 </div>
-                {!isLast && <div className={cn("border-t", dividerColor)} />}
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
+              </div>
+              {!isLast && <div className={cn("border-t", dividerColor)} />}
+            </div>
+          );
+        })}
       </div>
 
-      {/* Expand/Collapse Button - Bottom Center */}
-      {hasMoreFeatures && (
-        <div className="mt-4 flex justify-center @[250px]:mt-6">
-          <button
-            aria-label={isExpanded ? "Collapse features" : "Expand features"}
-            className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-feature rounded-full p-2 transition-transform"
-            onClick={handleExpandClick}
-            type="button"
-          >
-            <motion.div
-              animate={{ rotate: isExpanded ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <ChevronDown
-                className={cn(
-                  "h-3.5 w-3.5 @[250px]:h-5 @[250px]:w-5",
-                  secondaryTextColor,
-                )}
-              />
-            </motion.div>
-          </button>
-        </div>
-      )}
-      <div className="mt-4 mx-auto">
-        <Button asChild variant="feature" size="sm">
+      <div className="mt-3">
+        <Button asChild variant="feature" className="w-full">
           <Link
             className="uppercase"
             href={ctaHref}
             onClick={(e) => e.stopPropagation()}
-            scroll={false}
+            scroll={!navigateOnCardClick}
           >
             {level.ctaLabel}
           </Link>

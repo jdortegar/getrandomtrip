@@ -26,7 +26,7 @@ export function TripperBlogTeaser({
   if (posts.length === 0) return null;
 
   return (
-    <Section eyebrow={copy.eyebrow} title={copy.heading}>
+    <Section eyebrow={copy.eyebrow} title={copy.heading} data-component="TripperBlogTeaser">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:gap-6">
         {posts.map((post, index) => (
           <BlogIndexCard

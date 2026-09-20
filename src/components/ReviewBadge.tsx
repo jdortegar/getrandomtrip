@@ -11,7 +11,7 @@ export function ReviewBadge({ className, rating }: ReviewBadgeProps) {
       className={cn(
         "absolute flex gap-1 items-center rounded-lg bg-white/10 px-2 py-1 backdrop-blur-sm right-4 top-4 z-20",
         className,
-      )}
+      )} data-component="ReviewBadge"
     >
       <span className="text-xs font-semibold text-white">{rating}</span>
       <svg

@@ -243,7 +243,7 @@ export function BlogFormContent({
     : getMissingBlogFields(activeTab, draft, copy.fields as Record<string, string>);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4" data-component="BlogFormContent">
       <Accordion
         type="single"
         collapsible

@@ -51,7 +51,7 @@ export function ImageUploadTile({
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5" data-component="ImageUploadTile">
       <div className="flex items-start gap-3">
         {value ? (
           <div

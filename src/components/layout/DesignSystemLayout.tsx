@@ -74,7 +74,7 @@ export const Grid: React.FC<GridProps> = ({
         responsiveClasses,
         className,
       )}
-      {...props}
+      {...props} data-component="Grid"
     >
       {children}
     </div>
@@ -145,7 +145,7 @@ export const GridItem: React.FC<GridItemProps> = ({
         responsiveClasses,
         className,
       )}
-      {...props}
+      {...props} data-component="GridItem"
     >
       {children}
     </div>
@@ -217,7 +217,7 @@ export const Stack: React.FC<StackProps> = ({
         wrap && "flex-wrap",
         className,
       )}
-      {...props}
+      {...props} data-component="Stack"
     >
       {children}
     </div>
@@ -267,7 +267,7 @@ export const Divider: React.FC<DividerProps> = ({
         thicknessClasses[thickness],
         className,
       )}
-      {...props}
+      {...props} data-component="Divider"
     />
   );
 };
@@ -313,7 +313,7 @@ export const Section: React.FC<SectionProps> = ({
         !fullWidth && "container mx-auto px-4 sm:px-6 lg:px-8",
         className,
       )}
-      {...props}
+      {...props} data-component="Section"
     >
       {children}
     </section>

@@ -272,10 +272,10 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
     return copy.status[key] ?? status;
   }
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner data-component="BlogPageClient" />;
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="BlogPageClient">
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

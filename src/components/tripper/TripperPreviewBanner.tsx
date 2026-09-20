@@ -8,7 +8,7 @@ export default function TripperPreviewBanner() {
   if (role === "tripper") return null;
 
   return (
-    <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-900">
+    <div className="bg-yellow-100 border-b border-yellow-300 text-yellow-900" data-component="TripperPreviewBanner">
       <div className="rt-container px-6 py-2 text-sm flex items-center gap-3">
         <span>
           Estás viendo el Tripper Panel en <strong>modo vista previa</strong>.

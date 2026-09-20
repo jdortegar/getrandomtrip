@@ -17,7 +17,7 @@ interface StatusIndicatorBadgeProps {
 export function StatusIndicatorBadge({ label, styles }: StatusIndicatorBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${styles.badge}`}
+      className={`inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${styles.badge}`} data-component="StatusIndicatorBadge"
     >
       <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${styles.dot}`} />
       {label}

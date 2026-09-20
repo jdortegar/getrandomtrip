@@ -48,7 +48,7 @@ export default function TripperInviteClient({
 
   if (!resolution.ok) {
     return (
-      <ErrorCard copy={copy} loginHref={loginHref} reason={resolution.reason} reasonCopy={reasonCopy} />
+      <ErrorCard copy={copy} loginHref={loginHref} reason={resolution.reason} reasonCopy={reasonCopy} data-component="TripperInviteClient" />
     );
   }
 
@@ -57,7 +57,7 @@ export default function TripperInviteClient({
       copy={copy}
       kind={resolution.kind}
       loginHref={loginHref}
-      token={token}
+      token={token} data-component="TripperInviteClient"
     />
   ) : (
     <NewUserBranch
@@ -67,7 +67,7 @@ export default function TripperInviteClient({
       kind={resolution.kind}
       locale={locale}
       loginHref={loginHref}
-      token={token}
+      token={token} data-component="TripperInviteClient"
     />
   );
 }
