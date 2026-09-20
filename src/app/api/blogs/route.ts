@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "12", 10);
     const tripperId = searchParams.get("tripperId");
     const tripperIds = searchParams.get("tripperIds"); // comma-separated
+    const level = searchParams.get("level");
     const travelType = searchParams.get("travelType");
     const excuseKey = searchParams.get("excuseKey");
     const skip = (page - 1) * limit;
@@ -49,7 +50,11 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (travelType?.trim()) {
+    // "level" is XSED-only for now — BlogPost has no dedicated level column,
+    // XSED is tracked via the travelType marker (see TitleImageStep).
+    if (level?.trim() === "xsed") {
+      where.travelType = { has: "XSED" };
+    } else if (travelType?.trim()) {
       where.travelType = { has: travelType.trim() };
     }
 

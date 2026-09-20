@@ -47,7 +47,7 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
         <p className="font-barlow mb-1 text-xs font-bold uppercase tracking-widest text-xsed">
           {drop.date}
         </p>
-        <p className="font-barlow-condensed text-3xl text-neutral-600 font-extralight">
+        <p className="font-barlow-condensed text-3xl text-neutral-600 font-extralight line-clamp-2 min-h-[4.5rem]">
           {drop.title}
         </p>
         <hr className="mt-2 border-xsed" />

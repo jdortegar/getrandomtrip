@@ -122,7 +122,7 @@ export default function CitySelector({
         <Input
           autoComplete="off"
           className={cn(
-            "border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0",
+            "border-transparent bg-gray-100 pl-11 ring-0 focus-visible:ring-0",
             size === "lg"
               ? "h-12 text-base"
               : size === "sm"

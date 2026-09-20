@@ -44,6 +44,16 @@ describe("GET /api/blogs (public list) — visibility guard", () => {
     expect(findManyArgs.where.excuseKey).toEqual({ has: "solo-adventure" });
   });
 
+  it("maps level=xsed to travelType has XSED and ignores a conflicting travelType param", async () => {
+    const req = new NextRequest(
+      "http://localhost/api/blogs?level=xsed&travelType=solo",
+    );
+    await GET(req);
+
+    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(findManyArgs.where.travelType).toEqual({ has: "XSED" });
+  });
+
   it("returns travelType/excuseKey as arrays in the response, not scalar-coerced values", async () => {
     (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
       {

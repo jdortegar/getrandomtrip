@@ -302,6 +302,12 @@ function JourneyPageContent({
               totalLabel: journey.checkout.totalLabel,
             }}
           />
+
+          {/* Portal target for JourneyMainContent's action bar on mobile —
+              keeps Clear all/Back/Checkout below the trip summary there,
+              while desktop keeps its own copy right under the step content
+              (see JourneyMainContent's mobileActionBarSlot effect). */}
+          <div className="w-full lg:hidden" id="mobile-action-bar-slot" />
         </div>
       </div>
     </div>

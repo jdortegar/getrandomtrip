@@ -24,6 +24,14 @@ export type TravelerType =
   | "honeymoon"
   | "paws";
 export type BudgetLevel = "low" | "mid" | "high";
+/**
+ * Who a traveler is booking an XSED escape with — shown to the user as
+ * "mood" (UI label only). Distinct from `TravelerType` (the site-wide
+ * journey taxonomy) — XSED is a flat-rate product with its own lighter
+ * vocabulary, stored on `TripRequest.level` (never `type`, which is
+ * reserved as the `"xsed"` product marker).
+ */
+export type XsedTravelType = "couple" | "family" | "friends";
 
 export interface User {
   id: ID;

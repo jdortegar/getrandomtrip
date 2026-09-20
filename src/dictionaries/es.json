@@ -814,16 +814,23 @@
       },
       {
         "id": "pax",
-        "label": "Viajeros",
+        "label": "Compañía y viajeros",
         "substeps": [
           {
             "id": "pax",
-            "title": "Cantidad de personas",
-            "description": "Viajeros que realizan la escapada."
+            "title": "Viajeros",
+            "description": "Con quién viajás y cuántos son."
           }
         ]
       }
     ],
+    "travelType": {
+      "label": "¿Con quién viajás?",
+      "placeholder": "Seleccioná una opción",
+      "couple": "Pareja",
+      "family": "Familia",
+      "friends": "Amigos"
+    },
     "pax": {
       "label": "Personas",
       "countOne": "{count} persona",
@@ -1321,6 +1328,8 @@
       "allOption": "Todos",
       "excuseLabel": "Excusa / Categoría",
       "excuseSubtitle": "Elige una excusa",
+      "levelLabel": "Nivel",
+      "levelSubtitle": "Elige un nivel de experiencia",
       "travelTypeLabel": "Tipo de viaje",
       "travelTypeSubtitle": "Elige cómo quieres viajar",
       "tripperLabel": "Por Tripper",

@@ -6,8 +6,8 @@ import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { getNextWeekend, toISODate } from "@/lib/helpers/xsed-dates";
-import { Minus, Plus } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
+import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
@@ -20,6 +20,7 @@ import { useUserStore } from "@/store/slices/userStore";
 import type { JourneyDetailsStepLabels } from "@/components/journey/JourneyDetailsStep";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 import type { XsedBookDict } from "@/lib/types/dictionary";
+import type { XsedTravelType } from "@/types/core";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -52,10 +53,13 @@ export function XsedBookClient({
     searchParams.get("originCity") ?? "",
   );
   const [pax, setPax] = useState(2);
+  const [travelType, setTravelType] = useState<XsedTravelType | "">("");
   const [openSection, setOpenSection] = useState("origin");
   const [isSaving, setIsSaving] = useState(false);
 
   const { saturday, sunday } = useMemo(() => getNextWeekend(), []);
+
+  const travelTypeLabel = travelType ? book.travelType[travelType] : "";
 
   // Derive active tab from the open accordion section
   const activeTab = openSection === "origin" ? "details" : openSection;
@@ -92,10 +96,13 @@ export function XsedBookClient({
   };
 
   const isOriginComplete = Boolean(originCountry && originCity);
-  const canBook = isOriginComplete;
+  const isTravelTypeComplete = Boolean(travelType);
+  const canBook = isOriginComplete && isTravelTypeComplete;
   const isAllStepsComplete = canBook;
   const canContinue = isOriginComplete && openSection === "origin";
-  const showClearAll = Boolean(originCountry || originCity || pax !== 2);
+  const showClearAll = Boolean(
+    originCountry || originCity || pax !== 2 || travelType,
+  );
 
   const completedTabIds = [
     ...(isOriginComplete ? ["details"] : []),
@@ -110,6 +117,7 @@ export function XsedBookClient({
     setOriginCountry("");
     setOriginCity("");
     setPax(2);
+    setTravelType("");
     setOpenSection("origin");
     router.replace("?", { scroll: false });
   };
@@ -117,6 +125,10 @@ export function XsedBookClient({
   const handleBook = useCallback(async () => {
     if (!originCountry || !originCity) {
       toast.error("Completá país y ciudad de salida para continuar.");
+      return;
+    }
+    if (!travelType) {
+      toast.error("Elegí con quién viajás para continuar.");
       return;
     }
     if (sessionStatus === "loading") {
@@ -136,7 +148,7 @@ export function XsedBookClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           type: "xsed",
-          level: "xsed",
+          level: travelType,
           originCountry,
           originCity,
           pax,
@@ -165,7 +177,7 @@ export function XsedBookClient({
     } finally {
       setIsSaving(false);
     }
-  }, [originCity, originCountry, pax, locale, router, session, sessionStatus]);
+  }, [originCity, originCountry, pax, travelType, locale, router, session, sessionStatus]);
 
   return (
     <div className="min-h-screen bg-ground" data-component="XsedBookClient">
@@ -262,32 +274,50 @@ export function XsedBookClient({
 
                   <JourneyDropdown
                     content={
-                      pax === 1
-                        ? book.pax.countOne.replace("{count}", String(pax))
-                        : book.pax.countOther.replace("{count}", String(pax))
+                      travelTypeLabel
+                        ? `${travelTypeLabel} · ${
+                            pax === 1
+                              ? book.pax.countOne.replace("{count}", String(pax))
+                              : book.pax.countOther.replace("{count}", String(pax))
+                          }`
+                        : pax === 1
+                          ? book.pax.countOne.replace("{count}", String(pax))
+                          : book.pax.countOther.replace("{count}", String(pax))
                     }
                     label={book.pax.label}
                     value="pax"
                   >
-                    <div className="flex items-center gap-2 justify-center">
-                      <button
-                        className="w-10 h-10 rounded-sm border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-50 disabled:opacity-40 transition-colors"
-                        disabled={pax <= 1}
-                        onClick={() => setPax((p) => Math.max(1, p - 1))}
-                        type="button"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="text-2xl font-bold w-8 text-center tabular-nums">
-                        {pax}
-                      </span>
-                      <button
-                        className="w-10 h-10 rounded-sm border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-50 transition-colors"
-                        onClick={() => setPax((p) => p + 1)}
-                        type="button"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
+                    <div className="flex flex-wrap items-start justify-start gap-6">
+                      <div className="w-full max-w-32">
+                        <FormField
+                          id="xsed-pax"
+                          label={book.pax.label}
+                          min={1}
+                          onChange={(e) =>
+                            setPax(Math.max(1, Number(e.target.value) || 1))
+                          }
+                          type="number"
+                          value={pax}
+                        />
+                      </div>
+
+                      <div className="w-full max-w-56">
+                        <FormSelectField
+                          id="xsed-travel-type"
+                          label={book.travelType.label}
+                          onChange={(e) =>
+                            setTravelType(e.target.value as XsedTravelType)
+                          }
+                          value={travelType}
+                        >
+                          <option disabled value="">
+                            {book.travelType.placeholder}
+                          </option>
+                          <option value="couple">{book.travelType.couple}</option>
+                          <option value="family">{book.travelType.family}</option>
+                          <option value="friends">{book.travelType.friends}</option>
+                        </FormSelectField>
+                      </div>
                     </div>
                   </JourneyDropdown>
                 </div>
@@ -311,6 +341,7 @@ export function XsedBookClient({
             originCity={originCity}
             originCountry={originCountry}
             pax={pax}
+            travelTypeLabel={travelTypeLabel}
           />
         </div>
       </div>
