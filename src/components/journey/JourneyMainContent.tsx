@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -183,6 +184,14 @@ export default function JourneyMainContent({
   const locale = (params?.locale as string) ?? "es";
   const { data: session, status: sessionStatus } = useSession();
   const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
+  // Mobile puts the action bar after JourneySummary (a DOM sibling this
+  // component can't reach by nesting), so it's portaled into a target slot
+  // JourneyPageClient renders there; the in-flow copy below stays desktop-only.
+  const [mobileActionBarSlot, setMobileActionBarSlot] =
+    useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setMobileActionBarSlot(document.getElementById("mobile-action-bar-slot"));
+  }, []);
   const updateQuery = useQuerySync();
   const { filters, setPartial } = useStore();
 
@@ -783,28 +792,32 @@ export default function JourneyMainContent({
     }
   };
 
+  const actionBarProps = {
+    canContinue,
+    isAllStepsComplete,
+    isSavingAndRedirecting,
+    labels: {
+      back: labels.back,
+      clearAll: labels.clearAll,
+      next: labels.next,
+      processingCheckout: labels.processingCheckout,
+      viewCheckout: labels.viewCheckout,
+    },
+    onBack: previousTab ? handleBack : undefined,
+    onClearAll: handleClearAll,
+    onContinue: handleContinue,
+    onGoToCheckout: handleGoToCheckout,
+    showClearAll: Boolean(url.travelType),
+  };
+
   return (
     <div className={cn("flex-1 min-h-0 flex flex-col", className)} data-component="JourneyMainContent">
       <div className="flex-1" id="journey-actions">
         {renderContent()}
       </div>
-      <JourneyActionBar
-        canContinue={canContinue}
-        isAllStepsComplete={isAllStepsComplete}
-        isSavingAndRedirecting={isSavingAndRedirecting}
-        labels={{
-          back: labels.back,
-          clearAll: labels.clearAll,
-          next: labels.next,
-          processingCheckout: labels.processingCheckout,
-          viewCheckout: labels.viewCheckout,
-        }}
-        onBack={previousTab ? handleBack : undefined}
-        onClearAll={handleClearAll}
-        onContinue={handleContinue}
-        onGoToCheckout={handleGoToCheckout}
-        showClearAll={Boolean(url.travelType)}
-      />
+      <JourneyActionBar {...actionBarProps} className="hidden lg:flex" />
+      {mobileActionBarSlot &&
+        createPortal(<JourneyActionBar {...actionBarProps} />, mobileActionBarSlot)}
     </div>
   );
 }
