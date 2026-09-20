@@ -467,8 +467,8 @@ const TYPE_LEVEL_OVERRIDES: Record<
 > = {
   couple: {
     atelier: {
-      es: { subtitle: "Tu Tripper Advisor personal (Couple Edition)" },
-      en: { subtitle: "Your personal Tripper Advisor (Couple Edition)" },
+      es: { subtitle: "Tu Tripper Advisor personal" },
+      en: { subtitle: "Your personal Tripper Advisor" },
     },
   },
   solo: {

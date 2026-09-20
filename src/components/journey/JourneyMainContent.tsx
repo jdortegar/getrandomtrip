@@ -645,7 +645,6 @@ export default function JourneyMainContent({
             }}
             locale={locale}
             localizedTravelerTypes={localizedTravelerTypes}
-            minimizeAllFeatures
             onAccordionValueChange={setAccordionValue}
             selectedExperienceLevel={url.experience}
             selectedTravelType={url.travelType as TravelerTypeSlug}
