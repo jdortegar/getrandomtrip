@@ -34,6 +34,7 @@ interface XsedSummaryProps {
   originCity: string;
   originCountry: string;
   pax: number;
+  travelTypeLabel: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ export function XsedSummary({
   originCity,
   originCountry,
   pax,
+  travelTypeLabel,
 }: XsedSummaryProps) {
   const total = XSED_PRICE_PER_PERSON * pax;
   const { saturday, sunday } = getNextWeekend();
@@ -117,6 +119,7 @@ export function XsedSummary({
         <p className={sectionTitleClass}>Personas</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           <p className={detailClass}>
+            {travelTypeLabel ? `${travelTypeLabel} · ` : ""}
             {pax} persona{pax !== 1 ? "s" : ""}
           </p>
           <button

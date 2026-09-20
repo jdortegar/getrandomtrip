@@ -72,6 +72,7 @@ import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
 } from "@/emails/TripStartVouchers";
 import { getLevelContent } from "@/lib/data/experience-levels";
+import { getXsedLevel } from "@/lib/data/xsed-catalog";
 import type { MailAttachment } from "@/lib/helpers/sendMail";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -402,7 +403,14 @@ export function sendAdminNewBooking(
             clientEmail: user.email,
             tripRequestId,
             tripType: tripRequest.type,
-            level: getLevelContent(tripRequest.level, tripRequest.type, "es")?.name ?? tripRequest.level,
+            // XSED's `level` column holds the traveler's chosen travel mood
+            // (couple/family/friends), not a price level — the display name
+            // here must come from `type`, not fall through to that raw value.
+            level:
+              tripRequest.type === "xsed"
+                ? getXsedLevel("es").name
+                : (getLevelContent(tripRequest.level, tripRequest.type, "es")?.name ??
+                  tripRequest.level),
             nights: tripRequest.nights,
             originCity: tripRequest.originCity,
             originCountry: tripRequest.originCountry,
