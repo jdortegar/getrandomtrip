@@ -28,7 +28,7 @@ export function CheckoutIconValueCard({
 }: CheckoutIconValueCardProps) {
   if (valueLayout === "chips") {
     return (
-      <div className={cn(cardClassName, className)}>
+      <div className={cn(cardClassName, className)} data-component="CheckoutIconValueCard">
         <p className={titleClassName}>{title}</p>
         <div className="mt-2 flex flex-wrap gap-2">{value}</div>
       </div>
@@ -36,7 +36,7 @@ export function CheckoutIconValueCard({
   }
 
   return (
-    <div className={cn(cardClassName, className)}>
+    <div className={cn(cardClassName, className)} data-component="CheckoutIconValueCard">
       <p className={titleClassName}>{title}</p>
       {icon != null ? (
         <div className="mt-1 flex items-start gap-2">

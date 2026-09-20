@@ -34,6 +34,7 @@ interface XsedSummaryProps {
   originCity: string;
   originCountry: string;
   pax: number;
+  travelTypeLabel: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ export function XsedSummary({
   originCity,
   originCountry,
   pax,
+  travelTypeLabel,
 }: XsedSummaryProps) {
   const total = XSED_PRICE_PER_PERSON * pax;
   const { saturday, sunday } = getNextWeekend();
@@ -53,7 +55,7 @@ export function XsedSummary({
     "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-ink hover:bg-gray-200";
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80">
+    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80" data-component="XsedSummary">
       <h2 className="text-xl font-bold text-ink">Resumen</h2>
 
       {/* Producto */}
@@ -117,6 +119,7 @@ export function XsedSummary({
         <p className={sectionTitleClass}>Personas</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           <p className={detailClass}>
+            {travelTypeLabel ? `${travelTypeLabel} · ` : ""}
             {pax} persona{pax !== 1 ? "s" : ""}
           </p>
           <button

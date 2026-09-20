@@ -41,7 +41,7 @@ export function CountryFlag({
       aria-hidden
       className={cn("inline-block leading-none", className)}
       role="img"
-      title={title ?? country ?? code}
+      title={title ?? country ?? code} data-component="CountryFlag"
     >
       {emoji}
     </span>

@@ -15,7 +15,7 @@ interface BlogListProps {
 export default function BlogList({ posts }: BlogListProps) {
   const locale = useLocale();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-component="BlogList">
       {posts.length === 0 ? (
         <div className="lg:col-span-3 text-center p-10 border border-dashed border-neutral-300 rounded-2xl text-neutral-600">
           <h2 className="text-xl font-semibold mb-2">Aún no tienes posts.</h2>

@@ -32,7 +32,7 @@ export default function InspirationBanner({
   className,
 }: InspirationBannerProps) {
   return (
-    <Section className={cn("text-left! py-12! md:py-16! ", className)}>
+    <Section className={cn("text-left! py-12! md:py-16! ", className)} data-component="InspirationBanner">
       {/* Label */}
       {labelText && (
         <Label

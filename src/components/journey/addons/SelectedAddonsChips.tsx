@@ -11,7 +11,7 @@ export default function SelectedAddonsChips() {
   if (!sel.length) return null;
 
   return (
-    <div className="mb-4 rounded-xl bg-neutral-50 ring-1 ring-neutral-200 p-3">
+    <div className="mb-4 rounded-xl bg-neutral-50 ring-1 ring-neutral-200 p-3" data-component="SelectedAddonsChips">
       <div className="text-sm font-medium text-neutral-700 mb-2">
         Tus add-ons ({sel.length})
       </div>

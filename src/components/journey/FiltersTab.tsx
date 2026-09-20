@@ -64,7 +64,7 @@ export default function FiltersTab({ avoidGridLabels }: FiltersTabProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="FiltersTab">
       <div>
         <h2 className="text-2xl font-bold">Filtros Premium (Opcional)</h2>
         <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mt-2 text-sm text-blue-800">

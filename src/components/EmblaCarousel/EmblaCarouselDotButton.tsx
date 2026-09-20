@@ -63,7 +63,7 @@ export const DotButton = (props: PropType) => {
       aria-current={selected}
       aria-label={`Go to slide ${index + 1}`}
       type="button"
-      {...restProps}
+      {...restProps} data-component="DotButton"
     >
       {children}
     </button>

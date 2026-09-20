@@ -19,7 +19,7 @@ export default function KpiCard({
     <motion.div
       className="bg-neutral-800 p-6 rounded-2xl shadow-sm border border-neutral-700 flex items-center space-x-4"
       whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }} data-component="KpiCard"
     >
       <div className={`p-3 rounded-full ${color} bg-opacity-20`}>
         <Icon size={24} />

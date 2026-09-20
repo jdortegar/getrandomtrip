@@ -6,7 +6,7 @@ export default function PreferencePills({
   style?: string[];
 }) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" data-component="PreferencePills">
       {lodging && <span className="rt-badge">{lodging}</span>}
       {style?.map((s) => (
         <span key={s} className="rt-badge">

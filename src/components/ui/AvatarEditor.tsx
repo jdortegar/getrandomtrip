@@ -126,7 +126,7 @@ export function AvatarEditor({
           onSave={handleEditorSave}
           open={editorOpen}
           saving={uploading}
-          source={{ originalUrl: user?.avatarUrlOriginal ?? user?.avatar ?? undefined }}
+          source={{ originalUrl: user?.avatarUrlOriginal ?? user?.avatar ?? undefined }} data-component="AvatarEditor"
         />
       )}
     </>

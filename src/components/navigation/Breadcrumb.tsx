@@ -22,7 +22,7 @@ export default function Breadcrumb({ className, items }: BreadcrumbProps) {
       className={cn(
         "mb-8 flex items-center gap-2 text-sm text-neutral-600",
         className,
-      )}
+      )} data-component="Breadcrumb"
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;

@@ -35,7 +35,7 @@ export function RecentBookingsList({
   locale = "es",
 }: RecentBookingsListProps) {
   return (
-    <section>
+    <section data-component="RecentBookingsList">
       {/* Brand section header — eyebrow + condensed heading */}
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>

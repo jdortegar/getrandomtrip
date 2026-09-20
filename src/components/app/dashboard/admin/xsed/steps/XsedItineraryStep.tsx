@@ -38,7 +38,7 @@ export function XsedItineraryStep({ form, onChange, copy }: Props) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="XsedItineraryStep">
       <div className="space-y-6">
         {form.itinerary.map((day, index) => (
           <div key={index} className="space-y-4">

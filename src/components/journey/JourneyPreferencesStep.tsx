@@ -185,7 +185,7 @@ export function JourneyPreferencesStep({
       collapsible
       onValueChange={onOpenSection}
       type="single"
-      value={openSectionId}
+      value={openSectionId} data-component="JourneyPreferencesStep"
     >
       <div className="space-y-4">
         <JourneyDropdown

@@ -64,7 +64,7 @@ export default function DestinationCard({
           isSelected ? "border-primary" : "border-transparent"
         }`}
         onClick={toggle}
-        type="button"
+        type="button" data-component="DestinationCard"
       >
         <Img
           alt={suggestion.city}
@@ -96,7 +96,7 @@ export default function DestinationCard({
         isSelected ? "ring-2 ring-primary" : ""
       }`}
       onClick={toggle}
-      type="button"
+      type="button" data-component="DestinationCard"
     >
       <div className="absolute inset-0 bg-linear-to-b from-neutral-200 to-neutral-400" />
 

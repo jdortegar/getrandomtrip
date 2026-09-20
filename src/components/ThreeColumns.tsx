@@ -30,7 +30,7 @@ const cardVariants = {
 
 export default function ThreeColumns({ items }: ThreeColumnsProps) {
   return (
-    <div className={`grid gap-4 md:grid-cols-3 w-full`}>
+    <div className={`grid gap-4 md:grid-cols-3 w-full`} data-component="ThreeColumns">
       {items.map((item, index) => (
         <motion.div
           key={item.title}

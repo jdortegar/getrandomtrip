@@ -37,7 +37,7 @@ export default function TripperMottoBanner({
     <Section
       fullWidth
       backgroundImage={backgroundImageUrl}
-      className={cn(className)}
+      className={cn(className)} data-component="TripperMottoBanner"
     >
       <div className="relative z-10 flex max-w-3xl flex-col items-center gap-6 mx-auto">
         <blockquote className="font-barlow-condensed text-2xl font-bold uppercase leading-snug text-white md:text-3xl lg:text-4xl">

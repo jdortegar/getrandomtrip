@@ -81,7 +81,7 @@ export function ContactForm({ copy, onSuccess }: ContactFormProps) {
   return (
     <form
       className="space-y-5 rounded-xl bg-transparent"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit} data-component="ContactForm"
     >
       <FormField
         id="contact-name"

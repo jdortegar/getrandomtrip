@@ -10,7 +10,7 @@ type Props = {
 
 export default function ContactSticky({ tripper }: Props) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 p-4 shadow-lg md:hidden z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 p-4 shadow-lg md:hidden z-50" data-component="ContactSticky">
       <div className="flex justify-around items-center">
         <Link
           href="https://wa.me/526241928208"

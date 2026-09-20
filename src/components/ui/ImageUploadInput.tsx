@@ -44,7 +44,7 @@ export function ImageUploadInput({
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2" data-component="ImageUploadInput">
       {values.map((url) => (
         <div
           key={url}

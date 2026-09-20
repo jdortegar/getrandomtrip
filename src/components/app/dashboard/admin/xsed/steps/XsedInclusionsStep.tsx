@@ -21,7 +21,7 @@ interface Props {
  */
 export function XsedInclusionsStep({ form, onChange, copy }: Props) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="XsedInclusionsStep">
       <ChipListInput
         id="xsed-inc-inclusions"
         label={copy.inclusions}

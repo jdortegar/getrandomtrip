@@ -814,16 +814,23 @@
       },
       {
         "id": "pax",
-        "label": "Travelers",
+        "label": "Mood and travelers",
         "substeps": [
           {
             "id": "pax",
-            "title": "Number of travelers",
-            "description": "Travelers joining the escape."
+            "title": "Travelers",
+            "description": "Who you're traveling with, and how many."
           }
         ]
       }
     ],
+    "travelType": {
+      "label": "Who's traveling with you?",
+      "placeholder": "Select an option",
+      "couple": "Couple",
+      "family": "Family",
+      "friends": "Friends"
+    },
     "pax": {
       "label": "Travelers",
       "countOne": "{count} traveler",

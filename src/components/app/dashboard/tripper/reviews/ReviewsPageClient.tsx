@@ -212,9 +212,9 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     }
   }
 
-  if (loading && !hasLoadedOnce) return <LoadingSpinner />;
+  if (loading && !hasLoadedOnce) return <LoadingSpinner data-component="ReviewsPageClient" />;
   if (error && !hasLoadedOnce)
-    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+    return <div className="p-8 text-center text-sm text-red-600" data-component="ReviewsPageClient">{error}</div>;
 
   const kpis: KpiCard[] = [
     {
@@ -258,7 +258,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   }
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-6 text-left" data-component="ReviewsPageClient">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}

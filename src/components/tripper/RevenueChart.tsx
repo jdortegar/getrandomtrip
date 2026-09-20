@@ -9,7 +9,7 @@ export default function RevenueChart() {
       className="bg-neutral-800 p-6 rounded-2xl shadow-sm border border-neutral-700 mt-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: 0.5, delay: 0.3 }} data-component="RevenueChart"
     >
       <h3 className="text-xl font-bold text-white mb-4">Ingresos Recientes</h3>
       <div className="flex items-center justify-center h-48 bg-neutral-700 rounded-lg border border-dashed border-neutral-600 text-neutral-400">

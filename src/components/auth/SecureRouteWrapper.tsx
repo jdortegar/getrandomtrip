@@ -8,5 +8,5 @@ interface Props {
 }
 
 export default function SecureRouteWrapper({ children, requiredRole }: Props) {
-  return <SecureRoute requiredRole={requiredRole}>{children}</SecureRoute>;
+  return <SecureRoute requiredRole={requiredRole} data-component="SecureRouteWrapper">{children}</SecureRoute>;
 }

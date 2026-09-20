@@ -63,7 +63,7 @@ export function DurationInput({
   const hint = isValid && selectedUnit ? `${parsed} ${selectedUnit.hint}` : null;
 
   return (
-    <div className={cn("flex w-fit flex-col gap-2", className)}>
+    <div className={cn("flex w-fit flex-col gap-2", className)} data-component="DurationInput">
       <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
         {label}
       </label>

@@ -78,7 +78,7 @@ export function WaitlistPage({
   };
 
   return (
-    <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container">
+    <section className="grid h-screen grid-cols-1 lg:grid-cols-2 rt-container" data-component="WaitlistPage">
       <div className="flex min-w-0 items-center justify-center px-6 pb-4 pt-10 md:px-12 md:pb-6 md:pt-14 lg:px-0 lg:py-6">
         <div className="mx-auto w-full max-w-md lg:mx-0 lg:w-auto lg:max-w-none">
           <Img

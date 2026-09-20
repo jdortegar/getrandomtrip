@@ -21,7 +21,7 @@ export default function FiltersPanel() {
   };
 
   return (
-    <div className="mt-4 space-y-6">
+    <div className="mt-4 space-y-6" data-component="FiltersPanel">
       <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
         <p className="text-sm text-blue-700">
           Tu primer filtro opcional es gratis. 2–3 filtros: USD 18 c/u. 4+

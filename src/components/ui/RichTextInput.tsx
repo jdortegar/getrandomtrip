@@ -57,7 +57,7 @@ export function RichTextInput({
   const isEmpty = isPeeking && !peek!.originalValue.trim();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2" data-component="RichTextInput">
       <label className="block font-normal text-gray-600 text-base" htmlFor={id}>
         {label}
       </label>

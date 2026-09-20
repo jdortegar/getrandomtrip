@@ -142,7 +142,7 @@ export default function HeaderHero({
       className={cn(
         "relative flex min-h-[40vh] items-center justify-center overflow-hidden py-10 md:py-0",
         className,
-      )}
+      )} data-component="HeaderHero"
     >
       {/* Video Background */}
       {videoSrc ? (

@@ -22,7 +22,7 @@ export default function ExperienceLevelGrid({
 
   return (
     <div
-      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ""}`}
+      className={`grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 ${className ?? ""}`} data-component="ExperienceLevelGrid"
     >
       {tiers.map((level) => (
         <div

@@ -54,7 +54,6 @@ interface BudgetStepProps {
   labels: BudgetStepLabels;
   localizedTravelerTypes?: TravelerTypeCardOption[];
   locale: string;
-  minimizeAllFeatures?: boolean;
   travelTypeContent: string;
   onAccordionValueChange: (next: string) => void;
   selectedExperienceLevel?: string;
@@ -78,7 +77,6 @@ export default function BudgetStep({
   labels,
   localizedTravelerTypes,
   locale,
-  minimizeAllFeatures = true,
   onAccordionValueChange,
   selectedExperienceLevel,
   selectedTravelType,
@@ -137,7 +135,7 @@ export default function BudgetStep({
     : accordionValue;
 
   return (
-    <div>
+    <div data-component="BudgetStep">
       <Accordion
         collapsible
         onValueChange={onAccordionValueChange}
@@ -195,7 +193,6 @@ export default function BudgetStep({
                 allowedLevelIds={allowedLevelIds}
                 content={plannerContent}
                 itemsPerView={2}
-                minimizeAllFeatures={minimizeAllFeatures}
                 onSelect={handleExperienceSelect}
                 selectedLevel={selectedExperienceLevel}
                 tripperBadge={tripperBadge}

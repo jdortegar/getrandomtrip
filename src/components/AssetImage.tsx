@@ -22,6 +22,6 @@ export default function AssetImage({
   }, [failed, countryName, srcPrimary]);
 
   return (
-    <Image {...rest} alt={alt} src={src} onError={() => setFailed(true)} />
+    <Image {...rest} alt={alt} src={src} onError={() => setFailed(true)} data-component="AssetImage" />
   );
 }

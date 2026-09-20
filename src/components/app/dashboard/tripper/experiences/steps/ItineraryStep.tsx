@@ -53,7 +53,7 @@ export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSe
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="ItineraryStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[2]?.substeps[1]?.description}
       </p>

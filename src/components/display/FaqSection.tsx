@@ -31,7 +31,7 @@ export default function FaqSection({
   return (
     <section
       aria-labelledby={headingId}
-      className={cn("mt-10 text-left", className)}
+      className={cn("mt-10 text-left", className)} data-component="FaqSection"
     >
       <Accordion collapsible type="single">
         {items.map((item, index) => (

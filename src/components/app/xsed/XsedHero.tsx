@@ -26,7 +26,7 @@ export function XsedHero({
       className={cn(
         "relative flex h-screen flex-col overflow-hidden",
         className,
-      )}
+      )} data-component="XsedHero"
     >
       <VideoBackground
         fallbackImage={content.backgroundImage}

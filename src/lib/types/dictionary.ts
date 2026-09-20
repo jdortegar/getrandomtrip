@@ -977,6 +977,13 @@ export interface XsedBookDict {
     countOther: string;
     label: string;
   };
+  travelType: {
+    label: string;
+    placeholder: string;
+    couple: string;
+    family: string;
+    friends: string;
+  };
 }
 
 export interface XsedPageDict {

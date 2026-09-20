@@ -11,7 +11,7 @@ interface BlogViewAllCardProps {
 
 export default function BlogViewAllCard({ viewAll }: BlogViewAllCardProps) {
   return (
-    <div className="group relative block aspect-3/4 w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1">
+    <div className="group relative block aspect-3/4 w-full overflow-hidden rounded-2xl text-left shadow-lg transition-transform duration-300 hover:-translate-y-1" data-component="BlogViewAllCard">
       <Link
         aria-label={viewAll.title}
         className="absolute inset-0 z-0"

@@ -5,7 +5,7 @@ import { Search, Bell, UserCircle } from "lucide-react";
 
 export default function Topbar() {
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-neutral-800 shadow-sm flex items-center justify-between px-6 z-10">
+    <header className="fixed top-0 left-64 right-0 h-16 bg-neutral-800 shadow-sm flex items-center justify-between px-6 z-10" data-component="Topbar">
       {/* Search Bar */}
       <div className="relative flex-1 max-w-md">
         <Search

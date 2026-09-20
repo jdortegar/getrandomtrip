@@ -8,7 +8,7 @@ interface PremiumLoaderProps {
 }
 
 const PremiumLoader: React.FC<PremiumLoaderProps> = ({ message }) => (
-  <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+  <div className="flex flex-col items-center justify-center py-20 text-gray-400" data-component="PremiumLoader">
     <motion.div
       animate={{ rotate: 360 }}
       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}

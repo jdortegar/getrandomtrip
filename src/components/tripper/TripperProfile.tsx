@@ -11,7 +11,7 @@ export default function TripperProfile({ t }: { t: Tripper }) {
     // Ancla para “aterrizar” arriba del todo al entrar al perfil
     <section
       id="tripper-hero"
-      className="relative bg-[#07143A] text-white scroll-mt-24"
+      className="relative bg-[#07143A] text-white scroll-mt-24" data-component="TripperProfile"
     >
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-12 md:py-16">
         {/* Grid tipo Black Tomato */}

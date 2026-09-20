@@ -131,9 +131,9 @@ export function TravelerHomePageClient({
     <>
       <DashboardRoleToast message={roleToast} />
       {loading ? (
-        <DashboardSkeleton variant="home" />
+        <DashboardSkeleton variant="home" data-component="TravelerHomePageClient" />
       ) : (
-        <div className="space-y-10 py-10">
+        <div className="space-y-10 py-10" data-component="TravelerHomePageClient">
           <section>
             <div className="mb-5">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

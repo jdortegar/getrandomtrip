@@ -13,7 +13,7 @@ export default function FavoriteCard({
   return (
     <Link
       href={href}
-      className="block overflow-hidden rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md dark:border-white/10"
+      className="block overflow-hidden rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md dark:border-white/10" data-component="FavoriteCard"
     >
       <div className="relative h-40 w-full">
         <Image src={image} alt="" fill className="object-cover" />

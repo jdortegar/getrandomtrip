@@ -36,7 +36,7 @@ export function Container({
         horizontalPadding && "px-4 sm:px-6 lg:px-8",
         className,
       )}
-      {...props}
+      {...props} data-component="Container"
     >
       {children}
     </div>

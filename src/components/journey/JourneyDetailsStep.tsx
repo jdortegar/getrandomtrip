@@ -241,7 +241,7 @@ export function JourneyDetailsStep({
       collapsible
       onValueChange={onOpenSection}
       type="single"
-      value={openSectionId}
+      value={openSectionId} data-component="JourneyDetailsStep"
     >
       <div className="space-y-4">
         {showPaxSubstep && (

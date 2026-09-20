@@ -29,7 +29,7 @@ export function FullPageStatusLayout({
 }: FullPageStatusLayoutProps) {
   return (
     <Section
-      className={cn("min-h-[min(100dvh,960px)] justify-center py-12 md:py-20")}
+      className={cn("min-h-[min(100dvh,960px)] justify-center py-12 md:py-20")} data-component="FullPageStatusLayout"
     >
       <div className="rt-container">
         <div className="relative mx-auto w-full max-w-4xl">

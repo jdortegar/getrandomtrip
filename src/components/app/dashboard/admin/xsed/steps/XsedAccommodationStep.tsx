@@ -51,7 +51,7 @@ export function XsedAccommodationStep({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="XsedAccommodationStep">
       <div className="space-y-4">
         {form.hotels.map((entry, index) => (
           <div key={index} className="max-w-[calc(50%-0.5rem)]">

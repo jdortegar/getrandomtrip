@@ -22,7 +22,7 @@ export function Switch({ checked, disabled, id, onCheckedChange }: SwitchProps) 
       id={id}
       onClick={() => onCheckedChange(!checked)}
       role="switch"
-      type="button"
+      type="button" data-component="Switch"
     >
       <span
         className={cn(

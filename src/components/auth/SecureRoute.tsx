@@ -100,7 +100,7 @@ export default function SecureRoute({
   ]);
 
   if (status === "loading" || isChecking) {
-    return <LoadingSpinner />;
+    return <LoadingSpinner data-component="SecureRoute" />;
   }
 
   // Not authenticated: show same page + auth modal (no full-page fallback)
@@ -124,7 +124,7 @@ export default function SecureRoute({
       fallback || (
         <>
           <BgCarousel scrim={0.75} />
-          <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16">
+          <main className="container mx-auto max-w-5xl px-4 pt-24 md:pt-28 pb-16" data-component="SecureRoute">
             <GlassCard>
               <div className="p-6 text-center text-neutral-700">
                 <div className="text-red-600 mb-4">⚠️ Acceso denegado</div>

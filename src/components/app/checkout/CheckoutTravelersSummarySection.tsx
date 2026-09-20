@@ -84,7 +84,7 @@ export function CheckoutTravelersSummarySection({
             "cursor-pointer text-left sm:col-span-2",
           )}
           onClick={() => handleModalOpenChange(true)}
-          type="button"
+          type="button" data-component="CheckoutTravelersSummarySection"
         >
           {tileInner}
         </button>
@@ -92,7 +92,7 @@ export function CheckoutTravelersSummarySection({
         <div
           aria-label={checkoutCopy.travelersTileTitle}
           className={cn(tileClassName, "sm:col-span-2")}
-          role="group"
+          role="group" data-component="CheckoutTravelersSummarySection"
         >
           {tileInner}
         </div>
@@ -108,7 +108,7 @@ export function CheckoutTravelersSummarySection({
           onOpenChange={handleModalOpenChange}
           onRoomsChange={(value) => patchDraft({ rooms: value })}
           open={modalOpen}
-          rooms={draft.rooms}
+          rooms={draft.rooms} data-component="CheckoutTravelersSummarySection"
         />
       ) : null}
     </>

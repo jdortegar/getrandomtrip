@@ -63,7 +63,7 @@ export function UnpaidTripsAlert({
   }
 
   return (
-    <section>
+    <section data-component="UnpaidTripsAlert">
       {/* Section header */}
       <div className="mb-5">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

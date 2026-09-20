@@ -43,7 +43,7 @@ export default function HomeInfo({ content }: HomeInfoProps) {
   const [activeTab, setActiveTab] = useState<string>(TABS[0].id);
 
   return (
-    <Section eyebrow={eyebrow} title={title}>
+    <Section eyebrow={eyebrow} title={title} data-component="HomeInfo">
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

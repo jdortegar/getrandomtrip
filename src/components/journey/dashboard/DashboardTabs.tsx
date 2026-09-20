@@ -107,7 +107,7 @@ export default function DashboardTabs() {
   }, [next?.startISO]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="DashboardTabs">
       {/* Tabs */}
       <div className="flex gap-2 border-b border-neutral-200">
         {[

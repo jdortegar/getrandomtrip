@@ -34,7 +34,7 @@ export function JourneyDropdown({
         className,
       )}
       id={id}
-      value={value}
+      value={value} data-component="JourneyDropdown"
     >
       <AccordionPrimitive.Header className="flex">
         <AccordionPrimitive.Trigger

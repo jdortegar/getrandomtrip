@@ -34,7 +34,7 @@ export function TripperTravelerTypesSection({
       eyebrow={copy.eyebrow}
       id={TRIPPER_TRAVELER_TYPES_ANCHOR_ID}
       subtitle={copy.subtitle.replace("{name}", tripperName)}
-      title={copy.title.replace("{name}", tripperName)}
+      title={copy.title.replace("{name}", tripperName)} data-component="TripperTravelerTypesSection"
     >
       <TravelerTypesCarousel
         availableTypes={availableTypes}

@@ -96,7 +96,7 @@ export function CheckoutTravelDetailsCard({
       className={cn(
         "flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-md lg:col-span-1",
         "ring-1 ring-gray-100",
-      )}
+      )} data-component="CheckoutTravelDetailsCard"
     >
       <h2 className="mb-4 font-barlow-condensed text-4xl font-bold uppercase">
         {checkoutCopy.travelDetailsTitle}

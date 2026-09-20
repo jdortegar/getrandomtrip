@@ -57,7 +57,7 @@ export function XsedDinnerStep({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-component="XsedDinnerStep">
       <XsedActivityEntryFields
         idPrefix="xsed-dinner"
         namePlaceholder={copy.dinnerNamePlaceholder}

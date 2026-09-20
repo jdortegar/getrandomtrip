@@ -61,7 +61,7 @@ interface SessionProviderProps {
 
 export default function SessionProvider({ children }: SessionProviderProps) {
   return (
-    <NextAuthSessionProvider>
+    <NextAuthSessionProvider data-component="SessionProvider">
       <SessionSync />
       {children}
     </NextAuthSessionProvider>

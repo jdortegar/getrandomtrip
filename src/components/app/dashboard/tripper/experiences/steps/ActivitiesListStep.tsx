@@ -93,7 +93,7 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnl
     peek?.(index, key) ? "ring-2 ring-amber-400 rounded-xl" : undefined;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-component="ActivitiesListStep">
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[2]?.substeps[0]?.description}
       </p>

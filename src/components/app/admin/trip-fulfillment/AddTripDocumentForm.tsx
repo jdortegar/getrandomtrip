@@ -42,7 +42,7 @@ export function AddTripDocumentForm({
   }
 
   return (
-    <form className={styles.addDoc} onSubmit={handleSubmit}>
+    <form className={styles.addDoc} onSubmit={handleSubmit} data-component="AddTripDocumentForm">
       <p className={styles.addDocTitle}>{copy.addDocument.title}</p>
 
       <div className={styles.addDocGrid}>

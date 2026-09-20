@@ -89,13 +89,13 @@ export default function CountrySelector({
   };
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} data-component="CountrySelector">
       <div className="relative">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-gray-600" />
         <Input
           autoComplete="off"
           className={cn(
-            "border-gray-300 bg-white pl-11 ring-0 focus-visible:ring-0",
+            "border-transparent bg-gray-100 pl-11 ring-0 focus-visible:ring-0",
             size === "lg"
               ? "h-12 text-base"
               : size === "sm"

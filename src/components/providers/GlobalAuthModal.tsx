@@ -41,7 +41,7 @@ export function GlobalAuthModal({ dict }: GlobalAuthModalProps) {
       defaultMode="login"
       dict={dict}
       isOpen={authModalOpen}
-      onClose={handleClose}
+      onClose={handleClose} data-component="GlobalAuthModal"
     />
   );
 }

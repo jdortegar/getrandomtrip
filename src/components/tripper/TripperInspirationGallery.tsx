@@ -34,7 +34,7 @@ export default function TripperInspirationGallery({
   if (!trips.length) return null;
 
   return (
-    <Section className="bg-primary py-20" fullWidth={true} variant="dark">
+    <Section className="bg-primary py-20" fullWidth={true} variant="dark" data-component="TripperInspirationGallery">
       <div className="rt-container px-6 md:px-12">
         {/* Header */}
         <div className="text-center mb-16">

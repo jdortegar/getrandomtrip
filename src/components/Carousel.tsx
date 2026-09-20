@@ -225,7 +225,7 @@ const CarouselRoot = React.forwardRef<
     );
 
     return (
-      <CarouselContext.Provider value={value}>
+      <CarouselContext.Provider value={value} data-component="CarouselRoot">
         <div
           ref={ref}
           className={cn("relative", className)}
@@ -261,7 +261,7 @@ const CarouselContent = React.forwardRef<
       ref={carouselRef}
       className={cn(viewportClassName)}
       data-slot="carousel-viewport"
-      style={viewportStyle}
+      style={viewportStyle} data-component="CarouselContent"
     >
       <div
         ref={ref}
@@ -294,7 +294,7 @@ const CarouselItem = React.forwardRef<
       className={cn("min-w-0 shrink-0 grow-0 basis-full", className)}
       data-slot="carousel-item"
       role="group"
-      {...props}
+      {...props} data-component="CarouselItem"
     />
   );
 });
@@ -322,7 +322,7 @@ const CarouselPrevious = React.forwardRef<
         onClick={scrollPrev}
         size="icon"
         type="button"
-        variant="ghost"
+        variant="ghost" data-component="CarouselPrevious"
       >
         <ChevronLeft className="size-5 text-white" />
       </Button>
@@ -350,7 +350,7 @@ const CarouselNext = React.forwardRef<
         onClick={scrollNext}
         size={size}
         variant={variant}
-        {...props}
+        {...props} data-component="CarouselNext"
       >
         <ChevronRight className="size-5 text-white" />
         <span className="sr-only">Next slide</span>
@@ -382,7 +382,7 @@ const CarouselDots = React.forwardRef<
       ref={ref}
       className={cn("flex items-center gap-2", alignClass, className)}
       data-slot="carousel-dots"
-      {...props}
+      {...props} data-component="CarouselDots"
     >
       {scrollSnaps.map((_, index) => (
         <button
@@ -524,7 +524,7 @@ function Carousel({
       : undefined;
 
   return (
-    <div ref={sectionRef} className={cn("w-full", classes?.section, className)}>
+    <div ref={sectionRef} className={cn("w-full", classes?.section, className)} data-component="Carousel">
       <div className={cn(wrapperClass)}>
         <CarouselRoot
           edgeBleed={edgeBleed}

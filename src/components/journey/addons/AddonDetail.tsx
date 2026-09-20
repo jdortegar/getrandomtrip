@@ -30,7 +30,7 @@ export default function AddonDetail({
 
   if (!addon) {
     return (
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-600">
+      <div className="rounded-2xl border border-neutral-200 bg-white p-5 text-neutral-600" data-component="AddonDetail">
         Elegí un add-on a la izquierda para ver detalles.
       </div>
     );
@@ -50,7 +50,7 @@ export default function AddonDetail({
   };
 
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+    <div className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm" data-component="AddonDetail">
       <div className="flex items-start justify-between gap-3">
         <div className="text-ink">
           <h3 className="text-lg font-semibold">{addon.title}</h3>

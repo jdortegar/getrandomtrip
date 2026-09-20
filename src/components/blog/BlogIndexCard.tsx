@@ -40,7 +40,7 @@ export function BlogIndexCard({
   return (
     <Link
       className={cn("group block", colSpan)}
-      href={pathForLocale(locale, `/blog/${post.slug}`)}
+      href={pathForLocale(locale, `/blog/${post.slug}`)} data-component="BlogIndexCard"
     >
       <GlassCard className="relative h-full overflow-hidden rounded-xl transition-shadow hover:shadow-lg">
         <div className="relative h-[304.83px] w-full overflow-hidden">

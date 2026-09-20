@@ -107,7 +107,7 @@ export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   }
 
   return (
-    <header className={styles.hero} role="banner">
+    <header className={styles.hero} role="banner" data-component="TripDetailsHero">
       <Img
         alt=""
         aria-hidden="true"

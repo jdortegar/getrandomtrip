@@ -22,7 +22,7 @@ export function NotificationsPageClient(props: NotificationsPageClientProps) {
   return (
     <RoleNotificationsPageClient
       {...props}
-      resolveHref={resolveTripperNotificationHref}
+      resolveHref={resolveTripperNotificationHref} data-component="NotificationsPageClient"
     />
   );
 }

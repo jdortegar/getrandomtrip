@@ -20,7 +20,7 @@ export default function TripperBlog({
   return (
     <section
       id={sectionId}
-      className="py-20 px-8 bg-primary text-white scroll-mt-24"
+      className="py-20 px-8 bg-primary text-white scroll-mt-24" data-component="TripperBlog"
     >
       <div className="rt-container grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
         <div className="md:col-span-1 text-left">

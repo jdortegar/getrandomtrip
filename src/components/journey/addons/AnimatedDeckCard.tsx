@@ -68,7 +68,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
       className={cn(
         "border border-gray-200 rounded-lg overflow-hidden bg-white",
         !isAvailableForLevel && "opacity-50",
-      )}
+      )} data-component="AnimatedDeckCard"
     >
       {/* Accordion Header */}
       <button

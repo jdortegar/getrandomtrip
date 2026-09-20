@@ -7,7 +7,7 @@ export default function StatCard({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rt-stat rt-card-body">
+    <div className="rt-stat rt-card-body" data-component="StatCard">
       <div className="k">{value}</div>
       <div className="l">{label}</div>
     </div>

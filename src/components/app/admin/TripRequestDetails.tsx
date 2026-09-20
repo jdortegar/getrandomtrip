@@ -30,7 +30,7 @@ interface TripRequestDetailsProps {
 
 export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
   return (
-    <div className={styles.factList}>
+    <div className={styles.factList} data-component="TripRequestDetails">
       <DetailRow
         label={labels.origin}
         value={`${trip.originCity}, ${trip.originCountry}`}

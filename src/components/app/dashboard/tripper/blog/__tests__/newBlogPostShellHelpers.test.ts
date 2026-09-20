@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import {
   isEditingExisting,
   resolveBlogPersistTarget,
+  resolveBlogPublishRedirectPath,
+  shouldShowTripperNoteField,
   shouldSkipAutosave,
   shouldSwapFooterForReviewActions,
 } from "../newBlogPostShellHelpers";
@@ -37,6 +39,53 @@ describe("shouldSwapFooterForReviewActions", () => {
     expect(shouldSwapFooterForReviewActions("adminEdit")).toBe(true);
     expect(shouldSwapFooterForReviewActions("adminReadOnly")).toBe(true);
     expect(shouldSwapFooterForReviewActions("tripper")).toBe(false);
+  });
+});
+
+describe("resolveBlogPublishRedirectPath", () => {
+  it("goes to the admin blog list in adminCreate mode regardless of source", () => {
+    expect(resolveBlogPublishRedirectPath("adminCreate", "es")).toBe(
+      "/es/dashboard/admin/blog",
+    );
+    expect(resolveBlogPublishRedirectPath("adminCreate", "es", "TRIPPER")).toBe(
+      "/es/dashboard/admin/blog",
+    );
+  });
+
+  it("goes to the tripper blog list in tripper mode for a TRIPPER-sourced post", () => {
+    expect(resolveBlogPublishRedirectPath("tripper", "es", "TRIPPER")).toBe(
+      "/es/dashboard/tripper/blog",
+    );
+  });
+
+  it("goes to the tripper blog list in tripper mode when source is unknown (default)", () => {
+    expect(resolveBlogPublishRedirectPath("tripper", "es")).toBe(
+      "/es/dashboard/tripper/blog",
+    );
+  });
+
+  it("goes to the admin blog list in tripper mode for a RANDOMTRIP-sourced post — an admin finishing their own draft through the tripper edit page still belongs on the admin list", () => {
+    expect(resolveBlogPublishRedirectPath("tripper", "es", "RANDOMTRIP")).toBe(
+      "/es/dashboard/admin/blog",
+    );
+  });
+});
+
+describe("shouldShowTripperNoteField", () => {
+  it("shows the note field for a regular tripper submitting their own TRIPPER-sourced post", () => {
+    expect(shouldShowTripperNoteField("tripper", "TRIPPER")).toBe(true);
+  });
+
+  it("shows the note field when source is unknown (default, backward compatible)", () => {
+    expect(shouldShowTripperNoteField("tripper")).toBe(true);
+  });
+
+  it("hides the note field in adminCreate mode — there is no reviewer to note", () => {
+    expect(shouldShowTripperNoteField("adminCreate")).toBe(false);
+  });
+
+  it("hides the note field in tripper mode for a RANDOMTRIP-sourced post — it publishes directly, skipping review", () => {
+    expect(shouldShowTripperNoteField("tripper", "RANDOMTRIP")).toBe(false);
   });
 });
 

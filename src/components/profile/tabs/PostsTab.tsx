@@ -27,7 +27,7 @@ const PostCard = ({
 export default function PostsTab({ data }: Props) {
   const posts = data.posts ?? [];
   return (
-    <section aria-labelledby="posts-heading">
+    <section aria-labelledby="posts-heading" data-component="PostsTab">
       <h2 id="posts-heading" className="sr-only">
         Bitácoras
       </h2>

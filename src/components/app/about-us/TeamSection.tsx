@@ -55,7 +55,7 @@ export function TeamSection({ content }: TeamSectionProps) {
     <Section
       eyebrow={content.eyebrow}
       title={content.sectionTitle}
-      subtitle={content.subtitle}
+      subtitle={content.subtitle} data-component="TeamSection"
     >
       <div
         className={

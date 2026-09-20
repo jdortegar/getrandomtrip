@@ -48,7 +48,7 @@ export function TripDocumentsSection({ copy, documents, status }: TripDocumentsS
   const note = status === "CANCELLED" ? copy.documentsCancelledNote : copy.documentsNote;
 
   return (
-    <section className={styles.block} id="documents">
+    <section className={styles.block} id="documents" data-component="TripDocumentsSection">
       <SectionHead
         eyebrow={copy.documents.eyebrow}
         heading={copy.documents.heading}
