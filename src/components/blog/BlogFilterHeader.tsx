@@ -3,6 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import {
   getBlogExcuseOptions,
+  getBlogLevelOptions,
   getBlogTravelTypeOptions,
   type ExcuseFilterOption,
   type TripperFilterOption,
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 
 export interface BlogFilterState {
   excuseKey: string | null;
+  levelKey: string;
   tripperId: string | null;
   travelTypeKey: string;
 }
@@ -48,9 +50,7 @@ function FilterDropdownCard({
       )}
     >
       <div className="flex justify-between gap-1 items-center w-full">
-        <p className="text-base font-semibold text-ink md:text-xl">
-          {title}
-        </p>
+        <p className="text-base font-semibold text-ink md:text-xl">{title}</p>
         <span className="pointer-events-none text-ink">
           <ChevronDown className="h-4 w-4 md:h-5 md:w-5" />
         </span>
@@ -78,6 +78,7 @@ export function BlogFilterHeader({
 }: BlogFilterHeaderProps) {
   const travelTypeOptions = getBlogTravelTypeOptions(locale);
   const excuseOptions = getBlogExcuseOptions(locale);
+  const levelOptions = getBlogLevelOptions();
 
   const selectedTripper = value.tripperId
     ? getTripperById(trippers, value.tripperId)
@@ -89,20 +90,32 @@ export function BlogFilterHeader({
   const travelTypeTitle =
     value.travelTypeKey === ""
       ? labels.travelTypeLabel
-      : (travelTypeOptions.find((o) => o.key === value.travelTypeKey)
-          ?.label ?? labels.travelTypeLabel);
+      : (travelTypeOptions.find((o) => o.key === value.travelTypeKey)?.label ??
+        labels.travelTypeLabel);
+
+  const levelTitle =
+    value.levelKey === ""
+      ? labels.levelLabel
+      : (levelOptions.find((o) => o.key === value.levelKey)?.label ??
+        labels.levelLabel);
 
   const excuseTitle = selectedExcuse?.label ?? labels.excuseLabel;
 
   const tripperTitle = selectedTripper?.name ?? labels.tripperLabel;
 
   const handleTravelTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange({ ...value, travelTypeKey: e.target.value });
+    onChange({ ...value, levelKey: "", travelTypeKey: e.target.value });
   };
 
-  const handleExcuseSelect = (key: string) => {
-    const next = value.excuseKey === key ? null : key;
-    onChange({ ...value, excuseKey: next });
+  const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextLevel = e.target.value;
+    onChange({
+      ...value,
+      levelKey: nextLevel,
+      // XSED is stored on travelType — clear traveler-type when selecting a level
+      // so the two filters don't fight (mirrors /api/tripper/blogs else-if).
+      travelTypeKey: nextLevel ? "" : value.travelTypeKey,
+    });
   };
 
   const handleTripperChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -115,7 +128,8 @@ export function BlogFilterHeader({
       className={cn(
         "flex flex-col gap-3 border-b border-neutral-200 pb-4 md:flex-row md:flex-wrap md:items-center",
         className,
-      )} data-component="BlogFilterHeader"
+      )}
+      data-component="BlogFilterHeader"
     >
       <FilterDropdownCard
         subtitle={labels.travelTypeSubtitle}
@@ -128,6 +142,21 @@ export function BlogFilterHeader({
         >
           <option value="">{labels.allOption}</option>
           {travelTypeOptions.map((opt) => (
+            <option key={opt.key} value={opt.key}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </FilterDropdownCard>
+
+      <FilterDropdownCard subtitle={labels.levelSubtitle} title={levelTitle}>
+        <select
+          className="absolute inset-0 cursor-pointer opacity-0"
+          onChange={handleLevelChange}
+          value={value.levelKey}
+        >
+          <option value="">{labels.allOption}</option>
+          {levelOptions.map((opt) => (
             <option key={opt.key} value={opt.key}>
               {opt.label}
             </option>
