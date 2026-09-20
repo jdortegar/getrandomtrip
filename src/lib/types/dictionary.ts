@@ -2522,6 +2522,8 @@ export interface MarketingDictionary {
       allOption: string;
       excuseLabel: string;
       excuseSubtitle: string;
+      levelLabel: string;
+      levelSubtitle: string;
       travelTypeLabel: string;
       travelTypeSubtitle: string;
       tripperLabel: string;

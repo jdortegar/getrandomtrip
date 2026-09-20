@@ -64,6 +64,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
   const [trippers, setTrippers] = useState<TripperFilterOption[]>([]);
   const [filter, setFilter] = useState<BlogFilterState>({
     excuseKey: null,
+    levelKey: "",
     tripperId: tripperId ?? null,
     travelTypeKey: "",
   });
@@ -90,6 +91,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         });
 
         if (filter.tripperId) query.append("tripperId", filter.tripperId);
+        if (filter.levelKey) query.append("level", filter.levelKey);
         if (filter.travelTypeKey)
           query.append("travelType", filter.travelTypeKey);
         if (filter.excuseKey) query.append("excuseKey", filter.excuseKey);
@@ -110,7 +112,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         setLoadingMore(false);
       }
     },
-    [filter.excuseKey, filter.tripperId, filter.travelTypeKey],
+    [filter.excuseKey, filter.levelKey, filter.tripperId, filter.travelTypeKey],
   );
 
   useEffect(() => {

@@ -1321,6 +1321,8 @@
       "allOption": "All",
       "excuseLabel": "Excuse / Category",
       "excuseSubtitle": "Choose an excuse",
+      "levelLabel": "Level",
+      "levelSubtitle": "Choose an experience level",
       "travelTypeLabel": "Travel type",
       "travelTypeSubtitle": "Choose how you want to travel",
       "tripperLabel": "By Tripper",
