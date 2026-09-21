@@ -33,56 +33,6 @@ export type XsedListRow = Prisma.ExperienceGetPayload<{
   select: typeof xsedListSelect;
 }>;
 
-const xsedDetailSelect = {
-  id: true,
-  slug: true,
-  titleInternal: true,
-  teaser: true,
-  heroImage: true,
-  destinationCity: true,
-  destinationCountry: true,
-  tripDate: true,
-  revealAt: true,
-  basePrice: true,
-  currency: true,
-  maxSpots: true,
-  minSpots: true,
-  inclusions: true,
-  exclusions: true,
-  cancellationPolicy: true,
-  weatherPolicy: true,
-  accessibilityNotes: true,
-  safetyNotes: true,
-  packingHints: true,
-  sections: true,
-  gallery: true,
-} as const;
-
-export type XsedExperienceDetail = Prisma.ExperienceGetPayload<{
-  select: typeof xsedDetailSelect;
-}>;
-
-export interface XsedDropSectionPhoto {
-  url: string;
-  credit: string;
-}
-
-export interface XsedDropSection {
-  title: string;
-  body: string;
-  photos: XsedDropSectionPhoto[];
-}
-
-/**
- * Parses the `sections` Json column into the public-page narrative body
- * structure. Replaces the old `parseDropBenefits(hotels, activities)`
- * derivation — the admin XSED authoring form no longer feeds hotels/
- * activities into the public body, it authors `sections` directly.
- */
-export function parseDropSections(sections: Prisma.JsonValue | null): XsedDropSection[] {
-  return Array.isArray(sections) ? (sections as unknown as XsedDropSection[]) : [];
-}
-
 export async function findUpcomingActiveXsedExperiences(
   now: Date = new Date(),
 ): Promise<XsedListRow[]> {
@@ -109,32 +59,6 @@ export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
     where: { type: { has: "XSED" } },
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
-  });
-}
-
-export async function findActiveXsedExperienceBySlug(
-  slug: string,
-): Promise<XsedExperienceDetail | null> {
-  return prisma.experience.findUnique({
-    where: { slug },
-    select: xsedDetailSelect,
-  });
-}
-
-export async function findCompletedXsedTripRequestsForTestimonials(
-  experienceId: string,
-) {
-  return prisma.tripRequest.findMany({
-    where: {
-      experienceId,
-      status: "COMPLETED",
-      customerFeedback: { not: null },
-    },
-    orderBy: { completedAt: "desc" },
-    take: 24,
-    include: {
-      user: { select: { name: true, avatarUrl: true } },
-    },
   });
 }
 

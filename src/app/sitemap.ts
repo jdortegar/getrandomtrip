@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Dynamic: published blog posts
-  const [blogPosts, trippers, tripperTimestamps, xsedDrops] = await Promise.all([
+  const [blogPosts, trippers, tripperTimestamps] = await Promise.all([
     prisma.blogPost.findMany({
       where: { isActive: true, isReviewCopy: false, status: "PUBLISHED" },
       select: { slug: true, id: true, updatedAt: true },
@@ -93,10 +93,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     prisma.user.findMany({
       where: { roles: { has: "TRIPPER" }, tripperSlug: { not: null }, isActive: true },
       select: { tripperSlug: true, updatedAt: true },
-    }),
-    prisma.experience.findMany({
-      where: { type: { has: "XSED" }, slug: { not: null } },
-      select: { slug: true, updatedAt: true },
     }),
   ]);
 
@@ -131,18 +127,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         `experiences/by-tripper/${slug}`,
         { changeFrequency: "weekly", priority: 0.7 },
         lastModified,
-      ),
-    );
-  }
-
-  // Dynamic: public xsed drops
-  for (const drop of xsedDrops) {
-    if (!drop.slug) continue;
-    entries.push(
-      toSitemapEntry(
-        `xsed/drops/${drop.slug}`,
-        { changeFrequency: "weekly", priority: 0.8 },
-        drop.updatedAt,
       ),
     );
   }
