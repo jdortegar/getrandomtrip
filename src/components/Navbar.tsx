@@ -107,7 +107,7 @@ export default function Navbar({
   const iconHoverClass = backgroundPrimary ? "hover:bg-secondary/10" : "hover:bg-white/10";
   const wordmarkSrc = backgroundPrimary
     ? "/assets/logos/logo_randomtrip_no_tag.svg"
-    : "/assets/logos/logo_white_no_tag.svg";
+    : "/assets/logos/logo_white_no_tag_ochre_icon.svg";
 
   return (
     <>
