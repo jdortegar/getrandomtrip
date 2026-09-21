@@ -1,6 +1,8 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, use } from "react";
+import { useJourneyPricingReady } from "@/hooks/useJourneyPricingReady";
+import type { JourneyPricingContext } from "@/lib/pricing/journey-pricing-context";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
@@ -75,14 +77,17 @@ function getInitialStepFromParams(params: URLSearchParams): {
 
 function JourneyPageContent({
   locale,
+  pricing,
   tripperSlug,
   tripperState,
 }: {
   locale?: string;
+  pricing: JourneyPricingContext;
   tripperSlug?: string;
   tripperState: TripperContextState;
 }) {
   const router = useRouter();
+  const pricingReady = useJourneyPricingReady(pricing.binding);
   const searchParams = useSearchParams();
   const [dict, setDict] = useState<Dictionary | null>(null);
   const [activeTab, setActiveTab] = useState("budget");
@@ -179,7 +184,7 @@ function JourneyPageContent({
     setOpenSectionId(sectionId);
   };
 
-  if (!dict) {
+  if (!dict || !pricingReady) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <LoadingSpinner />
@@ -252,6 +257,7 @@ function JourneyPageContent({
 
           <div className="lg:sticky lg:top-8 lg:self-start min-w-0 flex-1">
             <JourneyMainContent
+              bookingPriceOverrides={pricing.bookingBound ? pricing.overrides : undefined}
               activeTab={activeTab}
               addonLabels={journey.addons}
               allowedLevelsByType={tripperContext?.allowedLevelsByType}
@@ -282,7 +288,7 @@ function JourneyPageContent({
           <JourneySummary
             addonLabels={journey.addons}
             filterOptions={journey.preferencesStep.filterOptions}
-            tripperPriceOverrides={tripperContext?.priceOverrides ?? null}
+            tripperPriceOverrides={pricing.overrides}
             localizedExcuses={hasExcuseStep ? journey.excuses : undefined}
             onEdit={handleSummaryEdit}
             refineDetailOptions={
@@ -315,6 +321,7 @@ function JourneyPageContent({
 }
 
 export default function JourneyPageClient(props: {
+  pricing: JourneyPricingContext;
   params?: Promise<{ locale?: string }>;
   tripperSlug?: string;
   tripperState?: TripperContextState;
@@ -324,6 +331,7 @@ export default function JourneyPageClient(props: {
     <Suspense fallback={<LoadingSpinner />}>
       <JourneyPageContent
         locale={params?.locale}
+        pricing={props.pricing}
         tripperSlug={props.tripperSlug}
         tripperState={props.tripperState ?? { status: "none" }}
       />
