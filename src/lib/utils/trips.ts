@@ -1,4 +1,5 @@
 export interface Trip {
+  basePriceUsd?: number;
   accommodationType?: string;
   addons?: Array<{ id: string; qty: number }>;
   actualDestination?: string | null;
@@ -25,6 +26,7 @@ export interface Trip {
   type: string;
   payment?: {
     amount: number;
+    currency?: string;
     createdAt?: string;
     status: string;
   };
@@ -108,6 +110,11 @@ export function mapTripFromApi(raw: unknown): Trip {
     rowTotalUsd > 0 ? rowTotalUsd : paymentAmount > 0 ? paymentAmount : 0;
 
   return {
+    basePriceUsd:
+      typeof trip.basePriceUsd === "number" &&
+      Number.isFinite(trip.basePriceUsd)
+        ? trip.basePriceUsd
+        : undefined,
     accommodationType: trip.accommodationType
       ? String(trip.accommodationType)
       : undefined,
@@ -142,6 +149,8 @@ export function mapTripFromApi(raw: unknown): Trip {
     payment: payment
       ? {
           amount: paymentAmount,
+          currency:
+            typeof payment.currency === "string" ? payment.currency : "USD",
           createdAt: payment.createdAt
             ? toIsoDate(payment.createdAt)
             : undefined,

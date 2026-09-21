@@ -6,6 +6,8 @@ import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 
 /** Optional fields present on Prisma `TripRequest` list items (dashboard / GET /api/trips). */
 export interface TripRequestPricingFields {
+  /** Server-resolved, before the PAWS headcount multiplier. */
+  basePriceUsd?: number;
   accommodationType?: string;
   addons?: Array<{ id: string; qty: number }> | null;
   arrivePref?: string;
@@ -64,7 +66,11 @@ export function paymentTotalsInputFromTripRequest(
     overrides,
     travelerType: type,
   });
-  const basePriceUsd = applyPaxMultiplier(resolution.price, type, pax);
+  const basePriceUsd = applyPaxMultiplier(
+    trip.basePriceUsd ?? resolution.price,
+    type,
+    pax,
+  );
 
   const avoidList = Array.isArray(trip.avoidDestinations)
     ? trip.avoidDestinations

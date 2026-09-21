@@ -108,6 +108,8 @@ interface JourneyMainContentProps {
    * undefined, all types render tripper-badge-free (direct journey).
    */
   allowedTypes?: string[];
+  /** An owned persisted booking prices independently of current marketing curation. */
+  bookingPriceOverrides?: TripperPriceOverrides | null;
   /**
    * When defined (curated journey), which levels of an offered type the
    * tripper actually has ACTIVE content for — badge signal only (nothing is
@@ -161,6 +163,7 @@ export default function JourneyMainContent({
   activeTab,
   addonLabels,
   allowedTypes,
+  bookingPriceOverrides,
   allowedLevelsByType,
   className,
   tripperPriceOverrides,
@@ -622,6 +625,7 @@ export default function JourneyMainContent({
       case "budget": {
         return (
           <BudgetStep
+            bookingPriceOverrides={bookingPriceOverrides}
             accordionValue={accordionValue}
             allowedTypes={allowedTypes}
             allowedLevelsByType={allowedLevelsByType}

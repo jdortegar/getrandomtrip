@@ -68,7 +68,7 @@ export default function EmailLayout({
           {/* ── Header ── */}
           <Section style={headerSection}>
             <Img
-              src={`${BASE_URL}/assets/logos/logo_getrandomtrip_1.png`}
+              src={`${BASE_URL}/assets/logos/logo_white_no_tag.svg`}
               width={160}
               alt="Randomtrip"
               style={{ display: "block", margin: "0 auto" }}
@@ -151,7 +151,7 @@ const container: React.CSSProperties = {
 };
 
 const headerSection: React.CSSProperties = {
-  backgroundColor: "#111827",
+  backgroundColor: "#0F5C60", // Deep Teal (brand primary)
   padding: "24px 40px",
   textAlign: "center",
 };

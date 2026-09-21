@@ -41,6 +41,8 @@ interface BudgetStepProps {
    * unchanged.
    */
   allowedTypes?: string[];
+  /** An owned persisted booking prices independently of current marketing curation. */
+  bookingPriceOverrides?: TripperPriceOverrides | null;
   /**
    * When defined (curated journey), which levels of the selected type the
    * tripper actually has ACTIVE content for — badge signal only, forwarded
@@ -70,6 +72,7 @@ interface BudgetStepProps {
 export default function BudgetStep({
   accordionValue,
   allowedTypes,
+  bookingPriceOverrides,
   allowedLevelsByType,
   experienceContent,
   handleExperienceSelect,
@@ -109,8 +112,9 @@ export default function BudgetStep({
   // can reach this component via a stale/direct `?travelType=` param that
   // never went through that picker. Also gated per-level by allowedLevelIds
   // so a "BY RANDOMTRIP"-badged level never shows the tripper's price.
-  const effectiveTripperPriceOverrides =
-    hasTravelType && allowedTypes !== undefined
+  const effectiveTripperPriceOverrides = bookingPriceOverrides !== undefined
+    ? bookingPriceOverrides
+    : hasTravelType && allowedTypes !== undefined
       ? getEffectiveTripperPriceOverrides(
           { allowedTypes, priceOverrides: tripperPriceOverrides ?? null },
           travelerType as TravelerTypeSlug,
