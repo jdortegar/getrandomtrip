@@ -36,11 +36,12 @@ import {
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
+import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
+import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { getLevelName } from "@/lib/utils/levels";
 
 interface TripDetails {
+  basePriceUsd?: number;
   id: string;
   type: string;
   level: string;
@@ -83,6 +84,7 @@ interface TripDetails {
     id: string;
     status: string;
     amount: number;
+    currency?: string;
     provider: string;
     providerPaymentId?: string;
     createdAt: string;
@@ -229,48 +231,12 @@ function TripDetailsContent() {
   const canRevealDestination =
     trip.status === "REVEALED" || trip.status === "COMPLETED";
 
-  // Pricing fields were dropped from TripRequest — recompute live totals from
-  // stored type/level/filters/addons (same helper the dashboard trip list uses),
-  // and prefer the actually-charged Payment.amount as the authoritative total
-  // when one exists.
-  const pax = Math.max(1, trip.pax || 1);
-  // This client page's `TripDetails` projection carries no `tripperId` (and
-  // no server access to load one), so this display-only estimate cannot
-  // resolve a tripper override — pass `null` explicitly (global catalog).
-  // The actually-charged `Payment.amount` (preferred above when present)
-  // already reflects any override applied at checkout time.
-  const paymentInput = paymentTotalsInputFromTripRequest(
-    {
-      accommodationType: trip.accommodationType,
-      addons: addonsList,
-      arrivePref: trip.arrivePref,
-      avoidDestinations: trip.avoidDestinations,
-      city: trip.originCity,
-      climate: trip.climate,
-      country: trip.originCountry,
-      departPref: trip.departPref,
-      level: trip.level,
-      maxTravelTime: trip.maxTravelTime,
-      nights: trip.nights,
-      pax,
-      transport: trip.transport,
-      type: trip.type,
-    },
-    null,
-  );
-  const totals = paymentInput ? calculatePaymentTotals(paymentInput) : null;
-  const basePriceTotal = (totals?.basePerPax ?? 0) * pax;
-  const filtersCostTotal = (totals?.filtersPerPax ?? 0) * pax;
-  const addonsCostTotal =
-    ((totals?.addonsPerPax ?? 0) + (totals?.cancelInsurancePerPax ?? 0)) * pax;
-  const hasChargedAmount = (trip.payment?.amount ?? 0) > 0;
-  const totalTripUsd = hasChargedAmount
-    ? (trip.payment?.amount ?? 0)
-    : (totals?.totalTrip ?? 0);
-  const totalPerPaxUsd = hasChargedAmount
-    ? (trip.payment?.amount ?? 0) / pax
-    : (totals?.totalPerPax ?? 0);
-  const isEstimate = !hasChargedAmount;
+  const price = getTripCostDisplay({
+    ...trip,
+    addons: addonsList,
+    city: trip.originCity,
+    country: trip.originCountry,
+  });
   const typeLabel =
     (copy.typeValues as Record<string, string>)[trip.type] ?? trip.type;
   const levelLabel = getLevelName(trip.level);
@@ -524,57 +490,7 @@ function TripDetailsContent() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Pricing Summary */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
-                  {copy.costsTitle}
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-sm text-neutral-600">
-                      {copy.basePriceLabel}
-                    </span>
-                    <span className="font-semibold text-ink">
-                      ${basePriceTotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-sm text-neutral-600">
-                      {copy.filtersCostLabel}
-                    </span>
-                    <span className="font-semibold text-ink">
-                      ${filtersCostTotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                    <span className="text-sm text-neutral-600">
-                      {copy.addonsCostLabel}
-                    </span>
-                    <span className="font-semibold text-ink">
-                      ${addonsCostTotal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-sm font-semibold text-ink">
-                      {copy.totalTripLabel}
-                      {isEstimate && (
-                        <span className="ml-1 text-xs font-normal text-neutral-400">
-                          {copy.estimateNote}
-                        </span>
-                      )}
-                    </span>
-                    <span className="text-xl font-bold text-secondary">
-                      ${totalTripUsd.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm text-neutral-600">
-                    <span>{copy.perPersonLabel}</span>
-                    <span className="font-medium">
-                      ${totalPerPaxUsd.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <TripCostSummary copy={copy} price={price} />
 
               {/* Payment Info */}
               {trip.payment && (
@@ -595,7 +511,7 @@ function TripDetailsContent() {
                           {copy.amountLabel}
                         </span>
                         <span className="font-semibold text-ink">
-                          ${(trip.payment?.amount ?? 0).toFixed(2)}
+                          {trip.payment.currency ?? "USD"} {(trip.payment?.amount ?? 0).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">
