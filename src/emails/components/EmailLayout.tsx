@@ -151,7 +151,7 @@ const container: React.CSSProperties = {
 };
 
 const headerSection: React.CSSProperties = {
-  backgroundColor: "#111827",
+  backgroundColor: "#0F5C60", // Deep Teal (brand primary)
   padding: "24px 40px",
   textAlign: "center",
 };
