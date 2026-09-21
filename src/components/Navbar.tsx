@@ -77,7 +77,11 @@ export default function Navbar({
 }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  useScrollDetection({ variant: backgroundPrimary ? "solid" : variant });
+  // backgroundPrimary forces the solid state (e.g. dashboard, always-solid
+  // pages); otherwise this reacts to actual scroll position, transitioning
+  // from the transparent hero overlay to solid once scrolled past the top.
+  const overlay = useScrollDetection({ variant: backgroundPrimary ? "solid" : variant });
+  const isSolid = backgroundPrimary || !overlay;
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
   const languageMenu = useMenuState();
@@ -95,17 +99,23 @@ export default function Navbar({
   };
 
   const headerClass = cn(
-    "duration-500 ease-in-out h-16 top-0 transition-all z-50",
-    backgroundPrimary
-      ? "bg-ground ring-1 ring-gray-200 shadow-sm sticky text-primary w-full"
-      : "absolute backdrop-blur-md bg-white/0 inset-x-0 text-white",
+    "duration-500 ease-in-out h-16 top-0 inset-x-0 transition-all z-50",
+    // backgroundPrimary-forced pages (dashboard, invite pages) have no hero
+    // and expect the header to reserve its own layout space — sticky, same
+    // as before. Marketing pages render their hero assuming zero header
+    // offset, so both of their states stay out-of-flow via fixed instead,
+    // whether still transparent-over-hero or scrolled past it into solid.
+    backgroundPrimary ? "sticky" : "fixed",
+    isSolid
+      ? "bg-ground ring-1 ring-gray-200 shadow-sm text-primary w-full"
+      : "backdrop-blur-md bg-white/0 text-white",
   );
   // Solid state sits on the new Off-White ground — Deep Teal is reserved for
   // text/icons/focus states there, never as a big-area fill (brand book
   // "0-5% Ochre / 5-10% Deep Teal" ratio). The transparent hero-overlay
   // state keeps white-on-photo, so its hover wash and wordmark stay as-is.
-  const iconHoverClass = backgroundPrimary ? "hover:bg-secondary/10" : "hover:bg-white/10";
-  const wordmarkSrc = backgroundPrimary
+  const iconHoverClass = isSolid ? "hover:bg-secondary/10" : "hover:bg-white/10";
+  const wordmarkSrc = isSolid
     ? "/assets/logos/logo_randomtrip_no_tag.svg"
     : "/assets/logos/logo_white_no_tag_ochre_icon.svg";
 
