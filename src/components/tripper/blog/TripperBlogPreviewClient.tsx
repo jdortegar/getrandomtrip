@@ -161,7 +161,7 @@ export function TripperBlogPreviewClient() {
         title={post.title ?? ""}
       />
 
-      <Section>
+      <Section className="text-left items-start">
         <div className="mx-auto max-w-4xl px-4">
           <Breadcrumb
             items={[
