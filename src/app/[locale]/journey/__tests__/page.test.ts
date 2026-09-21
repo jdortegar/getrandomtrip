@@ -1,12 +1,14 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-// `page.tsx` now imports `attribution-server.ts` / `tripper-queries.ts`
-// (Node-only, both prisma-touching) for the tripper-attribution server-side
-// resolve (PR3). This suite only exercises the pure `getAccordionForStep`
-// re-export and never invokes the page component itself, but merely
-// importing the module still constructs the real `PrismaClient` at
-// module-load time — which throws outside a configured DB env. Mock it away,
-// same pattern as `attribution-server.test.ts`.
+// These attribution-forwarding cases are anonymous page requests. Keep the
+// auth request boundary mocked so NextAuth never reads real request headers.
+vi.mock("next-auth", () => ({
+  getServerSession: vi.fn().mockResolvedValue(null),
+}));
+vi.mock("@/lib/auth", () => ({ authOptions: {} }));
+
+// Importing server helpers must not construct a real Prisma client. The
+// anonymous pricing path does not query a user or active booking.
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },

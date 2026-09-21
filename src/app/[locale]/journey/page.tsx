@@ -1,3 +1,9 @@
+import { getServerSession } from "next-auth";
+import { notFound } from "next/navigation";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { resolveJourneyPricing } from "@/lib/pricing/journey-pricing.server";
+import { journeyPricingKey } from "@/lib/pricing/journey-pricing-context";
 import type { Metadata } from "next";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
@@ -54,8 +60,14 @@ export async function generateMetadata(props: {
   };
 }
 
+/** Match URLSearchParams.get when Next.js represents repeated keys as arrays. */
+function firstSearchValue(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default async function JourneyPage(props: {
   params?: Promise<{ locale?: string }>;
+  searchParams?: Promise<{ tripRequestId?: string | string[]; travelType?: string | string[]; draftId?: string | string[] }>;
 }) {
   const tripperSlug = await readAttributionSlug();
   const tripperState = await resolveTripperState(tripperSlug);
@@ -65,9 +77,23 @@ export default async function JourneyPage(props: {
   // re-validate it (review finding #3, defense in depth).
   const validatedTripperSlug =
     tripperState.status === "ok" ? tripperSlug ?? undefined : undefined;
+  const search = await props.searchParams;
+  const session = await getServerSession(authOptions);
+  const email = session?.user?.email;
+  const user = email ? await prisma.user.findUnique({ where: { email }, select: { id: true } }) : null;
+  const type = firstSearchValue(search?.travelType) ?? "couple";
+  const tripRequestId = firstSearchValue(search?.tripRequestId)?.trim() || undefined;
+  const pricing = await resolveJourneyPricing({
+    currentOverrides: tripperState.status === "ok" ? tripperState.context.priceOverrides : null,
+    tripRequestId,
+    type,
+    userId: user?.id,
+  });
+  if (!pricing) notFound();
   return (
     <JourneyPageClient
       params={props.params}
+      pricing={{ ...pricing, binding: journeyPricingKey(email, tripRequestId, type) }}
       tripperSlug={validatedTripperSlug}
       tripperState={tripperState}
     />

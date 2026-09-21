@@ -1,6 +1,4 @@
-import { getPricePerPerson } from "@/lib/data/traveler-types";
-import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { paymentTotalsInputFromTripRequest } from "@/lib/helpers/trip-request-pricing";
+import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
 import { getLevelById } from "@/lib/utils/experiencesData";
 import { getCardForType } from "@/lib/utils/traveler-card";
@@ -24,77 +22,22 @@ export function getTripDisplayUsd(trip: Trip): {
   amount: number;
   isEstimate: boolean;
 } {
-  if (trip.totalTripUsd > 0) {
-    return { amount: trip.totalTripUsd, isEstimate: false };
-  }
-  const pax = effectivePaxForCatalogPricing(trip);
-  const travelerType = normalizeTripTypeSlug(trip.type);
-  const per = getPricePerPerson(travelerType, trip.level, pax);
-  if (per <= 0) return { amount: 0, isEstimate: true };
-  return { amount: per * pax, isEstimate: true };
+  const result = getTripPriceParts(trip);
+  return { amount: result.total, isEstimate: result.isEstimate };
 }
 
-/** Per-person and total for display (aligned with checkout / usePayment). */
-export function getTripPriceParts(trip: Trip): {
-  isEstimate: boolean;
-  pax: number;
-  perPerson: number;
-  total: number;
-} {
-  const pax = effectivePaxForCatalogPricing(trip);
-  const travelerType = normalizeTripTypeSlug(trip.type);
-  if (trip.totalTripUsd > 0) {
-    const per = Math.max(0, Math.round(trip.totalTripUsd / pax));
-    return {
-      isEstimate: false,
-      pax,
-      perPerson: per,
-      total: Math.round(trip.totalTripUsd),
-    };
-  }
-
-  // `Trip` (dashboard list projection) carries no `tripperId`, so this
-  // display-only estimate cannot resolve a tripper override here — pass
-  // `null` explicitly (global catalog), matching this path's pre-existing
-  // behavior. Out of scope for the tripper-price-override change: this is
-  // never the authoritative charge (see stripe payment-intent route).
-  const paymentInput = paymentTotalsInputFromTripRequest(
-    {
-      accommodationType: trip.accommodationType,
-      addons: trip.addons ?? null,
-      arrivePref: trip.arrivePref,
-      avoidDestinations: trip.avoidDestinations,
-      city: trip.city,
-      climate: trip.climate,
-      country: trip.country,
-      departPref: trip.departPref,
-      level: trip.level,
-      maxTravelTime: trip.maxTravelTime,
-      nights: trip.nights,
-      pax,
-      transport: trip.transport,
-      type: trip.type,
-    },
-    null,
-  );
-
-  if (paymentInput) {
-    const t = calculatePaymentTotals(paymentInput);
-    return {
-      isEstimate: true,
-      pax: paymentInput.logistics.pax,
-      perPerson: Math.round(t.totalPerPax),
-      total: Math.round(t.totalTrip),
-    };
-  }
-
-  const per = getPricePerPerson(travelerType, trip.level, pax);
-  const total = per * pax;
+/** API attribution drives live estimates; recorded payments drive history. */
+export function getTripPriceParts(trip: Trip) {
+  const pax =
+    trip.payment || trip.basePriceUsd !== undefined
+      ? Math.max(1, trip.pax)
+      : effectivePaxForCatalogPricing(trip);
+  const result = getTripCostDisplay({ ...trip, pax });
   return {
-    isEstimate: true,
+    isEstimate: result.isEstimate,
     pax,
-    perPerson: per,
-    total,
+    perPerson: result.perPerson,
+    total: result.total,
   };
 }
 
