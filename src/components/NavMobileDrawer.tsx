@@ -121,7 +121,7 @@ export function NavMobileDrawer({
         <Img
           alt="Randomtrip"
           height={40}
-          src="/assets/logos/logo_getrandomtrip.svg"
+          src="/assets/logos/logo_randomtrip_no_tag.svg"
           width={144}
           style={{ height: "auto" }}
         />

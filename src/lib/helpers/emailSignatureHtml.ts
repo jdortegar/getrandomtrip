@@ -10,7 +10,7 @@ function joinSiteOrigin(origin: string, pathname: string): string {
 }
 
 export function buildEmailSignatureOption1Html(siteOrigin: string): string {
-  const logoSrc = joinSiteOrigin(siteOrigin, "/assets/svg/email-sign.svg");
+  const logoSrc = joinSiteOrigin(siteOrigin, "/assets/logos/logo_randomtrip_no_tag.svg");
   return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse">
         <tbody>
           <tr>
@@ -80,7 +80,7 @@ export function buildEmailSignatureOption1Html(siteOrigin: string): string {
 export function buildEmailSignatureOption2Html(siteOrigin: string): string {
   const logoSrc = joinSiteOrigin(
     siteOrigin,
-    "/assets/logos/logo_getrandomtrip_1.png",
+    "/assets/logos/logo_white_no_tag.svg",
   );
   return `<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse: collapse">
         <tbody>

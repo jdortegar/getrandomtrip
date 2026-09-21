@@ -331,7 +331,7 @@ export default function TripStartVouchers({
               <Row>
                 <Column style={{ padding: "20px 0 20px 32px", width: "50%" }}>
                   <Img
-                    src={`${BASE_URL}/assets/logos/logo_getrandomtrip_white.png`}
+                    src={`${BASE_URL}/assets/logos/logo_white_no_tag.svg`}
                     width={104}
                     height={26}
                     alt="Randomtrip"
