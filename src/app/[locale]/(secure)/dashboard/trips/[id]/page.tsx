@@ -665,7 +665,7 @@ function TripDetailsContent() {
 
               {/* Trip Info Card */}
               <div className="rounded-2xl bg-secondary/5 p-6 ring-1 ring-secondary/20">
-                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-secondary">
+                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-primary">
                   <Info className="h-4 w-4" />
                   {copy.tripInfoTitle}
                 </h3>
