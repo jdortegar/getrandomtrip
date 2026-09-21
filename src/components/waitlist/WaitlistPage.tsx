@@ -84,7 +84,7 @@ export function WaitlistPage({
           <Img
             alt="Randomtrip"
             className="h-auto w-full lg:h-40 lg:w-auto"
-            src="/assets/svg/randomtrip.svg"
+            src="/assets/logos/logo_randomtrip.svg"
           />
         </div>
       </div>
