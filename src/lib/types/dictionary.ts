@@ -2235,6 +2235,7 @@ export interface MarketingDictionary {
      * (design.md ADR-5).
      */
     countries: Record<string, string>;
+    backToTop: string;
   };
   imageEditor: ImageEditorDict;
   adminXsed: AdminXsedDict;

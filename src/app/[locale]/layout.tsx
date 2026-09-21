@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
+import BackToTopButton from "@/components/chrome/BackToTopButton";
 import { GlobalAuthModal } from "@/components/providers/GlobalAuthModal";
 import SessionProvider from "@/components/providers/SessionProvider";
 import SetLocaleLang from "@/components/providers/SetLocaleLang";
@@ -56,6 +57,7 @@ export default async function LocaleLayout(props: {
         {children}
       </GateAwareChrome>
       <GlobalAuthModal dict={dict} />
+      <BackToTopButton />
       <Toaster />
     </SessionProvider>
   );
