@@ -113,7 +113,12 @@ export function TripperSettingsHeroCard({
 
   return (
     <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200" data-component="TripperSettingsHeroCard">
-      <div className="relative aspect-[16/9] w-full">
+      {/* Mobile stacks the avatar + name + badge + stats vertically inside
+          this box (md:flex-row lays them out side by side instead) — a
+          16:9 ratio doesn't have room for that stack, so it's taller
+          (4:5) below md and only goes wide once the content fits beside
+          the photo instead of on top of it. */}
+      <div className="relative aspect-[4/5] w-full md:aspect-[16/9]">
         {/* Image surface — plain object-cover, no client-side position math:
             the server bakes the final 16:9 crop, this just displays it. */}
         <div
@@ -199,8 +204,12 @@ export function TripperSettingsHeroCard({
           </button>
         )}
 
-        {/* Edit / Save / Cancel buttons */}
-        <div className="absolute right-4 top-4 z-10 flex gap-2">
+        {/* Edit / Save / Cancel buttons — z-20, above the bottom content
+            block (z-10): at mobile widths that block stacks vertically and
+            grows tall enough to overlap this corner, and same z-index ties
+            resolve by DOM order, so it was silently intercepting clicks
+            meant for these buttons. */}
+        <div className="absolute right-4 top-4 z-20 flex gap-2">
           {!isEditing ? (
             <Button
               aria-label={copy.editProfile}
