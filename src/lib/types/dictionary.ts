@@ -2185,6 +2185,11 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  errorFallback: {
+    title: string;
+    description: string;
+    retry: string;
+  };
   nav: {
     ariaLabelBitacoras: string;
     ariaLabelContact: string;

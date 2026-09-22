@@ -42,6 +42,7 @@ npm start
 ## Variables de entorno
 
 - `.env.local` — (placeholder para futuras integraciones: auth real, PSP, analytics).
+- Monitoreo de errores: [configuración de Sentry](docs/Sentry.md).
 
 ## Rutas principales
 

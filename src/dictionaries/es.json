@@ -1,4 +1,9 @@
 {
+  "errorFallback": {
+    "title": "Algo salió mal",
+    "description": "Intentá de nuevo. Si el problema continúa, volvé más tarde.",
+    "retry": "Intentar de nuevo"
+  },
   "nav": {
     "labelTrippers": "Trippers",
     "labelInspiration": "Tripper’s Inspiration",

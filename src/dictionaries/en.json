@@ -1,4 +1,9 @@
 {
+  "errorFallback": {
+    "title": "Something went wrong",
+    "description": "Please try again. If the problem continues, come back later.",
+    "retry": "Try again"
+  },
   "nav": {
     "labelTrippers": "Trippers",
     "labelInspiration": "Tripper’s Inspiration",
