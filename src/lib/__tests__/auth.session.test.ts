@@ -98,3 +98,90 @@ describe("session() callback — hasSiteAccess derivation (design ADR 4)", () =>
     expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("session update — trusted identity and persisted profile refresh", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("loads the authenticated user's saved profile, never the client-supplied identity or privileges", async () => {
+    const savedProfile = {
+      ...baseDbUser,
+      name: "Alice Updated",
+      email: "alice.updated@example.com",
+      phone: "+541155550000",
+      address: { city: "Buenos Aires" },
+      travelerType: "solo",
+      interests: ["nature"],
+      dislikes: ["crowds"],
+      avatarUrl: "/api/upload/alice-avatar.jpg",
+      avatarUrlOriginal: "/api/upload/alice-original.jpg",
+      siteAccessGrantedAt: null,
+      referredBy: null,
+    };
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ where }) =>
+        where.id === "user-1"
+          ? savedProfile
+          : {
+              ...savedProfile,
+              id: "victim-admin",
+              roles: ["ADMIN"],
+              siteAccessGrantedAt: new Date(),
+            },
+    );
+
+    const { authOptions } = await import("../auth");
+    const jwt = authOptions.callbacks!.jwt!;
+    const sessionCallback = authOptions.callbacks!.session!;
+    const originalToken = {
+      id: "user-1",
+      sub: "user-1",
+      name: "Alice",
+      email: "alice@example.com",
+      picture: "https://example.com/old-avatar.jpg",
+    };
+    const token = await jwt({
+      token: originalToken,
+      trigger: "update",
+      session: {
+        id: "victim-admin",
+        sub: "victim-admin",
+        user: { id: "victim-admin", role: "admin", hasSiteAccess: true },
+      },
+    } as unknown as Parameters<typeof jwt>[0]);
+    const session = (await sessionCallback({
+      session: {
+        user: {
+          name: originalToken.name,
+          email: originalToken.email,
+          image: originalToken.picture,
+        },
+      },
+      token,
+    } as unknown as Parameters<
+      typeof sessionCallback
+    >[0])) as import("next-auth").Session;
+
+    expect(prisma.user.findUnique).toHaveBeenCalledTimes(2);
+    for (const [query] of (prisma.user.findUnique as ReturnType<typeof vi.fn>)
+      .mock.calls) {
+      expect(query.where).toEqual({ id: "user-1" });
+    }
+    expect(session.user).toMatchObject({
+      id: "user-1",
+      role: "traveler",
+      roles: ["traveler"],
+      hasSiteAccess: false,
+      name: savedProfile.name,
+      email: savedProfile.email,
+      phone: savedProfile.phone,
+      address: savedProfile.address,
+      travelerType: savedProfile.travelerType,
+      interests: savedProfile.interests,
+      dislikes: savedProfile.dislikes,
+      image: savedProfile.avatarUrl,
+      avatarUrlOriginal: savedProfile.avatarUrlOriginal,
+    });
+  });
+});

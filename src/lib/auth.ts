@@ -248,7 +248,7 @@ export const authOptions: NextAuthOptions = {
 
       return true;
     },
-    async jwt({ token, user, trigger, session: clientSession, account }) {
+    async jwt({ token, user, trigger, account }) {
       if (user) {
         token.id = user.id;
 
@@ -269,21 +269,12 @@ export const authOptions: NextAuthOptions = {
         );
       }
 
-      // Handle session updates from client (design ADR-6, SECURITY-BLOCKING):
-      // `clientSession` is attacker-controlled input (`update({...})` from
-      // any authenticated browser). A blanket `{ ...token, ...clientSession }`
-      // spread would let a client mint `referredByTripperSlug: "rival"` and
-      // silently steal another tripper's pricing/commission. Strip that key
-      // out of the spread unconditionally and recompute it from the DB in
-      // this same branch — `update()` is a cheap safety net, not the primary
-      // correctness path (the claim is already fresh from the `user`-present
-      // branch above on every sign-in).
+      // Treat client updates only as refresh requests, never as JWT claims.
+      // Callers persist profile changes through authenticated API routes;
+      // session() reloads them from the DB using this trusted token.id.
       if (trigger === "update") {
-        const { referredByTripperSlug: _drop, ...safe } = (clientSession ??
-          {}) as Record<string, unknown>;
         return {
           ...token,
-          ...safe,
           referredByTripperSlug: await getReferralClaim(token.id as string),
         };
       }
