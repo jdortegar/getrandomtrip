@@ -4,7 +4,7 @@
  */
 export const BLOG_LISTING_HERO_CONFIG = {
   className: "min-h-[40vh]!",
-  eyebrowColor: "#F2C53D",
+  eyebrowColor: "#E5A51C",
   fallbackImage: "/images/trippers-hero.png",
   subtitle: "BLOG",
   videoSrc: "/videos/trippers-hero.mp4",

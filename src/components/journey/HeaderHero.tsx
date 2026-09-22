@@ -24,7 +24,7 @@ const DEFAULT_DESCRIPTION = (
 
 const DEFAULT_SUBTITLE = (
   <>
-    PUNTO DE <span className="text-[#F2C53D]">PARTIDA</span>
+    PUNTO DE <span className="text-[#E5A51C]">PARTIDA</span>
   </>
 );
 
@@ -214,7 +214,7 @@ export default function HeaderHero({
                     {tripperBadge.name.toUpperCase()}
                   </p>
                   {tripperBadge.location && (
-                    <div className="mt-1 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
+                    <div className="mt-1 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#E5A51C]">
                       {countryForFlag && (
                         <CountryFlag
                           className="inline-block shrink-0 align-baseline"

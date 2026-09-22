@@ -20,21 +20,33 @@ export default function Breadcrumb({ className, items }: BreadcrumbProps) {
     <nav
       aria-label="Breadcrumb"
       className={cn(
-        "mb-8 flex items-center gap-2 text-sm text-neutral-600",
+        "mb-8 flex w-full items-center gap-2 text-sm text-neutral-600",
         className,
       )} data-component="Breadcrumb"
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
+        // The last segment is the current page — often a long, unbounded
+        // title (a post name) — so it's the one allowed to shrink and
+        // truncate. Earlier segments are short, fixed nav labels that
+        // should never wrap or lose space to it.
         const segment = item.href ? (
           <Link
-            className="inline-flex items-center gap-1 transition-colors hover:text-ink"
+            className={cn(
+              "shrink-0 whitespace-nowrap transition-colors hover:text-ink",
+              isLast && "min-w-0 flex-1 truncate",
+            )}
             href={item.href}
           >
             {item.label}
           </Link>
         ) : (
-          <span className="font-medium capitalize text-ink">
+          <span
+            className={cn(
+              "shrink-0 whitespace-nowrap font-medium capitalize text-ink",
+              isLast && "min-w-0 flex-1 truncate",
+            )}
+          >
             {item.label.toLowerCase()}
           </span>
         );

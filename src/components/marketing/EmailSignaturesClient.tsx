@@ -74,7 +74,7 @@ export function EmailSignaturesClient({
       <HeaderHero
         className="min-h-[40vh]!"
         description={copy.hero.description}
-        eyebrowColor="#F2C53D"
+        eyebrowColor="#E5A51C"
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={copy.hero.eyebrow}
         title={copy.hero.title}

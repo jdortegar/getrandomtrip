@@ -2235,6 +2235,7 @@ export interface MarketingDictionary {
      * (design.md ADR-5).
      */
     countries: Record<string, string>;
+    backToTop: string;
   };
   imageEditor: ImageEditorDict;
   adminXsed: AdminXsedDict;
@@ -2541,6 +2542,10 @@ export interface MarketingDictionary {
     heroTitleDefault: string;
     loadMore: string;
     seenAll: string;
+    share: {
+      ariaLabel: string;
+      linkCopied: string;
+    };
   };
   packagesByType: {
     blogEyebrow: string;

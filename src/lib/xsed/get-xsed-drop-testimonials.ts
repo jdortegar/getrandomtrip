@@ -1,13 +1,10 @@
 import type { TestimonialData } from "@/components/Testimonials/types";
-import {
-  findAllCompletedXsedTripRequestsForTestimonials,
-  findCompletedXsedTripRequestsForTestimonials,
-} from "@/lib/data/xsed";
+import { findAllCompletedXsedTripRequestsForTestimonials } from "@/lib/data/xsed";
 import { getCountryCode } from "@/lib/helpers/flags";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 
 type CompletedXsedTripRequestRow = Awaited<
-  ReturnType<typeof findCompletedXsedTripRequestsForTestimonials>
+  ReturnType<typeof findAllCompletedXsedTripRequestsForTestimonials>
 >[number];
 
 function mapRowsToTestimonials(
@@ -32,16 +29,6 @@ function mapRowsToTestimonials(
   }
 
   return out;
-}
-
-/**
- * Public testimonials from travelers who completed this XSED drop and left feedback.
- */
-export async function getXsedDropTestimonials(
-  experienceId: string,
-): Promise<TestimonialData[]> {
-  const rows = await findCompletedXsedTripRequestsForTestimonials(experienceId);
-  return mapRowsToTestimonials(rows);
 }
 
 /**

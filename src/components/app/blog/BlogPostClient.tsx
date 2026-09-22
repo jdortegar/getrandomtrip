@@ -209,7 +209,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
         title={blog.title}
       />
 
-      <Section>
+      <Section className="text-left items-start">
         <Breadcrumb
           items={[
             { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
