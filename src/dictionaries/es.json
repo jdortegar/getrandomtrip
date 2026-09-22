@@ -1340,7 +1340,11 @@
     "heroTitleByTripper": "Blog de {name}",
     "heroTitleDefault": "TRIPPER'S INSPIRATION",
     "loadMore": "Cargar más",
-    "seenAll": "Has visto todos los posts disponibles"
+    "seenAll": "Has visto todos los posts disponibles",
+    "share": {
+      "ariaLabel": "Compartir",
+      "linkCopied": "Enlace copiado al portapapeles"
+    }
   },
   "packagesByType": {
     "blogEyebrow": "Historias de viajeros",
@@ -1355,7 +1359,7 @@
     "hero": {
       "title": "Empieza la aventura",
       "description": "¿Con quién vas a escribir tu próxima historia?",
-      "subtitle": "PUNTO DE <span style=\"color: #F2C53D\">PARTIDA</span>"
+      "subtitle": "PUNTO DE <span style=\"color: #E5A51C\">PARTIDA</span>"
     },
     "tripperBadge": {
       "curatedBy": "VIAJE CURADO POR",
@@ -2780,7 +2784,7 @@
     "hero": {
       "title": "¡Gracias por tu compra!",
       "description": "Tu viaje sorpresa está confirmado. Revisa los detalles más abajo.",
-      "subtitle": "CONFIRMACIÓN <span style=\"color: #F2C53D\">DE PAGO</span>"
+      "subtitle": "CONFIRMACIÓN <span style=\"color: #E5A51C\">DE PAGO</span>"
     },
     "page": {
       "title": "¡Gracias por tu compra!",
@@ -2816,7 +2820,7 @@
     "title": "Pago rechazado",
     "body": "El pago no pudo completarse. Puedes intentar de nuevo o elegir otro medio de pago.",
     "metaDescription": "El pago fue rechazado. Intenta de nuevo en Randomtrip.",
-    "subtitle": "PAGO <span style=\"color: #F2C53D\">RECHAZADO</span>",
+    "subtitle": "PAGO <span style=\"color: #E5A51C\">RECHAZADO</span>",
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
     "ctaTryAgain": "Intentar de nuevo",
@@ -2826,7 +2830,7 @@
     "title": "Pago pendiente",
     "body": "Tu pago está en proceso. Revisa tu correo para ver el estado.",
     "metaDescription": "Tu pago está pendiente. Randomtrip.",
-    "subtitle": "PAGO <span style=\"color: #F2C53D\">PENDIENTE</span>",
+    "subtitle": "PAGO <span style=\"color: #E5A51C\">PENDIENTE</span>",
     "ctaBackToJourney": "Volver al viaje",
     "ctaHome": "Ir al inicio",
     "ctaMyTrips": "Ir a mis viajes"

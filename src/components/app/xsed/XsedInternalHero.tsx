@@ -140,7 +140,7 @@ export function XsedInternalHero({
                   </p>
                 </div>
                 {author.location ? (
-                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase leading-none tracking-[0.4em] text-[#F2C53D]">
+                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold uppercase leading-none tracking-[0.4em] text-[#E5A51C]">
                     {countryForFlag ? (
                       <CountryFlag
                         className="inline-block shrink-0 align-baseline"

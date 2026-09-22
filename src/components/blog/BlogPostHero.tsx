@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Heart, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import CountryFlag from "@/components/common/CountryFlag";
 import { Button } from "@/components/ui/Button";
-
-const BLOG_EYEBROW_COLOR = "#F2C53D";
+import { useDictionary } from "@/hooks/useDictionary";
 
 /** Derive country for flag from location string (e.g. "México City, México" → "México"). */
 function getCountryFromLocation(
@@ -51,6 +51,25 @@ export default function BlogPostHero({
     : `By ${author.name}.`;
   const tripperLocation = author.location?.trim() ?? null;
   const countryForFlag = getCountryFromLocation(tripperLocation);
+  const shareCopy = useDictionary((d) => d.blogPage.share);
+
+  const handleShare = async () => {
+    const shareData = { title, url: window.location.href };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // User cancelled the native share sheet — nothing to report.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      toast.success(shareCopy.linkCopied);
+    } catch {
+      // Clipboard access denied — no share path available, fail silently.
+    }
+  };
 
   return (
     <section
@@ -74,10 +93,7 @@ export default function BlogPostHero({
 
       {/* Content – left-aligned, bottom-weighted */}
       <div className="relative z-10 rt-container pb-12 pt-16 text-left text-white">
-        <p
-          className="mb-2 font-bold text-sm uppercase tracking-[0.4em] md:text-base"
-          style={{ color: BLOG_EYEBROW_COLOR }}
-        >
+        <p className="mb-2 font-bold text-sm uppercase tracking-[0.4em] text-feature md:text-base">
           BLOG
         </p>
         <h1 className="mb-4 font-barlow-condensed text-5xl font-extrabold uppercase leading-none md:text-7xl">
@@ -111,26 +127,18 @@ export default function BlogPostHero({
                   <p className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-white md:text-2xl">
                     {author.name}
                   </p>
-                  <div className="flex items-center gap-3">
-                    <button
-                      aria-label="Compartir"
-                      className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
-                      type="button"
-                    >
-                      <Share2 className="h-5 w-5" />
-                    </button>
-                    <button
-                      aria-label="Guardar"
-                      className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
-                      type="button"
-                    >
-                      <Heart className="h-5 w-5" />
-                    </button>
-                  </div>
+                  <button
+                    aria-label={shareCopy.ariaLabel}
+                    className="rounded-full p-2 text-white transition-colors hover:bg-white/20"
+                    onClick={handleShare}
+                    type="button"
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </button>
                 </div>
 
                 {tripperLocation && (
-                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-[#F2C53D]">
+                  <div className="mt-0.5 flex items-center gap-2 font-barlow-condensed text-sm font-semibold leading-none uppercase tracking-[0.4em] text-feature">
                     {countryForFlag && (
                       <CountryFlag
                         className="inline-block shrink-0 align-baseline"

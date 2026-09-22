@@ -2542,6 +2542,10 @@ export interface MarketingDictionary {
     heroTitleDefault: string;
     loadMore: string;
     seenAll: string;
+    share: {
+      ariaLabel: string;
+      linkCopied: string;
+    };
   };
   packagesByType: {
     blogEyebrow: string;

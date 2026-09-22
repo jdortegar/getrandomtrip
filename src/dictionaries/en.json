@@ -1340,7 +1340,11 @@
     "heroTitleByTripper": "Blog by {name}",
     "heroTitleDefault": "TRIPPER'S INSPIRATION",
     "loadMore": "Load more",
-    "seenAll": "You've seen all available posts"
+    "seenAll": "You've seen all available posts",
+    "share": {
+      "ariaLabel": "Share",
+      "linkCopied": "Link copied to clipboard"
+    }
   },
   "packagesByType": {
     "blogEyebrow": "Traveler stories",
@@ -1355,7 +1359,7 @@
     "hero": {
       "title": "Start the adventure",
       "description": "Who will you write your next story with?",
-      "subtitle": "STARTING <span style=\"color: #F2C53D\">POINT</span>"
+      "subtitle": "STARTING <span style=\"color: #E5A51C\">POINT</span>"
     },
     "contentTabs": [
       {
@@ -2780,7 +2784,7 @@
     "hero": {
       "title": "Thank you for your purchase!",
       "description": "Your surprise trip is confirmed. Check the details below.",
-      "subtitle": "PAYMENT <span style=\"color: #F2C53D\">CONFIRMATION</span>"
+      "subtitle": "PAYMENT <span style=\"color: #E5A51C\">CONFIRMATION</span>"
     },
     "page": {
       "title": "Thank you for your purchase!",
@@ -2816,7 +2820,7 @@
     "title": "Payment rejected",
     "body": "The payment could not be completed. You can try again or choose another payment method.",
     "metaDescription": "Payment was rejected. Try again on Randomtrip.",
-    "subtitle": "PAYMENT <span style=\"color: #F2C53D\">REJECTED</span>",
+    "subtitle": "PAYMENT <span style=\"color: #E5A51C\">REJECTED</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
     "ctaTryAgain": "Try again",
@@ -2826,7 +2830,7 @@
     "title": "Payment pending",
     "body": "Your payment is being processed. Check your email for confirmation.",
     "metaDescription": "Your payment is pending. Randomtrip.",
-    "subtitle": "PAYMENT <span style=\"color: #F2C53D\">PENDING</span>",
+    "subtitle": "PAYMENT <span style=\"color: #E5A51C\">PENDING</span>",
     "ctaBackToJourney": "Back to journey",
     "ctaHome": "Go to home",
     "ctaMyTrips": "Go to my trips"
