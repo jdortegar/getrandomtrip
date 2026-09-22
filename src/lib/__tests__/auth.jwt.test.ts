@@ -139,7 +139,7 @@ describe("jwt() callback — trigger:'update' hardening (design ADR-6, SECURITY-
     vi.clearAllMocks();
   });
 
-  it("strips a client-supplied referredByTripperSlug from the spread and recomputes it from the DB instead", async () => {
+  it("ignores client claims and refreshes referral data for the original authenticated user", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       referredByTripperId: "tripper-1",
       referredBy: {
@@ -149,21 +149,51 @@ describe("jwt() callback — trigger:'update' hardening (design ADR-6, SECURITY-
       },
     });
 
+    const originalToken = {
+      id: "user-1",
+      sub: "user-1",
+      name: "Alice",
+      email: "alice@example.com",
+      picture: "https://example.com/alice.jpg",
+      iat: 100,
+      exp: 200,
+      jti: "original-token",
+      referredByTripperSlug: "old-slug",
+    };
     const jwt = await getJwtCallback();
     const token = await jwt({
-      token: { id: "user-1", name: "Alice" },
+      token: { ...originalToken },
       trigger: "update",
-      session: { referredByTripperSlug: "rival" },
+      session: {
+        id: "victim-admin",
+        sub: "victim-admin",
+        name: "Victim",
+        email: "victim@example.com",
+        picture: "https://example.com/forged.jpg",
+        role: "admin",
+        roles: ["admin"],
+        hasSiteAccess: true,
+        isAdmin: true,
+        iat: 0,
+        exp: 9999999999,
+        jti: "forged-token",
+        accessToken: "forged-access-token",
+        user: { id: "victim-admin", role: "admin" },
+        referredByTripperSlug: "rival",
+      },
     } as unknown as Parameters<typeof jwt>[0]);
 
-    // The DB-recomputed claim wins — the client-forged value never survives.
-    expect((token as Record<string, unknown>).referredByTripperSlug).toBe(
-      "maria",
+    expect(token).toEqual({
+      ...originalToken,
+      referredByTripperSlug: "maria",
+    });
+    expect(prisma.user.findUnique).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: "user-1" } }),
     );
     expect(prisma.user.findUnique).toHaveBeenCalledTimes(1);
   });
 
-  it("still applies other legitimate client session fields (e.g. refreshedAt) untouched", async () => {
+  it("does not add arbitrary client session fields to the token", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       referredByTripperId: null,
       referredBy: null,
@@ -176,10 +206,8 @@ describe("jwt() callback — trigger:'update' hardening (design ADR-6, SECURITY-
       session: { refreshedAt: 12345 },
     } as unknown as Parameters<typeof jwt>[0]);
 
-    expect((token as Record<string, unknown>).refreshedAt).toBe(12345);
-    expect(
-      (token as Record<string, unknown>).referredByTripperSlug,
-    ).toBeNull();
+    expect(token).not.toHaveProperty("refreshedAt");
+    expect((token as Record<string, unknown>).referredByTripperSlug).toBeNull();
   });
 
   it("recomputes the claim from the DB even when no clientSession is provided on an update trigger", async () => {
@@ -203,4 +231,26 @@ describe("jwt() callback — trigger:'update' hardening (design ADR-6, SECURITY-
       "maria",
     );
   });
+
+  it.each([
+    { tripperSlug: "maria", isActive: false, roles: ["TRIPPER"] },
+    { tripperSlug: "maria", isActive: true, roles: ["TRAVELER"] },
+    null,
+  ])(
+    "clears a stale referral claim on update when the referrer is not live: %j",
+    async (referredBy) => {
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        referredBy,
+      });
+
+      const jwt = await getJwtCallback();
+      const token = await jwt({
+        token: { id: "user-1", referredByTripperSlug: "maria" },
+        trigger: "update",
+        session: { referredByTripperSlug: "rival" },
+      } as unknown as Parameters<typeof jwt>[0]);
+
+      expect(token.referredByTripperSlug).toBeNull();
+    },
+  );
 });
