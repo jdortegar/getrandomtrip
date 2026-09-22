@@ -1,4 +1,21 @@
 {
+  "sentryExample": {
+    "title": "Prueba de Sentry",
+    "description": "Solo en desarrollo. Cada botón genera un error de prueba deliberado. Verificá ambos eventos en Sentry Issues; esta página no puede confirmar la entrega.",
+    "browserButton": "Probar error del navegador",
+    "serverButton": "Probar error del servidor",
+    "issuesLink": "Abrir Sentry Issues",
+    "status": {
+      "idle": "Todavía no se ejecutó ninguna prueba.",
+      "running": "Ejecutando la prueba…",
+      "browserDisabled": "El monitoreo del navegador está inactivo. Configurá NEXT_PUBLIC_SENTRY_DSN en .env.local y reiniciá el servidor de desarrollo.",
+      "browserAttempted": "Se intentó capturar el error del navegador y se completó el vaciado de la cola. Buscá ‘Sentry browser smoke test’ en Sentry; esto no confirma la entrega.",
+      "browserFailed": "La captura o el vaciado de la cola no se completaron. Revisá el DSN, la red y los bloqueadores de contenido; después verificá Sentry Issues.",
+      "serverDisabled": "El monitoreo del servidor está inactivo. Configurá NEXT_PUBLIC_SENTRY_DSN o SENTRY_DSN localmente y reiniciá el servidor de desarrollo.",
+      "serverAttempted": "La API devolvió HTTP 500. Buscá ‘Sentry backend smoke test’ en Sentry; un error HTTP no confirma la captura ni la entrega.",
+      "serverFailed": "La solicitud a la API falló o devolvió un estado inesperado. Revisá el servidor de desarrollo e intentá de nuevo."
+    }
+  },
   "errorFallback": {
     "title": "Algo salió mal",
     "description": "Intentá de nuevo. Si el problema continúa, volvé más tarde.",

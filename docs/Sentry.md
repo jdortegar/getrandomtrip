@@ -17,6 +17,11 @@ browser, server, and edge errors. Without a DSN, the SDK is not initialized.
 browser capture by itself. The DSN is public; the auth token is a secret and must
 never use a `NEXT_PUBLIC_` prefix or be committed.
 
+The wizard's `.env.sentry-build-plugin` contains an upload token and stays
+gitignored. It does not activate runtime capture or replace the three-variable
+source-map upload gate above. Do not commit this file or rerun the wizard over
+the existing configuration.
+
 ## Coverage and privacy
 
 - Next's `onRequestError` captures uncaught server rendering and request errors.
@@ -46,11 +51,21 @@ Review Sentry project-side data scrubbing and access controls before production.
 
 ## Verify
 
-In a local or preview deployment with a test-project DSN, temporarily throw
-`new Error("Sentry smoke test")` from an application button handler and then from
-a server route. Confirm both events in Sentry Issues with the expected environment
-and readable stack traces when uploads are configured. Remove the temporary test
-code afterward; no public diagnostic endpoint is included. Browser console throws
-are not a reliable capture test. Live delivery requires a real DSN and network access.
+1. Set `NEXT_PUBLIC_SENTRY_DSN` in `.env.local` and
+   `NEXT_PUBLIC_SENTRY_ENVIRONMENT=development`. Netlify environment variables
+   are **not** automatically loaded by `npm run dev`.
+2. Restart `npm run dev` and open `/sentry-example-page` (uses your current
+   language, Spanish by default) or `/en/sentry-example-page` on port 3010.
+3. Run each button once: browser capture creates `Sentry browser smoke test`;
+   the API deliberately throws `Sentry backend smoke test` to exercise Next's
+   request-error hook. Confirm both in the linked Sentry Issues project with
+   environment `development`.
+
+Flush completion and HTTP 500 are **not proof of delivery**. Live verification
+requires an active DSN, network access, and checking Sentry itself. If disabled,
+configure the local DSN and restart; if blocked, check network/content blockers.
+The page and API are development-only (404 outside development); the API accepts
+only POST to avoid accidental navigation/prefetch errors. No tracing or logs are
+enabled by these tests.
 
 Reference: [Sentry's Next.js manual setup](https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/).

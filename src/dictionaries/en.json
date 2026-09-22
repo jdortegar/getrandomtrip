@@ -1,4 +1,21 @@
 {
+  "sentryExample": {
+    "title": "Sentry smoke test",
+    "description": "Development only. Each button creates a deliberate sample error. Confirm both events in Sentry Issues; this page cannot verify delivery.",
+    "browserButton": "Test browser error",
+    "serverButton": "Test server error",
+    "issuesLink": "Open Sentry Issues",
+    "status": {
+      "idle": "No test has been triggered.",
+      "running": "Running the test…",
+      "browserDisabled": "Browser monitoring is inactive. Set NEXT_PUBLIC_SENTRY_DSN in .env.local and restart the development server.",
+      "browserAttempted": "Browser capture attempted and flush completed. Check Sentry for ‘Sentry browser smoke test’; a completed flush does not prove delivery.",
+      "browserFailed": "Browser capture or flush did not complete. Check your DSN, network, and content blockers, then verify Sentry Issues.",
+      "serverDisabled": "Server monitoring is inactive. Set NEXT_PUBLIC_SENTRY_DSN or SENTRY_DSN locally and restart the development server.",
+      "serverAttempted": "The API returned HTTP 500. Check Sentry for ‘Sentry backend smoke test’; an HTTP failure does not prove capture or delivery.",
+      "serverFailed": "The API request failed or returned an unexpected status. Check the development server and try again."
+    }
+  },
   "errorFallback": {
     "title": "Something went wrong",
     "description": "Please try again. If the problem continues, come back later.",

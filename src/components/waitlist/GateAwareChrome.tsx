@@ -30,8 +30,13 @@ function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
   if (!pathname) return false;
   const withLocalePrefix = `/${locale}`;
   const routePath = pathname.startsWith(withLocalePrefix)
-    ? (pathname.slice(withLocalePrefix.length) || "/")
+    ? pathname.slice(withLocalePrefix.length) || "/"
     : pathname;
+  if (
+    process.env.NODE_ENV === "development" &&
+    routePath === "/sentry-example-page"
+  )
+    return true;
   return GATE_EXEMPT_ROUTES.some(
     (route) => routePath === route || routePath.startsWith(`${route}/`),
   );

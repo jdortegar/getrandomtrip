@@ -143,6 +143,7 @@ it.each([0, 1, 2, 3, 4, 5, 6, 7])(
       },
       require: () => ({ withSentryConfig }),
     });
+    expect(withSentryConfig).toHaveBeenCalledTimes(1);
     expect(withSentryConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         images: expect.any(Object),
