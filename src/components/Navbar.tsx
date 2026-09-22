@@ -178,6 +178,16 @@ export default function Navbar({
               <Phone className="h-5 w-5" />
             </a>
 
+            {!isAuthed && (
+              <button
+                aria-label={nav?.signIn ?? "Sign in"}
+                className={cn("p-2 rounded-lg", iconHoverClass)}
+                onClick={() => openLogin()}
+              >
+                <User className="h-5 w-5" />
+              </button>
+            )}
+
             {/* Hamburger — visible below xl (1280px); desktop nav shows all links */}
             <button
               aria-controls={mobileMenu.isOpen ? DRAWER_ID : undefined}
@@ -189,16 +199,6 @@ export default function Navbar({
             >
               <Menu className="h-5 w-5" />
             </button>
-
-            {!isAuthed && (
-              <button
-                aria-label={nav?.signIn ?? "Sign in"}
-                className={cn("hidden xl:block p-2 rounded-lg", iconHoverClass)}
-                onClick={() => openLogin()}
-              >
-                <User className="h-5 w-5" />
-              </button>
-            )}
 
             {isAuthed && user && profileLabels && (
               <NavbarProfile
