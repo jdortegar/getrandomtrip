@@ -45,6 +45,8 @@ delivery:
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
+  next_slice: 2.2c2a-safe-cleanup-target-planning
+  awaiting_user: dependency-only-size-exception
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.
