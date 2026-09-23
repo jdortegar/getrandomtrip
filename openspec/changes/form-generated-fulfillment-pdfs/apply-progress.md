@@ -1,7 +1,7 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher). Remaining: 1.8 onward.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots). Remaining: 1.9 onward.
 Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/bounds units with adjacent tests; no schema, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
@@ -15,6 +15,7 @@ Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/boun
 | 1.5 | `src/lib/trip-documents/parsers/__tests__/hotelVoucher.test.ts` | Unit / N/A (new); 353 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Required/shape/bounds/IDs/metadata: 60 failed → 61 passed; formats/range: 7 failed → 70 passed | Shared voucher text validation/types extracted; 423/423 regression tests passed |
 | 1.6 | `src/lib/trip-documents/parsers/__tests__/activityVoucher.test.ts` | Unit / N/A (new); 423 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Required/shape/bounds/IDs/metadata: 56 failed → 61 passed; lowercase date/time: 2 failed → 67 passed | Reused shared voucher/metadata rules, formatted; 490/490 regression tests passed |
 | 1.7 | `src/lib/trip-documents/parsers/__tests__/dinnerVoucher.test.ts` | Unit / N/A (new); 490 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Required/shape/bounds/IDs/metadata: 57 failed → 62 passed; existing shared format rules + inclusive limits: 70 passed | Reused shared voucher/metadata rules, formatted; 560/560 regression tests passed |
+| 1.8 | `src/lib/trip-documents/__tests__/snapshots.test.ts` | Unit / N/A (new); 560 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Template/locale/pax/isolation: 21 failed → 23 passed; invalid/oversized facts: 2 failed → 25 passed; review extended-year cases: 2 failed → 27 passed | Bounded fact/date helpers and readable test alias; nested isolation verified; initial 585/585 and review-fix 587/587 regressions passed |
 
 Verification: `npm run test -- src/lib/trip-documents/__tests__/documentMetadata.test.ts src/lib/trips/__tests__/destinationCountries.test.ts` → 144 passed (136 new + 8 existing); `npm run typecheck` → pass; targeted Prettier check → pass. Full suite/lint not rerun; known baseline failures unchanged by this isolated unit.
 
@@ -34,4 +35,6 @@ Task 1.6 verification: `npm run test -- src/lib/trip-documents src/lib/trips/__t
 
 Task 1.7 verification: `npm run test -- src/lib/trip-documents src/lib/trips/__tests__/destinationCountries.test.ts` → 560 passed (70 dinner + 490 prior). Typecheck and targeted Prettier passed. Generation requires authored guests, restaurant name/address, real local date/time and service. Menu arrays may be empty; supplied items preserve order/unique stable IDs and need titles for generation. Optional conditions/holder/claims/links stay absent unless supplied; drafts preserve incomplete content. Existing shared validation reused unchanged. No design deviations.
 
-Rollback: revert the respective isolated unit. Next: fresh review, then task 1.8 snapshots. No DB/runtime/deploy verification claimed.
+Task 1.8 verification: `npm run test -- src/lib/trip-documents src/lib/trips/__tests__/destinationCountries.test.ts` → initial 585 passed; review-fix 587 passed (27 snapshot + 560 prior). Unsupported extended/negative years now remain blank through shared ISO-calendar validation. Typecheck and targeted Prettier passed. Creation-only typed source accepts Prisma Date fields; UTC day prefills roadmaps only. Buyer + companion names and valid pax use existing EN/ES dictionary wording; exact `en`, otherwise `es`. Basic destination/title facts copy without mutable references; unknown/oversized facts remain blank, never truncated. All five outputs validate as drafts; nested objects/arrays remain independent. Voucher booking schedules/claims stay blank/absent. Provider/itinerary normalization deferred to 1.9. No design deviations.
+
+Rollback: revert the respective isolated unit. Next: fresh review, then task 1.9 provider snapshots. No DB/runtime/deploy verification claimed.
