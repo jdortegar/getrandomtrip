@@ -1,6 +1,6 @@
 "use client";
 import Image, { ImageProps } from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type ImgProps = Omit<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -29,18 +29,18 @@ export default function Img({
   onError,
   ...rest
 }: ImgProps) {
-  const [errored, setErrored] = useState(false);
+  const [imageState, setImageState] = useState({ src, errored: false });
 
   // A src swapped in after an error (e.g. a live search fallback resolving)
   // deserves a fresh attempt, not the permanently-stuck placeholder.
-  useEffect(() => {
-    setErrored(false);
-  }, [src]);
+  if (imageState.src !== src) {
+    setImageState({ src, errored: false });
+  }
 
   const w = width ?? 1200;
   const h = height ?? 675;
 
-  if (errored) {
+  if (imageState.src === src && imageState.errored) {
     // When the caller positions the image absolutely (fill-style layout,
     // e.g. "absolute inset-0 h-full w-full"), let those classes size the
     // fallback box too — an inline width/height here would win over them
@@ -52,7 +52,8 @@ export default function Img({
         className={`flex items-center justify-center bg-neutral-200 ${className ?? ""}`}
         style={isAbsolutelyPositioned ? undefined : { width: w, height: h }}
         role="img"
-        aria-label={alt} data-component="Img"
+        aria-label={alt}
+        data-component="Img"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -79,10 +80,11 @@ export default function Img({
       sizes={sizes}
       unoptimized={unoptimized}
       onError={() => {
-        setErrored(true);
+        setImageState({ src, errored: true });
         onError?.();
       }}
-      {...rest} data-component="Img"
+      {...rest}
+      data-component="Img"
     />
   );
 }

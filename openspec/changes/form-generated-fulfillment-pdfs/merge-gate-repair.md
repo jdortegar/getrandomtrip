@@ -19,7 +19,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m6: Make the loaded-once latch immediate and effect-free, preserving settlement/refetch/error behavior and per-mount reset; remove render-time test capture.
 - [x] m7: Bind XSED notification loading to page requests and guard stale completions by request occurrence, preserving rows, chrome and local deletion.
 - [x] m8: Read Lenis scroll through a real external-store subscription, with immediate client snapshots, fixed variants and stable server fallback.
-- [ ] Remaining lint debt: 78 errors / 20 warnings in 67 files; continue only in reviewed, bounded slices.
+- [x] m9: Associate Img failure with its current source, retrying changed URLs immediately while preserving fallback, caller callbacks and props.
+- [ ] Remaining lint debt: 77 errors / 20 warnings in 66 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -44,6 +45,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m6 | Existing 4 tests pass; rendered-boolean approval harness retains all 4 passes | SSR with isLoading=false incorrectly emits false: 1 failed / 5 passed; actual targeted lint has 2 errors | Immediate state initialization plus guarded monotonic update: 6 pass; initial-settled/refetch/remount triangulation → 8 pass; targeted lint 0 | Scoped formatting; 8 tests pass again, no effects/timers/refs introduced |
 | m7 | Existing 2 tests pass; strengthened mounted-row/count/error approval tests also pass | A→B→A stale success clears the live overlay: 1 failed / 2 passed; actual lint has 1 error + 1 warning | Per-request abort guards + event-owned pending state: 3 pass; stale success/HTTP/network, fully reversed completion, body parsing, initial failures, unmount/StrictMode and local DELETE → 12 pass | Scoped formatting and retry recovery assertions; 12 pass, targeted lint 0 |
 | m8 | No existing direct test; adjacent hook safety net: 8 pass; four new approval cases pass before production | Restored scroll has an incorrect first committed overlay: 1 failed / 4 passed; actual hook lint has 2 errors | useSyncExternalStore + Lenis unsubscribe: 5 pass; threshold, fixed/auto, instance lifecycle, StrictMode, SSR/hydration → 15 pass | Scoped formatting only; 15 pass again; targeted lint 0 |
+| m9 | No existing direct tests; three new real-Next-Image approval cases pass before production | Replacement source first commits the old fallback logo: 1 failed / 3 passed; actual lint has 1 error | Guarded source-associated state: 4 pass; A→B→A with successful/failed B, async caller recovery, SSR defaults/props → 9 pass | Scoped formatting only; 9 pass again, targeted lint 0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -69,6 +71,8 @@ m7 keeps initial pending state and moves later resets to pagination events; each
 
 m8 uses the installed Lenis 1.3.23 public `on("scroll", notify)` unsubscribe contract and a primitive boolean snapshot; no setter effect, timer or callback scheduling workaround. Fixed variants do not subscribe; threshold changes reuse the subscription. Tests mount actual LenisContext/useLenis with a controlled scroll source, not full Navbar/browser animation. They prove first client commit, equality, instance arrival/replacement/removal, cleanup and matching server/hydration fallback. Full suite **1829 passed / 241 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **78 errors / 20 warnings in 67 of 1186 files**, exit 1. Evidence: `/private/tmp/m8-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m8-lint-before.json`, `m8-lint-results.json`.
 
+m9 uses `{src, errored}` with a guarded render reset, not a setter effect. Existing fallback role/label, decorative logo, absolute-sizing branch and props are unchanged; no placeholder redesign or CSS assertions. Tests use real Next Image with local unoptimized URLs, without module mocks or network loading. Approval setup first corrected URL resolution and happy-dom’s absent `draggable` property (asserting the actual attribute instead); approval GREEN and regression RED were rerun before production edits. Full suite **1838 passed / 242 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **77 errors / 20 warnings in 66 of 1187 files**, exit 1. Evidence: `/private/tmp/m9-{approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m9-lint-before.json`, `m9-lint-results.json`. No browser visual-layout claim.
+
 ## Next boundary
 
-Fresh-review m8 Lenis subscription behavior before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m9 source-owned Img recovery before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
