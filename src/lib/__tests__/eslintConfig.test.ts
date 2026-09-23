@@ -16,6 +16,14 @@ async function lint(code: string) {
 }
 
 describe("repository ESLint configuration", () => {
+  it("requires framework navigation in TripperTopbar", async () => {
+    const eslint = new ESLint({ cwd });
+    const [result] = await eslint.lintFiles([
+      "src/components/tripper/TripperTopbar.tsx",
+    ]);
+    expect(result.messages).toEqual([]);
+  });
+
   it("accepts a valid stateful React component without diagnostics", async () => {
     const result = await lint(`
       import { useState } from "react";

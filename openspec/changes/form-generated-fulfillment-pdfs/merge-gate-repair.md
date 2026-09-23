@@ -6,6 +6,8 @@ The user approved baseline repairs before merging the PDF child PRs, including a
 
 Do not waive failing tests or change established product behavior to satisfy stale assertions. Keep FAQ's real navigation bug separate from test maintenance. No database or deployment actions belong to this detour.
 
+The user subsequently approved remaining repository-wide lint repairs in reviewed, bounded slices and direct integration of cumulative reviewed commits into the feature tracker **only after all gates pass**. This does not authorize rule waivers, a main merge, schema publishing or PDF dependency installation.
+
 ## Acceptance and tasks
 
 - [x] m1: Repair four API test files (16 stale failures), preserving authorization, review-copy isolation, source/owner/creator rules, filter precedence and pricing rejection guards. No production changes.
@@ -13,8 +15,9 @@ Do not waive failing tests or change established product behavior to satisfy sta
 - [x] m2: Separate optional FAQ navigation/submission eligibility from completion checkmarks; preserve existing partial-entry acceptance and required-field gates.
 - [x] m3 tooling: Repair Next 16 / ESLint compatibility and generated lockfile; retain native rules and the zero-warning gate.
 - [x] m4: Remove only 183 unused ESLint directives, preserving executable code, meaningful prose, valid suppressions and substantive diagnostics.
-- [ ] Remaining lint debt: 97 errors / 21 warnings in 72 files; behavioral source remediation remains a separate boundary.
-- [ ] Final gate: full tests, typecheck and lint pass before eligible child merges. Keep unfinished feature tracker off main.
+- [x] m5: Replace the legacy TripperTopbar internal anchor with Next Link, preserving destination, copy, appearance and link semantics.
+- [ ] Remaining lint debt: 83 errors / 21 warnings in 71 files; continue only in reviewed, bounded slices.
+- [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
 
@@ -34,6 +37,7 @@ Do not waive failing tests or change established product behavior to satisfy sta
 | m1b | Sidebar/TextArea baseline: 7 passed, 3 known stale failures | Five missing-description failures; triangulation: four locale/disabled-description failures, then two disabled-key bubbling failures | 5 initial GREEN; 23 sidebar/TextArea passed after locale, precedence, opt-in, navigation and disabled-state cases | Deduplicated event helper, object-row completed-ID matrix; 32 focused passed after formatting |
 | m3 | New linter-contract file; old npm lint exits 1 because Next removed the command | Two actual ESLint API fixtures fail loading the old config | Valid stateful TSX has no diagnostics; conditional hook yields severity-2 rules-of-hooks; both pass | Formatted tests pass again; full tests/typecheck below |
 | m4 | Full safety net: 1797 tests passed | Pre-change executable zero-unused-directive probe fails: 183 ≠ 0 | Actual ESLint directive-only fixes → zero unused directives; parser-aware tokens/project emit equivalent in 81 files; valid suppressions and all substantive diagnostics identical | Only generated replacement blank-line whitespace trimmed; no runtime tests invented or unrelated formatting |
+| m5 | Existing adjacent/config tests: 5 passed; two new DOM approval cases pass before production | Actual ESLint contract fails with 14 no-html-link-for-pages diagnostics | Next Link yields zero targeted diagnostics; 5 focused tests pass, preserving link destination/name/focus at default and English-prefixed locations | Test formatting only; 5 focused tests pass again |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -51,6 +55,8 @@ Post-install follow-up: an authorized read-only request to `http://localhost:301
 
 m4 removes **183 obsolete directives across 81 files**, using `fix: true, fixTypes: ["directive"]`, not blanket fix. Removed lines contain only directives (no explanatory prose); every added line is empty. Source diff **+183/-183 = 366**, with no code/config/dependency/rule changes. Full tests remain **1797 passed / 239 files**, typecheck and diff checks pass. Changed-line whitespace verification replaces whole-file formatting; existing style is untouched. Exact active and legitimately suppressed diagnostics, parser-aware tokens and comment-free project-configured emitted JS are unchanged; remaining lint findings are **97 errors / 21 warnings in 72 of 1184 files**, so merges remain blocked. Evidence: `/private/tmp/m4-directives.cjs`, `m4-{red,apply,green,safety,full,typecheck,lint}.log`, `m4-proof.json`, `m4-diff-proof.json`, `m4-before.json`, `m4-after-results.json`.
 
+m5 changes only the legacy TripperTopbar anchor to Next Link. Its hardcoded `/dashboard/tripper/packages/new`, Spanish copy and styling remain unchanged; no active caller or current packages route was found, so route repair/internationalization is outside this unit. Tests render the real component/Link with no module mocks and verify native link semantics, not full router navigation or destination availability. Targeted lint, typecheck, test Prettier and diff checks pass; full suite **1800 passed / 240 files**. Whole lint remains **83 errors / 21 warnings in 71 of 1185 files**, exit 1; no rule waivers. Evidence: `/private/tmp/m5-{safety,red,green,refactor,full,typecheck,lint}.log` and `m5-lint-results.json`.
+
 ## Next boundary
 
-m4 passed fresh review with no findings. Obtain approval for the remaining repository-wide source remediation and its maintenance integration route. Do not waive rules or silently expand scope. No merge-readiness claim until lint also passes.
+Fresh-review m5 navigation before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
