@@ -1,8 +1,14 @@
 import type {
+  DocumentPrefillSource,
   DocumentProviderCandidate,
   DocumentProviderRole,
   DocumentProviderSource,
 } from "@/lib/types/DocumentProviderCandidate";
+import type {
+  TripDocumentSnapshot,
+  TripDocumentSnapshotSource,
+} from "@/lib/types/TripDocumentSnapshot";
+import { createTripDocumentSnapshot } from "./snapshots";
 import { normalizeSourceText as text } from "./sourceText";
 import { isBoundedDocumentArray, isHttpsUrl } from "./validationPrimitives";
 
@@ -73,4 +79,77 @@ export function selectProviderCandidate(
       (candidate) => candidate.index === index,
     ) ?? null
   );
+}
+
+/** Creation only: no saved draft is accepted, refreshed or mutated. */
+export function createPrefilledDocumentSnapshot(
+  template: TripDocumentSnapshot["template"],
+  trip: TripDocumentSnapshotSource,
+  source: DocumentPrefillSource,
+  candidateIndex?: unknown,
+): TripDocumentSnapshot {
+  const draft = createTripDocumentSnapshot(template, trip);
+  if (
+    draft.template === "experience-roadmap" ||
+    draft.template === "xsed-roadmap"
+  ) {
+    const itinerary = rows(source.itinerary).flatMap((entry, index) => {
+      const row = record(entry);
+      const title = text(row.title);
+      const description = text(row.description, "html");
+      return title || description
+        ? [{ id: `itinerary-${index}`, title, description }]
+        : [];
+    });
+    if (draft.template === "experience-roadmap")
+      draft.data.activities = itinerary;
+    else
+      draft.data.stops = itinerary.map(({ description, ...item }) => ({
+        ...item,
+        directions: description,
+      }));
+    return draft;
+  }
+  const role =
+    draft.template === "hotel-voucher"
+      ? "hotel"
+      : draft.template === "activity-voucher"
+        ? "activity"
+        : "dinner";
+  const candidate = selectProviderCandidate(source, role, candidateIndex);
+  if (!candidate) return draft;
+  const entry = record(
+    rows(role === "hotel" ? source.hotels : source.activities)[candidate.index],
+  );
+  const sectionIndex = role === "hotel" ? 0 : role === "dinner" ? 1 : 2;
+  const section =
+    source.kind === "xsed" ? record(rows(source.sections)[sectionIndex]) : {};
+  const format = source.kind === "experience" ? "html" : "plain";
+  const description = text(
+    [text(entry.description, format), text(section.body, "html")]
+      .filter(Boolean)
+      .join("\n\n"),
+  );
+  switch (draft.template) {
+    case "hotel-voucher":
+      draft.data.property = candidate.provider;
+      draft.data.instructions = description;
+      break;
+    case "activity-voucher":
+      draft.data.provider = candidate.provider;
+      draft.data.program = [
+        {
+          id: `activity-${candidate.index}`,
+          title: candidate.title,
+          description,
+        },
+      ];
+      draft.data.recommendations = text(entry.risks, format);
+      break;
+    case "dinner-voucher":
+      draft.data.restaurant = candidate.provider;
+      draft.data.service = candidate.title;
+      draft.data.conditions = description;
+  }
+  return draft;
 }

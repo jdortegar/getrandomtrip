@@ -17,3 +17,7 @@ export interface DocumentProviderCandidate {
   title: string;
   provider: VoucherProvider;
 }
+
+export interface DocumentPrefillSource extends DocumentProviderSource {
+  itinerary?: unknown;
+}
