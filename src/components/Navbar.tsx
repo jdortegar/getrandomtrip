@@ -71,6 +71,11 @@ export interface NavbarProps {
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 const WHATSAPP_URL = "https://wa.me/526241928208";
 
+// Browser persistence belongs to the locale selection event, not rendering.
+function writeLocaleCookie(locale: Locale) {
+  document.cookie = `${COOKIE_LOCALE}=${locale}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
+}
+
 export default function Navbar({
   backgroundPrimary = false,
   contained = false,
@@ -87,8 +92,17 @@ export default function Navbar({
   const isSolid = backgroundPrimary || !overlay;
   const { isAuthed, user, signOut, session } = useUserStore();
   const { isOpen, mode, close, openLogin } = useAuthModal();
-  const languageMenu = useMenuState();
-  const mobileMenu = useMenuState();
+  const {
+    close: closeLanguageMenu,
+    isOpen: isLanguageMenuOpen,
+    menuRef: languageMenuRef,
+    toggle: toggleLanguageMenu,
+  } = useMenuState();
+  const {
+    close: closeMobileMenu,
+    isOpen: isMobileMenuOpen,
+    toggle: toggleMobileMenu,
+  } = useMenuState();
   const currentLocale: Locale = localeProp ?? "es";
   const nav = dict?.nav;
   const profileLabels = dict?.navbarProfile as NavbarProfileLabels;
@@ -96,7 +110,7 @@ export default function Navbar({
   const isActive = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
 
   const switchLocale = (loc: Locale) => {
-    document.cookie = `${COOKIE_LOCALE}=${loc}; path=/; max-age=${COOKIE_MAX_AGE}; sameSite=lax`;
+    writeLocaleCookie(loc);
     const pathWithout = pathWithoutLocale(pathname);
     router.push(pathForLocale(loc, pathWithout || "/"));
   };
@@ -194,11 +208,11 @@ export default function Navbar({
 
             {/* Hamburger — visible below xl (1280px); desktop nav shows all links */}
             <button
-              aria-controls={mobileMenu.isOpen ? DRAWER_ID : undefined}
-              aria-expanded={mobileMenu.isOpen}
+              aria-controls={isMobileMenuOpen ? DRAWER_ID : undefined}
+              aria-expanded={isMobileMenuOpen}
               aria-label={nav?.openMenu ?? "Open menu"}
               className={cn("p-2 rounded-lg xl:hidden", iconHoverClass)}
-              onClick={mobileMenu.toggle}
+              onClick={toggleMobileMenu}
               type="button"
             >
               <Menu className="h-5 w-5" />
@@ -213,13 +227,13 @@ export default function Navbar({
               />
             )}
 
-            <div className="relative hidden xl:flex" ref={languageMenu.menuRef}>
+            <div className="relative hidden xl:flex" ref={languageMenuRef}>
               <button
-                aria-expanded={languageMenu.isOpen}
+                aria-expanded={isLanguageMenuOpen}
                 aria-haspopup="menu"
                 aria-label={nav?.selectLanguage ?? "Select language"}
                 className={cn("flex items-center gap-2 p-2 rounded-lg", iconHoverClass)}
-                onClick={languageMenu.toggle}
+                onClick={toggleLanguageMenu}
                 type="button"
               >
                 <Globe className="h-5 w-5" />
@@ -228,7 +242,7 @@ export default function Navbar({
                 </span>
               </button>
 
-              {languageMenu.isOpen && (
+              {isLanguageMenuOpen && (
                 <div
                   role="menu"
                   className="absolute right-0 mt-3 w-40 rounded-xl bg-white/90 backdrop-blur-xl shadow-lg ring-1 ring-black/5 p-2 text-ink"
@@ -243,7 +257,7 @@ export default function Navbar({
                         currentLocale === loc && "bg-neutral-100 font-semibold",
                       )}
                       onClick={() => {
-                        languageMenu.close();
+                        closeLanguageMenu();
                         switchLocale(loc);
                       }}
                     >
@@ -261,10 +275,10 @@ export default function Navbar({
         currentLocale={currentLocale}
         isActive={isActive}
         isAuthed={isAuthed}
-        isOpen={mobileMenu.isOpen}
+        isOpen={isMobileMenuOpen}
         links={NAV_LINKS}
         nav={nav}
-        onClose={mobileMenu.close}
+        onClose={closeMobileMenu}
         onLocaleChange={switchLocale}
         onSignIn={() => openLogin()}
         whatsappHref={WHATSAPP_URL}
