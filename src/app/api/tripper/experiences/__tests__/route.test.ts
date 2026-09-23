@@ -15,6 +15,10 @@ vi.mock("@/lib/db/tripper-queries", () => ({
   getTripperExperiences: vi.fn(),
 }));
 
+vi.mock("@/lib/randomtrip-user", () => ({
+  getRandomtripUserId: vi.fn().mockResolvedValue("randomtrip-owner"),
+}));
+
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
@@ -26,6 +30,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { getTripperExperiences } from "@/lib/db/tripper-queries";
+import { getRandomtripUserId } from "@/lib/randomtrip-user";
 
 const mockSession = (userId: string) => ({
   user: { id: userId, email: "user@example.com" },
@@ -163,9 +168,12 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
         data: expect.objectContaining({
           source: "TRIPPER",
           status: "DRAFT",
+          ownerId: "tripper-1",
+          createdById: "tripper-1",
         }),
       }),
     );
+    expect(getRandomtripUserId).not.toHaveBeenCalled();
   });
 
   it("persists source: RANDOMTRIP and status: DRAFT for an admin caller (Scenario: Source derived from admin caller)", async () => {
@@ -188,9 +196,12 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
         data: expect.objectContaining({
           source: "RANDOMTRIP",
           status: "DRAFT",
+          ownerId: "randomtrip-owner",
+          createdById: "admin-1",
         }),
       }),
     );
+    expect(getRandomtripUserId).toHaveBeenCalledOnce();
   });
 
   it("ignores a client-sent source field for a tripper caller (Scenario: Client-sent source is ignored)", async () => {
@@ -204,14 +215,22 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
     const mod = (await import("../route")) as RouteModule;
     await mod.POST(
       makePostRequest(
-        baseDraftBody({ source: "RANDOMTRIP" }),
+        baseDraftBody({
+          source: "RANDOMTRIP",
+          ownerId: "forged",
+          createdById: "forged",
+        }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ) as any,
     );
 
     expect(prisma.experience.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ source: "TRIPPER" }),
+        data: expect.objectContaining({
+          source: "TRIPPER",
+          ownerId: "tripper-1",
+          createdById: "tripper-1",
+        }),
       }),
     );
   });
