@@ -11,17 +11,23 @@ artifacts:
   specs: complete
   design: complete
   tasks: complete
-  apply: pending
+  apply: in-progress
   verify: pending
   archive: pending
 delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 0.2-planning
-  current_branch: codex/form-generated-fulfillment-pdfs-00-planning
-  current_base: codex/form-generated-fulfillment-pdfs
+  current_slice: 1.1-metadata
+  current_branch: codex/form-generated-fulfillment-pdfs-01-metadata
+  current_base: codex/form-generated-fulfillment-pdfs-00-planning
+  tracker_seed_commit: a01b276f
+  planning_commit: 84d5fc05
+  current_slice_review: no-findings
+  current_slice_tests_passed: 144
   approved_issue: unavailable-repository-issues-disabled
+  dependency_slice_changed_lines: 726
+  dependency_size_exception: pending
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.
@@ -33,3 +39,4 @@ baseline:
   tests_failed: 20
   lint: preexisting-next-lint-command-failure
   database_target: remote-unverified
+  relevant_regression_tests_passed: 57
