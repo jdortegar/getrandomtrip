@@ -1,0 +1,33 @@
+change: form-generated-fulfillment-pdfs
+execution_mode: auto
+artifact_store: openspec
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+strict_tdd: true
+test_command: npm run test
+phase: apply
+artifacts:
+  proposal: complete
+  specs: complete
+  design: complete
+  tasks: complete
+  apply: pending
+  verify: pending
+  archive: pending
+delivery:
+  tracker_branch: codex/form-generated-fulfillment-pdfs
+  base_branch: origin/main
+  base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
+  current_slice: null
+  approved_issue: unavailable-repository-issues-disabled
+constraints:
+  - Preserve unrelated existing registry and email-script changes.
+  - Verify database target before applying schema changes.
+  - Do not deploy to production.
+  - Actual PR creation requires resolving the approved-issue prerequisite.
+baseline:
+  typecheck: pass
+  tests_passed: 1742
+  tests_failed: 20
+  lint: preexisting-next-lint-command-failure
+  database_target: remote-unverified
