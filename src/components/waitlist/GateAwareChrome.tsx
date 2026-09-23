@@ -93,14 +93,15 @@ export function GateAwareChrome({
       <div className="relative">
         <Navbar
           backgroundPrimary={navbarBackgroundPrimary}
+          contained
           dict={dict}
           locale={locale}
         />
         <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
           <main className="min-h-screen">{children}</main>
         </NavbarChromeContext.Provider>
+        <Footer dict={dict} locale={locale} />
       </div>
-      <Footer dict={dict} locale={locale} />
     </>
   );
 

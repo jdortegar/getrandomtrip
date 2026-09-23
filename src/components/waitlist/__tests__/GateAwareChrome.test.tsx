@@ -1,4 +1,4 @@
-import { act, type ReactNode } from "react";
+import { act, Suspense, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GateAwareChrome } from "../GateAwareChrome";
@@ -28,7 +28,11 @@ vi.mock("next-auth/react", () => ({
 }));
 
 vi.mock("@/components/Navbar", () => ({
-  default: () => <div data-testid="navbar">navbar</div>,
+  default: ({ contained }: { contained?: boolean }) => (
+    <div data-contained={String(!!contained)} data-testid="navbar">
+      navbar
+    </div>
+  ),
 }));
 vi.mock("@/components/layout/Footer", () => ({
   default: () => <div data-testid="footer">footer</div>,
@@ -214,6 +218,15 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
     expect(
       container.querySelector('[data-testid="attribution-banner"]'),
     ).not.toBeNull();
+
+    const navbar = container.querySelector('[data-testid="navbar"]')!;
+    const chrome = navbar.parentElement!;
+    expect(navbar.getAttribute("data-contained")).toBe("true");
+    expect(chrome.previousElementSibling?.getAttribute("data-testid")).toBe(
+      "attribution-banner",
+    );
+    expect(chrome.querySelector("main")).not.toBeNull();
+    expect(chrome.querySelector('[data-testid="footer"]')).not.toBeNull();
   });
 
   it("renders nothing extra when no banner prop is passed (AttributionModeBanner returning null)", async () => {
@@ -229,5 +242,19 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
       container.querySelector('[data-testid="attribution-banner"]'),
     ).toBeNull();
     expect(container.querySelector('[data-testid="navbar"]')).not.toBeNull();
+  });
+
+  it("does not reserve banner space when its server-rendered Suspense content is null", async () => {
+    mockSessionState = {
+      data: { user: { hasSiteAccess: true, role: "traveler" } },
+      status: "authenticated",
+    };
+
+    render(<Suspense fallback={null}>{null}</Suspense>);
+    await flush();
+
+    const navbar = container.querySelector('[data-testid="navbar"]')!;
+    expect(navbar.getAttribute("data-contained")).toBe("true");
+    expect(navbar.parentElement?.previousElementSibling).toBeNull();
   });
 });

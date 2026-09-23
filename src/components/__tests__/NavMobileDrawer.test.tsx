@@ -151,3 +151,33 @@ describe("Navbar — search control removed", () => {
     expect(container.querySelector('[aria-label="Buscar"]')).toBeNull();
   });
 });
+
+describe("Navbar — attribution banner positioning", () => {
+  it.each(["overlay", "solid"] as const)(
+    "keeps contained marketing chrome sticky and over the hero in %s mode",
+    (variant) => {
+      render(<Navbar contained variant={variant} />);
+
+      const header = container.querySelector("[data-site-header]")!;
+      expect(header.classList.contains("sticky")).toBe(true);
+      expect(header.classList.contains("fixed")).toBe(false);
+      expect(header.classList.contains("-mb-16")).toBe(true);
+    },
+  );
+
+  it("reserves navbar space for contained forced-solid pages", () => {
+    render(<Navbar backgroundPrimary contained />);
+
+    const header = container.querySelector("[data-site-header]")!;
+    expect(header.classList.contains("sticky")).toBe(true);
+    expect(header.classList.contains("-mb-16")).toBe(false);
+  });
+
+  it("preserves standalone marketing navbar positioning", () => {
+    render(<Navbar />);
+
+    const header = container.querySelector("[data-site-header]")!;
+    expect(header.classList.contains("fixed")).toBe(true);
+    expect(header.classList.contains("-mb-16")).toBe(false);
+  });
+});
