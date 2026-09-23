@@ -39,7 +39,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 2.1 | prisma/schema.prisma: draft/outbox identities, dispositions, durable receipts/tombstones and indexes; schema/DTO isolation. Applied to approved development/staging DB; post-diff empty. |
 | [x] 2.2a | src/lib/db/tripDocumentLocks.ts: injectable ordered owner→trips→drafts→documents→outbox locks; sorted/deduplicated IDs, live ownership and rollback contract tests. |
 | [x] 2.2b1 | src/lib/db/tripDocumentCandidates.ts: immutable exact-key candidates, ordered-lock registration before PUT; identity/collision/commit-failure tests. |
-| [ ] 2.2b2 | Candidate adoption/expiry/retained receipts in caller's locked transaction; identity/delete-state/rollback and ambiguous-outcome reconciliation tests. |
+| [x] 2.2b2 | Candidate adoption/expiry/retained receipts in caller's locked transaction; identity/delete-state/rollback and ambiguous-outcome reconciliation tests. |
 | [ ] 2.2c | D/cleanup.ts: locked scope cancellation and retained-publication exclusion; deletion identity tests. |
 | [ ] 2.2d | D/cleanup.ts: exact-key tombstone execution after parent deletion; retain after absence, test late PUT/successful SDK retry. |
 | [ ] 2.2e | D/cleanup.ts: bounded prefix tombstone execution; pagination, partial failure and continuing sweep tests. |

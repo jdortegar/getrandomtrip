@@ -18,13 +18,13 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 2.2b1-candidate-registration
-  current_branch: codex/form-generated-fulfillment-pdfs-15-candidate-registration
-  current_base: codex/form-generated-fulfillment-pdfs-14-document-locks
+  current_slice: 2.2b2-candidate-lifecycle
+  current_branch: codex/form-generated-fulfillment-pdfs-16-candidate-lifecycle
+  current_base: codex/form-generated-fulfillment-pdfs-15-candidate-registration
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: fresh-context-no-findings
-  current_slice_tests_passed: 753
+  current_slice_review: passed
+  current_slice_tests_passed: 781
   schema_application: applied-development-target-empty-diff-verified
   schema_applied_commit: 14ba2e1a
   schema_publication: awaiting-deploy-hook-verification
