@@ -18,13 +18,13 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: lifecycle-design-correction
-  current_branch: codex/form-generated-fulfillment-pdfs-10-lifecycle-design
-  current_base: codex/form-generated-fulfillment-pdfs-09-source-text
+  current_slice: 1.9b-provider-candidates
+  current_branch: codex/form-generated-fulfillment-pdfs-11-provider-candidates
+  current_base: codex/form-generated-fulfillment-pdfs-10-lifecycle-design
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: independent-design-no-findings
-  current_slice_tests_passed: docs-only
+  current_slice_review: fresh-context-no-findings
+  current_slice_tests_passed: 639
   tracker_pr: 151
   planning_pr: 152
   metadata_pr: 153
@@ -36,6 +36,7 @@ delivery:
   dinner_parser_pr: 159
   trip_snapshots_pr: 160
   source_text_pr: 161
+  lifecycle_design_pr: 162
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending

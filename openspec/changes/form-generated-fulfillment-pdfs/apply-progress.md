@@ -1,7 +1,7 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text). Remaining: 1.9b onward.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates). Remaining: 1.9c onward.
 Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/bounds units with adjacent tests; no schema, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
@@ -17,6 +17,7 @@ Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/boun
 | 1.7 | `src/lib/trip-documents/parsers/__tests__/dinnerVoucher.test.ts` | Unit / N/A (new); 490 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Required/shape/bounds/IDs/metadata: 57 failed → 62 passed; existing shared format rules + inclusive limits: 70 passed | Reused shared voucher/metadata rules, formatted; 560/560 regression tests passed |
 | 1.8 | `src/lib/trip-documents/__tests__/snapshots.test.ts` | Unit / N/A (new); 560 baseline regressions passed | Missing-module failure before implementation | Initial 1/1 passed | Template/locale/pax/isolation: 21 failed → 23 passed; invalid/oversized facts: 2 failed → 25 passed; review extended-year cases: 2 failed → 27 passed | Bounded fact/date helpers and readable test alias; nested isolation verified; initial 585/585 and review-fix 587/587 regressions passed |
 | 1.9a | `src/lib/trip-documents/__tests__/sourceText.test.ts` | Unit / N/A (new); 587 baseline regressions; review baseline 16/16 | Missing-module failure before implementation | Initial 1/1 passed | Unknown/bounds/HTML: 13 failed; list assertion made semantic; empty-editor failure fixed → 14; escaped tags/links → 16. Review: two body-discovery failures, then head approval failure → 19; bounded bodies → 21 | Named limits, shared bounds, full-fragment walker/head skip; Node 21/21 and aggregate 608/608 passed |
+| 1.9b | `src/lib/trip-documents/__tests__/providerSnapshots.test.ts` | Unit / N/A (new); 608 baseline regressions | Missing-module failure before implementation | Initial 1/1 passed | Current/legacy/roles/selection/bounds: 27 failed → 29 passed; merged bounds/no-fetch/source isolation → 31 passed | Shared normalization/bounds, named candidate types, formatted; Node 31/31 and aggregate 639/639 passed |
 
 Verification: `npm run test -- src/lib/trip-documents/__tests__/documentMetadata.test.ts src/lib/trips/__tests__/destinationCountries.test.ts` → 144 passed (136 new + 8 existing); `npm run typecheck` → pass; targeted Prettier check → pass. Full suite/lint not rerun; known baseline failures unchanged by this isolated unit.
 
@@ -44,7 +45,9 @@ Task 1.9a review fix: default body discovery silently skipped later bodies beyon
 
 Runtime evidence: standalone `tsx` CLI smoke failed on sandbox IPC `listen EPERM` before loading the helper. No escalation/config/environment workaround; the same utility was verified through Vitest's per-file Node environment (0 ms DOM environment). Final Netlify packaging remains a later gate; reusing the React Email public export may affect server bundle size.
 
-Rollback: revert the respective isolated unit. Next: fresh review, then task 1.9b provider candidates. No DB/deploy verification claimed.
+Rollback: revert the respective isolated unit. Next: fresh review, then task 1.9c creation-only source application. No DB/deploy verification claimed.
+
+Task 1.9b verification: Node candidate tests → 31 passed; aggregate document/catalog tests → 639 passed; typecheck/targeted Prettier/diff check passed. Legacy/current hotel facts preserve authored text; current fields take precedence without stale legacy fallback. XSED roles use fixed source/section slots; experience activities never become dinner candidates. Original indices survive filtering; all selection requires an explicit valid index, with no singleton fallback. Contact names remain contact text, service titles never become provider names, links require bounded credential-free HTTPS, and referral/time/confirmation claims remain absent. Results are independent; no saved draft or itinerary is accepted or mutated. Source application remains 1.9c.
 
 ## Planning Refinement: Candidate Lifecycle (Pre-schema)
 

@@ -34,7 +34,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 1.7 | D/parsers/dinnerVoucher.ts + src/lib/types/: dinner voucher; partial/full/unknown-shape. |
 | [x] 1.8 | D/snapshots.ts: buyer/trip/locale snapshots; no inferred claims. |
 | [x] 1.9a | D/sourceText.ts: bounded non-executing plain-text/HTML normalization. |
-| [ ] 1.9b | D/providerSnapshots.ts: legacy/current explicit-role candidates and selection. |
+| [x] 1.9b | D/providerSnapshots.ts: legacy/current explicit-role candidates and selection. |
 | [ ] 1.9c | D/providerSnapshots.ts: creation-only provider/itinerary application; draft isolation. |
 | [ ] 2.1 | prisma/schema.prisma: draft/outbox candidate dispositions, immutable identities, non-cascading receipts/tombstones and due-time indexes; schema/DTO isolation. |
 | [ ] 2.2 | D/cleanup.ts: pre-write registration, locked cancellation/expiry, retained exclusion and compact tombstone sweeps; test late PUT after absence, including successful SDK retry. |
