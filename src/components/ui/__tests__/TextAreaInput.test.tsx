@@ -43,19 +43,15 @@ function PeekHarness({
   );
 }
 
-describe("TextAreaInput chrome", () => {
-  it("matches FormField control styles (white surface, gray border, rounded-xl)", () => {
+describe("TextAreaInput labeling", () => {
+  it("associates the visible label with the textarea", () => {
     harness.render(
       <TextAreaInput id="d1" label="Field" onChange={() => {}} value="" />,
     );
     const textarea = harness.container.querySelector(
       "textarea",
     ) as HTMLTextAreaElement;
-    expect(textarea.className).toContain("bg-white");
-    expect(textarea.className).toContain("border-gray-200");
-    expect(textarea.className).toContain("rounded-xl");
-    expect(textarea.className).not.toContain("bg-gray-100");
-    expect(textarea.className).not.toContain("rounded-sm");
+    expect(textarea.labels?.[0]?.textContent).toBe("Field");
   });
 });
 
@@ -64,25 +60,26 @@ describe("TextAreaInput peek", () => {
     harness.render(
       <TextAreaInput id="d1" label="Field" value="hello" onChange={() => {}} />,
     );
-    expect(harness.container.querySelector("svg.lucide-eye")).toBeNull();
-    expect(harness.container.querySelector("svg.lucide-eye-off")).toBeNull();
+    expect(harness.container.querySelector('[role="button"]')).toBeNull();
   });
 
-  it("renders an EyeOff toggle by default showing the admin's suggestion, char count reflects displayed value", () => {
+  it("offers the original-content action while displaying the suggestion and its count", () => {
     harness.render(<PeekHarness />);
     const textarea = harness.container.querySelector(
       "textarea",
     ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("Suggested description");
     expect(
-      harness.container.querySelector("svg.lucide-eye-off"),
-    ).not.toBeNull();
+      harness.container
+        .querySelector('[role="button"]')
+        ?.getAttribute("aria-label"),
+    ).toBe(baseTooltip.showOriginal);
     expect(harness.container.textContent ?? "").toContain(
       `${"Suggested description".length} /`,
     );
   });
 
-  it("toggling swaps the displayed value to the original with line-through and updates char count", () => {
+  it("toggling swaps values, accessible actions and character counts", () => {
     harness.render(<PeekHarness />);
     const button = harness.container.querySelector(
       '[role="button"]',
@@ -93,14 +90,16 @@ describe("TextAreaInput peek", () => {
       "textarea",
     ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("Original description");
-    expect(textarea.className).toContain("line-through");
-    expect(harness.container.querySelector("svg.lucide-eye")).not.toBeNull();
+    expect(button.getAttribute("aria-label")).toBe(baseTooltip.showSuggestion);
     expect(harness.container.textContent ?? "").toContain(
       `${"Original description".length} /`,
     );
+    harness.click(button);
+    expect(textarea.value).toBe("Suggested description");
+    expect(button.getAttribute("aria-label")).toBe(baseTooltip.showOriginal);
   });
 
-  it("shows a muted italic placeholder when the original value is empty", () => {
+  it("shows the empty-original placeholder and zero count", () => {
     harness.render(<PeekHarness originalValue="" />);
     const button = harness.container.querySelector(
       '[role="button"]',
@@ -112,7 +111,7 @@ describe("TextAreaInput peek", () => {
     ) as HTMLTextAreaElement;
     expect(textarea.value).toBe("");
     expect(textarea.placeholder).toBe("(no content)");
-    expect(textarea.className).toContain("italic");
-    expect(textarea.className).not.toContain("line-through");
+    expect(harness.container.textContent).toContain("0 / 280");
+    expect(button.getAttribute("aria-label")).toBe(baseTooltip.showSuggestion);
   });
 });

@@ -2595,6 +2595,10 @@ export interface MarketingDictionary {
     };
   };
   journey: {
+    completionLabels: {
+      completed: string;
+      incomplete: string;
+    };
     /** Localized addon copy keyed by addon id. When present, overrides catalog title/descriptions. */
     addons?: Record<
       string,

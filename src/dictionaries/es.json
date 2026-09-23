@@ -1409,6 +1409,10 @@
     }
   },
   "journey": {
+    "completionLabels": {
+      "completed": "Completado",
+      "incomplete": "Incompleto"
+    },
     "hero": {
       "title": "Empieza la aventura",
       "description": "¿Con quién vas a escribir tu próxima historia?",
