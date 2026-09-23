@@ -281,9 +281,15 @@ export default function TripStartVouchers({
       <Head>
         <meta name="color-scheme" content="light" />
         <meta name="supported-color-schemes" content="light" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600;700&display=swap"
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow Condensed"
+          fontStyle="normal"
+          fontWeight={700}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
+            format: "woff2",
+          }}
         />
         <Font
           fontFamily="Barlow Condensed"
@@ -294,6 +300,36 @@ export default function TripStartVouchers({
           }}
           fontWeight={800}
           fontStyle="normal"
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={400}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={500}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={700}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
+            format: "woff2",
+          }}
         />
         <Font
           fontFamily="Barlow"

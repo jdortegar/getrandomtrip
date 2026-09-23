@@ -51,16 +51,11 @@ export default function NewsletterGoLive({
   return (
     <Html lang="es">
       <Head>
-        {/* Google Fonts link — loaded by browsers and Gmail/Apple Mail */}
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;700&family=Nothing+You+Could+Do&display=swap"
-        />
         <Font
           fontFamily="Nothing You Could Do"
           fallbackFontFamily="Georgia"
           webFont={{
-            url: "https://fonts.gstatic.com/s/nothingyoucoulddo/v20/oY1B8fbBpaP5OX3DtrRYf_Q2BPB1SnfZb0OJ.woff2",
+            url: "https://fonts.gstatic.com/s/nothingyoucoulddo/v21/oY1B8fbBpaP5OX3DtrRYf_Q2BPB1SnfZb3OOnVsH2pmp.woff2",
             format: "woff2",
           }}
           fontWeight={400}
@@ -70,7 +65,7 @@ export default function NewsletterGoLive({
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v12/HTxwL3I-JCGChYJ8VI-L6OO_au7B43LT1Q.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
             format: "woff2",
           }}
           fontWeight={700}
@@ -80,7 +75,7 @@ export default function NewsletterGoLive({
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v12/HTxwL3I-JCGChYJ8VI-L6OO_au7B6HLT1Q.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
             format: "woff2",
           }}
           fontWeight={800}
@@ -90,7 +85,7 @@ export default function NewsletterGoLive({
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E3b8s8yn4.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
             format: "woff2",
           }}
           fontWeight={400}
@@ -100,7 +95,7 @@ export default function NewsletterGoLive({
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E3t-4s51os.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
             format: "woff2",
           }}
           fontWeight={500}
@@ -110,7 +105,7 @@ export default function NewsletterGoLive({
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E3_-Es51os.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
             format: "woff2",
           }}
           fontWeight={700}

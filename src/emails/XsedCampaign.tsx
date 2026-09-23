@@ -26,10 +26,6 @@ export default function XsedCampaign() {
   return (
     <Html lang="es">
       <Head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;700;800&family=Barlow:wght@400;500;600;700&display=swap"
-        />
         <style>{`
           @media only screen and (max-width: 480px) {
             .col-half {
@@ -42,10 +38,20 @@ export default function XsedCampaign() {
           }
         `}</style>
         <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow Condensed"
+          fontStyle="normal"
+          fontWeight={300}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47rxz3bWuYMBYro.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v12/HTxwL3I-JCGChYJ8VI-L6OO_au7B43LT1Q.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
             format: "woff2",
           }}
           fontWeight={700}
@@ -55,7 +61,7 @@ export default function XsedCampaign() {
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v12/HTxwL3I-JCGChYJ8VI-L6OO_au7B6HLT1Q.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
             format: "woff2",
           }}
           fontWeight={800}
@@ -65,7 +71,7 @@ export default function XsedCampaign() {
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E3b8s8yn4.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
             format: "woff2",
           }}
           fontWeight={400}
@@ -75,17 +81,27 @@ export default function XsedCampaign() {
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E3t-4s51os.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
             format: "woff2",
           }}
           fontWeight={500}
           fontStyle="normal"
         />
         <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={600}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E30-8s51ostz0rdg.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHqv4kjgoGqM7E3_-Es51os.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
             format: "woff2",
           }}
           fontWeight={700}
