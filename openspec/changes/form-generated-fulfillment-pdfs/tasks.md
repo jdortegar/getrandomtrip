@@ -11,7 +11,7 @@ Chain strategy: feature-branch-chain
 
 Tracker: `codex/form-generated-fulfillment-pdfs`; first child targets tracker, subsequent children target predecessors. Ranges=separate children. Budget 200–350 lines/child; ceiling 400 including evidence/docs. Rollback: revert child; retain data.
 
-Lockfile 2.8: request `size:exception` if unsplittable >400; unapproved, earlier units unblocked. Issues-disabled approved-issue gate blocks PRs only.
+Lockfile 2.8: request `size:exception` if unsplittable >400; unapproved, earlier units unblocked. User approved the issues-disabled issue-link exception only; PR creation is unblocked, size ceiling unchanged.
 
 ## Execution contract
 
@@ -27,7 +27,8 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 0.2 | Design/specs/tasks planning child; inspect traceability. |
 | [x] 1.1 | D/documentMetadata.ts + D/__tests__/documentMetadata.test.ts: metadata validation. |
 | [x] 1.2 | D/validationPrimitives.ts: calendar/time/range, HTTPS, bounds. |
-| [ ] 1.3–1.7 | D/parsers + src/lib/types/: one/template; partial/full/unknown-shape. |
+| [x] 1.3 | D/parsers/xsedRoadmap.ts + src/lib/types/: XSED partial/full/unknown-shape validation. |
+| [ ] 1.4–1.7 | D/parsers + src/lib/types/: remaining templates; partial/full/unknown-shape. |
 | [ ] 1.8 | D/snapshots.ts: buyer/trip/locale snapshots; no inferred claims. |
 | [ ] 1.9 | D/providerSnapshots.ts: candidate selection/legacy HTML normalization. |
 | [ ] 2.1 | prisma/schema.prisma: draft/outbox relations; schema/DTO isolation. |
