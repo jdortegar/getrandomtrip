@@ -26,9 +26,10 @@ export function createVoucherValidation(mode: DocumentValidationMode) {
     )
       add(path, "required");
     else if (mode === "generation" && field) {
-      if (key.endsWith("Date") && !isIsoCalendarDate(field))
+      if ((key === "date" || key.endsWith("Date")) && !isIsoCalendarDate(field))
         add(path, "invalid_date");
-      if (key.endsWith("Time") && !isWallTime(field)) add(path, "invalid_time");
+      if ((key === "time" || key.endsWith("Time")) && !isWallTime(field))
+        add(path, "invalid_time");
       if (key.endsWith("Url") && !isHttpsUrl(field)) add(path, "invalid_url");
     }
   }
