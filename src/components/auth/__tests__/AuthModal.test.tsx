@@ -12,6 +12,8 @@ vi.mock("next-auth/react", () => ({
 
 import { signIn } from "next-auth/react";
 import AuthModal from "../AuthModal";
+import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 
 const signInMock = signIn as ReturnType<typeof vi.fn>;
 
@@ -449,4 +451,87 @@ describe("AuthModal not-verified panel — hides Google sign-in", () => {
 
     expect(queryGoogleButton()).toBeNull();
   });
+});
+
+describe("AuthModal Google callback translation capture", () => {
+  async function clickNamedGoogle(label: string) {
+    const button = [...container.querySelectorAll("button")].find(
+      (node) => node.textContent?.trim() === label,
+    )!;
+    await act(async () => button.click());
+  }
+
+  it("uses the current required-referral copy after a dictionary change", async () => {
+    const fetchMock = mockFetchSequence(null);
+    render(
+      <AuthModal defaultMode="register" dict={es} isOpen onClose={() => {}} />,
+    );
+    await clickNamedGoogle(es.auth.continueWithGoogle);
+    expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+      es.auth.referredByRequired,
+    );
+    render(
+      <AuthModal defaultMode="register" dict={en} isOpen onClose={() => {}} />,
+    );
+    await clickNamedGoogle(en.auth.continueWithGoogle);
+    expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+      en.auth.referredByRequired,
+    );
+    expect(
+      fetchMock.mock.calls.some(([url]) => url === "/api/attribution/mode"),
+    ).toBe(false);
+    expect(signInMock).not.toHaveBeenCalled();
+  });
+
+  it.each(["HTTP", "network"])(
+    "keeps OAuth blocked and refreshes copy after %s sync failure",
+    async (failure) => {
+      const fetchMock = mockFetchSequence(null);
+      fetchMock.mockImplementation((url) => {
+        if (url === "/api/trippers/active")
+          return Promise.resolve(
+            Response.json({ trippers: [], current: null }),
+          );
+        if (url === "/api/attribution/mode")
+          return failure === "HTTP"
+            ? Promise.resolve(new Response("", { status: 500 }))
+            : Promise.reject(new Error("Offline"));
+        return Promise.reject(new Error(`Unexpected fetch ${url}`));
+      });
+      render(
+        <AuthModal
+          defaultMode="register"
+          dict={es}
+          isOpen
+          onClose={() => {}}
+        />,
+      );
+      setSelectValue(container.querySelector("select")!, "none");
+      await clickNamedGoogle(es.auth.continueWithGoogle);
+      expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+        es.auth.loginFailed,
+      );
+      render(
+        <AuthModal
+          defaultMode="register"
+          dict={en}
+          isOpen
+          onClose={() => {}}
+        />,
+      );
+      await clickNamedGoogle(en.auth.continueWithGoogle);
+      expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+        en.auth.loginFailed,
+      );
+      expect(getRequestBody(fetchMock, "/api/attribution/mode")).toEqual({
+        mode: "randomtrip",
+      });
+      expect(signInMock).not.toHaveBeenCalled();
+      expect(
+        [...container.querySelectorAll("button")].find(
+          (node) => node.textContent?.trim() === en.auth.continueWithGoogle,
+        )?.disabled,
+      ).toBe(false);
+    },
+  );
 });

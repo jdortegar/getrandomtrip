@@ -323,6 +323,8 @@ export default function AuthModal({
     }
   }, [email, password]);
 
+  const googleReferralRequired = t?.referredByRequired;
+  const googleLoginFailed = t?.loginFailed;
   const handleGoogleSignIn = useCallback(async () => {
     // Register mode requires the referring-tripper choice up front, same as
     // the credentials path (validateForm) — Google's OAuth redirect can't
@@ -333,7 +335,7 @@ export default function AuthModal({
     // signIn callback (`auth.ts`) then reads that cookie for the new account.
     if (mode === "register") {
       if (referredByTripperSlug === NOT_DECIDED_VALUE) {
-        setError(t?.referredByRequired ?? "");
+        setError(googleReferralRequired ?? "");
         return;
       }
       setIsLoading(true);
@@ -349,12 +351,12 @@ export default function AuthModal({
           ),
         });
         if (!syncResponse.ok) {
-          setError(t?.loginFailed ?? "");
+          setError(googleLoginFailed ?? "");
           setIsLoading(false);
           return;
         }
       } catch {
-        setError(t?.loginFailed ?? "");
+        setError(googleLoginFailed ?? "");
         setIsLoading(false);
         return;
       }
@@ -363,7 +365,7 @@ export default function AuthModal({
     trackCustomEvent({ event: mode === "register" ? "sign_up" : "login", method: "google" });
     // Use current page as callback - let the page handle what happens next
     await signIn("google", { callbackUrl: window.location.href });
-  }, [mode, referredByTripperSlug, t?.referredByRequired, t?.loginFailed]);
+  }, [mode, referredByTripperSlug, googleReferralRequired, googleLoginFailed]);
 
   const toggleMode = useCallback(() => {
     setMode(mode === "login" ? "register" : "login");
