@@ -25,7 +25,8 @@ delivery:
   planning_commit: 84d5fc05
   current_slice_review: fresh-context-no-findings
   current_slice_tests_passed: 696
-  schema_application: awaiting-database-target-approval
+  schema_application: applied-development-target-empty-diff-verified
+  schema_applied_commit: 14ba2e1a
   schema_publication: awaiting-deploy-hook-verification
   tracker_pr: 151
   planning_pr: 152
@@ -54,5 +55,5 @@ baseline:
   tests_passed: 1742
   tests_failed: 20
   lint: preexisting-next-lint-command-failure
-  database_target: remote-unverified
+  database_target: user-confirmed-development-or-staging
   relevant_regression_tests_passed: 57

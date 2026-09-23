@@ -1,8 +1,8 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema prepared offline, NOT APPLIED). Remaining: 2.2 onward; DB target/application unverified.
-Boundaries: reviewed pure helpers and additive schema with adjacent tests; no database application, routes, dependencies or UI.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database). Remaining: 2.2 onward; deployment packaging/smoke gates remain.
+Boundaries: reviewed pure helpers and additive schema with adjacent tests; authorized schema application only, no application-row access, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
 
@@ -68,3 +68,13 @@ Added separate trip-cascading drafts with nullable preview/publication identitie
 Verification: 11 schema contracts + 3 DTO + 7 email + 12 traveler-route tests passed; full document/catalog/compatibility selection → 696 passed. Typecheck, targeted Prettier and diff check passed. Offline `prisma validate` and `npm run db:generate` passed with explicit dummy `DATABASE_URL` (Client v7.8.0). No DB connection, push/migrate, build, deployment or backfill performed; configured remote DB remains unverified.
 
 Deploy preflight (read-only): `postinstall → npx prisma generate && node scripts/copy-tinymce-to-public.mjs`; `build → next build`; `build:clean → rm -rf .next && npm run build`. Tracked Netlify configuration contains no build command/schema hook; both explicit `db:push` and `db:migrate` mean `prisma db push`, and migration history is empty. Netlify dashboard build-command overrides remain unverified: verify before publishing schema branches, approve database target before applying.
+
+## Task 2.1: Authorized Schema Application (2026-09-23)
+
+User confirmed the configured remote target is development/staging and authorized updating it. Independent review approved exactly 13 additive statements: one enum, two tables (two primary keys), eight indexes and two draft foreign keys; no destructive/unrelated drift. Initial sandbox read-only preflight returned P1001; one narrowly escalated retry succeeded without connection changes. CLI and Next development select the identical `.env` datasource; no process override or `.env.local` database URL.
+
+Immediately before application, a fresh live-to-desired diff matched the reviewed 3,035-byte SQL exactly: SHA256 `5f6a89717a61a8f68471c7f3a3078ef3a6862b7feca33775a8fb88e42058ee25`. `npm run db:push` exited 0, reported synchronization and emitted no Prisma warnings. No data-loss/reset/force flags, schema edits, backfill, build or deployment. This deploys previously TDD-verified schema; no new code/TDD cycle or test run was needed.
+
+Post-application diff exited 0 and contains only `-- This is an empty migration.` Read-only catalog queries restricted to the new objects verified 19 draft/15 cleanup columns, 10 indexes including two primary keys, two draft foreign keys, zero cleanup foreign keys and enum labels `pending|retained|delete`; defaults/nullability/delete actions match. No application rows queried. The metadata client's generic future SSL-mode semantics warning did not change TLS/connection settings.
+
+Sanitized evidence: `/private/tmp/randomtrip-schema-apply-SOOfgp/evidence.json`, `before.sql`, `after.sql`, `new-model-metadata.json`. Prior offline evidence above remains historical; schema is now applied. Live rollback requires a separately reviewed plan, not automatic table drops. Runtime lifecycle enforcement and deployment smoke verification remain pending.
