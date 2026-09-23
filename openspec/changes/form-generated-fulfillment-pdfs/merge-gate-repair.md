@@ -17,7 +17,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m4: Remove only 183 unused ESLint directives, preserving executable code, meaningful prose, valid suppressions and substantive diagnostics.
 - [x] m5: Replace the legacy TripperTopbar internal anchor with Next Link, preserving destination, copy, appearance and link semantics.
 - [x] m6: Make the loaded-once latch immediate and effect-free, preserving settlement/refetch/error behavior and per-mount reset; remove render-time test capture.
-- [ ] Remaining lint debt: 81 errors / 21 warnings in 69 files; continue only in reviewed, bounded slices.
+- [x] m7: Bind XSED notification loading to page requests and guard stale completions by request occurrence, preserving rows, chrome and local deletion.
+- [ ] Remaining lint debt: 80 errors / 20 warnings in 68 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -40,6 +41,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m4 | Full safety net: 1797 tests passed | Pre-change executable zero-unused-directive probe fails: 183 ≠ 0 | Actual ESLint directive-only fixes → zero unused directives; parser-aware tokens/project emit equivalent in 81 files; valid suppressions and all substantive diagnostics identical | Only generated replacement blank-line whitespace trimmed; no runtime tests invented or unrelated formatting |
 | m5 | Existing adjacent/config tests: 5 passed; two new DOM approval cases pass before production | Actual ESLint contract fails with 14 no-html-link-for-pages diagnostics | Next Link yields zero targeted diagnostics; 5 focused tests pass, preserving link destination/name/focus at default and English-prefixed locations | Test formatting only; 5 focused tests pass again |
 | m6 | Existing 4 tests pass; rendered-boolean approval harness retains all 4 passes | SSR with isLoading=false incorrectly emits false: 1 failed / 5 passed; actual targeted lint has 2 errors | Immediate state initialization plus guarded monotonic update: 6 pass; initial-settled/refetch/remount triangulation → 8 pass; targeted lint 0 | Scoped formatting; 8 tests pass again, no effects/timers/refs introduced |
+| m7 | Existing 2 tests pass; strengthened mounted-row/count/error approval tests also pass | A→B→A stale success clears the live overlay: 1 failed / 2 passed; actual lint has 1 error + 1 warning | Per-request abort guards + event-owned pending state: 3 pass; stale success/HTTP/network, fully reversed completion, body parsing, initial failures, unmount/StrictMode and local DELETE → 12 pass | Scoped formatting and retry recovery assertions; 12 pass, targeted lint 0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -61,6 +63,8 @@ m5 changes only the legacy TripperTopbar anchor to Next Link. Its hardcoded `/da
 
 m6 changes only `useHasLoadedOnce` and its test: initialize from `!isLoading`, then guard the one-time false→true state adjustment during render. Both initial SSR states, persistent loading, settlement (including error), refetch and remount reset are covered by rendered output rather than a render-time global assignment. Full suite **1804 passed / 240 files**; typecheck, scoped Prettier and diff checks pass. Targeted lint removes both findings; whole lint remains **81 errors / 21 warnings in 69 of 1185 files**, exit 1. Evidence: `/private/tmp/m6-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m6-lint-before.json`, `m6-lint-results.json`.
 
+m7 keeps initial pending state and moves later resets to pagination events; each effect occurrence owns its abort signal, checked even when fetch ignores cancellation. Error facts are separate from translated fallback copy, so GET depends only on page. No scheduling tricks, generic fetch abstraction or DELETE behavior changes. Full suite **1814 passed / 240 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **80 errors / 20 warnings in 68 of 1185 files**, exit 1; no rule waivers. Evidence: `/private/tmp/m7-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m7-lint-before.json`, `m7-lint-results.json`. Component tests use deferred mocked HTTP, not browser/network concurrency proof.
+
 ## Next boundary
 
-Fresh-review m6 loaded-once behavior before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m7 XSED request-lifecycle behavior before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
