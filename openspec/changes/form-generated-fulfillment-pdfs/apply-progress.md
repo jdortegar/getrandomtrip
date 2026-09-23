@@ -1,8 +1,8 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills). Remaining: 2.1 onward.
-Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/bounds units with adjacent tests; no schema, routes, dependencies or UI.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema prepared offline, NOT APPLIED). Remaining: 2.2 onward; DB target/application unverified.
+Boundaries: reviewed pure helpers and additive schema with adjacent tests; no database application, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
 
@@ -19,6 +19,7 @@ Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/boun
 | 1.9a | `src/lib/trip-documents/__tests__/sourceText.test.ts` | Unit / N/A (new); 587 baseline regressions; review baseline 16/16 | Missing-module failure before implementation | Initial 1/1 passed | Unknown/bounds/HTML: 13 failed; list assertion made semantic; empty-editor failure fixed → 14; escaped tags/links → 16. Review: two body-discovery failures, then head approval failure → 19; bounded bodies → 21 | Named limits, shared bounds, full-fragment walker/head skip; Node 21/21 and aggregate 608/608 passed |
 | 1.9b | `src/lib/trip-documents/__tests__/providerSnapshots.test.ts` | Unit / N/A (new); 608 baseline regressions | Missing-module failure before implementation | Initial 1/1 passed | Current/legacy/roles/selection/bounds: 27 failed → 29 passed; merged bounds/no-fetch/source isolation → 31 passed | Shared normalization/bounds, named candidate types, formatted; Node 31/31 and aggregate 639/639 passed |
 | 1.9c | `src/lib/trip-documents/__tests__/providerPrefills.test.ts` | Unit / 639 baseline; review safety net 53 passed | Missing-function failure before implementation | Initial 1/1 passed | Narrative/itinerary: 6 failed → 20 passed; joined bounds/claims → 22; edited-legacy HTML review: 3 failed → 23, ordinary text → 24 | Composed helpers, removed unreliable shape-based text-format inference, formatted; initial 661/661 and corrected 663/663 regressions passed |
+| 2.1 | `src/lib/trip-documents/__tests__/schema.test.ts`; DTO/email adjacent tests | Schema contract + mocked behavior / 20 affected baseline tests | Missing draft-model contract failed | Initial 1/1 passed | Preview/link/outbox/index contracts: 9 failed → 10 passed; generated metadata + DTO/email isolation → 33 affected tests passed | Preserved published scalars; formatted tests; 696/696 aggregate passed, offline validate/generate and typecheck passed |
 
 Verification: `npm run test -- src/lib/trip-documents/__tests__/documentMetadata.test.ts src/lib/trips/__tests__/destinationCountries.test.ts` → 144 passed (136 new + 8 existing); `npm run typecheck` → pass; targeted Prettier check → pass. Full suite/lint not rerun; known baseline failures unchanged by this isolated unit.
 
@@ -46,7 +47,7 @@ Task 1.9a review fix: default body discovery silently skipped later bodies beyon
 
 Runtime evidence: standalone `tsx` CLI smoke failed on sandbox IPC `listen EPERM` before loading the helper. No escalation/config/environment workaround; the same utility was verified through Vitest's per-file Node environment (0 ms DOM environment). Final Netlify packaging remains a later gate; reusing the React Email public export may affect server bundle size.
 
-Rollback: revert the respective isolated unit. Next: fresh review, then task 2.1 additive schema subject to database-target safety checks. No DB/deploy verification claimed.
+Rollback: revert the respective isolated unit. Next: fresh review, then task 2.2. Schema application requires explicit verified-target approval; schema-branch publication also requires deploy-hook verification. No DB/deploy verification claimed.
 
 Task 1.9b verification: Node candidate tests → 31 passed; aggregate document/catalog tests → 639 passed; typecheck/targeted Prettier/diff check passed. Legacy/current hotel facts preserve authored text; current fields take precedence without stale legacy fallback. XSED roles use fixed source/section slots; experience activities never become dinner candidates. Original indices survive filtering; all selection requires an explicit valid index, with no singleton fallback. Contact names remain contact text, service titles never become provider names, links require bounded credential-free HTTPS, and referral/time/confirmation claims remain absent. Results are independent; no saved draft or itinerary is accepted or mutated. Source application remains 1.9c.
 
@@ -59,3 +60,11 @@ Documentation-only correction before task 2.1; completed 1.1–1.9a and all TDD/
 The existing outbox now plans pre-write candidate registration, atomic retained adoption receipts, authorization/live-owner checks before committed-retry recognition, and scoped cancellation under ordered locks. Ambiguous DB outcomes require reconciliation, not exception-driven deletion. Draft deletion cancels previews/unfinished publications but preserves retained published generations; replacement preserves historical bytes and email stamps.
 
 SDK retries mean even successful `set` cannot prove every PUT settled. Compact deletion tombstones therefore survive observed absence with bounded scheduled sweeps/capped backoff and alerts. The achievable guarantee is eventual cleanup after writes quiesce/storage recovers; metadata retention and continuing sweep cost are explicit. Hotel holder is required for generation, unlike the generic optional voucher field.
+
+## Task 2.1: Schema Prepared, Not Applied
+
+Added separate trip-cascading drafts with nullable preview/publication identities and unique optional document link (`SetNull`); added relation-free cleanup jobs with `pending|retained|delete` enum, scalar ownership/receipt identities, JSON targets, expiry/retry metadata and lookup indexes. Deletion tombstones survive owner deletion and observed blob absence. No existing published scalar changed; manual DTO and scheduled-email query isolation pass. Runtime immutability/ownership/cleanup enforcement belongs to later service tasks.
+
+Verification: 11 schema contracts + 3 DTO + 7 email + 12 traveler-route tests passed; full document/catalog/compatibility selection → 696 passed. Typecheck, targeted Prettier and diff check passed. Offline `prisma validate` and `npm run db:generate` passed with explicit dummy `DATABASE_URL` (Client v7.8.0). No DB connection, push/migrate, build, deployment or backfill performed; configured remote DB remains unverified.
+
+Deploy preflight (read-only): `postinstall → npx prisma generate && node scripts/copy-tinymce-to-public.mjs`; `build → next build`; `build:clean → rm -rf .next && npm run build`. Tracked Netlify configuration contains no build command/schema hook; both explicit `db:push` and `db:migrate` mean `prisma db push`, and migration history is empty. Netlify dashboard build-command overrides remain unverified: verify before publishing schema branches, approve database target before applying.

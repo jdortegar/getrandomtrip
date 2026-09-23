@@ -18,13 +18,15 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 1.9c-provider-prefills
-  current_branch: codex/form-generated-fulfillment-pdfs-12-provider-prefills
-  current_base: codex/form-generated-fulfillment-pdfs-11-provider-candidates
+  current_slice: 2.1-draft-schema
+  current_branch: codex/form-generated-fulfillment-pdfs-13-draft-schema
+  current_base: codex/form-generated-fulfillment-pdfs-12-provider-prefills
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
   current_slice_review: fresh-context-no-findings
-  current_slice_tests_passed: 663
+  current_slice_tests_passed: 696
+  schema_application: awaiting-database-target-approval
+  schema_publication: awaiting-deploy-hook-verification
   tracker_pr: 151
   planning_pr: 152
   metadata_pr: 153
@@ -38,6 +40,7 @@ delivery:
   source_text_pr: 161
   lifecycle_design_pr: 162
   provider_candidates_pr: 163
+  provider_prefills_pr: 164
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending

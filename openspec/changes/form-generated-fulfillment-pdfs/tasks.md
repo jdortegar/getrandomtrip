@@ -36,7 +36,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 1.9a | D/sourceText.ts: bounded non-executing plain-text/HTML normalization. |
 | [x] 1.9b | D/providerSnapshots.ts: legacy/current explicit-role candidates and selection. |
 | [x] 1.9c | D/providerSnapshots.ts: creation-only provider/itinerary application; draft isolation. |
-| [ ] 2.1 | prisma/schema.prisma: draft/outbox candidate dispositions, immutable identities, non-cascading receipts/tombstones and due-time indexes; schema/DTO isolation. |
+| [x] 2.1 | prisma/schema.prisma: draft/outbox identities, dispositions, durable receipts/tombstones and indexes; schema/DTO isolation. Prepared offline; NOT APPLIED, remote DB unverified. |
 | [ ] 2.2 | D/cleanup.ts: pre-write registration, locked cancellation/expiry, retained exclusion and compact tombstone sweeps; test late PUT after absence, including successful SDK retry. |
 | [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker; bounded batches, capped backoff, durable rescheduling/alerts, including absent keys. |
 | [ ] 2.4 | D/drafts.ts: revision-controlled CRUD; shared owner→trip→draft→document→outbox locking, sorted IDs, live ownership/conflicts. |
