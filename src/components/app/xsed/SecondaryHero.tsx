@@ -89,7 +89,7 @@ export function SecondaryHero({
             className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"
           >
-            "SCROLL"
+            &quot;SCROLL&quot;
           </div>
         </div>
       )}

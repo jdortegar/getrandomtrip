@@ -26,7 +26,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m13: Reuse shared snapshots in UI carousel, removing stale reInit listeners and preserving controls/context/SSR contracts.
 - [x] m14: Correct four email font manifests and remove Google CSS links, preserving fallback cascade, body content and delivery behavior.
 - [x] m15: Separate Navbar reactive menu values from refs and keep locale-cookie persistence in the selection event, preserving navigation and menu behavior.
-- [ ] Remaining lint debt: 66 errors / 15 warnings in 56 files; continue only in reviewed, bounded slices.
+- [x] m16: Encode the XSED scroll indicator quotes without changing the literal text, decorative semantics or visibility.
+- [ ] Remaining lint debt: 64 errors / 15 warnings in 55 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -58,6 +59,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m13 | Existing carousel safety net: 18 pass; four actual-control approval cases pass | Replaced-API reInit corrupts buttons and first commit is stale: 2 failed / 4 passed; actual lint has 1 error | Shared primitive snapshots: 6 pass; absent/return, StrictMode cleanup and server fallback → 9 pass | Scoped test formatting; 27 focused pass across all carousel variants; targeted lint 0 |
 | m14 | Existing email safety net: 21 pass; clean offline real-render approval: 6 pass | Missing/wrong font faces and retained Google CSS links: 12 failed / 6 passed; actual lint has 4 warnings | Verified face declarations: 18 pass; every family fallback stack across six ES/EN renders → 24 pass | Only new Font prop ordering/test formatting; 45 focused pass; targeted lint 0 |
 | m15 | Existing shared Navbar/Drawer safety net: 10 pass; four new real-Navbar approval cases pass | Actual ESLint fails with five refs findings and one immutability finding; no runtime bug fabricated | Explicit value/ref destructuring and event-only cookie helper: 14 focused pass; current-route/no-render-write and mobile-locale cases → 17 pass | Scoped test formatting only; 17 focused pass again; targeted lint 0 |
+| m16 | No direct suite; adjacent notification validation: 3 pass; two real SSR approval cases pass | Actual ESLint fails with two no-unescaped-entities errors; no runtime defect claimed | Quote entities preserve both approvals; default-hidden triangulation → 3 pass | New-test formatting only; 6 focused pass; targeted lint 0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -99,6 +101,8 @@ The first approval parse unexpectedly attempted public Google CSS fetches (sandb
 
 m15 is a compiler-boundary refactor, not a locale-cookie runtime fix: browser cookie mutation remains a legitimate user-event operation, called before router.push with identical one-year/path/sameSite attributes. Menu values and refs are destructured independently; no render .current access, scheduling workaround, hook/Drawer/Auth changes, markup/CSS or navigation policy changes. The actual baseline has six findings, not seven; no forward-reference issue or additional setter/dependency error appeared. Tests use one Next navigation boundary and real menus; existing five Navbar/five Drawer approval tests stay untouched, with no new CSS assertions. Full suite **1907 passed / 248 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **66 errors / 15 warnings in 56 of 1194 files**, exit 1. Evidence: `/private/tmp/m15-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m15-lint-before.json`, `m15-lint-results.json`. Existing Node localStorage warnings also appear in the safety run; no environment workaround. No browser layout claim.
 
+m16 changes only the encoding of the two ASCII quotes around SCROLL. Real SSR renders use actual child components and inert template parsing with blank media fixtures; shown, explicitly hidden and default-hidden branches preserve exact text and decorative aria-hidden semantics. No copy, i18n, markup, styling, animation or logging changes; no network/browser-layout claim. Full suite **1910 passed / 249 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **64 errors / 15 warnings in 55 of 1195 files**, exit 1. Evidence: `/private/tmp/m16-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m16-lint-before.json`, `m16-lint-results.json`.
+
 ## Next boundary
 
-Fresh-review m15 Navbar boundaries before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m16 XSED quote encoding before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
