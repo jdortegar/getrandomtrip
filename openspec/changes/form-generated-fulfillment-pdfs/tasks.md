@@ -36,10 +36,14 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 1.9a | D/sourceText.ts: bounded non-executing plain-text/HTML normalization. |
 | [x] 1.9b | D/providerSnapshots.ts: legacy/current explicit-role candidates and selection. |
 | [x] 1.9c | D/providerSnapshots.ts: creation-only provider/itinerary application; draft isolation. |
-| [x] 2.1 | prisma/schema.prisma: draft/outbox identities, dispositions, durable receipts/tombstones and indexes; schema/DTO isolation. Prepared offline; NOT APPLIED, remote DB unverified. |
-| [ ] 2.2 | D/cleanup.ts: pre-write registration, locked cancellation/expiry, retained exclusion and compact tombstone sweeps; test late PUT after absence, including successful SDK retry. |
+| [x] 2.1 | prisma/schema.prisma: draft/outbox identities, dispositions, durable receipts/tombstones and indexes; schema/DTO isolation. Applied to approved development/staging DB; post-diff empty. |
+| [x] 2.2a | src/lib/db/tripDocumentLocks.ts: injectable ordered owner→trips→drafts→documents→outbox locks; sorted/deduplicated IDs, live ownership and rollback contract tests. |
+| [ ] 2.2b | D/cleanup.ts: pre-write candidates, expiry and atomic retained receipts; ambiguous-outcome reconciliation tests. |
+| [ ] 2.2c | D/cleanup.ts: locked scope cancellation and retained-publication exclusion; deletion identity tests. |
+| [ ] 2.2d | D/cleanup.ts: exact-key tombstone execution after parent deletion; retain after absence, test late PUT/successful SDK retry. |
+| [ ] 2.2e | D/cleanup.ts: bounded prefix tombstone execution; pagination, partial failure and continuing sweep tests. |
 | [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker; bounded batches, capped backoff, durable rescheduling/alerts, including absent keys. |
-| [ ] 2.4 | D/drafts.ts: revision-controlled CRUD; shared owner→trip→draft→document→outbox locking, sorted IDs, live ownership/conflicts. |
+| [ ] 2.4 | D/drafts.ts: revision-controlled CRUD using 2.2a locks; live ownership/conflict tests. |
 | [ ] 2.5 | A/route.ts: authenticated creation/list; isolation. |
 | [ ] 2.6 | A/[draftId]/route.ts: read/edit authorization/concurrency. |
 | [ ] 2.7 | Draft deletion: cancel previews/unfinished publications under locks; retained publications/attachment survive; test paused writes. |
