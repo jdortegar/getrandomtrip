@@ -130,7 +130,7 @@
         "description": "Crea un post publicado por Randomtrip."
       },
       "home": {
-        "title": "Panel de Admin",
+        "title": "Panel",
         "description": "Resumen general de la plataforma."
       },
       "tripRequests": {
@@ -4214,7 +4214,12 @@
     "header": {
       "description": "Gestiona tus viajes y descubre nuevas aventuras",
       "helloFallbackName": "Viajero",
-      "helloPrefix": "Hola"
+      "helloPrefix": "Hola",
+      "roleLabels": {
+        "admin": "ADMIN",
+        "traveler": "TRAVELER",
+        "tripper": "TRIPPER"
+      }
     },
     "paymentStatus": {
       "APPROVED": "Aprobado",

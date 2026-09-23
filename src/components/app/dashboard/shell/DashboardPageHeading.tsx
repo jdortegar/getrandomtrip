@@ -15,11 +15,12 @@ interface DashboardPageHeadingProps {
 export function DashboardPageHeading({ role }: DashboardPageHeadingProps) {
   const rawPathname = usePathname();
   const locale = useLocale();
+  const roleLabel = useDictionary((d) => d.dashboard.header.roleLabels[role]);
   const adminHeadings = useDictionary((d) => d.adminDashboard.pageHeadings);
-  const travelerHeadings = useDictionary((d) => d.travelerDashboard.pageHeadings);
-  const tripperHeadings = useDictionary(
-    (d) => d.tripperDashboard.pageHeadings,
+  const travelerHeadings = useDictionary(
+    (d) => d.travelerDashboard.pageHeadings,
   );
+  const tripperHeadings = useDictionary((d) => d.tripperDashboard.pageHeadings);
 
   const pathname = rawPathname.startsWith(`/${locale}/`)
     ? rawPathname.slice(locale.length + 1)
@@ -40,8 +41,10 @@ export function DashboardPageHeading({ role }: DashboardPageHeadingProps) {
   return (
     <PageHeading
       className="text-center"
+      data-component="DashboardPageHeading"
       description={description}
-      title={title} data-component="DashboardPageHeading"
+      eyebrow={roleLabel}
+      title={title}
     />
   );
 }

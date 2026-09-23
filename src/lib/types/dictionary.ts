@@ -434,6 +434,11 @@ export interface DashboardDict {
     description: string;
     helloFallbackName: string;
     helloPrefix: string;
+    roleLabels: {
+      admin: string;
+      traveler: string;
+      tripper: string;
+    };
   };
   paymentStatus: Record<string, string>;
   quickActions: {

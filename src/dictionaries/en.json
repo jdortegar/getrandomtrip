@@ -130,7 +130,7 @@
         "description": "Create a post published by Randomtrip."
       },
       "home": {
-        "title": "Admin Dashboard",
+        "title": "Dashboard",
         "description": "Platform overview at a glance."
       },
       "tripRequests": {
@@ -4214,7 +4214,12 @@
     "header": {
       "description": "Manage your trips and discover new adventures",
       "helloFallbackName": "Traveler",
-      "helloPrefix": "Hello"
+      "helloPrefix": "Hello",
+      "roleLabels": {
+        "admin": "ADMIN",
+        "traveler": "TRAVELER",
+        "tripper": "TRIPPER"
+      }
     },
     "paymentStatus": {
       "APPROVED": "Approved",
