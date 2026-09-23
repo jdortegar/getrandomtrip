@@ -17,7 +17,11 @@ import {
 import { BlogFormContent } from "./BlogFormContent";
 import { BlogReviewActionsBar } from "./BlogReviewActionsBar";
 import type { BlogFormDraft } from "@/types/blog";
-import { buildBlogSubmitPayload, isBlogTabComplete } from "@/lib/helpers/blog-form";
+import {
+  buildBlogSubmitPayload,
+  isBlogTabComplete,
+  isBlogTabEligible,
+} from "@/lib/helpers/blog-form";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 import {
@@ -241,7 +245,7 @@ export function NewBlogPostShell({
     const currentIndex = tabs.findIndex((t) => t.id === activeTab);
     if (targetIndex <= currentIndex) return true;
     for (let i = 0; i < targetIndex; i++) {
-      if (!isBlogTabComplete(tabs[i]!.id, draft)) return false;
+      if (!isBlogTabEligible(tabs[i]!.id, draft)) return false;
     }
     return true;
   }

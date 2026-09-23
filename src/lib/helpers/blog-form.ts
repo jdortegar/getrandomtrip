@@ -44,6 +44,11 @@ export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean 
   }
 }
 
+/** Optional FAQ content affects its checkmark, never navigation/submission. */
+export function isBlogTabEligible(tabId: string, draft: BlogFormDraft): boolean {
+  return tabId === "faq" || isBlogTabComplete(tabId, draft);
+}
+
 export function getMissingBlogFields(
   tabId: string,
   draft: BlogFormDraft,
