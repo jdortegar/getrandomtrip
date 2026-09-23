@@ -33,9 +33,9 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const result = await (prisma.$transaction as any)(async (tx: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const original = await (tx.blogPost.findUnique as any)({
         where: { id: params.id },
       }) as Record<string, unknown> | null;
@@ -54,7 +54,7 @@ export async function POST(
       }
 
       // Check for an existing active (non-discarded) copy
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const existingCopy = await (tx.blogPost.findFirst as any)({
         where: {
           parentId: params.id,
@@ -75,22 +75,22 @@ export async function POST(
         authorId: _authorId,
         createdAt: _createdAt,
         slug: _slug,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         isReviewCopy: _irc,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         parentId: _pid,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         reviewLockedBy: _rlb,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         changedFields: _cf,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         isDiscarded: _isDiscarded,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
         updatedAt: _updatedAt,
         ...copyableFields
       } = original;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const copy = await (tx.blogPost.create as any)({
         data: {
           ...copyableFields,
@@ -108,7 +108,7 @@ export async function POST(
       }) as { id: string };
 
       // Set the soft lock on the original
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: { reviewLockedBy: caller.id },

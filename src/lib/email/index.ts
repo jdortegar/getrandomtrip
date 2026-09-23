@@ -433,7 +433,7 @@ export function sendExperiencePendingTripperReview(
   void (async () => {
     try {
       const [experience, tripper] = await Promise.all([
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         (prisma.experience.findUnique as any)({
           where: { id: experienceId },
           select: { title: true, changedFields: true },

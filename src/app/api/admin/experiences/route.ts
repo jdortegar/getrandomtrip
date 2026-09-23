@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     // route also backs the admin catalog browsing view, which must keep
     // showing inactive owners' experiences (no admin-side isActive
     // display/filter is in scope for that use case).
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const where: Record<string, any> = {};
     if (ownerActive) where.owner = { isActive: true };
     if (filterTripperId) where.ownerId = filterTripperId;
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     if (searchParam) where.title = { contains: searchParam, mode: "insensitive" };
 
     const [experiences, total, pendingCount] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.findMany as any)({
         where,
         orderBy: experienceListOrderBy(sortBy, sortOrder),
@@ -108,13 +108,13 @@ export async function GET(request: NextRequest) {
           updatedAt: true,
         },
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.count as any)({ where }),
       // Dataset-wide pending count for the tab badge — independent of the
       // active page/filter, matching the pre-pagination behavior where the
       // badge always summarized every experience, not just the current
       // filter's results.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.count as any)({
         where: { status: { in: PENDING_STATUSES } },
       }),

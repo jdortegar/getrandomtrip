@@ -99,7 +99,7 @@ export function NavMobileDrawer({
     // `onClose` is read through `onCloseRef` so a new function identity on
     // every parent render doesn't tear down/re-run this effect (which would
     // re-steal focus onto the close button on every unrelated re-render).
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [isOpen]);
 
   if (!shouldRender) return null;

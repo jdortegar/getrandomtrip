@@ -43,6 +43,6 @@ export function useJourneyDetailsProgressCallback(
   const { origin, dates, transport, complete } = progress;
   useEffect(() => {
     onChangeRef.current?.({ origin, dates, transport, complete });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [origin, dates, transport, complete]);
 }

@@ -102,7 +102,7 @@ describe("runPass1", () => {
     // Actually route uses prisma.tripRequest.update for stamp in Pass1
     // Let's mock that too
     const { prisma: prismaMock } = await import("@/lib/prisma");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (prismaMock.tripRequest as any).update = vi.fn().mockResolvedValue(trip);
 
     const mod = (await import("../route")) as RouteModule;
@@ -153,7 +153,7 @@ describe("runPass1", () => {
     (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([admin]);
 
     const { prisma: prismaMock } = await import("@/lib/prisma");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (prismaMock.tripRequest as any).update = vi.fn().mockResolvedValue(escalationTrip);
 
     const mod = (await import("../route")) as RouteModule;

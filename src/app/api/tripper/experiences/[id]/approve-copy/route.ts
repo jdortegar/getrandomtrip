@@ -42,7 +42,7 @@ export async function POST(
     }
 
     // Find original experience owned by this tripper
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.experience.findFirst as any)({
       where: { id: params.id, ownerId: user.id },
       select: { id: true, ownerId: true, status: true },
@@ -66,7 +66,7 @@ export async function POST(
     }
 
     // Find the active review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,
@@ -88,12 +88,12 @@ export async function POST(
     }
 
     // Transactionally overwrite the original with the copy's data + delete copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       await overwriteOriginalWithCopy(tx, params.id, copy.id);
       // overwriteOriginalWithCopy already sets status=ACTIVE, isActive=true
       // Now hard-delete the copy
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.delete as any)({ where: { id: copy.id } });
     });
 

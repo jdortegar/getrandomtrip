@@ -131,12 +131,12 @@ export function computeChangedFields(
  * @returns           The updated original experience record
  */
 export async function overwriteOriginalWithCopy(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   tx: any,
   originalId: string,
   copyId: string,
 ): Promise<unknown> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const copy = await (tx.experience.findUnique as any)({
     where: { id: copyId },
   }) as FieldRecord | null;
@@ -158,7 +158,6 @@ export async function overwriteOriginalWithCopy(
     Object.assign(overwriteData, await xsedPublicationData(tx, copy as unknown as XsedPublicationRecord, original?.slug));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (tx.experience.update as any)({
     where: { id: originalId },
     data: {

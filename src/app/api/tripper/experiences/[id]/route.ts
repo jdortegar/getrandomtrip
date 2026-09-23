@@ -38,7 +38,7 @@ export async function GET(
 
     const experienceId = params.id;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const experienceData = await (prisma.experience.findFirst as any)({
       where: {
         id: experienceId,

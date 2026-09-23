@@ -39,7 +39,7 @@ export async function POST(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const experience = await (prisma.experience.findFirst as any)({
       where: { id: params.id },
     }) as (ExperienceFormDraft & {
@@ -146,10 +146,10 @@ export async function POST(
     }
 
     // Transition status and clean up any INACTIVE copy from a prior rejection
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const updated = await (prisma.$transaction as any)(async (tx: any) => {
       // Delete any INACTIVE review copy for this experience (from a prior rejection cycle)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const inactiveCopy = await (tx.experience.findFirst as any)({
         where: {
           parentId: params.id,
@@ -160,11 +160,11 @@ export async function POST(
       }) as { id: string } | null;
 
       if (inactiveCopy) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         await (tx.experience.delete as any)({ where: { id: inactiveCopy.id } });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       return (tx.experience.update as any)({
         where: { id: params.id },
         data: {

@@ -32,7 +32,7 @@ export default async function EditExperiencePage(props: {
     redirect(`/${params.locale}/dashboard`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const pkg = await (prisma.experience.findFirst as any)({
     where: { id: params.id, ownerId: user.id },
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {

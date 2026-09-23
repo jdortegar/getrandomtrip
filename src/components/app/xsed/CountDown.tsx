@@ -119,7 +119,7 @@ export function CountDown({
     setPhase(newPhase);
     setTarget(newTarget);
     setTime(computeTimeLeft(newTarget));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, []);
 
   useEffect(() => {

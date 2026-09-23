@@ -12,7 +12,8 @@ Do not waive failing tests or change established product behavior to satisfy sta
 - [x] m1b: Repair three stale UI assertions with semantic completion coverage and appropriate visual verification; do not replace banned CSS-class assertions with new class checks or unrelated value assertions.
 - [x] m2: Separate optional FAQ navigation/submission eligibility from completion checkmarks; preserve existing partial-entry acceptance and required-field gates.
 - [x] m3 tooling: Repair Next 16 / ESLint compatibility and generated lockfile; retain native rules and the zero-warning gate.
-- [ ] Remaining lint debt: 97 errors / 204 warnings in 149 files; source remediation is a separate, not-yet-authorized boundary.
+- [x] m4: Remove only 183 unused ESLint directives, preserving executable code, meaningful prose, valid suppressions and substantive diagnostics.
+- [ ] Remaining lint debt: 97 errors / 21 warnings in 72 files; behavioral source remediation remains a separate boundary.
 - [ ] Final gate: full tests, typecheck and lint pass before eligible child merges. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -32,6 +33,7 @@ Do not waive failing tests or change established product behavior to satisfy sta
 | m2   | Helper/shell-helper/submit baseline: 44 passed, known FAQ failure | New eligibility helper: six missing-function failures; real shell/content controls: three disabled-Next failures before production change | 31 passed after minimum fix; answer-only/filled FAQ and checkmark triangulation → 59 focused tests passed                                 | Scoped formatting only, 33 helper/UI tests passed again; full suite below |
 | m1b | Sidebar/TextArea baseline: 7 passed, 3 known stale failures | Five missing-description failures; triangulation: four locale/disabled-description failures, then two disabled-key bubbling failures | 5 initial GREEN; 23 sidebar/TextArea passed after locale, precedence, opt-in, navigation and disabled-state cases | Deduplicated event helper, object-row completed-ID matrix; 32 focused passed after formatting |
 | m3 | New linter-contract file; old npm lint exits 1 because Next removed the command | Two actual ESLint API fixtures fail loading the old config | Valid stateful TSX has no diagnostics; conditional hook yields severity-2 rules-of-hooks; both pass | Formatted tests pass again; full tests/typecheck below |
+| m4 | Full safety net: 1797 tests passed | Pre-change executable zero-unused-directive probe fails: 183 ≠ 0 | Actual ESLint directive-only fixes → zero unused directives; parser-aware tokens/project emit equivalent in 81 files; valid suppressions and all substantive diagnostics identical | Only generated replacement blank-line whitespace trimmed; no runtime tests invented or unrelated formatting |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -47,6 +49,8 @@ m3 full tests: **1797 passed / 239 files**; typecheck, scoped Prettier and diff 
 
 Post-install follow-up: an authorized read-only request to `http://localhost:3010/en` returned HTTP 200; the existing local server is responsive.
 
+m4 removes **183 obsolete directives across 81 files**, using `fix: true, fixTypes: ["directive"]`, not blanket fix. Removed lines contain only directives (no explanatory prose); every added line is empty. Source diff **+183/-183 = 366**, with no code/config/dependency/rule changes. Full tests remain **1797 passed / 239 files**, typecheck and diff checks pass. Changed-line whitespace verification replaces whole-file formatting; existing style is untouched. Exact active and legitimately suppressed diagnostics, parser-aware tokens and comment-free project-configured emitted JS are unchanged; remaining lint findings are **97 errors / 21 warnings in 72 of 1184 files**, so merges remain blocked. Evidence: `/private/tmp/m4-directives.cjs`, `m4-{red,apply,green,safety,full,typecheck,lint}.log`, `m4-proof.json`, `m4-diff-proof.json`, `m4-before.json`, `m4-after-results.json`.
+
 ## Next boundary
 
-Fresh-review m3 tooling, then obtain a bounded source-lint remediation decision. Do not waive rules or silently expand scope. No merge-readiness claim until lint also passes.
+m4 passed fresh review with no findings. Obtain approval for the remaining repository-wide source remediation and its maintenance integration route. Do not waive rules or silently expand scope. No merge-readiness claim until lint also passes.

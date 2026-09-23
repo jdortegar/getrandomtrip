@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripSupportModal } from "../TripSupportModal";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: Pick<TripItineraryDict, "support"> = {

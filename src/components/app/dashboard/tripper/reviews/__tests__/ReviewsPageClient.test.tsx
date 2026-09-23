@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ReviewsPageClient } from "@/components/app/dashboard/tripper/reviews/ReviewsPageClient";
 import type { TripperReviewsDict } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({

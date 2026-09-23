@@ -34,7 +34,7 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const blog = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
       select: { id: true, status: true, authorId: true, title: true, publishedAt: true },
@@ -58,7 +58,7 @@ export async function POST(
         : null;
 
     // Check whether an active (non-discarded) review copy exists.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const existingCopy = await (prisma.blogPost.findFirst as any)({
       where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
       select: { id: true },
@@ -68,21 +68,21 @@ export async function POST(
 
     if (existingCopy) {
       // Copy-based approve: overwrite + delete copy in transaction
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       updated = await (prisma.$transaction as any)(async (tx: any) => {
         const result = await overwriteOriginalWithCopy(tx, params.id, existingCopy.id);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         const finalResult = await (tx.blogPost.update as any)({
           where: { id: params.id },
           data: { reviewNote },
         });
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         await (tx.blogPost.delete as any)({ where: { id: existingCopy.id } });
         return finalResult ?? result;
       });
     } else {
       // Direct approve path (no copy)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       updated = await (prisma.blogPost.update as any)({
         where: { id: params.id },
         data: {

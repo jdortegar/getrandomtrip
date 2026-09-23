@@ -6,7 +6,7 @@ import { GATE_STORAGE_KEY } from "@/lib/constants/marketing-gate";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 let mockPathname = "/en";

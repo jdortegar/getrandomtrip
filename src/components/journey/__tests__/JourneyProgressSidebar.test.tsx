@@ -5,7 +5,7 @@ import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 let mockSearch = "";

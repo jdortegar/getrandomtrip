@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminExperiencesPageClient } from "@/app/[locale]/(secure)/dashboard/admin/AdminExperiencesPageClient";
 import type { AdminExperience } from "@/lib/admin/types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({

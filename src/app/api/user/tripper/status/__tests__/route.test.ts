@@ -26,7 +26,7 @@ function makeRequest(body: unknown) {
   return new Request("http://localhost/api/user/tripper/status", {
     method: "PATCH",
     body: JSON.stringify(body),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   }) as any;
 }
 

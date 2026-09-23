@@ -35,7 +35,7 @@ export default async function AdminEditExperiencePage(props: {
     redirect(`/${locale}/dashboard`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const pkg = await (prisma.experience.findFirst as any)({
     where: { id: params.id },
   }) as (Awaited<ReturnType<typeof prisma.experience.findFirst>> & ExperienceRandomtripEditFields) | null;

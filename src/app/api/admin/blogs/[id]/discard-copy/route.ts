@@ -37,7 +37,7 @@ export async function POST(
     // can no longer discard it. Without this, discarding after send-to-tripper
     // deletes the copy but leaves the original stuck at PENDING_TRIPPER_REVIEW
     // with no copy left for the tripper's routes to act on.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
       select: { status: true },
@@ -55,7 +55,7 @@ export async function POST(
     }
 
     // Find the active (non-discarded) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.blogPost.findFirst as any)({
       where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
       select: { id: true },
@@ -69,12 +69,12 @@ export async function POST(
     }
 
     // Transactionally: delete the copy + clear lock on original
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.delete as any)({ where: { id: copy.id } });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: { reviewLockedBy: null },

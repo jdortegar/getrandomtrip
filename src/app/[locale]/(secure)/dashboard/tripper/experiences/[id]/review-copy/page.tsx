@@ -35,7 +35,7 @@ export default async function ReviewCopyPage(props: {
   }
 
   // Fetch the original experience (must be owned by the tripper)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const original = await (prisma.experience.findFirst as any)({
     where: { id: params.id, ownerId: user.id },
   }) as (Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
@@ -52,7 +52,7 @@ export default async function ReviewCopyPage(props: {
   }
 
   // Find the associated review copy
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const copy = await (prisma.experience.findFirst as any)({
     where: {
       parentId: params.id,

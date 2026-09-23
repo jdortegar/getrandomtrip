@@ -158,7 +158,7 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
 
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       makePostRequest(baseDraftBody()) as any,
     );
 
@@ -186,7 +186,7 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
 
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       makePostRequest(baseDraftBody()) as any,
     );
 
@@ -220,7 +220,7 @@ describe("POST /api/tripper/experiences — role-aware source", () => {
           ownerId: "forged",
           createdById: "forged",
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       ) as any,
     );
 

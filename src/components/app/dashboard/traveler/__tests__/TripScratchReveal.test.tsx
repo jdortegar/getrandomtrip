@@ -15,7 +15,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripScratchReveal } from "@/components/app/dashboard/traveler/TripScratchReveal";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const TRIP_ID = "trip-123";
@@ -46,7 +46,7 @@ function makeLocalStorageStub() {
 let container: HTMLDivElement;
 let root: Root;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function makeFakeCanvasContext(clearedAlpha: number): any {
   return {
     setTransform: vi.fn(),
@@ -88,7 +88,7 @@ beforeEach(() => {
   });
   // happy-dom defines setPointerCapture but throws "not implemented" — stub
   // it unconditionally rather than only when the property is entirely absent.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   (Element.prototype as any).setPointerCapture = vi.fn();
 });
 

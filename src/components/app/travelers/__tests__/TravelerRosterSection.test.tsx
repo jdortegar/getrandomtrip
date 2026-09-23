@@ -8,7 +8,7 @@ import {
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: InviteTravelersDict = {

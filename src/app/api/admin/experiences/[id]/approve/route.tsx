@@ -39,7 +39,7 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const experience = await (prisma.experience.findUnique as any)({
       where: { id: params.id },
       select: { id: true, status: true, type: true, level: true, slug: true, titleInternal: true, tripDate: true, destinationCity: true, destinationCountry: true },
@@ -102,24 +102,24 @@ export async function POST(
 
     if (existingCopy) {
       // Copy-based approve: overwrite + delete copy in transaction
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       updated = await (prisma.$transaction as any)(async (tx: any) => {
         const result = await overwriteOriginalWithCopy(tx, params.id, existingCopy.id);
         // overwriteOriginalWithCopy already sets status=ACTIVE, isActive=true
         // Apply the admin-supplied pricingByType on top
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         const finalResult = await (tx.experience.update as any)({
           where: { id: params.id },
           data: { ...(isXsedExperience(publishedExperience) ? {} : { pricingByType: validation.value }), reviewNote },
         });
         // Hard-delete the copy
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         await (tx.experience.delete as any)({ where: { id: existingCopy.id } });
         return finalResult ?? result;
       });
     } else {
       // Direct approve path (no copy)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       updated = await (prisma.experience.update as any)({
         where: { id: params.id },
         data: {

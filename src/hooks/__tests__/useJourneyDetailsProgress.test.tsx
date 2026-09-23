@@ -6,7 +6,7 @@ import {
   type JourneyDetailsProgress,
 } from "@/hooks/useJourneyDetailsProgress";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 function Harness({

@@ -38,7 +38,7 @@ export async function POST(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.blogPost.findFirst as any)({
       where: { id: params.id, authorId: user.id, isReviewCopy: false },
       select: { id: true, authorId: true, status: true },
@@ -62,7 +62,7 @@ export async function POST(
     }
 
     // Find the active (non-discarded) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.blogPost.findFirst as any)({
       where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
       select: { id: true },
@@ -76,10 +76,10 @@ export async function POST(
     }
 
     // Transactionally overwrite the original with the copy's data + delete copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       await overwriteOriginalWithCopy(tx, params.id, copy.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.delete as any)({ where: { id: copy.id } });
     });
 

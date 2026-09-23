@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { TripEssentialsStrip } from "../TripEssentialsStrip";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: TripItineraryDict["essentials"] = {

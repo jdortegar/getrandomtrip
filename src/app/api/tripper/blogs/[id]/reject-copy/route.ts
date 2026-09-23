@@ -37,7 +37,7 @@ export async function POST(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.blogPost.findFirst as any)({
       where: { id: params.id, authorId: user.id, isReviewCopy: false },
       select: { id: true, authorId: true, status: true },
@@ -61,7 +61,7 @@ export async function POST(
     }
 
     // Find the active (non-discarded) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.blogPost.findFirst as any)({
       where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
       select: { id: true },
@@ -75,15 +75,15 @@ export async function POST(
     }
 
     // Transactionally: tombstone the copy (isDiscarded:true) + set original to DRAFT
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: copy.id },
         data: { isDiscarded: true },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: { status: "DRAFT" },

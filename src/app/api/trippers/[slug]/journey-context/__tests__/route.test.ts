@@ -23,7 +23,7 @@ describe("GET /api/trippers/[slug]/journey-context", () => {
   it("returns 404 with an error body when the tripper is not_found", async () => {
     getTripperJourneyContextMock.mockResolvedValue({ status: "not_found" });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const response = await GET(makeRequest() as any, {
       params: Promise.resolve({ slug: "nobody" }),
     });
@@ -39,7 +39,7 @@ describe("GET /api/trippers/[slug]/journey-context", () => {
       name: "Florencia Denis",
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const response = await GET(makeRequest() as any, {
       params: Promise.resolve({ slug: "florencia-denis" }),
     });
@@ -65,7 +65,7 @@ describe("GET /api/trippers/[slug]/journey-context", () => {
       context,
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const response = await GET(makeRequest() as any, {
       params: Promise.resolve({ slug: "ana-lopez" }),
     });
@@ -78,7 +78,7 @@ describe("GET /api/trippers/[slug]/journey-context", () => {
   it("returns 500 (not a false 404) when getTripperJourneyContext throws (review finding #7 — a transient DB error is not 'tripper not found')", async () => {
     getTripperJourneyContextMock.mockRejectedValue(new Error("connection reset"));
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const response = await GET(makeRequest() as any, {
       params: Promise.resolve({ slug: "ana-lopez" }),
     });

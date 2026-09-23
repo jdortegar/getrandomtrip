@@ -30,7 +30,7 @@ export default async function AdminBlogReviewPage(props: {
   }
 
   // Admin can review any blog post — no authorId filter
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const post = (await (prisma.blogPost.findFirst as any)({
     where: { id: params.id },
   })) as
@@ -44,7 +44,7 @@ export default async function AdminBlogReviewPage(props: {
 
   // Check for an existing active review copy — load it instead of the
   // original so the admin resumes editing their previous changes.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const existingCopy = (await (prisma.blogPost.findFirst as any)({
     where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
   })) as

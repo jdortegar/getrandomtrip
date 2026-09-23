@@ -45,7 +45,7 @@ export async function POST(
         ? body.reviewNote.trim()
         : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.experience.findUnique as any)({
       where: { id: params.id },
     }) as Record<string, unknown> | null;
@@ -55,7 +55,7 @@ export async function POST(
     }
 
     // Find the active (non-INACTIVE) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,
@@ -89,17 +89,17 @@ export async function POST(
     }
 
     // Transactionally: store changedFields on copy, transition original, clear lock
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       // Update copy with changedFields and the admin's note to the tripper
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.update as any)({
         where: { id: copy.id as string },
         data: { changedFields, reviewNote },
       });
 
       // Transition original to PENDING_TRIPPER_REVIEW and clear lock
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.update as any)({
         where: { id: params.id },
         data: {

@@ -40,7 +40,7 @@ export async function POST(
         ? body.reviewNote.trim()
         : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
     }) as Record<string, unknown> | null;
@@ -50,7 +50,7 @@ export async function POST(
     }
 
     // Find the active (non-discarded) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.blogPost.findFirst as any)({
       where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
     }) as Record<string, unknown> | null;
@@ -75,15 +75,15 @@ export async function POST(
     }
 
     // Transactionally: store changedFields on copy, transition original, clear lock
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: copy.id as string },
         data: { changedFields, reviewNote },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: { status: "PENDING_TRIPPER_REVIEW", reviewLockedBy: null },
