@@ -30,8 +30,13 @@ function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {
   if (!pathname) return false;
   const withLocalePrefix = `/${locale}`;
   const routePath = pathname.startsWith(withLocalePrefix)
-    ? (pathname.slice(withLocalePrefix.length) || "/")
+    ? pathname.slice(withLocalePrefix.length) || "/"
     : pathname;
+  if (
+    process.env.NODE_ENV === "development" &&
+    routePath === "/sentry-example-page"
+  )
+    return true;
   return GATE_EXEMPT_ROUTES.some(
     (route) => routePath === route || routePath.startsWith(`${route}/`),
   );
@@ -88,14 +93,15 @@ export function GateAwareChrome({
       <div className="relative">
         <Navbar
           backgroundPrimary={navbarBackgroundPrimary}
+          contained
           dict={dict}
           locale={locale}
         />
         <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
           <main className="min-h-screen">{children}</main>
         </NavbarChromeContext.Provider>
+        <Footer dict={dict} locale={locale} />
       </div>
-      <Footer dict={dict} locale={locale} />
     </>
   );
 

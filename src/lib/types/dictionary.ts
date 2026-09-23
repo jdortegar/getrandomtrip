@@ -986,6 +986,15 @@ export interface XsedBookDict {
   };
 }
 
+export interface XsedLevelCardDict {
+  closingLine: string;
+  ctaLabel: string;
+  features: Array<{ description: string; title: string }>;
+  name: string;
+  priceFootnote: string;
+  subtitle: string;
+}
+
 export interface XsedPageDict {
   countdown: {
     ctaHref: string;
@@ -2185,6 +2194,28 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  sentryExample: {
+    title: string;
+    description: string;
+    browserButton: string;
+    serverButton: string;
+    issuesLink: string;
+    status: {
+      idle: string;
+      running: string;
+      browserDisabled: string;
+      browserAttempted: string;
+      browserFailed: string;
+      serverDisabled: string;
+      serverAttempted: string;
+      serverFailed: string;
+    };
+  };
+  errorFallback: {
+    title: string;
+    description: string;
+    retry: string;
+  };
   nav: {
     ariaLabelBitacoras: string;
     ariaLabelContact: string;
@@ -2318,6 +2349,7 @@ export interface MarketingDictionary {
     errorApprove: string;
     errorReject: string;
   };
+  xsedLevelCard: XsedLevelCardDict;
   xsedPage: XsedPageDict;
   xsedUnavailable: {
     heading: string;

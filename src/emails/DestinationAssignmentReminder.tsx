@@ -71,7 +71,7 @@ export default function DestinationAssignmentReminder({
   escalated = false,
 }: DestinationAssignmentReminderProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/admin`;
+  const ctaHref = `${BASE_URL}/${locale}/dashboard/admin/trip-requests/${tripId}`;
   const preview = escalated ? c.escalatedPreview(clientName) : c.preview(clientName);
   const heading = escalated ? c.escalatedHeading : c.heading;
   const urgency = escalated ? c.escalatedUrgency : c.urgency;
@@ -111,7 +111,7 @@ const heading_style: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "38px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink (brand text)
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
@@ -146,7 +146,7 @@ const summaryRow: React.CSSProperties = {
 
 const summaryLabel: React.CSSProperties = {
   fontWeight: "700",
-  color: "#111827",
+  color: "#383838", // Ink (brand text)
 };
 
 const summaryValue: React.CSSProperties = {
@@ -170,8 +170,8 @@ const urgencyTextEscalated: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#ffffff",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

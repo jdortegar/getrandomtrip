@@ -1,4 +1,4 @@
-import { act, type ReactNode } from "react";
+import { act, Suspense, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GateAwareChrome } from "../GateAwareChrome";
@@ -9,14 +9,16 @@ import type { Locale } from "@/lib/i18n/config";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
-vi.mock("next/navigation", () => ({
-  usePathname: () => "/en",
-}));
+let mockPathname = "/en";
+vi.mock("next/navigation", () => ({ usePathname: () => mockPathname }));
 
 type SessionStatus = "loading" | "authenticated" | "unauthenticated";
 
 let mockSessionState: {
-  data: { user?: { role?: string; hasSiteAccess?: boolean } } | null | undefined;
+  data:
+    | { user?: { role?: string; hasSiteAccess?: boolean } }
+    | null
+    | undefined;
   status: SessionStatus;
 } = { data: undefined, status: "loading" };
 
@@ -26,7 +28,11 @@ vi.mock("next-auth/react", () => ({
 }));
 
 vi.mock("@/components/Navbar", () => ({
-  default: () => <div data-testid="navbar">navbar</div>,
+  default: ({ contained }: { contained?: boolean }) => (
+    <div data-contained={String(!!contained)} data-testid="navbar">
+      navbar
+    </div>
+  ),
 }));
 vi.mock("@/components/layout/Footer", () => ({
   default: () => <div data-testid="footer">footer</div>,
@@ -36,7 +42,10 @@ vi.mock("@/components/auth/AuthModal", () => ({
 }));
 vi.mock("@/components/waitlist/WaitlistPage", () => ({
   WaitlistPage: ({ accessDenied }: { accessDenied?: boolean }) => (
-    <div data-access-denied={String(!!accessDenied)} data-testid="waitlist-page">
+    <div
+      data-access-denied={String(!!accessDenied)}
+      data-testid="waitlist-page"
+    >
       waitlist
     </div>
   ),
@@ -52,7 +61,8 @@ function makeLocalStorageStub() {
     clear: () => {
       store = new Map();
     },
-    getItem: (key: string) => (store.has(key) ? (store.get(key) as string) : null),
+    getItem: (key: string) =>
+      store.has(key) ? (store.get(key) as string) : null,
     removeItem: (key: string) => {
       store.delete(key);
     },
@@ -92,6 +102,7 @@ async function flush() {
 }
 
 beforeEach(() => {
+  mockPathname = "/en";
   Object.defineProperty(window, "localStorage", {
     configurable: true,
     value: makeLocalStorageStub(),
@@ -104,6 +115,24 @@ afterEach(() => {
   });
   container?.remove();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+});
+
+it.each([
+  ["development", "/sentry-example-page", false],
+  ["development", "/en/sentry-example-page", false],
+  ["development", "/en/sentry-example-page/other", true],
+  ["production", "/en/sentry-example-page", true],
+])("Sentry gate exemption: %s %s", async (environment, pathname, gated) => {
+  vi.stubEnv("NODE_ENV", environment);
+  mockPathname = pathname;
+  mockSessionState = { data: null, status: "unauthenticated" };
+  render();
+  await flush();
+  expect(!!container.querySelector('[data-testid="waitlist-page"]')).toBe(
+    gated,
+  );
+  expect(container.textContent?.includes("children")).toBe(!gated);
 });
 
 describe("GateAwareChrome — session-status guard (ADR 7)", () => {
@@ -144,7 +173,9 @@ describe("GateAwareChrome — session-status guard (ADR 7)", () => {
     await flush();
 
     expect(window.localStorage.getItem(GATE_STORAGE_KEY)).toBeNull();
-    const waitlistPage = container.querySelector('[data-testid="waitlist-page"]');
+    const waitlistPage = container.querySelector(
+      '[data-testid="waitlist-page"]',
+    );
     expect(waitlistPage).not.toBeNull();
     expect(waitlistPage?.getAttribute("data-access-denied")).toBe("true");
   });
@@ -187,6 +218,15 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
     expect(
       container.querySelector('[data-testid="attribution-banner"]'),
     ).not.toBeNull();
+
+    const navbar = container.querySelector('[data-testid="navbar"]')!;
+    const chrome = navbar.parentElement!;
+    expect(navbar.getAttribute("data-contained")).toBe("true");
+    expect(chrome.previousElementSibling?.getAttribute("data-testid")).toBe(
+      "attribution-banner",
+    );
+    expect(chrome.querySelector("main")).not.toBeNull();
+    expect(chrome.querySelector('[data-testid="footer"]')).not.toBeNull();
   });
 
   it("renders nothing extra when no banner prop is passed (AttributionModeBanner returning null)", async () => {
@@ -202,5 +242,19 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
       container.querySelector('[data-testid="attribution-banner"]'),
     ).toBeNull();
     expect(container.querySelector('[data-testid="navbar"]')).not.toBeNull();
+  });
+
+  it("does not reserve banner space when its server-rendered Suspense content is null", async () => {
+    mockSessionState = {
+      data: { user: { hasSiteAccess: true, role: "traveler" } },
+      status: "authenticated",
+    };
+
+    render(<Suspense fallback={null}>{null}</Suspense>);
+    await flush();
+
+    const navbar = container.querySelector('[data-testid="navbar"]')!;
+    expect(navbar.getAttribute("data-contained")).toBe("true");
+    expect(navbar.parentElement?.previousElementSibling).toBeNull();
   });
 });

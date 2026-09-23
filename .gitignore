@@ -48,3 +48,6 @@ next-env.d.ts
 
 # MCP config (may contain secrets)
 .mcp.json
+
+# Sentry Config File
+.env.sentry-build-plugin

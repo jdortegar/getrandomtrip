@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Section from "@/components/layout/Section";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import LevelCard from "@/components/by-type/shared/LevelCard";
@@ -21,6 +21,8 @@ interface TypePlannerProps {
   allowedLevelIds?: string[];
   compact?: boolean;
   content: TypePlannerContent;
+  /** Standalone marketing card; never participates in level selection or attribution. */
+  leadingCard?: ReactNode;
   navigateOnCardClick?: boolean;
   onSelect?: (levelId: string) => void;
   selectedLevel?: string;
@@ -35,6 +37,7 @@ export default function TypePlanner({
   allowedLevelIds,
   compact = false,
   content,
+  leadingCard,
   navigateOnCardClick = false,
   onSelect,
   selectedLevel: externalSelectedLevel,
@@ -71,9 +74,15 @@ export default function TypePlanner({
   const contentElement = (
     <div className="relative flex w-full flex-col">
       <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
+        {leadingCard && (
+          <div className="min-w-0 w-full py-3" key="leading-card">
+            {leadingCard}
+          </div>
+        )}
         {content.levels.map((level, index) => {
-          // Alternate between light and dark variants
-          const variant = index % 2 === 0 ? "light" : "dark";
+          // Alternate by visual position without changing tier identity.
+          const visualIndex = index + (leadingCard ? 1 : 0);
+          const variant = visualIndex % 2 === 0 ? "light" : "off-white";
           // Featured state: exploraPlus or index 2
           const isFeatured = index === 2;
 
@@ -123,7 +132,8 @@ export default function TypePlanner({
       subtitle={content.subtitle}
       title={content.title}
       id="type-planner"
-      fullWidth data-component="TypePlanner"
+      fullWidth
+      data-component="TypePlanner"
     >
       {contentElement}
     </Section>

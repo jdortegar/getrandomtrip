@@ -61,6 +61,8 @@ const NAV_LINKS: NavLink[] = [
 
 export interface NavbarProps {
   backgroundPrimary?: boolean;
+  /** Stick within a full-page chrome container, after any attribution banner. */
+  contained?: boolean;
   dict?: Dictionary;
   locale?: Locale;
   variant?: NavbarVariant;
@@ -71,6 +73,7 @@ const WHATSAPP_URL = "https://wa.me/526241928208";
 
 export default function Navbar({
   backgroundPrimary = false,
+  contained = false,
   dict,
   locale: localeProp,
   variant = "auto",
@@ -100,12 +103,13 @@ export default function Navbar({
 
   const headerClass = cn(
     "duration-500 ease-in-out h-16 top-0 inset-x-0 transition-all z-50",
-    // backgroundPrimary-forced pages (dashboard, invite pages) have no hero
-    // and expect the header to reserve its own layout space — sticky, same
-    // as before. Marketing pages render their hero assuming zero header
-    // offset, so both of their states stay out-of-flow via fixed instead,
-    // whether still transparent-over-hero or scrolled past it into solid.
-    backgroundPrimary ? "sticky" : "fixed",
+    // Contained chrome starts below the banner's natural height, then sticks
+    // at the viewport top after the banner scrolls away. Cancel this h-16
+    // header's layout space on marketing pages to preserve the hero overlay.
+    // Forced-solid pages reserve that space; standalone marketing headers
+    // retain their existing fixed positioning.
+    backgroundPrimary || contained ? "sticky" : "fixed",
+    contained && !backgroundPrimary && "-mb-16",
     isSolid
       ? "bg-ground ring-1 ring-gray-200 shadow-sm text-primary w-full"
       : "backdrop-blur-md bg-white/0 text-white",
