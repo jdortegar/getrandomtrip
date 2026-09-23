@@ -986,6 +986,15 @@ export interface XsedBookDict {
   };
 }
 
+export interface XsedLevelCardDict {
+  closingLine: string;
+  ctaLabel: string;
+  features: Array<{ description: string; title: string }>;
+  name: string;
+  priceFootnote: string;
+  subtitle: string;
+}
+
 export interface XsedPageDict {
   countdown: {
     ctaHref: string;
@@ -2340,6 +2349,7 @@ export interface MarketingDictionary {
     errorApprove: string;
     errorReject: string;
   };
+  xsedLevelCard: XsedLevelCardDict;
   xsedPage: XsedPageDict;
   xsedUnavailable: {
     heading: string;

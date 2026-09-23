@@ -5,6 +5,7 @@ import Paragraph from "@/components/Paragraph";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import Blog from "@/components/Blog";
 import TypePlanner from "@/components/by-type/TypePlanner";
+import { XsedLevelCard } from "@/components/app/xsed/XsedLevelCard";
 import InspirationBanner from "@/components/InspirationBanner";
 import {
   getTravelerType,
@@ -122,13 +123,19 @@ export default async function TravelerTypePage(props: {
           priceOverrides,
         )}
         itemsPerView={3}
+        leadingCard={
+          <XsedLevelCard copy={dict.xsedLevelCard} locale={locale} />
+        }
         type={typeData.meta.slug as TravelerTypeSlug}
         navigateOnCardClick={true}
       />
       <Blog
         eyebrow={blogEyebrow}
         id="blog"
-        posts={typeData.blog.posts.map((p) => ({ ...p, href: pathForLocale(locale, p.href) }))}
+        posts={typeData.blog.posts.map((p) => ({
+          ...p,
+          href: pathForLocale(locale, p.href),
+        }))}
         subtitle={typeData.blog.subtitle}
         title={typeData.blog.title}
         viewAll={viewAll}
@@ -141,7 +148,10 @@ export default async function TravelerTypePage(props: {
         labelText={inspirationBanner.labelText}
         title={inspirationBanner.title}
       />
-      <Testimonials testimonials={testimonials} title={typeData.testimonials.title} />
+      <Testimonials
+        testimonials={testimonials}
+        title={typeData.testimonials.title}
+      />
     </main>
   );
 }

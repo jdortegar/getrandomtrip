@@ -265,11 +265,19 @@
           "id": "logistics",
           "label": "Logistics",
           "substeps": [
-            { "id": "accommodation", "title": "Accommodation", "description": "" },
+            {
+              "id": "accommodation",
+              "title": "Accommodation",
+              "description": ""
+            },
             { "id": "dinner", "title": "Dinner", "description": "" },
             { "id": "activity", "title": "Activity", "description": "" },
             { "id": "itinerary", "title": "Itinerary", "description": "" },
-            { "id": "inclusions", "title": "Inclusions / Exclusions", "description": "" }
+            {
+              "id": "inclusions",
+              "title": "Inclusions / Exclusions",
+              "description": ""
+            }
           ]
         }
       ],
@@ -867,6 +875,29 @@
     "filterDate": "Date",
     "filterOrderBy": "Order by",
     "loadMore": "LOAD MORE"
+  },
+  "xsedLevelCard": {
+    "closingLine": "One night, one dinner, and one surprise local experience close to home.",
+    "ctaLabel": "DISCOVER TGIS",
+    "features": [
+      { "description": "1 night — Saturday to Sunday", "title": "Duration" },
+      {
+        "description": "A surprise destination within 300 km",
+        "title": "Destination"
+      },
+      {
+        "description": "Your own car; transportation not included",
+        "title": "Transport"
+      },
+      { "description": "One night of accommodation", "title": "Accommodation" },
+      {
+        "description": "Saturday dinner, Sunday breakfast, and a curated local experience",
+        "title": "Benefits"
+      }
+    ],
+    "name": "TGIS",
+    "priceFootnote": "per person",
+    "subtitle": "THANK GOD IT’S SUNDAY"
   },
   "xsedPage": {
     "meta": {
@@ -3323,11 +3354,7 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell destinations. We design a different way of traveling. Randomtrip was born to free travelers from the fatigue of planning: too many open tabs, too many decisions before you even start.",
       "p2": "Our answer is Designed Serendipity: experiences that feel spontaneous but are born from a rigorous structure. You define dates, budget, style, pace, and limits. We design the wonder within that framework. Living the unexpected, without improvising.",
-      "pills": [
-        "Emotional brief",
-        "Invisible design",
-        "Surprise with a net"
-      ],
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
       "sectionTitle": "Our philosophy"
     },
     "steps": {

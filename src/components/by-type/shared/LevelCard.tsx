@@ -21,7 +21,10 @@ import Link from "next/link";
 import { useDictionary } from "@/hooks/useDictionary";
 
 interface LevelCardProps {
+  ctaClassName?: string;
   featured?: boolean;
+  /** Explicit destination for a standalone product; regular levels keep their default route. */
+  href?: string;
   level: Level;
   /** When true, card click navigates to the CTA `href` instead of calling `onSelect`. */
   navigateOnCardClick?: boolean;
@@ -32,7 +35,7 @@ interface LevelCardProps {
   travelerType?: string;
   /** Tripper branding — when defined, renders "BY TRIPPER {name}" on this card (curated journey, level the tripper actually offers). */
   tripperBadge?: { name: string; avatarUrl: string | null };
-  variant?: "light" | "dark";
+  variant?: "light" | "off-white";
   className?: string;
 }
 
@@ -56,7 +59,9 @@ const FEATURE_ICONS: Record<
 };
 
 export default function LevelCard({
+  ctaClassName,
   featured = false,
+  href,
   level,
   navigateOnCardClick = false,
   onSelect,
@@ -72,20 +77,17 @@ export default function LevelCard({
   const byRandomtripLabel = useDictionary(
     (d) => d.journey.tripperBadge.byRandomtrip,
   );
-  const ctaHref = travelerType
-    ? `/journey?travelType=${travelerType}&experience=${level.id}`
-    : `/experiences/by-type/${level.id}`;
-  const isDark = variant === "dark";
-  const textColor = isDark ? "text-white" : "text-ink";
-  const bgColor = isDark ? "bg-primary" : "bg-white";
-  const borderColor = selected
-    ? "border-primary"
-    : isDark
-      ? "border-primary"
-      : "border-transparent";
-  const dividerColor = isDark ? "border-gray-700" : "border-gray-200";
+  const ctaHref =
+    href ??
+    (travelerType
+      ? `/journey?travelType=${travelerType}&experience=${level.id}`
+      : `/experiences/by-type/${level.id}`);
+  const textColor = "text-ink";
+  const bgColor = variant === "off-white" ? "bg-ground" : "bg-white";
+  const borderColor = selected ? "border-primary" : "border-transparent";
+  const dividerColor = "border-gray-200";
   const priceDividerColor = "bg-feature";
-  const secondaryTextColor = isDark ? "text-white" : "text-gray-600";
+  const secondaryTextColor = "text-gray-600";
 
   const handleClick = () => {
     if (navigateOnCardClick) {
@@ -106,7 +108,8 @@ export default function LevelCard({
         className,
       )}
       onClick={navigateOnCardClick || onSelect ? handleClick : undefined}
-      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }} data-component="LevelCard"
+      style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
+      data-component="LevelCard"
     >
       {/* Featured Badge - Top Left */}
       {featured && (
@@ -190,7 +193,7 @@ export default function LevelCard({
       <p
         className={cn(
           "mb-3.5 text-left text-pretty leading-relaxed text-[0.82rem]",
-          isDark ? "text-white" : "text-gray-700",
+          "text-gray-700",
         )}
       >
         {level.closingLine}
@@ -239,12 +242,16 @@ export default function LevelCard({
       </div>
 
       <div className="mt-3">
-        <Button asChild variant="feature" className="w-full">
+        <Button
+          asChild
+          className={cn("w-full text-ink", ctaClassName)}
+          variant="feature"
+        >
           <Link
             className="uppercase"
             href={ctaHref}
             onClick={(e) => e.stopPropagation()}
-            scroll={!navigateOnCardClick}
+            scroll={href !== undefined || !navigateOnCardClick}
           >
             {level.ctaLabel}
           </Link>

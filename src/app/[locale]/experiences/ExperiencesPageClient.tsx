@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Hero from "@/components/Hero";
 import TypePlanner from "@/components/by-type/TypePlanner";
+import { XsedLevelCard } from "@/components/app/xsed/XsedLevelCard";
 import { TravelerTypesCarousel } from "@/components/landing/exploration/TravelerTypesCarousel";
 import Section from "@/components/layout/Section";
 import en from "@/dictionaries/en.json";
@@ -68,6 +69,9 @@ export default function ExperiencesPageClient({
           overrides,
         )}
         itemsPerView={3}
+        leadingCard={
+          <XsedLevelCard copy={dict.xsedLevelCard} locale={locale} />
+        }
         type={selectedTypeTraveler}
       />
     </main>
