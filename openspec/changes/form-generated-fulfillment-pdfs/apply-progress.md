@@ -45,3 +45,11 @@ Task 1.9a review fix: default body discovery silently skipped later bodies beyon
 Runtime evidence: standalone `tsx` CLI smoke failed on sandbox IPC `listen EPERM` before loading the helper. No escalation/config/environment workaround; the same utility was verified through Vitest's per-file Node environment (0 ms DOM environment). Final Netlify packaging remains a later gate; reusing the React Email public export may affect server bundle size.
 
 Rollback: revert the respective isolated unit. Next: fresh review, then task 1.9b provider candidates. No DB/deploy verification claimed.
+
+## Planning Refinement: Candidate Lifecycle (Pre-schema)
+
+Documentation-only correction before task 2.1; completed 1.1–1.9a and all TDD/runtime evidence above remain unchanged. Implementation next remains 1.9b; no schema, DB, deployment or runtime verification claimed.
+
+The existing outbox now plans pre-write candidate registration, atomic retained adoption receipts, authorization/live-owner checks before committed-retry recognition, and scoped cancellation under ordered locks. Ambiguous DB outcomes require reconciliation, not exception-driven deletion. Draft deletion cancels previews/unfinished publications but preserves retained published generations; replacement preserves historical bytes and email stamps.
+
+SDK retries mean even successful `set` cannot prove every PUT settled. Compact deletion tombstones therefore survive observed absence with bounded scheduled sweeps/capped backoff and alerts. The achievable guarantee is eventual cleanup after writes quiesce/storage recovers; metadata retention and continuing sweep cost are explicit. Hotel holder is required for generation, unlike the generic optional voucher field.

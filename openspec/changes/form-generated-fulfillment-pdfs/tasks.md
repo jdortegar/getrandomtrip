@@ -36,24 +36,24 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 1.9a | D/sourceText.ts: bounded non-executing plain-text/HTML normalization. |
 | [ ] 1.9b | D/providerSnapshots.ts: legacy/current explicit-role candidates and selection. |
 | [ ] 1.9c | D/providerSnapshots.ts: creation-only provider/itinerary application; draft isolation. |
-| [ ] 2.1 | prisma/schema.prisma: draft/outbox relations; schema/DTO isolation. |
-| [ ] 2.2 | D/cleanup.ts: durable key/prefix retries and failure. |
-| [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker. |
-| [ ] 2.4 | D/drafts.ts: revision-controlled CRUD; conflicts/deletion. |
+| [ ] 2.1 | prisma/schema.prisma: draft/outbox candidate dispositions, immutable identities, non-cascading receipts/tombstones and due-time indexes; schema/DTO isolation. |
+| [ ] 2.2 | D/cleanup.ts: pre-write registration, locked cancellation/expiry, retained exclusion and compact tombstone sweeps; test late PUT after absence, including successful SDK retry. |
+| [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker; bounded batches, capped backoff, durable rescheduling/alerts, including absent keys. |
+| [ ] 2.4 | D/drafts.ts: revision-controlled CRUD; shared owner→trip→draft→document→outbox locking, sorted IDs, live ownership/conflicts. |
 | [ ] 2.5 | A/route.ts: authenticated creation/list; isolation. |
 | [ ] 2.6 | A/[draftId]/route.ts: read/edit authorization/concurrency. |
-| [ ] 2.7 | Draft deletion: enqueue previews only; attachment survives. |
+| [ ] 2.7 | Draft deletion: cancel previews/unfinished publications under locks; retained publications/attachment survive; test paused writes. |
 | [ ] 2.8 | package manifests/lockfile: renderer-v4/QR dependencies; import smoke. |
 | [ ] 2.9 | assets/pdf/, next.config.js: licensed bundled assets/tracing. |
 | [ ] 2.10 | D/pdf/: shared A4/locale/links/QR layout. |
 | [ ] 2.11–2.15 | Five PDF templates, separately; content/pagination. |
-| [ ] 2.16 | D/render.ts: private revision-bound previews; size/race/failure. |
+| [ ] 2.16 | D/render.ts: register candidate before PUT; revision-bound atomic preview/retained receipt; test size/races, expiry and process/acknowledgement loss. |
 | [ ] 2.17 | A/[draftId]/render+preview endpoints: authenticated bytes/error. |
-| [ ] 2.18 | D/publish.ts: identical-byte/idempotent publication race. |
-| [ ] 2.19 | Confirmed replacement: stable IDs/history/email timestamps. |
-| [ ] 2.20 | A/[draftId]/attach endpoint: stale/confirmation/retry. |
-| [ ] 2.21 | Attachment deletion: unlink draft/all-generation cleanup. |
-| [ ] 2.22–2.24 | Two trip-delete routes/account deletion separately; cascade cleanup. |
+| [ ] 2.18 | D/publish.ts: byte-identical atomic document/draft/receipt adoption; test concurrent attach and ambiguous commit reconciliation without unsafe cleanup. |
+| [ ] 2.19 | Confirmed replacement: stable IDs/retained history/email timestamps; test commit-response loss followed by supersession. |
+| [ ] 2.20 | A/[draftId]/attach endpoint: authorize/live-owner checks, committed retry before revision/replacement checks; stale/mismatched/deleted attachment tests. |
+| [ ] 2.21 | Attachment deletion: preserve/unlink draft, cancel all generations/pending replacements; test ordered-lock attach/delete race and late writes. |
+| [ ] 2.22–2.24 | Two trip-delete routes/account deletion separately: ordered-lock cancellation, generated prefixes/legacy keys, buyer-owned scope not uploader/tripper; tombstones survive cascades. |
 | [ ] 3.1–3.2 | U/shell/client-hook separately: accessibility/loading/error/save. |
 | [ ] 3.3 | U/repeatables: stable-ID add/remove/reorder. |
 | [ ] 3.4–3.8 | Five forms separately; edits/validation/localization. |

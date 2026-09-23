@@ -13,7 +13,7 @@ Only explicit admin attachment of a current validated preview MUST publish a gen
 
 #### Scenario: Stale or missing preview
 - GIVEN no successful preview or a preview preceding the current draft revision
-- WHEN attachment is requested
+- WHEN a new publication is requested rather than a matching committed retry
 - THEN it is rejected without changing published documents
 
 ### Requirement: Idempotent Publication and Confirmed Replacement
@@ -24,6 +24,11 @@ Duplicate/concurrent attachment requests for the same preview MUST yield the sam
 - GIVEN concurrent requests or a retried successful attachment
 - WHEN the same preview is submitted again
 - THEN the same document is returned without duplicate publications
+
+#### Scenario: Ambiguous publication result
+- GIVEN publication committed but its response was lost, possibly followed by a newer publication
+- WHEN an authorized admin retries the same preview for the still-live owning draft and linked document
+- THEN its retained receipt yields the same document without duplicate publication, replacement confirmation or deletion of either published generation
 
 #### Scenario: Correct a published document
 - GIVEN an attached PDF and a newer preview
@@ -41,7 +46,7 @@ Superseded published bytes MUST remain privately available to in-flight download
 
 ### Requirement: Independent Deletion and Complete Cleanup
 
-Deleting an attachment MUST unlink but preserve its editable draft and remove all current/superseded published blobs. Deleting a draft MUST remove private previews but preserve its attachment. Trip/account deletion MUST remove associated drafts, previews and all published generations. Storage failures MUST remain observable/retryable rather than silently abandoning cleanup.
+Deleting an attachment MUST unlink but preserve its editable draft and remove all current/superseded published blobs. Deleting a draft MUST remove private previews but preserve its attachment. Trip/account deletion MUST remove associated drafts, previews and all published generations. Deletion MUST cancel unfinished publication candidates without deleting retained publications outside its scope. Durable cleanup tombstones MUST survive cascades and remain scheduled after observed absence; failures MUST stay observable/retryable. Cleanup MUST eventually remove scoped bytes after outstanding writes quiesce and storage recovers, not promise immediate permanent absence.
 
 #### Scenario: Delete attachment, preserve draft
 - GIVEN a draft linked to an attachment with superseded bytes
@@ -49,14 +54,19 @@ Deleting an attachment MUST unlink but preserve its editable draft and remove al
 - THEN published generations are cleaned and the draft survives unlinked for editing/reattachment
 
 #### Scenario: Delete draft, preserve attachment
-- GIVEN a linked draft with private previews
+- GIVEN a linked draft with private previews and an unfinished publication
 - WHEN the draft is deleted
-- THEN previews are cleaned and the published attachment remains readable
+- THEN preview/unfinished-publication candidates are cancelled and cleaned, while retained published generations and the attachment remain readable
 
 #### Scenario: Delete trip or account
 - GIVEN generated documents, private previews and superseded blobs
 - WHEN their owning trip/account is deleted
-- THEN all associated generated records/files are cleaned, including previously unlinked generations
+- THEN associated drafts and generated files are cleaned, including previously unlinked generations, while compact cleanup tombstones remain retryable
+
+#### Scenario: Late storage write after deletion
+- GIVEN a scoped deletion tombstone and a sweep that observed no remaining bytes
+- WHEN an earlier storage PUT completes later, including an SDK retry after another attempt returned success
+- THEN cancelled candidates cannot be adopted; bounded scheduled sweeps continue after absence and remove the late bytes once writes quiesce and storage recovers
 
 ### Requirement: Existing Fulfillment Compatibility
 
