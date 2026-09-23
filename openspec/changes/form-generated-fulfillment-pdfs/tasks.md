@@ -26,7 +26,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 0.1 | Proposal/state tracker seed; inspect completeness. |
 | [x] 0.2 | Design/specs/tasks planning child; inspect traceability. |
 | [x] 1.1 | D/documentMetadata.ts + D/__tests__/documentMetadata.test.ts: metadata validation. |
-| [ ] 1.2 | D/validationPrimitives.ts: calendar/time/range, HTTPS, bounds. |
+| [x] 1.2 | D/validationPrimitives.ts: calendar/time/range, HTTPS, bounds. |
 | [ ] 1.3–1.7 | D/parsers + src/lib/types/: one/template; partial/full/unknown-shape. |
 | [ ] 1.8 | D/snapshots.ts: buyer/trip/locale snapshots; no inferred claims. |
 | [ ] 1.9 | D/providerSnapshots.ts: candidate selection/legacy HTML normalization. |

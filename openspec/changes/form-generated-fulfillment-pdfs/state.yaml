@@ -18,21 +18,24 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 1.1-metadata
-  current_branch: codex/form-generated-fulfillment-pdfs-01-metadata
-  current_base: codex/form-generated-fulfillment-pdfs-00-planning
+  current_slice: 1.2-validation
+  current_branch: codex/form-generated-fulfillment-pdfs-02-validation
+  current_base: codex/form-generated-fulfillment-pdfs-01-metadata
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: no-findings
-  current_slice_tests_passed: 144
-  approved_issue: unavailable-repository-issues-disabled
+  current_slice_review: fresh-context-no-findings
+  current_slice_tests_passed: 231
+  tracker_pr: 151
+  planning_pr: 152
+  metadata_pr: 153
+  approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.
   - Do not deploy to production.
-  - Actual PR creation requires resolving the approved-issue prerequisite.
+  - User approved issue-link exception for this feature because repository issues are disabled.
 baseline:
   typecheck: pass
   tests_passed: 1742
