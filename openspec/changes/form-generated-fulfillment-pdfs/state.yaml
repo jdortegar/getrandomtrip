@@ -18,18 +18,19 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 1.4-experience-parser
-  current_branch: codex/form-generated-fulfillment-pdfs-04-experience-parser
-  current_base: codex/form-generated-fulfillment-pdfs-03-xsed-parser
+  current_slice: 1.5-hotel-parser
+  current_branch: codex/form-generated-fulfillment-pdfs-05-hotel-parser
+  current_base: codex/form-generated-fulfillment-pdfs-04-experience-parser
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
   current_slice_review: fresh-context-no-findings
-  current_slice_tests_passed: 353
+  current_slice_tests_passed: 423
   tracker_pr: 151
   planning_pr: 152
   metadata_pr: 153
   validation_pr: 154
   xsed_parser_pr: 155
+  experience_parser_pr: 156
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
