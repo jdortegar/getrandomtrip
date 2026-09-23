@@ -23,7 +23,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m10: Make MultiSelectInput keyboard-operable and programmatically labeled, preserving nested removal and real Radix/cmdk behavior.
 - [x] m11: Subscribe active Embla arrow/dot hooks to stable external snapshots, cleaning replaced-instance listeners and preserving controls/SSR fallbacks.
 - [x] m12: Reuse the Embla snapshot contract in Main Carousel, preserving context, controls, plugin/options forwarding and already-correct cleanup.
-- [ ] Remaining lint debt: 73 errors / 19 warnings in 62 files; continue only in reviewed, bounded slices.
+- [x] m13: Reuse shared snapshots in UI carousel, removing stale reInit listeners and preserving controls/context/SSR contracts.
+- [ ] Remaining lint debt: 72 errors / 19 warnings in 61 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -52,6 +53,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m10 | Adjacent FormField safety net: 5 pass; two real Radix click/selection approval tests pass | Four failures: Enter, Space, trigger label and focused search label; existing Radix controls are explicitly NOT a fabricated RED | Stable IDs/naming, target-guarded keys and labeled cmdk Input: 6 pass; two instances, fallback naming, nested removal and filtering → 11 pass | Scoped prop ordering/formatting; 11 pass again; targeted warning 1→0 |
 | m11 | Active static-carousel safety net: 5 pass; three control approval tests pass before production | Old-instance events corrupt current controls and first client commit is stale: 2 failed / 3 passed; actual hook lint has 2 errors | Shared useSyncExternalStore reader + exact off cleanup: 5 pass; select/reInit replacement, API removal/return, StrictMode and SSR/hydration → 9 pass | Scoped formatting and cleanup-case matrix; 14 focused pass including existing carousel tests; targeted lint 0 |
 | m12 | Shared-hook safety net: 9 pass; five real-control approval cases pass, including already-correct cleanup | Two first-commit cases render stale disabled/empty controls: 2 failed / 5 passed; actual lint has 2 errors | Reused snapshot helper: 7 pass; absent/return/unmount and server fallback → 9 pass | Formatted only modified hook functions/new tests; 18 focused pass; targeted lint 0 |
+| m13 | Existing carousel safety net: 18 pass; four actual-control approval cases pass | Replaced-API reInit corrupts buttons and first commit is stale: 2 failed / 4 passed; actual lint has 1 error | Shared primitive snapshots: 6 pass; absent/return, StrictMode cleanup and server fallback → 9 pass | Scoped test formatting; 27 focused pass across all carousel variants; targeted lint 0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -85,6 +87,8 @@ m11 uses the installed Embla 8.6.0 contract: on returns a chain, off requires th
 
 m12 replaces only Main Carousel’s private selection-state effects with the reviewed snapshot reader. Public context/handlers, options/plugins/setApi, preset visibility/children, geometry/resize, markup and copy remain unchanged; cleanup was already correct and is approval coverage, not a fabricated regression. One controlled Embla React boundary exercises real context/buttons, without browser layout/animation or plugin-timing claims. Full suite **1867 passed / 245 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **73 errors / 19 warnings in 62 of 1191 files**, exit 1. The interrupted run resumed its preserved RED/GREEN evidence; no solved work was reset. Evidence: `/private/tmp/m12-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m12-lint-before.json`, `m12-lint-results.json`.
 
+m13 replaces only UI carousel’s arrow-state copy/subscription effect with two shared snapshot reads. Exact select/reInit cleanup fixes the retained old-instance callback; public context, setApi, options/plugins, orientation, keyboard, button/ref forwarding and markup/CSS remain unchanged. One controlled Embla React boundary tests real components, not browser scrolling/layout. An incomplete initial edit left a cleanup tail and failed transformation; that source syntax was corrected before the recorded six-test GREEN (`m13-green-transform-failure.log` retains the failed attempt), with no environment/config workaround. Full suite **1876 passed / 246 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **72 errors / 19 warnings in 61 of 1192 files**, exit 1. Evidence: `/private/tmp/m13-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m13-lint-before.json`, `m13-lint-results.json`.
+
 ## Next boundary
 
-Fresh-review m12 Main Carousel snapshots before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m13 UI carousel snapshots before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
