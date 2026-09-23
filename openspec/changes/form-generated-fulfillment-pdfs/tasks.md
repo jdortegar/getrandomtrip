@@ -28,7 +28,8 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 1.1 | D/documentMetadata.ts + D/__tests__/documentMetadata.test.ts: metadata validation. |
 | [x] 1.2 | D/validationPrimitives.ts: calendar/time/range, HTTPS, bounds. |
 | [x] 1.3 | D/parsers/xsedRoadmap.ts + src/lib/types/: XSED partial/full/unknown-shape validation. |
-| [ ] 1.4–1.7 | D/parsers + src/lib/types/: remaining templates; partial/full/unknown-shape. |
+| [x] 1.4 | D/parsers/experienceRoadmap.ts + src/lib/types/: experience roadmap and date-range validation. |
+| [ ] 1.5–1.7 | D/parsers + src/lib/types/: voucher templates; partial/full/unknown-shape. |
 | [ ] 1.8 | D/snapshots.ts: buyer/trip/locale snapshots; no inferred claims. |
 | [ ] 1.9 | D/providerSnapshots.ts: candidate selection/legacy HTML normalization. |
 | [ ] 2.1 | prisma/schema.prisma: draft/outbox relations; schema/DTO isolation. |

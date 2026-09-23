@@ -1,7 +1,7 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser). Remaining: 1.4 onward.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap). Remaining: 1.5 onward.
 Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/bounds units with adjacent tests; no schema, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
@@ -11,6 +11,7 @@ Boundaries: separately reviewed pure metadata and calendar/time/range/HTTPS/boun
 | 1.1 | `src/lib/trip-documents/__tests__/documentMetadata.test.ts` | Unit / N/A (new files) | Missing-module failure before implementation | Initial 1/1 passed | Draft blanks: 1 failed → 2 passed; bounds/catalog/locale: 20 failed → 72 passed; shape/types: 60 failed → 134 passed; hidden/symbol fields: 2 failed → 136 passed | Extracted field/limit constants, ordered imports, formatted; 144/144 including catalog regression passed |
 | 1.2 | `src/lib/trip-documents/__tests__/validationPrimitives.test.ts` | Unit / N/A (new); 144 existing regression tests passed before work | Missing-module failure before implementation | Initial 1/1 passed | Calendar: 8 failed → 25 passed; time/range: 25 failed → 50 passed; HTTPS: 29 failed → 79 passed; bounds: 8 failed → 87 passed | Extracted limits, bounded UTF-8 allocation, formatted; 231/231 including prior regressions passed |
 | 1.3 | `src/lib/trip-documents/parsers/__tests__/xsedRoadmap.test.ts` | Unit / N/A (new); 231 existing regressions passed; review-fix baseline 70/70 | Missing-module failure before implementation | Initial 1/1 passed | Required/metadata: 9 failed → 10 passed; shape/bounds/IDs: 58 failed → 68 passed; consolidated 65 cases; formats: 4 failed → 69 passed; whitespace URL: 1 failed → 70 passed; hidden-field review fix: 3 failed → 73 passed, nested cases → 75 passed | Consolidated structural/error assertions and expected output; rejected hidden descriptors consistently; 306/306 regression tests passed |
+| 1.4 | `src/lib/trip-documents/parsers/__tests__/experienceRoadmap.test.ts` | Unit / 306 baseline; new XSED approval test passed before helper extraction | Missing-module failure before implementation | Initial 1/1 passed | Required/shape/bounds/metadata: 43 failed → 44 passed; dates/range: 1 failed → 46 passed | Shared strict-record helper extracted without XSED behavior changes; 353 regressions passed |
 
 Verification: `npm run test -- src/lib/trip-documents/__tests__/documentMetadata.test.ts src/lib/trips/__tests__/destinationCountries.test.ts` → 144 passed (136 new + 8 existing); `npm run typecheck` → pass; targeted Prettier check → pass. Full suite/lint not rerun; known baseline failures unchanged by this isolated unit.
 
@@ -22,4 +23,6 @@ Task 1.2 contract: seven pure predicates; real fixed-width calendar dates (Grego
 
 Task 1.3 verification: `npm run test -- src/lib/trip-documents src/lib/trips/__tests__/destinationCountries.test.ts` → 306 passed (75 XSED + 231 prior). Typecheck and targeted Prettier passed. Discriminated template/version + metadata + data envelope; strict shapes/bounds and unique nonblank stop IDs always validated. Drafts preserve incomplete text; generation requires scalars/stop title/directions and validates supplied dates/times/HTTPS links. Optional links/date/time may be absent or empty; whitespace-only links cannot publish. Stop order and custom text remain untouched. Review fix rejects non-enumerable properties at every record level: previously validation saw hidden fields that result spreading/JSON would drop. No design deviations.
 
-Rollback: revert the respective isolated unit. Next: fresh review, then task 1.4 experience-roadmap parser. No DB/runtime/deploy verification claimed.
+Task 1.4 verification: `npm run test -- src/lib/trip-documents src/lib/trips/__tests__/destinationCountries.test.ts` → 353 passed (46 experience + 307 prior/approval). Typecheck and targeted Prettier passed. Draft content stays editable; generation validates required scalars, inclusive real travel-date range, nonempty suggested activities, optional date/time/map links. Unique stable IDs/order/authored text preserved; strict shapes/descriptor rules shared with XSED, metadata rules remain centralized. One approval test covers null-prototype envelopes before extraction; no design deviations.
+
+Rollback: revert the respective isolated unit. Next: fresh review, then task 1.5 hotel voucher. No DB/runtime/deploy verification claimed.

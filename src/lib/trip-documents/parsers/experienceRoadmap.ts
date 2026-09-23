@@ -1,12 +1,13 @@
 import type { DocumentValidationMode } from "@/lib/types/DocumentMetadata";
 import type { DocumentParseResult } from "@/lib/types/DocumentValidation";
-import type { XsedRoadmapDocument } from "@/lib/types/XsedRoadmap";
+import type { ExperienceRoadmapDocument } from "@/lib/types/ExperienceRoadmap";
 import { validateDocumentMetadata } from "../documentMetadata";
 import {
   isBoundedDocumentArray,
   isBoundedDocumentText,
   isHttpsUrl,
   isIsoCalendarDate,
+  isOrderedDateRange,
   isWallTime,
 } from "../validationPrimitives";
 
@@ -15,16 +16,17 @@ import { createDocumentValidation } from "./createDocumentValidation";
 const DATA_FIELDS = [
   "origin",
   "destination",
-  "departureDate",
-  "departureTime",
-  "drivingDuration",
+  "startDate",
+  "endDate",
+  "duration",
+  "heading",
   "mapUrl",
 ];
 
-export function parseXsedRoadmap(
+export function parseExperienceRoadmap(
   input: unknown,
   mode: DocumentValidationMode,
-): DocumentParseResult<XsedRoadmapDocument> {
+): DocumentParseResult<ExperienceRoadmapDocument> {
   const { errors, add, record } = createDocumentValidation();
   function text(
     value: Record<string, unknown>,
@@ -43,10 +45,12 @@ export function parseXsedRoadmap(
     )
       add(path, "required");
     else if (mode === "generation" && field) {
-      if (["date", "departureDate"].includes(key) && !isIsoCalendarDate(field))
+      if (
+        ["date", "startDate", "endDate"].includes(key) &&
+        !isIsoCalendarDate(field)
+      )
         add(path, "invalid_date");
-      if (["time", "departureTime"].includes(key) && !isWallTime(field))
-        add(path, "invalid_time");
+      if (key === "time" && !isWallTime(field)) add(path, "invalid_time");
       if (key === "mapUrl" && !isHttpsUrl(field)) add(path, "invalid_url");
     }
   }
@@ -56,41 +60,49 @@ export function parseXsedRoadmap(
     "$",
   );
   if (!raw) return { ok: false, errors };
-  if (raw.template !== "xsed-roadmap") add("template", "invalid_value");
+  if (raw.template !== "experience-roadmap") add("template", "invalid_value");
   if (raw.templateVersion !== 1) add("templateVersion", "invalid_value");
   const metadata = validateDocumentMetadata(
     { label: raw.label, country: raw.country, locale: raw.locale },
     mode,
   );
   if (!metadata.ok) errors.push(...metadata.errors);
-  const data = record(raw.data, [...DATA_FIELDS, "stops"], "data");
+  const data = record(raw.data, [...DATA_FIELDS, "activities"], "data");
   if (!data) return { ok: false, errors };
   for (const key of DATA_FIELDS)
     text(data, key, `data.${key}`, key === "mapUrl");
-  if (!isBoundedDocumentArray(data.stops)) add("data.stops", "invalid_array");
+  if (
+    mode === "generation" &&
+    isIsoCalendarDate(data.startDate) &&
+    isIsoCalendarDate(data.endDate) &&
+    !isOrderedDateRange(data.startDate, data.endDate)
+  )
+    add("data.endDate", "invalid_range");
+  if (!isBoundedDocumentArray(data.activities))
+    add("data.activities", "invalid_array");
   else {
-    if (mode === "generation" && !data.stops.length)
-      add("data.stops", "required");
+    if (mode === "generation" && !data.activities.length)
+      add("data.activities", "required");
     const ids = new Set<string>();
-    for (const [index, value] of data.stops.entries()) {
-      const path = `data.stops.${index}`;
-      const stop = record(
+    for (const [index, value] of data.activities.entries()) {
+      const path = `data.activities.${index}`;
+      const activity = record(
         value,
-        ["id", "title", "directions", "date", "time"],
+        ["id", "title", "description", "date", "time"],
         path,
       );
-      if (!stop) continue;
-      for (const key of ["id", "title", "directions", "date", "time"])
-        text(stop, key, `${path}.${key}`, key === "date" || key === "time");
-      if (typeof stop.id === "string") {
-        if (ids.has(stop.id)) add(`${path}.id`, "duplicate_id");
-        ids.add(stop.id);
+      if (!activity) continue;
+      for (const key of ["id", "title", "description", "date", "time"])
+        text(activity, key, `${path}.${key}`, key === "date" || key === "time");
+      if (typeof activity.id === "string") {
+        if (ids.has(activity.id)) add(`${path}.id`, "duplicate_id");
+        ids.add(activity.id);
       }
     }
   }
   if (errors.length || !metadata.ok) return { ok: false, errors };
   return {
     ok: true,
-    value: { ...(input as XsedRoadmapDocument), ...metadata.value },
+    value: { ...(input as ExperienceRoadmapDocument), ...metadata.value },
   };
 }

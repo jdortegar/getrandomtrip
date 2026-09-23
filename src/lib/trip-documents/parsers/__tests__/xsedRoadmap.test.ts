@@ -38,6 +38,10 @@ const success = (patch: object) => ({
 });
 
 describe("parseXsedRoadmap", () => {
+  it("preserves null-prototype envelope behavior before helper extraction", () => {
+    const input = Object.assign(Object.create(null), document);
+    expect(parseXsedRoadmap(input, "generation")).toEqual(success({}));
+  });
   it.each(["template", "templateVersion", "data"])(
     "rejects hidden %s",
     (field) => {

@@ -8,6 +8,7 @@ export interface DocumentFieldError {
     | "invalid_array"
     | "duplicate_id"
     | "invalid_date"
+    | "invalid_range"
     | "invalid_time"
     | "invalid_url";
 }
