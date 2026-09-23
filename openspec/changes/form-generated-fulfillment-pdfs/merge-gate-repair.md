@@ -22,7 +22,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m9: Associate Img failure with its current source, retrying changed URLs immediately while preserving fallback, caller callbacks and props.
 - [x] m10: Make MultiSelectInput keyboard-operable and programmatically labeled, preserving nested removal and real Radix/cmdk behavior.
 - [x] m11: Subscribe active Embla arrow/dot hooks to stable external snapshots, cleaning replaced-instance listeners and preserving controls/SSR fallbacks.
-- [ ] Remaining lint debt: 75 errors / 19 warnings in 63 files; continue only in reviewed, bounded slices.
+- [x] m12: Reuse the Embla snapshot contract in Main Carousel, preserving context, controls, plugin/options forwarding and already-correct cleanup.
+- [ ] Remaining lint debt: 73 errors / 19 warnings in 62 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -50,6 +51,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m9 | No existing direct tests; three new real-Next-Image approval cases pass before production | Replacement source first commits the old fallback logo: 1 failed / 3 passed; actual lint has 1 error | Guarded source-associated state: 4 pass; A→B→A with successful/failed B, async caller recovery, SSR defaults/props → 9 pass | Scoped formatting only; 9 pass again, targeted lint 0 |
 | m10 | Adjacent FormField safety net: 5 pass; two real Radix click/selection approval tests pass | Four failures: Enter, Space, trigger label and focused search label; existing Radix controls are explicitly NOT a fabricated RED | Stable IDs/naming, target-guarded keys and labeled cmdk Input: 6 pass; two instances, fallback naming, nested removal and filtering → 11 pass | Scoped prop ordering/formatting; 11 pass again; targeted warning 1→0 |
 | m11 | Active static-carousel safety net: 5 pass; three control approval tests pass before production | Old-instance events corrupt current controls and first client commit is stale: 2 failed / 3 passed; actual hook lint has 2 errors | Shared useSyncExternalStore reader + exact off cleanup: 5 pass; select/reInit replacement, API removal/return, StrictMode and SSR/hydration → 9 pass | Scoped formatting and cleanup-case matrix; 14 focused pass including existing carousel tests; targeted lint 0 |
+| m12 | Shared-hook safety net: 9 pass; five real-control approval cases pass, including already-correct cleanup | Two first-commit cases render stale disabled/empty controls: 2 failed / 5 passed; actual lint has 2 errors | Reused snapshot helper: 7 pass; absent/return/unmount and server fallback → 9 pass | Formatted only modified hook functions/new tests; 18 focused pass; targeted lint 0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -81,6 +83,8 @@ m10 preserves the div trigger because it contains native remove buttons. Enter/S
 
 m11 uses the installed Embla 8.6.0 contract: on returns a chain, off requires the exact callback, subscriptions survive reInit, and scrollSnapList returns an engine-owned stable array. The small shared reader returns primitives/direct stable arrays, not uncached objects or render-ref state; each selected value owns its subscription. Existing hook shapes, scroll callbacks, button markup/copy and server disabled/empty defaults remain; client API changes read immediately. Main Carousel and ui/carousel are untouched. Full suite **1858 passed / 244 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **75 errors / 19 warnings in 63 of 1190 files**, exit 1. Controlled API tests follow the installed emitter contract but do not claim browser layout/animation coverage. Evidence: `/private/tmp/m11-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m11-lint-before.json`, `m11-lint-results.json`.
 
+m12 replaces only Main Carousel’s private selection-state effects with the reviewed snapshot reader. Public context/handlers, options/plugins/setApi, preset visibility/children, geometry/resize, markup and copy remain unchanged; cleanup was already correct and is approval coverage, not a fabricated regression. One controlled Embla React boundary exercises real context/buttons, without browser layout/animation or plugin-timing claims. Full suite **1867 passed / 245 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **73 errors / 19 warnings in 62 of 1191 files**, exit 1. The interrupted run resumed its preserved RED/GREEN evidence; no solved work was reset. Evidence: `/private/tmp/m12-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m12-lint-before.json`, `m12-lint-results.json`.
+
 ## Next boundary
 
-Fresh-review m11 Embla control subscriptions before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m12 Main Carousel snapshots before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
