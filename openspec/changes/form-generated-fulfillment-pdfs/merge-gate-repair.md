@@ -20,7 +20,8 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 - [x] m7: Bind XSED notification loading to page requests and guard stale completions by request occurrence, preserving rows, chrome and local deletion.
 - [x] m8: Read Lenis scroll through a real external-store subscription, with immediate client snapshots, fixed variants and stable server fallback.
 - [x] m9: Associate Img failure with its current source, retrying changed URLs immediately while preserving fallback, caller callbacks and props.
-- [ ] Remaining lint debt: 77 errors / 20 warnings in 66 files; continue only in reviewed, bounded slices.
+- [x] m10: Make MultiSelectInput keyboard-operable and programmatically labeled, preserving nested removal and real Radix/cmdk behavior.
+- [ ] Remaining lint debt: 77 errors / 19 warnings in 65 files; continue only in reviewed, bounded slices.
 - [ ] Final gate: full tests, typecheck and lint pass before direct integration into the feature tracker. Keep unfinished feature tracker off main.
 
 ## Verified product contracts
@@ -46,6 +47,7 @@ The user subsequently approved remaining repository-wide lint repairs in reviewe
 | m7 | Existing 2 tests pass; strengthened mounted-row/count/error approval tests also pass | A→B→A stale success clears the live overlay: 1 failed / 2 passed; actual lint has 1 error + 1 warning | Per-request abort guards + event-owned pending state: 3 pass; stale success/HTTP/network, fully reversed completion, body parsing, initial failures, unmount/StrictMode and local DELETE → 12 pass | Scoped formatting and retry recovery assertions; 12 pass, targeted lint 0 |
 | m8 | No existing direct test; adjacent hook safety net: 8 pass; four new approval cases pass before production | Restored scroll has an incorrect first committed overlay: 1 failed / 4 passed; actual hook lint has 2 errors | useSyncExternalStore + Lenis unsubscribe: 5 pass; threshold, fixed/auto, instance lifecycle, StrictMode, SSR/hydration → 15 pass | Scoped formatting only; 15 pass again; targeted lint 0 |
 | m9 | No existing direct tests; three new real-Next-Image approval cases pass before production | Replacement source first commits the old fallback logo: 1 failed / 3 passed; actual lint has 1 error | Guarded source-associated state: 4 pass; A→B→A with successful/failed B, async caller recovery, SSR defaults/props → 9 pass | Scoped formatting only; 9 pass again, targeted lint 0 |
+| m10 | Adjacent FormField safety net: 5 pass; two real Radix click/selection approval tests pass | Four failures: Enter, Space, trigger label and focused search label; existing Radix controls are explicitly NOT a fabricated RED | Stable IDs/naming, target-guarded keys and labeled cmdk Input: 6 pass; two instances, fallback naming, nested removal and filtering → 11 pass | Scoped prop ordering/formatting; 11 pass again; targeted warning 1→0 |
 
 m1 full `npm run test`: **1764 passed, 4 failed** across 237 files (234 passed). Remaining failures were the two sidebar completion assertions, one TextAreaInput chrome assertion and the FAQ completeness bug. Typecheck and diff checks passed. Baseline/full logs are local temporary evidence, not repository artifacts.
 
@@ -73,6 +75,8 @@ m8 uses the installed Lenis 1.3.23 public `on("scroll", notify)` unsubscribe con
 
 m9 uses `{src, errored}` with a guarded render reset, not a setter effect. Existing fallback role/label, decorative logo, absolute-sizing branch and props are unchanged; no placeholder redesign or CSS assertions. Tests use real Next Image with local unoptimized URLs, without module mocks or network loading. Approval setup first corrected URL resolution and happy-dom’s absent `draggable` property (asserting the actual attribute instead); approval GREEN and regression RED were rerun before production edits. Full suite **1838 passed / 242 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **77 errors / 20 warnings in 66 of 1187 files**, exit 1. Evidence: `/private/tmp/m9-{approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m9-lint-before.json`, `m9-lint-results.json`. No browser visual-layout claim.
 
+m10 preserves the div trigger because it contains native remove buttons. Enter/Space activation applies only to the trigger itself; Escape restores its focus through Radix. Explicit useId controls match the dialog, visible labels name trigger/dialog, and unlabeled instances reuse placeholder copy. The existing cmdk Input/root label supplies search/list/active-option relationships without changing manual filtering. Full suite **1849 passed / 243 files**; typecheck, scoped Prettier and diff checks pass. Whole lint remains **77 errors / 19 warnings in 65 of 1188 files**, exit 1. Tests mount real Radix/cmdk without mocks/polyfills; they await Radix’s existing deferred focus cleanup and separately test nested key propagation/click activation, not browser default-action synthesis, popup layout or assistive technology. Evidence: `/private/tmp/m10-{safety,approval,red,green,triangulation,refactor,full,typecheck,lint}.log`, `m10-lint-before.json`, `m10-lint-results.json`.
+
 ## Next boundary
 
-Fresh-review m9 source-owned Img recovery before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.
+Fresh-review m10 MultiSelectInput accessibility before the next bounded lint-repair unit. Integrate reviewed cumulative work into the feature tracker only after all gates pass; no main merge or rule waivers.

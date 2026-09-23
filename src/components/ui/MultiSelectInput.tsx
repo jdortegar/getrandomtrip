@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { ReactNode } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Command as CommandPrimitive } from "cmdk";
 import { cn } from "@/lib/utils";
 import RemovableTag from "@/components/RemovableTag";
@@ -38,6 +42,10 @@ export function MultiSelectInput({
   hint,
   triggerClassName,
 }: MultiSelectInputProps) {
+  const generatedId = useId();
+  const triggerId = id ?? `${generatedId}-trigger`;
+  const labelId = `${generatedId}-label`;
+  const contentId = `${generatedId}-content`;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -61,7 +69,8 @@ export function MultiSelectInput({
       {label && (
         <label
           className="block font-normal text-gray-600 text-base"
-          htmlFor={id}
+          htmlFor={triggerId}
+          id={labelId}
         >
           {label}
         </label>
@@ -71,14 +80,27 @@ export function MultiSelectInput({
         <PopoverTrigger asChild>
           {/* A real <button> can't contain RemovableTag's own remove <button> —
               nested buttons are invalid HTML — so this trigger is a div with
-              role="combobox", not a <button>. Radix's asChild still wires up
-              the same click/keyboard/ARIA behavior onto it. */}
+              role="combobox", not a <button>. Radix supplies click/ARIA;
+              keyboard activation must be provided for this non-native trigger. */}
           <div
-            id={id}
+            aria-controls={contentId}
+            aria-expanded={open}
+            aria-label={label ? undefined : placeholder}
+            aria-labelledby={label ? labelId : undefined}
+            className={cn(
+              "min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left cursor-pointer",
+              triggerClassName,
+            )}
+            id={triggerId}
+            onKeyDown={(event) => {
+              if (event.target !== event.currentTarget) return;
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setOpen((current) => !current);
+              }
+            }}
             role="combobox"
             tabIndex={0}
-            aria-expanded={open}
-            className={cn("min-h-[56px] w-full bg-gray-100 rounded-xl px-4 py-3 flex flex-wrap gap-2 items-center text-left cursor-pointer", triggerClassName)}
           >
             {selected.length === 0 && (
               <span className="text-gray-400 text-base flex-1">
@@ -91,7 +113,8 @@ export function MultiSelectInput({
                   item={{
                     key: o.value,
                     value: o.label,
-                    onRemove: () => onChange(value.filter((v) => v !== o.value)),
+                    onRemove: () =>
+                      onChange(value.filter((v) => v !== o.value)),
                   }}
                   color="secondary"
                   size="sm"
@@ -103,18 +126,21 @@ export function MultiSelectInput({
         </PopoverTrigger>
 
         <PopoverContent
-          className="p-0 bg-white border border-gray-200 shadow-md rounded-xl overflow-hidden"
           align="start"
+          aria-label={label ? undefined : placeholder}
+          aria-labelledby={label ? labelId : undefined}
+          className="p-0 bg-white border border-gray-200 shadow-md rounded-xl overflow-hidden"
+          id={contentId}
           style={{ width: "var(--radix-popover-trigger-width)" }}
         >
-          <CommandPrimitive shouldFilter={false}>
+          <CommandPrimitive label={searchPlaceholder} shouldFilter={false}>
             {/* Search input */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={searchPlaceholder}
+              <CommandPrimitive.Input
                 className="flex-1 bg-transparent outline-none text-sm text-ink placeholder:text-gray-400"
+                onValueChange={setSearch}
+                placeholder={searchPlaceholder}
+                value={search}
               />
             </div>
 
@@ -148,7 +174,10 @@ export function MultiSelectInput({
                       )}
                     >
                       {isSelected && (
-                        <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                        <Check
+                          className="h-2.5 w-2.5 text-white"
+                          strokeWidth={3}
+                        />
                       )}
                     </span>
                     {option.label}
