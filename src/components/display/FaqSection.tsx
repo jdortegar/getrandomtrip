@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Img from "@/components/common/Img";
 import {
   Accordion,
   AccordionContent,
@@ -43,13 +42,14 @@ export default function FaqSection({
             <AccordionTrigger className="flex items-center gap-3 py-4 text-left hover:no-underline [&[data-state=open]>svg]:rotate-180">
               <span
                 aria-hidden
-                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary text-ink"
+                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded bg-secondary"
               >
-                <Img
-                  alt="FAQ"
-                  height={32}
-                  src="/assets/icons/isologo.png"
-                  width={32}
+                <span
+                  className={cn(
+                    "block h-5 w-5 bg-primary mask-center mask-contain mask-no-repeat",
+                    "[mask-image:url(/assets/logos/iso-randomtrip.svg)]",
+                    "[-webkit-mask-image:url(/assets/logos/iso-randomtrip.svg)]",
+                  )}
                 />
               </span>
               <span className="flex-1 text-left font-medium text-ink">
