@@ -18,16 +18,16 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: transient-dinner-preview-ui
-  current_branch: codex/pdf-dinner-preview-ui
+  current_slice: transient-experience-roadmap-renderer
+  current_branch: codex/pdf-experience-roadmap-renderer
   current_base: develop
   local_integration_commit: 923725a5
   preserved_pdf_tip: ace55baaa4c9c61e35e7d3a494302e3d56cef414
   local_develop_base: 010d414ce5f612a39844cd84c0b9b9e6997d2901
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: passed-local-transient-scope
-  current_slice_tests_passed: 80
+  current_slice_review: pending
+  current_slice_tests_passed: 55
   schema_application: applied-development-target-empty-diff-verified
   schema_applied_commit: 14ba2e1a
   schema_publication: published-with-explicit-hook-risk-consent
@@ -53,7 +53,7 @@ delivery:
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
   renderer_only_dependency: {changed_lines: 515, exception: approved, status: installed, commit: 34979cfc}
-  next_slice: remaining-roadmap-transient-preview
+  next_slice: transient-experience-roadmap-endpoint
   awaiting_user: null
   transient_milestones: {hotel: 1e6ffbeb, activity: e82c14c8, dinner: f4e3db5c}
   browser_pdf_paint: unverified

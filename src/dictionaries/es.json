@@ -1,4 +1,16 @@
 {
+  "experienceRoadmapPdf": {
+    "title": "Hoja de ruta de experiencia",
+    "origin": "Origen",
+    "destination": "Destino",
+    "startDate": "Fecha de salida",
+    "endDate": "Fecha de finalización",
+    "duration": "Duración del viaje",
+    "activities": "Actividades sugeridas",
+    "date": "Fecha sugerida",
+    "time": "Horario sugerido",
+    "map": "Abrir mapa interactivo"
+  },
   "dinnerVoucherPreview": {
     "open": "Crear vista previa de cena",
     "title": "Vista previa del comprobante gastronómico",

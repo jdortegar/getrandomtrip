@@ -1,4 +1,16 @@
 {
+  "experienceRoadmapPdf": {
+    "title": "Experience roadmap",
+    "origin": "Origin",
+    "destination": "Destination",
+    "startDate": "Departure date",
+    "endDate": "End date",
+    "duration": "Travel duration",
+    "activities": "Suggested activities",
+    "date": "Suggested date",
+    "time": "Suggested time",
+    "map": "Open interactive map"
+  },
   "dinnerVoucherPreview": {
     "open": "Create dinner preview",
     "title": "Dinner voucher preview",

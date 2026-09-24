@@ -183,3 +183,13 @@ Both new flows preserve live-admin/trip checks, streamed128KiB request/4MiB PDF 
 Browser QA on the existing server submitted sample dinner data and received an Open PDF preview link. At360px, dialog width360/client358/scroll358; at1280px, dialog width1024/client1022/scroll1022: no horizontal overflow. Blob navigation was not attempted after the earlier policy block, so **browser PDF painting is unverified**. Separate actual Node-rendered PDFs were visually inspected as recorded above; HappyDOM's unsupported blob-iframe warning is not browser-rendering evidence.
 
 Remaining: both roadmap forms/renderers; original draft save/versioning, storage/worker/publication/attach/replace/email integration; licensed-font fidelity, QR and complete shared layout; complete bilingual fixture suite, full build/Netlify preview and external deploy-hook verification. Prefix WIP remains deferred in stash `8bdd8a36`; no restoration or approval implied. The earlier726-line renderer+QR dependency exception remains historical/pending; only the separate renderer-only515-line exception was approved. Original pending task groups below must not be marked complete by these transient subsets.
+
+## Transient Experience Roadmap Renderer (2026-09-24)
+
+Existing voucher milestones and publication-risk history above are unchanged. Experience roadmap now renders only authored origin/destination/date range/duration/heading, ordered suggested activities with optional dates/times, and optional validated HTTPS map link. Local logo, teal/cyan A4 branding, EN/ES labels and4MiB output guard reuse the established pattern; no route planning, map fetch, QR, confirmation or persistence is inferred.
+
+| Unit | RED | GREEN / triangulation | Verification |
+|---|---|---|---|
+| Experience roadmap renderer | Missing-module failure |9 renderer +46 parser tests passed; invalid ranges/locale/map/empty activities, optional schedule/map, size/failure paths |Typecheck/targetlint; actual EN1page/ES4page PDFs inspected,30stops/accents/map annotation preserved |
+
+QA `/private/tmp/experience-render-qa/`; logs `/private/tmp/experience-render-{red,green,typecheck}.log`. Activity title/schedule/description share an orphan-controlled text flow. Helvetica remains interim. Next: guarded experience-roadmap endpoint and editor/modal, then XSED roadmap; original persistent lifecycle remains pending.

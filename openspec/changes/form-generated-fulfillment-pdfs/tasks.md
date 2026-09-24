@@ -86,3 +86,5 @@ Verify DB target before application. Baseline: 1742passed/20failed/broken-next-l
 - [x] Dinner endpoint, bilingual scalar/menu editor, request lifecycle and dashboard preview (`72e8c0c3`–`f4e3db5c`).
 - [ ] Both roadmap vertical previews, font/QR fidelity and remaining persistent lifecycle/publication requirements.
 - [ ] Browser PDF painting, full build/Netlify preview and external deploy-hook verification; sample dinner POST and360/1280 no-overflow checks passed only.
+
+- [x] Experience-roadmap transient renderer subset: authored itinerary, optional schedule/map, EN/ES/size validation and actual PDF QA; endpoint/editor still pending.
