@@ -10,6 +10,7 @@ import {
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { canonicalizeExperienceTypeFilter } from "@/lib/experiences/experienceTypeFilter";
 import { prisma } from "@/lib/prisma";
+import { EXPERIENCE_TRIP_REQUEST_COUNT_SELECT, withCanDelete } from "@/lib/experiences/deletion";
 
 export const dynamic = "force-dynamic";
 
@@ -106,6 +107,8 @@ export async function GET(request: NextRequest) {
           reviewNote: true,
           tripperNote: true,
           updatedAt: true,
+          isReviewCopy: true,
+          ...EXPERIENCE_TRIP_REQUEST_COUNT_SELECT,
         },
       }),
 
@@ -120,7 +123,13 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json({ experiences, total, page, limit, pendingCount });
+    return NextResponse.json({
+      experiences: experiences.map(withCanDelete),
+      total,
+      page,
+      limit,
+      pendingCount,
+    });
   } catch (error) {
     console.error("[admin/experiences] GET", error);
     return NextResponse.json(

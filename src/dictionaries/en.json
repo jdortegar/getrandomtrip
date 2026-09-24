@@ -731,6 +731,11 @@
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
+        "delete": "Delete",
+        "deleteTitle": "Delete experience?",
+        "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone.",
+        "deleteBlocked": "Can't delete while it has bookings or is under review.",
+        "deleteFailed": "Couldn't delete this experience. Please try again.",
         "feature": "Feature",
         "review": "Review",
         "edit": "Edit"
@@ -4592,6 +4597,8 @@
       "delete": "Delete",
       "deleteTitle": "Delete experience?",
       "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone.",
+      "deleteBlocked": "Can't delete while it has bookings or is under review.",
+      "deleteFailed": "Couldn't delete this experience. Please try again.",
       "selectAll": "Select all experiences",
       "selectRow": "Select experience"
     },

@@ -154,3 +154,93 @@ describe("AdminExperiencesPageClient — refetch error keeps chrome mounted", ()
     expect(banner?.textContent).toContain("Refetch boom");
   });
 });
+
+describe("AdminExperiencesPageClient — delete follows the shared deletion rule", () => {
+  function deleteButtonFor(label: string) {
+    return Array.from(container.querySelectorAll('[data-component="TableIconButton"]'))
+      .find((wrapper) => wrapper.textContent === label)
+      ?.querySelector("button") as HTMLButtonElement | undefined;
+  }
+
+  it("disables delete with an explanation when the experience can't be deleted", async () => {
+    const es = (await import("@/dictionaries/es.json")).default;
+    fetchMock().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        experiences: [experience({ status: "ACTIVE", canDelete: false })],
+        pendingCount: 0,
+        total: 1,
+      }),
+    });
+
+    render(<AdminExperiencesPageClient />);
+    await flush();
+
+    expect(deleteButtonFor(es.adminPages.experiences.actions.deleteBlocked)?.disabled).toBe(true);
+  });
+
+  it("deletes a deletable experience after confirming in the modal", async () => {
+    const es = (await import("@/dictionaries/es.json")).default;
+    const actions = es.adminPages.experiences.actions;
+    fetchMock().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        experiences: [experience({ status: "DRAFT", canDelete: true })],
+        pendingCount: 0,
+        total: 1,
+      }),
+    });
+
+    render(<AdminExperiencesPageClient />);
+    await flush();
+
+    act(() => deleteButtonFor(actions.delete)!.click());
+    await flush();
+    const dialog = document.body.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog.textContent).toContain(actions.deleteTitle);
+
+    const confirm = Array.from(dialog.querySelectorAll("button")).find(
+      (b) => b.textContent === actions.delete,
+    ) as HTMLButtonElement;
+    await act(async () => confirm.click());
+    await flush();
+
+    expect(fetchMock()).toHaveBeenCalledWith("/api/admin/experiences/e1", { method: "DELETE" });
+  });
+});
+
+describe("AdminExperiencesPageClient — failed delete is reported", () => {
+  it("shows the blocked message when the server refuses the delete with 409", async () => {
+    const es = (await import("@/dictionaries/es.json")).default;
+    const actions = es.adminPages.experiences.actions;
+    fetchMock().mockImplementation(async (_url: string, init?: RequestInit) =>
+      init?.method === "DELETE"
+        ? { ok: false, status: 409, json: async () => ({ reason: "has_bookings" }) }
+        : {
+            ok: true,
+            json: async () => ({
+              experiences: [experience({ status: "DRAFT", canDelete: true })],
+              pendingCount: 0,
+              total: 1,
+            }),
+          },
+    );
+
+    render(<AdminExperiencesPageClient />);
+    await flush();
+
+    const trash = Array.from(container.querySelectorAll('[data-component="TableIconButton"]'))
+      .find((w) => w.textContent === actions.delete)
+      ?.querySelector("button") as HTMLButtonElement;
+    act(() => trash.click());
+    await flush();
+    const dialog = document.body.querySelector('[role="dialog"]') as HTMLElement;
+    const confirm = Array.from(dialog.querySelectorAll("button")).find(
+      (b) => b.textContent === actions.delete,
+    ) as HTMLButtonElement;
+    await act(async () => confirm.click());
+    await flush();
+
+    expect(container.textContent).toContain(actions.deleteBlocked);
+  });
+});

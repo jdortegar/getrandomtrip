@@ -11,6 +11,7 @@ import {
   Search,
   Star,
   StarOff,
+  Trash2,
   X,
 } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -108,6 +109,8 @@ export function AdminExperiencesPageClient() {
   const [loading, setLoading] = useState(true);
   const hasLoadedOnce = useHasLoadedOnce(loading);
   const [savingId, setSavingId] = useState<string | null>(null);
+  // Id of the experience pending delete confirmation. null = modal closed.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(() =>
     parseStatusFilter(searchParams.get("status")),
   );
@@ -345,6 +348,31 @@ export function AdminExperiencesPageClient() {
       setSavingId(null);
     }
   }
+
+  async function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
+    setSavingId(id);
+    setBulkFailureMessage(null);
+    try {
+      const res = await fetch(`/api/admin/experiences/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        // 409 = the server's deletion rule refused (bookings / in review).
+        setBulkFailureMessage(
+          res.status === 409 ? copy.actions.deleteBlocked : copy.actions.deleteFailed,
+        );
+      }
+      // Refetch either way so a stale canDelete flag is corrected.
+      await fetchExperiences();
+    } catch {
+      setBulkFailureMessage(copy.actions.deleteFailed);
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  const deleteTarget = experiences.find((e) => e.id === deleteTargetId);
 
   useEffect(() => {
     void fetchExperiences();
@@ -682,6 +710,14 @@ export function AdminExperiencesPageClient() {
                                 <Star className="h-4 w-4" />
                               )}
                             </TableIconButton>
+                            <TableIconButton
+                              danger
+                              disabled={isBusy || !item.canDelete}
+                              onClick={() => setDeleteTargetId(item.id)}
+                              title={item.canDelete ? act.delete : act.deleteBlocked}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </TableIconButton>
                           </div>
                         )}
                       </td>
@@ -701,6 +737,20 @@ export function AdminExperiencesPageClient() {
         pageOfLabel={paginationCopy.pageOf}
         previousLabel={paginationCopy.previous}
         totalPages={totalPages}
+      />
+
+      <ConfirmModal
+        open={deleteTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTargetId(null);
+        }}
+        onConfirm={() => void confirmDelete()}
+        icon={Trash2}
+        tone="danger"
+        title={act.deleteTitle}
+        description={act.deleteConfirmMessage.replace("{{title}}", deleteTarget?.title ?? "")}
+        cancelLabel={copy.bulkActions.cancel}
+        confirmLabel={act.delete}
       />
 
       <ConfirmModal

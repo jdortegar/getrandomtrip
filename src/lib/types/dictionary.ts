@@ -732,6 +732,8 @@ export interface TripperExperiencesDict {
     deleteTitle: string;
     /** Interpolated with {{title}} — the experience's name, rendered bold. */
     deleteConfirmMessage: string;
+    deleteBlocked: string;
+    deleteFailed: string;
     selectAll: string;
     selectRow: string;
   };
@@ -1545,6 +1547,11 @@ export interface AdminPagesDict {
       disable: string;
       enable: string;
       unfeature: string;
+      delete: string;
+      deleteTitle: string;
+      deleteConfirmMessage: string;
+      deleteBlocked: string;
+      deleteFailed: string;
       feature: string;
       review: string;
       edit: string;

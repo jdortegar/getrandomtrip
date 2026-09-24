@@ -71,6 +71,23 @@ describe("GET /api/admin/experiences", () => {
     expect(findManyArgs.take).toBe(10);
   });
 
+  it("selects the trip-request count and returns canDelete instead of the raw count", async () => {
+    (prisma.experience.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      { id: "e1", status: "ACTIVE", _count: { tripRequests: 2 } },
+      { id: "e2", status: "DRAFT", _count: { tripRequests: 0 } },
+    ]);
+
+    const body = await (await GET(makeRequest(""))).json();
+
+    const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(findManyArgs.select._count).toEqual({ select: { tripRequests: true } });
+    expect(findManyArgs.select.isReviewCopy).toBe(true);
+    expect(body.experiences).toEqual([
+      { id: "e1", status: "ACTIVE", canDelete: false },
+      { id: "e2", status: "DRAFT", canDelete: true },
+    ]);
+  });
+
   it("applies a comma-separated status filter as an 'in' match for the pending tab", async () => {
     await GET(
       makeRequest("?status=PENDING_REVIEW,PENDING_TRIPPER_REVIEW"),

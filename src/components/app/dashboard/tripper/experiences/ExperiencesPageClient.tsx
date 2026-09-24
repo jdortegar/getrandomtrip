@@ -140,8 +140,11 @@ export default function ExperiencesPageClient({
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  // Only deletable rows (no bookings, not in review) can join a bulk delete.
+  const deletableExperiences = experiences.filter((e) => e.canDelete);
   const allSelected =
-    experiences.length > 0 && experiences.every((e) => selectedIds.has(e.id));
+    deletableExperiences.length > 0 &&
+    deletableExperiences.every((e) => selectedIds.has(e.id));
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   useEffect(() => {
@@ -154,7 +157,7 @@ export default function ExperiencesPageClient({
     if (allSelected) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(experiences.map((e) => e.id)));
+      setSelectedIds(new Set(deletableExperiences.map((e) => e.id)));
     }
   }
 
@@ -222,9 +225,18 @@ export default function ExperiencesPageClient({
         const res = await fetch(`/api/tripper/experiences/${id}`, {
           method: "DELETE",
         });
-        if (res.ok) {
-          await fetchExperiences();
-        }
+        // 409 = the server's deletion rule refused (bookings / in review).
+        setBulkFailureMessage(
+          res.ok
+            ? null
+            : res.status === 409
+              ? copy.table.deleteBlocked
+              : copy.table.deleteFailed,
+        );
+        // Refetch either way so a stale canDelete flag is corrected.
+        await fetchExperiences();
+      } catch {
+        setBulkFailureMessage(copy.table.deleteFailed);
       } finally {
         setDeletingId(null);
       }
@@ -400,6 +412,7 @@ export default function ExperiencesPageClient({
                       aria-label={copy.table.selectAll}
                       checked={allSelected}
                       className="h-4 w-4 rounded border-gray-300"
+                      disabled={deletableExperiences.length === 0}
                       onChange={toggleSelectAll}
                       ref={selectAllRef}
                       type="checkbox"
@@ -452,6 +465,7 @@ export default function ExperiencesPageClient({
                           aria-label={copy.table.selectRow}
                           checked={selectedIds.has(experience.id)}
                           className="h-4 w-4 rounded border-gray-300"
+                          disabled={!experience.canDelete}
                           onChange={() => toggleRowSelected(experience.id)}
                           type="checkbox"
                         />
@@ -554,9 +568,13 @@ export default function ExperiencesPageClient({
                           </TableIconButton>
                           <TableIconButton
                             danger
-                            disabled={isBusy}
+                            disabled={isBusy || !experience.canDelete}
                             onClick={() => handleDelete(experience.id)}
-                            title={copy.table.delete}
+                            title={
+                              experience.canDelete
+                                ? copy.table.delete
+                                : copy.table.deleteBlocked
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </TableIconButton>
