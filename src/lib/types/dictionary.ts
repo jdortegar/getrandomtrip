@@ -1,3 +1,10 @@
+export interface ExperienceRoadmapPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  discard: string;
+}
+
 export interface ExperienceRoadmapPdfCopy {
   addActivity: string;
   heading: string;
@@ -2326,6 +2333,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;

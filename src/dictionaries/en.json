@@ -1,4 +1,10 @@
 {
+  "experienceRoadmapPreview": {
+    "open": "Create experience roadmap",
+    "title": "Experience roadmap preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Trip details are editable suggestions; enter the itinerary and verify all dates.",
+    "discard": "Discard this unsaved roadmap?"
+  },
   "experienceRoadmapPdf": {
     "addActivity": "Add suggested activity",
     "heading": "Roadmap heading",

@@ -1,4 +1,10 @@
 {
+  "experienceRoadmapPreview": {
+    "open": "Crear hoja de ruta de experiencia",
+    "title": "Vista previa de hoja de ruta",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. Los datos del viaje son sugerencias editables; introduce el itinerario y verifica las fechas.",
+    "discard": "¿Descartar esta hoja de ruta sin guardar?"
+  },
   "experienceRoadmapPdf": {
     "addActivity": "Añadir actividad sugerida",
     "heading": "Título de la hoja de ruta",
