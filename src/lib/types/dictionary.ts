@@ -1,3 +1,16 @@
+export interface HotelVoucherFormCopy {
+  label: string;
+  locale: string;
+  english: string;
+  spanish: string;
+  property: string;
+  checkInTime: string;
+  checkOutTime: string;
+  submit: string;
+  invalid: string;
+  note: string;
+}
+
 export interface HotelVoucherPdfCopy {
   title: string;
   checkIn: string;
@@ -2220,6 +2233,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  hotelVoucherForm: HotelVoucherFormCopy;
   hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {
     title: string;

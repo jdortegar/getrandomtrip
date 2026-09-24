@@ -1,4 +1,16 @@
 {
+  "hotelVoucherForm": {
+    "label": "Nombre del documento",
+    "locale": "Idioma del documento",
+    "english": "Inglés",
+    "spanish": "Español",
+    "property": "Nombre del alojamiento",
+    "checkInTime": "Hora de entrada",
+    "checkOutTime": "Hora de salida",
+    "submit": "Vista previa del PDF",
+    "invalid": "Revisa los campos obligatorios, las fechas y los enlaces HTTPS.",
+    "note": "Solo vista previa. Introduce declaraciones del proveedor y de pago únicamente si están verificadas."
+  },
   "hotelVoucherPdf": {
     "title": "Comprobante de alojamiento",
     "checkIn": "Entrada",

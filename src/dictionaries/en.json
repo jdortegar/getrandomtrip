@@ -1,4 +1,16 @@
 {
+  "hotelVoucherForm": {
+    "label": "Document label",
+    "locale": "Document language",
+    "english": "English",
+    "spanish": "Spanish",
+    "property": "Property name",
+    "checkInTime": "Check-in time",
+    "checkOutTime": "Check-out time",
+    "submit": "Preview PDF",
+    "invalid": "Review the required fields, dates and HTTPS links.",
+    "note": "Preview only. Enter supplier and payment statements only when verified."
+  },
   "hotelVoucherPdf": {
     "title": "Hotel voucher",
     "checkIn": "Check-in",
