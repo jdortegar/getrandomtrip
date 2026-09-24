@@ -62,6 +62,8 @@ export function AdminBlogPageClient() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Id of the post pending delete confirmation. null = modal closed.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
@@ -185,8 +187,10 @@ export function AdminBlogPageClient() {
     });
   }
 
-  function handleDelete(id: string) {
-    if (!confirm(act.deleteConfirm)) return;
+  function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
     setDeletingId(id);
     void fetch(`/api/admin/blogs/${id}`, { method: "DELETE" })
       .then((res) => {
@@ -393,7 +397,7 @@ export function AdminBlogPageClient() {
                         if (isPending) {
                           router.push(`/${locale}/dashboard/admin/blog/${item.id}`);
                         } else if (isRandomtrip) {
-                          router.push(`/${locale}/dashboard/tripper/blog/${item.id}`);
+                          router.push(`/${locale}/dashboard/admin/blog/${item.id}/edit`);
                         }
                       }}
                     >
@@ -458,7 +462,7 @@ export function AdminBlogPageClient() {
                           )}
                           {isRandomtrip && (
                             <TableIconLink
-                              href={`/${locale}/dashboard/tripper/blog/${item.id}`}
+                              href={`/${locale}/dashboard/admin/blog/${item.id}/edit`}
                               title={act.edit}
                             >
                               <Pencil className="h-4 w-4" />
@@ -467,7 +471,7 @@ export function AdminBlogPageClient() {
                           <TableIconButton
                             danger
                             disabled={isBusy || isPending}
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => setDeleteTargetId(item.id)}
                             title={isPending ? act.lockedForDeletion : act.delete}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -490,6 +494,21 @@ export function AdminBlogPageClient() {
         pageOfLabel={paginationCopy.pageOf}
         previousLabel={paginationCopy.previous}
         totalPages={totalPages}
+      />
+
+      <ConfirmModal
+        open={deleteTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTargetId(null);
+        }}
+        onConfirm={confirmDelete}
+        isConfirming={deletingId !== null}
+        icon={Trash2}
+        tone="danger"
+        title={act.deleteTitle}
+        description={act.deleteConfirm}
+        cancelLabel={copy.bulkActions.cancel}
+        confirmLabel={act.delete}
       />
 
       <ConfirmModal

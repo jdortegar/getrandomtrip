@@ -800,6 +800,7 @@
         "review": "Revisar",
         "edit": "Editar",
         "delete": "Eliminar",
+        "deleteTitle": "Eliminar post",
         "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
         "lockedForDeletion": "No se puede eliminar mientras hay una revisión pendiente"
       },
@@ -4131,6 +4132,7 @@
       "view": "Ver",
       "reviewChanges": "Ver cambios",
       "waitingReview": "Esperando revisión",
+      "deleteTitle": "Eliminar post",
       "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
       "selectAll": "Seleccionar todos los posts",
       "selectRow": "Seleccionar post",

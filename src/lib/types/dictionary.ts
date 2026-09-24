@@ -332,6 +332,7 @@ export interface TripperBlogsDict {
   table: {
     actions: string;
     delete: string;
+    deleteTitle: string;
     deleteConfirm: string;
     edit: string;
     format: string;
@@ -1613,6 +1614,7 @@ export interface AdminPagesDict {
       review: string;
       edit: string;
       delete: string;
+      deleteTitle: string;
       deleteConfirm: string;
       lockedForDeletion: string;
     };
