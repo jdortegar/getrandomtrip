@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
           travelType: true,
           excuseKey: true,
           level: true,
-        label: true,
+          label: true,
           format: true,
           status: true,
           isActive: true,
