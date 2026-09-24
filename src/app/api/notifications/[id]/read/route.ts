@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseNotificationAudience } from "@/lib/notifications/list-query";
 
 export async function PATCH(
-  _request: NextRequest,
+  request: NextRequest,
   props: { params: Promise<{ id: string }> },
 ) {
   const session = await getServerSession(authOptions);
@@ -15,18 +16,42 @@ export async function PATCH(
 
   const { id } = await props.params;
 
-  const existing = await prisma.notification.findFirst({
-    where: { id, userId: session.user.id },
+  const rawBody = await request.text();
+  let isRead = true;
+
+  if (rawBody) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+    }
+
+    if (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      "isRead" in parsed
+    ) {
+      const value = (parsed as { isRead: unknown }).isRead;
+      if (typeof value !== "boolean") {
+        return NextResponse.json({ error: "Invalid body" }, { status: 400 });
+      }
+      isRead = value;
+    }
+  }
+
+  const audience = parseNotificationAudience(
+    request.nextUrl.searchParams.get("audience"),
+  );
+
+  const { count } = await prisma.notification.updateMany({
+    where: { id, userId: session.user.id, ...(audience && { audience }) },
+    data: { isRead },
   });
 
-  if (!existing) {
+  if (count === 0) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const notification = await prisma.notification.update({
-    where: { id },
-    data: { isRead: true },
-  });
-
-  return NextResponse.json({ notification });
+  return NextResponse.json({ success: true, isRead });
 }

@@ -15,6 +15,9 @@ vi.mock("@/lib/prisma", () => ({
   prisma: {
     notification: {
       deleteMany: vi.fn(),
+      findFirst: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -30,6 +33,12 @@ function makeDeleteRequest(id: string): NextRequest {
   return new NextRequest(`http://localhost/api/notifications/${id}`, {
     method: "DELETE",
   });
+}
+
+function makeGetRequest(id: string, audience?: string): NextRequest {
+  const url = new URL(`http://localhost/api/notifications/${id}`);
+  if (audience !== undefined) url.searchParams.set("audience", audience);
+  return new NextRequest(url, { method: "GET" });
 }
 
 describe("DELETE /api/notifications/[id]", () => {
@@ -117,5 +126,145 @@ describe("DELETE /api/notifications/[id]", () => {
     });
 
     expect(res.status).toBe(404);
+  });
+});
+
+describe("GET /api/notifications/[id]", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns 401 when there is no session", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("notif-1", "TRAVELER"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 400 when audience is missing", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("notif-1"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when audience is invalid", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("notif-1", "SUPERADMIN"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 for a cross-user id", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-2"),
+    );
+    (prisma.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(
+      makeGetRequest("notif-owned-by-user-1", "TRAVELER"),
+      { params: Promise.resolve({ id: "notif-owned-by-user-1" }) },
+    );
+    const body = await res.json();
+
+    expect(res.status).toBe(404);
+    expect(body).toEqual({ error: "Not found" });
+  });
+
+  it("returns 404 for a cross-audience id", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+    (prisma.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("notif-1", "ADMIN"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 200 { notification } shaped via toClientNotification, with zero write calls", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+    const row = {
+      id: "notif-1",
+      userId: "user-1",
+      type: "BOOKING_CONFIRMED",
+      audience: "TRAVELER",
+      isRead: false,
+      title: "Your trip is confirmed",
+      body: "See you soon!",
+      metadata: null,
+      createdAt: new Date("2026-01-15T10:00:00.000Z"),
+    };
+    (prisma.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      row,
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.GET(makeGetRequest("notif-1", "TRAVELER"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body).toEqual({
+      notification: {
+        id: "notif-1",
+        userId: "user-1",
+        type: "BOOKING_CONFIRMED",
+        audience: "TRAVELER",
+        isRead: false,
+        title: "Your trip is confirmed",
+        body: "See you soon!",
+        metadata: null,
+        createdAt: "2026-01-15T10:00:00.000Z",
+      },
+    });
+    expect(prisma.notification.update).not.toHaveBeenCalled();
+    expect(prisma.notification.updateMany).not.toHaveBeenCalled();
+    expect(prisma.notification.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it("scopes findFirst by both id, userId and audience", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+    (prisma.notification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.GET(makeGetRequest("notif-1", "TRAVELER"), {
+      params: Promise.resolve({ id: "notif-1" }),
+    });
+
+    expect(prisma.notification.findFirst).toHaveBeenCalledWith({
+      where: { id: "notif-1", userId: "user-1", audience: "TRAVELER" },
+    });
   });
 });
