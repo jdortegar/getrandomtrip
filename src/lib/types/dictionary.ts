@@ -1,4 +1,7 @@
 export interface ExperienceRoadmapPdfCopy {
+  heading: string;
+  mapUrl: string;
+  note: string;
   title: string;
   origin: string;
   destination: string;

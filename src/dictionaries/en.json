@@ -1,5 +1,8 @@
 {
   "experienceRoadmapPdf": {
+    "heading": "Roadmap heading",
+    "mapUrl": "Map URL (HTTPS)",
+    "note": "Enter your suggested itinerary. No route or travel times are calculated automatically.",
     "title": "Experience roadmap",
     "origin": "Origin",
     "destination": "Destination",
