@@ -5189,6 +5189,23 @@
       "partialFailure": "Deleted {success} of {total}. {failed} could not be deleted."
     },
     "emptyStateFiltered": "No notifications match this filter.",
+    "pane": {
+      "notFoundTitle": "Notification not found",
+      "notFoundBody": "This notification doesn't exist or isn't yours.",
+      "loadError": "We couldn't load this notification.",
+      "closeAriaLabel": "Close",
+      "markUnread": "Mark as unread",
+      "delete": "Delete",
+      "previous": "Previous",
+      "next": "Next",
+      "deleteConfirmTitle": "Delete this notification?",
+      "deleteConfirmBody": "This action cannot be undone."
+    },
+    "errors": {
+      "markReadFailed": "We couldn't mark the notification as read.",
+      "markUnreadFailed": "We couldn't mark the notification as unread.",
+      "deleteFailed": "We couldn't delete the notification."
+    },
     "types": {
       "EXPERIENCE_APPROVED": "Experience approved",
       "EXPERIENCE_REJECTED": "Experience rejected",

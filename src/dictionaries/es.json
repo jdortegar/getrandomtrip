@@ -5189,6 +5189,23 @@
       "partialFailure": "Se eliminaron {success} de {total}. No se pudieron eliminar {failed}."
     },
     "emptyStateFiltered": "No hay notificaciones que coincidan con este filtro.",
+    "pane": {
+      "notFoundTitle": "Notificación no encontrada",
+      "notFoundBody": "Esta notificación no existe o no te pertenece.",
+      "loadError": "No pudimos cargar esta notificación.",
+      "closeAriaLabel": "Cerrar",
+      "markUnread": "Marcar como no leída",
+      "delete": "Eliminar",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "deleteConfirmTitle": "¿Eliminar esta notificación?",
+      "deleteConfirmBody": "Esta acción no se puede deshacer."
+    },
+    "errors": {
+      "markReadFailed": "No pudimos marcar la notificación como leída.",
+      "markUnreadFailed": "No pudimos marcar la notificación como no leída.",
+      "deleteFailed": "No pudimos eliminar la notificación."
+    },
     "types": {
       "EXPERIENCE_APPROVED": "Experiencia aprobada",
       "EXPERIENCE_REJECTED": "Experiencia rechazada",
