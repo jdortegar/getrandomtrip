@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/experiences/new");
 
 export default async function NewExperiencePage(props: {
   params: Promise<{ locale: string }>;

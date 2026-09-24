@@ -13,6 +13,9 @@ import type {
   ActivityEntry,
   ItineraryDayEntry,
 } from "@/types/tripper";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/experiences/x/review-copy");
 
 export default async function ReviewCopyPage(props: {
   params: Promise<{ locale: string; id: string }>;

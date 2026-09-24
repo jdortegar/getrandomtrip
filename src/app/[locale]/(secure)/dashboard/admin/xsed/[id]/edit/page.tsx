@@ -7,6 +7,9 @@ import type { XsedDropDraft, XsedDropStatus } from "@/types/xsed";
 import { EMPTY_XSED_DRAFT } from "@/types/xsed";
 import { normalizeXsedDraft } from "@/lib/helpers/xsed-form";
 import { XsedDropShell } from "@/components/app/dashboard/admin/xsed/XsedDropShell";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/xsed/x/edit");
 
 function toDateInput(d: Date | null | undefined): string {
   if (!d) return "";

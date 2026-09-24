@@ -1,6 +1,9 @@
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { NewExperienceShell } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/experiences/new");
 
 export default async function NewAdminExperiencePage(props: {
   params: Promise<{ locale: string }>;

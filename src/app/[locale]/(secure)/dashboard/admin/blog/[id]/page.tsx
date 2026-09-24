@@ -8,6 +8,9 @@ import { hasLocale } from "@/lib/i18n/config";
 import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
 import { AdminBlogReviewClient } from "./AdminBlogReviewClient";
 import type { BlogPost } from "@/types/blog";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/blog/x");
 
 export default async function AdminBlogReviewPage(props: {
   params: Promise<{ locale: string; id: string }>;

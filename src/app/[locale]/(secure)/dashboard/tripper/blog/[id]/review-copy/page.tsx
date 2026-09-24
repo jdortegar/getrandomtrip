@@ -8,6 +8,9 @@ import { hasLocale } from "@/lib/i18n/config";
 import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
 import { TripperBlogReviewCopyClient } from "./TripperBlogReviewCopyClient";
 import type { BlogPost } from "@/types/blog";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/blog/x/review-copy");
 
 export default async function BlogReviewCopyPage(props: {
   params: Promise<{ locale: string; id: string }>;

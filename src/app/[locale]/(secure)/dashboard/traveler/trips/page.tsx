@@ -2,6 +2,9 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import Section from "@/components/layout/Section";
 import { TravelerTripsPageClient } from "@/components/app/dashboard/traveler/TravelerTripsPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/traveler/trips");
 
 export default async function TravelerTripsPage(props: {
   params: Promise<{ locale: string }>;

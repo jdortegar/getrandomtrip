@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { computeAdminOverviewStats } from "@/lib/admin/overview";
 import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import { AdminHomeContent } from "./AdminHomeContent";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin");
 
 export default async function AdminHomePage(props: {
   params: Promise<{ locale: string }>;
