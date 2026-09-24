@@ -2352,6 +2352,7 @@ export interface ImageEditorDict {
 export interface MarketingDictionary {
   experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
   xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
+  documentDraftEditor: { save: string; close: string; discard: string; note: string };
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;

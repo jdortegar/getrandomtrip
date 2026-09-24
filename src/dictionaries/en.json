@@ -15,6 +15,12 @@
     "time": "Suggested time",
     "map": "Open interactive map"
   },
+  "documentDraftEditor": {
+    "save": "Save draft",
+    "close": "Close draft",
+    "discard": "Discard unsaved draft changes?",
+    "note": "Drafts are private and are not attached or emailed. You can save incomplete fields; PDF preview requires complete content."
+  },
   "xsedRoadmapPreview": {
     "open": "Create XSED roadmap preview",
     "title": "XSED roadmap preview",

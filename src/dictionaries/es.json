@@ -15,6 +15,12 @@
     "time": "Horario sugerido",
     "map": "Abrir mapa interactivo"
   },
+  "documentDraftEditor": {
+    "save": "Guardar borrador",
+    "close": "Cerrar borrador",
+    "discard": "¿Descartar los cambios sin guardar del borrador?",
+    "note": "Los borradores son privados y no se adjuntan ni se envían por correo. Podés guardar campos incompletos; la vista previa PDF requiere contenido completo."
+  },
   "xsedRoadmapPreview": {
     "open": "Crear vista previa de hoja de ruta XSED",
     "title": "Vista previa de hoja de ruta XSED",
