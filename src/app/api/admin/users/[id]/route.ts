@@ -6,6 +6,7 @@ import {
   buildUserRoleUpdate,
   parseUserRolesPayload,
 } from "@/lib/auth/prismaUserRoles";
+import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
 import { generateUniqueTripperSlug } from "@/lib/db/tripper-queries";
 import {
@@ -21,12 +22,12 @@ export async function DELETE(
   _request: NextRequest,
   props: { params: Promise<{ id: string }> },
 ) {
-  const params = await props.params;
+  const headers = { "Cache-Control": "private, no-store" };
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
     }
 
     const caller = await prisma.user.findUnique({
@@ -35,13 +36,14 @@ export async function DELETE(
     });
 
     if (!caller || !hasRoleAccess(caller, "admin")) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403, headers });
     }
 
+    const params = await props.params;
     if (params.id === caller.id) {
       return NextResponse.json(
         { error: "Cannot delete your own account" },
-        { status: 400 },
+        { status: 400, headers },
       );
     }
 
@@ -51,7 +53,7 @@ export async function DELETE(
     });
 
     if (!target) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404, headers });
     }
 
     if (target.roles.includes("ADMIN")) {
@@ -61,19 +63,23 @@ export async function DELETE(
       if (adminCount <= 1) {
         return NextResponse.json(
           { error: "Cannot delete the last admin" },
-          { status: 400 },
+          { status: 400, headers },
         );
       }
     }
 
-    await prisma.user.delete({ where: { id: params.id } });
+    await withDocumentCascadeCleanup(
+      prisma,
+      { kind: "account", ownerId: target.id },
+      (tx) => tx.user.delete({ where: { id: target.id } }),
+    );
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true }, { headers });
   } catch (error) {
-    console.error("[admin/users/[id]] DELETE", error);
+    const conflict = error instanceof Error && error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: conflict ? "account_conflict" : "delete_unavailable" },
+      { status: conflict ? 409 : 503, headers },
     );
   }
 }

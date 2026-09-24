@@ -225,3 +225,15 @@ describe("registerDocumentCleanup", () => {
     );
   });
 });
+it("registers known uploaded keys without prefix jobs in exact-key mode", async () => {
+  const fake = database();
+  await fake.run((tx) =>
+    register(tx, scope, facts, clock, { exactKeysOnly: true }),
+  );
+  expect(fake.rows).toHaveLength(1);
+  expect(fake.rows[0].purpose).toBe("legacy-key");
+  expect(fake.rows[0].targets).toEqual({
+    keys: [facts.documents[0].storageKey],
+    prefixes: [],
+  });
+});

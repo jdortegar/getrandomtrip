@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -14,7 +14,7 @@ import es from "@/dictionaries/es.json";
 const styles = StyleSheet.create({
   page: {
     color: "#17333d",
-    fontFamily: "Helvetica",
+    fontFamily: "Barlow",
     fontSize: 10,
     padding: 28,
     paddingBottom: 45,
@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   title: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Barlow",
+    fontWeight: 700,
     fontSize: 22,
     lineHeight: 1.25,
     marginBottom: 8,
@@ -74,8 +75,13 @@ const styles = StyleSheet.create({
 interface HotelVoucherPdfProps {
   document: HotelVoucherDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
-export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
+export function HotelVoucherPdf({
+  document,
+  logo,
+  qrImages,
+}: HotelVoucherPdfProps) {
   const { data, locale } = document;
   const copy = (locale === "en" ? en : es).hotelVoucherPdf;
   const date = (value: string) =>
@@ -105,7 +111,9 @@ export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
                 style={styles.logo}
               />
             )}
-            <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 16 }}>
+            <Text
+              style={{ fontFamily: "Barlow", fontWeight: 700, fontSize: 16 }}
+            >
               RANDOMTRIP
             </Text>
           </View>
@@ -140,10 +148,14 @@ export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
               </View>
             ))}
           {data.property.locationUrl && (
-            <Link src={data.property.locationUrl}>{copy.location}</Link>
+            <PdfQrLink images={qrImages} src={data.property.locationUrl}>
+              {copy.location}
+            </PdfQrLink>
           )}
           {data.property.providerUrl && (
-            <Link src={data.property.providerUrl}>{copy.provider}</Link>
+            <PdfQrLink images={qrImages} src={data.property.providerUrl}>
+              {copy.provider}
+            </PdfQrLink>
           )}
         </View>
         {data.inclusions.length > 0 && (
@@ -153,7 +165,7 @@ export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
             </Text>
             {data.inclusions.map((item) => (
               <View key={item.id} style={styles.inclusion}>
-                <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                <Text style={{ fontFamily: "Barlow", fontWeight: 700 }}>
                   {item.title}
                 </Text>
                 {item.description && <Text>{item.description}</Text>}

@@ -1,3 +1,83 @@
+export interface XsedRoadmapPdfCopy {
+  directions: string;
+  addStop: string;
+  mapUrl: string;
+  note: string;
+  title: string;
+  origin: string;
+  destination: string;
+  departureDate: string;
+  departureTime: string;
+  drivingDuration: string;
+  stops: string;
+  date: string;
+  time: string;
+  map: string;
+}
+
+export interface ExperienceRoadmapPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  discard: string;
+}
+
+export interface ExperienceRoadmapPdfCopy {
+  addActivity: string;
+  heading: string;
+  mapUrl: string;
+  note: string;
+  title: string;
+  origin: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  duration: string;
+  activities: string;
+  date: string;
+  time: string;
+  map: string;
+}
+
+export interface DinnerVoucherPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  discard: string;
+}
+
+export interface DinnerVoucherPdfCopy {
+  addItem: string;
+  guests: string;
+  restaurantName: string;
+  title: string;
+  date: string;
+  time: string;
+  service: string;
+  menu: string;
+  conditions: string;
+  provider: string;
+}
+
+export interface ActivityVoucherPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  discard: string;
+}
+
+export interface ActivityVoucherPdfCopy {
+  addItem: string;
+  providerName: string;
+  provider: string;
+  title: string;
+  participants: string;
+  date: string;
+  time: string;
+  program: string;
+  recommendations: string;
+}
+
 export interface HotelVoucherPreviewCopy {
   open: string;
   title: string;
@@ -14,6 +94,7 @@ export interface HotelVoucherPreviewCopy {
 }
 
 export interface HotelVoucherFormCopy {
+  errors: Record<string, string> & { invalid: string };
   add: string;
   remove: string;
   up: string;
@@ -2270,8 +2351,19 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
+  xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
+  documentDraftDelivery: { memoryNotice: string; storage_authorization: string; preview: string; saveFirst: string; attach: string; replace: string; confirmReplace: string; view: string; draft: string; attached: string; unpublished: string; reset: string; resetConfirm: string; attach_in_progress: string; attach_request_expired: string; attach_request_mismatch: string; replacement_required: string; replacement_mismatch: string; preview_conflict: string; attachment_missing: string; unavailable: string };
+  documentDraftPanel: { generate: string; sourceNote: string; delete: string; deleteConfirm: string; title: string; load: string; template: string; provider: string; none: string; create: string; pending: string; conflict: string; reload: string; error: string; saved: string };
+  documentDraftEditor: { save: string; close: string; discard: string; note: string };
+  dinnerVoucherPreview: DinnerVoucherPreviewCopy;
+  activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;
   hotelVoucherForm: HotelVoucherFormCopy;
+  xsedRoadmapPdf: XsedRoadmapPdfCopy;
+  experienceRoadmapPdf: ExperienceRoadmapPdfCopy;
+  dinnerVoucherPdf: DinnerVoucherPdfCopy;
+  activityVoucherPdf: ActivityVoucherPdfCopy;
   hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {
     title: string;

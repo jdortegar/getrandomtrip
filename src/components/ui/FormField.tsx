@@ -4,6 +4,7 @@ import * as React from "react";
 import type { ReactNode } from "react";
 import { ChevronDown, Eye, EyeOff } from "lucide-react";
 
+import { useFieldValidation } from "./FormValidationScope";
 import { cn } from "@/lib/utils";
 import {
   PeekToggleButton,
@@ -27,6 +28,11 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
     { className, id, label, peek, placeholder, type, value, ...inputProps },
     ref,
   ) {
+    const validation = useFieldValidation(
+      inputProps.name,
+      id,
+      inputProps["aria-describedby"],
+    );
     const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
     const isPasswordField = type === "password";
     const resolvedType = isPasswordField
@@ -58,6 +64,7 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             type={resolvedType}
             value={displayValue}
             {...inputProps}
+            {...(validation.error ? validation.attributes : {})}
           />
           {isPasswordField ? (
             <button
@@ -75,6 +82,11 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
           ) : null}
           {showPeek ? <PeekToggleButton peek={peek} position="input" /> : null}
         </div>
+        {validation.error && (
+          <p className="text-red-700 text-sm" id={validation.errorId}>
+            {validation.error}
+          </p>
+        )}
       </div>
     );
   },
@@ -98,6 +110,11 @@ export const FormSelectField = React.forwardRef<
   { children, className, id, label, ...selectProps },
   ref,
 ) {
+  const validation = useFieldValidation(
+    selectProps.name,
+    id,
+    selectProps["aria-describedby"],
+  );
   return (
     <div className="flex flex-col gap-2" data-component="FormSelectField">
       <label className={formLabelClass} htmlFor={id}>
@@ -113,6 +130,7 @@ export const FormSelectField = React.forwardRef<
           id={id}
           ref={ref}
           {...selectProps}
+          {...(validation.error ? validation.attributes : {})}
         >
           {children}
         </select>
@@ -121,6 +139,11 @@ export const FormSelectField = React.forwardRef<
           className="absolute -translate-y-1/2 h-5 pointer-events-none right-4 top-1/2 w-5 text-gray-500"
         />
       </div>
+      {validation.error && (
+        <p className="text-red-700 text-sm" id={validation.errorId}>
+          {validation.error}
+        </p>
+      )}
     </div>
   );
 });
