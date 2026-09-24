@@ -43,6 +43,7 @@ const findUnique = vi.fn();
 const query = vi.fn();
 const create = vi.fn();
 const update = vi.fn();
+const replace = vi.fn();
 const events: string[] = [];
 beforeEach(() => {
   vi.resetAllMocks();
@@ -56,7 +57,7 @@ beforeEach(() => {
       events.push("owner-trip-draft");
       return work({
         tripDocumentDraft: { findUnique, update },
-        tripDocument: { create },
+        tripDocument: { create, update: replace },
         $queryRaw: query,
       } as never);
     },
@@ -157,4 +158,79 @@ it("reconciles ambiguous commit using retained receipt and surviving link", asyn
     documentId: "document",
     status: "retained",
   });
+});
+
+it("replaces only the explicitly linked stable document without deleting old bytes", async () => {
+  findUnique.mockResolvedValue({ ...draft, documentId: "document" });
+  query.mockResolvedValue([
+    { id: "document", tripRequestId: "trip", storageKey: "old-key" },
+  ]);
+  expect(
+    await publishDocumentDraft(db, { ...input, replaceDocumentId: "document" }),
+  ).toEqual({ documentId: "document", status: "adopted" });
+  expect(create).not.toHaveBeenCalled();
+  expect(replace).toHaveBeenCalledWith({
+    where: { id: "document" },
+    data: {
+      label: "Voucher",
+      country: "AR",
+      storageKey: receipt.key,
+      mimeType: "application/pdf",
+      originalFilename: "document.pdf",
+      sizeBytes: 4,
+      uploadedById: "admin",
+    },
+  });
+  expect(update).toHaveBeenCalledWith({
+    where: { id: "draft" },
+    data: {
+      documentId: "document",
+      publishedRevision: 2,
+      publishedPreviewId: "preview",
+    },
+  });
+});
+it.each(["wrong", ""])(
+  "rejects mismatched replacement confirmation %s even on retained retries",
+  async (replaceDocumentId) => {
+    findUnique.mockResolvedValue({ ...draft, documentId: "document" });
+    query.mockResolvedValue([{ id: "document", tripRequestId: "trip" }]);
+    vi.mocked(reconcileDocumentCandidate).mockResolvedValue("retained");
+    await expect(
+      publishDocumentDraft(db, { ...input, replaceDocumentId }),
+    ).rejects.toThrow("DOCUMENT_REPLACEMENT_MISMATCH");
+    expect(replace).not.toHaveBeenCalled();
+  },
+);
+it("old retained replacement retry never restores superseded bytes", async () => {
+  findUnique.mockResolvedValue({
+    ...draft,
+    documentId: "document",
+    revision: 9,
+    previewId: "latest",
+  });
+  query.mockResolvedValue([
+    { id: "document", tripRequestId: "trip", storageKey: "latest-key" },
+  ]);
+  vi.mocked(reconcileDocumentCandidate).mockResolvedValue("retained");
+  expect(
+    await publishDocumentDraft(db, { ...input, replaceDocumentId: "document" }),
+  ).toEqual({ documentId: "document", status: "retained" });
+  expect(replace).not.toHaveBeenCalled();
+  expect(update).not.toHaveBeenCalled();
+});
+it("rejects replacement after link deletion or with changed preview hash", async () => {
+  await expect(
+    publishDocumentDraft(db, { ...input, replaceDocumentId: "document" }),
+  ).rejects.toThrow("DOCUMENT_REPLACEMENT_MISMATCH");
+  findUnique.mockResolvedValue({
+    ...draft,
+    documentId: "document",
+    previewHash: "b".repeat(64),
+  });
+  query.mockResolvedValue([{ id: "document", tripRequestId: "trip" }]);
+  await expect(
+    publishDocumentDraft(db, { ...input, replaceDocumentId: "document" }),
+  ).rejects.toThrow("DOCUMENT_PUBLICATION_CONFLICT");
+  expect(replace).not.toHaveBeenCalled();
 });
