@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import type { ExperienceRoadmapDocument } from "@/lib/types/ExperienceRoadmap";
 import type {
@@ -32,7 +32,6 @@ export function ExperienceRoadmapForm({
   submitting,
   value,
 }: ExperienceRoadmapFormProps) {
-  const [invalid, setInvalid] = useState(false);
   const fields = [
     ["origin", roadmapCopy.origin, "text", true],
     ["destination", roadmapCopy.destination, "text", true],
@@ -42,21 +41,21 @@ export function ExperienceRoadmapForm({
     ["heading", roadmapCopy.heading, "text", true],
     ["mapUrl", roadmapCopy.mapUrl, "url", false],
   ] as const;
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (submitting) return;
-    const parsed = parseExperienceRoadmap(value, "generation");
-    setInvalid(!parsed.ok);
-    if (parsed.ok) onSubmit(parsed.value);
-  }
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <DocumentValidationForm
+      copy={copy}
+      onSubmit={onSubmit}
+      parse={parseExperienceRoadmap}
+      submitting={submitting}
+      value={value}
+    >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">
           {roadmapCopy.note}
         </legend>
         <FormField
           id="experience-label"
+          name="label"
           label={copy.label}
           maxLength={120}
           onChange={(e) => onChange({ ...value, label: e.target.value })}
@@ -65,6 +64,7 @@ export function ExperienceRoadmapForm({
         />
         <FormSelectField
           id="experience-country"
+          name="country"
           label={pdfCopy.country}
           onChange={(e) => onChange({ ...value, country: e.target.value })}
           required
@@ -79,6 +79,7 @@ export function ExperienceRoadmapForm({
         </FormSelectField>
         <FormSelectField
           id="experience-locale"
+          name="locale"
           label={copy.locale}
           onChange={(e) =>
             onChange({ ...value, locale: e.target.value as "en" | "es" })
@@ -91,6 +92,7 @@ export function ExperienceRoadmapForm({
         {fields.map(([key, label, type, required]) => (
           <FormField
             id={`experience-${key}`}
+            name={`data.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -115,11 +117,10 @@ export function ExperienceRoadmapForm({
           roadmapCopy={roadmapCopy}
           title={roadmapCopy.activities}
         />
-        {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
         </button>
       </fieldset>
-    </form>
+    </DocumentValidationForm>
   );
 }

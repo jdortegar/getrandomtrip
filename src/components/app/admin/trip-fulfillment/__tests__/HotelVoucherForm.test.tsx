@@ -112,6 +112,7 @@ it("blocks invalid required fields and reversed dates", () => {
   act(() => root.render(<Harness />));
   edit("hotel-holder", "");
   edit("hotel-checkOutDate", "2026-09-01");
+  edit("hotel-property-providerUrl", "http://example.com");
   act(() =>
     container
       .querySelector("form")!
@@ -121,6 +122,19 @@ it("blocks invalid required fields and reversed dates", () => {
   expect(container.querySelector("[role=alert]")?.textContent).toBe(
     en.hotelVoucherForm.invalid,
   );
+  expect(container.querySelector("#hotel-holder-error")?.textContent).toBe(
+    en.hotelVoucherForm.errors.required,
+  );
+  expect(
+    container.querySelector("#hotel-checkOutDate-error")?.textContent,
+  ).toBe(en.hotelVoucherForm.errors.invalid_range);
+  expect(
+    container.querySelector("#hotel-property-providerUrl-error")?.textContent,
+  ).toBe(en.hotelVoucherForm.errors.invalid_url);
+  edit("hotel-property-providerUrl", "https://example.com");
+  expect(
+    container.querySelector("#hotel-property-providerUrl-error"),
+  ).toBeNull();
 });
 it("disables editing and submission while preview is pending", () => {
   act(() => root.render(<Harness busy />));

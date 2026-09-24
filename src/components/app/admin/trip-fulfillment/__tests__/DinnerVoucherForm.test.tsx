@@ -279,3 +279,35 @@ it("does not edit menu while a preview is busy", () => {
   act(() => menuButton("data-add-menu").click());
   expect(menuRows()).toHaveLength(1);
 });
+it("associates menu item errors with their current parser paths", () => {
+  act(() =>
+    root.render(
+      <Harness
+        value={{ ...initial, data: { ...initial.data, menuItems: [] } }}
+      />,
+    ),
+  );
+  act(() => menuButton("data-add-menu").click());
+  act(() =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  const title = container.querySelector<HTMLInputElement>("[data-menu-title]")!;
+  expect(title.getAttribute("name")).toBe("data.menuItems.0.title");
+  expect(title.getAttribute("aria-invalid")).toBe("true");
+  edit(title.id, "Dinner");
+  expect(title.hasAttribute("aria-invalid")).toBe(false);
+  act(() => menuButton("data-add-menu").click());
+  act(() => menuButton("data-menu-up", 1).click());
+  expect(
+    container
+      .querySelector('[name="data.menuItems.0.title"]')
+      ?.getAttribute("aria-invalid"),
+  ).toBe("true");
+  expect(
+    container
+      .querySelector('[name="data.menuItems.1.title"]')
+      ?.hasAttribute("aria-invalid"),
+  ).toBe(false);
+});

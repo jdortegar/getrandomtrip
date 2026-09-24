@@ -1,5 +1,6 @@
 "use client";
 
+import { DocumentValidationGroup } from "./DocumentValidationGroup";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { VoucherItem } from "@/lib/types/VoucherData";
@@ -28,7 +29,11 @@ export function ActivityVoucherItems({
     );
   }
   return (
-    <fieldset className="flex flex-col gap-3" data-item-section={section}>
+    <DocumentValidationGroup
+      name={`data.${section}`}
+      className="flex flex-col gap-3"
+      data-item-section={section}
+    >
       <legend>{title}</legend>
       {items.map((item, index) => (
         <div
@@ -38,6 +43,7 @@ export function ActivityVoucherItems({
           <FormField
             data-item-title
             id={`activity-${section}-${item.id}`}
+            name={`data.${section}.${index}.title`}
             label={`${title} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { title: e.target.value })}
@@ -46,6 +52,7 @@ export function ActivityVoucherItems({
           />
           <TextAreaInput
             id={`activity-${section}-description-${item.id}`}
+            name={`data.${section}.${index}.description`}
             label={`${copy.description} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { description: e.target.value })}
@@ -91,6 +98,6 @@ export function ActivityVoucherItems({
       >
         {addLabel}
       </button>
-    </fieldset>
+    </DocumentValidationGroup>
   );
 }

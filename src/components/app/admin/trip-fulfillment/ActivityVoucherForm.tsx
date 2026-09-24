@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { ActivityVoucherDocument } from "@/lib/types/ActivityVoucher";
@@ -34,7 +34,6 @@ export function ActivityVoucherForm({
   submitting,
   value,
 }: ActivityVoucherFormProps) {
-  const [invalid, setInvalid] = useState(false);
   const data = value.data;
   const fields = [
     ["holder", pdfCopy.holder, "text", false],
@@ -56,19 +55,19 @@ export function ActivityVoucherForm({
   function updateData(patch: Partial<typeof data>) {
     onChange({ ...value, data: { ...data, ...patch } });
   }
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (submitting) return;
-    const parsed = parseActivityVoucher(value, "generation");
-    setInvalid(!parsed.ok);
-    if (parsed.ok) onSubmit(parsed.value);
-  }
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <DocumentValidationForm
+      copy={copy}
+      onSubmit={onSubmit}
+      parse={parseActivityVoucher}
+      submitting={submitting}
+      value={value}
+    >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">{copy.note}</legend>
         <FormField
           id="activity-label"
+          name="label"
           label={copy.label}
           maxLength={120}
           onChange={(e) => onChange({ ...value, label: e.target.value })}
@@ -77,6 +76,7 @@ export function ActivityVoucherForm({
         />
         <FormSelectField
           id="activity-country"
+          name="country"
           label={pdfCopy.country}
           onChange={(e) => onChange({ ...value, country: e.target.value })}
           required
@@ -91,6 +91,7 @@ export function ActivityVoucherForm({
         </FormSelectField>
         <FormSelectField
           id="activity-locale"
+          name="locale"
           label={copy.locale}
           onChange={(e) =>
             onChange({ ...value, locale: e.target.value as "en" | "es" })
@@ -103,6 +104,7 @@ export function ActivityVoucherForm({
         {fields.map(([key, label, type, required]) => (
           <FormField
             id={`activity-${key}`}
+            name={`data.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -115,6 +117,7 @@ export function ActivityVoucherForm({
         {providerFields.map(([key, label, type, required]) => (
           <FormField
             id={`activity-provider-${key}`}
+            name={`data.provider.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -130,6 +133,7 @@ export function ActivityVoucherForm({
         ))}
         <TextAreaInput
           id="activity-recommendations"
+          name="data.recommendations"
           label={activityCopy.recommendations}
           maxLength={4000}
           onChange={(e) => updateData({ recommendations: e.target.value })}
@@ -151,11 +155,10 @@ export function ActivityVoucherForm({
             />
           );
         })}
-        {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
         </button>
       </fieldset>
-    </form>
+    </DocumentValidationForm>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { DocumentValidationGroup } from "./DocumentValidationGroup";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { XsedRoadmapStop } from "@/lib/types/XsedRoadmap";
@@ -31,7 +32,11 @@ export function XsedRoadmapStops({
     );
   }
   return (
-    <fieldset className="flex flex-col gap-3" disabled={disabled}>
+    <DocumentValidationGroup
+      name={`data.stops`}
+      className="flex flex-col gap-3"
+      disabled={disabled}
+    >
       <legend>{title}</legend>
       {items.map((item, index) => (
         <div
@@ -41,6 +46,7 @@ export function XsedRoadmapStops({
           <FormField
             data-stop-title
             id={`xsed-stop-${item.id}`}
+            name={`data.stops.${index}.title`}
             label={`${title} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { title: e.target.value })}
@@ -50,6 +56,7 @@ export function XsedRoadmapStops({
           <TextAreaInput
             data-stop-directions
             id={`xsed-stop-directions-${item.id}`}
+            name={`data.stops.${index}.directions`}
             label={`${roadmapCopy.directions} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { directions: e.target.value })}
@@ -60,6 +67,7 @@ export function XsedRoadmapStops({
             <FormField
               {...{ [`data-stop-${key}`]: true }}
               id={`xsed-stop-${key}-${item.id}`}
+              name={`data.stops.${index}.${key}`}
               key={key}
               label={`${roadmapCopy[key]} ${index + 1}`}
               onChange={(event) => edit(item.id, { [key]: event.target.value })}
@@ -111,6 +119,6 @@ export function XsedRoadmapStops({
       >
         {roadmapCopy.addStop}
       </button>
-    </fieldset>
+    </DocumentValidationGroup>
   );
 }

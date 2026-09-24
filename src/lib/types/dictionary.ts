@@ -94,6 +94,7 @@ export interface HotelVoucherPreviewCopy {
 }
 
 export interface HotelVoucherFormCopy {
+  errors: Record<string, string> & { invalid: string };
   add: string;
   remove: string;
   up: string;

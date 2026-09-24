@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { DocumentValidationGroup } from "./DocumentValidationGroup";
+import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { HotelVoucherDocument } from "@/lib/types/HotelVoucher";
@@ -30,7 +31,6 @@ export function HotelVoucherForm({
   submitting,
   value,
 }: HotelVoucherFormProps) {
-  const [invalid, setInvalid] = useState(false);
   const data = value.data;
   const fields = [
     ["holder", pdfCopy.holder, "text", true],
@@ -54,19 +54,19 @@ export function HotelVoucherForm({
   function updateData(patch: Partial<typeof data>) {
     onChange({ ...value, data: { ...data, ...patch } });
   }
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (submitting) return;
-    const parsed = parseHotelVoucher(value, "generation");
-    setInvalid(!parsed.ok);
-    if (parsed.ok) onSubmit(parsed.value);
-  }
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <DocumentValidationForm
+      copy={copy}
+      onSubmit={onSubmit}
+      parse={parseHotelVoucher}
+      submitting={submitting}
+      value={value}
+    >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">{copy.note}</legend>
         <FormField
           id="hotel-label"
+          name="label"
           label={copy.label}
           maxLength={120}
           onChange={(e) => onChange({ ...value, label: e.target.value })}
@@ -75,6 +75,7 @@ export function HotelVoucherForm({
         />
         <FormSelectField
           id="hotel-country"
+          name="country"
           label={pdfCopy.country}
           onChange={(e) => onChange({ ...value, country: e.target.value })}
           required
@@ -89,6 +90,7 @@ export function HotelVoucherForm({
         </FormSelectField>
         <FormSelectField
           id="hotel-locale"
+          name="locale"
           label={copy.locale}
           onChange={(e) =>
             onChange({ ...value, locale: e.target.value as "en" | "es" })
@@ -101,6 +103,7 @@ export function HotelVoucherForm({
         {fields.map(([key, label, type, required]) => (
           <FormField
             id={`hotel-${key}`}
+            name={`data.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -113,6 +116,7 @@ export function HotelVoucherForm({
         {propertyFields.map(([key, label, type, required]) => (
           <FormField
             id={`hotel-property-${key}`}
+            name={`data.property.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -128,12 +132,16 @@ export function HotelVoucherForm({
         ))}
         <TextAreaInput
           id="hotel-instructions"
+          name="data.instructions"
           label={pdfCopy.instructions}
           maxLength={4000}
           onChange={(e) => updateData({ instructions: e.target.value })}
           value={data.instructions ?? ""}
         />
-        <fieldset className="flex flex-col gap-3">
+        <DocumentValidationGroup
+          className="flex flex-col gap-3"
+          name="data.inclusions"
+        >
           <legend>{pdfCopy.inclusions}</legend>
           {data.inclusions.map((item, index) => (
             <div
@@ -143,6 +151,7 @@ export function HotelVoucherForm({
               <FormField
                 data-inclusion-title
                 id={`hotel-inclusion-${item.id}`}
+                name={`data.inclusions.${index}.title`}
                 label={`${copy.itemTitle} ${index + 1}`}
                 maxLength={4000}
                 onChange={(e) =>
@@ -159,6 +168,7 @@ export function HotelVoucherForm({
               />
               <TextAreaInput
                 id={`hotel-description-${item.id}`}
+                name={`data.inclusions.${index}.description`}
                 label={`${copy.description} ${index + 1}`}
                 maxLength={4000}
                 onChange={(e) =>
@@ -219,12 +229,11 @@ export function HotelVoucherForm({
           >
             {copy.add}
           </button>
-        </fieldset>
-        {invalid && <p role="alert">{copy.invalid}</p>}
+        </DocumentValidationGroup>
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
         </button>
       </fieldset>
-    </form>
+    </DocumentValidationForm>
   );
 }

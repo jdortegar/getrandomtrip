@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import type { XsedRoadmapDocument } from "@/lib/types/XsedRoadmap";
 import type {
@@ -32,7 +32,6 @@ export function XsedRoadmapForm({
   submitting,
   value,
 }: XsedRoadmapFormProps) {
-  const [invalid, setInvalid] = useState(false);
   const fields = [
     ["origin", roadmapCopy.origin, "text", true],
     ["destination", roadmapCopy.destination, "text", true],
@@ -41,21 +40,21 @@ export function XsedRoadmapForm({
     ["drivingDuration", roadmapCopy.drivingDuration, "text", true],
     ["mapUrl", roadmapCopy.mapUrl, "url", false],
   ] as const;
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (submitting) return;
-    const parsed = parseXsedRoadmap(value, "generation");
-    setInvalid(!parsed.ok);
-    if (parsed.ok) onSubmit(parsed.value);
-  }
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <DocumentValidationForm
+      copy={copy}
+      onSubmit={onSubmit}
+      parse={parseXsedRoadmap}
+      submitting={submitting}
+      value={value}
+    >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">
           {roadmapCopy.note}
         </legend>
         <FormField
           id="xsed-label"
+          name="label"
           label={copy.label}
           maxLength={120}
           onChange={(e) => onChange({ ...value, label: e.target.value })}
@@ -64,6 +63,7 @@ export function XsedRoadmapForm({
         />
         <FormSelectField
           id="xsed-country"
+          name="country"
           label={pdfCopy.country}
           onChange={(e) => onChange({ ...value, country: e.target.value })}
           required
@@ -78,6 +78,7 @@ export function XsedRoadmapForm({
         </FormSelectField>
         <FormSelectField
           id="xsed-locale"
+          name="locale"
           label={copy.locale}
           onChange={(e) =>
             onChange({ ...value, locale: e.target.value as "en" | "es" })
@@ -90,6 +91,7 @@ export function XsedRoadmapForm({
         {fields.map(([key, label, type, required]) => (
           <FormField
             id={`xsed-${key}`}
+            name={`data.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -114,11 +116,10 @@ export function XsedRoadmapForm({
           roadmapCopy={roadmapCopy}
           title={roadmapCopy.stops}
         />
-        {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
         </button>
       </fieldset>
-    </form>
+    </DocumentValidationForm>
   );
 }

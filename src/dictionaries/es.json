@@ -137,6 +137,19 @@
     "unavailable": "La vista previa no está disponible. Inténtalo de nuevo."
   },
   "hotelVoucherForm": {
+    "errors": {
+      "invalid": "Revisa este valor.",
+      "required": "Completa este campo.",
+      "too_long": "Acorta este valor.",
+      "invalid_country": "Selecciona un país disponible.",
+      "invalid_locale": "Selecciona inglés o español.",
+      "invalid_date": "Introduce una fecha válida.",
+      "invalid_time": "Introduce una hora válida.",
+      "invalid_range": "Revisa el orden de las fechas y las fechas del viaje.",
+      "invalid_url": "Usa un enlace HTTPS sin nombre de usuario ni contraseña.",
+      "invalid_array": "Usa un máximo de 50 elementos.",
+      "duplicate_id": "Elimina el elemento duplicado y vuelve a añadirlo."
+    },
     "add": "Añadir servicio incluido",
     "remove": "Eliminar",
     "up": "Subir",

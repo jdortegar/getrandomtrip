@@ -1,5 +1,6 @@
 "use client";
 
+import { DocumentValidationGroup } from "./DocumentValidationGroup";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { SuggestedActivity } from "@/lib/types/ExperienceRoadmap";
@@ -31,7 +32,11 @@ export function ExperienceRoadmapActivities({
     );
   }
   return (
-    <fieldset className="flex flex-col gap-3" disabled={disabled}>
+    <DocumentValidationGroup
+      name={`data.activities`}
+      className="flex flex-col gap-3"
+      disabled={disabled}
+    >
       <legend>{title}</legend>
       {items.map((item, index) => (
         <div
@@ -41,6 +46,7 @@ export function ExperienceRoadmapActivities({
           <FormField
             data-stop-title
             id={`experience-stop-${item.id}`}
+            name={`data.activities.${index}.title`}
             label={`${title} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { title: e.target.value })}
@@ -50,6 +56,7 @@ export function ExperienceRoadmapActivities({
           <TextAreaInput
             data-stop-description
             id={`experience-stop-description-${item.id}`}
+            name={`data.activities.${index}.description`}
             label={`${copy.description} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { description: e.target.value })}
@@ -60,6 +67,7 @@ export function ExperienceRoadmapActivities({
             <FormField
               {...{ [`data-stop-${key}`]: true }}
               id={`experience-stop-${key}-${item.id}`}
+              name={`data.activities.${index}.${key}`}
               key={key}
               label={`${roadmapCopy[key]} ${index + 1}`}
               onChange={(event) => edit(item.id, { [key]: event.target.value })}
@@ -111,6 +119,6 @@ export function ExperienceRoadmapActivities({
       >
         {roadmapCopy.addActivity}
       </button>
-    </fieldset>
+    </DocumentValidationGroup>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { DinnerVoucherDocument } from "@/lib/types/DinnerVoucher";
@@ -34,7 +34,6 @@ export function DinnerVoucherForm({
   submitting,
   value,
 }: DinnerVoucherFormProps) {
-  const [invalid, setInvalid] = useState(false);
   const data = value.data;
   const fields = [
     ["holder", pdfCopy.holder, "text", false],
@@ -57,19 +56,19 @@ export function DinnerVoucherForm({
   function updateData(patch: Partial<typeof data>) {
     onChange({ ...value, data: { ...data, ...patch } });
   }
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (submitting) return;
-    const parsed = parseDinnerVoucher(value, "generation");
-    setInvalid(!parsed.ok);
-    if (parsed.ok) onSubmit(parsed.value);
-  }
   return (
-    <form noValidate onSubmit={handleSubmit}>
+    <DocumentValidationForm
+      copy={copy}
+      onSubmit={onSubmit}
+      parse={parseDinnerVoucher}
+      submitting={submitting}
+      value={value}
+    >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">{copy.note}</legend>
         <FormField
           id="dinner-label"
+          name="label"
           label={copy.label}
           maxLength={120}
           onChange={(e) => onChange({ ...value, label: e.target.value })}
@@ -78,6 +77,7 @@ export function DinnerVoucherForm({
         />
         <FormSelectField
           id="dinner-country"
+          name="country"
           label={pdfCopy.country}
           onChange={(e) => onChange({ ...value, country: e.target.value })}
           required
@@ -92,6 +92,7 @@ export function DinnerVoucherForm({
         </FormSelectField>
         <FormSelectField
           id="dinner-locale"
+          name="locale"
           label={copy.locale}
           onChange={(e) =>
             onChange({ ...value, locale: e.target.value as "en" | "es" })
@@ -104,6 +105,7 @@ export function DinnerVoucherForm({
         {fields.map(([key, label, type, required]) => (
           <FormField
             id={`dinner-${key}`}
+            name={`data.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -116,6 +118,7 @@ export function DinnerVoucherForm({
         {restaurantFields.map(([key, label, type, required]) => (
           <FormField
             id={`dinner-restaurant-${key}`}
+            name={`data.restaurant.${key}`}
             key={key}
             label={label}
             maxLength={4000}
@@ -131,6 +134,7 @@ export function DinnerVoucherForm({
         ))}
         <TextAreaInput
           id="dinner-conditions"
+          name="data.conditions"
           label={dinnerCopy.conditions}
           maxLength={4000}
           onChange={(e) => updateData({ conditions: e.target.value })}
@@ -144,11 +148,10 @@ export function DinnerVoucherForm({
           onChange={(menuItems) => updateData({ menuItems })}
           title={dinnerCopy.menu}
         />
-        {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
         </button>
       </fieldset>
-    </form>
+    </DocumentValidationForm>
   );
 }

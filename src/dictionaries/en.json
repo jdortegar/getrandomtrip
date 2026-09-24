@@ -137,6 +137,19 @@
     "unavailable": "Preview is unavailable. Please try again."
   },
   "hotelVoucherForm": {
+    "errors": {
+      "invalid": "Check this value.",
+      "required": "Complete this field.",
+      "too_long": "Shorten this value.",
+      "invalid_country": "Choose a supported country.",
+      "invalid_locale": "Choose English or Spanish.",
+      "invalid_date": "Enter a valid date.",
+      "invalid_time": "Enter a valid time.",
+      "invalid_range": "Check the date order and trip dates.",
+      "invalid_url": "Use an HTTPS link without a username or password.",
+      "invalid_array": "Use at most 50 items.",
+      "duplicate_id": "Remove the duplicate item and add it again."
+    },
     "add": "Add inclusion",
     "remove": "Remove",
     "up": "Move up",

@@ -1,5 +1,6 @@
 "use client";
 
+import { DocumentValidationGroup } from "./DocumentValidationGroup";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { VoucherItem } from "@/lib/types/VoucherData";
@@ -28,7 +29,11 @@ export function DinnerVoucherMenu({
     );
   }
   return (
-    <fieldset className="flex flex-col gap-3" disabled={disabled}>
+    <DocumentValidationGroup
+      name={`data.menuItems`}
+      className="flex flex-col gap-3"
+      disabled={disabled}
+    >
       <legend>{title}</legend>
       {items.map((item, index) => (
         <div
@@ -38,6 +43,7 @@ export function DinnerVoucherMenu({
           <FormField
             data-menu-title
             id={`dinner-menu-${item.id}`}
+            name={`data.menuItems.${index}.title`}
             label={`${title} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { title: e.target.value })}
@@ -47,6 +53,7 @@ export function DinnerVoucherMenu({
           <TextAreaInput
             data-menu-description
             id={`dinner-menu-description-${item.id}`}
+            name={`data.menuItems.${index}.description`}
             label={`${copy.description} ${index + 1}`}
             maxLength={4000}
             onChange={(e) => edit(item.id, { description: e.target.value })}
@@ -93,6 +100,6 @@ export function DinnerVoucherMenu({
       >
         {addLabel}
       </button>
-    </fieldset>
+    </DocumentValidationGroup>
   );
 }
