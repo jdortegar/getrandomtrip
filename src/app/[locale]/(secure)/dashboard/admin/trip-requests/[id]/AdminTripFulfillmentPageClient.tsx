@@ -9,6 +9,7 @@ import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripMan
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import type { ExperienceItinerary } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { TripDocumentsTable } from "@/components/app/admin/trip-fulfillment/TripDocumentsTable";
+import { ActivityVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/ActivityVoucherPreviewAction";
 import { HotelVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/HotelVoucherPreviewAction";
 import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/AddTripDocumentForm";
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
@@ -246,6 +247,7 @@ export function AdminTripFulfillmentPageClient({
                 removingId={removingId}
               />
             </div>
+            <ActivityVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <HotelVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <AddTripDocumentForm
               copy={fulfillmentDict}

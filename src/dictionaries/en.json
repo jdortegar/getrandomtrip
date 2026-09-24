@@ -1,4 +1,10 @@
 {
+  "activityVoucherPreview": {
+    "open": "Create activity preview",
+    "title": "Activity voucher preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Buyer name and trip date are editable suggestions; verify activity details.",
+    "discard": "Discard this unsaved activity form?"
+  },
   "activityVoucherPdf": {
     "addItem": "Add item",
     "providerName": "Provider name",

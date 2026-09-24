@@ -1,3 +1,10 @@
+export interface ActivityVoucherPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  discard: string;
+}
+
 export interface ActivityVoucherPdfCopy {
   addItem: string;
   providerName: string;
@@ -2282,6 +2289,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;
   hotelVoucherForm: HotelVoucherFormCopy;
   activityVoucherPdf: ActivityVoucherPdfCopy;

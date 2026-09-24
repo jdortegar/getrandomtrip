@@ -1,4 +1,10 @@
 {
+  "activityVoucherPreview": {
+    "open": "Crear vista previa de actividad",
+    "title": "Vista previa del comprobante de actividad",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. El nombre del comprador y la fecha del viaje son sugerencias editables; verifica los datos de la actividad.",
+    "discard": "¿Descartar este formulario de actividad sin guardar?"
+  },
   "activityVoucherPdf": {
     "addItem": "Añadir elemento",
     "providerName": "Nombre del proveedor",
