@@ -46,7 +46,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 2.2c2b | Caller-transaction immutable tombstone registration; retry identity/collision/rollback tests, no candidate overwrite or schedule reset. |
 | [x] 2.2d | D/cleanup.ts: exact-key tombstone execution after parent deletion; retain after absence, test late PUT/successful SDK retry. |
 | Superseded 2.2e | Generated prefix enumeration replaced by durable pre-registered exact-key ledger (design amendment2026-09-24); blocked prefix WIP remains stashed. |
-| [ ] 2.3 | netlify/functions/: authenticated hourly exact-key cleanup worker; fair bounded due-job selection, capped backoff, permanent rescheduling/alerts including absent keys and deleted parents. |
+| [x] 2.3 | netlify/functions/: authenticated hourly exact-key cleanup worker; fair bounded due-job selection, capped backoff, permanent rescheduling/alerts including absent keys and deleted parents. |
 | [ ] 2.4 | D/drafts.ts: revision-controlled CRUD using 2.2a locks; live ownership/conflict tests. |
 | [ ] 2.5 | A/route.ts: authenticated creation/list; isolation. |
 | [ ] 2.6 | A/[draftId]/route.ts: read/edit authorization/concurrency. |

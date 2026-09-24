@@ -222,3 +222,9 @@ RED missing module → GREEN19contract +329parser tests (348total); nonincrement
 ## Cleanup Scope Amendment (2026-09-24)
 
 Independent audit3137/decision3139 resolved the generated-file prefix liveness blocker by using the existing durable pre-PUT exact-key ledger, not an unsupported resumable SDK cursor. Design/tasks now require fair bounded permanent rescheduling of exact-key tombstones after absence and parent deletion; known uploaded keys remain covered, historical unregistered orphans are excluded. No schema change or stash restoration occurred. Next storage unit: committed candidate registration → raw-key immutable PUT with size/hash metadata; adoption/publication follow before worker scheduling.
+
+## Authenticated Cleanup Scheduling (2026-09-24)
+
+Worker core committed `1d811334`; this adapter follows existing hourly Netlify→internal POST conventions. Internal POST requires CRON_SECRET before invoking one bounded batch, returns only counters and logs sanitized failures. Scheduled fetch rejects redirects/insecure origins and times out at25s; the API declares30s. A fetch abort does not prove remote worker cancellation: durable leases recover interrupted runs. Netlify documents scheduled production functions as non-URL-invocable with30s execution limit: https://docs.netlify.com/build/functions/scheduled-functions/ . Deployment/configuration/runtime invocation remains unverified.
+
+StrictTDD: RED two missing modules → GREEN11 adapter tests/2suites; nonincremental typecheck and scoped lint pass. Worker evidence remains61 tests/3suites in `/private/tmp/worker-green.log`; adapter logs `/private/tmp/schedule-{red,green,typecheck}.log`. No live storage/DB/server activity. Cumulative persistent implementation/task reconciliation follows as a separate documentation unit; prior milestone history is preserved.
