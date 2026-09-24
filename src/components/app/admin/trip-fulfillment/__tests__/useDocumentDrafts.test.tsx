@@ -143,3 +143,61 @@ it.each([
   await act(async () => current.list());
   expect(current.error).toBe(error);
 });
+it("deletes only the selected revision, removing editor/list without touching attachment", async () => {
+  fetchMock.mockResolvedValueOnce(
+    response({ ...draft, documentId: "attached" }),
+  );
+  await act(async () => current.open("draft"));
+  act(() => current.edit({ ...draft.document, label: "Unsaved" }));
+  fetchMock.mockResolvedValueOnce(response({ deleted: true }));
+  await act(async () => current.removeSelected());
+  expect(fetchMock.mock.calls[1][0]).toBe(
+    "/api/admin/trip-requests/trip/document-drafts/draft",
+  );
+  expect(fetchMock.mock.calls[1][1].method).toBe("DELETE");
+  expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ revision: 1 });
+  expect(current.selected).toBe(null);
+  expect(current.document).toBe(null);
+  expect(current.drafts).toEqual([]);
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+it.each([409, 503])(
+  "preserves dirty edits/list after deletion failure %s",
+  async (status) => {
+    fetchMock.mockResolvedValueOnce(response(draft));
+    await act(async () => current.open("draft"));
+    act(() => current.edit({ ...draft.document, label: "Keep edits" }));
+    fetchMock.mockResolvedValueOnce(response({}, status));
+    await act(async () => current.removeSelected());
+    expect(current.document?.label).toBe("Keep edits");
+    expect(current.drafts).toHaveLength(1);
+    expect(current.error).toBe(status === 409 ? "conflict" : "unavailable");
+  },
+);
+it("ignores deletion JSON completing after opening another draft and aborts old request", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => current.open("draft"));
+  let finish!: (value: unknown) => void;
+  fetchMock.mockResolvedValueOnce({
+    ok: true,
+    json: () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  });
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = current.removeSelected();
+  });
+  expect(current.busy).toBe(true);
+  const signal = fetchMock.mock.calls[1][1].signal;
+  fetchMock.mockResolvedValueOnce(response({ ...draft, id: "other" }));
+  await act(async () => current.open("other"));
+  await act(async () => {
+    finish({ deleted: true });
+    await pending;
+  });
+  expect(signal.aborted).toBe(true);
+  expect(current.selected?.id).toBe("other");
+  expect(current.drafts).toHaveLength(2);
+});

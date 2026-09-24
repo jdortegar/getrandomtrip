@@ -168,6 +168,19 @@ export function DocumentDraftPanel({
                 : deliveryCopy.unpublished}
         </p>
       )}
+      {drafts.selected && (
+        <button
+          className={styles.btn}
+          disabled={drafts.busy || delivery.busy}
+          onClick={() => {
+            if (window.confirm(copy.deleteConfirm))
+              void drafts.removeSelected();
+          }}
+          type="button"
+        >
+          {copy.delete}
+        </button>
+      )}
       {drafts.document && (
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
@@ -228,7 +241,7 @@ export function DocumentDraftPanel({
                 />
                 <button
                   className={styles.btn}
-                  disabled={delivery.busy || drafts.dirty}
+                  disabled={delivery.busy || drafts.busy || drafts.dirty}
                   onClick={() => {
                     if (
                       !linkedId ||

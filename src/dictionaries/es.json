@@ -37,6 +37,8 @@
     "unavailable": "No se pudo completar la solicitud. Reintentá sin cambiar su identidad."
   },
   "documentDraftPanel": {
+    "delete": "Eliminar borrador",
+    "deleteConfirm": "¿Eliminar este borrador privado y descartar los cambios sin guardar? El PDF adjunto se conservará.",
     "title": "Borradores privados de documentos",
     "load": "Actualizar borradores",
     "template": "Plantilla",

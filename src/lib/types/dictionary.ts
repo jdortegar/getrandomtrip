@@ -2353,7 +2353,7 @@ export interface MarketingDictionary {
   experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
   xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
   documentDraftDelivery: { preview: string; saveFirst: string; attach: string; replace: string; confirmReplace: string; view: string; draft: string; attached: string; unpublished: string; reset: string; resetConfirm: string; attach_in_progress: string; attach_request_expired: string; attach_request_mismatch: string; replacement_required: string; replacement_mismatch: string; preview_conflict: string; attachment_missing: string; unavailable: string };
-  documentDraftPanel: { title: string; load: string; template: string; provider: string; none: string; create: string; pending: string; conflict: string; reload: string; error: string; saved: string };
+  documentDraftPanel: { delete: string; deleteConfirm: string; title: string; load: string; template: string; provider: string; none: string; create: string; pending: string; conflict: string; reload: string; error: string; saved: string };
   documentDraftEditor: { save: string; close: string; discard: string; note: string };
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;

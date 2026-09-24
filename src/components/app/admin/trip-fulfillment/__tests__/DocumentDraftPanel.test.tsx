@@ -2,6 +2,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import { createTripDocumentSnapshot } from "@/lib/trip-documents/snapshots";
 import { DocumentDraftPanel } from "../DocumentDraftPanel";
 (
@@ -203,3 +204,44 @@ it("keeps a newly attached link across rerender and requires confirmed replaceme
   });
   expect(attached).toHaveBeenCalledTimes(2);
 });
+it.each(["en", "es"])(
+  "requires confirmed draft deletion and preserves attachment/dirty edits on cancel (%s)",
+  async (locale) => {
+    const copy = (locale === "en" ? en : es).documentDraftPanel;
+    act(() =>
+      root.render(
+        <DocumentDraftPanel
+          countryLabels={{ AR: "Argentina" }}
+          locale={locale}
+          tripId="trip"
+        />,
+      ),
+    );
+    fetchMock.mockResolvedValueOnce(
+      response({ ...draft, documentId: "attached" }),
+    );
+    await act(async () => button(copy.create).click());
+    edit("Unsaved");
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    await act(async () => button(copy.delete).click());
+    expect(confirm).toHaveBeenCalledWith(copy.deleteConfirm);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(host.querySelector<HTMLInputElement>("input")!.value).toBe(
+      "Unsaved",
+    );
+    confirm.mockReturnValue(true);
+    let finish!: (r: Response) => void;
+    fetchMock.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    await act(async () => button(copy.delete).click());
+    expect(button(copy.delete).disabled).toBe(true);
+    expect(host.textContent).toContain(copy.pending);
+    await act(async () => finish(response({ deleted: true })));
+    expect(host.querySelector("input")).toBe(null);
+    expect(host.querySelectorAll("[data-open-draft]")).toHaveLength(0);
+    expect(fetchMock.mock.calls[1][0]).toContain("/document-drafts/draft");
+  },
+);

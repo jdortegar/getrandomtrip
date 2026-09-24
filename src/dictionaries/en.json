@@ -37,6 +37,8 @@
     "unavailable": "Could not complete the request. Retry without changing the request identity."
   },
   "documentDraftPanel": {
+    "delete": "Delete draft",
+    "deleteConfirm": "Delete this private draft and discard any unsaved edits? Any attached PDF will be preserved.",
     "title": "Private document drafts",
     "load": "Refresh drafts",
     "template": "Template",

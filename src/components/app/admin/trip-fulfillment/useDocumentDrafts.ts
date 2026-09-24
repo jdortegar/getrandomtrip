@@ -152,6 +152,24 @@ export function useDocumentDrafts(tripId: string) {
       adopt,
     );
   }
+  function removeSelected() {
+    if (!selected) return Promise.resolve();
+    const id = selected.id;
+    return request<{ deleted: true }>(
+      `/${encodeURIComponent(id)}`,
+      "DELETE",
+      { revision: selected.revision },
+      (value) => {
+        if (value.deleted !== true) throw new Error("invalid_delete_response");
+        setCollection((previous) => ({
+          ...previous,
+          drafts: previous.drafts.filter((row) => row.id !== id),
+        }));
+        setSelected(null);
+        setDocument(null);
+      },
+    );
+  }
   const dirty =
     selected !== null &&
     JSON.stringify(selected.document) !== JSON.stringify(document);
@@ -168,5 +186,6 @@ export function useDocumentDrafts(tripId: string) {
     edit,
     save,
     close,
+    removeSelected,
   };
 }
