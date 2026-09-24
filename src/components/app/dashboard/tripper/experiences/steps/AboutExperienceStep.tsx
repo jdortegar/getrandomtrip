@@ -29,7 +29,7 @@ interface Props {
   changedFieldSet?: Set<string>;
   /** Builds the peek toggle for an eligible field; `undefined` when peek is not available. */
   peek?: (field: string) => FieldPeek | undefined;
-  /** XSED Drop is an admin-only experience type — offered only when true. */
+  /** XSED is an admin-only experience level — offered only when true. */
   isAdmin?: boolean;
 }
 
@@ -44,9 +44,7 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
   const locale = (params?.locale as string) ?? "es";
   const { onHeroSelect, onHeroRemove } = imageState;
   // XSED Drop is fulfilled centrally by the admin team, not authored by individual trippers.
-  const experienceTypes = getExperienceTypes(locale).filter(
-    (t) => isAdmin || t.value !== "XSED",
-  );
+  const experienceTypes = getExperienceTypes(locale);
   const experienceLevels = EXPERIENCE_LEVELS.filter(
     (l) => isAdmin || l.value !== "xsed",
   );
@@ -60,13 +58,6 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
 
   const handleLevelChange = (value: string) => {
     onChange("level", value);
-    // XSED is the type/level marker every downstream query (public drop pages,
-    // pricing, admin listing) keys off `type` containing "XSED" — keep it in
-    // sync so a level="xsed" experience is never created without it.
-    if (value === "xsed") {
-      onChange("type", ["XSED"]);
-      onChange("excuseKey", []);
-    }
     const fixedNights = MAX_NIGHTS_BY_LEVEL[value];
     if (fixedNights != null) {
       onChange("minNights", fixedNights);

@@ -3,6 +3,19 @@ import type { AccommodationEntry, ActivityEntry, ItineraryDayEntry } from "@/typ
 export type { AccommodationEntry, ActivityEntry, ItineraryDayEntry };
 export type XsedDropStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
+export interface XsedPublicationRecord {
+  type: string[];
+  level: string | null;
+  status: string;
+  isActive: boolean;
+  isReviewCopy: boolean;
+  slug: string | null;
+  titleInternal: string | null;
+  tripDate: Date | string | null;
+  destinationCity: string;
+  destinationCountry: string;
+}
+
 export interface XsedSectionPhoto {
   url: string;
   /** Freeform "PH by ..." caption — no photographer directory exists. */
@@ -72,6 +85,7 @@ export const EMPTY_XSED_SECTION: XsedSection = {
 export function normalizeXsedSection(raw: unknown): XsedSection {
   const r = (raw ?? {}) as Partial<XsedSection>;
   return {
+    ...r,
     title: r.title ?? "",
     body: r.body ?? "",
     photos: Array.isArray(r.photos) ? r.photos : [],

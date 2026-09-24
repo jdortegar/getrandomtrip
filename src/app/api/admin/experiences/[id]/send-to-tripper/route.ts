@@ -1,3 +1,6 @@
+import { isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { hasXsedDropContent } from "@/lib/xsed/publication";
+import type { XsedPublicationRecord } from "@/types/xsed";
 // ============================================================================
 // POST /api/admin/experiences/[id]/send-to-tripper
 // Computes changedFields, stores them on the copy, transitions the original
@@ -66,6 +69,10 @@ export async function POST(
         { error: "no_copy", message: "No review copy found for this experience" },
         { status: 404 },
       );
+    }
+
+    if (isXsedExperience(copy as unknown as XsedPublicationRecord) && !hasXsedDropContent(copy as unknown as XsedPublicationRecord)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
     }
 
     // Compute changed fields

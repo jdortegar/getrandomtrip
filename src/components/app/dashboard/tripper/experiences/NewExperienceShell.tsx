@@ -17,6 +17,7 @@ import {
 import { ExperienceFormContent } from "./ExperienceFormContent";
 import { ReviewActionsBar } from "./ReviewActionsBar";
 import type { ExperienceFormDraft } from "@/types/tripper";
+import { getExperienceBlogTravelTypes, normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { isExperienceTabComplete } from "@/lib/helpers/experience-form";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
@@ -153,7 +154,9 @@ export function NewExperienceShell({
   // Resolve initial tab+section from URL, validating existence and guard
   const rawTab = searchParams.get("tab");
   const rawSection = searchParams.get("section");
-  const seed = initialDraft ?? EMPTY_DRAFT;
+  const seed = initialDraft
+    ? { ...initialDraft, ...normalizeExperienceClassification(initialDraft) }
+    : EMPTY_DRAFT;
   const tabIndex = rawTab ? effectiveTabs.findIndex((t) => t.id === rawTab) : -1;
   let resolvedTabId = tabs[0]?.id ?? "about";
   if (tabIndex !== -1) {
@@ -174,7 +177,7 @@ export function NewExperienceShell({
   const [activeTab, setActiveTab] = useState(resolvedTabId);
   const [openSectionId, setOpenSectionId] = useState(resolvedSection);
   const [form, setForm] = useState<ExperienceFormDraft>(
-    initialDraft ?? EMPTY_DRAFT,
+    seed,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
@@ -350,13 +353,13 @@ export function NewExperienceShell({
       isFirstRender.current = false;
       return;
     }
-    if (isReadOnly) return; // no autosave while pending review
+    if (isReadOnly || isSubmitting) return; // no autosave during review or explicit handoff
     if (isEditingExisting) return; // editing an existing row — only an explicit finalize/save click persists
     if (!draftIdRef.current && !form.title.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(form), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [form, persistDraft, isReadOnly, isEditingExisting]);
+  }, [form, persistDraft, isReadOnly, isEditingExisting, isSubmitting]);
 
   // Keep URL in sync with active tab+section so reloads restore position
   useEffect(() => {
@@ -430,11 +433,15 @@ export function NewExperienceShell({
     setForm(EMPTY_DRAFT);
   }
 
+  const canContinueDropSetup = form.level === "xsed" &&
+    (mode === "adminCreate" || (mode === "adminEdit" && !!adminCopyId)) &&
+    !isSubmitting && !isReadOnly;
+
   const canFinalize = canRequestSubmit(mode, isSubmitting, isReadOnly, form.status);
   const canSaveChanges = isEditingLiveRandomtrip && !isSubmitting && !isReadOnly;
 
   function handleRequestSubmit() {
-    if (!canFinalize && !canSaveChanges) return;
+    if (!canFinalize && !canSaveChanges && !canContinueDropSetup) return;
     setSubmitNote(form.tripperNote ?? "");
     setShowSubmitConfirm(true);
   }
@@ -449,7 +456,14 @@ export function NewExperienceShell({
       const finalForm = await flushPendingBlobs({ ...form, tripperNote: submitNote });
 
       // Ensure the draft is persisted first (create if new, update if existing)
-      if (!draftIdRef.current) {
+      if (mode === "adminEdit" && adminCopyId) {
+        const res = await fetch(`/api/admin/experiences/${adminCopyId}/edit-copy`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(finalForm),
+        });
+        if (!res.ok) throw new Error("Failed to save review copy");
+      } else if (!draftIdRef.current) {
         const res = await fetch("/api/tripper/experiences", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -482,7 +496,7 @@ export function NewExperienceShell({
               content: finalForm.description || null,
               coverUrl: finalForm.heroImage || null,
               tags: finalForm.tags,
-              travelType: finalForm.type || null,
+              travelType: getExperienceBlogTravelTypes(finalForm),
               excuseKey: finalForm.excuseKey[0] ?? null,
               status: "draft",
               format: "article",
@@ -492,6 +506,13 @@ export function NewExperienceShell({
           // non-fatal
         }
       };
+
+      if (finalForm.level === "xsed" && (mode === "adminCreate" || mode === "adminEdit")) {
+        await maybeCreateBlogPost();
+        const setupId = mode === "adminEdit" ? adminCopyId : draftIdRef.current;
+        router.push(`/${locale}/dashboard/admin/xsed/${setupId}/edit`);
+        return;
+      }
 
       // Editing an already-live RANDOMTRIP row: the PATCH above already
       // persisted the changes. There is no PENDING_REVIEW step to enter —
@@ -608,14 +629,16 @@ export function NewExperienceShell({
   // Editing an already-live RANDOMTRIP row swaps in "Save Changes" copy
   // instead — there is nothing left to "publish".
   const resolvedFinalizeCopy =
-    isEditingLiveRandomtrip && editModeCopy
+    form.level === "xsed" && (mode === "adminCreate" || mode === "adminEdit")
+      ? dict.xsedSetup
+      : isEditingLiveRandomtrip && editModeCopy
       ? {
           submitLabel: dict.editSubmit,
           confirmTitle: editModeCopy.confirmTitle,
           confirmBody: editModeCopy.confirmBody,
         }
       : resolveFinalizeCopy(dict, finalizeCopy);
-  const effectiveDict = finalizeCopy
+  const effectiveDict = finalizeCopy || form.level === "xsed"
     ? {
         ...dict,
         actionBar: {
@@ -624,7 +647,8 @@ export function NewExperienceShell({
         },
       }
     : dict;
-  const showTripperNoteField = shouldShowTripperNoteField(mode);
+  const showTripperNoteField = shouldShowTripperNoteField(mode) &&
+    !(form.level === "xsed" && (mode === "adminCreate" || mode === "adminEdit"));
 
   return (
     <div className="bg-gray-50" data-component="NewExperienceShell">
@@ -689,6 +713,14 @@ export function NewExperienceShell({
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
+        )}
+
+        {mode === "adminEdit" && form.level === "xsed" && (
+          <div className="flex justify-end mb-4">
+            <Button disabled={!canContinueDropSetup} onClick={handleRequestSubmit}>
+              {dict.xsedSetup.submitLabel}
+            </Button>
           </div>
         )}
 

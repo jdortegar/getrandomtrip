@@ -1,3 +1,4 @@
+import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -78,8 +79,7 @@ export default async function AdminExperienceReviewPage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: source.status,
     title: source.title,
-    type: Array.isArray(source.type) ? source.type : [source.type].filter(Boolean),
-    level: source.level ?? "essenza",
+    ...normalizeExperienceClassification(source),
     teaser: source.teaser,
     description: source.description,
     heroImage: source.heroImage,

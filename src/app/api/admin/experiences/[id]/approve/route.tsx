@@ -1,3 +1,7 @@
+import { hasXsedDropContent } from "@/lib/xsed/publication";
+import { xsedPublicationData } from "@/lib/xsed/publish";
+import type { XsedPublicationRecord } from "@/types/xsed";
+import { isValidSharedExperienceClassification, isXsedExperience } from "@/lib/experiences/xsedExperience";
 // ============================================================================
 // POST /api/admin/experiences/[id]/approve
 // Transitions a PENDING_REVIEW experience to ACTIVE, sets pricingByType.
@@ -38,8 +42,8 @@ export async function POST(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const experience = await (prisma.experience.findUnique as any)({
       where: { id: params.id },
-      select: { id: true, status: true, type: true },
-    }) as { id: string; status: string; type: string[] } | null;
+      select: { id: true, status: true, type: true, level: true, slug: true, titleInternal: true, tripDate: true, destinationCity: true, destinationCountry: true },
+    }) as XsedPublicationRecord & { id: string } | null;
 
     if (!experience) {
       return NextResponse.json(
@@ -58,8 +62,30 @@ export async function POST(
       );
     }
 
+    // Check whether a non-INACTIVE review copy exists for this experience.
+    // If yes → perform the atomic copy→original overwrite, then set ACTIVE.
+    // If no  → follow the existing direct-approve path.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const existingCopy = await (prisma.experience.findFirst as any)({
+      where: {
+        parentId: params.id,
+        isReviewCopy: true,
+        NOT: { status: "INACTIVE" },
+      },
+      select: { id: true, type: true, level: true, slug: true, titleInternal: true, tripDate: true, destinationCity: true, destinationCountry: true },
+    }) as XsedPublicationRecord & { id: string } | null;
+
+    const publishedExperience = existingCopy ?? experience;
+    if (!isValidSharedExperienceClassification(publishedExperience)) {
+      return NextResponse.json({ error: "incomplete", missing: ["type"] }, { status: 422 });
+    }
+
+    if (isXsedExperience(publishedExperience) && !hasXsedDropContent(publishedExperience)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
+    }
+
     const body = await request.json() as { pricingByType?: unknown; reviewNote?: unknown };
-    const validation = validatePricingByType(body.pricingByType, experience.type);
+    const validation = validatePricingByType(body.pricingByType, publishedExperience.type);
     const reviewNote =
       typeof body.reviewNote === "string" && body.reviewNote.trim()
         ? body.reviewNote.trim()
@@ -71,19 +97,6 @@ export async function POST(
         { status: 422 },
       );
     }
-
-    // Check whether a non-INACTIVE review copy exists for this experience.
-    // If yes → perform the atomic copy→original overwrite, then set ACTIVE.
-    // If no  → follow the existing direct-approve path.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existingCopy = await (prisma.experience.findFirst as any)({
-      where: {
-        parentId: params.id,
-        isReviewCopy: true,
-        NOT: { status: "INACTIVE" },
-      },
-      select: { id: true },
-    }) as { id: string } | null;
 
     let updated: unknown;
 
@@ -97,7 +110,7 @@ export async function POST(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const finalResult = await (tx.experience.update as any)({
           where: { id: params.id },
-          data: { pricingByType: validation.value, reviewNote },
+          data: { ...(isXsedExperience(publishedExperience) ? {} : { pricingByType: validation.value }), reviewNote },
         });
         // Hard-delete the copy
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,6 +126,7 @@ export async function POST(
           status: "ACTIVE",
           isActive: true,
           pricingByType: validation.value,
+          ...(isXsedExperience(experience) ? await xsedPublicationData(prisma, experience, experience.slug) : {}),
           reviewNote,
         },
       });

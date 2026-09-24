@@ -35,7 +35,7 @@ interface ExperienceFormContentProps {
   copy: TripperExperiencesDict["form"];
   form: ExperienceFormDraft;
   imageState: ExperienceImageState;
-  /** Controls which experience type options are offered — XSED Drop is admin-only. Defaults to 'tripper'. */
+  /** Controls which experience level options are offered — XSED is admin-only. Defaults to 'tripper'. */
   mode?: ExperienceShellMode;
   adminReviewSlot?: ReactNode;
   /** Renders approve/reject actions in the form action area; suppresses the pending banner. */

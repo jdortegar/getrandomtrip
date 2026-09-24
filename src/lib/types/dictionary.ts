@@ -635,6 +635,7 @@ export interface TripperExperiencesDict {
     tripperNoteHint: string;
     submitConfirmTitle: string;
     submitConfirmBody: string;
+    xsedSetup: { submitLabel: string; confirmTitle: string; confirmBody: string };
     actionBar: {
       back: string;
       previousStep: string;

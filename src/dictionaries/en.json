@@ -4422,6 +4422,11 @@
       "tripperNoteHint": "Visible to the admin reviewing this experience.",
       "submitConfirmTitle": "Submit for review?",
       "submitConfirmBody": "Your experience will be locked while the admin reviews it. Add anything they should know.",
+      "xsedSetup": {
+        "submitLabel": "Continue to drop setup",
+        "confirmTitle": "Continue to drop setup?",
+        "confirmBody": "Save this experience and configure its drop date and details before publication."
+      },
       "actionBar": {
         "clearAll": "Clear all",
         "back": "Back to beginning",

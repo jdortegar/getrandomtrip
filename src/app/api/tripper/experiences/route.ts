@@ -1,3 +1,4 @@
+import { hasValidExperienceClassificationShape, isValidSharedExperienceClassification } from "@/lib/experiences/xsedExperience";
 // ============================================================================
 // GET  /api/tripper/experiences - List tripper's own experiences
 // POST /api/tripper/experiences - Create a new experience (DRAFT)
@@ -82,6 +83,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as ExperienceFormDraft;
+    if (!hasValidExperienceClassificationShape(body)) {
+      return NextResponse.json({ error: "invalid_classification" }, { status: 400 });
+    }
+
+    if (!isValidSharedExperienceClassification(body)) {
+      return NextResponse.json({ error: "incomplete", missing: ["type"] }, { status: 422 });
+    }
 
     // source is server-derived from the caller's role only — never trusted
     // from the request body (ExperienceFormDraft has no `source` field).

@@ -1,3 +1,4 @@
+import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -50,8 +51,7 @@ export default async function AdminEditExperiencePage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: pkg.status,
     title: pkg.title,
-    type: Array.isArray(pkg.type) ? pkg.type : [pkg.type].filter(Boolean),
-    level: pkg.level ?? "essenza",
+    ...normalizeExperienceClassification(pkg),
     teaser: pkg.teaser,
     description: pkg.description,
     heroImage: pkg.heroImage,

@@ -1,3 +1,6 @@
+import { isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { hasXsedDropContent } from "@/lib/xsed/publication";
+import type { XsedPublicationRecord } from "@/types/xsed";
 // ============================================================================
 // POST /api/tripper/experiences/[id]/approve-copy
 // Tripper approves the admin's review copy: overwrites the original with the
@@ -70,14 +73,18 @@ export async function POST(
         isReviewCopy: true,
         NOT: { status: "INACTIVE" },
       },
-      select: { id: true },
-    }) as { id: string } | null;
+      select: { id: true, type: true, level: true, titleInternal: true, tripDate: true, destinationCity: true, destinationCountry: true },
+    }) as XsedPublicationRecord & { id: string } | null;
 
     if (!copy) {
       return NextResponse.json(
         { error: "no_copy", message: "No review copy found for this experience" },
         { status: 404 },
       );
+    }
+
+    if (isXsedExperience(copy as unknown as XsedPublicationRecord) && !hasXsedDropContent(copy as unknown as XsedPublicationRecord)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
     }
 
     // Transactionally overwrite the original with the copy's data + delete copy

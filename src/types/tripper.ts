@@ -422,6 +422,11 @@ export interface AccommodationEntry {
   referredLink: string;
 }
 
+export interface ExperienceClassification {
+  type?: string | string[] | null;
+  level?: string | null;
+}
+
 export interface ExperienceFormDraft {
   // About
   status: ExperienceStatus;

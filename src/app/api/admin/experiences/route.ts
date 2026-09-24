@@ -1,3 +1,4 @@
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -57,9 +58,13 @@ export async function GET(request: NextRequest) {
     const where: Record<string, any> = {};
     if (ownerActive) where.owner = { isActive: true };
     if (filterTripperId) where.ownerId = filterTripperId;
-    if (filterLevel) where.level = filterLevel;
-    if (filterType) {
-      where.type = { has: canonicalizeExperienceTypeFilter(filterType) };
+    const canonicalType = filterType ? canonicalizeExperienceTypeFilter(filterType) : null;
+    if (filterLevel === "xsed" || canonicalType === "XSED") {
+      where.AND = [XSED_EXPERIENCE_WHERE];
+    }
+    if (filterLevel && filterLevel !== "xsed") where.level = filterLevel;
+    if (canonicalType && canonicalType !== "XSED") {
+      where.type = { has: canonicalType };
     }
     if (filterStatus) where.status = { in: filterStatus.split(",") };
     if (searchParam) where.title = { contains: searchParam, mode: "insensitive" };

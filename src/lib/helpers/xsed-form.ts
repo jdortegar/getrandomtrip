@@ -62,6 +62,7 @@ export function canPublishXsedDrop(form: XsedPublishFields): boolean {
   return !!(
     form.titleInternal.trim() &&
     form.tripDate.trim() &&
+    Number.isFinite(new Date(form.tripDate).getTime()) &&
     form.destinationCity.trim() &&
     form.destinationCountry.trim()
   );
@@ -119,15 +120,15 @@ export function isXsedTabComplete(tabId: string, form: XsedDropDraft): boolean {
 function padActivities(raw: ActivityEntry[] | undefined): ActivityEntry[] {
   const padded = EMPTY_XSED_DRAFT.activities.map((empty) => ({ ...empty }));
   if (!Array.isArray(raw)) return padded;
-  raw.slice(0, padded.length).forEach((entry, i) => {
-    padded[i] = { ...padded[i], ...entry };
+  raw.forEach((entry, i) => {
+    padded[i] = { ...EMPTY_XSED_DRAFT.activities[0], ...entry };
   });
   return padded;
 }
 
 function padSections(raw: unknown[] | undefined): XsedSection[] {
-  return EMPTY_XSED_DRAFT.sections.map((empty, i) =>
-    normalizeXsedSection(raw?.[i] ?? empty),
+  return Array.from({ length: Math.max(EMPTY_XSED_DRAFT.sections.length, raw?.length ?? 0) }, (_, i) =>
+    normalizeXsedSection(raw?.[i] ?? EMPTY_XSED_DRAFT.sections[i]),
   );
 }
 
@@ -143,7 +144,7 @@ function padHotels(raw: unknown): AccommodationEntry[] {
   });
 }
 
-/** Pads hotels/activities/sections to the fixed XSED authoring shape. */
+/** Pads minimum XSED slots without truncating shared-experience content. */
 export function normalizeXsedDraft(
   partial: Partial<Omit<XsedDropDraft, "hotels" | "activities" | "sections" | "itinerary" | "inclusions" | "exclusions" | "gallery">> & {
     hotels?: unknown;

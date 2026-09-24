@@ -1,3 +1,7 @@
+import { isXsedExperience } from "./xsedExperience";
+import { xsedPublicationData } from "@/lib/xsed/publish";
+import type { ExperienceClassification } from "@/types/tripper";
+import type { XsedPublicationRecord } from "@/types/xsed";
 // ============================================================================
 // Experience changed-fields utility
 // Computes the set of mutable fields that differ between a review copy and
@@ -42,6 +46,8 @@ export const MUTABLE_EXPERIENCE_FIELDS = [
   "highlights",
   // XSED fields
   "titleInternal",
+  "sections",
+  "gallery",
   "tripDate",
   "revealAt",
   "minSpots",
@@ -70,6 +76,8 @@ const JSON_FIELDS = new Set<string>([
   "inclusions",
   "exclusions",
   "pricingByType",
+  "sections",
+  "gallery",
 ]);
 
 /**
@@ -143,6 +151,11 @@ export async function overwriteOriginalWithCopy(
     if (field in copy) {
       overwriteData[field] = copy[field];
     }
+  }
+
+  if (isXsedExperience(copy as ExperienceClassification)) {
+    const original = await tx.experience.findUnique({ where: { id: originalId }, select: { slug: true } });
+    Object.assign(overwriteData, await xsedPublicationData(tx, copy as unknown as XsedPublicationRecord, original?.slug));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

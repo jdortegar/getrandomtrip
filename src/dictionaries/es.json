@@ -4422,6 +4422,11 @@
       "tripperNoteHint": "Visible para el admin que revise esta experiencia.",
       "submitConfirmTitle": "¿Enviar a revisión?",
       "submitConfirmBody": "Tu experiencia quedará bloqueada mientras el admin la revisa. Agrega lo que necesite saber.",
+      "xsedSetup": {
+        "submitLabel": "Continuar con la configuración del drop",
+        "confirmTitle": "¿Continuar con la configuración del drop?",
+        "confirmBody": "Guarda esta experiencia y configura la fecha y los detalles del drop antes de publicarlo."
+      },
       "actionBar": {
         "clearAll": "Borrar todo",
         "back": "Volver al inicio",

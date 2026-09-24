@@ -1,3 +1,5 @@
+import { xsedPublicationData } from "@/lib/xsed/publish";
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
@@ -62,7 +64,7 @@ export async function GET(_req: Request, ctx: RouteContext): Promise<NextRespons
     const { id } = await ctx.params;
 
     const drop = await prisma.experience.findUnique({
-      where: { id, type: { has: "XSED" } },
+      where: { id, ...XSED_EXPERIENCE_WHERE },
     });
 
     if (!drop) {
@@ -86,7 +88,7 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
 
     // Fetch existing record to validate status gate and check current values
     const existing = await prisma.experience.findUnique({
-      where: { id, type: { has: "XSED" } },
+      where: { id, ...XSED_EXPERIENCE_WHERE },
     });
 
     if (!existing) {
@@ -97,7 +99,13 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
 
     // Status gate: activating requires the General-tab publish fields
     const incomingStatus = body.status as string | undefined;
-    if (incomingStatus === "ACTIVE") {
+    if (incomingStatus !== undefined && (typeof incomingStatus !== "string" || !["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"].includes(incomingStatus))) {
+      return NextResponse.json({ error: "invalid_status" }, { status: 400 });
+    }
+    if ((incomingStatus ?? existing.status) === "ACTIVE") {
+      if (existing.isReviewCopy) {
+        return NextResponse.json({ error: "review_copy_requires_approval" }, { status: 422 });
+      }
       const publishFields = resolveXsedPublishFields(body, existing);
       if (!canPublishXsedDrop(publishFields)) {
         return NextResponse.json(
@@ -166,6 +174,11 @@ export async function PUT(req: Request, ctx: RouteContext): Promise<NextResponse
       if (inclusions !== undefined) updateData.inclusions = safeJsonParse(inclusions);
       if (exclusions !== undefined) updateData.exclusions = safeJsonParse(exclusions);
 
+      if ((incomingStatus ?? existing.status) === "ACTIVE") {
+        Object.assign(updateData, await xsedPublicationData(prisma, { ...existing, ...resolveXsedPublishFields(body, existing) },
+          slug === undefined ? existing.slug : slug));
+      }
+
       const updated = await prisma.experience.update({
         where: { id },
         data: updateData,
@@ -198,7 +211,7 @@ export async function DELETE(_req: Request, ctx: RouteContext): Promise<NextResp
     const { id } = await ctx.params;
 
     const existing = await prisma.experience.findUnique({
-      where: { id, type: { has: "XSED" } },
+      where: { id, ...XSED_EXPERIENCE_WHERE },
       select: { id: true, status: true },
     });
 

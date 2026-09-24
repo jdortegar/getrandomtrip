@@ -119,12 +119,12 @@ describe("GET /api/admin/experiences", () => {
     expect(findManyArgs.where.owner).toEqual({ isActive: true });
   });
 
-  it("normalizes a lowercase type=xsed filter to match uppercase stored ['XSED']", async () => {
+  it("matches canonical XSED levels and legacy markers for a type=xsed filter", async () => {
     await GET(makeRequest("?type=xsed"));
 
     const findManyArgs = (prisma.experience.findMany as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(findManyArgs.where.type).toEqual({ has: "XSED" });
+    expect(findManyArgs.where.AND).toEqual([{ OR: [{ level: "xsed" }, { type: { has: "XSED" } }] }]);
   });
 
   it("keeps matching type=couple as before this change (no-regression for lowercase traveler types)", async () => {

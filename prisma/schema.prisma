@@ -260,9 +260,9 @@ model Experience {
   status  ExperienceStatus @default(DRAFT)
   source  ExperienceSource @default(TRIPPER) // immutable ownership signal, server-derived at create
 
-  // Experience metadata — type also accepts 'XSED' for Sunday drops
+  // Experience metadata — legacy dedicated drops may still carry the XSED type marker
   type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
-  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
+  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway' | 'xsed'; null on legacy drops
 
   // User preference matching (for filtering)
   excuseKey String[] @default([]) // Excuse keys this experience supports (e.g., ['romantic-getaway', 'solo-adventure'])

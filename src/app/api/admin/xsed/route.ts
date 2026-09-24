@@ -1,3 +1,5 @@
+import { nextXsedDropSlug } from "@/lib/xsed/publish";
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
@@ -55,7 +57,7 @@ export async function GET(): Promise<NextResponse> {
     if (!auth.ok) return auth.errorResponse;
 
     const drops = await prisma.experience.findMany({
-      where: { type: { has: "XSED" } },
+      where: XSED_EXPERIENCE_WHERE,
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -102,8 +104,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     } = body ?? {};
 
     // Auto-generate slug as the next drop number
-    const dropCount = await prisma.experience.count({ where: { type: { has: "XSED" } } });
-    const autoSlug = String(dropCount + 1);
+    const autoSlug = await nextXsedDropSlug(prisma);
 
     // title/description are required (non-nullable) columns shared with the
     // tripper Experience model. XSED authoring no longer has a `teaser`
