@@ -1,3 +1,18 @@
+export interface HotelVoucherPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  close: string;
+  discard: string;
+  pending: string;
+  view: string;
+  forbidden: string;
+  trip_not_found: string;
+  too_large: string;
+  invalid: string;
+  unavailable: string;
+}
+
 export interface HotelVoucherFormCopy {
   add: string;
   remove: string;
@@ -2238,6 +2253,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  hotelVoucherPreview: HotelVoucherPreviewCopy;
   hotelVoucherForm: HotelVoucherFormCopy;
   hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {

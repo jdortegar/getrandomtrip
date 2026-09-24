@@ -1,4 +1,18 @@
 {
+  "hotelVoucherPreview": {
+    "open": "Crear vista previa de hotel",
+    "title": "Vista previa del comprobante de hotel",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. Las fechas del viaje y el nombre del comprador son sugerencias editables; verifica los datos del hotel.",
+    "close": "Cerrar",
+    "discard": "¿Descartar este formulario de hotel sin guardar?",
+    "pending": "Generando vista previa…",
+    "view": "Abrir vista previa del PDF",
+    "forbidden": "Se requiere acceso de administrador.",
+    "trip_not_found": "Este viaje ya no está disponible.",
+    "too_large": "El documento es demasiado grande. Reduce su contenido.",
+    "invalid": "Revisa los campos antes de generar la vista previa.",
+    "unavailable": "La vista previa no está disponible. Inténtalo de nuevo."
+  },
   "hotelVoucherForm": {
     "add": "Añadir servicio incluido",
     "remove": "Eliminar",

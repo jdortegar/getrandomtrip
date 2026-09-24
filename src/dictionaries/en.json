@@ -1,4 +1,18 @@
 {
+  "hotelVoucherPreview": {
+    "open": "Create hotel preview",
+    "title": "Hotel voucher preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Trip dates and buyer name are editable suggestions; verify all hotel details.",
+    "close": "Close",
+    "discard": "Discard this unsaved hotel form?",
+    "pending": "Generating preview…",
+    "view": "Open PDF preview",
+    "forbidden": "Administrator access is required.",
+    "trip_not_found": "This trip is no longer available.",
+    "too_large": "The document is too large. Shorten its content.",
+    "invalid": "Review the form fields before previewing.",
+    "unavailable": "Preview is unavailable. Please try again."
+  },
   "hotelVoucherForm": {
     "add": "Add inclusion",
     "remove": "Remove",
