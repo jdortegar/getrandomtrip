@@ -1,5 +1,7 @@
 {
   "xsedRoadmapPdf": {
+    "mapUrl": "Map URL (HTTPS, optional)",
+    "note": "Enter the route and driving duration manually. No directions or journey times are calculated.",
     "title": "XSED roadmap",
     "origin": "Origin",
     "destination": "Destination",

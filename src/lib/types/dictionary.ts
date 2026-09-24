@@ -1,4 +1,6 @@
 export interface XsedRoadmapPdfCopy {
+  mapUrl: string;
+  note: string;
   title: string;
   origin: string;
   destination: string;
