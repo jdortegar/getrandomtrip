@@ -15,6 +15,19 @@
     "time": "Horario sugerido",
     "map": "Abrir mapa interactivo"
   },
+  "documentDraftPanel": {
+    "title": "Borradores privados de documentos",
+    "load": "Actualizar borradores",
+    "template": "Plantilla",
+    "provider": "Proveedor de origen",
+    "none": "Sin datos de proveedor",
+    "create": "Crear borrador",
+    "pending": "Procesando…",
+    "conflict": "Otro guardado cambió este borrador. Tus cambios se conservan. Recargá solo para descartarlos y usar la última versión guardada.",
+    "reload": "Recargar versión guardada",
+    "error": "No se pudo completar la solicitud. Intentá nuevamente.",
+    "saved": "Versión guardada cargada."
+  },
   "documentDraftEditor": {
     "save": "Guardar borrador",
     "close": "Cerrar borrador",

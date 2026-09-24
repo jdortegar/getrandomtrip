@@ -15,6 +15,19 @@
     "time": "Suggested time",
     "map": "Open interactive map"
   },
+  "documentDraftPanel": {
+    "title": "Private document drafts",
+    "load": "Refresh drafts",
+    "template": "Template",
+    "provider": "Source provider",
+    "none": "No provider prefill",
+    "create": "Create draft",
+    "pending": "Working…",
+    "conflict": "Another save changed this draft. Your edits are preserved. Reload only to discard them and use the latest saved version.",
+    "reload": "Reload saved version",
+    "error": "Draft request failed. Try again.",
+    "saved": "Saved version loaded."
+  },
   "documentDraftEditor": {
     "save": "Save draft",
     "close": "Close draft",

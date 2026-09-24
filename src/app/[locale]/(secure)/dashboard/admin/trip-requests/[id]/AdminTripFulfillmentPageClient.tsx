@@ -14,6 +14,7 @@ import { ExperienceRoadmapPreviewAction } from "@/components/app/admin/trip-fulf
 import { DinnerVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/DinnerVoucherPreviewAction";
 import { ActivityVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/ActivityVoucherPreviewAction";
 import { HotelVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/HotelVoucherPreviewAction";
+import { DocumentDraftPanel } from "@/components/app/admin/trip-fulfillment/DocumentDraftPanel";
 import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/AddTripDocumentForm";
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
 import { ContactTravelerModal } from "@/components/app/admin/trip-fulfillment/ContactTravelerModal";
@@ -255,6 +256,7 @@ export function AdminTripFulfillmentPageClient({
             <DinnerVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <ActivityVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <HotelVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
+            <DocumentDraftPanel countryLabels={countryLabels} key={trip.id} locale={locale} tripId={trip.id} />
             <AddTripDocumentForm
               copy={fulfillmentDict}
               countryLabels={countryLabels}

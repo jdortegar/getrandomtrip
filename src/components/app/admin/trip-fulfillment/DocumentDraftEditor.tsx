@@ -24,7 +24,7 @@ interface Props {
   dirty: boolean;
   onChange: (document: TripDocumentSnapshot) => void;
   onClose: () => void;
-  onPreview: (document: TripDocumentSnapshot) => void;
+  onPreview?: (document: TripDocumentSnapshot) => void;
   onSave: () => void;
   value: TripDocumentSnapshot;
 }
@@ -53,7 +53,7 @@ export function DocumentDraftEditor({
     copy: dictionary.hotelVoucherForm,
     countryLabels,
     onChange,
-    onSubmit: onPreview,
+    onSubmit: onPreview ?? (() => undefined),
     pdfCopy: dictionary.hotelVoucherPdf,
     submitting: busy,
   };
@@ -122,7 +122,7 @@ export function DocumentDraftEditor({
           {copy.close}
         </button>
       </div>
-      {form}
+      <div className={onPreview ? undefined : "[&_button[type=submit]]:hidden"}>{form}</div>
     </section>
   );
 }
