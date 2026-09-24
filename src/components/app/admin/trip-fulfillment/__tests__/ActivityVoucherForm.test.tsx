@@ -173,3 +173,104 @@ it.each([en, es])(
     ).toBe(dictionary.activityVoucherPdf.provider);
   },
 );
+function section(name: string) {
+  return container.querySelector(`[data-item-section="${name}"]`)!;
+}
+function add(name: string) {
+  act(() =>
+    section(name).querySelector<HTMLButtonElement>("button[data-add]")!.click(),
+  );
+}
+const rows = (name: string) => [
+  ...section(name).querySelectorAll<HTMLInputElement>("input[data-item-title]"),
+];
+it.each(["program", "inclusions"])(
+  "edits and reorders %s with stable IDs",
+  (name) => {
+    act(() => root.render(<Harness />));
+    add(name);
+    add(name);
+    const items = rows(name);
+    const last = items.at(-1)!;
+    edit(last.id, "Última actividad");
+    const description =
+      section(name).querySelectorAll<HTMLTextAreaElement>("textarea");
+    edit(description[description.length - 1].id, "Traer identificación");
+    act(() =>
+      section(name)
+        .querySelectorAll<HTMLButtonElement>("button[data-up]")
+        [items.length - 1].click(),
+    );
+    expect(rows(name)[items.length - 2].id).toBe(last.id);
+    expect(rows(name)[items.length - 2].value).toBe("Última actividad");
+    expect(
+      section(name).querySelectorAll<HTMLTextAreaElement>("textarea")[
+        items.length - 2
+      ].value,
+    ).toBe("Traer identificación");
+    act(() =>
+      section(name)
+        .querySelectorAll<HTMLButtonElement>("button[data-remove]")
+        [items.length - 1].click(),
+    );
+    expect(rows(name)).toHaveLength(items.length - 1);
+    expect(new Set(rows(name).map((row) => row.id)).size).toBe(
+      items.length - 1,
+    );
+  },
+);
+it("requires a nonempty program but permits empty inclusions", () => {
+  act(() => root.render(<Harness />));
+  act(() =>
+    section("program")
+      .querySelector<HTMLButtonElement>("button[data-remove]")!
+      .click(),
+  );
+  const send = () =>
+    act(() =>
+      container
+        .querySelector("form")!
+        .dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        ),
+    );
+  send();
+  expect(submit).not.toHaveBeenCalled();
+  add("program");
+  send();
+  expect(submit).not.toHaveBeenCalled();
+  edit(rows("program")[0].id, "Circuito de agua");
+  send();
+  expect(submit.mock.calls[0][0].data.program[0].title).toBe(
+    "Circuito de agua",
+  );
+  expect(submit.mock.calls[0][0].data.inclusions).toEqual([]);
+});
+it.each(["program", "inclusions"])(
+  "caps %s at50 and allows replacing a removed row",
+  (name) => {
+    const items = Array.from({ length: 50 }, (_, i) => ({
+      id: `row-${i}`,
+      title: `Item ${i}`,
+    }));
+    act(() =>
+      root.render(
+        <Harness
+          value={{ ...initial, data: { ...initial.data, [name]: items } }}
+        />,
+      ),
+    );
+    const button = () =>
+      section(name).querySelector<HTMLButtonElement>("button[data-add]")!;
+    expect(button().disabled).toBe(true);
+    act(() =>
+      section(name)
+        .querySelector<HTMLButtonElement>("button[data-remove]")!
+        .click(),
+    );
+    expect(button().disabled).toBe(false);
+    add(name);
+    expect(rows(name)).toHaveLength(50);
+    expect(new Set(rows(name).map((row) => row.id)).size).toBe(50);
+  },
+);

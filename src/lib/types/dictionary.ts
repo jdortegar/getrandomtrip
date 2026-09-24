@@ -1,4 +1,5 @@
 export interface ActivityVoucherPdfCopy {
+  addItem: string;
   providerName: string;
   provider: string;
   title: string;

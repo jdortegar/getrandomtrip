@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types/dictionary";
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseActivityVoucher } from "@/lib/trip-documents/parsers/activityVoucher";
+import { ActivityVoucherItems } from "./ActivityVoucherItems";
 import styles from "./fulfillment.module.css";
 
 interface ActivityVoucherFormProps {
@@ -134,6 +135,22 @@ export function ActivityVoucherForm({
           onChange={(e) => updateData({ recommendations: e.target.value })}
           value={data.recommendations ?? ""}
         />
+        {["program", "inclusions"].map((section) => {
+          const key = section as "program" | "inclusions";
+          return (
+            <ActivityVoucherItems
+              addLabel={activityCopy.addItem}
+              copy={copy}
+              items={data[key] ?? []}
+              key={key}
+              onChange={(items) => updateData({ [key]: items })}
+              section={key}
+              title={
+                key === "program" ? activityCopy.program : pdfCopy.inclusions
+              }
+            />
+          );
+        })}
         {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}

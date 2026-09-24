@@ -1,5 +1,6 @@
 {
   "activityVoucherPdf": {
+    "addItem": "Añadir elemento",
     "providerName": "Nombre del proveedor",
     "provider": "Sitio web del proveedor",
     "title": "Comprobante de actividad",
