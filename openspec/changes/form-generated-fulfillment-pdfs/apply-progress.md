@@ -202,3 +202,13 @@ Experience transient form→private PDF preview completed at `b7548a8c`; prior m
 - GREEN:9 renderer +76 parser tests; typecheck and targeted lint passed. Generation validation, optional fields, EN/ES,4MiB boundary and render failures covered.
 - Actual PDF QA: EN1page/ES4pages,30stops, accents, directions and map annotation preserved; inspected page images, no clipping or orphan headings. Local logo/teal-cyan branding; Helvetica remains interim. Evidence `/private/tmp/xsed-render-qa/`, `/private/tmp/xsed-render-{red,green,typecheck}.log`, `/private/tmp/xsed-glyph-red.log`.
 - Next: XSED guarded endpoint, editable form, hook and modal. Original persistent lifecycle, QR/font fidelity and deployment verification remain pending.
+
+## Five Transient Preview Flows Complete (2026-09-24)
+
+This cumulative checkpoint supersedes earlier next-template notes without removing their evidence. Hotel `1e6ffbeb`, activity `e82c14c8`, dinner `f4e3db5c`, experience roadmap `b7548a8c` and XSED roadmap `37731d70` now provide admin form→private PDF preview. All five include bilingual editable forms, authored repeatables, guarded streamed requests, generation validation, response limits, safe errors and stale-request/object-URL cleanup. Known trip suggestions remain editable; no automatic routing, travel-type gating, supplier confirmation or persistent attachment is inferred.
+
+- Final combined verification: **658 tests across30 suites passed**, covering allfive parsers/renderers/endpoints/forms/hooks/modal integrations. **69 scoped source/test files lint clean**; nonincremental typecheck passed. Logs and manifests: `/private/tmp/pdf-final-*`.
+- Existing dashboard `loadTrip` effect lint error remains; reproduced against HEAD using ESLint stdin. No unrelated cleanup was performed.
+- Root browser QA submitted sample experience and XSED roadmap forms; both produced Open PDF preview links. Dialogs had no horizontal overflow at360px and1280px. **Actual browser PDF painting remains unverified**: no blob navigation was attempted after the earlier IAB policy block. Node-rendered PDF visual QA is recorded separately above.
+- Original persistent specification remains incomplete: draft save/versioning, storage/publication, attach/replace/email integration, QR/licensed-font fidelity, complete fixtures/build/Netlify preview and external deploy-hook verification are pending. Next implementation scope is **persistent drafts and attachment**, not more template forms.
+- Deferred prefix-cleanup WIP stays in stash `8bdd8a36`; no restoration, schema expansion or liveness-fix approval is implied. Prior explicit publication-risk consent and dependency-exception history are unchanged.
