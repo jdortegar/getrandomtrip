@@ -11,18 +11,20 @@ const baseDrop: DropEntry = {
   title: "Mendoza",
 };
 
-function badgeText(drop: DropEntry): string {
+function renderBadge(drop: DropEntry): Element | null {
   const template = document.createElement("template");
   template.innerHTML = renderToStaticMarkup(<DropCard drop={drop} />);
-  return template.content.querySelector("[data-drop-badge]")?.textContent ?? "";
+  return template.content.querySelector("[data-drop-badge]");
 }
 
 describe("DropCard badge", () => {
   it("shows the stored label when present", () => {
-    expect(badgeText({ ...baseDrop, label: "XSED Nº1 (AR)" })).toBe("|XSED Nº1 (AR)");
+    expect(renderBadge({ ...baseDrop, label: "XSED Nº1 (AR)" })?.textContent).toBe(
+      "|XSED Nº1 (AR)",
+    );
   });
 
-  it("falls back to the drop number when there is no label", () => {
-    expect(badgeText(baseDrop)).toBe("|XSEDNº5");
+  it("renders no badge when there is no label", () => {
+    expect(renderBadge(baseDrop)).toBeNull();
   });
 });
