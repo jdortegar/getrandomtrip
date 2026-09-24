@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -59,10 +59,12 @@ const styles = StyleSheet.create({
 interface ExperienceRoadmapPdfProps {
   document: ExperienceRoadmapDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
 export function ExperienceRoadmapPdf({
   document,
   logo,
+  qrImages,
 }: ExperienceRoadmapPdfProps) {
   const { data, locale } = document;
   const dictionary = locale === "en" ? en : es;
@@ -134,7 +136,11 @@ export function ExperienceRoadmapPdf({
             </Text>
           </View>
         ))}
-        {data.mapUrl && <Link src={data.mapUrl}>{copy.map}</Link>}
+        {data.mapUrl && (
+          <PdfQrLink images={qrImages} src={data.mapUrl}>
+            {copy.map}
+          </PdfQrLink>
+        )}
         <View fixed style={styles.footer}>
           <Text
             render={({ pageNumber, totalPages }) =>

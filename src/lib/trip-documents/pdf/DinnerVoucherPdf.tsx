@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -59,8 +59,13 @@ const styles = StyleSheet.create({
 interface DinnerVoucherPdfProps {
   document: DinnerVoucherDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
-export function DinnerVoucherPdf({ document, logo }: DinnerVoucherPdfProps) {
+export function DinnerVoucherPdf({
+  document,
+  logo,
+  qrImages,
+}: DinnerVoucherPdfProps) {
   const { data, locale } = document;
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.dinnerVoucherPdf;
@@ -122,10 +127,14 @@ export function DinnerVoucherPdf({ document, logo }: DinnerVoucherPdfProps) {
               </View>
             ))}
           {data.restaurant.locationUrl && (
-            <Link src={data.restaurant.locationUrl}>{common.location}</Link>
+            <PdfQrLink images={qrImages} src={data.restaurant.locationUrl}>
+              {common.location}
+            </PdfQrLink>
           )}
           {data.restaurant.providerUrl && (
-            <Link src={data.restaurant.providerUrl}>{copy.provider}</Link>
+            <PdfQrLink images={qrImages} src={data.restaurant.providerUrl}>
+              {copy.provider}
+            </PdfQrLink>
           )}
         </View>
         {[{ label: copy.menu, items: data.menuItems }]

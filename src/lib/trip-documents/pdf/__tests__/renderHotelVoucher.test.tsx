@@ -116,3 +116,24 @@ describe("hotel voucher PDF", () => {
       ).rejects.toThrow("DOCUMENT_PDF_TOO_LARGE");
   });
 });
+
+it("passes locally generated QR bytes for the supplied optional URL to the template", async () => {
+  const render = vi.fn().mockResolvedValue(Buffer.from("%PDF-test"));
+  await renderHotelVoucher(document, render);
+  const images = render.mock.calls[0][0].props.qrImages;
+  const url = document.data.property.locationUrl;
+  expect(images[url!].subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+});
+it("renders a valid oversized QR destination as clickable-only without failing PDF generation", async () => {
+  const url = "https://example.com/" + "é".repeat(1000);
+  const input = {
+    ...document,
+    data: {
+      ...document.data,
+      property: { ...document.data.property, locationUrl: url },
+    },
+  };
+  const result = await renderHotelVoucher(input);
+  expect(result.ok).toBe(true);
+  if (result.ok) expect(result.buffer.subarray(0, 5).toString()).toBe("%PDF-");
+});

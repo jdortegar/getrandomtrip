@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -59,10 +59,12 @@ const styles = StyleSheet.create({
 interface ActivityVoucherPdfProps {
   document: ActivityVoucherDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
 export function ActivityVoucherPdf({
   document,
   logo,
+  qrImages,
 }: ActivityVoucherPdfProps) {
   const { data, locale } = document;
   const dictionary = locale === "en" ? en : es;
@@ -124,10 +126,14 @@ export function ActivityVoucherPdf({
               </View>
             ))}
           {data.provider.locationUrl && (
-            <Link src={data.provider.locationUrl}>{common.location}</Link>
+            <PdfQrLink images={qrImages} src={data.provider.locationUrl}>
+              {common.location}
+            </PdfQrLink>
           )}
           {data.provider.providerUrl && (
-            <Link src={data.provider.providerUrl}>{copy.provider}</Link>
+            <PdfQrLink images={qrImages} src={data.provider.providerUrl}>
+              {copy.provider}
+            </PdfQrLink>
           )}
         </View>
         {[

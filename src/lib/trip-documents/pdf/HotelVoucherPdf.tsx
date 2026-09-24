@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -74,8 +74,13 @@ const styles = StyleSheet.create({
 interface HotelVoucherPdfProps {
   document: HotelVoucherDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
-export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
+export function HotelVoucherPdf({
+  document,
+  logo,
+  qrImages,
+}: HotelVoucherPdfProps) {
   const { data, locale } = document;
   const copy = (locale === "en" ? en : es).hotelVoucherPdf;
   const date = (value: string) =>
@@ -140,10 +145,14 @@ export function HotelVoucherPdf({ document, logo }: HotelVoucherPdfProps) {
               </View>
             ))}
           {data.property.locationUrl && (
-            <Link src={data.property.locationUrl}>{copy.location}</Link>
+            <PdfQrLink images={qrImages} src={data.property.locationUrl}>
+              {copy.location}
+            </PdfQrLink>
           )}
           {data.property.providerUrl && (
-            <Link src={data.property.providerUrl}>{copy.provider}</Link>
+            <PdfQrLink images={qrImages} src={data.property.providerUrl}>
+              {copy.provider}
+            </PdfQrLink>
           )}
         </View>
         {data.inclusions.length > 0 && (

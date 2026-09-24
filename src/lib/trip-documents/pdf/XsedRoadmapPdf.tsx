@@ -1,7 +1,7 @@
+import { PdfQrLink } from "./PdfQrLink";
 import {
   Document,
   Image as PdfImage,
-  Link,
   Page,
   StyleSheet,
   Text,
@@ -59,8 +59,13 @@ const styles = StyleSheet.create({
 interface XsedRoadmapPdfProps {
   document: XsedRoadmapDocument;
   logo?: Buffer;
+  qrImages?: Record<string, Buffer>;
 }
-export function XsedRoadmapPdf({ document, logo }: XsedRoadmapPdfProps) {
+export function XsedRoadmapPdf({
+  document,
+  logo,
+  qrImages,
+}: XsedRoadmapPdfProps) {
   const { data, locale } = document;
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.xsedRoadmapPdf;
@@ -133,7 +138,11 @@ export function XsedRoadmapPdf({ document, logo }: XsedRoadmapPdfProps) {
             </Text>
           </View>
         ))}
-        {data.mapUrl && <Link src={data.mapUrl}>{copy.map}</Link>}
+        {data.mapUrl && (
+          <PdfQrLink images={qrImages} src={data.mapUrl}>
+            {copy.map}
+          </PdfQrLink>
+        )}
         <View fixed style={styles.footer}>
           <Text
             render={({ pageNumber, totalPages }) =>

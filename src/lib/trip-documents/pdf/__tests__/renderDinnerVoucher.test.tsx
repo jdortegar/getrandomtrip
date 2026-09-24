@@ -151,3 +151,11 @@ it.each([
     text(DinnerVoucherPdf({ document: { ...document, locale } })),
   ).toContain(label);
 });
+
+it("passes locally generated QR bytes for the supplied optional URL to the template", async () => {
+  const render = vi.fn().mockResolvedValue(Buffer.from("%PDF-test"));
+  await renderDinnerVoucher(document, render);
+  const images = render.mock.calls[0][0].props.qrImages;
+  const url = document.data.restaurant.locationUrl;
+  expect(images[url!].subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+});
