@@ -136,3 +136,94 @@ it("blocks submission while preview is busy", () => {
   expect(submit).not.toHaveBeenCalled();
   expect(container.querySelector("fieldset")!.disabled).toBe(true);
 });
+const rows = () => [
+  ...container.querySelectorAll<HTMLInputElement>("input[data-stop-title]"),
+];
+const control = (name: string, index = 0) =>
+  container.querySelectorAll<HTMLButtonElement>(`button[${name}]`)[index];
+it("adds, edits and reorders suggested activities with optional trip-boundary schedules", () => {
+  act(() => root.render(<Harness />));
+  act(() => control("data-add-stop").click());
+  const id = rows()[1].id;
+  edit(id, "Café");
+  const field = (kind: string, index: number) =>
+    container.querySelectorAll<HTMLInputElement>(`[data-stop-${kind}]`)[index]
+      .id;
+  edit(field("description", 1), "Probar café local");
+  edit(field("date", 1), initial.data.endDate);
+  edit(field("time", 1), "23:59");
+  edit(field("date", 0), initial.data.startDate);
+  edit(field("time", 0), "00:00");
+  act(() => control("data-stop-up", 1).click());
+  expect(rows()[0].id).toBe(id);
+  send();
+  expect(submit.mock.calls[0][0].data.activities).toMatchObject([
+    {
+      title: "Café",
+      description: "Probar café local",
+      date: "2026-10-03",
+      time: "23:59",
+    },
+    { date: "2026-10-02", time: "00:00" },
+  ]);
+  act(() => control("data-stop-remove", 1).click());
+  expect(rows()).toHaveLength(1);
+});
+it("requires title/description and at least one activity, while schedule can be cleared", () => {
+  act(() => root.render(<Harness />));
+  act(() => control("data-stop-remove").click());
+  send();
+  expect(submit).not.toHaveBeenCalled();
+  act(() => control("data-add-stop").click());
+  edit(rows()[0].id, "Paseo");
+  send();
+  expect(submit).not.toHaveBeenCalled();
+  const field = container.querySelector<HTMLTextAreaElement>(
+    "[data-stop-description]",
+  )!;
+  edit(field.id, "Caminar por el centro");
+  edit(
+    container.querySelector<HTMLInputElement>("[data-stop-date]")!.id,
+    "2026-10-02",
+  );
+  edit(
+    container.querySelector<HTMLInputElement>("[data-stop-time]")!.id,
+    "10:00",
+  );
+  edit(container.querySelector<HTMLInputElement>("[data-stop-date]")!.id, "");
+  edit(container.querySelector<HTMLInputElement>("[data-stop-time]")!.id, "");
+  send();
+  expect(submit.mock.calls[0][0].data.activities[0]).toMatchObject({
+    title: "Paseo",
+    description: "Caminar por el centro",
+    date: "",
+    time: "",
+  });
+});
+it("caps activities at50, replaces removed IDs, and preserves scalar fields", () => {
+  const activities = Array.from({ length: 50 }, (_, i) => ({
+    id: `stop-${i}`,
+    title: `Stop ${i}`,
+    description: "Walk",
+  }));
+  act(() =>
+    root.render(
+      <Harness value={{ ...initial, data: { ...initial.data, activities } }} />,
+    ),
+  );
+  expect(control("data-add-stop").disabled).toBe(true);
+  act(() => control("data-stop-remove").click());
+  expect(control("data-add-stop").disabled).toBe(false);
+  act(() => control("data-add-stop").click());
+  expect(rows()).toHaveLength(50);
+  expect(new Set(rows().map((row) => row.id)).size).toBe(50);
+  expect(
+    container.querySelector<HTMLInputElement>("#experience-origin")!.value,
+  ).toBe(initial.data.origin);
+});
+it("disables repeatable changes during preview", () => {
+  act(() => root.render(<Harness busy />));
+  act(() => control("data-add-stop").click());
+  act(() => control("data-stop-remove").click());
+  expect(rows()).toHaveLength(1);
+});

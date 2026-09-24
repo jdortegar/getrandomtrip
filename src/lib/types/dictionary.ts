@@ -1,4 +1,5 @@
 export interface ExperienceRoadmapPdfCopy {
+  addActivity: string;
   heading: string;
   mapUrl: string;
   note: string;

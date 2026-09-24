@@ -1,5 +1,6 @@
 {
   "experienceRoadmapPdf": {
+    "addActivity": "Añadir actividad sugerida",
     "heading": "Título de la hoja de ruta",
     "mapUrl": "Enlace al mapa (HTTPS)",
     "note": "Introduce el itinerario sugerido. No se calculan rutas ni tiempos de viaje automáticamente.",

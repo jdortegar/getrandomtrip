@@ -10,6 +10,7 @@ import type {
 } from "@/lib/types/dictionary";
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseExperienceRoadmap } from "@/lib/trip-documents/parsers/experienceRoadmap";
+import { ExperienceRoadmapActivities } from "./ExperienceRoadmapActivities";
 import styles from "./fulfillment.module.css";
 interface ExperienceRoadmapFormProps {
   copy: HotelVoucherFormCopy;
@@ -104,6 +105,16 @@ export function ExperienceRoadmapForm({
             value={value.data[key] ?? ""}
           />
         ))}
+        <ExperienceRoadmapActivities
+          copy={copy}
+          disabled={submitting}
+          items={value.data.activities}
+          onChange={(activities) =>
+            onChange({ ...value, data: { ...value.data, activities } })
+          }
+          roadmapCopy={roadmapCopy}
+          title={roadmapCopy.activities}
+        />
         {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
