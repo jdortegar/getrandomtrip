@@ -1,3 +1,23 @@
+export interface HotelVoucherPdfCopy {
+  title: string;
+  checkIn: string;
+  checkOut: string;
+  holder: string;
+  guests: string;
+  country: string;
+  address: string;
+  contact: string;
+  reference: string;
+  issued: string;
+  payment: string;
+  confirmation: string;
+  inclusions: string;
+  instructions: string;
+  location: string;
+  provider: string;
+  preview: string;
+}
+
 // ============================================================================
 // Dictionary type – keep in sync with dictionaries/en.json and es.json
 // ============================================================================
@@ -2200,6 +2220,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {
     title: string;
     description: string;

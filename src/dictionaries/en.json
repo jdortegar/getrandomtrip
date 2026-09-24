@@ -1,4 +1,23 @@
 {
+  "hotelVoucherPdf": {
+    "title": "Hotel voucher",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "holder": "Reservation holder",
+    "guests": "Guests",
+    "country": "Country",
+    "address": "Address",
+    "contact": "Contact",
+    "reference": "Reservation reference",
+    "issued": "Issue date",
+    "payment": "Payment status",
+    "confirmation": "Supplier confirmation",
+    "inclusions": "Included services",
+    "instructions": "Important information",
+    "location": "View location",
+    "provider": "Property website",
+    "preview": "Preview - not attached to the trip"
+  },
   "sentryExample": {
     "title": "Sentry smoke test",
     "description": "Development only. Each button creates a deliberate sample error. Confirm both events in Sentry Issues; this page cannot verify delivery.",

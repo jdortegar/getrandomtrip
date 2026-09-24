@@ -1,4 +1,23 @@
 {
+  "hotelVoucherPdf": {
+    "title": "Comprobante de alojamiento",
+    "checkIn": "Entrada",
+    "checkOut": "Salida",
+    "holder": "Titular de la reserva",
+    "guests": "Huéspedes",
+    "country": "País",
+    "address": "Dirección",
+    "contact": "Contacto",
+    "reference": "Referencia de reserva",
+    "issued": "Fecha de emisión",
+    "payment": "Estado de pago",
+    "confirmation": "Confirmación del proveedor",
+    "inclusions": "Servicios incluidos",
+    "instructions": "Información importante",
+    "location": "Ver ubicación",
+    "provider": "Sitio del alojamiento",
+    "preview": "Vista previa - no adjunta al viaje"
+  },
   "sentryExample": {
     "title": "Prueba de Sentry",
     "description": "Solo en desarrollo. Cada botón genera un error de prueba deliberado. Verificá ambos eventos en Sentry Issues; esta página no puede confirmar la entrega.",
