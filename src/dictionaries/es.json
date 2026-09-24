@@ -1,5 +1,6 @@
 {
   "dinnerVoucherPdf": {
+    "addItem": "Añadir plato",
     "guests": "Comensales",
     "restaurantName": "Nombre del restaurante",
     "title": "Comprobante gastronómico",

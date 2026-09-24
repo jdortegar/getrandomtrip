@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types/dictionary";
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseDinnerVoucher } from "@/lib/trip-documents/parsers/dinnerVoucher";
+import { DinnerVoucherMenu } from "./DinnerVoucherMenu";
 import styles from "./fulfillment.module.css";
 
 interface DinnerVoucherFormProps {
@@ -134,6 +135,14 @@ export function DinnerVoucherForm({
           maxLength={4000}
           onChange={(e) => updateData({ conditions: e.target.value })}
           value={data.conditions ?? ""}
+        />
+        <DinnerVoucherMenu
+          addLabel={dinnerCopy.addItem}
+          copy={copy}
+          disabled={submitting}
+          items={data.menuItems}
+          onChange={(menuItems) => updateData({ menuItems })}
+          title={dinnerCopy.menu}
         />
         {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">

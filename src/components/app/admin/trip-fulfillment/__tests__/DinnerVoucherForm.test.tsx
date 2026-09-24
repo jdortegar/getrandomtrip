@@ -208,3 +208,74 @@ it.each([
     container.querySelector('label[for="dinner-guests"]')?.textContent,
   ).toBe(label);
 });
+const menuRows = () => [
+  ...container.querySelectorAll<HTMLInputElement>("input[data-menu-title]"),
+];
+const menuButton = (attribute: string, index = 0) =>
+  container.querySelectorAll<HTMLButtonElement>(`button[${attribute}]`)[index];
+it("adds, edits, reorders and removes menu entries with stable identities", () => {
+  act(() => root.render(<Harness />));
+  act(() => menuButton("data-add-menu").click());
+  const added = menuRows()[1];
+  edit(added.id, "Postre");
+  edit(
+    container.querySelectorAll<HTMLTextAreaElement>(
+      "textarea[data-menu-description]",
+    )[1].id,
+    "Flan casero",
+  );
+  act(() => menuButton("data-menu-up", 1).click());
+  expect(menuRows()[0].id).toBe(added.id);
+  expect(menuRows()[0].value).toBe("Postre");
+  expect(
+    container.querySelector<HTMLTextAreaElement>(
+      "textarea[data-menu-description]",
+    )!.value,
+  ).toBe("Flan casero");
+  act(() => menuButton("data-menu-remove", 1).click());
+  expect(menuRows()).toHaveLength(1);
+  act(() =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  expect(submit.mock.calls[0][0].data).toMatchObject({
+    service: "Cena de pasos",
+    menuItems: [{ title: "Postre", description: "Flan casero" }],
+  });
+});
+it("caps menu at50, permits removal to empty, and preserves unrelated data", () => {
+  const items = Array.from({ length: 50 }, (_, i) => ({
+    id: `saved-${i}`,
+    title: `Dish ${i}`,
+  }));
+  act(() =>
+    root.render(
+      <Harness
+        value={{ ...initial, data: { ...initial.data, menuItems: items } }}
+      />,
+    ),
+  );
+  expect(menuButton("data-add-menu").disabled).toBe(true);
+  act(() => menuButton("data-menu-remove").click());
+  expect(menuButton("data-add-menu").disabled).toBe(false);
+  act(() => menuButton("data-add-menu").click());
+  expect(new Set(menuRows().map((row) => row.id)).size).toBe(50);
+  for (let i = 0; i < 50; i++)
+    act(() => menuButton("data-menu-remove").click());
+  expect(menuRows()).toHaveLength(0);
+  act(() =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  expect(submit.mock.calls[0][0].data).toMatchObject({
+    service: "Cena de pasos",
+    menuItems: [],
+  });
+});
+it("does not edit menu while a preview is busy", () => {
+  act(() => root.render(<Harness busy />));
+  act(() => menuButton("data-add-menu").click());
+  expect(menuRows()).toHaveLength(1);
+});
