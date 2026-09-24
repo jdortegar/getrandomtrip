@@ -1,8 +1,8 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration), 2.2d (exact-key execution). Remaining: 2.2e onward; deployment packaging/smoke gates remain.
-Boundaries: reviewed pure helpers and additive schema with adjacent tests; authorized schema application only, no application-row access, routes, dependencies or UI.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration), 2.2d (exact-key execution). Historical foundation checkpoint. Current cumulative implementation through2.24/3.11 is recorded below;2.2e was superseded. Final integrated/live/deployment gates remain.
+Historical foundation boundary: pure helpers and additive schema. Subsequent entries record routes, dependencies and UI; no later live application-row/storage mutation or deployment is implied.
 
 ## TDD Cycle Evidence
 
@@ -236,3 +236,49 @@ All five wrappers encode supplied optional provider/location/map HTTPS URLs loca
 ## Local Barlow and Publication-neutral Footer (2026-09-24)
 
 All five wrappers register local Barlow only after generation validation; templates use regular/bold Barlow weights. Shared EN/ES footer is now “Travel document” / “Documento de viaje”, valid for both private preview and unchanged published bytes. Baseline54tests → RED20newfailures → GREEN74tests/7suites; nonincremental typecheck/scopedlint pass. Rebuilt XSED EN/ES fixtures: long ES5pages/56,586bytes, embedded/subset Unicode BarlowRegular/Bold confirmed by pdffonts; first/last pages visually inspected with QR and neutral page footers. Full20-fixture QA/buildtrace/deployment still pending. Evidence `/private/tmp/font-integrate-*`, `/private/tmp/xsed-render-qa/`.
+
+
+## Cumulative Persistent Feature Checkpoint (2026-09-24)
+
+**Implementation complete; final verification incomplete.** Earlier “persistent lifecycle pending” statements describe historical transient milestones, not the current code. Nothing below claims live database concurrency, storage delivery, deployment, or release readiness.
+
+| Implemented boundary | Concrete implementation/evidence |
+|---|---|
+| Private drafts2.4–2.7 | Five-template incomplete validation/safe DTO; locked create/read/CAS-update/delete; transaction-loaded buyer locale/provider snapshots; admin collection/item APIs. Draft deletion preserves attachment and retained publication receipts. |
+| Render2.16–2.17 | Generation dispatcher→committed candidate→immutable raw-key PUT→revision-bound atomic adoption; SHA256/size identity and4MiB guard; authenticated renderPOST and verified stored-byte previewGET. Historical receipt reconciliation handles ambiguous adoption without unsafe deletion. |
+| Publication2.18–2.20 | Exact stored bytes, stable request identity, retained publication receipt, explicit stable-ID replacement and email timestamps untouched. Pending/expired request recovery is explicit; no silent new request or rerender-on-attach. |
+| Lifecycle2.21–2.24 | Attachment deletion preserves/unlinks draft; two trip-delete routes and account deletion use complete buyer-owned ordered locks, cancellation and known-key intents in the cascade transaction. Uploader/tripper associations do not define cleanup scope. |
+| Worker2.3 | Real Prisma/Netlify20-job ordered skip-locked selection, conditional TTL expiry, claim lease/CAS scheduling, permanent success/absence sweeps, capped sanitized failure backoff. Authenticated hourly adapter committed `531b5fc4`; core `1d811334`. |
+| Authoring3.1–3.11 | All five forms/repeatables, independent incomplete Save draft, conflict preservation/confirmed reload, saved-byte preview, explicit attach/replace, stable publication refresh event, confirmed draft deletion, dirty/unload guards and abort/stale-response protection. |
+| Entry consolidation | Five redundant dashboard transient launchers removed; retained compatibility components/endpoints. Single EN/ES Generate document panel beside upload, automatic provider/draft load, gated creation and visible retry. Parent browser panel360/1280no-overflow; no draft/editor/attachment mutation tested live. |
+| Assets2.8–2.15 | Renderer and QR installed with scripts disabled, generated Prisma unchanged; licensed local Barlow and six explicit tracing patterns; all five templates have local optional QR and neutral preview/publication footer. Font integration `c35f1f15`; QR `2734d1e2`. |
+
+### Cumulative TDD / verification evidence
+
+These are per-unit results, not an additive unique-test total. Earlier tables and progress sections remain intact.
+
+| Boundary | RED → GREEN / regression | Evidence |
+|---|---|---|
+| Draft contracts/backend/API | Missing/new behavior failures before implementations; guarded source/owner/revision/DTO tests | `/private/tmp/draft-contract-*`, adjacent `src/lib/db/__tests__` and admin draft API tests |
+| Render/publication | Validation/adoption/receipt/replacement failure cases; real bytes and fake storage; selected dispatcher/retirement scope strengthened after review | `/private/tmp/attach-*`, `/private/tmp/attach-api-*`, `/private/tmp/preview-get-*`; reviewed render `84476f2a`, initial publication `8ea690be` |
+| Deletion | Attachment route9RED→38tests; cascade helper missing-moduleRED→78tests; admin trip8RED→25; buyer trip7RED→24; account7RED→32 | `/private/tmp/{attachment-route,cascade-cleanup,admin-trip-delete,second-trip,account-delete}-*` |
+| Scheduling | Core missing-moduleRED→61tests/3suites; adapter missing-moduleRED→11tests/2suites | `/private/tmp/{worker,schedule}-*` |
+| Draft-delete UI / consolidation |5RED→37tests; automatic-load2RED plus stale-load triangulation→40tests/4suites | `/private/tmp/{draft-delete-ui,consolidate}-*`; nonincremental typecheck/new scoped lint passed; installed Next SWC transform passed |
+| QR / fonts | QR missing helper plus5wrapper failures→52tests; font integration20RED→74tests/7suites | `/private/tmp/{qr-behavior,font-integrate}-*`; actual PDFs/local assets, no URL fetch |
+
+### Final QA status — not release-ready
+
+- Report `/private/tmp/pdf-final-visual-qa/report.md`:20fresh fixtures,56A4pages,max57,374bytes, all five contact sheets inspected without clipping/overlap; both Barlow weights embedded, accents/page counters/30long-item headings preserved. All32 standard HTTPS destinations exist as clickable annotations and decode from actual150dpi raster QR crops.
+- **Documented limitation:**2,000-byte dense URL produces88,785-byte PDF;100pt QR fails150dpi decoding but exact destination decodes at300dpi. This satisfies scannability; the spec does not require150dpi, so no new acceptance blocker is imposed. Low-resolution scanning is not universally reliable; full clickable URL is intact.
+- Earlier343files/3,613tests checkpoint is historical. Frozen `0e3211de` final rerun passes345suites/3,654tests and nonincremental typecheck (`/private/tmp/pdf-final-full-tests.log`, `/private/tmp/pdf-final-full-typecheck.log`). Full lint baseline is53errors/11warnings, not only the dashboard effect; new scoped lint passes, no blanket repository-lint pass claimed.
+- Live DB concurrency/commit-loss, actual stored publication/browser painting, cleanup late-write recovery, Netlify preview/cron/secret/external hook smoke remain unverified. Isolated production build/traces subsequently passed as recorded below. No production deploy, new schema/client generation or live application mutation was performed for this checkpoint.
+- Original prefix WIP stash remains untouched. Do not archive: resolve remaining QA findings, run final verification, and record deployment gates explicitly.
+
+
+### Frozen-state compatibility audit (0e3211de)
+
+Current implementation branch `codex/pdf-unified-workflow`, independent review PASS. Read-only inspection of upload POST, traveler list/stream, safe document DTO and trip-start email confirms publication compatibility: all consume TripDocument, never private draft content/preview keys. Existing auth/visibility boundaries remain; upload behavior unchanged and generated attachment uses the same published-row DTO/stream path. Final full-suite evidence includes51 relevant tests across upload, stream, delete, email, DTO and visibility suites; explicit private-draft exclusion cases pass. Task4.1 code/regression gate complete, while actual browser published PDF painting/live email/storage delivery remains pending. No source edits or new tests during isolated build verification.
+
+
+### Isolated production build and asset tracing
+Frozen `0e3211de` built successfully in `/private/tmp/getrandomtrip-prod-verify.y4rn6B`:190/190pages and type checks, no DB fallback/errors. All six render-route NFT manifests include BarlowRegular, BarlowBold, OFL and logo (24required asset entries), confirmed in `/private/tmp/pdf-final-build-traces.json`. Verification runtime wasNode25, not configured NetlifyNode20: deployment/runtime smoke remains open. The working-tree3010server was not restarted; parent confirmed it remained alive. No live DB/storage mutation is implied by the isolated build.

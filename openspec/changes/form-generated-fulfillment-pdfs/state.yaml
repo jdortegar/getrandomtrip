@@ -12,22 +12,23 @@ artifacts:
   design: complete
   tasks: complete
   apply: in-progress
-  verify: pending
+  verify: local-implementation-verified-release-incomplete
   archive: pending
 delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: persistent-draft-contracts
-  current_branch: codex/pdf-persistent-drafts
+  current_slice: cumulative-implementation-verification-checkpoint
+  current_branch: codex/pdf-unified-workflow
+  current_implementation_commit: 0e3211de
   current_base: develop
-  local_integration_commit: 923725a5
+  historical_local_integration_commit: 923725a5
   preserved_pdf_tip: ace55baaa4c9c61e35e7d3a494302e3d56cef414
   local_develop_base: 010d414ce5f612a39844cd84c0b9b9e6997d2901
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: pending
-  current_slice_tests_passed: 348
+  current_slice_review: passed
+  current_slice_tests_passed: 3654
   transient_test_suites_passed: 30
   transient_lint_files_passed: 69
   transient_typecheck: passed-nonincremental
@@ -54,22 +55,41 @@ delivery:
   provider_prefills_pr: 164
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
-  dependency_size_exception: pending
+  dependency_size_exception: historical-726-line-plan-not-used
   renderer_only_dependency: {changed_lines: 515, exception: approved, status: installed, commit: 34979cfc}
-  next_slice: locked-revision-controlled-draft-crud
+  next_slice: remaining-live-and-netlify-verification
   awaiting_user: null
   transient_milestones: {hotel: 1e6ffbeb, activity: e82c14c8, dinner: f4e3db5c, experience: b7548a8c, xsed: 37731d70}
   browser_pdf_paint: unverified
-  original_persistent_scope: incomplete
+  original_persistent_scope: implementation-complete-verification-pending
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.
   - Do not deploy to production.
   - User approved issue-link exception for this feature because repository issues are disabled.
-baseline:
+historical_foundation_baseline:
   typecheck: pass
   tests_passed: 1742
   tests_failed: 20
   lint: preexisting-next-lint-command-failure
   database_target: user-confirmed-development-or-staging
   relevant_regression_tests_passed: 57
+
+verification_checkpoint:
+  release_ready: false
+  final_suite: {commit: 0e3211de, files: 345, tests: 3654, typecheck: passed-nonincremental}
+  earlier_full_suite: {files: 343, tests: 3613, typecheck: passed}
+  standard_pdf_fixtures: {count: 20, pages: 56, qr_destinations_decoded_150dpi_crops: 32, status: passed}
+  fixture_commit: c35f1f15
+  fixture_report: /private/tmp/pdf-final-visual-qa/report.md
+  dense_qr_2000_bytes: {at_150dpi: failed, at_300dpi: passed, classification: documented-low-resolution-limitation}
+  browser_panel: {mobile_360: no-overflow, desktop_1280: no-overflow}
+  browser_persistent_editor_and_delivery: not-exercised-live
+  live_database_concurrency: not-verified
+  production_build_and_traces: {commit: 0e3211de, status: passed, pages: 190, traced_routes: 6, traced_asset_entries: 24, runtime_node: 25}
+  netlify_node20_runtime: not-verified
+  netlify_preview_and_scheduler: pending
+  new_scoped_lint: passed
+  repository_lint: {errors: 53, warnings: 11, classification: preexisting-baseline}
+  archive: blocked-by-open-verification-gates
+  report: verify-report.md
