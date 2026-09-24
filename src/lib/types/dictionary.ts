@@ -1047,6 +1047,8 @@ export interface XsedBookDict {
 }
 
 export interface XsedLevelCardDict {
+  /** Badge shown on the top edge of the XSED card. */
+  badge: string;
   closingLine: string;
   ctaLabel: string;
   features: Array<{ description: string; title: string }>;
@@ -3000,6 +3002,8 @@ export interface MarketingDictionary {
       byTripper: string;
       /** Shown on a carousel card in place of the tripper badge when the attributed tripper doesn't offer this type/level — it's still bookable, just priced/fulfilled by Randomtrip directly. */
       byRandomtrip: string;
+      /** Badge on the featured level card. */
+      mostChosen: string;
     };
     userNamePlaceholder: string;
     meta: {

@@ -181,7 +181,9 @@ it.each(["en", "es"])(
       expectWhiteAndOffWhitePalette();
       expect(
         cards()
-          .filter((card) => card.textContent?.includes("Más elegido"))
+          .filter((card) =>
+            card.textContent?.includes(dict.journey.tripperBadge.mostChosen),
+          )
           .map((card) => card.querySelector("h3")?.textContent),
       ).toEqual(["Explora+"]);
       expect(regular[0].querySelector("a")?.getAttribute("href")).toBe(
@@ -340,4 +342,24 @@ it("prices the XSED card at the solo rate on the solo traveler-type page", async
   });
   act(() => root.render(page));
   expect(cards()[0].textContent).toContain("350 USD");
+});
+
+it.each([
+  ["en", "Most popular"],
+  ["es", "Más elegido"],
+])("labels the XSED and featured cards with localized badges (%s)", (locale, featured) => {
+  navigation.locale = locale;
+  const dict = locale === "en" ? en : es;
+  act(() =>
+    root.render(<ExperiencesPageClient locale={locale} tripperContext={null} />),
+  );
+  const badges = () =>
+    Array.from(container.querySelectorAll('[data-component="Label"]')).map(
+      (badge) => badge.textContent,
+    );
+  expect(cards()[0].textContent).toContain(dict.xsedLevelCard.badge);
+  expect(badges()).toContain(dict.xsedLevelCard.badge);
+  expect(badges()).toContain(featured);
+  const badge = container.querySelector('[data-component="Label"]');
+  expect(badge?.classList.contains("-translate-y-1/2")).toBe(true);
 });

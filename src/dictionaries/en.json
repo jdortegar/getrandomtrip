@@ -928,6 +928,7 @@
     "loadMore": "LOAD MORE"
   },
   "xsedLevelCard": {
+    "badge": "Sunday Glitch",
     "closingLine": "One night, one dinner, and one surprise local experience close to home.",
     "ctaLabel": "DISCOVER TGIS",
     "features": [
@@ -2880,7 +2881,8 @@
     "tripperBadge": {
       "curatedBy": "TRIP CURATED BY",
       "byTripper": "BY TRIPPER",
-      "byRandomtrip": "BY RANDOMTRIP"
+      "byRandomtrip": "BY RANDOMTRIP",
+      "mostChosen": "Most popular"
     },
     "userNamePlaceholder": "User name",
     "meta": {

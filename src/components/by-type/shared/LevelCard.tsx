@@ -21,6 +21,8 @@ import Link from "next/link";
 import { useDictionary } from "@/hooks/useDictionary";
 
 interface LevelCardProps {
+  /** Custom text for the top-edge badge; overrides the featured "most chosen" badge. */
+  badgeLabel?: string;
   ctaClassName?: string;
   featured?: boolean;
   /** Explicit destination for a standalone product; regular levels keep their default route. */
@@ -59,6 +61,7 @@ const FEATURE_ICONS: Record<
 };
 
 export default function LevelCard({
+  badgeLabel,
   ctaClassName,
   featured = false,
   href,
@@ -77,6 +80,10 @@ export default function LevelCard({
   const byRandomtripLabel = useDictionary(
     (d) => d.journey.tripperBadge.byRandomtrip,
   );
+  const mostChosenLabel = useDictionary(
+    (d) => d.journey.tripperBadge.mostChosen,
+  );
+  const topBadge = badgeLabel ?? (featured ? mostChosenLabel : undefined);
   const ctaHref =
     href ??
     (travelerType
@@ -111,11 +118,11 @@ export default function LevelCard({
       style={{ boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.2)" }}
       data-component="LevelCard"
     >
-      {/* Featured Badge - Top Left */}
-      {featured && (
+      {/* Top badge - centered on the card's top edge, half outside the card */}
+      {topBadge && (
         <Label
-          text="Más elegido"
-          className="absolute left-1/2 z-10 -translate-x-1/2 -top-2 @[250px]:-top-3"
+          text={topBadge}
+          className="absolute left-1/2 top-[-2px] z-10 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap"
         />
       )}
 

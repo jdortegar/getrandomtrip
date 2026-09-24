@@ -928,6 +928,7 @@
     "loadMore": "VER MÁS"
   },
   "xsedLevelCard": {
+    "badge": "Sunday Glitch",
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
     "ctaLabel": "DESCUBRE XSED",
     "features": [
@@ -1472,7 +1473,8 @@
     "tripperBadge": {
       "curatedBy": "VIAJE CURADO POR",
       "byTripper": "BY TRIPPER",
-      "byRandomtrip": "BY RANDOMTRIP"
+      "byRandomtrip": "BY RANDOMTRIP",
+      "mostChosen": "Más elegido"
     },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [

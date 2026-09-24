@@ -14,6 +14,7 @@ interface XsedLevelCardProps {
 export function XsedLevelCard({ copy, locale, travelType }: XsedLevelCardProps) {
   return (
     <LevelCard
+      badgeLabel={copy.badge}
       ctaClassName="text-ink"
       href={pathForLocale(hasLocale(locale) ? locale : "es", "/xsed")}
       level={{
