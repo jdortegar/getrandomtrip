@@ -21,9 +21,13 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/db/withDocumentCascadeCleanup", () => ({ withDocumentCascadeCleanup: vi.fn() }));
+
 // ── Imports ────────────────────────────────────────────────────────────────────
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
+const transactionDelete = vi.fn();
 
 type RouteModule = typeof import("../route");
 
@@ -212,6 +216,7 @@ describe("DELETE /api/trips/[id]", () => {
     vi.resetAllMocks();
     const mod = await import("../route");
     DELETE = mod.DELETE;
+    vi.mocked(withDocumentCascadeCleanup).mockImplementation(async (_db, _scope, work) => work({ tripRequest: { delete: transactionDelete } } as never));
   });
 
   it("stays buyer-only: a companion linked via TripTraveler.userId still gets 403 — NOT routed through the shared read predicate", async () => {
@@ -247,6 +252,33 @@ describe("DELETE /api/trips/[id]", () => {
     const res = await DELETE(makeRequest("DELETE"), makeProps("trip-1"));
 
     expect(res.status).toBe(200);
-    expect(prisma.tripRequest.delete).toHaveBeenCalledTimes(1);
+    expect(prisma.tripRequest.delete).not.toHaveBeenCalled();
+    expect(transactionDelete).toHaveBeenCalledWith({ where: { id: "trip-1" } });
+    expect(withDocumentCascadeCleanup).toHaveBeenCalledWith(prisma, { kind: "trip", ownerId: "user-1", tripRequestId: "trip-1" }, expect.any(Function));
+    expect(res.headers.get("cache-control")).toBe("private, no-store");
   });
+  it.each(["cleanup", "cascade", "scope"])("fails safely on %s errors", async stage => {
+    vi.mocked(getServerSession).mockResolvedValue({ user: { email: "test@example.com" } });
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockUser as never);
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(mockTrip as never);
+    const error = new Error(stage === "scope" ? "DOCUMENT_LOCK_SCOPE_MISMATCH" : "postgres://private-secret");
+    if (stage === "cascade") transactionDelete.mockRejectedValue(error);
+    else vi.mocked(withDocumentCascadeCleanup).mockRejectedValue(error);
+    const response = await DELETE(makeRequest("DELETE"), makeProps("trip-1"));
+    expect(response.status).toBe(stage === "scope" ? 409 : 503);
+    expect(await response.json()).toEqual({ error: stage === "scope" ? "trip_conflict" : "delete_unavailable" });
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(prisma.tripRequest.delete).not.toHaveBeenCalled();
+    if (stage !== "cascade") expect(transactionDelete).not.toHaveBeenCalled();
+  });
+  it.each(["session", "user", "trip"])("does not enter cleanup for missing %s", async stage => {
+    vi.mocked(getServerSession).mockResolvedValue(stage === "session" ? null : { user: { email: "test@example.com" } });
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(stage === "user" ? null : mockUser as never);
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(null);
+    const response = await DELETE(makeRequest("DELETE"), makeProps("trip-1"));
+    expect(response.status).toBe(stage === "session" ? 401 : 404);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(withDocumentCascadeCleanup).not.toHaveBeenCalled();
+  });
+
 });

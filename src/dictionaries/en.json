@@ -1,4 +1,127 @@
 {
+  "xsedRoadmapPdf": {
+    "directions": "Directions",
+    "addStop": "Add stop",
+    "mapUrl": "Map URL (HTTPS, optional)",
+    "note": "Enter the route and driving duration manually. No directions or journey times are calculated.",
+    "title": "XSED roadmap",
+    "origin": "Origin",
+    "destination": "Destination",
+    "departureDate": "Departure date",
+    "departureTime": "Departure time",
+    "drivingDuration": "Driving duration",
+    "stops": "Step-by-step itinerary",
+    "date": "Suggested date",
+    "time": "Suggested time",
+    "map": "Open interactive map"
+  },
+  "documentDraftDelivery": {
+    "preview": "Preview saved PDF",
+    "saveFirst": "Save changes before previewing or attaching.",
+    "attach": "Attach PDF",
+    "replace": "Replace attached PDF",
+    "confirmReplace": "Replace the attached document with this exact preview?",
+    "view": "Open saved PDF preview",
+    "draft": "Private draft",
+    "attached": "Attached",
+    "unpublished": "Unpublished saved changes",
+    "reset": "Start a new attachment request",
+    "resetConfirm": "The previous request expired. Start a new request?",
+    "attach_in_progress": "Attachment is still pending. Retry the same request later.",
+    "attach_request_expired": "The request expired. You can explicitly start a new request.",
+    "attach_request_mismatch": "This request no longer matches. Reopen the draft.",
+    "replacement_required": "Confirm replacement of the existing attachment.",
+    "replacement_mismatch": "The attachment changed. Reopen the draft.",
+    "preview_conflict": "The preview changed. Save and render again.",
+    "attachment_missing": "The attachment was removed. Reopen the draft.",
+    "unavailable": "Could not complete the request. Retry without changing the request identity."
+  },
+  "documentDraftPanel": {
+    "generate": "Generate document",
+    "sourceNote": "Choose a template and optional source provider, or reopen a saved draft. Drafts remain private until you attach a reviewed PDF.",
+    "delete": "Delete draft",
+    "deleteConfirm": "Delete this private draft and discard any unsaved edits? Any attached PDF will be preserved.",
+    "title": "Private document drafts",
+    "load": "Refresh drafts",
+    "template": "Template",
+    "provider": "Source provider",
+    "none": "No provider prefill",
+    "create": "Create draft",
+    "pending": "Working…",
+    "conflict": "Another save changed this draft. Your edits are preserved. Reload only to discard them and use the latest saved version.",
+    "reload": "Reload saved version",
+    "error": "Draft request failed. Try again.",
+    "saved": "Saved version loaded."
+  },
+  "documentDraftEditor": {
+    "save": "Save draft",
+    "close": "Close draft",
+    "discard": "Discard unsaved draft changes?",
+    "note": "Drafts are private and are not attached or emailed. You can save incomplete fields; PDF preview requires complete content."
+  },
+  "xsedRoadmapPreview": {
+    "open": "Create XSED roadmap preview",
+    "title": "XSED roadmap preview",
+    "note": "This preview is temporary. It is not saved or attached to the trip. Enter all directions and driving times manually.",
+    "discard": "Discard your unsaved XSED roadmap changes?"
+  },
+  "experienceRoadmapPreview": {
+    "open": "Create experience roadmap",
+    "title": "Experience roadmap preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Trip details are editable suggestions; enter the itinerary and verify all dates.",
+    "discard": "Discard this unsaved roadmap?"
+  },
+  "experienceRoadmapPdf": {
+    "addActivity": "Add suggested activity",
+    "heading": "Roadmap heading",
+    "mapUrl": "Map URL (HTTPS)",
+    "note": "Enter your suggested itinerary. No route or travel times are calculated automatically.",
+    "title": "Experience roadmap",
+    "origin": "Origin",
+    "destination": "Destination",
+    "startDate": "Departure date",
+    "endDate": "End date",
+    "duration": "Travel duration",
+    "activities": "Suggested activities",
+    "date": "Suggested date",
+    "time": "Suggested time",
+    "map": "Open interactive map"
+  },
+  "dinnerVoucherPreview": {
+    "open": "Create dinner preview",
+    "title": "Dinner voucher preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Buyer name and trip date are editable suggestions; verify restaurant details.",
+    "discard": "Discard this unsaved dinner form?"
+  },
+  "dinnerVoucherPdf": {
+    "addItem": "Add menu item",
+    "guests": "Diners",
+    "restaurantName": "Restaurant name",
+    "title": "Dinner voucher",
+    "date": "Dinner date",
+    "time": "Arrival time",
+    "service": "Service",
+    "menu": "Menu",
+    "conditions": "Conditions and recommendations",
+    "provider": "Restaurant website"
+  },
+  "activityVoucherPreview": {
+    "open": "Create activity preview",
+    "title": "Activity voucher preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Buyer name and trip date are editable suggestions; verify activity details.",
+    "discard": "Discard this unsaved activity form?"
+  },
+  "activityVoucherPdf": {
+    "addItem": "Add item",
+    "providerName": "Provider name",
+    "provider": "Provider website",
+    "title": "Activity voucher",
+    "participants": "Participants",
+    "date": "Activity date",
+    "time": "Activity time",
+    "program": "Program",
+    "recommendations": "Recommendations"
+  },
   "hotelVoucherPreview": {
     "open": "Create hotel preview",
     "title": "Hotel voucher preview",
@@ -47,7 +170,7 @@
     "instructions": "Important information",
     "location": "View location",
     "provider": "Property website",
-    "preview": "Preview - not attached to the trip"
+    "preview": "Travel document"
   },
   "sentryExample": {
     "title": "Sentry smoke test",

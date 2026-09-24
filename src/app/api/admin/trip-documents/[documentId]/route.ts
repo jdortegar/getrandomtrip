@@ -1,57 +1,54 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
-import { getTripDocumentStore } from "@/lib/storage/tripDocumentStore";
+import { deletePublishedDocument } from "@/lib/db/deletePublishedDocument";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
 type RouteContext = { params: Promise<{ documentId: string }> };
+const headers = { "Cache-Control": "private, no-store" };
 
-/**
- * Admin-role-based delete, NOT upload-ownership (Resolved Decision #2). Any
- * admin can remove any trip's document, regardless of which admin uploaded
- * it. Row is deleted first, then the blob is removed best-effort — a
- * dangling row is never acceptable, an orphaned blob in a private store is.
- * Never proxies through `DELETE /api/upload/[...path]`, which would
- * re-apply the uploader-ownership check this route deliberately does not
- * inherit.
+/** Any live admin may delete an attachment, regardless of its uploader.
+ * The transaction retains exact-key cleanup intents; storage I/O belongs to
+ * the worker, never this request or its database transaction.
  */
 export async function DELETE(
   _request: NextRequest,
   props: RouteContext,
 ): Promise<NextResponse> {
-  const { documentId } = await props.params;
   try {
     const auth = await requireAdmin();
-    if (!auth.ok) return auth.errorResponse;
-
+    if (!auth.ok) {
+      auth.errorResponse.headers.set("Cache-Control", "private, no-store");
+      return auth.errorResponse;
+    }
+    const { documentId } = await props.params;
     const document = await prisma.tripDocument.findUnique({
       where: { id: documentId },
-      select: { id: true, storageKey: true },
+      select: {
+        id: true,
+        tripRequestId: true,
+        tripRequest: { select: { userId: true } },
+      },
     });
-    if (!document) {
-      return NextResponse.json({ error: "not_found" }, { status: 404 });
-    }
-
-    await prisma.tripDocument.delete({ where: { id: document.id } });
-
-    try {
-      const store = getTripDocumentStore();
-      await store.delete(document.storageKey);
-    } catch (storageError) {
-      console.error(
-        "[admin/trip-documents/:id] best-effort blob delete failed",
-        storageError,
+    if (!document)
+      return NextResponse.json(
+        { error: "not_found" },
+        { status: 404, headers },
       );
-    }
-
-    return new NextResponse(null, { status: 204 });
+    await deletePublishedDocument(prisma, {
+      ownerId: document.tripRequest.userId,
+      tripRequestId: document.tripRequestId,
+      documentId: document.id,
+    });
+    return new NextResponse(null, { status: 204, headers });
   } catch (error) {
-    console.error("[admin/trip-documents/:id] DELETE", error);
+    const conflict =
+      error instanceof Error &&
+      error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: conflict ? "document_conflict" : "delete_unavailable" },
+      { status: conflict ? 409 : 503, headers },
     );
   }
 }

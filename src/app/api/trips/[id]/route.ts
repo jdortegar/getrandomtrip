@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
@@ -117,12 +118,12 @@ export async function DELETE(
   request: NextRequest,
   props: { params: Promise<{ id: string }> },
 ) {
-  const params = await props.params;
+  const headers = { "Cache-Control": "private, no-store" };
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
     }
 
     // Find user by email
@@ -131,37 +132,39 @@ export async function DELETE(
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404, headers });
     }
 
+    const params = await props.params;
     // Get trip
     const trip = await prisma.tripRequest.findUnique({
       where: { id: params.id },
     });
 
     if (!trip) {
-      return NextResponse.json({ error: "Trip not found" }, { status: 404 });
+      return NextResponse.json({ error: "Trip not found" }, { status: 404, headers });
     }
 
     // Verify ownership
     if (trip.userId !== user.id) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403, headers });
     }
 
-    // Delete trip
-    await prisma.tripRequest.delete({
-      where: { id: params.id },
-    });
+    await withDocumentCascadeCleanup(
+      prisma,
+      { kind: "trip", ownerId: trip.userId, tripRequestId: trip.id },
+      (tx) => tx.tripRequest.delete({ where: { id: trip.id } }),
+    );
 
     return NextResponse.json(
       { message: "Trip deleted successfully" },
-      { status: 200 },
+      { status: 200, headers },
     );
   } catch (error) {
-    console.error("Error deleting trip:", error);
+    const conflict = error instanceof Error && error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: conflict ? "trip_conflict" : "delete_unavailable" },
+      { status: conflict ? 409 : 503, headers },
     );
   }
 }

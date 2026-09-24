@@ -1,4 +1,127 @@
 {
+  "xsedRoadmapPdf": {
+    "directions": "Indicaciones",
+    "addStop": "Agregar parada",
+    "mapUrl": "URL del mapa (HTTPS, opcional)",
+    "note": "Introduce la ruta y el tiempo de conducción manualmente. No se calculan indicaciones ni tiempos de viaje.",
+    "title": "Hoja de ruta XSED",
+    "origin": "Origen",
+    "destination": "Destino",
+    "departureDate": "Fecha de salida",
+    "departureTime": "Horario de salida",
+    "drivingDuration": "Tiempo de conducción",
+    "stops": "Itinerario paso a paso",
+    "date": "Fecha sugerida",
+    "time": "Horario sugerido",
+    "map": "Abrir mapa interactivo"
+  },
+  "documentDraftDelivery": {
+    "preview": "Vista previa del PDF guardado",
+    "saveFirst": "Guardá los cambios antes de previsualizar o adjuntar.",
+    "attach": "Adjuntar PDF",
+    "replace": "Reemplazar PDF adjunto",
+    "confirmReplace": "¿Reemplazar el documento adjunto por esta vista previa exacta?",
+    "view": "Abrir vista previa guardada",
+    "draft": "Borrador privado",
+    "attached": "Adjunto",
+    "unpublished": "Cambios guardados sin publicar",
+    "reset": "Iniciar una nueva solicitud",
+    "resetConfirm": "La solicitud anterior venció. ¿Iniciar una nueva?",
+    "attach_in_progress": "La solicitud sigue pendiente. Reintentá la misma solicitud más tarde.",
+    "attach_request_expired": "La solicitud venció. Podés iniciar una nueva explícitamente.",
+    "attach_request_mismatch": "La solicitud ya no coincide. Reabrí el borrador.",
+    "replacement_required": "Confirmá el reemplazo del adjunto existente.",
+    "replacement_mismatch": "El adjunto cambió. Reabrí el borrador.",
+    "preview_conflict": "La vista previa cambió. Guardá y generala nuevamente.",
+    "attachment_missing": "El adjunto fue eliminado. Reabrí el borrador.",
+    "unavailable": "No se pudo completar la solicitud. Reintentá sin cambiar su identidad."
+  },
+  "documentDraftPanel": {
+    "generate": "Generar documento",
+    "sourceNote": "Elegí una plantilla y un proveedor de origen opcional, o abrí un borrador guardado. Los borradores son privados hasta que adjuntes el PDF revisado.",
+    "delete": "Eliminar borrador",
+    "deleteConfirm": "¿Eliminar este borrador privado y descartar los cambios sin guardar? El PDF adjunto se conservará.",
+    "title": "Borradores privados de documentos",
+    "load": "Actualizar borradores",
+    "template": "Plantilla",
+    "provider": "Proveedor de origen",
+    "none": "Sin datos de proveedor",
+    "create": "Crear borrador",
+    "pending": "Procesando…",
+    "conflict": "Otro guardado cambió este borrador. Tus cambios se conservan. Recargá solo para descartarlos y usar la última versión guardada.",
+    "reload": "Recargar versión guardada",
+    "error": "No se pudo completar la solicitud. Intentá nuevamente.",
+    "saved": "Versión guardada cargada."
+  },
+  "documentDraftEditor": {
+    "save": "Guardar borrador",
+    "close": "Cerrar borrador",
+    "discard": "¿Descartar los cambios sin guardar del borrador?",
+    "note": "Los borradores son privados y no se adjuntan ni se envían por correo. Podés guardar campos incompletos; la vista previa PDF requiere contenido completo."
+  },
+  "xsedRoadmapPreview": {
+    "open": "Crear vista previa de hoja de ruta XSED",
+    "title": "Vista previa de hoja de ruta XSED",
+    "note": "Esta vista previa es temporal. No se guarda ni se adjunta al viaje. Las indicaciones y los tiempos de conducción se ingresan manualmente.",
+    "discard": "¿Descartar los cambios sin guardar de la hoja de ruta XSED?"
+  },
+  "experienceRoadmapPreview": {
+    "open": "Crear hoja de ruta de experiencia",
+    "title": "Vista previa de hoja de ruta",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. Los datos del viaje son sugerencias editables; introduce el itinerario y verifica las fechas.",
+    "discard": "¿Descartar esta hoja de ruta sin guardar?"
+  },
+  "experienceRoadmapPdf": {
+    "addActivity": "Añadir actividad sugerida",
+    "heading": "Título de la hoja de ruta",
+    "mapUrl": "Enlace al mapa (HTTPS)",
+    "note": "Introduce el itinerario sugerido. No se calculan rutas ni tiempos de viaje automáticamente.",
+    "title": "Hoja de ruta de experiencia",
+    "origin": "Origen",
+    "destination": "Destino",
+    "startDate": "Fecha de salida",
+    "endDate": "Fecha de finalización",
+    "duration": "Duración del viaje",
+    "activities": "Actividades sugeridas",
+    "date": "Fecha sugerida",
+    "time": "Horario sugerido",
+    "map": "Abrir mapa interactivo"
+  },
+  "dinnerVoucherPreview": {
+    "open": "Crear vista previa de cena",
+    "title": "Vista previa del comprobante gastronómico",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. El nombre del comprador y la fecha del viaje son sugerencias editables; verifica los datos del restaurante.",
+    "discard": "¿Descartar este formulario de cena sin guardar?"
+  },
+  "dinnerVoucherPdf": {
+    "addItem": "Añadir plato",
+    "guests": "Comensales",
+    "restaurantName": "Nombre del restaurante",
+    "title": "Comprobante gastronómico",
+    "date": "Fecha de la cena",
+    "time": "Horario de llegada",
+    "service": "Servicio",
+    "menu": "Menú",
+    "conditions": "Condiciones y recomendaciones",
+    "provider": "Sitio web del restaurante"
+  },
+  "activityVoucherPreview": {
+    "open": "Crear vista previa de actividad",
+    "title": "Vista previa del comprobante de actividad",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. El nombre del comprador y la fecha del viaje son sugerencias editables; verifica los datos de la actividad.",
+    "discard": "¿Descartar este formulario de actividad sin guardar?"
+  },
+  "activityVoucherPdf": {
+    "addItem": "Añadir elemento",
+    "providerName": "Nombre del proveedor",
+    "provider": "Sitio web del proveedor",
+    "title": "Comprobante de actividad",
+    "participants": "Participantes",
+    "date": "Fecha de la actividad",
+    "time": "Horario de la actividad",
+    "program": "Programa",
+    "recommendations": "Recomendaciones"
+  },
   "hotelVoucherPreview": {
     "open": "Crear vista previa de hotel",
     "title": "Vista previa del comprobante de hotel",
@@ -47,7 +170,7 @@
     "instructions": "Información importante",
     "location": "Ver ubicación",
     "provider": "Sitio del alojamiento",
-    "preview": "Vista previa - no adjunta al viaje"
+    "preview": "Documento de viaje"
   },
   "sentryExample": {
     "title": "Prueba de Sentry",

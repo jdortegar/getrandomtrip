@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
+import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
 import {
   sendDestinationRevealed,
@@ -299,36 +300,40 @@ export async function DELETE(
   _request: NextRequest,
   props: { params: Promise<{ id: string }> },
 ) {
-  const params = await props.params;
+  const headers = { "Cache-Control": "private, no-store" };
   try {
     const session = await getServerSession(authOptions);
-
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
     }
-
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { id: true, roles: true },
     });
-
     if (!user || !hasRoleAccess(user, "admin")) {
       return NextResponse.json(
         { error: "Forbidden - Admin access only" },
-        { status: 403 },
+        { status: 403, headers },
       );
     }
-
-    await prisma.tripRequest.delete({
-      where: { id: params.id },
+    const { id } = await props.params;
+    const trip = await prisma.tripRequest.findUnique({
+      where: { id },
+      select: { id: true, userId: true },
     });
-
-    return NextResponse.json({ ok: true });
+    if (!trip)
+      return NextResponse.json({ error: "not_found" }, { status: 404, headers });
+    await withDocumentCascadeCleanup(
+      prisma,
+      { kind: "trip", ownerId: trip.userId, tripRequestId: trip.id },
+      (tx) => tx.tripRequest.delete({ where: { id: trip.id } }),
+    );
+    return NextResponse.json({ ok: true }, { headers });
   } catch (error) {
-    console.error("Error deleting admin trip request:", error);
+    const conflict = error instanceof Error && error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
+      { error: conflict ? "trip_conflict" : "delete_unavailable" },
+      { status: conflict ? 409 : 503, headers },
     );
   }
 }

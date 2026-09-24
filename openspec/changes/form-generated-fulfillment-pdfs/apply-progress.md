@@ -1,8 +1,8 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration), 2.2d (exact-key execution). Remaining: 2.2e onward; deployment packaging/smoke gates remain.
-Boundaries: reviewed pure helpers and additive schema with adjacent tests; authorized schema application only, no application-row access, routes, dependencies or UI.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration), 2.2d (exact-key execution). Historical foundation checkpoint. Current cumulative implementation through2.24/3.11 is recorded below;2.2e was superseded. Final integrated/live/deployment gates remain.
+Historical foundation boundary: pure helpers and additive schema. Subsequent entries record routes, dependencies and UI; no later live application-row/storage mutation or deployment is implied.
 
 ## TDD Cycle Evidence
 
@@ -145,3 +145,140 @@ Injected executor reads the durable job without parent lookups and only deletes 
 | 2.2d | `src/lib/trip-documents/__tests__/cleanup.test.ts` | 67 registration/planner passed | Missing-module failure | 1 passed; 13 unsafe/mismatched-job failures → 20 passed; byte-boundary/legacy-identity/read-failure coverage → 24 passed | Formatting; 218 lifecycle/planner/executor regressions passed |
 
 Verification: exact executor + planner + registration/candidate/lifecycle/cancellation/locks selection → 218 passed; typecheck, targeted ESLint, Prettier and diff checks passed. Fake storage tests cover repeated absent/successful sweeps followed by late PUT, retained/publication safety, failed deletion retry and valid Unicode 600-byte/invalid 601-byte targets. No actual storage deletion, DB, schema, dependency, worker or endpoint operation. Retained jobs require recurring worker scheduling before eventual cleanup is operational; no immediate-permanent-absence guarantee. Next: 2.2e bounded prefix tombstone execution. External publication/dependency gates unchanged.
+
+## Transient Activity Renderer Continuation (2026-09-24)
+
+Recovery: clean develop `186454a5` contains hotel vertical milestone `1e6ffbeb` as ancestor; external home/XSED changes preserved. Prior blocked prefix WIP remains in stash `8bdd8a36` (untracked files in third parent), NOT restored or approved. Historical lifecycle evidence above remains intact. Hotel dependency/render/form/preview work is already committed; user prioritizes usable transient templates, not cleanup/storage. Renderer-only dependency exception was separately approved; historical QR/package exception is not approval for further dependencies.
+
+Activity renderer uses existing generation parser, local logo, hotel-aligned teal/cyan A4 branding, EN/ES copy, authored provider/participants/date/time/program/inclusions/recommendations and optional claims; no inferred confirmation/payment, QR, persistence or network assets. Node boundary rejects output above4MiB. Helvetica fidelity gap remains explicit.
+
+| Unit | RED | GREEN / triangulation | Refactor / verification |
+|---|---|---|---|
+| Activity renderer | Missing-module failure before source |7 renderer tests +67 activity parser +7 hotel renderer =81 passed |Typecheck and targeted lint passed; actual EN1page/ES4page PDFs inspected, all30 long-program titles/accents extracted |
+
+QA artifacts: `/private/tmp/activity-render-qa/`; logs `/private/tmp/activity-render-{red,green,typecheck}.log`. No DB/schema/install/server/remote operations. Next autonomous unit: guarded activity preview endpoint, then editor/modal integration; publication/storage gates remain pending, prefix work remains deferred.
+
+## Transient Dinner Renderer (2026-09-24)
+
+Hotel and activity vertical previews are retained; activity UI milestone `e82c14c8` is the clean starting point. Dinner follows the inspected gastronomy reference with local branding and authored restaurant/service/menu/conditions only; no inferred reservation/payment claims or QR. Existing dinner parser allows an empty menu when service is supplied. Persistent lifecycle and stashed prefix work remain deferred.
+
+| Unit | RED | GREEN / triangulation | Verification |
+|---|---|---|---|
+| Dinner renderer | Missing-module failure |8 renderer tests; validation, locale, authored claims, empty menu,4MiB boundary and renderer failure |92 renderer/parser regressions, typecheck/targetlint; actual EN1page/ES4pages,30menu entries, accents and2HTTPSlinks |
+
+Visual QA found separate title/description nodes orphaned headings despite minPresenceAhead. One text flow with orphans/widows keeps headings with descriptions; extracted page-ending assertions failed before and pass after. Latest PNG inspected. Evidence `/private/tmp/dinner-render-qa/` and `/private/tmp/dinner-render-{red,green,typecheck}.log`. Helvetica remains interim. Next: dinner endpoint then editor/preview integration; no DB/install/server/remote work.
+
+## Transient Voucher Delivery Checkpoint (2026-09-24)
+
+Hotel (`1e6ffbeb`), activity (`e82c14c8`) and dinner (`f4e3db5c`) now have complete **transient** admin form→private PDF preview flows. These are local milestones, not completion of the original persistent-draft/publication specification. Activity commits: renderer `0380c106`, endpoint `d47a4aa6`, form `8d45f776`, repeatables `4b51bff2`, request hook `0575162c`, UI `e82c14c8`. Dinner commits: renderer `72e8c0c3`, endpoint `06b59cb1`, form `7479d556`, menu `17f3439a`, hook `da6383a9`, UI `f4e3db5c`.
+
+Both new flows preserve live-admin/trip checks, streamed128KiB request/4MiB PDF limits, generation validation, private/no-store responses, safe errors, editable buyer-locale/date suggestions, authored-only claims and stable repeatables. Hooks abort/ignore stale fetch/blob work and revoke object URLs on edit/replacement/reset/unmount. Modal close/Escape and dirty-only beforeunload guards protect unsaved input. Existing upload and trip-save handlers remain independent; no drafts, storage, attachment or email mutations were added. Dinner copy uses Diners/Comensales, not hotel terminology.
+
+| Scope | Test-first evidence | Verification |
+|---|---|---|
+| Activity endpoint/form/repeatables/hook/UI | Missing-module or new-behavior RED before each unit; provider-label EN/ES regression repaired |123 endpoint/parser/renderer;82 scalar;80 repeatable;30 hook;71 final focused tests passed |
+| Dinner endpoint/form/menu/hook/UI | Missing-module or new-behavior RED before each unit; Diners/Comensales RED4→GREEN21 across form/PDF |153 endpoint/parser/renderer;101 scalar;84 menu;45 hook;80 final focused tests passed |
+| Final dinner integration review | Independent review |60 integration tests, typecheck and new-code lint passed; existing dashboard loadTrip effect lint baseline remains unchanged |
+
+Browser QA on the existing server submitted sample dinner data and received an Open PDF preview link. At360px, dialog width360/client358/scroll358; at1280px, dialog width1024/client1022/scroll1022: no horizontal overflow. Blob navigation was not attempted after the earlier policy block, so **browser PDF painting is unverified**. Separate actual Node-rendered PDFs were visually inspected as recorded above; HappyDOM's unsupported blob-iframe warning is not browser-rendering evidence.
+
+Remaining: both roadmap forms/renderers; original draft save/versioning, storage/worker/publication/attach/replace/email integration; licensed-font fidelity, QR and complete shared layout; complete bilingual fixture suite, full build/Netlify preview and external deploy-hook verification. Prefix WIP remains deferred in stash `8bdd8a36`; no restoration or approval implied. The earlier726-line renderer+QR dependency exception remains historical/pending; only the separate renderer-only515-line exception was approved. Original pending task groups below must not be marked complete by these transient subsets.
+
+## Transient Experience Roadmap Renderer (2026-09-24)
+
+Existing voucher milestones and publication-risk history above are unchanged. Experience roadmap now renders only authored origin/destination/date range/duration/heading, ordered suggested activities with optional dates/times, and optional validated HTTPS map link. Local logo, teal/cyan A4 branding, EN/ES labels and4MiB output guard reuse the established pattern; no route planning, map fetch, QR, confirmation or persistence is inferred.
+
+| Unit | RED | GREEN / triangulation | Verification |
+|---|---|---|---|
+| Experience roadmap renderer | Missing-module failure |9 renderer +46 parser tests passed; invalid ranges/locale/map/empty activities, optional schedule/map, size/failure paths |Typecheck/targetlint; actual EN1page/ES4page PDFs inspected,30stops/accents/map annotation preserved |
+
+QA `/private/tmp/experience-render-qa/`; logs `/private/tmp/experience-render-{red,green,typecheck}.log`. Activity title/schedule/description share an orphan-controlled text flow. Helvetica remains interim. Next: guarded experience-roadmap endpoint and editor/modal, then XSED roadmap; original persistent lifecycle remains pending.
+
+## Transient XSED Roadmap Renderer (2026-09-24)
+
+Experience transient form→private PDF preview completed at `b7548a8c`; prior milestones/history remain unchanged. XSED renders authored origin/destination, departure date/time, driving duration, ordered stop directions with optional schedules and validated HTTPS map. No routing, fetching, confirmation or persistence is inferred.
+
+- RED: missing renderer module; visual QA then exposed unsupported Helvetica arrow, with a failing separator assertion before the ASCII fix.
+- GREEN:9 renderer +76 parser tests; typecheck and targeted lint passed. Generation validation, optional fields, EN/ES,4MiB boundary and render failures covered.
+- Actual PDF QA: EN1page/ES4pages,30stops, accents, directions and map annotation preserved; inspected page images, no clipping or orphan headings. Local logo/teal-cyan branding; Helvetica remains interim. Evidence `/private/tmp/xsed-render-qa/`, `/private/tmp/xsed-render-{red,green,typecheck}.log`, `/private/tmp/xsed-glyph-red.log`.
+- Next: XSED guarded endpoint, editable form, hook and modal. Original persistent lifecycle, QR/font fidelity and deployment verification remain pending.
+
+## Five Transient Preview Flows Complete (2026-09-24)
+
+This cumulative checkpoint supersedes earlier next-template notes without removing their evidence. Hotel `1e6ffbeb`, activity `e82c14c8`, dinner `f4e3db5c`, experience roadmap `b7548a8c` and XSED roadmap `37731d70` now provide admin form→private PDF preview. All five include bilingual editable forms, authored repeatables, guarded streamed requests, generation validation, response limits, safe errors and stale-request/object-URL cleanup. Known trip suggestions remain editable; no automatic routing, travel-type gating, supplier confirmation or persistent attachment is inferred.
+
+- Final combined verification: **658 tests across30 suites passed**, covering allfive parsers/renderers/endpoints/forms/hooks/modal integrations. **69 scoped source/test files lint clean**; nonincremental typecheck passed. Logs and manifests: `/private/tmp/pdf-final-*`.
+- Existing dashboard `loadTrip` effect lint error remains; reproduced against HEAD using ESLint stdin. No unrelated cleanup was performed.
+- Root browser QA submitted sample experience and XSED roadmap forms; both produced Open PDF preview links. Dialogs had no horizontal overflow at360px and1280px. **Actual browser PDF painting remains unverified**: no blob navigation was attempted after the earlier IAB policy block. Node-rendered PDF visual QA is recorded separately above.
+- Original persistent specification remains incomplete: draft save/versioning, storage/publication, attach/replace/email integration, QR/licensed-font fidelity, complete fixtures/build/Netlify preview and external deploy-hook verification are pending. Next implementation scope is **persistent drafts and attachment**, not more template forms.
+- Deferred prefix-cleanup WIP stays in stash `8bdd8a36`; no restoration, schema expansion or liveness-fix approval is implied. Prior explicit publication-risk consent and dependency-exception history are unchanged.
+
+## Persistent Draft Contract Foundation (2026-09-24)
+
+First bounded persistent-draft subunit: five-template draft-mode dispatch, strict revision/document PATCH envelope and explicit admin DTO allowlist. Incomplete authored strings remain saveable; generation requirements are not applied. Stored template/version/data are validated before reopening; DTO excludes keys, hashes, internal publication identity and stale preview IDs. Snapshots are not refreshed. This does not yet implement DB CRUD or optimistic conflict enforcement.
+
+RED missing module → GREEN19contract +329parser tests (348total); nonincremental typecheck, targeted lint passed. Evidence `/private/tmp/draft-contract-{red,green,typecheck}.log`. Next: locked revision-controlled create/read/update using existing owner→trip→draft locks, then authenticated collection/item APIs and save/reopen UI. Template/version immutability and revision conflicts are mutation responsibilities, not claims of this pure contract unit.
+
+## Cleanup Scope Amendment (2026-09-24)
+
+Independent audit3137/decision3139 resolved the generated-file prefix liveness blocker by using the existing durable pre-PUT exact-key ledger, not an unsupported resumable SDK cursor. Design/tasks now require fair bounded permanent rescheduling of exact-key tombstones after absence and parent deletion; known uploaded keys remain covered, historical unregistered orphans are excluded. No schema change or stash restoration occurred. Next storage unit: committed candidate registration → raw-key immutable PUT with size/hash metadata; adoption/publication follow before worker scheduling.
+
+## Authenticated Cleanup Scheduling (2026-09-24)
+
+Worker core committed `1d811334`; this adapter follows existing hourly Netlify→internal POST conventions. Internal POST requires CRON_SECRET before invoking one bounded batch, returns only counters and logs sanitized failures. Scheduled fetch rejects redirects/insecure origins and times out at25s; the API declares30s. A fetch abort does not prove remote worker cancellation: durable leases recover interrupted runs. Netlify documents scheduled production functions as non-URL-invocable with30s execution limit: https://docs.netlify.com/build/functions/scheduled-functions/ . Deployment/configuration/runtime invocation remains unverified.
+
+StrictTDD: RED two missing modules → GREEN11 adapter tests/2suites; nonincremental typecheck and scoped lint pass. Worker evidence remains61 tests/3suites in `/private/tmp/worker-green.log`; adapter logs `/private/tmp/schedule-{red,green,typecheck}.log`. No live storage/DB/server activity. Cumulative persistent implementation/task reconciliation follows as a separate documentation unit; prior milestone history is preserved.
+
+## Optional Local QR Images (2026-09-24)
+
+All five wrappers encode supplied optional provider/location/map HTTPS URLs locally and pass PNG buffers to labeled clickable QR blocks. No URL fetching/shortening or extra toggles/schema. Above2,000 UTF-8 bytes, retain the existing clickable link without QR rather than failing a valid document; absent URLs create no QR. Generation validation precedes assets and the4MiB PDF cap remains. RED missing helper/component plus5wrapper assertions → GREEN52tests/6suites; typecheck/scopedlint pass. Real EN/ES hotel PDFs generated; ES page visually inspected. Native Swift Vision decode failed on unavailable ANECF model loading, so decoded payload verification remains a final-QA gate. Evidence `/private/tmp/qr-behavior-*`, `/private/tmp/qr-hotel-{en,es}.pdf`.
+
+## Local Barlow and Publication-neutral Footer (2026-09-24)
+
+All five wrappers register local Barlow only after generation validation; templates use regular/bold Barlow weights. Shared EN/ES footer is now “Travel document” / “Documento de viaje”, valid for both private preview and unchanged published bytes. Baseline54tests → RED20newfailures → GREEN74tests/7suites; nonincremental typecheck/scopedlint pass. Rebuilt XSED EN/ES fixtures: long ES5pages/56,586bytes, embedded/subset Unicode BarlowRegular/Bold confirmed by pdffonts; first/last pages visually inspected with QR and neutral page footers. Full20-fixture QA/buildtrace/deployment still pending. Evidence `/private/tmp/font-integrate-*`, `/private/tmp/xsed-render-qa/`.
+
+
+## Cumulative Persistent Feature Checkpoint (2026-09-24)
+
+**Implementation complete; final verification incomplete.** Earlier “persistent lifecycle pending” statements describe historical transient milestones, not the current code. Nothing below claims live database concurrency, storage delivery, deployment, or release readiness.
+
+| Implemented boundary | Concrete implementation/evidence |
+|---|---|
+| Private drafts2.4–2.7 | Five-template incomplete validation/safe DTO; locked create/read/CAS-update/delete; transaction-loaded buyer locale/provider snapshots; admin collection/item APIs. Draft deletion preserves attachment and retained publication receipts. |
+| Render2.16–2.17 | Generation dispatcher→committed candidate→immutable raw-key PUT→revision-bound atomic adoption; SHA256/size identity and4MiB guard; authenticated renderPOST and verified stored-byte previewGET. Historical receipt reconciliation handles ambiguous adoption without unsafe deletion. |
+| Publication2.18–2.20 | Exact stored bytes, stable request identity, retained publication receipt, explicit stable-ID replacement and email timestamps untouched. Pending/expired request recovery is explicit; no silent new request or rerender-on-attach. |
+| Lifecycle2.21–2.24 | Attachment deletion preserves/unlinks draft; two trip-delete routes and account deletion use complete buyer-owned ordered locks, cancellation and known-key intents in the cascade transaction. Uploader/tripper associations do not define cleanup scope. |
+| Worker2.3 | Real Prisma/Netlify20-job ordered skip-locked selection, conditional TTL expiry, claim lease/CAS scheduling, permanent success/absence sweeps, capped sanitized failure backoff. Authenticated hourly adapter committed `531b5fc4`; core `1d811334`. |
+| Authoring3.1–3.11 | All five forms/repeatables, independent incomplete Save draft, conflict preservation/confirmed reload, saved-byte preview, explicit attach/replace, stable publication refresh event, confirmed draft deletion, dirty/unload guards and abort/stale-response protection. |
+| Entry consolidation | Five redundant dashboard transient launchers removed; retained compatibility components/endpoints. Single EN/ES Generate document panel beside upload, automatic provider/draft load, gated creation and visible retry. Parent browser panel360/1280no-overflow; no draft/editor/attachment mutation tested live. |
+| Assets2.8–2.15 | Renderer and QR installed with scripts disabled, generated Prisma unchanged; licensed local Barlow and six explicit tracing patterns; all five templates have local optional QR and neutral preview/publication footer. Font integration `c35f1f15`; QR `2734d1e2`. |
+
+### Cumulative TDD / verification evidence
+
+These are per-unit results, not an additive unique-test total. Earlier tables and progress sections remain intact.
+
+| Boundary | RED → GREEN / regression | Evidence |
+|---|---|---|
+| Draft contracts/backend/API | Missing/new behavior failures before implementations; guarded source/owner/revision/DTO tests | `/private/tmp/draft-contract-*`, adjacent `src/lib/db/__tests__` and admin draft API tests |
+| Render/publication | Validation/adoption/receipt/replacement failure cases; real bytes and fake storage; selected dispatcher/retirement scope strengthened after review | `/private/tmp/attach-*`, `/private/tmp/attach-api-*`, `/private/tmp/preview-get-*`; reviewed render `84476f2a`, initial publication `8ea690be` |
+| Deletion | Attachment route9RED→38tests; cascade helper missing-moduleRED→78tests; admin trip8RED→25; buyer trip7RED→24; account7RED→32 | `/private/tmp/{attachment-route,cascade-cleanup,admin-trip-delete,second-trip,account-delete}-*` |
+| Scheduling | Core missing-moduleRED→61tests/3suites; adapter missing-moduleRED→11tests/2suites | `/private/tmp/{worker,schedule}-*` |
+| Draft-delete UI / consolidation |5RED→37tests; automatic-load2RED plus stale-load triangulation→40tests/4suites | `/private/tmp/{draft-delete-ui,consolidate}-*`; nonincremental typecheck/new scoped lint passed; installed Next SWC transform passed |
+| QR / fonts | QR missing helper plus5wrapper failures→52tests; font integration20RED→74tests/7suites | `/private/tmp/{qr-behavior,font-integrate}-*`; actual PDFs/local assets, no URL fetch |
+
+### Final QA status — not release-ready
+
+- Report `/private/tmp/pdf-final-visual-qa/report.md`:20fresh fixtures,56A4pages,max57,374bytes, all five contact sheets inspected without clipping/overlap; both Barlow weights embedded, accents/page counters/30long-item headings preserved. All32 standard HTTPS destinations exist as clickable annotations and decode from actual150dpi raster QR crops.
+- **Documented limitation:**2,000-byte dense URL produces88,785-byte PDF;100pt QR fails150dpi decoding but exact destination decodes at300dpi. This satisfies scannability; the spec does not require150dpi, so no new acceptance blocker is imposed. Low-resolution scanning is not universally reliable; full clickable URL is intact.
+- Earlier343files/3,613tests checkpoint is historical. Frozen `0e3211de` final rerun passes345suites/3,654tests and nonincremental typecheck (`/private/tmp/pdf-final-full-tests.log`, `/private/tmp/pdf-final-full-typecheck.log`). Full lint baseline is53errors/11warnings, not only the dashboard effect; new scoped lint passes, no blanket repository-lint pass claimed.
+- Live DB concurrency/commit-loss, actual stored publication/browser painting, cleanup late-write recovery, Netlify preview/cron/secret/external hook smoke remain unverified. Isolated production build/traces subsequently passed as recorded below. No production deploy, new schema/client generation or live application mutation was performed for this checkpoint.
+- Original prefix WIP stash remains untouched. Do not archive: resolve remaining QA findings, run final verification, and record deployment gates explicitly.
+
+
+### Frozen-state compatibility audit (0e3211de)
+
+Current implementation branch `codex/pdf-unified-workflow`, independent review PASS. Read-only inspection of upload POST, traveler list/stream, safe document DTO and trip-start email confirms publication compatibility: all consume TripDocument, never private draft content/preview keys. Existing auth/visibility boundaries remain; upload behavior unchanged and generated attachment uses the same published-row DTO/stream path. Final full-suite evidence includes51 relevant tests across upload, stream, delete, email, DTO and visibility suites; explicit private-draft exclusion cases pass. Task4.1 code/regression gate complete, while actual browser published PDF painting/live email/storage delivery remains pending. No source edits or new tests during isolated build verification.
+
+
+### Isolated production build and asset tracing
+Frozen `0e3211de` built successfully in `/private/tmp/getrandomtrip-prod-verify.y4rn6B`:190/190pages and type checks, no DB fallback/errors. All six render-route NFT manifests include BarlowRegular, BarlowBold, OFL and logo (24required asset entries), confirmed in `/private/tmp/pdf-final-build-traces.json`. Verification runtime wasNode25, not configured NetlifyNode20: deployment/runtime smoke remains open. The working-tree3010server was not restarted; parent confirmed it remained alive. No live DB/storage mutation is implied by the isolated build.

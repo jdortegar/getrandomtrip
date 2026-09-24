@@ -14,8 +14,11 @@ export async function registerDocumentCleanup(
   scope: Readonly<TripDocumentCancellationScope>,
   facts: TripDocumentCleanupFacts,
   now = Date.now,
+  options: { exactKeysOnly?: boolean } = {},
 ) {
-  const plan = planDocumentCleanup(scope, facts);
+  const plan = planDocumentCleanup(scope, facts).filter(
+    (target) => !options.exactKeysOnly || target.purpose === "legacy-key",
+  );
   const time = new Date(now());
   if (!Number.isFinite(time.getTime()))
     throw new Error("INVALID_DOCUMENT_CLEANUP_CLOCK");

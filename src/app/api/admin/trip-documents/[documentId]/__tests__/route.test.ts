@@ -1,140 +1,120 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-
-type RouteModule = typeof import("../route");
-
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
 vi.mock("next-auth", () => ({ getServerSession: vi.fn() }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
-
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
     tripDocument: { findUnique: vi.fn(), delete: vi.fn() },
   },
 }));
-
-const storeDeleteMock = vi.fn();
-vi.mock("@/lib/storage/tripDocumentStore", () => ({
-  getTripDocumentStore: () => ({ delete: storeDeleteMock }),
+vi.mock("@/lib/db/deletePublishedDocument", () => ({
+  deletePublishedDocument: vi.fn(),
 }));
-
+vi.mock("@/lib/storage/tripDocumentStore", () => ({
+  getTripDocumentStore: vi.fn(),
+}));
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-
-const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
-const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
-const mockSession = (userId: string) => ({ user: { id: userId } });
-
-function makeProps(documentId: string) {
-  return { params: Promise.resolve({ documentId }) };
-}
-
-function makeRequest(): Request {
-  return new Request("http://localhost/api/admin/trip-documents/doc-1", {
-    method: "DELETE",
+import { deletePublishedDocument } from "@/lib/db/deletePublishedDocument";
+import { getTripDocumentStore } from "@/lib/storage/tripDocumentStore";
+import { DELETE } from "../route";
+const invoke = () =>
+  DELETE(
+    new NextRequest("http://localhost/api/admin/trip-documents/doc-1", {
+      method: "DELETE",
+    }),
+    { params: Promise.resolve({ documentId: "doc-1" }) },
+  );
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.mocked(getServerSession).mockResolvedValue({ user: { id: "admin-B" } });
+  vi.mocked(prisma.user.findUnique).mockResolvedValue({
+    id: "admin-B",
+    roles: ["ADMIN"],
+  } as never);
+  vi.mocked(prisma.tripDocument.findUnique).mockResolvedValue({
+    id: "doc-1",
+    tripRequestId: "trip-1",
+    tripRequest: { userId: "traveler-1" },
+    uploadedById: "admin-A",
+  } as never);
+  vi.mocked(deletePublishedDocument).mockResolvedValue({ deleted: true });
+});
+describe("durable attachment DELETE", () => {
+  it.each([401, 403])(
+    "rejects unauthorized callers (%s) before reading documents",
+    async (status) => {
+      if (status === 401) vi.mocked(getServerSession).mockResolvedValue(null);
+      else
+        vi.mocked(prisma.user.findUnique).mockResolvedValue({
+          id: "admin-B",
+          roles: ["TRAVELER"],
+        } as never);
+      const response = await invoke();
+      expect(response.status).toBe(status);
+      expect(response.headers.get("cache-control")).toBe("private, no-store");
+      expect(prisma.tripDocument.findUnique).not.toHaveBeenCalled();
+      expect(deletePublishedDocument).not.toHaveBeenCalled();
+    },
+  );
+  it("returns private 404 for a missing attachment", async () => {
+    vi.mocked(prisma.tripDocument.findUnique).mockResolvedValue(null);
+    const response = await invoke();
+    expect(response.status).toBe(404);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(deletePublishedDocument).not.toHaveBeenCalled();
   });
-}
-
-describe("DELETE /api/admin/trip-documents/[documentId]", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
-  });
-
-  it("returns 401 with no session", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    const mod = (await import("../route")) as RouteModule;
-    const res = await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-1"),
-    );
-    expect(res.status).toBe(401);
-  });
-
-  it("returns 403 for a non-admin caller", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("u1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockTravelerUser("u1"));
-    const mod = (await import("../route")) as RouteModule;
-    const res = await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-1"),
-    );
-    expect(res.status).toBe(403);
-  });
-
-  it("returns 404 when the document does not exist", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
-    (prisma.tripDocument.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    const mod = (await import("../route")) as RouteModule;
-    const res = await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-missing"),
-    );
-    expect(res.status).toBe(404);
-  });
-
-  it("admin B removes admin A's upload — 204 (regression proof: no uploader-ownership check)", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-B"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-B"));
-    (prisma.tripDocument.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: "doc-1",
-      storageKey: "trip-1/uuid",
-      uploadedById: "admin-A",
+  it("lets admin B remove admin A's upload through atomic owner-scoped deletion", async () => {
+    const response = await invoke();
+    expect(response.status).toBe(204);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(await response.text()).toBe("");
+    expect(prisma.tripDocument.findUnique).toHaveBeenCalledWith({
+      where: { id: "doc-1" },
+      select: {
+        id: true,
+        tripRequestId: true,
+        tripRequest: { select: { userId: true } },
+      },
     });
-    (prisma.tripDocument.delete as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "doc-1" });
-    storeDeleteMock.mockResolvedValue(undefined);
-
-    const mod = (await import("../route")) as RouteModule;
-    const res = await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-1"),
-    );
-    expect(res.status).toBe(204);
-    expect(prisma.tripDocument.delete).toHaveBeenCalledWith({ where: { id: "doc-1" } });
+    expect(deletePublishedDocument).toHaveBeenCalledWith(prisma, {
+      ownerId: "traveler-1",
+      tripRequestId: "trip-1",
+      documentId: "doc-1",
+    });
+    expect(prisma.tripDocument.delete).not.toHaveBeenCalled();
+    expect(getTripDocumentStore).not.toHaveBeenCalled();
   });
-
-  it("still returns 204 with the row deleted when the blob delete fails (best-effort)", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
-    (prisma.tripDocument.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: "doc-1",
-      storageKey: "trip-1/uuid",
-      uploadedById: "admin-1",
-    });
-    (prisma.tripDocument.delete as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "doc-1" });
-    storeDeleteMock.mockRejectedValue(new Error("blob store down"));
-
-    const mod = (await import("../route")) as RouteModule;
-    const res = await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-1"),
+  it.each(["session", "role", "lookup", "transaction"])(
+    "sanitizes %s failures without direct deletion or success",
+    async (stage) => {
+      const error = new Error("postgres://private-host secret-storage-key");
+      if (stage === "session")
+        vi.mocked(getServerSession).mockRejectedValue(error);
+      if (stage === "role")
+        vi.mocked(prisma.user.findUnique).mockRejectedValue(error);
+      if (stage === "lookup")
+        vi.mocked(prisma.tripDocument.findUnique).mockRejectedValue(error);
+      if (stage === "transaction")
+        vi.mocked(deletePublishedDocument).mockRejectedValue(error);
+      const response = await invoke();
+      expect(response.status).toBe(503);
+      expect(response.headers.get("cache-control")).toBe("private, no-store");
+      expect(await response.json()).toEqual({ error: "delete_unavailable" });
+      expect(prisma.tripDocument.delete).not.toHaveBeenCalled();
+      expect(getTripDocumentStore).not.toHaveBeenCalled();
+      if (stage !== "transaction")
+        expect(deletePublishedDocument).not.toHaveBeenCalled();
+    },
+  );
+  it("reports a concurrent owner/trip/document change as a conflict", async () => {
+    vi.mocked(deletePublishedDocument).mockRejectedValue(
+      new Error("DOCUMENT_LOCK_SCOPE_MISMATCH"),
     );
-    expect(res.status).toBe(204);
-    expect(prisma.tripDocument.delete).toHaveBeenCalledTimes(1);
-  });
-
-  it("deletes the row BEFORE attempting the blob delete", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
-    (prisma.tripDocument.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
-      id: "doc-1",
-      storageKey: "trip-1/uuid",
-      uploadedById: "admin-1",
-    });
-
-    const callOrder: string[] = [];
-    (prisma.tripDocument.delete as ReturnType<typeof vi.fn>).mockImplementation(async () => {
-      callOrder.push("row");
-      return { id: "doc-1" };
-    });
-    storeDeleteMock.mockImplementation(async () => {
-      callOrder.push("blob");
-    });
-
-    const mod = (await import("../route")) as RouteModule;
-    await mod.DELETE(
-      makeRequest() as unknown as import("next/server").NextRequest,
-      makeProps("doc-1"),
-    );
-    expect(callOrder).toEqual(["row", "blob"]);
+    const response = await invoke();
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ error: "document_conflict" });
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
   });
 });

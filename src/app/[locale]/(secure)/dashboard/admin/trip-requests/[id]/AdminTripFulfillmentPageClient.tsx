@@ -9,7 +9,7 @@ import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripMan
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import type { ExperienceItinerary } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { TripDocumentsTable } from "@/components/app/admin/trip-fulfillment/TripDocumentsTable";
-import { HotelVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/HotelVoucherPreviewAction";
+import { DocumentDraftPanel } from "@/components/app/admin/trip-fulfillment/DocumentDraftPanel";
 import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/AddTripDocumentForm";
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
 import { ContactTravelerModal } from "@/components/app/admin/trip-fulfillment/ContactTravelerModal";
@@ -246,7 +246,7 @@ export function AdminTripFulfillmentPageClient({
                 removingId={removingId}
               />
             </div>
-            <HotelVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
+            <DocumentDraftPanel autoLoad countryLabels={countryLabels} key={trip.id} locale={locale} onAttached={() => { void fetch(`/api/admin/trip-requests/${tripId}`, { cache: "no-store" }).then(async (response) => { if (response.ok) setDocuments((await response.json()).documents); }).catch(() => undefined); }} tripId={trip.id} />
             <AddTripDocumentForm
               copy={fulfillmentDict}
               countryLabels={countryLabels}
