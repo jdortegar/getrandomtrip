@@ -97,6 +97,7 @@ export function CountDown({
 }: CountDownProps) {
   const dictCopy = useDictionary((d) => d.xsedPage.countdown);
   const copy = copyProp ?? dictCopy;
+  const notifyCopy = useDictionary((d) => d.xsedPage.hero);
 
   // tz starts null (SSR-safe); detected and set on client mount via useEffect.
   const [tz, setTz] = useState<string | null>(null);
@@ -305,7 +306,7 @@ export function CountDown({
       >
         {showForm ? (
           <div className="rt-container mx-auto flex justify-center text-center">
-            <XsedNotifyForm variant="light" />
+            <XsedNotifyForm content={notifyCopy} variant="light" />
           </div>
         ) : (
           <Button asChild size="lg" variant="tertiary">

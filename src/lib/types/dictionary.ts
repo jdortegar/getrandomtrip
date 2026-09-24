@@ -1046,6 +1046,20 @@ export interface XsedBookDict {
   };
 }
 
+/** Copy the XSED notify form needs; both the hero and the bottom banner provide it. */
+export type XsedNotifyFormCopy = Pick<
+  XsedPageDict["hero"],
+  | "errorMessage"
+  | "helper"
+  | "inputLabel"
+  | "inputPlaceholder"
+  | "invalidEmailMessage"
+  | "submitAriaLabel"
+  | "submitLabel"
+  | "submittingLabel"
+  | "successMessage"
+>;
+
 export interface XsedLevelCardDict {
   /** Badge shown on the top edge of the XSED card. */
   badge: string;
