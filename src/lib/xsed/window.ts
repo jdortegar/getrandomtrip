@@ -278,7 +278,8 @@ export function isWithinServerOuterBoundary(date = new Date()): boolean {
 /**
  * SERVER-ONLY.
  * UTC offset (whole hours) whose users should get the drop email right now:
- * the zone where it is one hour before LOCAL_WINDOW_START_HOUR on drop day.
+ * the zone whose local time is in the hour before LOCAL_WINDOW_START_HOUR on
+ * drop day (the cron fires at :50, so 10 minutes before opening).
  * Western zones reach that hour after UTC midnight, so the day after the drop
  * day counts too. Returns null when no timezone west of UTC is in its send hour.
  */

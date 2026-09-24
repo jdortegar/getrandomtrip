@@ -43,21 +43,21 @@ describe("isWithinServerOuterBoundary covers every supported timezone", () => {
   });
 });
 
-describe("getNotifyTargetUtcOffset (email one hour before 18:00 local)", () => {
+describe("getNotifyTargetUtcOffset (email at 17:50 local, 10 minutes before 18:00)", () => {
   it.each([
-    ["2026-09-27T19:30:00Z", -2], // 17:30 in Noronha
-    ["2026-09-27T20:30:00Z", -3], // 17:30 in Buenos Aires
-    ["2026-09-27T23:30:00Z", -6], // 17:30 in Mexico City
-    ["2026-09-28T00:30:00Z", -7], // Sunday 17:30 in Hermosillo (Monday UTC)
-    ["2026-09-28T01:30:00Z", -8], // Sunday 17:30 in Tijuana winter (Monday UTC)
+    ["2026-09-27T19:50:00Z", -2], // 17:50 in Noronha
+    ["2026-09-27T20:50:00Z", -3], // 17:50 in Buenos Aires
+    ["2026-09-27T23:50:00Z", -6], // 17:50 in Mexico City
+    ["2026-09-28T00:50:00Z", -7], // Sunday 17:50 in Hermosillo (Monday UTC)
+    ["2026-09-28T01:50:00Z", -8], // Sunday 17:50 in Tijuana winter (Monday UTC)
   ])("at %s targets UTC%i", (iso, offset) => {
     expect(getNotifyTargetUtcOffset(new Date(iso))).toBe(offset);
   });
 
   it.each([
-    "2026-09-27T17:30:00Z", // too early for any supported zone
-    "2026-09-28T19:30:00Z", // Monday evening UTC
-    "2026-09-29T20:30:00Z", // Tuesday
+    "2026-09-27T17:50:00Z", // too early for any supported zone
+    "2026-09-28T19:50:00Z", // Monday evening UTC
+    "2026-09-29T20:50:00Z", // Tuesday
   ])("targets nobody at %s", (iso) => {
     expect(getNotifyTargetUtcOffset(new Date(iso))).toBeNull();
   });
