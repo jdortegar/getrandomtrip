@@ -784,6 +784,8 @@
       "columns": {
         "post": "Post",
         "tripper": "Tripper",
+        "level": "Nivel",
+        "travelType": "Tipo de viaje",
         "status": "Estado",
         "updated": "Actualizado",
         "actions": "Acciones"
@@ -3992,7 +3994,7 @@
           "substeps": [
             {
               "id": "title-image",
-              "title": "Título & Imagen",
+              "title": "Información básica",
               "description": "El título y la imagen de portada son lo primero que ven tus lectores."
             },
             {

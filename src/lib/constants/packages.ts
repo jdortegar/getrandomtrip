@@ -86,6 +86,19 @@ export const EXPERIENCE_LEVELS = [
   { value: "xsed", label: "XSED" },
 ] as const;
 
+export type ExperienceLevelValue = (typeof EXPERIENCE_LEVELS)[number]["value"];
+
+const EXPERIENCE_LEVEL_VALUES = new Set<string>(
+  EXPERIENCE_LEVELS.map((level) => level.value),
+);
+
+/** Guards any incoming (untrusted) value against the canonical level catalog. */
+export function isValidExperienceLevel(
+  value: unknown,
+): value is ExperienceLevelValue {
+  return typeof value === "string" && EXPERIENCE_LEVEL_VALUES.has(value);
+}
+
 export const EXPERIENCE_STATUSES = [
   { value: "DRAFT", label: "Borrador" },
   { value: "PENDING_REVIEW", label: "En revisión" },

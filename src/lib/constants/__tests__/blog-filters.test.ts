@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   getBlogExcuseOptions,
+  getBlogLevelOptions,
   getBlogTravelTypeOptions,
 } from "@/lib/constants/blog-filters";
+import { EXPERIENCE_LEVELS } from "@/lib/constants/packages";
 
 describe("getBlogExcuseOptions — regression: blog filter labels must be localized", () => {
   it("returns Spanish titles verbatim for es", () => {
@@ -34,5 +36,20 @@ describe("getBlogTravelTypeOptions — locale passthrough", () => {
     const en = getBlogTravelTypeOptions("en");
     expect(es.length).toBeGreaterThan(0);
     expect(es).not.toEqual(en);
+  });
+});
+
+describe("getBlogLevelOptions — regression: level is no longer XSED-only", () => {
+  it("returns every EXPERIENCE_LEVELS value, not just xsed", () => {
+    const options = getBlogLevelOptions();
+    expect(options.map((o) => o.key).sort()).toEqual(
+      [...EXPERIENCE_LEVELS.map((l) => l.value)].sort(),
+    );
+  });
+
+  it("includes xsed with its brand-name label", () => {
+    const options = getBlogLevelOptions();
+    const xsed = options.find((o) => o.key === "xsed");
+    expect(xsed?.label).toBe("XSED");
   });
 });

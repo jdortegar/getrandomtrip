@@ -410,6 +410,121 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
     },
   );
 
+  it("rejects an invalid level value with 400", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest({ level: "not-a-real-level" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    expect(res.status).toBe(400);
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects level: 'xsed' from a non-admin tripper with 403", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest({ level: "xsed" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    expect(res.status).toBe(403);
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("allows an admin to set level: 'xsed' on a RANDOMTRIP post", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "admin-1",
+      roles: ["ADMIN"],
+    });
+    mockOwnershipAndSlugLookup(baseBlog("someone-else", { source: "RANDOMTRIP" }));
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest({ level: "xsed" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    expect(res.status).toBe(200);
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.level).toBe("xsed");
+  });
+
+  it("allows a tripper to set a non-xsed level on their own post", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ level: "essenza" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.level).toBe("essenza");
+  });
+
+  it("clears level when the client sends an empty string", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1", { level: "essenza" }));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ level: "" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.level).toBeNull();
+  });
+
+  it("detects a level change as a content change and reverts a PUBLISHED post to DRAFT", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    const existing = baseBlog("tripper-1", { status: "PUBLISHED", level: "essenza" });
+    mockOwnershipAndSlugLookup(existing);
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ level: "modo-explora" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.status).toBe("DRAFT");
+  });
+
+  it("does not write level when omitted from the request body", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1", { level: "essenza" }));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ title: "Updated" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.level).toBeUndefined();
+  });
+
   it("excludes review copies from the ownership lookup — a tripper can never edit an admin's working copy through this route", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(

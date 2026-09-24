@@ -34,6 +34,8 @@ export interface BlogPost {
   excuseKey: string[];
   /** Journey traveler type keys (e.g. solo, couple); used for discovery filters. */
   travelType: string[];
+  /** One of EXPERIENCE_LEVELS' values (src/lib/constants/packages.ts), or null for none. XSED is a level, not a travelType. */
+  level?: string | null;
   format: BlogFormat;
   status: BlogStatus;
   source?: "TRIPPER" | "RANDOMTRIP";
@@ -74,6 +76,8 @@ export interface BlogFormDraft {
   travelType: string[];
   /** Journey excuse keys (e.g. solo-adventure), scoped to the selected travelType(s). */
   excuseKey: string[];
+  /** One of EXPERIENCE_LEVELS' values, or "" for none. XSED is admin-only (see TitleImageStep). Independent of travelType. */
+  level: string;
   /** Tripper's note to the admin at submission time. */
   tripperNote?: string | null;
 }

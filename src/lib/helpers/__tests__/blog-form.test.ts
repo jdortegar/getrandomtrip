@@ -20,6 +20,7 @@ const baseDraft: BlogFormDraft = {
   gallery: [],
   travelType: [],
   excuseKey: [],
+  level: "",
   tripperNote: null,
 };
 
@@ -231,6 +232,23 @@ describe("mapBlogPostToDraft", () => {
     expect(draft.travelType).toEqual([]);
     expect(draft.excuseKey).toEqual([]);
   });
+
+  it("maps a set level from the fetched post into the draft", () => {
+    const post: Partial<BlogPost> = {
+      status: "draft",
+      title: "My Trip",
+      blocks: [],
+      level: "xsed",
+    };
+    const draft = mapBlogPostToDraft(post);
+    expect(draft.level).toBe("xsed");
+  });
+
+  it("defaults level to '' when absent or null on the fetched post", () => {
+    const post: Partial<BlogPost> = { status: "draft", title: "My Trip", blocks: [], level: null };
+    const draft = mapBlogPostToDraft(post);
+    expect(draft.level).toBe("");
+  });
 });
 
 describe("buildBlogSubmitPayload", () => {
@@ -255,5 +273,17 @@ describe("buildBlogSubmitPayload", () => {
     const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
     expect(roundTripped.travelType).toEqual(["solo", "couple"]);
     expect(roundTripped.excuseKey).toEqual(["x", "y"]);
+  });
+
+  it("converts a set level to its string value, and an empty level to null", () => {
+    expect(buildBlogSubmitPayload({ ...baseDraft, level: "xsed" }).level).toBe("xsed");
+    expect(buildBlogSubmitPayload({ ...baseDraft, level: "" }).level).toBeNull();
+  });
+
+  it("round-trips level through buildBlogSubmitPayload -> mapBlogPostToDraft", () => {
+    const draft: BlogFormDraft = { ...baseDraft, level: "essenza" };
+    const payload = buildBlogSubmitPayload(draft);
+    const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
+    expect(roundTripped.level).toBe("essenza");
   });
 });

@@ -114,8 +114,10 @@ export interface AdminBlog {
   format: string;
   source: "TRIPPER" | "RANDOMTRIP";
   tags: string[];
-  travelType: string | null;
-  excuseKey: string | null;
+  travelType: string[];
+  excuseKey: string[];
+  /** One of EXPERIENCE_LEVELS' values (src/lib/constants/packages.ts), or null for none. */
+  level: string | null;
   author: AdminBlogAuthor;
   reviewNote: string | null;
   tripperNote: string | null;

@@ -104,18 +104,13 @@ export function BlogFilterHeader({
   const tripperTitle = selectedTripper?.name ?? labels.tripperLabel;
 
   const handleTravelTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange({ ...value, levelKey: "", travelTypeKey: e.target.value });
+    onChange({ ...value, travelTypeKey: e.target.value });
   };
 
   const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const nextLevel = e.target.value;
-    onChange({
-      ...value,
-      levelKey: nextLevel,
-      // XSED is stored on travelType — clear traveler-type when selecting a level
-      // so the two filters don't fight (mirrors /api/tripper/blogs else-if).
-      travelTypeKey: nextLevel ? "" : value.travelTypeKey,
-    });
+    // Level (BlogPost.level) and travel type are independent columns — both
+    // filters can be applied together (e.g. an XSED post tagged "solo").
+    onChange({ ...value, levelKey: e.target.value });
   };
 
   const handleTripperChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

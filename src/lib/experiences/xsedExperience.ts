@@ -78,12 +78,14 @@ export function getExperienceBasePricePerPerson(
   return getBasePricePerPerson(type, level);
 }
 
-/** BlogPost still uses the legacy editorial tag; it has no experience-level field. */
+/**
+ * BlogPost.level (not travelType) now carries the XSED marker — see
+ * NewExperienceShell's `maybeCreateBlogPost`, which pairs this with
+ * `level: isXsedExperience(experience) ? "xsed" : null`. This only returns
+ * the experience's actual traveler types.
+ */
 export function getExperienceBlogTravelTypes(
   experience: ExperienceClassification,
 ): string[] {
-  const types = storedTypes(experience.type);
-  return isXsedExperience(experience)
-    ? [...new Set([...types, "XSED"])]
-    : types;
+  return storedTypes(experience.type);
 }

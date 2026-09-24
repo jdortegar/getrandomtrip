@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { isValidExperienceLevel } from "@/lib/constants/packages";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -71,6 +72,7 @@ export async function GET(
         tags: true,
         travelType: true,
         excuseKey: true,
+        level: true,
         format: true,
         status: true,
         isActive: true,
@@ -211,6 +213,7 @@ export async function PATCH(
       seo,
       travelType,
       excuseKey,
+      level,
       tripperNote,
       isActive,
     } = body;
@@ -218,6 +221,22 @@ export async function PATCH(
     // Validate required fields
     if (title !== undefined && !title) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    const levelValue: string | null | undefined =
+      level === undefined ? undefined : level && level !== "" ? level : null;
+    if (levelValue != null && !isValidExperienceLevel(levelValue)) {
+      return NextResponse.json({ error: "Invalid level" }, { status: 400 });
+    }
+
+    // XSED is fulfilled centrally by the admin team — only admins may tag a
+    // post with it (mirrors the client-side gate in TitleImageStep and the
+    // create-time check in POST /api/tripper/blogs).
+    if (levelValue === "xsed" && !hasRoleAccess(user, "admin")) {
+      return NextResponse.json(
+        { error: "Only admins can set the XSED level" },
+        { status: 403 },
+      );
     }
 
     // Revert to DRAFT only if a reviewable content field actually changed.
@@ -239,6 +258,7 @@ export async function PATCH(
         !eq(normalizeStringArray(travelType), existingBlog.travelType)) ||
       (excuseKey !== undefined &&
         !eq(normalizeStringArray(excuseKey), existingBlog.excuseKey)) ||
+      (levelValue !== undefined && !eq(levelValue, existingBlog.level)) ||
       (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format)) ||
       (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
       (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
@@ -282,6 +302,7 @@ export async function PATCH(
     if (excuseKey !== undefined) {
       updateData.excuseKey = normalizeStringArray(excuseKey);
     }
+    if (levelValue !== undefined) updateData.level = levelValue;
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
     if (seo !== undefined) updateData.seo = seo || null;
 
@@ -330,6 +351,7 @@ export async function PATCH(
         tags: true,
         travelType: true,
         excuseKey: true,
+        level: true,
         format: true,
         status: true,
         isActive: true,

@@ -12,6 +12,7 @@ describe("computeChangedFields (blog)", () => {
     tags: ["adventure"],
     travelType: "couple",
     excuseKey: "escapada-romantica",
+    level: "essenza",
     format: "ARTICLE",
     seo: { title: "SEO title" },
     faq: { items: [{ question: "Q1", answer: "A1" }] },
@@ -80,6 +81,19 @@ describe("computeChangedFields (blog)", () => {
     expect(result).not.toContain("excuseKey");
   });
 
+  it("detects level scalar field change", () => {
+    const copy = { ...base, level: "xsed" };
+    const result = computeChangedFields(copy, base);
+    expect(result).toContain("level");
+  });
+
+  it("does NOT flag level as changed when both are null", () => {
+    const original = { ...base, level: null };
+    const copy = { ...base, level: null };
+    const result = computeChangedFields(copy, original);
+    expect(result).not.toContain("level");
+  });
+
   it("detects seo JSON change", () => {
     const copy = { ...base, seo: { title: "Different SEO" } };
     const result = computeChangedFields(copy, base);
@@ -143,6 +157,7 @@ describe("overwriteOriginalWithCopy (blog)", () => {
     tags: ["copy-tag"],
     travelType: "solo",
     excuseKey: "solo-adventure",
+    level: "xsed",
     format: "ARTICLE",
     seo: null,
     faq: null,
@@ -162,6 +177,7 @@ describe("overwriteOriginalWithCopy (blog)", () => {
         where: { id: "original-1" },
         data: expect.objectContaining({
           title: "Copy Title",
+          level: "xsed",
           status: "PUBLISHED",
           isActive: true,
           isReviewCopy: false,

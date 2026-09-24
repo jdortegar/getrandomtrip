@@ -135,6 +135,73 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
     expect(updateArgs.data.excuseKey).toEqual(["solo", "couple"]);
   });
 
+  it("writes a valid level to the copy", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "DRAFT",
+    });
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ id: "copy-1", ...data }),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest("copy-1", { level: "xsed" }), {
+      params: Promise.resolve({ id: "copy-1" }),
+    });
+
+    expect(res.status).toBe(200);
+    const updateArgs = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateArgs.data.level).toBe("xsed");
+  });
+
+  it("clears level when sent as an empty string", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "DRAFT",
+    });
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ id: "copy-1", ...data }),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest("copy-1", { level: "" }), {
+      params: Promise.resolve({ id: "copy-1" }),
+    });
+
+    const updateArgs = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateArgs.data.level).toBeNull();
+  });
+
+  it("rejects an invalid level value with 400", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "DRAFT",
+    });
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest("copy-1", { level: "not-a-real-level" }), {
+      params: Promise.resolve({ id: "copy-1" }),
+    });
+
+    expect(res.status).toBe(400);
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
   it("returns 404 when the blog post does not exist", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(

@@ -96,6 +96,64 @@ describe("GET /api/admin/blogs", () => {
     });
   });
 
+  it.each(["essenza", "xsed", "bivouac"])(
+    "filters by level=%s on the dedicated BlogPost.level column",
+    async (level) => {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockAdminUser("admin-1"),
+      );
+
+      const mod = (await import("../route")) as RouteModule;
+      await mod.GET(new NextRequest(`http://localhost/api/admin/blogs?level=${level}`));
+
+      const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(findManyArgs.where.level).toBe(level);
+    },
+  );
+
+  it("ignores an invalid level value instead of filtering by it", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.GET(new NextRequest("http://localhost/api/admin/blogs?level=not-a-level"));
+
+    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(findManyArgs.where.level).toBeUndefined();
+  });
+
+  it("combines level and travelType filters — they are no longer mutually exclusive", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.GET(
+      new NextRequest("http://localhost/api/admin/blogs?level=xsed&travelType=solo"),
+    );
+
+    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(findManyArgs.where.level).toBe("xsed");
+    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
+  });
+
+  it("selects the level column for the admin table", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.GET(new NextRequest("http://localhost/api/admin/blogs"));
+
+    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(findManyArgs.select).toMatchObject({ level: true, travelType: true });
+  });
+
   it("paginates with page/limit and returns total + a dataset-wide pendingCount", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(

@@ -613,6 +613,7 @@ model BlogPost {
   tags       String[] @default([])
   travelType String[] @default([]) // solo | couple | family | group | honeymoon | paws
   excuseKey  String[] @default([]) // e.g. solo-adventure (from shared excuses)
+  level      String? // one of EXPERIENCE_LEVELS values (src/lib/constants/packages.ts); XSED is a level, not a travelType
 
   // SEO
   seo Json? // { title?: string, description?: string, keywords?: string[] }

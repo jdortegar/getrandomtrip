@@ -6,6 +6,7 @@ import { BlogStatus } from "@prisma/client";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { NextRequest, NextResponse } from "next/server";
+import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
       excuseKey?: { has: string };
       status: BlogStatus;
       travelType?: { has: string };
+      level?: string;
       isReviewCopy: boolean;
       isActive: boolean;
     } = {
@@ -50,11 +52,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // "level" is XSED-only for now — BlogPost has no dedicated level column,
-    // XSED is tracked via the travelType marker (see TitleImageStep).
-    if (level?.trim() === "xsed") {
-      where.travelType = { has: "XSED" };
-    } else if (travelType?.trim()) {
+    // "level" is backed by BlogPost.level — independent of travelType (both
+    // filters can be applied together; see TitleImageStep).
+    if (level?.trim() && isValidExperienceLevel(level.trim())) {
+      where.level = level.trim();
+    }
+    if (travelType?.trim()) {
       where.travelType = { has: travelType.trim() };
     }
 

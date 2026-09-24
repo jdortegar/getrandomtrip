@@ -26,8 +26,6 @@ interface Props {
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-const XSED_LEVEL = EXPERIENCE_LEVELS.find((l) => l.value === "xsed");
-
 export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek, isAdmin }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
@@ -46,19 +44,17 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
     onChange("excuseKey", []);
   };
 
-  // XSED is the same marker Experience.type uses for drops (see AboutExperienceStep) —
-  // BlogPost has no dedicated level column: its legacy editorial selector uses
-  // the XSED travelType marker. Experience-generated posts include that marker
-  // alongside their actual traveler types so the XSED archive stays compatible.
-  const isXsedLevel = draft.travelType.includes("XSED");
+  // XSED is fulfilled centrally by the admin team — only admins may tag a
+  // post with it. Every other level is open to trippers. Level is stored on
+  // its own column (BlogPost.level) and no longer touches travelType, which
+  // trippers can now set independently (e.g. an XSED post with real
+  // traveler types).
+  const availableLevels = EXPERIENCE_LEVELS.filter(
+    (level) => level.value !== "xsed" || isAdmin,
+  );
 
   const handleLevelChange = (value: string) => {
-    if (value === "xsed") {
-      onChange("travelType", ["XSED"]);
-      onChange("excuseKey", []);
-    } else {
-      onChange("travelType", []);
-    }
+    onChange("level", value);
   };
 
   return (
@@ -87,7 +83,7 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         peek={peek?.("subtitle")}
       />
 
-      <div className={cn("grid grid-cols-1 gap-4", isAdmin ? "sm:grid-cols-3" : "sm:grid-cols-2")}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="flex flex-col gap-1">
           <MultiSelectInput
             id="blog-travel-type"
@@ -101,18 +97,20 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
           <p className="text-xs text-neutral-400">{fields.travelTypeHint}</p>
         </div>
 
-        {isAdmin && XSED_LEVEL && (
-          <FormSelectField
-            id="blog-level"
-            label={fields.level}
-            className={cn("bg-gray-100 border-transparent px-4 py-3.5", ch("travelType"))}
-            value={isXsedLevel ? "xsed" : ""}
-            onChange={(e) => handleLevelChange(e.target.value)}
-          >
-            <option value="">{fields.levelNone}</option>
-            <option value={XSED_LEVEL.value}>{XSED_LEVEL.label}</option>
-          </FormSelectField>
-        )}
+        <FormSelectField
+          id="blog-level"
+          label={fields.level}
+          className={cn("bg-gray-100 border-transparent px-4 py-3.5", ch("level"))}
+          value={draft.level}
+          onChange={(e) => handleLevelChange(e.target.value)}
+        >
+          <option value="">{fields.levelNone}</option>
+          {availableLevels.map((level) => (
+            <option key={level.value} value={level.value}>
+              {level.label}
+            </option>
+          ))}
+        </FormSelectField>
 
         <MultiSelectInput
           id="blog-excuse"

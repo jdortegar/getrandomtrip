@@ -1,8 +1,9 @@
 // Blog filter options for TravelType, Excuse, and Level. Trippers come from DB via /api/trippers.
 // Aligns with journey/tripper domain: Package has type + excuseKey; User is tripper.
 // Travel type labels from lib/data/traveler-types.
-// Level is XSED-only today — BlogPost has no dedicated level column; XSED is
-// stored as travelType: ["XSED"] (see TitleImageStep / tripper blogs API).
+// Level is backed by BlogPost.level (one of EXPERIENCE_LEVELS values) and is
+// independent of travelType — XSED is a level, not a travelType marker (see
+// TitleImageStep / tripper + admin blogs APIs).
 
 import { EXPERIENCE_LEVELS } from "@/lib/constants/packages";
 import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
@@ -79,7 +80,8 @@ export function getBlogExcuseOptions(locale?: string): ExcuseFilterOption[] {
 }
 
 // -----------------------------------------------------------------------------
-// Level – XSED-only until BlogPost gains a dedicated level column.
+// Level – every EXPERIENCE_LEVELS value, backed by BlogPost.level.
+// Labels are brand names (Essenza, XSED, …) — not translated per locale.
 // -----------------------------------------------------------------------------
 
 export interface LevelFilterOption {
@@ -88,12 +90,10 @@ export interface LevelFilterOption {
 }
 
 export function getBlogLevelOptions(): LevelFilterOption[] {
-  return EXPERIENCE_LEVELS.filter((level) => level.value === "xsed").map(
-    (level) => ({
-      key: level.value,
-      label: level.label,
-    }),
-  );
+  return EXPERIENCE_LEVELS.map((level) => ({
+    key: level.value,
+    label: level.label,
+  }));
 }
 
 // -----------------------------------------------------------------------------

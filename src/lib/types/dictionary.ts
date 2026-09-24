@@ -1595,6 +1595,8 @@ export interface AdminPagesDict {
     columns: {
       post: string;
       tripper: string;
+      level: string;
+      travelType: string;
       status: string;
       updated: string;
       actions: string;
