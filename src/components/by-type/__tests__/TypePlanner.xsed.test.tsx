@@ -51,7 +51,24 @@ vi.mock("@/components/EmblaCarousel/EmblaCarousel", () => ({
   default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 vi.mock("@/components/landing/exploration/TravelerTypesCarousel", () => ({
-  TravelerTypesCarousel: () => null,
+  TravelerTypesCarousel: ({
+    localizedTravelerTypes,
+    onSelect,
+  }: {
+    localizedTravelerTypes: Array<{ key: string }>;
+    onSelect: (key: string) => void;
+  }) => (
+    <div>
+      {localizedTravelerTypes.map(({ key }) => (
+        <button
+          data-traveler-type={key}
+          key={key}
+          onClick={() => onSelect(key)}
+          type="button"
+        />
+      ))}
+    </div>
+  ),
 }));
 
 (
@@ -237,7 +254,13 @@ it("keeps default planner levels, tripper badges, selection and ordinary card na
         allowedLevelIds={["xsed", "explora"]}
         compact
         content={content}
-        leadingCard={<XsedLevelCard copy={en.xsedLevelCard} locale="en" />}
+        leadingCard={
+          <XsedLevelCard
+            copy={en.xsedLevelCard}
+            locale="en"
+            travelType="couple"
+          />
+        }
         onSelect={onSelect}
         tripperBadge={{ name: "Test Tripper", avatarUrl: null }}
         type="couple"
@@ -287,4 +310,34 @@ it("does not add XSED to the real journey BudgetStep", () => {
     false,
   ]);
   expectWhiteAndOffWhitePalette();
+});
+
+it("reprices the XSED card at the solo rate when solo is selected on /experiences", () => {
+  act(() =>
+    root.render(<ExperiencesPageClient locale="en" tripperContext={null} />),
+  );
+  expect(cards()[0].textContent).toContain("250 USD");
+
+  act(() =>
+    container
+      .querySelector<HTMLButtonElement>('[data-traveler-type="solo"]')
+      ?.click(),
+  );
+  expect(cards()[0].textContent).toContain("350 USD");
+
+  act(() =>
+    container
+      .querySelector<HTMLButtonElement>('[data-traveler-type="family"]')
+      ?.click(),
+  );
+  expect(cards()[0].textContent).toContain("250 USD");
+});
+
+it("prices the XSED card at the solo rate on the solo traveler-type page", async () => {
+  const page = await TravelerTypePage({
+    params: Promise.resolve({ locale: "en", type: "solo" }),
+    searchParams: Promise.resolve({}),
+  });
+  act(() => root.render(page));
+  expect(cards()[0].textContent).toContain("350 USD");
 });

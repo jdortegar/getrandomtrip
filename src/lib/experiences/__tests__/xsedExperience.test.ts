@@ -17,13 +17,18 @@ describe("XSED experience classification", () => {
     expect(getExperienceTypes(locale).map(({ value }) => value)).toEqual(types);
   });
 
-  it.each(types)(
+  it.each(types.filter((type) => type !== "solo"))(
     "prices %s at the XSED flat rate without changing planner pricing",
     (type) => {
       expect(getExperienceBasePricePerPerson(type, "xsed")).toBe(250);
       expect(getBasePricePerPerson(type, "xsed")).toBe(0);
     },
   );
+
+  it("prices solo at the XSED solo rate without changing planner pricing", () => {
+    expect(getExperienceBasePricePerPerson("solo", "xsed")).toBe(350);
+    expect(getBasePricePerPerson("solo", "xsed")).toBe(0);
+  });
 
   it("preserves ordinary prices and rejects unknown traveler types", () => {
     expect(getExperienceBasePricePerPerson("solo", "essenza")).toBe(450);

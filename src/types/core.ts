@@ -31,7 +31,7 @@ export type BudgetLevel = "low" | "mid" | "high";
  * vocabulary, stored on `TripRequest.level` (never `type`, which is
  * reserved as the `"xsed"` product marker).
  */
-export type XsedTravelType = "couple" | "family" | "friends";
+export type XsedTravelType = "solo" | "couple" | "family" | "group";
 
 export interface User {
   id: ID;

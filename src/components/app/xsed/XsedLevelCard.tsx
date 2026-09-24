@@ -1,5 +1,5 @@
 import LevelCard from "@/components/by-type/shared/LevelCard";
-import { XSED_PRICE_PER_PERSON } from "@/lib/data/traveler-types";
+import { getXsedPricePerPerson } from "@/lib/data/traveler-types";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { XsedLevelCardDict } from "@/lib/types/dictionary";
@@ -7,9 +7,11 @@ import type { XsedLevelCardDict } from "@/lib/types/dictionary";
 interface XsedLevelCardProps {
   copy: XsedLevelCardDict;
   locale: string;
+  /** Selected traveler type; prices the card at that type's XSED rate. */
+  travelType: string;
 }
 
-export function XsedLevelCard({ copy, locale }: XsedLevelCardProps) {
+export function XsedLevelCard({ copy, locale, travelType }: XsedLevelCardProps) {
   return (
     <LevelCard
       ctaClassName="text-ink"
@@ -18,7 +20,7 @@ export function XsedLevelCard({ copy, locale }: XsedLevelCardProps) {
         ...copy,
         id: "xsed",
         maxNights: 1,
-        price: XSED_PRICE_PER_PERSON,
+        price: getXsedPricePerPerson(travelType),
         priceLabel: "",
         excuses: [],
       }}

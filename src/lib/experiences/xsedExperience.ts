@@ -1,6 +1,6 @@
 import {
   getBasePricePerPerson,
-  XSED_PRICE_PER_PERSON,
+  getXsedPricePerPerson,
 } from "@/lib/data/traveler-types";
 import { TRAVELER_EXPERIENCE_TYPES } from "./experienceTypeFilter";
 import type { ExperienceClassification } from "@/types/tripper";
@@ -73,7 +73,7 @@ export function getExperienceBasePricePerPerson(
     level === "xsed" &&
     (TRAVELER_EXPERIENCE_TYPES as readonly string[]).includes(type)
   ) {
-    return XSED_PRICE_PER_PERSON;
+    return getXsedPricePerPerson(type);
   }
   return getBasePricePerPerson(type, level);
 }

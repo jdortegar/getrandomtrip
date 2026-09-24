@@ -1040,8 +1040,9 @@ export interface XsedBookDict {
     label: string;
     placeholder: string;
     couple: string;
+    solo: string;
     family: string;
-    friends: string;
+    group: string;
   };
 }
 

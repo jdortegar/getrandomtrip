@@ -84,3 +84,15 @@ describe("getLevelById (tripper-override-aware)", () => {
     expect(level?.price).toBe(444);
   });
 });
+
+describe("getLevelById for XSED bookings (level holds the travel type)", () => {
+  it.each([
+    ["solo", 350],
+    ["couple", 250],
+    ["group", 250],
+  ])("prices an XSED %s booking at %i USD", (travelType, price) => {
+    const level = getLevelById("xsed", travelType, "en");
+    expect(level?.price).toBe(price);
+    expect(level?.priceLabel).toBe(`${price} USD`);
+  });
+});

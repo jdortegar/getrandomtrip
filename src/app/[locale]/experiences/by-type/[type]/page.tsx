@@ -124,7 +124,11 @@ export default async function TravelerTypePage(props: {
         )}
         itemsPerView={3}
         leadingCard={
-          <XsedLevelCard copy={dict.xsedLevelCard} locale={locale} />
+          <XsedLevelCard
+            copy={dict.xsedLevelCard}
+            locale={locale}
+            travelType={typeData.meta.slug}
+          />
         }
         type={typeData.meta.slug as TravelerTypeSlug}
         navigateOnCardClick={true}

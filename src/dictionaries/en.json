@@ -909,8 +909,9 @@
       "label": "Who's traveling with you?",
       "placeholder": "Select an option",
       "couple": "Couple",
+      "solo": "Solo",
       "family": "Family",
-      "friends": "Friends"
+      "group": "Group"
     },
     "pax": {
       "label": "Travelers",
@@ -979,7 +980,7 @@
         {
           "icon": "alert",
           "title": "The Alert",
-          "description": "On Sunday at 6:00 PM, <strong>you receive the hidden access.</strong><br/>You have 4 hours to book one of 10 limited escapes at a fixed price of $250 USD per person."
+          "description": "On Sunday at 6:00 PM, <strong>you receive the hidden access.</strong><br/>You have 4 hours to book one of 10 limited escapes at a fixed price of $250 USD per person ($350 USD for solo travelers)."
         },
         {
           "icon": "rhythm",

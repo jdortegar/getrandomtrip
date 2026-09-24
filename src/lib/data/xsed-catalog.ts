@@ -1,10 +1,13 @@
 /**
  * XSED product catalog — checkout display data (card + level).
  * XSED is a flat-rate Sunday-drop product, not a traveler type with planner/levels.
- * Pricing: XSED_PRICE_PER_PERSON from traveler-types.
+ * Pricing: getXsedPricePerPerson from traveler-types (solo pays the solo rate).
  */
 
-import { XSED_PRICE_PER_PERSON } from "@/lib/data/traveler-types";
+import {
+  getXsedPricePerPerson,
+  XSED_PRICE_PER_PERSON,
+} from "@/lib/data/traveler-types";
 import type { TravelerTypeCardData } from "@/lib/utils/traveler-card";
 import type { Level } from "@/lib/utils/levels";
 
@@ -68,6 +71,9 @@ const XSED_LEVEL_EN: Level = {
   icon: "⚡",
 };
 
-export function getXsedLevel(locale?: string): Level {
-  return locale?.startsWith("en") ? XSED_LEVEL_EN : XSED_LEVEL_ES;
+/** XSED level priced for the given travel type (standard rate when omitted). */
+export function getXsedLevel(locale?: string, travelType?: string | null): Level {
+  const level = locale?.startsWith("en") ? XSED_LEVEL_EN : XSED_LEVEL_ES;
+  const price = getXsedPricePerPerson(travelType);
+  return { ...level, price, priceLabel: `${price} USD` };
 }

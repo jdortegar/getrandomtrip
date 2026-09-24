@@ -70,7 +70,11 @@ export default function ExperiencesPageClient({
         )}
         itemsPerView={3}
         leadingCard={
-          <XsedLevelCard copy={dict.xsedLevelCard} locale={locale} />
+          <XsedLevelCard
+            copy={dict.xsedLevelCard}
+            locale={locale}
+            travelType={selectedTypeTraveler}
+          />
         }
         type={selectedTypeTraveler}
       />

@@ -113,6 +113,12 @@ export function XsedBookClient({
     setOpenSection("pax");
   };
 
+  // Solo is one traveler by definition, so its pax is fixed at 1.
+  const handleTravelTypeChange = (value: XsedTravelType) => {
+    setTravelType(value);
+    if (value === "solo") setPax(1);
+  };
+
   const handleClearAll = () => {
     setOriginCountry("");
     setOriginCity("");
@@ -290,6 +296,7 @@ export function XsedBookClient({
                     <div className="flex flex-wrap items-start justify-start gap-6">
                       <div className="w-full max-w-32">
                         <FormField
+                          disabled={travelType === "solo"}
                           id="xsed-pax"
                           label={book.pax.label}
                           min={1}
@@ -306,16 +313,17 @@ export function XsedBookClient({
                           id="xsed-travel-type"
                           label={book.travelType.label}
                           onChange={(e) =>
-                            setTravelType(e.target.value as XsedTravelType)
+                            handleTravelTypeChange(e.target.value as XsedTravelType)
                           }
                           value={travelType}
                         >
                           <option disabled value="">
                             {book.travelType.placeholder}
                           </option>
+                          <option value="solo">{book.travelType.solo}</option>
                           <option value="couple">{book.travelType.couple}</option>
                           <option value="family">{book.travelType.family}</option>
-                          <option value="friends">{book.travelType.friends}</option>
+                          <option value="group">{book.travelType.group}</option>
                         </FormSelectField>
                       </div>
                     </div>
@@ -341,6 +349,7 @@ export function XsedBookClient({
             originCity={originCity}
             originCountry={originCountry}
             pax={pax}
+            travelType={travelType}
             travelTypeLabel={travelTypeLabel}
           />
         </div>

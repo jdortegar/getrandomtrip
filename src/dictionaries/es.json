@@ -908,9 +908,10 @@
     "travelType": {
       "label": "¿Con quién viajás?",
       "placeholder": "Seleccioná una opción",
-      "couple": "Pareja",
-      "family": "Familia",
-      "friends": "Amigos"
+      "couple": "En Pareja",
+      "solo": "Solo",
+      "family": "En Familia",
+      "group": "En Grupo"
     },
     "pax": {
       "label": "Personas",
@@ -979,7 +980,7 @@
         {
           "icon": "alert",
           "title": "La Alerta",
-          "description": "El domingo a las 18:00 hs <strong>recibes el acceso oculto.</strong><br/>Tienes 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona."
+          "description": "El domingo a las 18:00 hs <strong>recibes el acceso oculto.</strong><br/>Tienes 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona ($350 USD si viajas solo)."
         },
         {
           "icon": "rhythm",

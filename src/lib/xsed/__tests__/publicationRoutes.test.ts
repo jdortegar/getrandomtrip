@@ -107,7 +107,7 @@ describe("XSED shared draft → dedicated publication", () => {
           data: expect.objectContaining({
             status: "ACTIVE",
             slug: "9",
-            pricingByType: { [type]: 250 },
+            pricingByType: { [type]: type === "solo" ? 350 : 250 },
           }),
         }),
       );
