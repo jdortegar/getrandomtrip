@@ -98,7 +98,9 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        // Buttons are shrink-0 by default; let them shrink in the row so a long
+        // label wraps inside the modal instead of pushing siblings out.
+        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:[&>*]:min-w-0 sm:[&>*]:shrink",
         className,
       )}
       {...props} data-component="DialogFooter"
