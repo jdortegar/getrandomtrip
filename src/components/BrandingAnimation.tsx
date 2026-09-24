@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Img from "@/components/common/Img";
 import { cn } from "@/lib/utils";
 
 interface BrandingAnimationProps {
@@ -121,10 +122,15 @@ function BrandingAnimation({
           ease: "easeOut",
         }}
       >
-        <img
+        <Img
           alt=""
           className="w-full object-cover"
+          decoding="auto"
+          height={68}
+          loading="eager"
           src="/assets/svg/yellow-arrow-back.svg"
+          unoptimized
+          width={250}
         />
       </motion.div>
     </motion.div>
