@@ -35,7 +35,6 @@ export default function TripperPlanner({
 
   const firstName =
     tripperData.name?.split(" ")[0] || tripperData.name || "este tripper";
-  const availableTypes = tripperData.availableTypes || [];
 
   const visitedCountries = useMemo(() => {
     if (tripperData.destinations?.length) return tripperData.destinations;
@@ -52,8 +51,9 @@ export default function TripperPlanner({
 
   const expertiseAreas = useMemo(() => {
     if (tripperData.interests?.length) return tripperData.interests;
+    const availableTypes = tripperData.availableTypes || [];
     return availableTypes.map((t) => getTypeLabel(t) || t).filter(Boolean);
-  }, [tripperData.interests, availableTypes]);
+  }, [tripperData.interests, tripperData.availableTypes]);
 
   const canContinue = country.trim().length > 0 && city.trim().length > 0;
 
