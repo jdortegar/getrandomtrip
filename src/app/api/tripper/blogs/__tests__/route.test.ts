@@ -344,4 +344,30 @@ describe("POST /api/tripper/blogs (create) — status is never accepted from the
     const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(createArgs.data.level).toBeNull();
   });
+
+  it("stores a trimmed label, or null when omitted", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+
+    await POST(
+      new NextRequest("http://localhost/api/tripper/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "My Trip", label: "  XSED Nº1 (AR) " }),
+      }),
+    );
+    await POST(
+      new NextRequest("http://localhost/api/tripper/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: "My Trip" }),
+      }),
+    );
+
+    const calls = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls;
+    expect(calls[0][0].data.label).toBe("XSED Nº1 (AR)");
+    expect(calls[1][0].data.label).toBeNull();
+  });
 });

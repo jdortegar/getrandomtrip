@@ -3,7 +3,7 @@ import SecureRouteWrapper from "@/components/auth/SecureRouteWrapper";
 
 export const metadata: Metadata = {
   description: "Tu panel personal de viajes",
-  title: "Dashboard - Randomtrip",
+  title: { default: "Dashboard - Randomtrip", template: "%s - Randomtrip" },
 };
 
 export default function SecureLayout({

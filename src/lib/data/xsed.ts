@@ -194,6 +194,7 @@ const xsedBlogPostSelect = {
   id: true,
   slug: true,
   title: true,
+  label: true,
   coverUrl: true,
   publishedAt: true,
   createdAt: true,
@@ -219,6 +220,7 @@ function toXsedBlogDropEntry(
     date: formatDropGridDate(blog.publishedAt ?? blog.createdAt, locale),
     image: blog.coverUrl || "/images/drops/drops-mendoza.jpg",
     number: total - position,
+    label: blog.label ?? undefined,
     slug: blog.slug ?? blog.id,
     title: blog.title,
   };

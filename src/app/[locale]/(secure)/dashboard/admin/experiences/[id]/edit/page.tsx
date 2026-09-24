@@ -14,6 +14,9 @@ import type {
   ActivityEntry,
   ItineraryDayEntry,
 } from "@/types/tripper";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/experiences/x/edit");
 
 export default async function AdminEditExperiencePage(props: {
   params: Promise<{ locale: string; id: string }>;

@@ -1,6 +1,9 @@
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { XsedDropShell } from "@/components/app/dashboard/admin/xsed/XsedDropShell";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/xsed/new");
 
 export default async function NewXsedDropPage(props: {
   params: Promise<{ locale: string }>;

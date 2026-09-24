@@ -93,6 +93,7 @@ const EMPTY_DRAFT: BlogFormDraft = {
   travelType: [],
   excuseKey: [],
   level: "",
+  label: "",
   tripperNote: null,
 };
 

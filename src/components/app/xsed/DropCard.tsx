@@ -12,7 +12,8 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
   return (
     <Link
       className={cn("flex flex-col text-left group", featured && "md:h-full")}
-      href={`/blog/${drop.slug}`} data-component="DropCard"
+      href={`/blog/${drop.slug}`}
+      data-component="DropCard"
     >
       <div
         className={cn(
@@ -29,11 +30,15 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
           src={drop.image}
           width={800}
         />
-        <div className="font-barlow absolute left-6 top-3 flex items-center gap-1 text-base font-semibold text-white drop-shadow">
-          <span className="text-xsed">|</span>
-          <span className="font-extralight">XSED</span>
-          <span className="font-bold text-xsed">Nº{drop.number}</span>
-        </div>
+        {drop.label && (
+          <div
+            className="font-barlow absolute left-6 top-3 flex items-center gap-1 text-base font-semibold text-white drop-shadow"
+            data-drop-badge
+          >
+            <span className="text-xsed">|</span>
+            <span className="font-bold">{drop.label}</span>
+          </div>
+        )}
         {drop.soldOut && (
           <div className="absolute right-3 top-3 rounded-[6px] bg-xsed px-3 py-1 text-xs text-white">
             <span className="font-bold">SOLD OUT</span>
@@ -44,9 +49,9 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
         )}
       </div>
       <div className="mt-3 pb-3">
-        <p className="font-barlow mb-1 text-xs font-bold uppercase tracking-widest text-xsed">
+        {/* <p className="font-barlow mb-1 text-xs font-bold uppercase tracking-widest text-xsed">
           {drop.date}
-        </p>
+        </p> */}
         <p className="font-barlow-condensed text-3xl text-neutral-600 font-extralight line-clamp-2 min-h-[4.5rem]">
           {drop.title}
         </p>

@@ -12,6 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getRandomtripUserId } from "@/lib/randomtrip-user";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
+import { normalizeBlogLabel } from "@/lib/blog/label";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -102,6 +103,7 @@ export async function GET(request: NextRequest) {
           travelType: true,
           excuseKey: true,
           level: true,
+          label: true,
           format: true,
           status: true,
           isActive: true,
@@ -173,6 +175,7 @@ export async function POST(request: NextRequest) {
       travelType,
       excuseKey,
       level,
+      label,
     } = body;
 
     // Validate required fields
@@ -239,6 +242,7 @@ export async function POST(request: NextRequest) {
         excuseKey: excuseKeyValue,
         travelType: travelTypeValue,
         level: levelValue,
+        label: normalizeBlogLabel(label) ?? null,
         format: prismaFormat,
         coverUrl: coverUrl || null,
         seo: seo || null,
@@ -258,6 +262,7 @@ export async function POST(request: NextRequest) {
         travelType: true,
         excuseKey: true,
         level: true,
+        label: true,
         format: true,
         status: true,
         isActive: true,

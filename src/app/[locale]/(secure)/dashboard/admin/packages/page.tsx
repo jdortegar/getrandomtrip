@@ -1,3 +1,7 @@
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/packages");
+
 export default function AdminPackagesPage() {
   return (
     <div className="flex flex-col items-center justify-center p-16 text-center">

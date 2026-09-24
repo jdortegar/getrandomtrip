@@ -4041,6 +4041,8 @@
       "fields": {
         "title": "Título",
         "titlePlaceholder": "Título del post",
+        "label": "Etiqueta",
+        "labelPlaceholder": "Ej: XSED Nº1 (AR)",
         "subtitle": "Subtítulo",
         "subtitlePlaceholder": "Subtítulo (opcional)",
         "coverImage": "Imagen de portada",

@@ -2,6 +2,9 @@ import Section from "@/components/layout/Section";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { AdminTripFulfillmentPageClient } from "./AdminTripFulfillmentPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/trip-requests/x");
 
 export default async function AdminTripFulfillmentPage(props: {
   params: Promise<{ locale: string; id: string }>;

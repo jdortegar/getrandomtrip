@@ -12,6 +12,9 @@ import {
   parseNotificationStatus,
   toClientNotification,
 } from "@/lib/notifications/list-query";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/traveler/notifications");
 
 export default async function TravelerNotificationsPage(props: {
   params: Promise<{ locale: string }>;

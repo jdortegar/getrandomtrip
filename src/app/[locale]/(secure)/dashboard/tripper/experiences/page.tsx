@@ -6,6 +6,9 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import Section from "@/components/layout/Section";
 import ExperiencesPageClient from "@/components/app/dashboard/tripper/experiences/ExperiencesPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/experiences");
 
 export default async function TripperExperiencesPage(props: {
   params: Promise<{ locale: string }>;

@@ -139,6 +139,7 @@ export function buildBlogSubmitPayload(draft: BlogFormDraft) {
     travelType: draft.travelType,
     excuseKey: draft.excuseKey,
     level: draft.level || null,
+    label: draft.label.trim() || null,
     tripperNote: draft.tripperNote ?? null,
   };
 }
@@ -197,6 +198,7 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
     travelType: post.travelType ?? [],
     excuseKey: post.excuseKey ?? [],
     level: post.level ?? "",
+    label: post.label ?? "",
     tripperNote: post.tripperNote ?? null,
   };
 }

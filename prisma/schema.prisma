@@ -614,6 +614,7 @@ model BlogPost {
   travelType String[] @default([]) // solo | couple | family | group | honeymoon | paws
   excuseKey  String[] @default([]) // e.g. solo-adventure (from shared excuses)
   level      String? // one of EXPERIENCE_LEVELS values (src/lib/constants/packages.ts); XSED is a level, not a travelType
+  label      String? // display ID shown on the XSED grid, e.g. "XSED Nº1 (AR)"
 
   // SEO
   seo Json? // { title?: string, description?: string, keywords?: string[] }

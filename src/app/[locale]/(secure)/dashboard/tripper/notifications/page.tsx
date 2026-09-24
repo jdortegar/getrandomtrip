@@ -13,6 +13,9 @@ import {
   parseNotificationStatus,
   toClientNotification,
 } from "@/lib/notifications/list-query";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/notifications");
 
 export default async function TripperNotificationsPage(props: {
   params: Promise<{ locale: string }>;

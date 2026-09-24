@@ -8,6 +8,9 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { parseTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { AdminUserEditPageClient } from "./AdminUserEditPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/settings/users/x/edit");
 
 export default async function AdminUserEditPage(props: {
   params: Promise<{ locale: string; id: string }>;

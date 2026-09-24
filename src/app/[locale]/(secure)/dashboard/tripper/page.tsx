@@ -6,6 +6,9 @@ import {
 } from "@/lib/db/tripper-queries";
 import type { RecentBooking } from "@/types/tripper";
 import TripperDashboardPageClient from "./TripperDashboardPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper");
 
 export default async function TripperPage() {
   const session = await getServerSession(authOptions);

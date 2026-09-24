@@ -6,6 +6,9 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { prisma } from "@/lib/prisma";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/blog");
 
 export default async function TripperBlogPage(props: {
   params: Promise<{ locale: string }>;

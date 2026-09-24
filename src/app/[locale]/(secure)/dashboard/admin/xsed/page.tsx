@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/xsed");
 
 // Redirects the bare /xsed index to the "new drop" form. Also gives the admin
 // nav tab a real page to point at while still prefix-matching both

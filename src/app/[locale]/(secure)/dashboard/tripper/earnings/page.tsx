@@ -8,6 +8,9 @@ import { getTripperEarnings } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { prisma } from "@/lib/prisma";
 import type { Earning } from "@/types/tripper";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/earnings");
 
 export const dynamic = "force-dynamic";
 

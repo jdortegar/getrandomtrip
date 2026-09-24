@@ -11,6 +11,9 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import type { TripperSettingsStats } from "@/types/tripper";
 import TripperSettingsPageClient from "./TripperSettingsPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/settings");
 
 export default async function TripperSettingsPage(props: {
   params: Promise<{ locale: string }>;

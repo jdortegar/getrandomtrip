@@ -6,6 +6,7 @@ import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
 import { EXPERIENCE_LEVELS, getExcuseOptionsForType } from "@/lib/constants/packages";
 import { getTravelerTypeOptions } from "@/lib/data/traveler-types";
+import { BLOG_LABEL_MAX_LENGTH } from "@/lib/blog/label";
 import { cn } from "@/lib/utils";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
@@ -63,15 +64,30 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>
 
-      <FormField
-        id="blog-title"
-        label={<>{fields.title}{req}</>}
-        placeholder={fields.titlePlaceholder}
-        value={draft.title}
-        onChange={(e) => onChange("title", e.target.value)}
-        className={ch("title")}
-        peek={peek?.("title")}
-      />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="sm:col-span-2">
+          <FormField
+            id="blog-title"
+            label={<>{fields.title}{req}</>}
+            placeholder={fields.titlePlaceholder}
+            value={draft.title}
+            onChange={(e) => onChange("title", e.target.value)}
+            className={ch("title")}
+            peek={peek?.("title")}
+          />
+        </div>
+
+        <FormField
+          id="blog-label"
+          label={fields.label}
+          placeholder={fields.labelPlaceholder}
+          maxLength={BLOG_LABEL_MAX_LENGTH}
+          value={draft.label}
+          onChange={(e) => onChange("label", e.target.value)}
+          className={ch("label")}
+          peek={peek?.("label")}
+        />
+      </div>
 
       <FormField
         id="blog-subtitle"

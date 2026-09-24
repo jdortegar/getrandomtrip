@@ -1,5 +1,8 @@
 import Section from "@/components/layout/Section";
 import { AdminExperiencesPageClient } from "../AdminExperiencesPageClient";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/admin/experiences");
 
 export default function AdminExperiencesPage() {
   return (

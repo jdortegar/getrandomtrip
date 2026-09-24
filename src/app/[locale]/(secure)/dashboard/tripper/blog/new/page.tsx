@@ -6,6 +6,9 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
+import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
+
+export const generateMetadata = dashboardPageMetadata("/dashboard/tripper/blog/new");
 
 export default async function NewBlogPostPage(props: {
   params: Promise<{ locale: string }>;
