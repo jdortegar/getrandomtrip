@@ -1,5 +1,6 @@
 {
   "activityVoucherPdf": {
+    "providerName": "Provider name",
     "provider": "Provider website",
     "title": "Activity voucher",
     "participants": "Participants",

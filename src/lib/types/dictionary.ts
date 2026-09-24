@@ -1,4 +1,5 @@
 export interface ActivityVoucherPdfCopy {
+  providerName: string;
   provider: string;
   title: string;
   participants: string;
