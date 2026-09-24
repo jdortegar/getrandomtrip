@@ -1,4 +1,13 @@
 {
+  "activityVoucherPdf": {
+    "provider": "Sitio web del proveedor",
+    "title": "Comprobante de actividad",
+    "participants": "Participantes",
+    "date": "Fecha de la actividad",
+    "time": "Horario de la actividad",
+    "program": "Programa",
+    "recommendations": "Recomendaciones"
+  },
   "hotelVoucherPreview": {
     "open": "Crear vista previa de hotel",
     "title": "Vista previa del comprobante de hotel",

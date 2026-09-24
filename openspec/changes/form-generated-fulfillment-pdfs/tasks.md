@@ -75,3 +75,5 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 First implementation: 1.1 typed label/country/locale field-path errors; draft blanks accepted; generation requires 1–120-character label/catalog country; en/es only. Boundary tests; no routes/schema/dependencies/UI.
 
 Verify DB target before application. Baseline: 1742passed/20failed/broken-next-lint; no regressions/production deployment.
+
+- [x] Transient activity renderer subunit of2.11–2.15: generation validation, bilingual A4 output,4MiB guard, real render/pagination checks. Persistent lifecycle integration remains pending.

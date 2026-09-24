@@ -145,3 +145,15 @@ Injected executor reads the durable job without parent lookups and only deletes 
 | 2.2d | `src/lib/trip-documents/__tests__/cleanup.test.ts` | 67 registration/planner passed | Missing-module failure | 1 passed; 13 unsafe/mismatched-job failures → 20 passed; byte-boundary/legacy-identity/read-failure coverage → 24 passed | Formatting; 218 lifecycle/planner/executor regressions passed |
 
 Verification: exact executor + planner + registration/candidate/lifecycle/cancellation/locks selection → 218 passed; typecheck, targeted ESLint, Prettier and diff checks passed. Fake storage tests cover repeated absent/successful sweeps followed by late PUT, retained/publication safety, failed deletion retry and valid Unicode 600-byte/invalid 601-byte targets. No actual storage deletion, DB, schema, dependency, worker or endpoint operation. Retained jobs require recurring worker scheduling before eventual cleanup is operational; no immediate-permanent-absence guarantee. Next: 2.2e bounded prefix tombstone execution. External publication/dependency gates unchanged.
+
+## Transient Activity Renderer Continuation (2026-09-24)
+
+Recovery: clean develop `186454a5` contains hotel vertical milestone `1e6ffbeb` as ancestor; external home/XSED changes preserved. Prior blocked prefix WIP remains in stash `8bdd8a36` (untracked files in third parent), NOT restored or approved. Historical lifecycle evidence above remains intact. Hotel dependency/render/form/preview work is already committed; user prioritizes usable transient templates, not cleanup/storage. Renderer-only dependency exception was separately approved; historical QR/package exception is not approval for further dependencies.
+
+Activity renderer uses existing generation parser, local logo, hotel-aligned teal/cyan A4 branding, EN/ES copy, authored provider/participants/date/time/program/inclusions/recommendations and optional claims; no inferred confirmation/payment, QR, persistence or network assets. Node boundary rejects output above4MiB. Helvetica fidelity gap remains explicit.
+
+| Unit | RED | GREEN / triangulation | Refactor / verification |
+|---|---|---|---|
+| Activity renderer | Missing-module failure before source |7 renderer tests +67 activity parser +7 hotel renderer =81 passed |Typecheck and targeted lint passed; actual EN1page/ES4page PDFs inspected, all30 long-program titles/accents extracted |
+
+QA artifacts: `/private/tmp/activity-render-qa/`; logs `/private/tmp/activity-render-{red,green,typecheck}.log`. No DB/schema/install/server/remote operations. Next autonomous unit: guarded activity preview endpoint, then editor/modal integration; publication/storage gates remain pending, prefix work remains deferred.

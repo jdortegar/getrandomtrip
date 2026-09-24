@@ -18,8 +18,8 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 2.2d-exact-key-tombstone-execution
-  current_branch: codex/form-generated-fulfillment-pdfs-20-cleanup-registration
+  current_slice: transient-activity-renderer
+  current_branch: codex/pdf-activity-preview
   current_base: develop
   local_integration_commit: 923725a5
   preserved_pdf_tip: ace55baaa4c9c61e35e7d3a494302e3d56cef414
@@ -27,7 +27,7 @@ delivery:
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
   current_slice_review: pending
-  current_slice_tests_passed: 218
+  current_slice_tests_passed: 81
   schema_application: applied-development-target-empty-diff-verified
   schema_applied_commit: 14ba2e1a
   schema_publication: awaiting-deploy-hook-verification
@@ -49,7 +49,7 @@ delivery:
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
-  next_slice: 2.2e-bounded-prefix-tombstone-execution
+  next_slice: transient-activity-preview-endpoint
   awaiting_user: null
 constraints:
   - Preserve unrelated existing registry and email-script changes.

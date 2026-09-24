@@ -1,4 +1,13 @@
 {
+  "activityVoucherPdf": {
+    "provider": "Provider website",
+    "title": "Activity voucher",
+    "participants": "Participants",
+    "date": "Activity date",
+    "time": "Activity time",
+    "program": "Program",
+    "recommendations": "Recommendations"
+  },
   "hotelVoucherPreview": {
     "open": "Create hotel preview",
     "title": "Hotel voucher preview",
