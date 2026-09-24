@@ -1,3 +1,4 @@
+import { isDocumentStorageAuthorizationError } from "@/lib/trip-documents/observeDocumentPreview";
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { prisma } from "@/lib/prisma";
@@ -82,10 +83,20 @@ export async function POST(request: NextRequest, context: Context) {
       scope,
       (input as { revision: number }).revision,
     );
-    return result.ok
-      ? json({ previewId: result.previewId, revision: result.revision })
-      : json({ errors: result.errors }, 422);
+    if (!result.ok) return json({ errors: result.errors }, 422);
+    return new NextResponse(new Uint8Array(result.buffer), {
+      headers: {
+        ...headers,
+        "Content-Type": "application/pdf",
+        "Content-Disposition": 'inline; filename="document-preview.pdf"',
+        "X-Content-Type-Options": "nosniff",
+        "X-Document-Preview-Id": result.previewId,
+        "X-Document-Revision": String(result.revision),
+      },
+    });
   } catch (cause) {
+    if (isDocumentStorageAuthorizationError(cause))
+      return json({ error: "storage_authorization" }, 503);
     const code = cause instanceof Error ? cause.message : "";
     if (code === "DOCUMENT_PDF_TOO_LARGE")
       return json({ error: "pdf_too_large" }, 413);

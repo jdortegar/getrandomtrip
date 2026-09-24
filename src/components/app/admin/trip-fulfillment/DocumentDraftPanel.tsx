@@ -242,6 +242,7 @@ export function DocumentDraftPanel({
             )}
             {delivery.url && (
               <>
+                <p>{deliveryCopy.memoryNotice}</p>
                 <a
                   href={delivery.url}
                   rel="noopener noreferrer"

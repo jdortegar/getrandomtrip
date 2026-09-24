@@ -16,12 +16,14 @@
     "map": "Open interactive map"
   },
   "documentDraftDelivery": {
-    "preview": "Preview saved PDF",
+    "memoryNotice": "This preview stays in browser memory until you refresh the page. Attach it within one hour; only Attach saves the PDF.",
+    "storage_authorization": "PDF storage authorization failed. An administrator must check the server’s Netlify storage configuration. Your draft is saved; retry after the configuration is fixed.",
+    "preview": "Preview PDF",
     "saveFirst": "Save changes before previewing or attaching.",
     "attach": "Attach PDF",
     "replace": "Replace attached PDF",
     "confirmReplace": "Replace the attached document with this exact preview?",
-    "view": "Open saved PDF preview",
+    "view": "Open PDF preview",
     "draft": "Private draft",
     "attached": "Attached",
     "unpublished": "Unpublished saved changes",

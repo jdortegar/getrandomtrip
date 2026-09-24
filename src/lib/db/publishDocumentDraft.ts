@@ -1,6 +1,7 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
 import type { TripDocumentCandidateReceipt } from "@/lib/types/TripDocumentCandidate";
 import { validateDocumentMetadata } from "@/lib/trip-documents/documentMetadata";
+import { assertMemoryPreviewLifetime } from "./memoryDocumentPreview";
 import { withTripDocumentLocks } from "./tripDocumentLocks";
 import {
   reconcileDocumentCandidate,
@@ -78,6 +79,8 @@ export async function publishDocumentDraft(
           draft.previewHash !== hash
         )
           throw new Error("DOCUMENT_PUBLICATION_CONFLICT");
+        if (draft.previewKey === null)
+          assertMemoryPreviewLifetime(receipt.previewId);
         const metadata = validateDocumentMetadata(
           { label: draft.label, country: draft.country, locale: draft.locale },
           "generation",

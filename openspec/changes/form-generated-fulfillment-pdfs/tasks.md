@@ -120,3 +120,8 @@ Historical transient checkpoint above is preserved. Current next step: remaining
 
 ### Compatibility evidence for4.1
 Read-only audit confirms existing upload POST still validates MIME/size/country, writes its existing raw key and creates a published TripDocument; the safe DTO excludes storage/draft internals. Traveler listing/streaming still queries TripDocument only, checks trip scope and buyer/companion/admin access with fulfillment-status gating. `sendTripStartVouchers` queries published TripDocument rows only and reads their stored bytes; it never queries draft previews. Frozen full-suite log confirms upload7, document-stream10, attachment-delete9, email7, DTO3 and visibility15 tests passed (51 tests across these six suites). Explicit tests reject draft querying/serialization. This is source/mock regression evidence, not live email/storage delivery; known legacy upload races are not redefined as generated-ledger guarantees.
+
+### Approved browser-memory preview continuation
+- [x] MP1: server-owned digest binding and locked adoption; UUIDv7 immutable one-hour lifetime; exact-byte/stale/expiry unit tests. Contract only; endpoints not switched yet.
+- [x] MP2: render response returns PDF directly; browser retains reviewed Blob, no preview storage write; validation/stale-response guards and legacy response compatibility tested. Attach transport awaits MP3 backend integration.
+- [x] MP3: bounded authenticated byte-transfer Attach verifies DB binding and final expiry; publication/idempotency/replacement/cleanup regression tests pass. Live Attach remains unexecuted without authorization and valid storage configuration.

@@ -18,6 +18,7 @@ const fieldCodes = new Set([
   "invalid_url",
 ]);
 const codes = [
+  "storage_authorization",
   "attach_in_progress",
   "attach_request_expired",
   "attach_request_mismatch",
@@ -45,6 +46,7 @@ export function useDraftDelivery(
   const abort = useRef<AbortController | null>(null);
   const blobUrl = useRef<string | null>(null);
   const preview = useRef<{ previewId: string; revision: number } | null>(null);
+  const reviewedBlob = useRef<Blob | null>(null);
   const requestId = useRef<string | null>(null);
   if (owner !== identity) {
     setOwner(identity);
@@ -62,6 +64,7 @@ export function useDraftDelivery(
       if (blobUrl.current) URL.revokeObjectURL(blobUrl.current);
       blobUrl.current = null;
       preview.current = null;
+      reviewedBlob.current = null;
       requestId.current = null;
     },
     [identity],
@@ -88,6 +91,7 @@ export function useDraftDelivery(
     if (!draft || dirty || busy) return;
     const { token, signal } = begin();
     preview.current = null;
+    reviewedBlob.current = null;
     requestId.current = null;
     setUrl(null);
     if (blobUrl.current) URL.revokeObjectURL(blobUrl.current);
@@ -133,17 +137,32 @@ export function useDraftDelivery(
         return;
       }
       await check(response);
-      const result = await response.json();
+      const direct =
+        response.headers.get("content-type")?.split(";")[0].trim() ===
+        "application/pdf";
+      const result = direct
+        ? {
+            previewId: response.headers.get("x-document-preview-id"),
+            revision: Number(response.headers.get("x-document-revision")),
+          }
+        : await response.json();
       if (token !== sequence.current) return;
       if (
         result.revision !== draft.revision ||
-        typeof result.previewId !== "string"
+        typeof result.previewId !== "string" ||
+        (direct &&
+          !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(
+            result.previewId,
+          ))
       )
         throw "unavailable";
-      const pdf = await fetch(
-        `${base}/preview?revision=${result.revision}&previewId=${encodeURIComponent(result.previewId)}`,
-        { cache: "no-store", signal },
-      );
+      // Legacy stored-preview responses remain readable during rollout.
+      const pdf = direct
+        ? response
+        : await fetch(
+            `${base}/preview?revision=${result.revision}&previewId=${encodeURIComponent(result.previewId)}`,
+            { cache: "no-store", signal },
+          );
       await check(pdf);
       if (
         pdf.headers.get("content-type")?.split(";")[0].trim() !==
@@ -153,6 +172,7 @@ export function useDraftDelivery(
       const blob = await pdf.blob();
       if (token !== sequence.current) return;
       if (blob.size > 4 * 1024 * 1024) throw "unavailable";
+      reviewedBlob.current = direct ? blob : null;
       preview.current = {
         previewId: result.previewId,
         revision: result.revision,
@@ -178,13 +198,25 @@ export function useDraftDelivery(
       const response = await fetch(`${base}/attach`, {
         method: "POST",
         cache: "no-store",
-        headers: { "Content-Type": "application/json" },
+        headers: reviewedBlob.current
+          ? {
+              "Content-Type": "application/pdf",
+              "X-Document-Revision": String(preview.current.revision),
+              "X-Document-Preview-Id": preview.current.previewId,
+              "X-Document-Request-Id": requestId.current,
+              ...(replaceDocumentId === undefined
+                ? {}
+                : { "X-Document-Replace-Id": replaceDocumentId }),
+            }
+          : { "Content-Type": "application/json" },
         signal,
-        body: JSON.stringify({
-          ...preview.current,
-          requestId: requestId.current,
-          ...(replaceDocumentId === undefined ? {} : { replaceDocumentId }),
-        }),
+        body:
+          reviewedBlob.current ??
+          JSON.stringify({
+            ...preview.current,
+            requestId: requestId.current,
+            ...(replaceDocumentId === undefined ? {} : { replaceDocumentId }),
+          }),
       });
       await check(response);
       const result = await response.json();

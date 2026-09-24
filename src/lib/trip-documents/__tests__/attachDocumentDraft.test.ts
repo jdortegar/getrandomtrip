@@ -193,3 +193,88 @@ it("allows a fresh explicit request after an abandoned candidate expires", async
   });
   expect(writeGeneratedDocument).toHaveBeenCalledOnce();
 });
+it("publishes only DB-bound browser bytes without reading a preview blob", async () => {
+  const { createHash } = await import("node:crypto");
+  const { createMemoryPreviewId } =
+    await import("@/lib/db/memoryDocumentPreview");
+  const id = createMemoryPreviewId();
+  draftFind.mockResolvedValue({
+    id: "draft",
+    tripRequestId: "trip",
+    revision: 2,
+    previewRevision: 2,
+    previewId: id,
+    previewKey: null,
+    previewSize: bytes.length,
+    previewHash: createHash("sha256").update(bytes).digest("hex"),
+    documentId: null,
+  });
+  await attachDocumentDraft(db, {
+    ...input,
+    previewId: id,
+    previewBytes: bytes,
+  });
+  expect(readDocumentPreview).not.toHaveBeenCalled();
+  expect(vi.mocked(writeGeneratedDocument).mock.calls[0][2]).toEqual(bytes);
+  expect(vi.mocked(writeGeneratedDocument).mock.calls[0][2]).not.toBe(bytes);
+  expect(writeGeneratedDocument).toHaveBeenCalledWith(
+    db,
+    expect.objectContaining({ purpose: "publication", previewId: id }),
+    expect.any(Buffer),
+    expect.any(Object),
+  );
+});
+it("rejects tampered browser bytes and missing bytes before any publication PUT", async () => {
+  const { createHash } = await import("node:crypto");
+  const { createMemoryPreviewId } =
+    await import("@/lib/db/memoryDocumentPreview");
+  const id = createMemoryPreviewId();
+  draftFind.mockResolvedValue({
+    id: "draft",
+    tripRequestId: "trip",
+    revision: 2,
+    previewRevision: 2,
+    previewId: id,
+    previewKey: null,
+    previewSize: bytes.length,
+    previewHash: createHash("sha256").update(bytes).digest("hex"),
+    documentId: null,
+  });
+  await expect(
+    attachDocumentDraft(db, {
+      ...input,
+      previewId: id,
+      previewBytes: Buffer.from("%PDF-tampered"),
+    }),
+  ).rejects.toThrow("DOCUMENT_PUBLICATION_CONFLICT");
+  await expect(
+    attachDocumentDraft(db, { ...input, previewId: id }),
+  ).rejects.toThrow("DOCUMENT_PUBLICATION_CONFLICT");
+  expect(writeGeneratedDocument).not.toHaveBeenCalled();
+  expect(readDocumentPreview).not.toHaveBeenCalled();
+});
+it("recognizes a retained memory publication after expiry and later draft edits without another PUT", async () => {
+  const { createMemoryPreviewId } =
+    await import("@/lib/db/memoryDocumentPreview");
+  const expired = createMemoryPreviewId(Date.now() - 7200000);
+  draftFind.mockResolvedValue({
+    id: "draft",
+    tripRequestId: "trip",
+    revision: 3,
+    documentId: "document",
+  });
+  jobFind.mockResolvedValue({
+    ...receipt,
+    previewId: expired,
+    disposition: "retained",
+  });
+  expect(
+    await attachDocumentDraft(db, {
+      ...input,
+      previewId: expired,
+      previewBytes: bytes,
+    }),
+  ).toEqual({ documentId: "document", status: "retained" });
+  expect(writeGeneratedDocument).not.toHaveBeenCalled();
+  expect(readDocumentPreview).not.toHaveBeenCalled();
+});

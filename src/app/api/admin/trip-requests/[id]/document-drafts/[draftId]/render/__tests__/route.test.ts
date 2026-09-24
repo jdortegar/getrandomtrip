@@ -53,6 +53,7 @@ beforeEach(() => {
     ok: true,
     previewId: "preview",
     revision: 1,
+    buffer: Buffer.from("%PDF-exact bytes"),
   } as never);
   vi.mocked(readTripDocumentDraft).mockResolvedValue({ id: "draft" } as never);
   vi.mocked(loadTripDocumentSource).mockResolvedValue({
@@ -90,6 +91,10 @@ it("rejects stale roles and missing trips", async () => {
 it("updates with DB owner and forwards the revision envelope", async () => {
   const response = await POST(request(), context);
   expect(response.status).toBe(200);
+  expect(response.headers.get("content-type")).toBe("application/pdf");
+  expect(response.headers.get("x-document-preview-id")).toBe("preview");
+  expect(response.headers.get("x-document-revision")).toBe("1");
+  expect(await response.text()).toBe("%PDF-exact bytes");
   expect(renderSavedDocumentDraft).toHaveBeenCalledWith(
     prisma,
     { ownerId: "buyer", tripRequestId: "trip", draftId: "draft" },
@@ -182,3 +187,36 @@ it.each([
   );
   expect(renderSavedDocumentDraft).not.toHaveBeenCalled();
 });
+it.each([401, 403])(
+  "returns actionable private storage configuration error for Blobs %s without secrets",
+  async (status) => {
+    const cause = Object.assign(
+      new Error(
+        `Netlify Blobs has generated an internal error (${status} status code, ID: private-token)`,
+      ),
+      { name: "BlobsInternalError" },
+    );
+    vi.mocked(renderSavedDocumentDraft).mockRejectedValue(cause);
+    const response = await POST(request(), context);
+    expect(response.status).toBe(503);
+    expect(response.headers.get("cache-control")).toBe("private, no-store");
+    expect(await response.json()).toEqual({ error: "storage_authorization" });
+  },
+);
+it.each([
+  new Error("private host returned 401 status code"),
+  Object.assign(
+    new Error(
+      "Netlify Blobs has generated an internal error (500 status code)",
+    ),
+    { name: "BlobsInternalError" },
+  ),
+])(
+  "does not mislabel unrelated failures as storage authorization",
+  async (cause) => {
+    vi.mocked(renderSavedDocumentDraft).mockRejectedValue(cause);
+    const response = await POST(request(), context);
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: "preview_unavailable" });
+  },
+);

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { Prisma, type PrismaClient } from "@prisma/client";
 import { withTripDocumentLocks } from "@/lib/db/tripDocumentLocks";
+import { verifyMemoryDocumentPreview } from "@/lib/db/memoryDocumentPreview";
 import { readDocumentPreview } from "@/lib/storage/readDocumentPreview";
 import { writeGeneratedDocument } from "@/lib/storage/writeGeneratedDocument";
 import { publishDocumentDraft } from "@/lib/db/publishDocumentDraft";
@@ -13,6 +14,7 @@ interface Input {
   previewId: string;
   requestId: string;
   replaceDocumentId?: string;
+  previewBytes?: Uint8Array;
 }
 /** Caller authorizes live admin. requestId is stable across transport retries.
  * Pending ambiguous uploads cannot be overwritten: after the one-hour lease
@@ -23,6 +25,11 @@ export async function attachDocumentDraft(
   db: Pick<PrismaClient, "$transaction">,
   input: Input,
 ) {
+  if (input.previewBytes && input.previewBytes.byteLength > 4 * 1024 * 1024)
+    throw new Error("DOCUMENT_PDF_TOO_LARGE");
+  const previewBytes = input.previewBytes
+    ? Buffer.from(input.previewBytes)
+    : undefined;
   const value = { ...input };
   const uuid = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
   if (
@@ -93,23 +100,37 @@ export async function attachDocumentDraft(
       value.replaceDocumentId !== draft.documentId
     )
       throw new Error("DOCUMENT_REPLACEMENT_MISMATCH");
+    if (draft.previewKey === null && !previewBytes)
+      throw new Error("DOCUMENT_PUBLICATION_CONFLICT");
+    const verifiedBytes = previewBytes
+      ? verifyMemoryDocumentPreview(
+          draft,
+          value,
+          value.revision,
+          value.previewId,
+          previewBytes,
+        )
+      : undefined;
     return {
+      verifiedBytes,
       documentId: draft.documentId ?? randomUUID(),
       state: draft.documentId ? ("existing" as const) : ("reserved" as const),
     };
   });
   if (plan.retained)
     return { documentId: plan.retained, status: "retained" as const };
-  const bytes = await readDocumentPreview(
-    db,
-    {
-      ownerId: value.ownerId,
-      tripRequestId: value.tripRequestId,
-      draftId: value.draftId,
-    },
-    value.revision,
-    value.previewId,
-  );
+  const bytes =
+    plan.verifiedBytes ??
+    (await readDocumentPreview(
+      db,
+      {
+        ownerId: value.ownerId,
+        tripRequestId: value.tripRequestId,
+        draftId: value.draftId,
+      },
+      value.revision,
+      value.previewId,
+    ));
   const stored = await writeGeneratedDocument(
     db,
     {

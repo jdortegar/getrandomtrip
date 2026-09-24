@@ -16,12 +16,14 @@
     "map": "Abrir mapa interactivo"
   },
   "documentDraftDelivery": {
-    "preview": "Vista previa del PDF guardado",
+    "memoryNotice": "Esta vista previa permanece en la memoria del navegador hasta que actualices la página. Adjúntala en el plazo de una hora; solo Adjuntar guarda el PDF.",
+    "storage_authorization": "Falló la autorización del almacenamiento de PDF. Un administrador debe revisar la configuración de Netlify del servidor. Tu borrador está guardado; vuelve a intentarlo cuando se corrija la configuración.",
+    "preview": "Vista previa del PDF",
     "saveFirst": "Guardá los cambios antes de previsualizar o adjuntar.",
     "attach": "Adjuntar PDF",
     "replace": "Reemplazar PDF adjunto",
     "confirmReplace": "¿Reemplazar el documento adjunto por esta vista previa exacta?",
-    "view": "Abrir vista previa guardada",
+    "view": "Abrir vista previa del PDF",
     "draft": "Borrador privado",
     "attached": "Adjunto",
     "unpublished": "Cambios guardados sin publicar",

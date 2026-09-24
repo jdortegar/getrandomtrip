@@ -64,3 +64,13 @@ Decision3139 narrows generated-file cleanup to the durable exact-key candidate l
 - The worker selects bounded due jobs fairly by nextAttemptAt and stable ID, advances every processed job to a future attempt (including absent/success cases), and applies capped retry backoff on failures. Repeated runs must not starve later jobs; lease/concurrency handling must preserve rescheduling and never lose ownership identity.
 - Existing schema fields support this policy; no SDK cursor or schema expansion is required. The blocked prefix executor in stash `8bdd8a36` is superseded for generated-file delivery and must not be restored. Pure prefix planning history remains historical, not an execution dependency.
 - Implement private preview/publication services before scheduling the worker. Storage adapters use raw validated receipt keys, never URLs, and never perform exception-driven deletion after ambiguous PUT/adoption outcomes.
+
+## Browser-memory Preview Amendment (2026-09-24, user approved)
+
+Preview now means server rendering returned directly to the browser, with no storage PUT, preview candidate, or server-memory cache. Only explicit Attach persists bytes. Existing stored-preview paths remain compatible during rollout.
+
+- The existing draft previewId/revision/SHA-256/size fields bind the server-rendered bytes; previewKey is null. This server-owned, locked DB record is authoritative, so a client-supplied PDF cannot be accepted merely on its own digest assertion.
+- A server-generated UUIDv7 carries immutable issue time and cryptographic randomness (RFC9562 section5.7); transient identities reject future timestamps and expire at one hour. No schema, credential, secret or package change is needed. Updating draft.updatedAt cannot extend expiry.
+- Attach authenticates before bounded raw-PDF body reading, verifies exact bytes against the current live locked identity/revision/digest/size and expiry, and registers the publication candidate before PUT. Finalization rechecks binding/expiry. Retained matching publication receipts are reconciled first so successful retries remain idempotent after expiry or later replacement.
+- Browser retains the reviewed Blob across ambiguous attach retries; Attach never rerenders. Editing, changing draft, explicit new preview, or deletion invalidates old identities. Existing immutable publication, replacement confirmation, safe DTOs, email isolation and durable exact-key cleanup remain unchanged.
+- Legacy preview blobs remain scheduled for retirement using existing exact-key receipts. No claim that existing Netlify authorization failure is repaired: it can still block explicit Attach.

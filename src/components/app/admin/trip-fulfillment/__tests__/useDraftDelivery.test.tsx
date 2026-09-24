@@ -232,3 +232,85 @@ it("ignores stale 422 JSON after a draft identity change", async () => {
   expect(current.fieldErrors).toEqual([]);
   expect(current.error).toBeNull();
 });
+it("preserves actionable storage authorization failure instead of suggesting identity retries", async () => {
+  fetchMock.mockResolvedValueOnce(
+    json({ error: "storage_authorization" }, 503),
+  );
+  await act(async () => current.render());
+  expect(current.error).toBe("storage_authorization");
+  expect(current.url).toBeNull();
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+it("previews direct PDF without storage GET and retries Attach with identical Blob and identity", async () => {
+  const previewId = "019b76da-a800-7123-8123-123456789012";
+  fetchMock.mockResolvedValueOnce(
+    new Response("%PDF-exact reviewed bytes", {
+      headers: {
+        "content-type": "application/pdf",
+        "x-document-preview-id": previewId,
+        "x-document-revision": "2",
+      },
+    }),
+  );
+  await act(async () => current.render());
+  expect(current.url).toBe("blob:preview");
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  fetchMock.mockRejectedValueOnce(new Error("ambiguous transport"));
+  await act(async () => current.attach());
+  const first = fetchMock.mock.calls[1][1];
+  expect(first.body).toBeInstanceOf(Blob);
+  expect(await first.body.text()).toBe("%PDF-exact reviewed bytes");
+  expect(first.headers["X-Document-Preview-Id"]).toBe(previewId);
+  expect(first.headers["Content-Type"]).toBe("application/pdf");
+  expect(current.url).toBe("blob:preview");
+  fetchMock.mockResolvedValueOnce(json({ documentId: "published" }));
+  await act(async () => current.attach());
+  expect(fetchMock.mock.calls[2][1].body).toBe(first.body);
+  expect(fetchMock.mock.calls[2][1].headers["X-Document-Request-Id"]).toBe(
+    first.headers["X-Document-Request-Id"],
+  );
+  expect(current.attachedId).toBe("published");
+});
+it("rejects direct PDFs with missing or mismatched identity before exposing bytes", async () => {
+  fetchMock.mockResolvedValueOnce(
+    new Response("%PDF", {
+      headers: {
+        "content-type": "application/pdf",
+        "x-document-revision": "1",
+      },
+    }),
+  );
+  await act(async () => current.render());
+  expect(current.url).toBeNull();
+  expect(current.error).toBe("unavailable");
+  expect(URL.createObjectURL).not.toHaveBeenCalled();
+});
+it("discards a late direct PDF Blob after switching drafts", async () => {
+  let finish!: (blob: Blob) => void;
+  fetchMock.mockResolvedValueOnce({
+    ok: true,
+    status: 200,
+    headers: new Headers({
+      "content-type": "application/pdf",
+      "x-document-preview-id": "019b76da-a800-7123-8123-123456789012",
+      "x-document-revision": "2",
+    }),
+    blob: () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  });
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = current.render();
+  });
+  act(() => root.render(<Harness id="different" />));
+  await act(async () => {
+    finish(new Blob(["%PDF-old"]));
+    await pending;
+  });
+  expect(current.url).toBeNull();
+  expect(URL.createObjectURL).not.toHaveBeenCalled();
+  await act(async () => current.attach());
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});

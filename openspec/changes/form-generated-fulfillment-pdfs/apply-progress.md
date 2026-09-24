@@ -282,3 +282,17 @@ Current implementation branch `codex/pdf-unified-workflow`, independent review P
 
 ### Isolated production build and asset tracing
 Frozen `0e3211de` built successfully in `/private/tmp/getrandomtrip-prod-verify.y4rn6B`:190/190pages and type checks, no DB fallback/errors. All six render-route NFT manifests include BarlowRegular, BarlowBold, OFL and logo (24required asset entries), confirmed in `/private/tmp/pdf-final-build-traces.json`. Verification runtime wasNode25, not configured NetlifyNode20: deployment/runtime smoke remains open. The working-tree3010server was not restarted; parent confirmed it remained alive. No live DB/storage mutation is implied by the isolated build.
+
+## Browser-memory Preview Contract — MP1 (2026-09-24)
+
+User approved preview without storage upload; persistence only on explicit Attach. Prior stored-preview implementation/evidence above is historical, not overwritten. Live diagnosis separately proved Netlify Blobs401 at store stage, not renderer failure.
+
+Added isolated bindMemoryDocumentPreview/verifyMemoryDocumentPreview contract: existing server-owned DB digest/revision/size and opaque UUIDv7 identity, previewKey=null, one-hour expiry unaffected by updatedAt. Live ordered locks and exact-byte comparison reject foreign/stale/tampered previews; no storage call/candidate or server-memory cache. RED missing module then8tests GREEN; endpoint/client/publication integration remains pending MP2/MP3. Existing diagnostics changes remain a separately reviewed unit; no live DB/storage calls, schema changes or credential edits in MP1.
+
+### MP2 — Direct render response and reviewed browser Blob
+Render now binds metadata and returns private PDF bytes with identity/revision headers, without storage/candidate registration; existing obsolete stored-preview receipts still retire via ordered exact-key cleanup. Client accepts direct PDF and legacy JSON/GET responses, retains the exact direct Blob across ambiguous Attach retries with stable request ID, and discards late blobs on identity changes. Tests RED then63tests/4suites GREEN; nonincremental typecheck and scoped lint PASS. MP2 incremental code/test budget232lines; Attach sends bounded-PDF transport but server support/final expiry checks remain MP3, so no attachment/browser-publication completion claim.
+
+### MP3 — Explicit byte-verified Attach
+Attach accepts at most4MiB streamed raw PDF after live admin/trip checks, with bounded identity headers; legacy JSON/stored previews remain supported. Locked DB digest/size/current revision/identity checks reject arbitrary or stale browser bytes before PUT. Final atomic publication independently rechecks immutable one-hour expiry; matching retained receipt retries remain successful after expiry/edits without another PUT. Browser keeps the reviewed Blob/request identity across ambiguous retries. Bilingual UI now says Preview PDF and explains browser-only lifetime/explicit persistence. RED then95tests/6suites GREEN; nonincremental typecheck/scoped lint PASS. Parent verified live hotel preview succeeds without storage401; embedded PDF painting remains unverified in IAB. No actual Attach, email, credential or schema mutation performed by this implementation; Netlify authorization still blocks publication until repaired.
+
+Combined local checkpoint:349suites/3,706tests PASS (`/private/tmp/pdf-memory-final-tests.log`), nonincremental typecheck and scoped lint PASS. This supersedes only the local test count, not historical evidence or outstanding live publication/Netlify gates.

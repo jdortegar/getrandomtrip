@@ -234,3 +234,16 @@ it("rejects replacement after link deletion or with changed preview hash", async
   ).rejects.toThrow("DOCUMENT_PUBLICATION_CONFLICT");
   expect(replace).not.toHaveBeenCalled();
 });
+it("rejects memory preview expiry at final publication after an otherwise successful PUT", async () => {
+  const { createMemoryPreviewId } = await import("../memoryDocumentPreview");
+  const id = createMemoryPreviewId(Date.now() - 3600000);
+  findUnique.mockResolvedValue({ ...draft, previewKey: null, previewId: id });
+  await expect(
+    publishDocumentDraft(db, {
+      ...input,
+      receipt: { ...receipt, previewId: id },
+    }),
+  ).rejects.toThrow("DOCUMENT_MEMORY_PREVIEW_EXPIRED");
+  expect(create).not.toHaveBeenCalled();
+  expect(update).not.toHaveBeenCalled();
+});

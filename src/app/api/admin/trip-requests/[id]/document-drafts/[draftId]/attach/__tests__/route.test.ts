@@ -213,3 +213,70 @@ it("forwards explicit replacement and safelists response", async () => {
     expect.objectContaining({ replaceDocumentId: "document" }),
   );
 });
+function binaryRequest(
+  body: BodyInit = "%PDF-exact",
+  extra: Record<string, string> = {},
+) {
+  return new Request("http://localhost", {
+    method: "POST",
+    body,
+    duplex: "half",
+    headers: {
+      "content-type": "application/pdf",
+      "x-document-preview-id": payload.previewId,
+      "x-document-request-id": payload.requestId,
+      "x-document-revision": "1",
+      ...extra,
+    },
+  } as RequestInit & { duplex: string }) as NextRequest;
+}
+it("accepts bounded raw PDF with identity headers only after live authorization", async () => {
+  const response = await POST(binaryRequest(), context);
+  expect(response.status).toBe(200);
+  expect(attachDocumentDraft).toHaveBeenCalledWith(
+    prisma,
+    expect.objectContaining({
+      ...payload,
+      ownerId: "buyer",
+      adminId: "admin",
+      previewBytes: Buffer.from("%PDF-exact"),
+    }),
+  );
+  vi.mocked(getServerSession).mockResolvedValue(null);
+  const req = binaryRequest();
+  const read = vi.spyOn(req.body!, "getReader");
+  expect((await POST(req, context)).status).toBe(401);
+  expect(read).not.toHaveBeenCalled();
+});
+it("bounds actual binary stream bytes even when content length lies", async () => {
+  const cancel = vi.fn();
+  const body = new ReadableStream({
+    pull(controller) {
+      controller.enqueue(new Uint8Array(4 * 1024 * 1024 + 1));
+    },
+    cancel,
+  });
+  expect(
+    (await POST(binaryRequest(body, { "content-length": "1" }), context))
+      .status,
+  ).toBe(413);
+  expect(cancel).toHaveBeenCalled();
+  expect(attachDocumentDraft).not.toHaveBeenCalled();
+});
+it("rejects malformed binary identities and reports expired previews as conflicts", async () => {
+  expect(
+    (
+      await POST(
+        binaryRequest("%PDF", { "x-document-preview-id": "arbitrary" }),
+        context,
+      )
+    ).status,
+  ).toBe(422);
+  expect(attachDocumentDraft).not.toHaveBeenCalled();
+  vi.mocked(attachDocumentDraft).mockRejectedValue(
+    new Error("DOCUMENT_MEMORY_PREVIEW_EXPIRED"),
+  );
+  expect(await (await POST(binaryRequest(), context)).json()).toEqual({
+    error: "preview_conflict",
+  });
+});

@@ -386,3 +386,65 @@ it("shows authoritative nested 422 errors inline, focuses them, and clears them 
   edit("Updated");
   expect(field.hasAttribute("aria-invalid")).toBe(false);
 });
+it.each([en, es])(
+  "localizes storage authorization guidance without requesting identity retries",
+  async (dictionary) => {
+    act(() =>
+      root.render(
+        <DocumentDraftPanel
+          countryLabels={{ AR: "Argentina" }}
+          locale={dictionary === en ? "en" : "es"}
+          tripId="trip"
+        />,
+      ),
+    );
+    fetchMock.mockResolvedValueOnce(response(renderableDraft));
+    await act(async () => button(dictionary.documentDraftPanel.create).click());
+    fetchMock.mockResolvedValueOnce(
+      response({ error: "storage_authorization" }, 503),
+    );
+    await act(async () =>
+      button(dictionary.documentDraftDelivery.preview).click(),
+    );
+    expect(host.textContent).toContain(
+      dictionary.documentDraftDelivery.storage_authorization,
+    );
+    expect(host.textContent).not.toContain(
+      dictionary.documentDraftDelivery.unavailable,
+    );
+    expect(host.querySelector("iframe")).toBeNull();
+  },
+);
+it.each([en, es])(
+  "explains that previews stay in memory and only Attach persists the PDF",
+  async (dictionary) => {
+    act(() =>
+      root.render(
+        <DocumentDraftPanel
+          countryLabels={{ AR: "Argentina" }}
+          locale={dictionary === en ? "en" : "es"}
+          tripId="trip"
+        />,
+      ),
+    );
+    fetchMock.mockResolvedValueOnce(response(renderableDraft));
+    await act(async () => button(dictionary.documentDraftPanel.create).click());
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:memory");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    fetchMock.mockResolvedValueOnce(
+      new Response("%PDF", {
+        headers: {
+          "content-type": "application/pdf",
+          "x-document-preview-id": "019b76da-a800-7123-8123-123456789012",
+          "x-document-revision": "1",
+        },
+      }),
+    );
+    await act(async () =>
+      button(dictionary.documentDraftDelivery.preview).click(),
+    );
+    expect(host.textContent).toContain(
+      dictionary.documentDraftDelivery.memoryNotice,
+    );
+  },
+);

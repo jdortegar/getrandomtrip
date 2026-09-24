@@ -4,8 +4,8 @@ import { beforeEach, expect, it, vi } from "vitest";
 vi.mock("@/lib/db/tripDocumentLocks", () => ({
   withTripDocumentLocks: vi.fn(),
 }));
-vi.mock("@/lib/db/adoptDocumentPreview", () => ({
-  adoptDocumentPreview: vi.fn(),
+vi.mock("@/lib/db/memoryDocumentPreview", () => ({
+  bindMemoryDocumentPreview: vi.fn(),
 }));
 vi.mock("@/lib/storage/writeGeneratedDocument", () => ({
   writeGeneratedDocument: vi.fn(),
@@ -20,7 +20,7 @@ vi.mock("../pdf/renderExperienceRoadmap", () => ({
 }));
 vi.mock("../pdf/renderXsedRoadmap", () => ({ renderXsedRoadmap: vi.fn() }));
 import { withTripDocumentLocks } from "@/lib/db/tripDocumentLocks";
-import { adoptDocumentPreview } from "@/lib/db/adoptDocumentPreview";
+import { bindMemoryDocumentPreview } from "@/lib/db/memoryDocumentPreview";
 import { writeGeneratedDocument } from "@/lib/storage/writeGeneratedDocument";
 import { renderHotelVoucher } from "../pdf/renderHotelVoucher";
 import { renderActivityVoucher } from "../pdf/renderActivityVoucher";
@@ -31,16 +31,6 @@ import { createTripDocumentSnapshot } from "../snapshots";
 import { renderSavedDocumentDraft } from "../renderSavedDocumentDraft";
 const db = {} as Pick<PrismaClient, "$transaction">;
 const scope = { ownerId: "buyer", tripRequestId: "trip", draftId: "draft" };
-const receipt = {
-  ...scope,
-  id: "candidate",
-  documentId: null,
-  previewId: "preview",
-  purpose: "preview" as const,
-  revision: 1,
-  key: "private",
-  expiresAt: "2030-01-01",
-};
 const findUnique = vi.fn();
 const query = vi.fn();
 const updateMany = vi.fn();
@@ -75,12 +65,13 @@ beforeEach(() => {
       ok: true,
       buffer: Buffer.from("%PDF"),
     });
-  vi.mocked(writeGeneratedDocument).mockResolvedValue({
-    receipt,
-    size: 4,
-    hash: "a".repeat(64),
-  });
-  vi.mocked(adoptDocumentPreview).mockResolvedValue("adopted");
+  vi.mocked(bindMemoryDocumentPreview).mockImplementation(
+    async (_db, _scope, revision, buffer) => ({
+      previewId: "preview",
+      revision,
+      buffer: Buffer.from(buffer),
+    }),
+  );
 });
 it.each([
   "hotel-voucher",
@@ -89,7 +80,7 @@ it.each([
   "experience-roadmap",
   "xsed-roadmap",
 ] as const)(
-  "dispatches saved %s then PUT/adopt/retire in order",
+  "dispatches saved %s then binds exact bytes and retires legacy previews without storage",
   async (template) => {
     findUnique.mockResolvedValue({
       ...createTripDocumentSnapshot(template, {}),
@@ -102,6 +93,7 @@ it.each([
       ok: true,
       previewId: "preview",
       revision: 1,
+      buffer: Buffer.from("%PDF"),
     });
     const selected = {
       "hotel-voucher": renderHotelVoucher,
@@ -116,17 +108,14 @@ it.each([
     for (const other of renderers.filter((render) => render !== selected))
       expect(other).not.toHaveBeenCalled();
     const rendered = await vi.mocked(selected).mock.results[0].value;
-    expect(vi.mocked(writeGeneratedDocument).mock.calls[0][2]).toBe(
+    expect(vi.mocked(bindMemoryDocumentPreview).mock.calls[0][3]).toBe(
       rendered.buffer,
     );
     expect(vi.mocked(selected).mock.invocationCallOrder[0]).toBeLessThan(
-      vi.mocked(writeGeneratedDocument).mock.invocationCallOrder[0],
+      vi.mocked(bindMemoryDocumentPreview).mock.invocationCallOrder[0],
     );
     expect(
-      vi.mocked(writeGeneratedDocument).mock.invocationCallOrder[0],
-    ).toBeLessThan(vi.mocked(adoptDocumentPreview).mock.invocationCallOrder[0]);
-    expect(
-      vi.mocked(adoptDocumentPreview).mock.invocationCallOrder[0],
+      vi.mocked(bindMemoryDocumentPreview).mock.invocationCallOrder[0],
     ).toBeLessThan(query.mock.invocationCallOrder[0]);
     const sql = query.mock.calls[0][0];
     expect(sql.text).toContain(`"purpose"='preview'`);
@@ -134,15 +123,13 @@ it.each([
     expect(sql.text).toContain('"previewId" IS DISTINCT FROM');
     expect(sql.text).toContain('ORDER BY "id" FOR UPDATE');
     expect(sql.values).toEqual(["buyer", "trip", "draft", "preview"]);
-    expect(writeGeneratedDocument).toHaveBeenCalledWith(
+    expect(writeGeneratedDocument).not.toHaveBeenCalled();
+    expect(bindMemoryDocumentPreview).toHaveBeenCalledWith(
       db,
-      expect.objectContaining({ ...scope, revision: 1, purpose: "preview" }),
+      scope,
+      1,
       Buffer.from("%PDF"),
     );
-    expect(adoptDocumentPreview).toHaveBeenCalledWith(db, receipt, {
-      size: 4,
-      hash: "a".repeat(64),
-    });
     expect(updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -164,8 +151,8 @@ it("does not PUT invalid generation or stale revision", async () => {
     "DOCUMENT_PREVIEW_REVISION_CONFLICT",
   );
 });
-it("leaves failed adoption registered and does not retire anything", async () => {
-  vi.mocked(adoptDocumentPreview).mockRejectedValue(new Error("stale"));
+it("does not retire legacy previews when new binding fails", async () => {
+  vi.mocked(bindMemoryDocumentPreview).mockRejectedValue(new Error("stale"));
   await expect(renderSavedDocumentDraft(db, scope, 1)).rejects.toThrow("stale");
   expect(updateMany).not.toHaveBeenCalled();
 });
@@ -174,7 +161,7 @@ it("retirement failure remains retryable without losing current receipt", async 
   await expect(renderSavedDocumentDraft(db, scope, 1)).rejects.toThrow(
     "db unavailable",
   );
-  expect(adoptDocumentPreview).toHaveBeenCalledOnce();
+  expect(bindMemoryDocumentPreview).toHaveBeenCalledOnce();
 });
 
 it("does not mutate when no obsolete previews exist", async () => {
