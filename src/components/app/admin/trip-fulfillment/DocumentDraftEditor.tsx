@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { HotelVoucherForm } from "./HotelVoucherForm";
@@ -7,6 +7,7 @@ import { ActivityVoucherForm } from "./ActivityVoucherForm";
 import { DinnerVoucherForm } from "./DinnerVoucherForm";
 import { ExperienceRoadmapForm } from "./ExperienceRoadmapForm";
 import { XsedRoadmapForm } from "./XsedRoadmapForm";
+import { DocumentFormWorkflowContext } from "./DocumentFormWorkflowContext";
 import styles from "./fulfillment.module.css";
 interface Props {
   busy: boolean;
@@ -20,6 +21,7 @@ interface Props {
     | "experienceRoadmapPdf"
     | "xsedRoadmapPdf"
     | "documentDraftEditor"
+    | "documentWorkflow"
   >;
   dirty: boolean;
   onChange: (document: TripDocumentSnapshot) => void;
@@ -40,6 +42,7 @@ export function DocumentDraftEditor({
   onSave,
   value,
 }: Props) {
+  const formRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!dirty) return;
     const guard = (event: BeforeUnloadEvent) => {
@@ -103,7 +106,20 @@ export function DocumentDraftEditor({
   return (
     <section className="flex flex-col gap-4">
       <p>{copy.note}</p>
-      <div className="flex flex-wrap gap-2">
+      <DocumentFormWorkflowContext.Provider value={Boolean(onPreview)}>
+        <div ref={formRef}>{form}</div>
+      </DocumentFormWorkflowContext.Provider>
+      <div className="sticky bottom-0 flex flex-wrap justify-end gap-2 border-t border-gray-200 bg-white py-4">
+        <button
+          className={styles.btn}
+          disabled={busy}
+          onClick={() => {
+            if (!dirty || window.confirm(copy.discard)) onClose();
+          }}
+          type="button"
+        >
+          {copy.close}
+        </button>
         <button
           className={styles.btn}
           disabled={busy}
@@ -112,17 +128,19 @@ export function DocumentDraftEditor({
         >
           {copy.save}
         </button>
-        <button
-          className={styles.btn}
-          onClick={() => {
-            if (!dirty || window.confirm(copy.discard)) onClose();
-          }}
-          type="button"
-        >
-          {copy.close}
-        </button>
+        {onPreview && (
+          <button
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            disabled={busy}
+            onClick={() =>
+              formRef.current?.querySelector("form")?.requestSubmit()
+            }
+            type="button"
+          >
+            {dictionary.documentWorkflow.savePreview}
+          </button>
+        )}
       </div>
-      <div className={onPreview ? undefined : "[&_button[type=submit]]:hidden"}>{form}</div>
     </section>
   );
 }

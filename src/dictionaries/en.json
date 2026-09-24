@@ -139,6 +139,7 @@
     "unavailable": "Preview is unavailable. Please try again."
   },
   "hotelVoucherForm": {
+    "groups": {"metadata": "Document details", "booking": "Booking and schedule", "provider": "Provider and location", "route": "Route and travel dates", "content": "Details and instructions"},
     "errors": {
       "invalid": "Check this value.",
       "required": "Complete this field.",
@@ -5439,5 +5440,27 @@
     "bannerRandomtripModeMessage": "You're viewing general Randomtrip experiences.",
     "bannerSwitchToRandomtrip": "View general Randomtrip experiences",
     "bannerSwitchToTripper": "Switch back to {name}'s experiences"
+  },
+  "documentWorkflow": {
+    "linkedDrafts": "Editable copies of attached documents",
+      "newDocument": "New document",
+      "privateDrafts": "Private drafts",
+      "draftsNote": "Only attached documents are available to travelers. Drafts stay private.",
+      "attachedDocuments": "Attached documents",
+      "uploadExisting": "Upload an existing PDF",
+      "chooseTemplate": "Choose a document template",
+      "editDocument": "Edit document",
+      "reviewDocument": "Review PDF",
+      "savePreview": "Save & preview",
+      "backToEditing": "Back to editing",
+      "moreActions": "More actions",
+      "emptyDrafts": "No private drafts yet.",
+      "refreshError": "Documents could not be refreshed. Your edits are safe. Retry to see the latest attachments.",
+      "retry": "Refresh documents",
+      "metadata": "Document details",
+      "booking": "Booking and schedule",
+      "provider": "Provider and location",
+      "route": "Route and travel dates",
+      "content": "Details and instructions"
   }
 }

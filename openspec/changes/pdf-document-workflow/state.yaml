@@ -1,0 +1,12 @@
+change: pdf-document-workflow
+execution_mode: auto
+artifact_store: openspec
+delivery_strategy: auto-chain
+chain_strategy: feature-branch-chain
+strict_tdd: true
+test_command: npm run test
+phase: verify
+current_branch: codex/pdf-document-workflow
+current_unit: U4
+previous_change: form-generated-fulfillment-pdfs
+publication: not-authorized

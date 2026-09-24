@@ -94,6 +94,7 @@ export interface HotelVoucherPreviewCopy {
 }
 
 export interface HotelVoucherFormCopy {
+  groups: {metadata:string;booking:string;provider:string;route:string;content:string};
   errors: Record<string, string> & { invalid: string };
   add: string;
   remove: string;
@@ -2355,6 +2356,7 @@ export interface MarketingDictionary {
   xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
   documentDraftDelivery: { memoryNotice: string; storage_authorization: string; preview: string; saveFirst: string; attach: string; replace: string; confirmReplace: string; view: string; draft: string; attached: string; unpublished: string; reset: string; resetConfirm: string; attach_in_progress: string; attach_request_expired: string; attach_request_mismatch: string; replacement_required: string; replacement_mismatch: string; preview_conflict: string; attachment_missing: string; unavailable: string };
   documentDraftPanel: { generate: string; sourceNote: string; delete: string; deleteConfirm: string; title: string; load: string; template: string; provider: string; none: string; create: string; pending: string; conflict: string; reload: string; error: string; saved: string };
+  documentWorkflow: { linkedDrafts:string; newDocument: string; privateDrafts: string; draftsNote: string; attachedDocuments: string; uploadExisting: string; chooseTemplate: string; editDocument: string; reviewDocument: string; savePreview: string; backToEditing: string; moreActions: string; emptyDrafts: string; refreshError: string; retry: string; metadata: string; booking: string; provider: string; route: string; content: string };
   documentDraftEditor: { save: string; close: string; discard: string; note: string };
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;

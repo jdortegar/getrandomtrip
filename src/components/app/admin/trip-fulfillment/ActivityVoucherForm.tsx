@@ -1,4 +1,6 @@
 "use client";
+import { DocumentFieldGroup } from "./DocumentFieldGroup";
+import { DocumentFormSubmit } from "./DocumentFormSubmit";
 
 import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
@@ -12,7 +14,6 @@ import type {
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseActivityVoucher } from "@/lib/trip-documents/parsers/activityVoucher";
 import { ActivityVoucherItems } from "./ActivityVoucherItems";
-import styles from "./fulfillment.module.css";
 
 interface ActivityVoucherFormProps {
   activityCopy: ActivityVoucherPdfCopy;
@@ -65,99 +66,105 @@ export function ActivityVoucherForm({
     >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">{copy.note}</legend>
-        <FormField
-          id="activity-label"
-          name="label"
-          label={copy.label}
-          maxLength={120}
-          onChange={(e) => onChange({ ...value, label: e.target.value })}
-          required
-          value={value.label}
-        />
-        <FormSelectField
-          id="activity-country"
-          name="country"
-          label={pdfCopy.country}
-          onChange={(e) => onChange({ ...value, country: e.target.value })}
-          required
-          value={value.country}
-        >
-          <option value="">—</option>
-          {DESTINATION_COUNTRY_CODES.map((code) => (
-            <option key={code} value={code}>
-              {countryLabels[code] ?? code}
-            </option>
-          ))}
-        </FormSelectField>
-        <FormSelectField
-          id="activity-locale"
-          name="locale"
-          label={copy.locale}
-          onChange={(e) =>
-            onChange({ ...value, locale: e.target.value as "en" | "es" })
-          }
-          value={value.locale}
-        >
-          <option value="en">{copy.english}</option>
-          <option value="es">{copy.spanish}</option>
-        </FormSelectField>
-        {fields.map(([key, label, type, required]) => (
+        <DocumentFieldGroup label={copy.groups.metadata}>
           <FormField
-            id={`activity-${key}`}
-            name={`data.${key}`}
-            key={key}
-            label={label}
-            maxLength={4000}
-            onChange={(e) => updateData({ [key]: e.target.value })}
-            required={required}
-            type={type}
-            value={data[key] ?? ""}
+            id="activity-label"
+            name="label"
+            label={copy.label}
+            maxLength={120}
+            onChange={(e) => onChange({ ...value, label: e.target.value })}
+            required
+            value={value.label}
           />
-        ))}
-        {providerFields.map(([key, label, type, required]) => (
-          <FormField
-            id={`activity-provider-${key}`}
-            name={`data.provider.${key}`}
-            key={key}
-            label={label}
-            maxLength={4000}
+          <FormSelectField
+            id="activity-country"
+            name="country"
+            label={pdfCopy.country}
+            onChange={(e) => onChange({ ...value, country: e.target.value })}
+            required
+            value={value.country}
+          >
+            <option value="">—</option>
+            {DESTINATION_COUNTRY_CODES.map((code) => (
+              <option key={code} value={code}>
+                {countryLabels[code] ?? code}
+              </option>
+            ))}
+          </FormSelectField>
+          <FormSelectField
+            id="activity-locale"
+            name="locale"
+            label={copy.locale}
             onChange={(e) =>
-              updateData({
-                provider: { ...data.provider, [key]: e.target.value },
-              })
+              onChange({ ...value, locale: e.target.value as "en" | "es" })
             }
-            required={required}
-            type={type}
-            value={data.provider[key] ?? ""}
-          />
-        ))}
-        <TextAreaInput
-          id="activity-recommendations"
-          name="data.recommendations"
-          label={activityCopy.recommendations}
-          maxLength={4000}
-          onChange={(e) => updateData({ recommendations: e.target.value })}
-          value={data.recommendations ?? ""}
-        />
-        {["program", "inclusions"].map((section) => {
-          const key = section as "program" | "inclusions";
-          return (
-            <ActivityVoucherItems
-              addLabel={activityCopy.addItem}
-              copy={copy}
-              items={data[key] ?? []}
+            value={value.locale}
+          >
+            <option value="en">{copy.english}</option>
+            <option value="es">{copy.spanish}</option>
+          </FormSelectField>
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.booking}>
+          {fields.map(([key, label, type, required]) => (
+            <FormField
+              id={`activity-${key}`}
+              name={`data.${key}`}
               key={key}
-              onChange={(items) => updateData({ [key]: items })}
-              section={key}
-              title={
-                key === "program" ? activityCopy.program : pdfCopy.inclusions
-              }
+              label={label}
+              maxLength={4000}
+              onChange={(e) => updateData({ [key]: e.target.value })}
+              required={required}
+              type={type}
+              value={data[key] ?? ""}
             />
-          );
-        })}
-        <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
-          {copy.submit}
-        </button>
+          ))}
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.provider}>
+          {providerFields.map(([key, label, type, required]) => (
+            <FormField
+              id={`activity-provider-${key}`}
+              name={`data.provider.${key}`}
+              key={key}
+              label={label}
+              maxLength={4000}
+              onChange={(e) =>
+                updateData({
+                  provider: { ...data.provider, [key]: e.target.value },
+                })
+              }
+              required={required}
+              type={type}
+              value={data.provider[key] ?? ""}
+            />
+          ))}
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.content}>
+          <TextAreaInput
+            id="activity-recommendations"
+            name="data.recommendations"
+            label={activityCopy.recommendations}
+            maxLength={4000}
+            onChange={(e) => updateData({ recommendations: e.target.value })}
+            value={data.recommendations ?? ""}
+          />
+          {["program", "inclusions"].map((section) => {
+            const key = section as "program" | "inclusions";
+            return (
+              <ActivityVoucherItems
+                addLabel={activityCopy.addItem}
+                copy={copy}
+                items={data[key] ?? []}
+                key={key}
+                onChange={(items) => updateData({ [key]: items })}
+                section={key}
+                title={
+                  key === "program" ? activityCopy.program : pdfCopy.inclusions
+                }
+              />
+            );
+          })}
+        </DocumentFieldGroup>
+        <DocumentFormSubmit label={copy.submit} />
       </fieldset>
     </DocumentValidationForm>
   );
