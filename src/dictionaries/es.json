@@ -1208,6 +1208,9 @@
     }
   },
   "home": {
+    "geoWelcome": {
+      "message": "Bienvenido a Randomtrip {country}"
+    },
     "hero": {
       "branding": {
         "repeatText": "Repeat",

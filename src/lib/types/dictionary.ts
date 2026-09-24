@@ -2491,6 +2491,10 @@ export interface MarketingDictionary {
   resetPasswordPage: ResetPasswordPageDict;
   tripperInviteAccept: TripperInviteAcceptDict;
   home: {
+    geoWelcome: {
+      /** Toast shown by visitor country; `{country}` is replaced with the localized name. */
+      message: string;
+    };
     hero: {
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
