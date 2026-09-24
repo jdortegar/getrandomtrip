@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { ReactNode } from "react";
+import { useFieldValidation } from "./FormValidationScope";
 import { cn } from "@/lib/utils";
 import {
   PeekToggleButton,
@@ -34,6 +35,11 @@ export function TextAreaInput({
   value,
   ...rest
 }: TextAreaInputProps) {
+  const validation = useFieldValidation(
+    rest.name,
+    id,
+    rest["aria-describedby"],
+  );
   const showPeek = !!peek;
   const { displayValue, isEmpty } = resolvePeekDisplay(peek, value);
   const length = typeof displayValue === "string" ? displayValue.length : 0;
@@ -59,9 +65,15 @@ export function TextAreaInput({
           placeholder={isEmpty ? peek?.emptyLabel : placeholder}
           value={displayValue}
           {...rest}
+          {...(validation.error ? validation.attributes : {})}
         />
         {showPeek ? <PeekToggleButton peek={peek} position="textarea" /> : null}
       </div>
+      {validation.error && (
+        <p className="text-red-700 text-sm" id={validation.errorId}>
+          {validation.error}
+        </p>
+      )}
       <span className="text-xs text-neutral-400 self-end">
         {length} / {maxLength}
       </span>
