@@ -157,3 +157,13 @@ Activity renderer uses existing generation parser, local logo, hotel-aligned tea
 | Activity renderer | Missing-module failure before source |7 renderer tests +67 activity parser +7 hotel renderer =81 passed |Typecheck and targeted lint passed; actual EN1page/ES4page PDFs inspected, all30 long-program titles/accents extracted |
 
 QA artifacts: `/private/tmp/activity-render-qa/`; logs `/private/tmp/activity-render-{red,green,typecheck}.log`. No DB/schema/install/server/remote operations. Next autonomous unit: guarded activity preview endpoint, then editor/modal integration; publication/storage gates remain pending, prefix work remains deferred.
+
+## Transient Dinner Renderer (2026-09-24)
+
+Hotel and activity vertical previews are retained; activity UI milestone `e82c14c8` is the clean starting point. Dinner follows the inspected gastronomy reference with local branding and authored restaurant/service/menu/conditions only; no inferred reservation/payment claims or QR. Existing dinner parser allows an empty menu when service is supplied. Persistent lifecycle and stashed prefix work remain deferred.
+
+| Unit | RED | GREEN / triangulation | Verification |
+|---|---|---|---|
+| Dinner renderer | Missing-module failure |8 renderer tests; validation, locale, authored claims, empty menu,4MiB boundary and renderer failure |92 renderer/parser regressions, typecheck/targetlint; actual EN1page/ES4pages,30menu entries, accents and2HTTPSlinks |
+
+Visual QA found separate title/description nodes orphaned headings despite minPresenceAhead. One text flow with orphans/widows keeps headings with descriptions; extracted page-ending assertions failed before and pass after. Latest PNG inspected. Evidence `/private/tmp/dinner-render-qa/` and `/private/tmp/dinner-render-{red,green,typecheck}.log`. Helvetica remains interim. Next: dinner endpoint then editor/preview integration; no DB/install/server/remote work.

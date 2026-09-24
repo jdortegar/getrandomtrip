@@ -77,3 +77,5 @@ First implementation: 1.1 typed label/country/locale field-path errors; draft bl
 Verify DB target before application. Baseline: 1742passed/20failed/broken-next-lint; no regressions/production deployment.
 
 - [x] Transient activity renderer subunit of2.11–2.15: generation validation, bilingual A4 output,4MiB guard, real render/pagination checks. Persistent lifecycle integration remains pending.
+
+- [x] Transient dinner renderer subunit of2.11–2.15: bilingual output, generation guard,4MiB limit and real pagination QA; persistent delivery pending.

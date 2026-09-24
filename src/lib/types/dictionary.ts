@@ -1,3 +1,13 @@
+export interface DinnerVoucherPdfCopy {
+  title: string;
+  date: string;
+  time: string;
+  service: string;
+  menu: string;
+  conditions: string;
+  provider: string;
+}
+
 export interface ActivityVoucherPreviewCopy {
   open: string;
   title: string;
@@ -2292,6 +2302,7 @@ export interface MarketingDictionary {
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;
   hotelVoucherForm: HotelVoucherFormCopy;
+  dinnerVoucherPdf: DinnerVoucherPdfCopy;
   activityVoucherPdf: ActivityVoucherPdfCopy;
   hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {

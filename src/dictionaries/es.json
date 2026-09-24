@@ -1,4 +1,13 @@
 {
+  "dinnerVoucherPdf": {
+    "title": "Comprobante gastronómico",
+    "date": "Fecha de la cena",
+    "time": "Horario de llegada",
+    "service": "Servicio",
+    "menu": "Menú",
+    "conditions": "Condiciones y recomendaciones",
+    "provider": "Sitio web del restaurante"
+  },
   "activityVoucherPreview": {
     "open": "Crear vista previa de actividad",
     "title": "Vista previa del comprobante de actividad",
