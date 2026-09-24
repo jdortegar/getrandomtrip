@@ -1,4 +1,9 @@
 export interface HotelVoucherFormCopy {
+  add: string;
+  remove: string;
+  up: string;
+  itemTitle: string;
+  description: string;
   label: string;
   locale: string;
   english: string;

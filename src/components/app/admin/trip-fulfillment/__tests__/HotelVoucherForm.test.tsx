@@ -155,3 +155,98 @@ it("retains existing inclusions during scalar edits and rejects unsafe links", (
     { id: "meal", title: "Breakfast" },
   ]);
 });
+
+function click(text: string) {
+  act(() =>
+    [...container.querySelectorAll("button")]
+      .find((el) => el.textContent === text)!
+      .click(),
+  );
+}
+it("adds, edits, reorders and removes inclusions while retaining stable IDs", () => {
+  act(() => root.render(<Harness />));
+  click(en.hotelVoucherForm.add);
+  click(en.hotelVoucherForm.add);
+  const titles = () => [
+    ...container.querySelectorAll<HTMLInputElement>(
+      "input[data-inclusion-title]",
+    ),
+  ];
+  edit(titles()[0].id, "Breakfast");
+  edit(titles()[1].id, "Spa");
+  const spaId = titles()[1].id;
+  act(() =>
+    container
+      .querySelectorAll<HTMLButtonElement>("button[data-move-up]")[1]
+      .click(),
+  );
+  expect(titles().map((el) => el.value)).toEqual(["Spa", "Breakfast"]);
+  expect(titles()[0].id).toBe(spaId);
+  act(() =>
+    container
+      .querySelectorAll<HTMLButtonElement>("button[data-remove]")[1]
+      .click(),
+  );
+  expect(titles().map((el) => el.value)).toEqual(["Spa"]);
+});
+
+it("caps inclusions at50 and permits a new row after removing one", () => {
+  const value = {
+    ...initial,
+    data: {
+      ...initial.data,
+      inclusions: Array.from({ length: 50 }, (_, i) => ({
+        id: `saved-${i}`,
+        title: `Meal ${i}`,
+      })),
+    },
+  };
+  act(() => root.render(<Harness value={value} />));
+  const add = () =>
+    [...container.querySelectorAll("button")].find(
+      (el) => el.textContent === en.hotelVoucherForm.add,
+    )!;
+  expect(add().disabled).toBe(true);
+  act(() =>
+    container.querySelector<HTMLButtonElement>("button[data-remove]")!.click(),
+  );
+  expect(add().disabled).toBe(false);
+  click(en.hotelVoucherForm.add);
+  const rows = [
+    ...container.querySelectorAll<HTMLInputElement>(
+      "input[data-inclusion-title]",
+    ),
+  ];
+  expect(rows).toHaveLength(50);
+  expect(new Set(rows.map((row) => row.id)).size).toBe(50);
+  expect(rows[0].value).toBe("Meal 1");
+});
+it("requires inclusion titles and preserves edited descriptions in submission", () => {
+  act(() => root.render(<Harness />));
+  click(en.hotelVoucherForm.add);
+  const submitForm = () =>
+    act(() =>
+      container
+        .querySelector("form")!
+        .dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        ),
+    );
+  submitForm();
+  expect(submit).not.toHaveBeenCalled();
+  const title = container.querySelector<HTMLInputElement>(
+    "input[data-inclusion-title]",
+  )!;
+  edit(title.id, "Breakfast");
+  edit(
+    container.querySelector<HTMLTextAreaElement>(
+      'textarea[id^="hotel-description-"]',
+    )!.id,
+    "Coffee included",
+  );
+  submitForm();
+  expect(submit.mock.calls[0][0].data.inclusions[0]).toMatchObject({
+    title: "Breakfast",
+    description: "Coffee included",
+  });
+});

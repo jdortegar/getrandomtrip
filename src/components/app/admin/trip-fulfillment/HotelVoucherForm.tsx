@@ -133,6 +133,93 @@ export function HotelVoucherForm({
           onChange={(e) => updateData({ instructions: e.target.value })}
           value={data.instructions ?? ""}
         />
+        <fieldset className="flex flex-col gap-3">
+          <legend>{pdfCopy.inclusions}</legend>
+          {data.inclusions.map((item, index) => (
+            <div
+              className="flex flex-col gap-2 rounded border border-gray-200 p-3"
+              key={item.id}
+            >
+              <FormField
+                data-inclusion-title
+                id={`hotel-inclusion-${item.id}`}
+                label={`${copy.itemTitle} ${index + 1}`}
+                maxLength={4000}
+                onChange={(e) =>
+                  updateData({
+                    inclusions: data.inclusions.map((row) =>
+                      row.id === item.id
+                        ? { ...row, title: e.target.value }
+                        : row,
+                    ),
+                  })
+                }
+                required
+                value={item.title}
+              />
+              <TextAreaInput
+                id={`hotel-description-${item.id}`}
+                label={`${copy.description} ${index + 1}`}
+                maxLength={4000}
+                onChange={(e) =>
+                  updateData({
+                    inclusions: data.inclusions.map((row) =>
+                      row.id === item.id
+                        ? { ...row, description: e.target.value }
+                        : row,
+                    ),
+                  })
+                }
+                value={item.description ?? ""}
+              />
+              <button
+                className={styles.btn}
+                data-move-up
+                disabled={index === 0}
+                onClick={() => {
+                  const items = [...data.inclusions];
+                  [items[index - 1], items[index]] = [
+                    items[index],
+                    items[index - 1],
+                  ];
+                  updateData({ inclusions: items });
+                }}
+                type="button"
+              >
+                {copy.up}
+              </button>
+              <button
+                className={styles.btn}
+                data-remove
+                onClick={() =>
+                  updateData({
+                    inclusions: data.inclusions.filter(
+                      (row) => row.id !== item.id,
+                    ),
+                  })
+                }
+                type="button"
+              >
+                {copy.remove}
+              </button>
+            </div>
+          ))}
+          <button
+            className={styles.btn}
+            disabled={data.inclusions.length >= 50}
+            onClick={() => {
+              updateData({
+                inclusions: [
+                  ...data.inclusions,
+                  { id: crypto.randomUUID(), title: "" },
+                ],
+              });
+            }}
+            type="button"
+          >
+            {copy.add}
+          </button>
+        </fieldset>
         {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}

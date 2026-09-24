@@ -1,5 +1,10 @@
 {
   "hotelVoucherForm": {
+    "add": "Añadir servicio incluido",
+    "remove": "Eliminar",
+    "up": "Subir",
+    "itemTitle": "Servicio incluido",
+    "description": "Descripción",
     "label": "Nombre del documento",
     "locale": "Idioma del documento",
     "english": "Inglés",

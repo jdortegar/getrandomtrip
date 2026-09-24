@@ -1,5 +1,10 @@
 {
   "hotelVoucherForm": {
+    "add": "Add inclusion",
+    "remove": "Remove",
+    "up": "Move up",
+    "itemTitle": "Inclusion title",
+    "description": "Description",
     "label": "Document label",
     "locale": "Document language",
     "english": "English",
