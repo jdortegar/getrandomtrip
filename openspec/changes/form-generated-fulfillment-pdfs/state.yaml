@@ -18,17 +18,20 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: 2.2c2a-safe-cleanup-target-planning
-  current_branch: codex/form-generated-fulfillment-pdfs-18-cleanup-targets
-  current_base: codex/form-generated-fulfillment-pdfs-17-candidate-cancellation
+  current_slice: candidate-url-namespace-hardening
+  current_branch: codex/form-generated-fulfillment-pdfs-continuation
+  current_base: develop
+  local_integration_commit: 923725a5
+  preserved_pdf_tip: ace55baaa4c9c61e35e7d3a494302e3d56cef414
+  local_develop_base: 010d414ce5f612a39844cd84c0b9b9e6997d2901
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: passed
-  current_slice_tests_passed: 850
+  current_slice_review: pending
+  current_slice_tests_passed: 169
   schema_application: applied-development-target-empty-diff-verified
   schema_applied_commit: 14ba2e1a
   schema_publication: awaiting-deploy-hook-verification
-  child_merge_gate: blocked-baseline-lint-and-test-failures
+  child_merge_gate: pending-integrated-verification
   tracker_pr: 151
   planning_pr: 152
   metadata_pr: 153
@@ -46,8 +49,8 @@ delivery:
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
-  next_slice: candidate-url-namespace-hardening
-  awaiting_user: baseline-merge-gate-repair-scope
+  next_slice: 2.2c2b-immutable-tombstone-registration
+  awaiting_user: null
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.

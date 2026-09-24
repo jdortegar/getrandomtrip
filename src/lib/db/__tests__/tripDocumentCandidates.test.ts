@@ -23,7 +23,6 @@ const publication = (
   previewId: "preview",
   document: { id: "document", state },
 });
-
 function database(failure?: "create" | "commit") {
   const rows: Record<string, Record<string, unknown>[]> = {
     users: [{ id: "buyer" }],
@@ -62,7 +61,6 @@ function database(failure?: "create" | "commit") {
   } as Pick<PrismaClient, "$transaction">;
   return { db, rows, stored, events };
 }
-
 async function rejectsInvalid(candidate: CandidateInput, runtime = clock) {
   const fake = database();
   await expect(register(fake.db, candidate, runtime)).rejects.toThrow(
@@ -71,8 +69,41 @@ async function rejectsInvalid(candidate: CandidateInput, runtime = clock) {
   expect(fake.stored).toEqual([]);
   return fake;
 }
-
 describe("registerDocumentCandidate", () => {
+  it.each([
+    "%2e%2e",
+    "trip%2Fother",
+    "trip?query",
+    "trip#fragment",
+    "trip space",
+    " trip",
+    "trip ",
+    "trip\tname",
+    "trip\nname",
+    "trip\rname",
+    "trip\u00a0name",
+    "trip\u0000name",
+    "trip\u001fname",
+    "trip\u007fname",
+    ".",
+    "..",
+    "a/b",
+    "a\\b",
+  ])("rejects unsafe identity segment %j before locking", async (value) => {
+    for (const field of [
+      "ownerId",
+      "tripRequestId",
+      "draftId",
+      "previewId",
+      "document",
+    ] as const) {
+      const candidate = publication("reserved");
+      if (field === "document") candidate.document!.id = value;
+      else candidate[field] = value;
+      const fake = await rejectsInvalid(candidate);
+      expect(fake.events).toEqual([]);
+    }
+  });
   it("commits an exact-key preview candidate before returning storage instructions", async () => {
     const fake = database();
     const result = await register(fake.db, input, clock);

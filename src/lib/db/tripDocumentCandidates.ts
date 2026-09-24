@@ -8,9 +8,9 @@ import { withTripDocumentLocks } from "./tripDocumentLocks";
 
 const safeSegment = (value: string | undefined) =>
   typeof value === "string" &&
-  value.trim().length > 0 &&
+  value.length > 0 &&
   ![".", ".."].includes(value) &&
-  !/[/\\]/.test(value);
+  !/[%?#\s/\\\u0000-\u001f\u007f]/u.test(value);
 
 function invalid(): never {
   throw new Error("INVALID_DOCUMENT_CANDIDATE");
