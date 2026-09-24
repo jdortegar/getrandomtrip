@@ -1,7 +1,7 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace). Remaining: 2.2c2b onward; deployment packaging/smoke gates remain.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration). Remaining: 2.2d onward; deployment packaging/smoke gates remain.
 Boundaries: reviewed pure helpers and additive schema with adjacent tests; authorized schema application only, no application-row access, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
@@ -125,3 +125,13 @@ Local continuation integrates preserved PDF tip `ace55baa` with develop `010d414
 | 2.2b1-hardening | `src/lib/db/__tests__/tripDocumentCandidates.test.ts` | 77 registration/planner tests passed | 14 unsafe-input cases failed with wrong lock-scope errors | 95 registration/planner tests passed; 18 unsafe strings across five identity positions, valid ASCII/Unicode byte boundaries | Formatting only; focused regression and typecheck/targeted lint passed |
 
 Verification: `npm run test -- src/lib/db/__tests__/tripDocumentCandidates.test.ts src/lib/trip-documents/__tests__/cleanupTargets.test.ts` → 95 passed; expanded registration/lifecycle/cancellation/locks/planner selection → 169 passed; `npm run typecheck` and targeted ESLint passed. Unit fakes prove pre-transaction rejection, not actual DB concurrency. Next: 2.2c2b immutable tombstone registration. Local cleanup waiting state is cleared; external deploy-hook/schema-publication gate and renderer lockfile size exception remain unresolved. No remote publication or global merge-gate pass claimed.
+
+## Task 2.2c2b: Immutable Tombstone Registration
+
+Caller-transaction helper recomputes deterministic cleanup plans from trusted complete locked facts, inserts sorted missing jobs with conflict skipping, and reads back every immutable field/target. Matching retries preserve attempts, lastError, createdAt and nextAttemptAt; mismatched/candidate collisions abort without overwrites. Acquire the complete scoped cancellation outbox batch after ancestor locks first; register and cascade/unlink in the same transaction, propagating errors. No new subset/ancestor locks, nested transaction or storage I/O. Empty account plans make no DB calls; invalid clocks fail before persistence. Readback uses an ID map rather than quadratic matching.
+
+| Task | Test file | Safety net | RED | GREEN / triangulation | Refactor |
+|---|---|---|---|---|---|
+| 2.2c2b | `src/lib/db/__tests__/tripDocumentCleanupRegistration.test.ts` | 66 planner/cancellation passed | Missing-module failure | 1 passed; 15 identity/clock/empty-plan failures → 23 passed; missing-readback and retained-candidate coverage → 25 passed | ID-map lookup, formatting; 194 focused regressions passed |
+
+Verification: registration + candidate registration/lifecycle/cancellation/locks + cleanup-planner selection → 194 passed; typecheck, targeted ESLint, Prettier and diff checks passed. Tests cover prefix/legacy jobs, retries, collisions, rollback after insert/read/commit or caller deletion failure, input snapshots, empty/invalid scopes and unrelated retained candidates. Unit transaction fakes do not establish live concurrency. No DB/schema/dependency/worker/endpoint changes. Next: 2.2d exact-key tombstone execution; external deploy-hook gate and renderer dependency size exception remain unchanged.

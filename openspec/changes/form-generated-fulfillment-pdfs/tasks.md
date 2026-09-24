@@ -43,7 +43,7 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 2.2b2 | Candidate adoption/expiry/retained receipts in caller's locked transaction; identity/delete-state/rollback and ambiguous-outcome reconciliation tests. |
 | [x] 2.2c1 | src/lib/db/tripDocumentCancellation.ts: caller-transaction scoped candidate cancellation; sorted outbox locks, retained-publication exclusion and deletion identity tests. |
 | [x] 2.2c2a | D/cleanupTargets.ts: pure namespace/ownership-safe immutable target planning; one prefix or legacy key per deterministic job, bounds/dedup tests. |
-| [ ] 2.2c2b | Caller-transaction immutable tombstone registration; retry identity/collision/rollback tests, no candidate overwrite or schedule reset. |
+| [x] 2.2c2b | Caller-transaction immutable tombstone registration; retry identity/collision/rollback tests, no candidate overwrite or schedule reset. |
 | [ ] 2.2d | D/cleanup.ts: exact-key tombstone execution after parent deletion; retain after absence, test late PUT/successful SDK retry. |
 | [ ] 2.2e | D/cleanup.ts: bounded prefix tombstone execution; pagination, partial failure and continuing sweep tests. |
 | [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker; bounded batches, capped backoff, durable rescheduling/alerts, including absent keys. |
