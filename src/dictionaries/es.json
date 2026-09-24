@@ -1,4 +1,10 @@
 {
+  "dinnerVoucherPreview": {
+    "open": "Crear vista previa de cena",
+    "title": "Vista previa del comprobante gastronómico",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. El nombre del comprador y la fecha del viaje son sugerencias editables; verifica los datos del restaurante.",
+    "discard": "¿Descartar este formulario de cena sin guardar?"
+  },
   "dinnerVoucherPdf": {
     "addItem": "Añadir plato",
     "guests": "Comensales",

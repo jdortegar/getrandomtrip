@@ -1,4 +1,10 @@
 {
+  "dinnerVoucherPreview": {
+    "open": "Create dinner preview",
+    "title": "Dinner voucher preview",
+    "note": "Temporary preview only: not saved, attached or emailed. Buyer name and trip date are editable suggestions; verify restaurant details.",
+    "discard": "Discard this unsaved dinner form?"
+  },
   "dinnerVoucherPdf": {
     "addItem": "Add menu item",
     "guests": "Diners",
