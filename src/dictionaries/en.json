@@ -1,4 +1,16 @@
 {
+  "xsedRoadmapPdf": {
+    "title": "XSED roadmap",
+    "origin": "Origin",
+    "destination": "Destination",
+    "departureDate": "Departure date",
+    "departureTime": "Departure time",
+    "drivingDuration": "Driving duration",
+    "stops": "Step-by-step itinerary",
+    "date": "Suggested date",
+    "time": "Suggested time",
+    "map": "Open interactive map"
+  },
   "experienceRoadmapPreview": {
     "open": "Create experience roadmap",
     "title": "Experience roadmap preview",

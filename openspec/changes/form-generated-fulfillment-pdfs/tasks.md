@@ -84,7 +84,10 @@ Verify DB target before application. Baseline: 1742passed/20failed/broken-next-l
 - [x] Hotel admin form→private PDF preview (`1e6ffbeb`), no saved drafts/attachments/email.
 - [x] Activity endpoint, bilingual scalar/repeatable editor, request lifecycle and dashboard preview (`0380c106`–`e82c14c8`).
 - [x] Dinner endpoint, bilingual scalar/menu editor, request lifecycle and dashboard preview (`72e8c0c3`–`f4e3db5c`).
-- [ ] Both roadmap vertical previews, font/QR fidelity and remaining persistent lifecycle/publication requirements.
+- [ ] XSED roadmap vertical preview, font/QR fidelity and remaining persistent lifecycle/publication requirements.
 - [ ] Browser PDF painting, full build/Netlify preview and external deploy-hook verification; sample dinner POST and360/1280 no-overflow checks passed only.
 
 - [x] Experience-roadmap transient renderer subset: authored itinerary, optional schedule/map, EN/ES/size validation and actual PDF QA; endpoint/editor still pending.
+
+- [x] Experience-roadmap transient endpoint/editor/hook/dashboard preview (`b7548a8c`); no persistent delivery.
+- [x] XSED transient renderer subset: authored directions/schedule/map, EN/ES/4MiB validation and real PDF QA; endpoint/editor pending.

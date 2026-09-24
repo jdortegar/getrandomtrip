@@ -1,3 +1,16 @@
+export interface XsedRoadmapPdfCopy {
+  title: string;
+  origin: string;
+  destination: string;
+  departureDate: string;
+  departureTime: string;
+  drivingDuration: string;
+  stops: string;
+  date: string;
+  time: string;
+  map: string;
+}
+
 export interface ExperienceRoadmapPreviewCopy {
   open: string;
   title: string;
@@ -2338,6 +2351,7 @@ export interface MarketingDictionary {
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;
   hotelVoucherForm: HotelVoucherFormCopy;
+  xsedRoadmapPdf: XsedRoadmapPdfCopy;
   experienceRoadmapPdf: ExperienceRoadmapPdfCopy;
   dinnerVoucherPdf: DinnerVoucherPdfCopy;
   activityVoucherPdf: ActivityVoucherPdfCopy;

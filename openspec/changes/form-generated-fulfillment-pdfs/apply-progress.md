@@ -193,3 +193,12 @@ Existing voucher milestones and publication-risk history above are unchanged. Ex
 | Experience roadmap renderer | Missing-module failure |9 renderer +46 parser tests passed; invalid ranges/locale/map/empty activities, optional schedule/map, size/failure paths |Typecheck/targetlint; actual EN1page/ES4page PDFs inspected,30stops/accents/map annotation preserved |
 
 QA `/private/tmp/experience-render-qa/`; logs `/private/tmp/experience-render-{red,green,typecheck}.log`. Activity title/schedule/description share an orphan-controlled text flow. Helvetica remains interim. Next: guarded experience-roadmap endpoint and editor/modal, then XSED roadmap; original persistent lifecycle remains pending.
+
+## Transient XSED Roadmap Renderer (2026-09-24)
+
+Experience transient form→private PDF preview completed at `b7548a8c`; prior milestones/history remain unchanged. XSED renders authored origin/destination, departure date/time, driving duration, ordered stop directions with optional schedules and validated HTTPS map. No routing, fetching, confirmation or persistence is inferred.
+
+- RED: missing renderer module; visual QA then exposed unsupported Helvetica arrow, with a failing separator assertion before the ASCII fix.
+- GREEN:9 renderer +76 parser tests; typecheck and targeted lint passed. Generation validation, optional fields, EN/ES,4MiB boundary and render failures covered.
+- Actual PDF QA: EN1page/ES4pages,30stops, accents, directions and map annotation preserved; inspected page images, no clipping or orphan headings. Local logo/teal-cyan branding; Helvetica remains interim. Evidence `/private/tmp/xsed-render-qa/`, `/private/tmp/xsed-render-{red,green,typecheck}.log`, `/private/tmp/xsed-glyph-red.log`.
+- Next: XSED guarded endpoint, editable form, hook and modal. Original persistent lifecycle, QR/font fidelity and deployment verification remain pending.

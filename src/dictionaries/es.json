@@ -1,4 +1,16 @@
 {
+  "xsedRoadmapPdf": {
+    "title": "Hoja de ruta XSED",
+    "origin": "Origen",
+    "destination": "Destino",
+    "departureDate": "Fecha de salida",
+    "departureTime": "Horario de salida",
+    "drivingDuration": "Tiempo de conducción",
+    "stops": "Itinerario paso a paso",
+    "date": "Fecha sugerida",
+    "time": "Horario sugerido",
+    "map": "Abrir mapa interactivo"
+  },
   "experienceRoadmapPreview": {
     "open": "Crear hoja de ruta de experiencia",
     "title": "Vista previa de hoja de ruta",
