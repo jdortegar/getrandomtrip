@@ -45,8 +45,8 @@ Path aliases: D=`src/lib/trip-documents/`; A=`src/app/api/admin/trip-requests/[i
 | [x] 2.2c2a | D/cleanupTargets.ts: pure namespace/ownership-safe immutable target planning; one prefix or legacy key per deterministic job, bounds/dedup tests. |
 | [x] 2.2c2b | Caller-transaction immutable tombstone registration; retry identity/collision/rollback tests, no candidate overwrite or schedule reset. |
 | [x] 2.2d | D/cleanup.ts: exact-key tombstone execution after parent deletion; retain after absence, test late PUT/successful SDK retry. |
-| [ ] 2.2e | D/cleanup.ts: bounded prefix tombstone execution; pagination, partial failure and continuing sweep tests. |
-| [ ] 2.3 | netlify/functions/: authenticated hourly cleanup worker; bounded batches, capped backoff, durable rescheduling/alerts, including absent keys. |
+| Superseded 2.2e | Generated prefix enumeration replaced by durable pre-registered exact-key ledger (design amendment2026-09-24); blocked prefix WIP remains stashed. |
+| [ ] 2.3 | netlify/functions/: authenticated hourly exact-key cleanup worker; fair bounded due-job selection, capped backoff, permanent rescheduling/alerts including absent keys and deleted parents. |
 | [ ] 2.4 | D/drafts.ts: revision-controlled CRUD using 2.2a locks; live ownership/conflict tests. |
 | [ ] 2.5 | A/route.ts: authenticated creation/list; isolation. |
 | [ ] 2.6 | A/[draftId]/route.ts: read/edit authorization/concurrency. |
@@ -98,3 +98,5 @@ Verify DB target before application. Baseline: 1742passed/20failed/broken-next-l
 Next: persistent draft/attachment implementation; original task groups above remain unchecked until their full contracts are verified.
 
 - [x] Persistent draft2.4 contract subunit: five-template incomplete-draft validation, positive-safe revision envelope and storage-free validated DTO; DB CRUD/conflict enforcement still pending.
+
+- [ ] Exact-key ledger integration: prove every generated PUT registers first; cancellation covers registered generations and known uploaded keys, without claiming historical orphan discovery. Worker implementation follows preview/publication services.
