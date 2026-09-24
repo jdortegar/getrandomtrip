@@ -1,4 +1,5 @@
 import { getExperienceBasePricePerPerson, hasValidExperienceClassificationShape, isValidSharedExperienceClassification, isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { deleteExperienceIfAllowed } from "@/lib/experiences/deletion";
 import { hasXsedDropContent } from "@/lib/xsed/publication";
 // ============================================================================
 // GET /api/tripper/experiences/[id] - Get a single experience by ID for tripper
@@ -412,7 +413,17 @@ export async function DELETE(
       );
     }
 
-    await prisma.experience.delete({ where: { id: params.id } });
+    // Same rule as the admin DELETE: only never-booked experiences outside
+    // review can be hard-deleted (see lib/experiences/deletion).
+    const result = await deleteExperienceIfAllowed(params.id);
+    if (!result.ok) {
+      return result.reason === "not_found"
+        ? NextResponse.json({ error: "Experience not found" }, { status: 404 })
+        : NextResponse.json(
+            { error: "Experience cannot be deleted", reason: result.reason },
+            { status: 409 },
+          );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

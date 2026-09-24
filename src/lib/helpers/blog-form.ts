@@ -1,4 +1,4 @@
-import type { BlogFormDraft, BlogPost } from "@/types/blog";
+import type { BlogFormDraft, BlogPost, BlogStatus } from "@/types/blog";
 
 type BlogBlock = BlogPost["blocks"][number];
 
@@ -186,7 +186,9 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
   const faqItems = post.faq?.items;
 
   return {
-    status: post.status ?? "draft",
+    // Server pages pass raw Prisma rows (uppercase enum, e.g. "PUBLISHED");
+    // the API lowercases it. Normalize so every caller maps to BlogStatus.
+    status: (post.status?.toLowerCase() ?? "draft") as BlogStatus,
     title: post.title ?? "",
     subtitle: post.subtitle ?? "",
     coverUrl: post.coverUrl ?? "",

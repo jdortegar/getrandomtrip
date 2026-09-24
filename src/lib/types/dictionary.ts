@@ -332,6 +332,7 @@ export interface TripperBlogsDict {
   table: {
     actions: string;
     delete: string;
+    deleteTitle: string;
     deleteConfirm: string;
     edit: string;
     format: string;
@@ -731,6 +732,8 @@ export interface TripperExperiencesDict {
     deleteTitle: string;
     /** Interpolated with {{title}} — the experience's name, rendered bold. */
     deleteConfirmMessage: string;
+    deleteBlocked: string;
+    deleteFailed: string;
     selectAll: string;
     selectRow: string;
   };
@@ -1544,6 +1547,11 @@ export interface AdminPagesDict {
       disable: string;
       enable: string;
       unfeature: string;
+      delete: string;
+      deleteTitle: string;
+      deleteConfirmMessage: string;
+      deleteBlocked: string;
+      deleteFailed: string;
       feature: string;
       review: string;
       edit: string;
@@ -1613,6 +1621,7 @@ export interface AdminPagesDict {
       review: string;
       edit: string;
       delete: string;
+      deleteTitle: string;
       deleteConfirm: string;
       lockedForDeletion: string;
     };

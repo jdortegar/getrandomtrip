@@ -731,6 +731,11 @@
         "disable": "Disable",
         "enable": "Enable",
         "unfeature": "Unfeature",
+        "delete": "Delete",
+        "deleteTitle": "Delete experience?",
+        "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone.",
+        "deleteBlocked": "Can't delete while it has bookings or is under review.",
+        "deleteFailed": "Couldn't delete this experience. Please try again.",
         "feature": "Feature",
         "review": "Review",
         "edit": "Edit"
@@ -800,6 +805,7 @@
         "review": "Review",
         "edit": "Edit",
         "delete": "Delete",
+        "deleteTitle": "Delete post",
         "deleteConfirm": "Delete this post? This cannot be undone.",
         "lockedForDeletion": "Cannot delete while a review decision is pending"
       },
@@ -4131,6 +4137,7 @@
       "view": "View",
       "reviewChanges": "Review changes",
       "waitingReview": "Awaiting review",
+      "deleteTitle": "Delete post",
       "deleteConfirm": "Delete this post? This action cannot be undone.",
       "selectAll": "Select all posts",
       "selectRow": "Select post",
@@ -4590,6 +4597,8 @@
       "delete": "Delete",
       "deleteTitle": "Delete experience?",
       "deleteConfirmMessage": "You're about to delete {{title}}. This action cannot be undone.",
+      "deleteBlocked": "Can't delete while it has bookings or is under review.",
+      "deleteFailed": "Couldn't delete this experience. Please try again.",
       "selectAll": "Select all experiences",
       "selectRow": "Select experience"
     },

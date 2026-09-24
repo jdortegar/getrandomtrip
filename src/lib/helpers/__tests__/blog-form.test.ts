@@ -276,6 +276,11 @@ describe("buildBlogSubmitPayload", () => {
     expect(roundTripped.excuseKey).toEqual(["x", "y"]);
   });
 
+  it("normalizes a raw Prisma (uppercase) status so server pages map like the API", () => {
+    const post = { status: "PUBLISHED", title: "T", blocks: [] } as unknown as Partial<BlogPost>;
+    expect(mapBlogPostToDraft(post).status).toBe("published");
+  });
+
   it("maps label between the fetched post, the draft and the submit payload", () => {
     const post: Partial<BlogPost> = { status: "draft", title: "T", blocks: [], label: "XSED Nº1 (AR)" };
     expect(mapBlogPostToDraft(post).label).toBe("XSED Nº1 (AR)");

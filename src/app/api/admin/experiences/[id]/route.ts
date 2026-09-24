@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { deleteExperienceIfAllowed } from "@/lib/experiences/deletion";
 
 export const dynamic = "force-dynamic";
 
@@ -67,5 +68,43 @@ export async function PATCH(
       { error: "Internal server error" },
       { status: 500 },
     );
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const params = await props.params;
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const caller = await prisma.user.findUnique({
+      select: { id: true, roles: true },
+      where: { id: session.user.id },
+    });
+    if (!caller || !hasRoleAccess(caller, "admin")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Same rule as the tripper DELETE: only never-booked experiences outside
+    // review can be hard-deleted; booked ones are archived instead.
+    const result = await deleteExperienceIfAllowed(params.id);
+    if (!result.ok) {
+      return result.reason === "not_found"
+        ? NextResponse.json({ error: "Experience not found" }, { status: 404 })
+        : NextResponse.json(
+            { error: "Experience cannot be deleted", reason: result.reason },
+            { status: 409 },
+          );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("[admin/experiences] DELETE", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

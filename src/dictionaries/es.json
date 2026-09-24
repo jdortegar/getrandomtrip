@@ -731,6 +731,11 @@
         "disable": "Desactivar",
         "enable": "Activar",
         "unfeature": "Quitar destaque",
+        "delete": "Eliminar",
+        "deleteTitle": "¿Eliminar experiencia?",
+        "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer.",
+        "deleteBlocked": "No se puede eliminar mientras tenga reservas o esté en revisión.",
+        "deleteFailed": "No se pudo eliminar la experiencia. Intentá de nuevo.",
         "feature": "Destacar",
         "review": "Revisar",
         "edit": "Editar"
@@ -800,6 +805,7 @@
         "review": "Revisar",
         "edit": "Editar",
         "delete": "Eliminar",
+        "deleteTitle": "Eliminar post",
         "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
         "lockedForDeletion": "No se puede eliminar mientras hay una revisión pendiente"
       },
@@ -4131,6 +4137,7 @@
       "view": "Ver",
       "reviewChanges": "Ver cambios",
       "waitingReview": "Esperando revisión",
+      "deleteTitle": "Eliminar post",
       "deleteConfirm": "¿Eliminar este post? Esta acción no se puede deshacer.",
       "selectAll": "Seleccionar todos los posts",
       "selectRow": "Seleccionar post",
@@ -4590,6 +4597,8 @@
       "delete": "Eliminar",
       "deleteTitle": "¿Eliminar experiencia?",
       "deleteConfirmMessage": "Estás por eliminar {{title}}. Esta acción no se puede deshacer.",
+      "deleteBlocked": "No se puede eliminar mientras tenga reservas o esté en revisión.",
+      "deleteFailed": "No se pudo eliminar la experiencia. Intentá de nuevo.",
       "selectAll": "Seleccionar todas las experiencias",
       "selectRow": "Seleccionar experiencia"
     },

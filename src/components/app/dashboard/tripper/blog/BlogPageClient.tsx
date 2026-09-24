@@ -60,6 +60,8 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Id of the post pending delete confirmation. null = modal closed.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -214,8 +216,10 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
     });
   }
 
-  function handleDelete(id: string) {
-    if (!confirm(copy.table.deleteConfirm)) return;
+  function confirmDelete() {
+    if (!deleteTargetId) return;
+    const id = deleteTargetId;
+    setDeleteTargetId(null);
     setDeletingId(id);
     startTransition(async () => {
       try {
@@ -559,7 +563,7 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
                           <TableIconButton
                             danger
                             disabled={isBusy || rowLocked}
-                            onClick={() => handleDelete(post.id)}
+                            onClick={() => setDeleteTargetId(post.id)}
                             title={
                               rowLocked
                                 ? copy.table.lockedForDeletion
@@ -601,6 +605,21 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
         description={copy.unpublishConfirm.body}
         cancelLabel={copy.unpublishConfirm.cancel}
         confirmLabel={copy.unpublishConfirm.confirm}
+      />
+
+      <ConfirmModal
+        open={deleteTargetId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTargetId(null);
+        }}
+        onConfirm={confirmDelete}
+        isConfirming={deletingId !== null}
+        icon={Trash2}
+        tone="danger"
+        title={copy.table.deleteTitle}
+        description={copy.table.deleteConfirm}
+        cancelLabel={copy.bulkActions.cancel}
+        confirmLabel={copy.table.delete}
       />
 
       <ConfirmModal

@@ -175,3 +175,62 @@ describe("AdminBlogPageClient — refetch error keeps chrome mounted", () => {
     expect(banner?.textContent).toContain("Refetch boom");
   });
 });
+
+describe("AdminBlogPageClient — single delete uses the in-app confirm dialog", () => {
+  it("opens ConfirmModal instead of window.confirm and deletes only after confirming", async () => {
+    const es = (await import("@/dictionaries/es.json")).default;
+    const act_ = es.adminPages.blog.actions;
+    const nativeConfirm = vi.fn(() => true);
+    vi.stubGlobal("confirm", nativeConfirm);
+    fetchMock().mockResolvedValue({
+      ok: true,
+      json: async () => ({ blogs: [blog({ status: "DRAFT" })], pendingCount: 0, total: 1 }),
+    });
+
+    render(<AdminBlogPageClient />);
+    await flush();
+
+    const deleteButton = Array.from(
+      container.querySelectorAll('[data-component="TableIconButton"]'),
+    )
+      .find((wrapper) => wrapper.textContent === act_.delete)
+      ?.querySelector("button") as HTMLButtonElement;
+    act(() => deleteButton.click());
+    await flush();
+
+    expect(nativeConfirm).not.toHaveBeenCalled();
+    const dialog = document.body.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog.textContent).toContain(act_.deleteTitle);
+    expect(
+      fetchMock().mock.calls.some(([, init]) => (init as RequestInit)?.method === "DELETE"),
+    ).toBe(false);
+
+    const confirmButton = Array.from(dialog.querySelectorAll("button")).find(
+      (b) => b.textContent === act_.delete,
+    ) as HTMLButtonElement;
+    await act(async () => confirmButton.click());
+    await flush();
+
+    expect(fetchMock()).toHaveBeenCalledWith("/api/admin/blogs/b1", { method: "DELETE" });
+  });
+});
+
+describe("AdminBlogPageClient — RANDOMTRIP edit stays under the admin dashboard", () => {
+  it("links the edit action to /dashboard/admin/blog/[id]/edit, not the tripper editor", async () => {
+    fetchMock().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        blogs: [blog({ status: "PUBLISHED", source: "RANDOMTRIP" } as Partial<AdminBlog>)],
+        pendingCount: 0,
+        total: 1,
+      }),
+    });
+
+    render(<AdminBlogPageClient />);
+    await flush();
+
+    const hrefs = Array.from(container.querySelectorAll("a")).map((a) => a.getAttribute("href"));
+    expect(hrefs).toContain("/es/dashboard/admin/blog/b1/edit");
+    expect(hrefs.some((h) => h?.includes("/dashboard/tripper/blog/"))).toBe(false);
+  });
+});

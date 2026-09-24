@@ -503,6 +503,8 @@ export interface ExperienceListItem {
   maxPax: number;
   createdAt: string;
   updatedAt: string;
+  /** False once the experience has bookings or is in review — see lib/experiences/deletion. */
+  canDelete: boolean;
   // Review copy fields
   isReviewCopy?: boolean;
   parentId?: string | null;

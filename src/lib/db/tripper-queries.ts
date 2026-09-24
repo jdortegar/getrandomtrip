@@ -29,6 +29,7 @@ import type {
 import type { TestimonialData } from "@/components/Testimonials/types";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 import { slugify } from "@/lib/helpers/slugify";
+import { EXPERIENCE_TRIP_REQUEST_COUNT_SELECT, withCanDelete } from "@/lib/experiences/deletion";
 
 /**
  * Get tripper profile by slug with a three-way discriminated result:
@@ -1036,6 +1037,7 @@ export async function getTripperExperiences(
           maxPax: true,
           createdAt: true,
           updatedAt: true,
+          ...EXPERIENCE_TRIP_REQUEST_COUNT_SELECT,
         },
         orderBy: { updatedAt: "desc" },
         skip: (pagination.page - 1) * pagination.limit,
@@ -1046,7 +1048,7 @@ export async function getTripperExperiences(
     ]);
 
     const experiences = packages.map((pkg: (typeof packages)[number]) => ({
-      ...pkg,
+      ...withCanDelete(pkg),
       createdAt: pkg.createdAt.toISOString(),
       updatedAt: pkg.updatedAt.toISOString(),
     }));
