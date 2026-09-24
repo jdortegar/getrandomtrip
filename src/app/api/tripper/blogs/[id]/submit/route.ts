@@ -38,7 +38,7 @@ export async function POST(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const blog = await (prisma.blogPost.findFirst as any)({
       where: { id: params.id, isReviewCopy: false },
     }) as {
@@ -91,9 +91,9 @@ export async function POST(
 
     // Transition status and clean up any discarded tombstone copy from a
     // prior tripper rejection cycle.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const updated = await (prisma.$transaction as any)(async (tx: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const tombstone = await (tx.blogPost.findFirst as any)({
         where: {
           parentId: params.id,
@@ -104,11 +104,11 @@ export async function POST(
       }) as { id: string } | null;
 
       if (tombstone) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         await (tx.blogPost.delete as any)({ where: { id: tombstone.id } });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       return (tx.blogPost.update as any)({
         where: { id: params.id },
         data: {

@@ -1,3 +1,4 @@
+import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -34,7 +35,7 @@ export default async function AdminExperienceReviewPage(props: {
   }
 
   // Admin can review any experience — no ownerId filter
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const pkg = await (prisma.experience.findFirst as any)({
     where: { id: params.id },
   }) as Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
@@ -48,7 +49,7 @@ export default async function AdminExperienceReviewPage(props: {
 
   // Check for an existing non-INACTIVE review copy — load full data so admin
   // resumes editing their previous changes instead of seeing the original.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const existingCopy = await (prisma.experience.findFirst as any)({
     where: {
       parentId: params.id,
@@ -78,8 +79,7 @@ export default async function AdminExperienceReviewPage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: source.status,
     title: source.title,
-    type: Array.isArray(source.type) ? source.type : [source.type].filter(Boolean),
-    level: source.level ?? "essenza",
+    ...normalizeExperienceClassification(source),
     teaser: source.teaser,
     description: source.description,
     heroImage: source.heroImage,

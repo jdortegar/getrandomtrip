@@ -62,7 +62,6 @@ export const EXPERIENCE_TYPES = [
   { value: "solo", label: "Solo (SOLUM©)" },
   { value: "honeymoon", label: "Luna de Miel (NUPTIA©)" },
   { value: "paws", label: "Con Mascotas (PAWS©)" },
-  { value: "XSED", label: "XSED Drop" },
 ] as const;
 
 const EXPERIENCE_TYPES_EN = [
@@ -72,7 +71,6 @@ const EXPERIENCE_TYPES_EN = [
   { value: "solo", label: "Solo (SOLUM©)" },
   { value: "honeymoon", label: "Honeymoon (NUPTIA©)" },
   { value: "paws", label: "With Pets (PAWS©)" },
-  { value: "XSED", label: "XSED Drop" },
 ] as const;
 
 export function getExperienceTypes(locale?: string) {

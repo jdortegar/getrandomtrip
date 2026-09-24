@@ -1,6 +1,6 @@
 /**
  * Returns the Saturday that follows the next Sunday booking window.
- * Booking opens Sunday 16:00–20:00 local time; the trip always departs
+ * Booking opens Sunday 18:00–22:00 local time; the trip always departs
  * the Saturday immediately after that Sunday (6 days later).
  * Using nearest-Saturday logic was wrong: on a Friday it returned tomorrow,
  * creating trips that started the next day instead of 8 days out.

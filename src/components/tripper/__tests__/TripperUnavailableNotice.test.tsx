@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { describe, expect, it } from "vitest";
 import { TripperUnavailableNotice } from "@/components/tripper/TripperUnavailableNotice";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy = {

@@ -1,3 +1,6 @@
+import { isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { hasXsedDropContent } from "@/lib/xsed/publication";
+import type { XsedPublicationRecord } from "@/types/xsed";
 // ============================================================================
 // POST /api/tripper/experiences/[id]/approve-copy
 // Tripper approves the admin's review copy: overwrites the original with the
@@ -39,7 +42,7 @@ export async function POST(
     }
 
     // Find original experience owned by this tripper
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.experience.findFirst as any)({
       where: { id: params.id, ownerId: user.id },
       select: { id: true, ownerId: true, status: true },
@@ -63,15 +66,15 @@ export async function POST(
     }
 
     // Find the active review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,
         isReviewCopy: true,
         NOT: { status: "INACTIVE" },
       },
-      select: { id: true },
-    }) as { id: string } | null;
+      select: { id: true, type: true, level: true, titleInternal: true, tripDate: true, destinationCity: true, destinationCountry: true },
+    }) as XsedPublicationRecord & { id: string } | null;
 
     if (!copy) {
       return NextResponse.json(
@@ -80,13 +83,17 @@ export async function POST(
       );
     }
 
+    if (isXsedExperience(copy as unknown as XsedPublicationRecord) && !hasXsedDropContent(copy as unknown as XsedPublicationRecord)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
+    }
+
     // Transactionally overwrite the original with the copy's data + delete copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       await overwriteOriginalWithCopy(tx, params.id, copy.id);
       // overwriteOriginalWithCopy already sets status=ACTIVE, isActive=true
       // Now hard-delete the copy
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.delete as any)({ where: { id: copy.id } });
     });
 

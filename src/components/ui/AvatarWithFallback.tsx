@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { User } from "lucide-react";
+import Img from "@/components/common/Img";
 
 interface AvatarWithFallbackProps {
   src?: string | null;
@@ -15,6 +16,8 @@ const sizeClasses = {
   lg: "w-16 h-16",
   xl: "w-24 h-24",
 };
+
+const sizePixels = { sm: 32, md: 48, lg: 64, xl: 96 };
 
 export default function AvatarWithFallback({
   src,
@@ -53,12 +56,18 @@ export default function AvatarWithFallback({
       {imageLoading && (
         <div className="absolute inset-0 bg-gray-200 animate-pulse" />
       )}
-      <img
-        src={src}
+      <Img
         alt={alt}
         className={`w-full h-full object-cover ${imageLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
+        decoding="auto"
+        height={sizePixels[size]}
+        loading="eager"
         onError={handleImageError}
-        onLoad={handleImageLoad}
+        // Keep native load timing; Next Image's onLoad waits for decode().
+        onLoadCapture={handleImageLoad}
+        src={src}
+        unoptimized
+        width={sizePixels[size]}
       />
     </div>
   );

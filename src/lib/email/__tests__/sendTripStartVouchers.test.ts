@@ -6,6 +6,7 @@ vi.mock("@/lib/prisma", () => ({
     user: { findUnique: vi.fn() },
     tripRequest: { findUnique: vi.fn() },
     tripDocument: { findMany: vi.fn() },
+    tripDocumentDraft: { findMany: vi.fn() },
   },
 }));
 
@@ -62,18 +63,21 @@ const DOC_B = {
 describe("sendTripStartVouchers", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(USER);
-    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      TRIP,
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      USER,
     );
-    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      DOC_A,
-      DOC_B,
-    ]);
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(TRIP);
+    (
+      prisma.tripDocument.findMany as ReturnType<typeof vi.fn>
+    ).mockResolvedValue([DOC_A, DOC_B]);
     storeGetMock.mockImplementation(async (key: string) =>
       makeBlob(key === DOC_A.storageKey ? DOC_A.sizeBytes : DOC_B.sizeBytes),
     );
-    (sendMail as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "resend-id" });
+    (sendMail as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "resend-id",
+    });
   });
 
   it("returns { sent: false } and does not call sendMail when the user has no email", async () => {
@@ -90,7 +94,9 @@ describe("sendTripStartVouchers", () => {
   });
 
   it("returns { sent: false } and does not call sendMail when there are zero documents", async () => {
-    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    (
+      prisma.tripDocument.findMany as ReturnType<typeof vi.fn>
+    ).mockResolvedValue([]);
 
     const result = await sendTripStartVouchers("trip-1", "user-1");
 
@@ -122,6 +128,31 @@ describe("sendTripStartVouchers", () => {
     expect(props.locale).toBe("es");
   });
 
+  it("queries published rows only, never draft preview keys or content", async () => {
+    vi.mocked(prisma.tripDocumentDraft.findMany).mockRejectedValue(
+      new Error("Drafts are private"),
+    );
+    expect(await sendTripStartVouchers("trip-1", "user-1")).toEqual({
+      sent: true,
+    });
+    expect(prisma.tripDocumentDraft.findMany).not.toHaveBeenCalled();
+    expect(prisma.tripDocument.findMany).toHaveBeenCalledWith({
+      where: { tripRequestId: "trip-1" },
+      select: {
+        label: true,
+        storageKey: true,
+        mimeType: true,
+        originalFilename: true,
+        sizeBytes: true,
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    expect(storeGetMock.mock.calls.map(([key]) => key)).toEqual([
+      DOC_A.storageKey,
+      DOC_B.storageKey,
+    ]);
+  });
+
   it("resolves locale 'en' from the user record", async () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
       ...USER,
@@ -141,10 +172,9 @@ describe("sendTripStartVouchers", () => {
       originalFilename: "huge.pdf",
       sizeBytes: 30 * 1024 * 1024, // 30MB — over the 25MB budget
     };
-    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      DOC_A,
-      hugeDoc,
-    ]);
+    (
+      prisma.tripDocument.findMany as ReturnType<typeof vi.fn>
+    ).mockResolvedValue([DOC_A, hugeDoc]);
 
     const result = await sendTripStartVouchers("trip-1", "user-1");
 

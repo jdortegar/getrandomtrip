@@ -3,7 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AttributionModeBannerToggle } from "../AttributionModeBannerToggle";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 let mockSearch = "";
@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 const fetchMock = vi.fn();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).fetch = fetchMock;
 
 const COPY = {

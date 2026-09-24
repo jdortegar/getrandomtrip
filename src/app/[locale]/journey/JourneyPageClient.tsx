@@ -248,6 +248,7 @@ function JourneyPageContent({
               activeSubstepId={openSectionId}
               activeTab={activeTab}
               addonsComingSoonLabel={journey.mainContent.addonsComingSoon}
+              completionLabels={journey.completionLabels}
               onStepClick={handleStepClick}
               substepCompletionOverrides={detailsSubstepCompletionOverrides}
               tabCompletionOverrides={detailsTabCompletionOverrides}

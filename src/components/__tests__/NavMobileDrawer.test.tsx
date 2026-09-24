@@ -6,7 +6,7 @@ import Navbar from "../Navbar";
 import type { NavLink } from "../Navbar";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({

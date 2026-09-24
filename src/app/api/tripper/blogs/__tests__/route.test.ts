@@ -72,28 +72,41 @@ describe("GET /api/tripper/blogs (own list) — visibility guard", () => {
     expect(findManyArgs.take).toBe(10);
   });
 
-  it("applies status, format, travelType, and search filters to the where clause", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockTripperUser("tripper-1"),
-    );
+  it.each([
+    ["", "solo"],
+    ["&level=essenza", "solo"],
+    ["&level=xsed", "XSED"],
+  ])(
+    "applies filters with XSED level precedence (%s), ignoring removed format",
+    async (level, type) => {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockSession("tripper-1"),
+      );
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockTripperUser("tripper-1"),
+      );
 
-    await GET(
-      new NextRequest(
-        "http://localhost/api/tripper/blogs?status=draft&format=video&travelType=solo&search=patagonia",
-      ),
-    );
+      await GET(
+        new NextRequest(
+          `http://localhost/api/tripper/blogs?status=draft&format=video&travelType=solo&search=patagonia${level}`,
+        ),
+      );
 
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(findManyArgs.where).toMatchObject({
-      authorId: "tripper-1",
-      isReviewCopy: false,
-      status: "DRAFT",
-      format: "VIDEO",
-      travelType: { has: "solo" },
-      title: { contains: "patagonia", mode: "insensitive" },
-    });
-  });
+      const findManyArgs = (
+        prisma.blogPost.findMany as ReturnType<typeof vi.fn>
+      ).mock.calls[0][0];
+      expect(findManyArgs.where).toEqual({
+        authorId: "tripper-1",
+        isReviewCopy: false,
+        status: "DRAFT",
+        travelType: { has: type },
+        title: { contains: "patagonia", mode: "insensitive" },
+      });
+      expect(prisma.blogPost.count).toHaveBeenCalledWith({
+        where: findManyArgs.where,
+      });
+    },
+  );
 });
 
 describe("POST /api/tripper/blogs (create) — status is never accepted from the client", () => {

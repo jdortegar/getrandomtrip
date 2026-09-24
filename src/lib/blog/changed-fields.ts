@@ -80,15 +80,15 @@ export function computeChangedFields(
  * @returns           The updated original BlogPost record
  */
 export async function overwriteOriginalWithCopy(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   tx: any,
   originalId: string,
   copyId: string,
 ): Promise<unknown> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const [copy, original] = await Promise.all([
     (tx.blogPost.findUnique as any)({ where: { id: copyId } }) as Promise<FieldRecord | null>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     (tx.blogPost.findUnique as any)({ where: { id: originalId } }) as Promise<
       (FieldRecord & { publishedAt: Date | null }) | null
     >,
@@ -109,7 +109,7 @@ export async function overwriteOriginalWithCopy(
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   return (tx.blogPost.update as any)({
     where: { id: originalId },
     data: {

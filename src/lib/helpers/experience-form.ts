@@ -1,3 +1,4 @@
+import { isValidSharedExperienceClassification } from "@/lib/experiences/xsedExperience";
 import type { ExperienceFormDraft } from "@/types/tripper";
 
 /**
@@ -12,7 +13,7 @@ export function getExperienceCompleteness(form: ExperienceFormDraft): {
   const missing: string[] = [];
 
   if (!form.title) missing.push("title");
-  if (!form.type || form.type.length === 0) missing.push("type");
+  if (!form.type || form.type.length === 0 || !isValidSharedExperienceClassification(form)) missing.push("type");
   if (!form.level) missing.push("level");
   if (!form.teaser) missing.push("teaser");
   if (!form.description) missing.push("description");
@@ -32,6 +33,8 @@ export function getMissingFields(
   const m: string[] = [];
   switch (tabId) {
     case "about":
+      if (!form.type.length) m.push(labels.type);
+      if (!form.level) m.push(labels.level);
       if (!form.title) m.push(labels.title ?? "Título");
       if (!form.teaser) m.push(labels.teaser ?? "Teaser");
       if (!form.description) m.push(labels.description ?? "Descripción");
@@ -55,6 +58,8 @@ export function isExperienceTabComplete(
   switch (tabId) {
     case "about":
       return !!(
+        form.type.length > 0 &&
+        form.level &&
         form.title &&
         form.teaser &&
         form.description &&

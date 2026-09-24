@@ -1,3 +1,4 @@
+import { hasValidExperienceClassificationShape, isValidSharedExperienceClassification } from "@/lib/experiences/xsedExperience";
 // ============================================================================
 // PATCH /api/admin/experiences/[id]/edit-copy
 // Saves content edits to a review copy. Admin-only — no ownership check.
@@ -31,11 +32,11 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findUnique as any)({
       where: { id: params.id },
-      select: { id: true, isReviewCopy: true, status: true },
-    }) as { id: string; isReviewCopy: boolean; status: string } | null;
+      select: { id: true, isReviewCopy: true, status: true, type: true, level: true },
+    }) as { id: string; isReviewCopy: boolean; status: string; type: string[]; level: string | null } | null;
 
     if (!copy) {
       return NextResponse.json({ error: "Experience not found" }, { status: 404 });
@@ -49,6 +50,9 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    if (!hasValidExperienceClassificationShape(body)) {
+      return NextResponse.json({ error: "invalid_classification" }, { status: 400 });
+    }
     const {
       type,
       level,
@@ -80,14 +84,21 @@ export async function PATCH(
       season,
     } = body;
 
+    if ((type !== undefined || level !== undefined) && !isValidSharedExperienceClassification({
+      type: type === undefined ? copy.type : type,
+      level: level === undefined ? copy.level : level,
+    })) {
+      return NextResponse.json({ error: "incomplete", missing: ["type"] }, { status: 422 });
+    }
+
     const hotels = hotelsField ?? accommodations;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const updated = await (prisma.experience.update as any)({
       where: { id: params.id },
       data: {
         ...(type !== undefined && { type: Array.isArray(type) ? type : [type].filter(Boolean) }),
-        level: level ?? null,
+        ...(level !== undefined && { level: level ?? null }),
         ...(title && { title }),
         teaser: teaser ?? "",
         description: description ?? "",

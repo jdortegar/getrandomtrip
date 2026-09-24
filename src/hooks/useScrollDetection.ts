@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { useLenis } from "lenis/react";
 
 interface UseScrollDetectionOptions {
@@ -18,26 +18,21 @@ export function useScrollDetection({
   variant,
   threshold = 1,
 }: UseScrollDetectionOptions) {
-  const [overlay, setOverlay] = useState(variant !== "solid");
+  const lenis = useLenis();
+  const subscribe = useCallback(
+    (notify: () => void) => {
+      if (variant !== "auto" || !lenis) return () => {};
+      return lenis.on("scroll", notify);
+    },
+    [lenis, variant],
+  );
 
-  useEffect(() => {
-    if (variant !== "auto") {
-      setOverlay(variant === "overlay");
-    }
-  }, [variant]);
-
-  const lenis = useLenis((instance) => {
-    if (variant !== "auto") return;
-    setOverlay(instance.animatedScroll < threshold);
-  });
-
-  // Sets the correct initial value once Lenis is available — e.g. when the
-  // page mounts already scrolled (restored position, anchor navigation)
-  // instead of waiting for the next scroll tick to correct it.
-  useEffect(() => {
-    if (variant !== "auto" || !lenis) return;
-    setOverlay(lenis.animatedScroll < threshold);
-  }, [variant, lenis, threshold]);
-
-  return overlay;
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      if (variant !== "auto") return variant === "overlay";
+      return lenis ? lenis.animatedScroll < threshold : true;
+    },
+    () => variant !== "solid",
+  );
 }

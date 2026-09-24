@@ -7,7 +7,7 @@ import {
 } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: MarketingDictionary["adminTripFulfillment"] = {

@@ -213,6 +213,8 @@ describe("POST /api/admin/experiences/[id]/approve", () => {
     // A review copy exists — triggers the copy-overwrite branch
     (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "copy-1",
+      type: ["couple", "group"],
+      level: "essenza",
     });
 
     const overwrittenExperience = {
@@ -271,4 +273,20 @@ describe("POST /api/admin/experiences/[id]/approve", () => {
       }),
     );
   });
+  it.each([false, true])("rejects marker-only XSED classification on published row (copy: %s)", async (hasCopy) => {
+    vi.mocked(getServerSession).mockResolvedValue(mockSession("admin-1"));
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(mockAdminUser("admin-1") as never);
+    vi.mocked(prisma.experience.update).mockResolvedValue({ id: "exp-1", status: "ACTIVE" } as never);
+    vi.mocked(prisma.$transaction).mockResolvedValue({ id: "exp-1", status: "ACTIVE" });
+    const legacy = { ...pendingExperience(), type: ["XSED"], level: "essenza" };
+    vi.mocked(prisma.experience.findUnique).mockResolvedValue((hasCopy ? pendingExperience() : legacy) as never);
+    vi.mocked(prisma.experience.findFirst).mockResolvedValue(hasCopy ? { ...legacy, id: "copy-1" } as never : null);
+    const mod = await import("../route");
+    const res = await mod.POST(makePostRequest("exp-1", { pricingByType: hasCopy ? { couple: 250, group: 250 } : {} }), { params: Promise.resolve({ id: "exp-1" }) });
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ error: "incomplete", missing: ["type"] });
+    expect(prisma.experience.update).not.toHaveBeenCalled();
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
 });

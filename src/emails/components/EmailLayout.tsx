@@ -37,25 +37,51 @@ export default function EmailLayout({
       <Head>
         <meta name="color-scheme" content="light" />
         <meta name="supported-color-schemes" content="light" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;700&display=swap"
-        />
         <Font
           fontFamily="Barlow Condensed"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v12/HTxwL3I-JCGChYJ8VI-L6OO_au7B43LT1Q.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
             format: "woff2",
           }}
           fontWeight={700}
           fontStyle="normal"
         />
         <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow Condensed"
+          fontStyle="normal"
+          fontWeight={800}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={500}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={700}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
           fontFamily="Barlow"
           fallbackFontFamily="Arial"
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v12/7cHpv4kjgoGqM7E3b8s8yn4.woff2",
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
             format: "woff2",
           }}
           fontWeight={400}

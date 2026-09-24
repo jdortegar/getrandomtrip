@@ -5,7 +5,7 @@ import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetails
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: TripItineraryDict["hero"] = {

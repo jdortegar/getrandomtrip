@@ -6,20 +6,22 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { parseXsedNotificationBody } from "@/lib/xsed/notifications";
-import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { useLocale } from "@/hooks/useDictionary";
+import type { XsedNotifyFormCopy } from "@/lib/types/dictionary";
 
 interface XsedNotifyFormProps {
-  variant?: "dark" | "light";
   className?: string;
+  content: XsedNotifyFormCopy;
+  variant?: "dark" | "light";
 }
 
 type SubmitStatus = "idle" | "error" | "invalid" | "success";
 
 export function XsedNotifyForm({
-  variant = "dark",
   className,
+  content,
+  variant = "dark",
 }: XsedNotifyFormProps) {
-  const content = useDictionary((d) => d.xsedPage.hero);
   const locale = useLocale();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +95,7 @@ export function XsedNotifyForm({
         <Input
           aria-label={content.inputLabel}
           className={cn(
-            "h-14 w-full rounded-md border-2 px-4 font-barlow text-lg font-semibold shadow-none focus-visible:ring-2 md:w-[300px]",
+            "h-14 w-full rounded-md border-2 px-4 font-barlow text-[17px] font-semibold shadow-none focus-visible:ring-2 md:w-[300px] md:text-lg",
             inputColorClasses,
           )}
           disabled={isSubmitting}
@@ -109,7 +111,7 @@ export function XsedNotifyForm({
         />
         <Button
           aria-label={content.submitAriaLabel}
-          className="w-full md:w-auto"
+          className="w-full text-[17px] leading-6 tracking-[1.7px] md:w-auto md:text-lg md:tracking-[1.5px]"
           disabled={isSubmitting}
           size="lg"
           type="submit"
@@ -132,7 +134,7 @@ export function XsedNotifyForm({
 
       <p
         className={cn(
-          "font-barlow text-base leading-relaxed [&_strong]:font-bold",
+          "font-barlow text-xs leading-normal md:text-base md:leading-relaxed [&_strong]:font-bold",
           helperColorClasses,
         )}
         dangerouslySetInnerHTML={{ __html: content.helper }}

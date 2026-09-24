@@ -1,3 +1,4 @@
+import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -34,7 +35,7 @@ export default async function AdminEditExperiencePage(props: {
     redirect(`/${locale}/dashboard`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const pkg = await (prisma.experience.findFirst as any)({
     where: { id: params.id },
   }) as (Awaited<ReturnType<typeof prisma.experience.findFirst>> & ExperienceRandomtripEditFields) | null;
@@ -50,8 +51,7 @@ export default async function AdminEditExperiencePage(props: {
   const initialDraft: ExperienceFormDraft = {
     status: pkg.status,
     title: pkg.title,
-    type: Array.isArray(pkg.type) ? pkg.type : [pkg.type].filter(Boolean),
-    level: pkg.level ?? "essenza",
+    ...normalizeExperienceClassification(pkg),
     teaser: pkg.teaser,
     description: pkg.description,
     heroImage: pkg.heroImage,

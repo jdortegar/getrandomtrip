@@ -30,7 +30,7 @@ export default async function BlogReviewCopyPage(props: {
   }
 
   // Fetch the original blog post (must be owned by the tripper)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const original = (await (prisma.blogPost.findFirst as any)({
     where: { id: params.id, authorId: user.id, isReviewCopy: false },
   })) as Partial<BlogPost> | null;
@@ -43,7 +43,7 @@ export default async function BlogReviewCopyPage(props: {
   }
 
   // Find the associated (active, non-discarded) review copy
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const copy = (await (prisma.blogPost.findFirst as any)({
     where: { parentId: params.id, isReviewCopy: true, isDiscarded: false },
   })) as (Partial<BlogPost> & { reviewNote: string | null }) | null;

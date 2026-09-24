@@ -1,3 +1,5 @@
+import { isPublicXsedExperience, PUBLIC_XSED_EXPERIENCE_WHERE } from "@/lib/xsed/publication";
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import type { Prisma, TripRequestStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
@@ -12,6 +14,13 @@ const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
 ];
 
 const xsedListSelect = {
+  type: true,
+  level: true,
+  status: true,
+  isActive: true,
+  isReviewCopy: true,
+  destinationCity: true,
+  destinationCountry: true,
   heroImage: true,
   id: true,
   maxSpots: true,
@@ -36,30 +45,27 @@ export type XsedListRow = Prisma.ExperienceGetPayload<{
 export async function findUpcomingActiveXsedExperiences(
   now: Date = new Date(),
 ): Promise<XsedListRow[]> {
-  return prisma.experience.findMany({
+  const rows = await prisma.experience.findMany({
     where: {
-      type: { has: "XSED" },
-      OR: [{ tripDate: { gte: now } }, { tripDate: null }],
+      AND: [PUBLIC_XSED_EXPERIENCE_WHERE, { tripDate: { gte: now } }],
     },
     orderBy: [{ tripDate: "asc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
+  return rows.filter(isPublicXsedExperience);
 }
 
 export async function findLatestActiveXsedExperience(): Promise<XsedListRow | null> {
-  return prisma.experience.findFirst({
-    where: { type: { has: "XSED" } },
-    orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
-    select: xsedListSelect,
-  });
+  return (await findPublicXsedExperiences())[0] ?? null;
 }
 
 export async function findPublicXsedExperiences(): Promise<XsedListRow[]> {
-  return prisma.experience.findMany({
-    where: { type: { has: "XSED" } },
+  const rows = await prisma.experience.findMany({
+    where: PUBLIC_XSED_EXPERIENCE_WHERE,
     orderBy: [{ tripDate: "desc" }, { createdAt: "desc" }],
     select: xsedListSelect,
   });
+  return rows.filter(isPublicXsedExperience);
 }
 
 /**
@@ -71,7 +77,7 @@ export async function findAllCompletedXsedTripRequestsForTestimonials() {
     where: {
       status: "COMPLETED",
       customerFeedback: { not: null },
-      experience: { type: { has: "XSED" } },
+      experience: XSED_EXPERIENCE_WHERE,
     },
     orderBy: { completedAt: "desc" },
     take: 24,

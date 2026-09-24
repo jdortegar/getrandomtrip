@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
 
     // Review copies (isReviewCopy: true) never appear in this list — they
     // surface only inside the admin review screen for their parent post.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const where: Record<string, any> = { isReviewCopy: false };
     if (filterAuthorId) where.authorId = filterAuthorId;
     if (filterStatus) where.status = { in: filterStatus.split(",") };
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     }
 
     const [blogs, total, pendingCount] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.blogPost.findMany as any)({
         where,
         orderBy: { updatedAt: "desc" },
@@ -100,13 +100,13 @@ export async function GET(request: NextRequest) {
           reviewLockedBy: true,
         },
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.blogPost.count as any)({ where }),
       // Dataset-wide pending count for the tab badge — independent of the
       // active page/filter, matching the pre-pagination behavior where the
       // badge always summarized every non-review-copy post, not just the
       // current filter's results.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.blogPost.count as any)({
         where: { isReviewCopy: false, status: { in: PENDING_STATUSES } },
       }),

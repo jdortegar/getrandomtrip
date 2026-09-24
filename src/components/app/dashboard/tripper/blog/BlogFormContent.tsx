@@ -13,7 +13,7 @@ import { FaqStep } from "./steps/FaqStep";
 import { GalleryStep } from "./steps/GalleryStep";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
-import { getMissingBlogFields, isBlogTabComplete } from "@/lib/helpers/blog-form";
+import { getMissingBlogFields, isBlogTabEligible } from "@/lib/helpers/blog-form";
 import { resolveBlogFieldPeek, resolveBlogEntryPeek } from "@/lib/blog/blog-form-peek";
 import type { FieldPeek } from "@/components/ui/field-peek";
 import type { BlogImageState, SaveStatus } from "./NewBlogPostShell";
@@ -236,8 +236,8 @@ export function BlogFormContent({
 
   const isLastTab = tabs[tabs.length - 1]?.id === activeTab;
   const hasValues = !!(draft.title || draft.subtitle || draft.coverUrl);
-  const canContinue = isBlogTabComplete(activeTab, draft);
-  const allTabsComplete = tabs.every((t) => isBlogTabComplete(t.id, draft));
+  const canContinue = isBlogTabEligible(activeTab, draft);
+  const allTabsEligible = tabs.every((t) => isBlogTabEligible(t.id, draft));
   const missingFields = canContinue
     ? []
     : getMissingBlogFields(activeTab, draft, copy.fields as Record<string, string>);
@@ -335,7 +335,7 @@ export function BlogFormContent({
             // Editable-but-not-tripper (adminEdit): reviewActionsSlot is present, but the
             // real submit action lives in the sticky bar (Send to Tripper), not here — force
             // "Next" so this button never turns into a "Submit for review" dead end.
-            isAllStepsComplete={!reviewActionsSlot && isLastTab && allTabsComplete}
+            isAllStepsComplete={!reviewActionsSlot && isLastTab && allTabsEligible}
             isSavingAndRedirecting={isFinishing}
             labels={{
               back: copy.actionBar.back,

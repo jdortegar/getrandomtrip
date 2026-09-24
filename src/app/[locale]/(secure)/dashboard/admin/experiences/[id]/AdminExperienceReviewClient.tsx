@@ -7,7 +7,7 @@ import { NewExperienceShell } from "@/components/app/dashboard/tripper/experienc
 import type { ExperienceShellMode } from "@/components/app/dashboard/tripper/experiences/NewExperienceShell";
 import { AdminReviewSlot } from "../../AdminReviewSlot";
 import { AdminReviewActionsBar } from "../../AdminReviewActionsBar";
-import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import { getExperienceBasePricePerPerson } from "@/lib/experiences/xsedExperience";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
@@ -49,7 +49,7 @@ export function AdminExperienceReviewClient({
   const [prices, setPrices] = useState<Record<string, string>>(
     Object.fromEntries(
       nonXsedTypes.map((t) => {
-        const preset = getBasePricePerPerson(t, level);
+        const preset = getExperienceBasePricePerPerson(t, level);
         return [t, preset > 0 ? String(preset) : ""];
       }),
     ),
@@ -63,7 +63,7 @@ export function AdminExperienceReviewClient({
   const saving = activeSaving !== null;
   const backPath = `/${locale}/dashboard/admin/experiences`;
 
-  const allPricesFilled = nonXsedTypes.every((t) => {
+  const allPricesFilled = nonXsedTypes.length > 0 && nonXsedTypes.every((t) => {
     const v = Number(prices[t]);
     return Number.isFinite(v) && v > 0;
   });

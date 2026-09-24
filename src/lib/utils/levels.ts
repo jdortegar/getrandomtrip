@@ -136,7 +136,8 @@ export function getLevelById(
   locale?: string,
   overrides?: TripperPriceOverrides | null,
 ): Level | undefined {
-  if ((type ?? "").toLowerCase() === "xsed") return getXsedLevel(locale);
+  // XSED bookings store the travel type in the level field.
+  if ((type ?? "").toLowerCase() === "xsed") return getXsedLevel(locale, levelId);
   const t = type ?? "solo";
   const levels = getLevelsForType(t, locale, overrides);
   const normalized = levelId.toLowerCase().replace(/\s+/g, "-");

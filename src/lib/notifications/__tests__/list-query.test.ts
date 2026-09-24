@@ -114,7 +114,7 @@ describe("toClientNotification", () => {
       body: "See you soon!",
       metadata: { tripRequestId: "trip-1" },
       createdAt,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } as any);
 
     expect(result).toEqual({
@@ -142,7 +142,7 @@ describe("toClientNotification", () => {
       body: null,
       metadata: null,
       createdAt,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     } as any);
 
     expect(result.body).toBeNull();

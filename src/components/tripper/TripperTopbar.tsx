@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 export default function TripperTopbar() {
   return (
     <div
@@ -11,12 +13,12 @@ export default function TripperTopbar() {
           placeholder="Buscar..."
           className="flex-1 px-3 py-2 rounded-xl bg-neutral-100"
         />
-        <a
-          href="/dashboard/tripper/packages/new"
+        <Link
           className="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm"
+          href="/dashboard/tripper/packages/new"
         >
           Crear Ruta
-        </a>
+        </Link>
       </div>
     </div>
   );

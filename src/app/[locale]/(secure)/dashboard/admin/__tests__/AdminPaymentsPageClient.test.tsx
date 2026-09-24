@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminPaymentsPageClient } from "@/app/[locale]/(secure)/dashboard/admin/AdminPaymentsPageClient";
 import type { AdminPayment } from "@/lib/admin/types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({

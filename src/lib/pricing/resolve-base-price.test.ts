@@ -56,6 +56,21 @@ describe("resolveBasePricePerPerson", () => {
     expect(result).toEqual({ offered: true, price: 250, source: "catalog" });
   });
 
+  it.each([
+    ["solo", 350],
+    ["couple", 250],
+    ["family", 250],
+    ["group", 250],
+    ["friends", 250],
+  ])("xsed booked as %s resolves to %i per person", (travelType, price) => {
+    const result = resolveBasePricePerPerson({
+      levelId: travelType,
+      overrides: { xsed: { essenza: 999 } } as never,
+      travelerType: "xsed",
+    });
+    expect(result).toEqual({ offered: true, price, source: "catalog" });
+  });
+
   it("returns not-offered for an unknown traveler type", () => {
     const result = resolveBasePricePerPerson({
       levelId: "essenza",

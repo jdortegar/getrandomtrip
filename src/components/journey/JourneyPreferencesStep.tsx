@@ -103,7 +103,6 @@ export function JourneyPreferencesStep({
   openSectionId,
   originCity,
   originCountry,
-  transport,
 }: JourneyPreferencesStepProps) {
   const labels = useMemo(
     () => ({
@@ -157,7 +156,6 @@ export function JourneyPreferencesStep({
     departPref,
     labels,
     maxTravelTime,
-    transport,
   ]);
 
   const addonsSummary = useMemo(() => {

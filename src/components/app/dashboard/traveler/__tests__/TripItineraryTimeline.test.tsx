@@ -5,7 +5,7 @@ import { TripItineraryTimeline } from "../TripItineraryTimeline";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { ItineraryDayEntry } from "@/types/tripper";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: Pick<TripItineraryDict, "itinerary"> = {

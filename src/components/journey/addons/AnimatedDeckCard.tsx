@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Minus, Plus, Check } from "lucide-react";
 import type { Addon } from "@/lib/data/shared/addons-catalog";
@@ -21,23 +20,16 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
   const { addons, setAddon, removeAddon, logistics, level } = useStore();
   const sel = addons.selected.find((s) => s.id === addon.id);
 
-  const [qty, setQty] = useState(sel?.qty || 0);
-
-  // Re-sincroniza controles al cambiar de add-on
-  useEffect(() => {
-    setQty(sel?.qty || 0);
-  }, [sel, addon.id]);
+  const qty = sel?.qty || 0;
 
   const inc = () => {
     const newQty = qty + 1;
-    setQty(newQty);
     // Auto-add when incrementing from 0
     setAddon({ id: addon.id, qty: newQty });
   };
 
   const dec = () => {
     const newQty = Math.max(0, qty - 1);
-    setQty(newQty);
     if (newQty === 0) {
       // Remove addon when quantity reaches 0
       removeAddon(addon.id);
@@ -50,10 +42,8 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
   const handleAddPerTrip = () => {
     if (isSelected) {
       removeAddon(addon.id);
-      setQty(0);
     } else {
       setAddon({ id: addon.id, qty: 1 });
-      setQty(1);
     }
   };
 

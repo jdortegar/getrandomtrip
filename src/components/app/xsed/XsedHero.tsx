@@ -38,12 +38,12 @@ export function XsedHero({
           initial={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="whitespace-pre-line text-center mb-10 font-barlow-condensed font-bold uppercase leading-tight text-white text-[50px] md:text-[70px]">
+          <h2 className="whitespace-pre-line text-center mb-10 font-barlow-condensed font-bold uppercase leading-10 text-white text-[32px] md:text-[70px] md:leading-tight">
             {content.title}
           </h2>
 
           <div className="flex justify-center mb-8 text-center">
-            <XsedNotifyForm variant="dark" />
+            <XsedNotifyForm content={content} variant="dark" />
           </div>
           {backHref && backLabel ? (
             <motion.div

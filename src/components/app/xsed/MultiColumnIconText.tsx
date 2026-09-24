@@ -34,7 +34,7 @@ export function MultiColumnIconText({ content }: MultiColumnIconTextProps) {
                 {item.title}
               </h2>
               <p
-                className="font-barlow text-sm font-normal leading-loose text-white/90 [&_strong]:font-bold [&_strong]:text-white"
+                className="text-pretty font-barlow text-sm font-normal leading-loose text-white/90 [&_strong]:font-bold [&_strong]:text-white"
                 dangerouslySetInnerHTML={{ __html: item.description }}
               />
             </article>

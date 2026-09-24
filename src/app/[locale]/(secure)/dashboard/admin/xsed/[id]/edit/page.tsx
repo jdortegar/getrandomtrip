@@ -1,3 +1,4 @@
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import { notFound } from "next/navigation";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
@@ -22,7 +23,7 @@ export default async function EditXsedDropPage(props: {
   const dict = await getDictionary(locale);
 
   const drop = await prisma.experience.findUnique({
-    where: { id: params.id, type: { has: "XSED" } },
+    where: { id: params.id, ...XSED_EXPERIENCE_WHERE },
   });
 
   if (!drop) {
@@ -32,7 +33,7 @@ export default async function EditXsedDropPage(props: {
   const draft: XsedDropDraft = normalizeXsedDraft({
     ...EMPTY_XSED_DRAFT,
     status: (drop.status as XsedDropStatus) ?? "DRAFT",
-    titleInternal: drop.titleInternal ?? "",
+    titleInternal: drop.titleInternal ?? drop.title ?? "",
     heroImage: drop.heroImage ?? "",
     tripDate: toDateInput(drop.tripDate),
     destinationCity: drop.destinationCity ?? "",
@@ -51,7 +52,9 @@ export default async function EditXsedDropPage(props: {
       dict={dict.adminXsed.form}
       initialDraft={draft}
       initialDraftId={drop.id}
+      isReviewCopy={drop.isReviewCopy}
       locale={locale}
+      returnHref={drop.isReviewCopy && drop.parentId ? `/${locale}/dashboard/admin/experiences/${drop.parentId}` : undefined}
     />
   );
 }

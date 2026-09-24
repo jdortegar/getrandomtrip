@@ -1,3 +1,4 @@
+import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -53,19 +54,23 @@ export async function GET(request: NextRequest) {
     // route also backs the admin catalog browsing view, which must keep
     // showing inactive owners' experiences (no admin-side isActive
     // display/filter is in scope for that use case).
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const where: Record<string, any> = {};
     if (ownerActive) where.owner = { isActive: true };
     if (filterTripperId) where.ownerId = filterTripperId;
-    if (filterLevel) where.level = filterLevel;
-    if (filterType) {
-      where.type = { has: canonicalizeExperienceTypeFilter(filterType) };
+    const canonicalType = filterType ? canonicalizeExperienceTypeFilter(filterType) : null;
+    if (filterLevel === "xsed" || canonicalType === "XSED") {
+      where.AND = [XSED_EXPERIENCE_WHERE];
+    }
+    if (filterLevel && filterLevel !== "xsed") where.level = filterLevel;
+    if (canonicalType && canonicalType !== "XSED") {
+      where.type = { has: canonicalType };
     }
     if (filterStatus) where.status = { in: filterStatus.split(",") };
     if (searchParam) where.title = { contains: searchParam, mode: "insensitive" };
 
     const [experiences, total, pendingCount] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.findMany as any)({
         where,
         orderBy: experienceListOrderBy(sortBy, sortOrder),
@@ -103,13 +108,13 @@ export async function GET(request: NextRequest) {
           updatedAt: true,
         },
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.count as any)({ where }),
       // Dataset-wide pending count for the tab badge — independent of the
       // active page/filter, matching the pre-pagination behavior where the
       // badge always summarized every experience, not just the current
       // filter's results.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.count as any)({
         where: { status: { in: PENDING_STATUSES } },
       }),

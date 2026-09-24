@@ -43,7 +43,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
       select: { id: true, isReviewCopy: true, status: true },
@@ -76,7 +76,7 @@ export async function PATCH(
       seo,
     } = body;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const updated = await (prisma.blogPost.update as any)({
       where: { id: params.id },
       data: {

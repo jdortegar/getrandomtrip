@@ -3,6 +3,7 @@ import {
   buildBlogSubmitPayload,
   getBlogCompleteness,
   isBlogTabComplete,
+  isBlogTabEligible,
   mapBlogPostToDraft,
 } from "../blog-form";
 import type { BlogFormDraft, BlogPost } from "@/types/blog";
@@ -117,13 +118,59 @@ describe("isBlogTabComplete", () => {
     ).toBe(true);
   });
 
-  it("'faq' and 'gallery' are vacuously complete — no required fields", () => {
-    expect(isBlogTabComplete("faq", baseDraft)).toBe(true);
+  it("only shows FAQ completion for filled entries; gallery has no required fields", () => {
+    expect(isBlogTabComplete("faq", baseDraft)).toBe(false);
+    expect(isBlogTabComplete("faq", { ...baseDraft, faq: [] })).toBe(false);
+    expect(
+      isBlogTabComplete("faq", {
+        ...baseDraft,
+        faq: [{ question: "When?", answer: "Tomorrow" }],
+      }),
+    ).toBe(true);
+    expect(
+      isBlogTabComplete("faq", {
+        ...baseDraft,
+        faq: [{ question: "When?", answer: " " }],
+      }),
+    ).toBe(false);
     expect(isBlogTabComplete("gallery", baseDraft)).toBe(true);
   });
 
   it("returns false for an unknown tab id", () => {
     expect(isBlogTabComplete("nonexistent", baseDraft)).toBe(false);
+  });
+});
+
+describe("isBlogTabEligible", () => {
+  it.each(
+    [
+      [],
+      [{ question: "", answer: "" }],
+      [{ question: "When?", answer: "" }],
+      [{ question: "", answer: "Tomorrow" }],
+      [{ question: "When?", answer: "Tomorrow" }],
+    ].map((faq) => ({ faq })),
+  )(
+    "allows optional FAQ content without adding backend restrictions: $faq",
+    ({ faq }) => {
+      expect(isBlogTabEligible("faq", { ...baseDraft, faq })).toBe(true);
+    },
+  );
+
+  it("preserves required tab checks and rejects unknown tabs", () => {
+    expect(isBlogTabEligible("general", baseDraft)).toBe(true);
+    expect(isBlogTabEligible("general", { ...baseDraft, title: " " })).toBe(
+      false,
+    );
+    expect(isBlogTabEligible("general", { ...baseDraft, coverUrl: " " })).toBe(
+      false,
+    );
+    expect(isBlogTabEligible("content", baseDraft)).toBe(false);
+    expect(
+      isBlogTabEligible("content", { ...baseDraft, featureText: "A quote" }),
+    ).toBe(true);
+    expect(isBlogTabEligible("gallery", baseDraft)).toBe(true);
+    expect(isBlogTabEligible("unknown", baseDraft)).toBe(false);
   });
 });
 

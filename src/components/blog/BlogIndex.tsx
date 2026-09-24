@@ -112,7 +112,16 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         setLoadingMore(false);
       }
     },
-    [filter.excuseKey, filter.levelKey, filter.tripperId, filter.travelTypeKey],
+    [
+      filter.excuseKey,
+      filter.levelKey,
+      filter.tripperId,
+      filter.travelTypeKey,
+      setLoading,
+      setLoadingMore,
+      setBlogs,
+      setHasMore,
+    ],
   );
 
   useEffect(() => {
@@ -152,7 +161,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     const nextPage = page + 1;
     setPage(nextPage);
     fetchBlogs(nextPage, true);
-  }, [page, fetchBlogs]);
+  }, [page, fetchBlogs, setPage]);
 
   return (
     <>

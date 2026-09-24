@@ -1,3 +1,6 @@
+import { isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { hasXsedDropContent } from "@/lib/xsed/publication";
+import type { XsedPublicationRecord } from "@/types/xsed";
 // ============================================================================
 // POST /api/admin/experiences/[id]/send-to-tripper
 // Computes changedFields, stores them on the copy, transitions the original
@@ -42,7 +45,7 @@ export async function POST(
         ? body.reviewNote.trim()
         : null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const original = await (prisma.experience.findUnique as any)({
       where: { id: params.id },
     }) as Record<string, unknown> | null;
@@ -52,7 +55,7 @@ export async function POST(
     }
 
     // Find the active (non-INACTIVE) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,
@@ -66,6 +69,10 @@ export async function POST(
         { error: "no_copy", message: "No review copy found for this experience" },
         { status: 404 },
       );
+    }
+
+    if (isXsedExperience(copy as unknown as XsedPublicationRecord) && !hasXsedDropContent(copy as unknown as XsedPublicationRecord)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
     }
 
     // Compute changed fields
@@ -82,17 +89,17 @@ export async function POST(
     }
 
     // Transactionally: store changedFields on copy, transition original, clear lock
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       // Update copy with changedFields and the admin's note to the tripper
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.update as any)({
         where: { id: copy.id as string },
         data: { changedFields, reviewNote },
       });
 
       // Transition original to PENDING_TRIPPER_REVIEW and clear lock
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.update as any)({
         where: { id: params.id },
         data: {

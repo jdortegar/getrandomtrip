@@ -348,7 +348,7 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
       expect(body.experience.pricingByType).toEqual({ couple: 350 });
     });
 
-    it("excludes the XSED type from derived pricingByType for a RANDOMTRIP row that mixes types", async () => {
+    it("requires canonical traveler types before publishing a row that mixes a legacy XSED marker", async () => {
       (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockSession("admin-1"),
       );
@@ -370,10 +370,11 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
       });
 
       const body = await res.json();
-      expect(body.experience.pricingByType).toEqual({ couple: 350 });
+      expect(res.status).toBe(422);
+      expect(body).toMatchObject({ error: "incomplete", missing: ["type"] });
     });
 
-    it("returns 422 'unpriceable' when a RANDOMTRIP row's only type is XSED (nothing left to price after filtering)", async () => {
+    it("requires traveler types before publishing a legacy marker-only RANDOMTRIP row", async () => {
       (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockSession("admin-1"),
       );
@@ -395,7 +396,7 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
 
       expect(res.status).toBe(422);
       const body = await res.json();
-      expect(body.error).toBe("unpriceable");
+      expect(body).toMatchObject({ error: "incomplete", missing: ["type"] });
     });
 
     it("returns 422 'unpriceable' when a RANDOMTRIP row's type/level combo prices at 0 (unrecognized type)", async () => {
@@ -431,7 +432,7 @@ describe("POST /api/tripper/experiences/[id]/submit", () => {
         mockTripperUser("tripper-1"),
       );
       (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-        completeDraftExperience("tripper-1", { source: "TRIPPER", type: ["XSED"] }),
+        completeDraftExperience("tripper-1", { source: "TRIPPER", type: ["couple"], level: "unknown-level" }),
       );
       mockTransactionPassthrough();
 

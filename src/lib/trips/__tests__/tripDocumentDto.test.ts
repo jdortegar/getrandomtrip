@@ -38,4 +38,18 @@ describe("toTripDocumentDTO", () => {
     expect(serialized).not.toContain("fileUrl");
     expect(serialized).not.toContain("/api/upload");
   });
+
+  it("never serializes a linked private draft, preview or authored data", () => {
+    const linked = {
+      ...row,
+      draft: {
+        previewKey: "private-preview",
+        data: { holder: "Private holder" },
+      },
+    };
+    expect(toTripDocumentDTO(linked)).toEqual(toTripDocumentDTO(row));
+    expect(JSON.stringify(toTripDocumentDTO(linked))).not.toContain(
+      "private-preview",
+    );
+  });
 });

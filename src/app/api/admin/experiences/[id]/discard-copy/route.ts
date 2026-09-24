@@ -33,7 +33,7 @@ export async function POST(
     }
 
     // Find the active (non-INACTIVE) review copy
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const copy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,
@@ -51,16 +51,16 @@ export async function POST(
     }
 
     // Transactionally: delete the copy + clear lock on original
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     await (prisma.$transaction as any)(async (tx: any) => {
       // Hard-delete the copy
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.delete as any)({
         where: { id: copy.id },
       });
 
       // Clear the lock on the original; status stays PENDING_REVIEW
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       await (tx.experience.update as any)({
         where: { id: params.id },
         data: { reviewLockedBy: null },

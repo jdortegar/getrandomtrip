@@ -8,7 +8,7 @@ import XsedDropNotification, {
 } from "@/emails/XsedDropNotification";
 import {
   DROP_DAY_OF_WEEK,
-  LOCAL_WINDOW_START_HOUR,
+  getNotifyTargetUtcOffset,
   getUtcOffsetHours,
 } from "@/lib/xsed/window";
 
@@ -22,10 +22,6 @@ function isAuthorized(request: Request): boolean {
 }
 
 // ─── Timezone matching ────────────────────────────────────────────────────────
-
-function targetUtcOffset(now: Date): number {
-  return LOCAL_WINDOW_START_HOUR - 1 - now.getUTCHours();
-}
 
 function timezoneMatchesOffset(tz: string, target: number, now: Date): boolean {
   try {
@@ -63,17 +59,21 @@ export async function POST(request: Request) {
 
     const now = new Date();
 
-    // Safety: only run on the correct drop day (bypass with ?force=true for testing)
-    if (!force && now.getUTCDay() !== DROP_DAY_OF_WEEK) {
-      return NextResponse.json({ skipped: "not drop day" });
+    // Safety: only run during drop-day send hours, which run past UTC midnight
+    // for western zones (bypass with ?force=true for testing).
+    const target = getNotifyTargetUtcOffset(now);
+    if (!force && target === null) {
+      return NextResponse.json({ skipped: "not drop day send hours" });
     }
 
-    const target = targetUtcOffset(now);
-
-    // Use start-of-today (Sunday) UTC — not a rolling 7-day window — so manual/test
-    // runs earlier in the week don't block the production Sunday send.
+    // Use start-of-drop-day (Sunday) UTC — not a rolling 7-day window — so manual/test
+    // runs earlier in the week don't block the production Sunday send. Runs
+    // after UTC midnight still belong to Sunday's drop.
     const todayUtcMidnight = new Date(now);
     todayUtcMidnight.setUTCHours(0, 0, 0, 0);
+    if (target !== null && now.getUTCDay() !== DROP_DAY_OF_WEEK) {
+      todayUtcMidnight.setUTCDate(todayUtcMidnight.getUTCDate() - 1);
+    }
 
     const candidates = await prisma.xsedNotificationSignup.findMany({
       where: {
@@ -86,12 +86,13 @@ export async function POST(request: Request) {
     });
 
     // Match by timezone offset. Null timezone defaults to Argentina (UTC-3).
-    const targets = force
-      ? candidates
-      : candidates.filter((u) => {
-          const tz = u.timezone ?? "America/Argentina/Buenos_Aires";
-          return timezoneMatchesOffset(tz, target, now);
-        });
+    const targets =
+      force || target === null
+        ? candidates
+        : candidates.filter((u) => {
+            const tz = u.timezone ?? "America/Argentina/Buenos_Aires";
+            return timezoneMatchesOffset(tz, target, now);
+          });
 
     if (targets.length === 0) {
       return NextResponse.json({ sent: 0, targetOffset: target });

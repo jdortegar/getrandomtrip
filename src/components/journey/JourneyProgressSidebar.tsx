@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useId } from "react";
 import { Check } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -25,6 +25,8 @@ interface JourneyProgressSidebarProps {
   activeSubstepId?: string;
   /** Tab IDs considered fully complete (used instead of search-param checks when provided). */
   completedTabIds?: string[];
+  /** Optional localized descriptions for the existing completion indicators. */
+  completionLabels?: { completed: string; incomplete: string };
   /**
    * Live per-tab completeness overrides keyed by tabId, e.g. `{ details: true }`.
    * Used instead of the internal search-param-based isTabComplete() check for
@@ -60,6 +62,7 @@ export default function JourneyProgressSidebar({
   activeTab,
   activeSubstepId,
   completedTabIds,
+  completionLabels,
   tabCompletionOverrides,
   substepCompletionOverrides,
   addonsComingSoonLabel,
@@ -69,6 +72,7 @@ export default function JourneyProgressSidebar({
   tabs,
 }: JourneyProgressSidebarProps) {
   const searchParams = useSearchParams();
+  const completionId = useId();
   const lastSubstepRowRef = useRef<HTMLDivElement>(null);
   const [lastTabLineHeight, setLastTabLineHeight] = useState(0);
 
@@ -189,6 +193,17 @@ export default function JourneyProgressSidebar({
         className,
       )} data-component="JourneyProgressSidebar"
     >
+      {completionLabels && (
+        <div className="sr-only">
+          <span id={`${completionId}-completed`}>
+            {completionLabels.completed}
+          </span>
+          <span id={`${completionId}-incomplete`}>
+            {completionLabels.incomplete}
+          </span>
+          <span id={`${completionId}-coming-soon`}>{addonsComingSoonLabel}</span>
+        </div>
+      )}
       {progressLabel && (
         <div className="flex items-center justify-between mb-6">
           <span className="text-lg font-bold text-ink">
@@ -215,6 +230,11 @@ export default function JourneyProgressSidebar({
 
             return (
               <div
+                aria-describedby={
+                  completionLabels
+                    ? `${completionId}-${isCompleted ? "completed" : "incomplete"}`
+                    : undefined
+                }
                 className="cursor-pointer relative"
                 key={tab.id}
                 onClick={() => onStepClick?.(tab.id)}
@@ -309,6 +329,11 @@ export default function JourneyProgressSidebar({
 
                           return (
                             <div
+                              aria-describedby={
+                                completionLabels
+                                  ? `${completionId}-${isAddonsComingSoon ? "coming-soon" : isSubstepCompleted ? "completed" : "incomplete"}`
+                                  : undefined
+                              }
                               aria-disabled={isAddonsComingSoon}
                               className={cn(
                                 "flex gap-3 items-start relative",
@@ -324,10 +349,10 @@ export default function JourneyProgressSidebar({
                                 onStepClick?.(tab.id, substep.id);
                               }}
                               onKeyDown={(e) => {
+                                e.stopPropagation();
                                 if (isAddonsComingSoon) return;
                                 if (e.key === "Enter" || e.key === " ") {
                                   e.preventDefault();
-                                  e.stopPropagation();
                                   onStepClick?.(tab.id, substep.id);
                                 }
                               }}

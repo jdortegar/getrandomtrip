@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
@@ -45,25 +45,37 @@ export function ContactTravelerModal({
   traveler,
   tripId,
 }: ContactTravelerModalProps) {
-  const [subject, setSubject] = useState("");
-  const [body, setBody] = useState("");
+  const prefillCopy =
+    resolveContactLocale(traveler.locale) === "en"
+      ? enDictionary.adminTripFulfillment.contactModal
+      : esDictionary.adminTripFulfillment.contactModal;
+  const [subject, setSubject] = useState(open ? prefillCopy.prefillSubject : "");
+  const [body, setBody] = useState(() =>
+    open ? buildPrefillBody(prefillCopy.prefillBody, traveler.name) : "",
+  );
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [composeInputs, setComposeInputs] = useState({
+    open,
+    locale: traveler.locale,
+    name: traveler.name,
+  });
 
-  useEffect(() => {
-    if (!open) return;
-    const contactLocale = resolveContactLocale(traveler.locale);
-    const prefillCopy =
-      contactLocale === "en"
-        ? enDictionary.adminTripFulfillment.contactModal
-        : esDictionary.adminTripFulfillment.contactModal;
-    setSubject(prefillCopy.prefillSubject);
-    setBody(buildPrefillBody(prefillCopy.prefillBody, traveler.name));
-    setSending(false);
-    setError("");
-    setSent(false);
-  }, [open, traveler.locale, traveler.name]);
+  if (
+    composeInputs.open !== open ||
+    composeInputs.locale !== traveler.locale ||
+    composeInputs.name !== traveler.name
+  ) {
+    setComposeInputs({ open, locale: traveler.locale, name: traveler.name });
+    if (open) {
+      setSubject(prefillCopy.prefillSubject);
+      setBody(buildPrefillBody(prefillCopy.prefillBody, traveler.name));
+      setSending(false);
+      setError("");
+      setSent(false);
+    }
+  }
 
   async function handleSend() {
     if (!canSend(subject, body, sending)) return;

@@ -1,10 +1,6 @@
-import React, {
-  ComponentPropsWithRef,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import React, { ComponentPropsWithRef, useCallback } from "react";
 import { EmblaCarouselType } from "embla-carousel";
+import { useEmblaSnapshot } from "./useEmblaSnapshot";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -18,8 +14,16 @@ type UsePrevNextButtonsType = {
 export const usePrevNextButtons = (
   emblaApi: EmblaCarouselType | undefined,
 ): UsePrevNextButtonsType => {
-  const [prevBtnDisabled, setPrevBtnDisabled] = useState(true);
-  const [nextBtnDisabled, setNextBtnDisabled] = useState(true);
+  const prevBtnDisabled = useEmblaSnapshot(
+    emblaApi,
+    (api) => !api.canScrollPrev(),
+    true,
+  );
+  const nextBtnDisabled = useEmblaSnapshot(
+    emblaApi,
+    (api) => !api.canScrollNext(),
+    true,
+  );
 
   const onPrevButtonClick = useCallback(() => {
     if (!emblaApi) return;
@@ -30,18 +34,6 @@ export const usePrevNextButtons = (
     if (!emblaApi) return;
     emblaApi.scrollNext();
   }, [emblaApi]);
-
-  const onSelect = useCallback((api: EmblaCarouselType) => {
-    setPrevBtnDisabled(!api.canScrollPrev());
-    setNextBtnDisabled(!api.canScrollNext());
-  }, []);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    onSelect(emblaApi);
-    emblaApi.on("reInit", onSelect).on("select", onSelect);
-  }, [emblaApi, onSelect]);
 
   return {
     prevBtnDisabled,
@@ -69,7 +61,8 @@ export const PrevButton = (props: PropType) => {
       )}
       disabled={disabled}
       type="button"
-      {...restProps} data-component="PrevButton"
+      {...restProps}
+      data-component="PrevButton"
     >
       <ChevronLeft className="size-5 text-white" />
     </button>
@@ -89,7 +82,8 @@ export const NextButton = (props: PropType) => {
       )}
       disabled={disabled}
       type="button"
-      {...restProps} data-component="NextButton"
+      {...restProps}
+      data-component="NextButton"
     >
       <ChevronRight className="size-5 text-white" />
     </button>

@@ -75,7 +75,7 @@ export default function TypePlanner({
     <div className="relative flex w-full flex-col">
       <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
         {leadingCard && (
-          <div className="min-w-0 w-full py-3" key="leading-card">
+          <div className="min-w-0 w-full pb-3 pt-4" key="leading-card">
             {leadingCard}
           </div>
         )}
@@ -92,7 +92,7 @@ export default function TypePlanner({
             false;
 
           return (
-            <div className=" w-full min-w-0 py-3" key={level.id}>
+            <div className="w-full min-w-0 pb-3 pt-4" key={level.id}>
               <LevelCard
                 featured={isFeatured}
                 level={level}

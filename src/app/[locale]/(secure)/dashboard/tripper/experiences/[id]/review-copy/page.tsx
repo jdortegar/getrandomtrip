@@ -1,3 +1,4 @@
+import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -34,7 +35,7 @@ export default async function ReviewCopyPage(props: {
   }
 
   // Fetch the original experience (must be owned by the tripper)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const original = await (prisma.experience.findFirst as any)({
     where: { id: params.id, ownerId: user.id },
   }) as (Awaited<ReturnType<typeof prisma.experience.findFirst>> & {
@@ -51,7 +52,7 @@ export default async function ReviewCopyPage(props: {
   }
 
   // Find the associated review copy
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const copy = await (prisma.experience.findFirst as any)({
     where: {
       parentId: params.id,
@@ -73,8 +74,7 @@ export default async function ReviewCopyPage(props: {
   const copyDraft: ExperienceFormDraft = {
     status: (copy.status ?? "DRAFT") as ExperienceFormDraft["status"],
     title: copy.title ?? "",
-    type: Array.isArray(copy.type) ? copy.type : [copy.type].filter(Boolean),
-    level: copy.level ?? "essenza",
+    ...normalizeExperienceClassification(copy),
     teaser: copy.teaser ?? "",
     description: copy.description ?? "",
     heroImage: copy.heroImage ?? "",
@@ -123,8 +123,7 @@ export default async function ReviewCopyPage(props: {
   const originalDraft: ExperienceFormDraft = {
     status: (original.status as string) as ExperienceFormDraft["status"],
     title: original.title ?? "",
-    type: Array.isArray(original.type) ? original.type : [original.type].filter(Boolean),
-    level: original.level ?? "essenza",
+    ...normalizeExperienceClassification(original),
     teaser: original.teaser ?? "",
     description: original.description ?? "",
     heroImage: original.heroImage ?? "",

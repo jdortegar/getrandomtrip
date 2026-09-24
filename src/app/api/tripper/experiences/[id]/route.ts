@@ -1,3 +1,5 @@
+import { getExperienceBasePricePerPerson, hasValidExperienceClassificationShape, isValidSharedExperienceClassification, isXsedExperience } from "@/lib/experiences/xsedExperience";
+import { hasXsedDropContent } from "@/lib/xsed/publication";
 // ============================================================================
 // GET /api/tripper/experiences/[id] - Get a single experience by ID for tripper
 // PATCH /api/tripper/experiences/[id] - Update an experience by ID for tripper
@@ -36,7 +38,7 @@ export async function GET(
 
     const experienceId = params.id;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const experienceData = await (prisma.experience.findFirst as any)({
       where: {
         id: experienceId,
@@ -171,6 +173,9 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    if (!hasValidExperienceClassificationShape(body)) {
+      return NextResponse.json({ error: "invalid_classification" }, { status: 400 });
+    }
     const {
       type,
       level,
@@ -225,6 +230,31 @@ export async function PATCH(
       supplierNotes,
     } = body;
 
+    const classification = {
+      type: type === undefined ? existingExperience.type : type,
+      level: level === undefined ? existingExperience.level : level,
+    };
+    if ((type !== undefined || level !== undefined) && !isValidSharedExperienceClassification(classification)) {
+      return NextResponse.json({ error: "incomplete", missing: ["type"] }, { status: 422 });
+    }
+
+    // Existing RANDOMTRIP rows save without /submit. Refresh only XSED-related
+    // classification changes so a live row cannot keep the previous level's price.
+    const classificationChanged =
+      JSON.stringify(classification.type) !== JSON.stringify(existingExperience.type) ||
+      classification.level !== existingExperience.level;
+    const refreshXsedPricing = existingExperience.source === "RANDOMTRIP" &&
+      existingExperience.status === "ACTIVE" && classificationChanged &&
+      (isXsedExperience(classification) || isXsedExperience(existingExperience));
+    const pricingByType = refreshXsedPricing
+      ? Object.fromEntries((Array.isArray(classification.type) ? classification.type : [classification.type]).map(
+          (travelerType: string) => [travelerType, getExperienceBasePricePerPerson(travelerType, classification.level)],
+        ))
+      : undefined;
+    if (pricingByType && (!Object.keys(pricingByType).length || Object.values(pricingByType).some((price) => price <= 0))) {
+      return NextResponse.json({ error: "unpriceable" }, { status: 422 });
+    }
+
     const hotels = hotelsField ?? accommodations;
 
     // Revert to DRAFT only if a reviewable content field actually changed.
@@ -270,7 +300,8 @@ export async function PATCH(
       where: { id: experienceId },
       data: {
         ...(type !== undefined && { type: Array.isArray(type) ? type : [type].filter(Boolean) }),
-        level: level ?? null,
+        ...(level !== undefined && { level: level ?? null }),
+        ...(pricingByType && { pricingByType }),
         ...(title && { title }),
         teaser: teaser ?? "",
         description: description ?? "",
@@ -286,6 +317,9 @@ export async function PATCH(
         ...(isActive !== undefined && { isActive }),
         ...(isFeatured !== undefined && { isFeatured }),
         ...(revertToDraft && { status: "DRAFT", isActive: false }),
+        ...(existingExperience.source === "RANDOMTRIP" && existingExperience.status === "ACTIVE" &&
+          isXsedExperience(classification) && (!existingExperience.slug || !hasXsedDropContent({ ...existingExperience, ...body })) &&
+          { status: "DRAFT", isActive: false }),
         ...(hotels !== undefined && { hotels }),
         ...(activities !== undefined && { activities }),
         ...(itinerary !== undefined && { itinerary }),

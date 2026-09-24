@@ -2,8 +2,9 @@
 
 import { CalendarDays, MapPin, Sparkle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { XSED_PRICE_PER_PERSON } from "@/lib/data/traveler-types";
+import { getXsedPricePerPerson } from "@/lib/data/traveler-types";
 import { getNextWeekend } from "@/lib/helpers/xsed-dates";
+import type { XsedTravelType } from "@/types/core";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
@@ -34,6 +35,7 @@ interface XsedSummaryProps {
   originCity: string;
   originCountry: string;
   pax: number;
+  travelType: XsedTravelType | "";
   travelTypeLabel: string;
 }
 
@@ -44,9 +46,11 @@ export function XsedSummary({
   originCity,
   originCountry,
   pax,
+  travelType,
   travelTypeLabel,
 }: XsedSummaryProps) {
-  const total = XSED_PRICE_PER_PERSON * pax;
+  const pricePerPerson = getXsedPricePerPerson(travelType);
+  const total = pricePerPerson * pax;
   const { saturday, sunday } = getNextWeekend();
 
   const sectionTitleClass = "text-base font-bold text-ink";
@@ -139,7 +143,7 @@ export function XsedSummary({
             Precio por persona
           </p>
           <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
-            USD {XSED_PRICE_PER_PERSON}
+            USD {pricePerPerson}
           </p>
         </div>
 

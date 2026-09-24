@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
@@ -22,34 +22,51 @@ export function AdminXsedNotificationsPageClient() {
   const [entries, setEntries] = useState<AdminXsedNotificationEntry[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const hasLoadedOnce = useHasLoadedOnce(loading);
 
-  async function fetchEntries() {
+  const activeRequest = useRef<AbortController | null>(null);
+  const errorMessage = error?.message ?? copy.errorLoad;
+
+  function changePage(nextPage: number) {
+    if (nextPage === page) return;
+    activeRequest.current?.abort();
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch(
-        `/api/admin/xsed-notifications?page=${page}&limit=${PAGE_SIZE}`,
-      );
-      const data = (await res.json()) as {
-        entries?: AdminXsedNotificationEntry[];
-        error?: string;
-        total?: number;
-      };
-      if (!res.ok || !data.entries) {
-        setError(data.error ?? copy.errorLoad);
-        return;
-      }
-      setEntries(data.entries);
-      setTotal(data.total ?? 0);
-    } catch {
-      setError(copy.errorLoad);
-    } finally {
-      setLoading(false);
-    }
+    setPage(nextPage);
   }
+
+  useEffect(() => {
+    const request = new AbortController();
+    activeRequest.current = request;
+    async function fetchEntries() {
+      try {
+        const res = await fetch(
+          `/api/admin/xsed-notifications?page=${page}&limit=${PAGE_SIZE}`,
+          { signal: request.signal },
+        );
+        const data = (await res.json()) as {
+          entries?: AdminXsedNotificationEntry[];
+          error?: string;
+          total?: number;
+        };
+        if (request.signal.aborted) return;
+        if (!res.ok || !data.entries) {
+          setError({ message: data.error });
+          return;
+        }
+        setEntries(data.entries);
+        setTotal(data.total ?? 0);
+      } catch {
+        if (!request.signal.aborted) setError({});
+      } finally {
+        if (!request.signal.aborted) setLoading(false);
+      }
+    }
+    void fetchEntries();
+    return () => request.abort();
+  }, [page]);
 
   async function removeEntry(id: string) {
     setDeletingId(id);
@@ -65,13 +82,11 @@ export function AdminXsedNotificationsPageClient() {
     }
   }
 
-  useEffect(() => {
-    void fetchEntries();
-  }, [page]);
-
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
   if (error && !hasLoadedOnce)
-    return <div className="p-8 text-center text-sm text-red-600">{error}</div>;
+    return (
+      <div className="p-8 text-center text-sm text-red-600">{errorMessage}</div>
+    );
 
   const cols = copy.columns;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -93,13 +108,11 @@ export function AdminXsedNotificationsPageClient() {
             className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
             role="alert"
           >
-            {error}
+            {errorMessage}
           </div>
         )}
         {entries.length === 0 ? (
-          <p className="py-16 text-center text-sm text-ink">
-            {copy.empty}
-          </p>
+          <p className="py-16 text-center text-sm text-ink">{copy.empty}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -121,7 +134,10 @@ export function AdminXsedNotificationsPageClient() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {entries.map((entry) => (
-                  <tr className="transition-colors hover:bg-gray-50" key={entry.id}>
+                  <tr
+                    className="transition-colors hover:bg-gray-50"
+                    key={entry.id}
+                  >
                     <td className="px-5 py-4 text-sm text-neutral-700">
                       {entry.email}
                     </td>
@@ -129,11 +145,14 @@ export function AdminXsedNotificationsPageClient() {
                       {entry.locale ?? "—"}
                     </td>
                     <td className="px-5 py-4 text-sm text-ink">
-                      {new Date(entry.createdAt).toLocaleDateString(dateLocale, {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
+                      {new Date(entry.createdAt).toLocaleDateString(
+                        dateLocale,
+                        {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        },
+                      )}
                     </td>
                     <td className="px-5 py-4">
                       <TableIconButton
@@ -163,7 +182,7 @@ export function AdminXsedNotificationsPageClient() {
 
       <Pagination
         nextLabel={paginationCopy.next}
-        onPageChange={setPage}
+        onPageChange={changePage}
         page={page}
         pageOfLabel={paginationCopy.pageOf}
         previousLabel={paginationCopy.previous}

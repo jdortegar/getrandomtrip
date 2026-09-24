@@ -27,6 +27,8 @@ interface XsedDropShellProps {
   initialDraft?: XsedDropDraft;
   initialDraftId?: string;
   locale: string;
+  isReviewCopy?: boolean;
+  returnHref?: string;
 }
 
 const AUTOSAVE_DELAY_MS = 2000;
@@ -50,6 +52,8 @@ export function XsedDropShell({
   initialDraft,
   initialDraftId,
   locale,
+  isReviewCopy = false,
+  returnHref,
 }: XsedDropShellProps) {
   const router = useRouter();
   const tabs = dict.contentTabs;
@@ -67,7 +71,7 @@ export function XsedDropShell({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const isEditingExisting = !!initialDraftId;
-  const finalizeCopy = resolveXsedFinalizeCopy(dict, form.status);
+  const finalizeCopy = isReviewCopy ? { ...dict.save, isPublish: false } : resolveXsedFinalizeCopy(dict, form.status);
 
   const persistDraft = useCallback(
     async (snapshot: XsedDropDraft) => {
@@ -116,10 +120,12 @@ export function XsedDropShell({
     setShowConfirm(false);
     setIsSubmitting(true);
     setSaveError(undefined);
-    const snapshot = finalizeCopy.isPublish ? { ...form, status: "ACTIVE" as const } : form;
+    const snapshot = isReviewCopy
+      ? { ...form, status: "DRAFT" as const }
+      : finalizeCopy.isPublish ? { ...form, status: "ACTIVE" as const } : form;
     try {
       await persistDraft(snapshot);
-      router.push(`/${locale}/dashboard/admin/experiences`);
+      router.push(returnHref ?? `/${locale}/dashboard/admin/experiences`);
     } catch (err) {
       console.error(err);
       setIsSubmitting(false);

@@ -47,10 +47,9 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
   };
 
   // XSED is the same marker Experience.type uses for drops (see AboutExperienceStep) —
-  // BlogPost has no dedicated `level` column, so this reuses `travelType` exclusively:
-  // picking XSED here replaces whatever traveler types were selected, matching how
-  // level="xsed" forces type=["XSED"] on the experience form. This is the only level
-  // that maps to anything on BlogPost, so it's the only option offered below.
+  // BlogPost has no dedicated level column: its legacy editorial selector uses
+  // the XSED travelType marker. Experience-generated posts include that marker
+  // alongside their actual traveler types so the XSED archive stays compatible.
   const isXsedLevel = draft.travelType.includes("XSED");
 
   const handleLevelChange = (value: string) => {

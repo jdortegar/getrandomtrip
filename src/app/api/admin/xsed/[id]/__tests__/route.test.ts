@@ -226,6 +226,7 @@ describe("PUT /api/admin/xsed/[id]", () => {
       destinationCity: "Buenos Aires",
       destinationCountry: "Argentina",
       titleInternal: "BA drop",
+      slug: "7",
       tripDate: "2026-09-06",
     };
     (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(existingDrop);

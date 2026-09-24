@@ -15,6 +15,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/Button";
+import { useEmblaSnapshot } from "./EmblaCarousel/useEmblaSnapshot";
+
+const EMPTY_SNAPS: number[] = [];
 
 // -----------------------------------------------------------------------------
 // Types
@@ -58,58 +61,40 @@ type CarouselContextValue = {
 
 /** Syncs prev/next button state with Embla and returns scroll handlers. */
 function usePrevNextButtons(api: CarouselApi | undefined) {
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(false);
+  const canScrollPrev = useEmblaSnapshot(
+    api,
+    (current) => current.canScrollPrev(),
+    false,
+  );
+  const canScrollNext = useEmblaSnapshot(
+    api,
+    (current) => current.canScrollNext(),
+    false,
+  );
 
   const scrollPrev = React.useCallback(() => api?.scrollPrev(), [api]);
   const scrollNext = React.useCallback(() => api?.scrollNext(), [api]);
-
-  const sync = React.useCallback(() => {
-    if (!api) return;
-    setCanScrollPrev(api.canScrollPrev());
-    setCanScrollNext(api.canScrollNext());
-  }, [api]);
-
-  React.useEffect(() => {
-    if (!api) return;
-    sync();
-    api.on("reInit", sync);
-    api.on("select", sync);
-    return () => {
-      api.off("select", sync);
-      api.off("reInit", sync);
-    };
-  }, [api, sync]);
 
   return { canScrollPrev, canScrollNext, scrollPrev, scrollNext };
 }
 
 /** Syncs dot state (selected index + snap list) with Embla and returns scroll-to handler. */
 function useDotButton(api: CarouselApi | undefined) {
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+  const selectedIndex = useEmblaSnapshot(
+    api,
+    (current) => current.selectedScrollSnap(),
+    0,
+  );
+  const scrollSnaps = useEmblaSnapshot(
+    api,
+    (current) => current.scrollSnapList(),
+    EMPTY_SNAPS,
+  );
 
   const scrollTo = React.useCallback(
     (index: number) => api?.scrollTo(index),
     [api],
   );
-
-  const sync = React.useCallback(() => {
-    if (!api) return;
-    setScrollSnaps(api.scrollSnapList());
-    setSelectedIndex(api.selectedScrollSnap());
-  }, [api]);
-
-  React.useEffect(() => {
-    if (!api) return;
-    sync();
-    api.on("reInit", sync);
-    api.on("select", sync);
-    return () => {
-      api.off("select", sync);
-      api.off("reInit", sync);
-    };
-  }, [api, sync]);
 
   return { selectedIndex, scrollSnaps, scrollTo };
 }

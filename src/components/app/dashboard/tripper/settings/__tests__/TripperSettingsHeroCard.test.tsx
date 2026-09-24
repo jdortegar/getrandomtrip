@@ -15,7 +15,7 @@ import type {
   TripperTierCopy,
 } from "@/types/tripper";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 // The card also renders `AvatarEditor` (tripper avatar inside the hero
@@ -43,7 +43,7 @@ vi.mock("next/dynamic", () => ({
     const React = require("react") as typeof import("react");
     const Lazy = React.lazy(() =>
       loader().then((mod) => ({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         default: (mod as any).default ?? (mod as any),
       })),
     );

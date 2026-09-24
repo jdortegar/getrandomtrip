@@ -1,3 +1,56 @@
+export interface HotelVoucherPreviewCopy {
+  open: string;
+  title: string;
+  note: string;
+  close: string;
+  discard: string;
+  pending: string;
+  view: string;
+  forbidden: string;
+  trip_not_found: string;
+  too_large: string;
+  invalid: string;
+  unavailable: string;
+}
+
+export interface HotelVoucherFormCopy {
+  add: string;
+  remove: string;
+  up: string;
+  itemTitle: string;
+  description: string;
+  label: string;
+  locale: string;
+  english: string;
+  spanish: string;
+  property: string;
+  checkInTime: string;
+  checkOutTime: string;
+  submit: string;
+  invalid: string;
+  note: string;
+}
+
+export interface HotelVoucherPdfCopy {
+  title: string;
+  checkIn: string;
+  checkOut: string;
+  holder: string;
+  guests: string;
+  country: string;
+  address: string;
+  contact: string;
+  reference: string;
+  issued: string;
+  payment: string;
+  confirmation: string;
+  inclusions: string;
+  instructions: string;
+  location: string;
+  provider: string;
+  preview: string;
+}
+
 // ============================================================================
 // Dictionary type – keep in sync with dictionaries/en.json and es.json
 // ============================================================================
@@ -434,6 +487,11 @@ export interface DashboardDict {
     description: string;
     helloFallbackName: string;
     helloPrefix: string;
+    roleLabels: {
+      admin: string;
+      traveler: string;
+      tripper: string;
+    };
   };
   paymentStatus: Record<string, string>;
   quickActions: {
@@ -630,6 +688,7 @@ export interface TripperExperiencesDict {
     tripperNoteHint: string;
     submitConfirmTitle: string;
     submitConfirmBody: string;
+    xsedSetup: { submitLabel: string; confirmTitle: string; confirmBody: string };
     actionBar: {
       back: string;
       previousStep: string;
@@ -981,12 +1040,29 @@ export interface XsedBookDict {
     label: string;
     placeholder: string;
     couple: string;
+    solo: string;
     family: string;
-    friends: string;
+    group: string;
   };
 }
 
+/** Copy the XSED notify form needs; both the hero and the bottom banner provide it. */
+export type XsedNotifyFormCopy = Pick<
+  XsedPageDict["hero"],
+  | "errorMessage"
+  | "helper"
+  | "inputLabel"
+  | "inputPlaceholder"
+  | "invalidEmailMessage"
+  | "submitAriaLabel"
+  | "submitLabel"
+  | "submittingLabel"
+  | "successMessage"
+>;
+
 export interface XsedLevelCardDict {
+  /** Badge shown on the top edge of the XSED card. */
+  badge: string;
   closingLine: string;
   ctaLabel: string;
   features: Array<{ description: string; title: string }>;
@@ -2194,6 +2270,9 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  hotelVoucherPreview: HotelVoucherPreviewCopy;
+  hotelVoucherForm: HotelVoucherFormCopy;
+  hotelVoucherPdf: HotelVoucherPdfCopy;
   sentryExample: {
     title: string;
     description: string;
@@ -2412,6 +2491,10 @@ export interface MarketingDictionary {
   resetPasswordPage: ResetPasswordPageDict;
   tripperInviteAccept: TripperInviteAcceptDict;
   home: {
+    geoWelcome: {
+      /** Toast shown by visitor country; `{country}` is replaced with the localized name. */
+      message: string;
+    };
     hero: {
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
@@ -2589,6 +2672,10 @@ export interface MarketingDictionary {
     };
   };
   journey: {
+    completionLabels: {
+      completed: string;
+      incomplete: string;
+    };
     /** Localized addon copy keyed by addon id. When present, overrides catalog title/descriptions. */
     addons?: Record<
       string,
@@ -2933,6 +3020,8 @@ export interface MarketingDictionary {
       byTripper: string;
       /** Shown on a carousel card in place of the tripper badge when the attributed tripper doesn't offer this type/level — it's still bookable, just priced/fulfilled by Randomtrip directly. */
       byRandomtrip: string;
+      /** Badge on the featured level card. */
+      mostChosen: string;
     };
     userNamePlaceholder: string;
     meta: {

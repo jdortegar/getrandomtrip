@@ -194,6 +194,7 @@ model TripRequest {
   review          Review?
   travelers       TripTraveler[]
   tripDocuments   TripDocument[]
+  documentDrafts  TripDocumentDraft[]
   contactMessages TripContactMessage[]
 
   @@map("trip_requests")
@@ -221,9 +222,76 @@ model TripDocument {
 
   tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
   uploadedBy  User?       @relation("TripDocumentsUploaded", fields: [uploadedById], references: [id], onDelete: SetNull)
+  draft       TripDocumentDraft?
 
   @@index([tripRequestId, createdAt])
   @@map("trip_documents")
+}
+
+/// Private authoring content; excluded from published document reads and emails.
+model TripDocumentDraft {
+  id              String @id @default(cuid())
+  tripRequestId   String
+  template        String
+  templateVersion Int    @default(1)
+  locale          String
+  label           String
+  country         String
+  data            Json
+  revision        Int    @default(1)
+
+  /// Server-owned private preview; never serialize the blob key.
+  previewId          String?
+  previewKey         String?
+  previewRevision    Int?
+  previewSize        Int?
+  previewHash        String?
+  publishedPreviewId String?
+  publishedRevision  Int?
+  documentId         String?  @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  tripRequest TripRequest  @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  document    TripDocument? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([tripRequestId, createdAt])
+  @@map("trip_document_drafts")
+}
+
+enum TripDocumentCleanupDisposition {
+  pending
+  retained
+  delete
+}
+
+/// Register before blob PUT; keep retained adoption receipts and deletion tombstones.
+/// Ownership identities deliberately have no foreign keys: cleanup survives deletion.
+/// Observed blob absence does not retire tombstones; late writes require later sweeps.
+model TripDocumentCleanupJob {
+  id            String @id @default(cuid())
+  targets       Json
+  purpose       String
+  ownerId       String
+  tripRequestId String?
+  draftId       String?
+  documentId    String?
+  previewId     String?
+  revision      Int?
+  disposition   TripDocumentCleanupDisposition @default(pending)
+  expiresAt     DateTime?
+  nextAttemptAt DateTime @default(now())
+  attempts      Int @default(0)
+  lastError     String?
+  createdAt     DateTime @default(now())
+
+  @@index([disposition, nextAttemptAt])
+  @@index([disposition, expiresAt])
+  @@index([ownerId, tripRequestId])
+  @@index([tripRequestId])
+  @@index([draftId, previewId, purpose, disposition])
+  @@index([documentId])
+  @@map("trip_document_cleanup_jobs")
 }
 
 /// Write-only audit trail of admin→traveler contact emails: one row per send
@@ -260,9 +328,9 @@ model Experience {
   status  ExperienceStatus @default(DRAFT)
   source  ExperienceSource @default(TRIPPER) // immutable ownership signal, server-derived at create
 
-  // Experience metadata — type also accepts 'XSED' for Sunday drops
+  // Experience metadata — legacy dedicated drops may still carry the XSED type marker
   type  String[] // 'couple' | 'family' | 'group' | 'solo' | 'honeymoon' | 'paws' | 'XSED'
-  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway'; null for XSED
+  level String? // 'essenza' | 'modo-explora' | 'explora-plus' | 'bivouac' | 'atelier-getaway' | 'xsed'; null on legacy drops
 
   // User preference matching (for filtering)
   excuseKey String[] @default([]) // Excuse keys this experience supports (e.g., ['romantic-getaway', 'solo-adventure'])

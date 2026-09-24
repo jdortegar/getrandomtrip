@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import { useStore } from "@/store/store";
 import { X, Minus, Plus } from "lucide-react";
@@ -16,17 +16,18 @@ export default function AddonDetail({
   const sel = addons.selected.find((s) => s.id === activeId);
 
   const [qty, setQty] = useState(sel?.qty || 1);
+  const [quantityId, setQuantityId] = useState(activeId);
 
   const addon = useMemo(
     () => ADDONS.find((a) => a.id === activeId),
     [activeId],
   );
 
-  // Re-sincroniza controles al cambiar de add-on
-  useEffect(() => {
+  // Same-ID store updates must not discard the unsaved quantity.
+  if (quantityId !== activeId) {
+    setQuantityId(activeId);
     setQty(sel?.qty || 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeId]);
+  }
 
   if (!addon) {
     return (

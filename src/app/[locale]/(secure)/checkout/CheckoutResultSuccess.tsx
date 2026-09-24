@@ -9,7 +9,6 @@ import { AddToCalendarButton } from "@/components/app/checkout/AddToCalendarButt
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import Confetti from "@/components/feedback/Confetti";
-import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
 import {
@@ -73,7 +72,6 @@ export default function CheckoutResultSuccess({
     stripeReturn?.redirectStatus ?? searchParams.get("redirect_status");
   const hasFailed = redirectStatus === "requires_payment_method";
 
-  const [loading, setLoading] = useState(false);
   const [tripData, setTripData] = useState<TripSummaryData | null>(null);
   const rosterRef = useRef<TravelerRosterSectionHandle>(null);
   const [savingTravelers, setSavingTravelers] = useState(false);
@@ -123,18 +121,6 @@ export default function CheckoutResultSuccess({
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentIntentId]);
-
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <LoadingSpinner />
-      </div>
-    );
-  }
 
   if (hasFailed) {
     return (

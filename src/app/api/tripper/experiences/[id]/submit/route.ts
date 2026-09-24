@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import { getExperienceCompleteness } from "@/lib/helpers/experience-form";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import { sendExperienceSubmitted } from "@/lib/email";
-import { getBasePricePerPerson } from "@/lib/data/traveler-types";
+import { getExperienceBasePricePerPerson, isXsedExperience } from "@/lib/experiences/xsedExperience";
 
 export async function POST(
   _request: Request,
@@ -39,7 +39,7 @@ export async function POST(
       );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const experience = await (prisma.experience.findFirst as any)({
       where: { id: params.id },
     }) as (ExperienceFormDraft & {
@@ -112,6 +112,10 @@ export async function POST(
       );
     }
 
+    if (isXsedExperience(experience)) {
+      return NextResponse.json({ error: "drop_setup_required" }, { status: 409 });
+    }
+
     // RANDOMTRIP (admin-created) rows auto-publish straight to ACTIVE, skipping
     // PENDING_REVIEW; TRIPPER rows keep the existing review pipeline.
     const isRandomtrip = experience.source === "RANDOMTRIP";
@@ -119,12 +123,11 @@ export async function POST(
 
     // RANDOMTRIP rows skip admin review (where pricingByType is normally set),
     // so derive it here from the same fixed-config preset the admin review
-    // pre-fills — no commission add-on. XSED prices flat via
-    // getBasePricePerPerson (levelId is ignored for it), same as any other type.
+    // pre-fills — no commission add-on. XSED is flat-priced for each traveler type.
     const pricingByType = isRandomtrip
       ? Object.fromEntries(
           (Array.isArray(experience.type) ? experience.type : [])
-            .map((t) => [t, getBasePricePerPerson(t, experience.level)]),
+            .map((t) => [t, getExperienceBasePricePerPerson(t, experience.level)]),
         )
       : undefined;
 
@@ -143,10 +146,10 @@ export async function POST(
     }
 
     // Transition status and clean up any INACTIVE copy from a prior rejection
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const updated = await (prisma.$transaction as any)(async (tx: any) => {
       // Delete any INACTIVE review copy for this experience (from a prior rejection cycle)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const inactiveCopy = await (tx.experience.findFirst as any)({
         where: {
           parentId: params.id,
@@ -157,11 +160,11 @@ export async function POST(
       }) as { id: string } | null;
 
       if (inactiveCopy) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
         await (tx.experience.delete as any)({ where: { id: inactiveCopy.id } });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       return (tx.experience.update as any)({
         where: { id: params.id },
         data: {

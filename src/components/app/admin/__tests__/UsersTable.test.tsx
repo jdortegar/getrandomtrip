@@ -7,7 +7,7 @@ import type { AdminUser } from "../UsersTableRow";
 import esCopy from "@/dictionaries/es.json";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy = esCopy.adminUsers as unknown as MarketingDictionary["adminUsers"];

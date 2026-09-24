@@ -55,8 +55,8 @@ function makePostRequest(body: Record<string, unknown>): Request {
 describe("POST /api/admin/xsed", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    // Auto-slug numbering — count value is irrelevant to every test below.
-    (prisma.experience.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
+    // Numeric identities are allocated from existing slugs.
+    (prisma.experience.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   });
 
   afterEach(() => {

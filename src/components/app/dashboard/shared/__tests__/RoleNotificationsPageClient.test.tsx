@@ -10,7 +10,7 @@ import { RoleNotificationsPageClient } from "@/components/app/dashboard/shared/R
 import type { ClientNotification } from "@/types/notifications";
 import type { NotificationsDict } from "@/lib/types/dictionary";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: NotificationsDict = {

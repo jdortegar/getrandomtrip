@@ -27,6 +27,7 @@ const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
 const baseBlog = (authorId: string, overrides: Record<string, unknown> = {}) => ({
   id: "blog-1",
   authorId,
+  source: "TRIPPER",
   status: "DRAFT",
   title: "My Trip",
   subtitle: "A subtitle",
@@ -56,15 +57,15 @@ function makePatchRequest(body: Record<string, unknown> = {}): NextRequest {
 }
 
 /**
- * Mocks `blogPost.findFirst` to resolve `blog` for the ownership lookup
- * (`where: { id, authorId }`) and `null` for the slug-uniqueness check
+ * Mocks `blogPost.findFirst` to resolve `blog` for the ID lookup
+ * (authorization runs after fetching) and `null` for the slug-uniqueness check
  * (`where: { slug, id: { not } }`) that fires when `title` changes — mirrors
  * the real DB behavior where a freshly-derived slug has no conflict.
  */
 function mockOwnershipAndSlugLookup(blog: Record<string, unknown>) {
   (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockImplementation(
     ({ where }: { where: Record<string, unknown> }) => {
-      if ("authorId" in where) return Promise.resolve(blog);
+      if (where.id === blog.id) return Promise.resolve(blog);
       return Promise.resolve(null); // no slug conflict
     },
   );
@@ -356,7 +357,7 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
     expect(updateCall.data.status).toBe("DRAFT");
   });
 
-  it("returns 404 when the post is not owned by the caller", async () => {
+  it("returns 404 when the post does not exist", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockTripperUser("tripper-1"),
@@ -369,7 +370,45 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
     });
 
     expect(res.status).toBe(404);
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["TRIPPER", "TRIPPER", 404],
+    ["TRIPPER", "RANDOMTRIP", 404],
+    ["ADMIN", "TRIPPER", 404],
+    ["ADMIN", "RANDOMTRIP", 200],
+  ])(
+    "authorizes a fetched non-owner post: role=%s source=%s",
+    async (role, source, status) => {
+      vi.mocked(getServerSession).mockResolvedValue(mockSession("caller"));
+      vi.mocked(prisma.user.findUnique).mockResolvedValue({
+        id: "caller",
+        roles: [role],
+      } as Awaited<ReturnType<typeof prisma.user.findUnique>>);
+      mockOwnershipAndSlugLookup(
+        baseBlog("someone-else", { source, status: "PUBLISHED" }),
+      );
+      const { PATCH } = await import("../route");
+      const res = await PATCH(makePatchRequest({ title: "Changed" }), {
+        params: Promise.resolve({ id: "blog-1" }),
+      });
+      expect(res.status).toBe(status);
+      if (status === 404) {
+        expect(await res.json()).toEqual({
+          error: "Blog post not found or access denied",
+        });
+        expect(prisma.blogPost.update).not.toHaveBeenCalled();
+      } else {
+        expect(
+          vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
+        ).toMatchObject({ title: "Changed" });
+        expect(
+          vi.mocked(prisma.blogPost.update).mock.calls[0][0].data.status,
+        ).toBeUndefined();
+      }
+    },
+  );
 
   it("excludes review copies from the ownership lookup — a tripper can never edit an admin's working copy through this route", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
@@ -385,7 +424,7 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
 
     const ownershipCall = (
       prisma.blogPost.findFirst as ReturnType<typeof vi.fn>
-    ).mock.calls.find(([{ where }]) => "authorId" in where)?.[0];
+    ).mock.calls.find(([{ where }]) => where.id === "blog-1")?.[0];
     expect(ownershipCall.where.isReviewCopy).toBe(false);
   });
 });

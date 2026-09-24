@@ -13,7 +13,7 @@ const copy = {
     preview: "Tu XSED abre en 30 minutos.",
     eyebrow: "XSED · Drop semanal",
     heading: "La ventana abre en 30 minutos.",
-    body: "Los lugares se agotan rápido. Este domingo de 16 a 20hs podés reservar tu XSED — 1 noche, destino sorpresa, experiencia local.",
+    body: "Los lugares se agotan rápido. Este domingo de 18:00 a 22:00 hs podés reservar tu XSED — 1 noche, destino sorpresa, experiencia local.",
     cta: "IR AL DROP",
     href: `${SITE_URL}/es/xsed`,
     unsubscribeIntro:
@@ -24,7 +24,7 @@ const copy = {
     preview: "Your XSED opens in 30 minutes.",
     eyebrow: "XSED · Weekly Drop",
     heading: "The window opens in 30 minutes.",
-    body: "Spots go fast. This Sunday from 4pm to 8pm you can book your XSED — 1 night, surprise destination, local experience.",
+    body: "Spots go fast. This Sunday from 18:00 to 22:00 you can book your XSED — 1 night, surprise destination, local experience.",
     cta: "GO TO THE DROP",
     href: `${SITE_URL}/en/xsed`,
     unsubscribeIntro: "You received this email because you signed up for XSED notifications.",

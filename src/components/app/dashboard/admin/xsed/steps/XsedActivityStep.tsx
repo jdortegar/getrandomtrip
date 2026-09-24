@@ -38,11 +38,12 @@ export function XsedActivityStep({
   imageCopy,
   contactCopy,
 }: Props) {
-  const dinner = form.activities[0] ?? EMPTY_ENTRY;
   const activity = form.activities[1] ?? EMPTY_ENTRY;
 
   function handleChange<K extends keyof ActivityEntry>(key: K, value: ActivityEntry[K]) {
-    onChange({ activities: [dinner, { ...activity, [key]: value }] });
+    const activities = form.activities.slice();
+    activities[1] = { ...activity, [key]: value };
+    onChange({ activities });
   }
 
   function updateSection(patch: Partial<XsedSection>) {

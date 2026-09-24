@@ -1,4 +1,54 @@
 {
+  "hotelVoucherPreview": {
+    "open": "Crear vista previa de hotel",
+    "title": "Vista previa del comprobante de hotel",
+    "note": "Vista previa temporal: no se guarda, adjunta ni envía por correo. Las fechas del viaje y el nombre del comprador son sugerencias editables; verifica los datos del hotel.",
+    "close": "Cerrar",
+    "discard": "¿Descartar este formulario de hotel sin guardar?",
+    "pending": "Generando vista previa…",
+    "view": "Abrir vista previa del PDF",
+    "forbidden": "Se requiere acceso de administrador.",
+    "trip_not_found": "Este viaje ya no está disponible.",
+    "too_large": "El documento es demasiado grande. Reduce su contenido.",
+    "invalid": "Revisa los campos antes de generar la vista previa.",
+    "unavailable": "La vista previa no está disponible. Inténtalo de nuevo."
+  },
+  "hotelVoucherForm": {
+    "add": "Añadir servicio incluido",
+    "remove": "Eliminar",
+    "up": "Subir",
+    "itemTitle": "Servicio incluido",
+    "description": "Descripción",
+    "label": "Nombre del documento",
+    "locale": "Idioma del documento",
+    "english": "Inglés",
+    "spanish": "Español",
+    "property": "Nombre del alojamiento",
+    "checkInTime": "Hora de entrada",
+    "checkOutTime": "Hora de salida",
+    "submit": "Vista previa del PDF",
+    "invalid": "Revisa los campos obligatorios, las fechas y los enlaces HTTPS.",
+    "note": "Solo vista previa. Introduce declaraciones del proveedor y de pago únicamente si están verificadas."
+  },
+  "hotelVoucherPdf": {
+    "title": "Comprobante de alojamiento",
+    "checkIn": "Entrada",
+    "checkOut": "Salida",
+    "holder": "Titular de la reserva",
+    "guests": "Huéspedes",
+    "country": "País",
+    "address": "Dirección",
+    "contact": "Contacto",
+    "reference": "Referencia de reserva",
+    "issued": "Fecha de emisión",
+    "payment": "Estado de pago",
+    "confirmation": "Confirmación del proveedor",
+    "inclusions": "Servicios incluidos",
+    "instructions": "Información importante",
+    "location": "Ver ubicación",
+    "provider": "Sitio del alojamiento",
+    "preview": "Vista previa - no adjunta al viaje"
+  },
   "sentryExample": {
     "title": "Prueba de Sentry",
     "description": "Solo en desarrollo. Cada botón genera un error de prueba deliberado. Verificá ambos eventos en Sentry Issues; esta página no puede confirmar la entrega.",
@@ -130,7 +180,7 @@
         "description": "Crea un post publicado por Randomtrip."
       },
       "home": {
-        "title": "Panel de Admin",
+        "title": "Panel",
         "description": "Resumen general de la plataforma."
       },
       "tripRequests": {
@@ -754,7 +804,7 @@
       },
       "xsedWindowEnforcement": {
         "toggleLabel": "Validación de ventana XSED",
-        "toggleDescription": "Cuando está activado, la compra de experiencias XSED solo se permite los domingos de 16 a 20hs (hora local). Desactivalo para permitir la compra en cualquier momento.",
+        "toggleDescription": "Cuando está activado, la compra de experiencias XSED solo se permite los domingos de 18:00 a 22:00 hs (hora local). Desactivalo para permitir la compra en cualquier momento.",
         "stateOn": "Activado",
         "stateOff": "Desactivado",
         "savedNote": "Guardado.",
@@ -812,7 +862,7 @@
   },
   "xsedUnavailable": {
     "heading": "Este DROP está agotado",
-    "subheading": "Los drops de XSED se abren los domingos de 16 a 20hs.",
+    "subheading": "Los drops de XSED se abren los domingos de 18:00 a 22:00 hs.",
     "notifyLabel": "Avisame del próximo",
     "backLabel": "Ver escapadas anteriores"
   },
@@ -858,9 +908,10 @@
     "travelType": {
       "label": "¿Con quién viajás?",
       "placeholder": "Seleccioná una opción",
-      "couple": "Pareja",
-      "family": "Familia",
-      "friends": "Amigos"
+      "couple": "En Pareja",
+      "solo": "Solo",
+      "family": "En Familia",
+      "group": "En Grupo"
     },
     "pax": {
       "label": "Personas",
@@ -877,6 +928,7 @@
     "loadMore": "VER MÁS"
   },
   "xsedLevelCard": {
+    "badge": "Sunday Glitch",
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
     "ctaLabel": "DESCUBRE XSED",
     "features": [
@@ -910,17 +962,17 @@
       "title": "XSED",
       "subtitle": "X SUERTE<br/>ES DOMINGO",
       "dropNumberLabel": "Nº {number}",
-      "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> única a menos de 300km de tu casa.<br/>Solo 10 cupos liberados cada domingo por país.",
+      "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> a menos de 300km de tu casa.<br/><small>Solo 10 cupos liberados cada domingo por país, para una escapada el siguiente fin de semana.</small>",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
       "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
       "invalidEmailMessage": "Ingresa un email válido.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
-      "submitLabel": "UNIRME A LA LISTA DE ESPERA",
-      "submitAriaLabel": "Unirme a la lista de espera de XSED",
+      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.<br/>Si parpadeas, te quedas fuera.",
+      "helper": "Te avisaremos 10 minutos antes de que se abra la venta cada domingo.<br/><br/>Si parpadeas, te quedas afuera.",
       "fallbackImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4"
     },
@@ -929,7 +981,7 @@
         {
           "icon": "alert",
           "title": "La Alerta",
-          "description": "El domingo a las 18:00 hs <strong>recibes el acceso oculto.</strong><br/>Tienes 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona."
+          "description": "El domingo a las 18:00 hs <strong>recibes el acceso oculto.</strong><br/>Tienes 4 horas para comprar una de las 10 escapadas limitadas a un precio cerrado de $250 USD por persona ($350 USD si viajas solo)."
         },
         {
           "icon": "rhythm",
@@ -976,12 +1028,12 @@
     "xsedHero": {
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
-      "title": "EL PRÓXIMO SÁBADO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNA DE ELLAS?",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
+      "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
+      "helper": "Cada domingo abrimos la pasarela para viajar el siguiente fin de semana, durante solo 4 horas. Déjanos tu email y te avisamos 10 minutos antes de que se abra la venta.<br/><br/>Si parpadeas, te quedas afuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
-      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
-      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
       "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
@@ -1156,6 +1208,9 @@
     }
   },
   "home": {
+    "geoWelcome": {
+      "message": "Bienvenido a Randomtrip {country}"
+    },
     "hero": {
       "branding": {
         "repeatText": "Repeat",
@@ -1305,12 +1360,12 @@
       "backgroundImage": "/images/hero-xsed.jpg",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
-      "title": "EL PRÓXIMO SÁBADO, UNOS POCOS LOGRARÁN ESCAPAR DE LA RUTINA.\n¿SERÁS UNO DE ELLOS?",
-      "helper": "Te avisaremos 10 minutos antes de que se abra la pasarela cada domingo.\nSi parpadeas, te quedas fuera.",
+      "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
+      "helper": "Cada domingo abrimos la pasarela para viajar el siguiente fin de semana, durante solo 4 horas. Déjanos tu email y te avisamos 10 minutos antes de que se abra la venta.<br/><br/>Si parpadeas, te quedas afuera.",
       "inputLabel": "Email",
-      "inputPlaceholder": "Email",
-      "submitLabel": "NOTIFICARME DEL PRÓXIMO DROP",
-      "submitAriaLabel": "Notificarme del próximo drop de XSED",
+      "inputPlaceholder": "Ingresa tu email",
+      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
       "submittingLabel": "SUMANDO...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
       "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
@@ -1409,6 +1464,10 @@
     }
   },
   "journey": {
+    "completionLabels": {
+      "completed": "Completado",
+      "incomplete": "Incompleto"
+    },
     "hero": {
       "title": "Empieza la aventura",
       "description": "¿Con quién vas a escribir tu próxima historia?",
@@ -1417,7 +1476,8 @@
     "tripperBadge": {
       "curatedBy": "VIAJE CURADO POR",
       "byTripper": "BY TRIPPER",
-      "byRandomtrip": "BY RANDOMTRIP"
+      "byRandomtrip": "BY RANDOMTRIP",
+      "mostChosen": "Más elegido"
     },
     "userNamePlaceholder": "Nombre usuario",
     "contentTabs": [
@@ -4214,7 +4274,12 @@
     "header": {
       "description": "Gestiona tus viajes y descubre nuevas aventuras",
       "helloFallbackName": "Viajero",
-      "helloPrefix": "Hola"
+      "helloPrefix": "Hola",
+      "roleLabels": {
+        "admin": "ADMIN",
+        "traveler": "TRAVELER",
+        "tripper": "TRIPPER"
+      }
     },
     "paymentStatus": {
       "APPROVED": "Aprobado",
@@ -4417,6 +4482,11 @@
       "tripperNoteHint": "Visible para el admin que revise esta experiencia.",
       "submitConfirmTitle": "¿Enviar a revisión?",
       "submitConfirmBody": "Tu experiencia quedará bloqueada mientras el admin la revisa. Agrega lo que necesite saber.",
+      "xsedSetup": {
+        "submitLabel": "Continuar con la configuración del drop",
+        "confirmTitle": "¿Continuar con la configuración del drop?",
+        "confirmBody": "Guarda esta experiencia y configura la fecha y los detalles del drop antes de publicarlo."
+      },
       "actionBar": {
         "clearAll": "Borrar todo",
         "back": "Volver al inicio",

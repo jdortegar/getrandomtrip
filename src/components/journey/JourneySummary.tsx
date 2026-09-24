@@ -288,7 +288,7 @@ export default function JourneySummary({
       TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
       getFilterLabel("transport", transport, filterOptions)
     );
-  }, [transport]);
+  }, [filterOptions, transport]);
 
   const TransportIcon = transport
     ? (TRANSPORT_ICONS[transport] ?? TRANSPORT_ICONS.plane)

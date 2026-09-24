@@ -150,7 +150,7 @@ export async function getTripperFeaturedTrips(
 
     if (!tripper) return [];
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const trips = (await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripper.id,
@@ -401,7 +401,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
     });
     if (!owner) return {};
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const packages = (await (prisma.experience.findMany as any)({
       where: {
         ownerId: tripperId,
@@ -511,7 +511,7 @@ export const getTripperJourneyContext = cache(
       if (!tripper) return { status: "not_found" };
       if (!tripper.isActive) return { status: "inactive", name: tripper.name };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const experiences = (await (prisma.experience.findMany as any)({
         where: {
           ownerId: tripper.id,
@@ -1003,7 +1003,7 @@ export async function getTripperExperiences(
   } = {},
 ) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const where: Record<string, any> = {
       ownerId: tripperId,
       isReviewCopy: false,
@@ -1016,7 +1016,7 @@ export async function getTripperExperiences(
     }
 
     const [packages, total] = await Promise.all([
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.findMany as any)({
         where,
         select: {
@@ -1041,7 +1041,7 @@ export async function getTripperExperiences(
         skip: (pagination.page - 1) * pagination.limit,
         take: pagination.limit,
       }),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       (prisma.experience.count as any)({ where }),
     ]);
 
