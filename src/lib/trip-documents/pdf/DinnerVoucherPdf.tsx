@@ -73,7 +73,7 @@ export function DinnerVoucherPdf({ document, logo }: DinnerVoucherPdfProps) {
   const details = [
     [copy.date, date(data.date)],
     [copy.time, data.time],
-    [common.guests, data.guests],
+    [copy.guests, data.guests],
     [copy.service, data.service],
     [common.holder, data.holder],
     [common.country, document.country],

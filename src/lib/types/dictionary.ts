@@ -1,4 +1,6 @@
 export interface DinnerVoucherPdfCopy {
+  guests: string;
+  restaurantName: string;
   title: string;
   date: string;
   time: string;

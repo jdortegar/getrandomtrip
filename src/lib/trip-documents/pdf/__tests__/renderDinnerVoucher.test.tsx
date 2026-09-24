@@ -143,3 +143,11 @@ it("allows service-only dinner without inventing menu entries", async () => {
     "Circuito de agua",
   );
 });
+it.each([
+  ["en", "Diners"],
+  ["es", "Comensales"],
+] as const)("labels dinner guests in %s", (locale, label) => {
+  expect(
+    text(DinnerVoucherPdf({ document: { ...document, locale } })),
+  ).toContain(label);
+});

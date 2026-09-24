@@ -1,5 +1,7 @@
 {
   "dinnerVoucherPdf": {
+    "guests": "Diners",
+    "restaurantName": "Restaurant name",
     "title": "Dinner voucher",
     "date": "Dinner date",
     "time": "Arrival time",

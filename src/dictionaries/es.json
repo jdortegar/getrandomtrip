@@ -1,5 +1,7 @@
 {
   "dinnerVoucherPdf": {
+    "guests": "Comensales",
+    "restaurantName": "Nombre del restaurante",
     "title": "Comprobante gastronómico",
     "date": "Fecha de la cena",
     "time": "Horario de llegada",
