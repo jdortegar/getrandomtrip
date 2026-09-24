@@ -9,6 +9,7 @@ import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripMan
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import type { ExperienceItinerary } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { TripDocumentsTable } from "@/components/app/admin/trip-fulfillment/TripDocumentsTable";
+import { XsedRoadmapPreviewAction } from "@/components/app/admin/trip-fulfillment/XsedRoadmapPreviewAction";
 import { ExperienceRoadmapPreviewAction } from "@/components/app/admin/trip-fulfillment/ExperienceRoadmapPreviewAction";
 import { DinnerVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/DinnerVoucherPreviewAction";
 import { ActivityVoucherPreviewAction } from "@/components/app/admin/trip-fulfillment/ActivityVoucherPreviewAction";
@@ -250,6 +251,7 @@ export function AdminTripFulfillmentPageClient({
               />
             </div>
             <ExperienceRoadmapPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
+            <XsedRoadmapPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <DinnerVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <ActivityVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <HotelVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />

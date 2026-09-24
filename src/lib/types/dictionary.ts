@@ -2351,6 +2351,7 @@ export interface ImageEditorDict {
 
 export interface MarketingDictionary {
   experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
+  xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;

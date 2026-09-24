@@ -15,6 +15,12 @@
     "time": "Horario sugerido",
     "map": "Abrir mapa interactivo"
   },
+  "xsedRoadmapPreview": {
+    "open": "Crear vista previa de hoja de ruta XSED",
+    "title": "Vista previa de hoja de ruta XSED",
+    "note": "Esta vista previa es temporal. No se guarda ni se adjunta al viaje. Las indicaciones y los tiempos de conducción se ingresan manualmente.",
+    "discard": "¿Descartar los cambios sin guardar de la hoja de ruta XSED?"
+  },
   "experienceRoadmapPreview": {
     "open": "Crear hoja de ruta de experiencia",
     "title": "Vista previa de hoja de ruta",

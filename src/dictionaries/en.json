@@ -15,6 +15,12 @@
     "time": "Suggested time",
     "map": "Open interactive map"
   },
+  "xsedRoadmapPreview": {
+    "open": "Create XSED roadmap preview",
+    "title": "XSED roadmap preview",
+    "note": "This preview is temporary. It is not saved or attached to the trip. Enter all directions and driving times manually.",
+    "discard": "Discard your unsaved XSED roadmap changes?"
+  },
   "experienceRoadmapPreview": {
     "open": "Create experience roadmap",
     "title": "Experience roadmap preview",
