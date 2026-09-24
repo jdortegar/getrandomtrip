@@ -1,4 +1,5 @@
 // @vitest-environment node
+import * as fonts from "../pdfFonts";
 import { isValidElement, type ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { renderHotelVoucher } from "../renderHotelVoucher";
@@ -136,4 +137,55 @@ it("renders a valid oversized QR destination as clickable-only without failing P
   const result = await renderHotelVoucher(input);
   expect(result.ok).toBe(true);
   if (result.ok) expect(result.buffer.subarray(0, 5).toString()).toBe("%PDF-");
+});
+
+it("prepares local fonts only after generation validation", async () => {
+  const prepare = vi.spyOn(fonts, "registerPdfFonts");
+  const render = vi.fn().mockResolvedValue(Buffer.from("%PDF-test"));
+  try {
+    await renderHotelVoucher({}, render);
+    expect(prepare).not.toHaveBeenCalled();
+    await renderHotelVoucher(document, render);
+    expect(prepare).toHaveBeenCalledOnce();
+  } finally {
+    prepare.mockRestore();
+  }
+});
+it.each(["en", "es"] as const)(
+  "uses publication-neutral %s footer",
+  (locale) => {
+    const root = HotelVoucherPdf({ document: { ...document, locale } });
+    function rendered(node: ReactNode): string {
+      if (Array.isArray(node)) return node.map(rendered).join(" ");
+      if (
+        !isValidElement<{
+          children?: ReactNode;
+          render?: (props: {
+            pageNumber: number;
+            totalPages: number;
+          }) => string;
+        }>(node)
+      )
+        return "";
+      return (
+        (node.props.render?.({ pageNumber: 1, totalPages: 2 }) ?? "") +
+        rendered(node.props.children)
+      );
+    }
+    expect(rendered(root)).toContain(
+      locale === "en"
+        ? "Travel document | 1 / 2"
+        : "Documento de viaje | 1 / 2",
+    );
+    expect(rendered(root)).not.toMatch(
+      /not attached|no adjunta|Preview|Vista previa/,
+    );
+  },
+);
+
+it("embeds Barlow regular and bold in actual PDF bytes", async () => {
+  const result = await renderHotelVoucher(document);
+  if (!result.ok) throw new Error("invalid fixture");
+  expect(result.buffer.toString("latin1")).toContain("Barlow-Regular");
+  expect(result.buffer.toString("latin1")).toContain("Barlow-Bold");
 });

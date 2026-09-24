@@ -14,7 +14,7 @@ import es from "@/dictionaries/es.json";
 const styles = StyleSheet.create({
   page: {
     color: "#17333d",
-    fontFamily: "Helvetica",
+    fontFamily: "Barlow",
     fontSize: 10,
     padding: 28,
     paddingBottom: 45,
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   title: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Barlow",
+    fontWeight: 700,
     fontSize: 22,
     lineHeight: 1.25,
     marginBottom: 8,
@@ -94,7 +95,9 @@ export function XsedRoadmapPdf({
                 style={{ height: 27, width: 27 }}
               />
             )}
-            <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 16 }}>
+            <Text
+              style={{ fontFamily: "Barlow", fontWeight: 700, fontSize: 16 }}
+            >
               RANDOMTRIP
             </Text>
           </View>
@@ -130,7 +133,7 @@ export function XsedRoadmapPdf({
           <View key={item.id} style={styles.item}>
             <Text orphans={4} widows={2}>
               <Text
-                style={{ fontFamily: "Helvetica-Bold" }}
+                style={{ fontFamily: "Barlow", fontWeight: 700 }}
               >{`${index + 1}. ${item.title}`}</Text>
               {item.date ? `\n${copy.date}: ${date(item.date)}` : ""}
               {item.time ? `\n${copy.time}: ${item.time}` : ""}

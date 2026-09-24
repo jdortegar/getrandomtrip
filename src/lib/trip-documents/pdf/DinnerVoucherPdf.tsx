@@ -14,7 +14,7 @@ import es from "@/dictionaries/es.json";
 const styles = StyleSheet.create({
   page: {
     color: "#17333d",
-    fontFamily: "Helvetica",
+    fontFamily: "Barlow",
     fontSize: 10,
     padding: 28,
     paddingBottom: 45,
@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   title: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: "Barlow",
+    fontWeight: 700,
     fontSize: 22,
     lineHeight: 1.25,
     marginBottom: 8,
@@ -100,7 +101,9 @@ export function DinnerVoucherPdf({
                 style={{ height: 27, width: 27 }}
               />
             )}
-            <Text style={{ fontFamily: "Helvetica-Bold", fontSize: 16 }}>
+            <Text
+              style={{ fontFamily: "Barlow", fontWeight: 700, fontSize: 16 }}
+            >
               RANDOMTRIP
             </Text>
           </View>
@@ -147,7 +150,7 @@ export function DinnerVoucherPdf({
               {section.items.map((item) => (
                 <View key={item.id} style={styles.item}>
                   <Text orphans={2} widows={2}>
-                    <Text style={{ fontFamily: "Helvetica-Bold" }}>
+                    <Text style={{ fontFamily: "Barlow", fontWeight: 700 }}>
                       {item.title}
                     </Text>
                     {item.description ? `\n${item.description}` : ""}

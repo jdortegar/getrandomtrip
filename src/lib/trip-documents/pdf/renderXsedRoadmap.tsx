@@ -1,3 +1,4 @@
+import { registerPdfFonts } from "./pdfFonts";
 import { createQrImages } from "./qrImages";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -12,6 +13,7 @@ export async function renderXsedRoadmap(
 ) {
   const parsed = parseXsedRoadmap(input, "generation");
   if (!parsed.ok) return parsed;
+  registerPdfFonts();
   const qrImages = await createQrImages([parsed.value.data.mapUrl]);
   const logo = await readFile(
     join(process.cwd(), "public/assets/icons/isologo.png"),
