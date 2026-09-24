@@ -14,6 +14,11 @@ function isAuthorized(request: Request): boolean {
   return auth === `Bearer ${secret}`;
 }
 
+// Admins act on the traveler, so name them; the id is only a fallback.
+function travelerLabel(trip: { id: string; user: { name: string | null } }): string {
+  return trip.user.name?.trim() || trip.id;
+}
+
 // ─── Pass 1: T-72h admin assignment reminder ──────────────────────────────────
 
 interface Pass1Result {
@@ -76,7 +81,7 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
             type: "BOOKING_CONFIRMED",
             audience: "ADMIN",
             title: "Asignación de destino pendiente",
-            body: `El viaje ${trip.id} sale en menos de 72 horas y no tiene experiencia asignada.`,
+            body: `El viaje de ${travelerLabel(trip)} sale en menos de 72 horas y no tiene experiencia asignada.`,
             metadata: { tripRequestId: trip.id },
           },
         });
@@ -108,7 +113,7 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
             type: "BOOKING_CONFIRMED",
             audience: "ADMIN",
             title: "URGENTE: Destino sin asignar — salida en menos de 48h",
-            body: `El viaje ${trip.id} sale en menos de 48 horas y AÚN no tiene experiencia asignada.`,
+            body: `El viaje de ${travelerLabel(trip)} sale en menos de 48 horas y AÚN no tiene experiencia asignada.`,
             metadata: { tripRequestId: trip.id, escalation: true },
           },
         });

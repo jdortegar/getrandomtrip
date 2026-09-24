@@ -28,3 +28,14 @@ describe("DropCard badge", () => {
     expect(renderBadge(baseDrop)).toBeNull();
   });
 });
+
+describe("DropCard mosaic fill", () => {
+  it("fills the cell so a height-capped grid can shrink the image", () => {
+    const html = renderToStaticMarkup(
+      <DropCard drop={baseDrop} featured fill />,
+    );
+    expect(html).toContain("h-full");
+    expect(html).toContain("min-h-0");
+    expect(html).toContain("lg:flex-1");
+  });
+});

@@ -1704,10 +1704,10 @@
       "completeBudgetFirst": "First complete travel type and experience in the Budget section.",
       "completeOriginFirst": "First complete Origin and Dates in Details and planning.",
       "customTripNoExcuseMessage": "Your trip is custom-designed with your advisor. Continue to the next steps to enter origin, dates and preferences.",
-      "excuseLabel": "Excuse",
+      "excuseLabel": "Excuses",
       "excusePlaceholder": "Choose your excuse",
       "excuseCardCta": "Choose and continue",
-      "excuseStepDescription": "Every getaway has its \"just because\".",
+      "excuseStepDescription": "Every getaway has its \"just because\"… which ones are yours?",
       "experienceLabel": "Experience",
       "experiencePlaceholder": "What I want from my trip",
       "experienceStepDescription": "Select the experience level that best fits your budget and preferences.",
@@ -5189,6 +5189,23 @@
       "partialFailure": "Deleted {success} of {total}. {failed} could not be deleted."
     },
     "emptyStateFiltered": "No notifications match this filter.",
+    "pane": {
+      "notFoundTitle": "Notification not found",
+      "notFoundBody": "This notification doesn't exist or isn't yours.",
+      "loadError": "We couldn't load this notification.",
+      "closeAriaLabel": "Close",
+      "markUnread": "Mark as unread",
+      "delete": "Delete",
+      "previous": "Previous",
+      "next": "Next",
+      "deleteConfirmTitle": "Delete this notification?",
+      "deleteConfirmBody": "This action cannot be undone."
+    },
+    "errors": {
+      "markReadFailed": "We couldn't mark the notification as read.",
+      "markUnreadFailed": "We couldn't mark the notification as unread.",
+      "deleteFailed": "We couldn't delete the notification."
+    },
     "types": {
       "EXPERIENCE_APPROVED": "Experience approved",
       "EXPERIENCE_REJECTED": "Experience rejected",

@@ -12,6 +12,7 @@ interface NotificationsPageClientProps {
   copy: NotificationsDict;
   initialNotifications: ClientNotification[];
   initialPage: number;
+  initialSelectedId?: string;
   initialStatus: NotificationStatusFilter;
   initialTotal: number;
   initialUnreadTotal: number;

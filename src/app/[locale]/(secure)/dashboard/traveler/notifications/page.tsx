@@ -33,6 +33,7 @@ export default async function TravelerNotificationsPage(props: {
   const sp = await props.searchParams;
   const status = parseNotificationStatus(sp.status);
   const page = Math.max(1, Number(sp.page) || 1);
+  const selectedId = typeof sp.id === "string" ? sp.id : undefined;
   const where = notificationListWhere({
     userId: session.user.id,
     audience: "TRAVELER",
@@ -64,6 +65,7 @@ export default async function TravelerNotificationsPage(props: {
           copy={dict.notifications}
           initialNotifications={rows.map(toClientNotification)}
           initialPage={page}
+          initialSelectedId={selectedId}
           initialStatus={status}
           initialTotal={total}
           initialUnreadTotal={unreadTotal}

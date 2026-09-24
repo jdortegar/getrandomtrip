@@ -43,6 +43,7 @@ export default async function TripperNotificationsPage(props: {
   const sp = await props.searchParams;
   const status = parseNotificationStatus(sp.status);
   const page = Math.max(1, Number(sp.page) || 1);
+  const selectedId = typeof sp.id === "string" ? sp.id : undefined;
   const where = notificationListWhere({ userId: user.id, audience: "TRIPPER", status });
 
   const [rows, total, unreadTotal] = await Promise.all([
@@ -65,6 +66,7 @@ export default async function TripperNotificationsPage(props: {
         copy={dict.notifications}
         initialNotifications={rows.map(toClientNotification)}
         initialPage={page}
+        initialSelectedId={selectedId}
         initialStatus={status}
         initialTotal={total}
         initialUnreadTotal={unreadTotal}

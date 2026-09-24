@@ -31,7 +31,10 @@ export function resolveAdminNotificationHref(
   }
 
   if ("tripRequestId" in metadata && metadata.tripRequestId) {
-    return pathForLocale(locale as Locale, "/dashboard/admin/trip-requests");
+    return pathForLocale(
+      locale as Locale,
+      `/dashboard/admin/trip-requests/${metadata.tripRequestId}`,
+    );
   }
 
   if ("experienceId" in metadata && metadata.experienceId) {

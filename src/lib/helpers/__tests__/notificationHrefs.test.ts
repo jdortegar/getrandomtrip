@@ -30,13 +30,13 @@ describe("resolveAdminNotificationHref", () => {
     );
   });
 
-  it("links a destination-assignment reminder to the admin trip-requests list", () => {
+  it("links a destination-assignment reminder to the specific admin trip request", () => {
     const notification = makeNotification({
       type: "BOOKING_CONFIRMED",
       metadata: { tripRequestId: "t1" },
     });
     expect(resolveAdminNotificationHref(notification, "es")).toBe(
-      "/dashboard/admin/trip-requests",
+      "/dashboard/admin/trip-requests/t1",
     );
   });
 

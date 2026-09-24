@@ -1846,6 +1846,26 @@ export interface NotificationsDict {
   };
   /** Empty-state copy shown when a status filter is active and matches nothing (distinct from the unfiltered `emptyState`). */
   emptyStateFiltered: string;
+  /** Copy for the reading pane (split view) — empty/not-found/loading states and its action labels. */
+  pane: {
+    notFoundTitle: string;
+    notFoundBody: string;
+    loadError: string;
+    /** aria-label for the reading-dialog's close (X) control. */
+    closeAriaLabel: string;
+    markUnread: string;
+    delete: string;
+    previous: string;
+    next: string;
+    deleteConfirmTitle: string;
+    deleteConfirmBody: string;
+  };
+  /** Localized microcopy for pane action failures (mark read/unread, delete). */
+  errors: {
+    markReadFailed: string;
+    markUnreadFailed: string;
+    deleteFailed: string;
+  };
 }
 
 export interface TripReviewDict {
