@@ -15,6 +15,27 @@
     "time": "Suggested time",
     "map": "Open interactive map"
   },
+  "documentDraftDelivery": {
+    "preview": "Preview saved PDF",
+    "saveFirst": "Save changes before previewing or attaching.",
+    "attach": "Attach PDF",
+    "replace": "Replace attached PDF",
+    "confirmReplace": "Replace the attached document with this exact preview?",
+    "view": "Open saved PDF preview",
+    "draft": "Private draft",
+    "attached": "Attached",
+    "unpublished": "Unpublished saved changes",
+    "reset": "Start a new attachment request",
+    "resetConfirm": "The previous request expired. Start a new request?",
+    "attach_in_progress": "Attachment is still pending. Retry the same request later.",
+    "attach_request_expired": "The request expired. You can explicitly start a new request.",
+    "attach_request_mismatch": "This request no longer matches. Reopen the draft.",
+    "replacement_required": "Confirm replacement of the existing attachment.",
+    "replacement_mismatch": "The attachment changed. Reopen the draft.",
+    "preview_conflict": "The preview changed. Save and render again.",
+    "attachment_missing": "The attachment was removed. Reopen the draft.",
+    "unavailable": "Could not complete the request. Retry without changing the request identity."
+  },
   "documentDraftPanel": {
     "title": "Private document drafts",
     "load": "Refresh drafts",

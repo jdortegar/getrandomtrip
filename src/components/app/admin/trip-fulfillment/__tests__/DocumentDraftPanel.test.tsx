@@ -119,3 +119,87 @@ it("reopens listed drafts and never offers attachment", async () => {
   expect(fetchMock.mock.calls[1][0]).toContain("/document-drafts/draft");
   expect(host.textContent).not.toContain("Attach");
 });
+it("previews saved bytes, confirms replacement and refreshes attachment list", async () => {
+  const attached = vi.fn();
+  act(() =>
+    root.render(
+      <DocumentDraftPanel
+        countryLabels={{ AR: "Argentina" }}
+        locale="en"
+        onAttached={attached}
+        tripId="trip"
+      />,
+    ),
+  );
+  fetchMock.mockResolvedValueOnce(
+    response({ ...draft, documentId: "document", publishedRevision: 1 }),
+  );
+  await act(async () => button(en.documentDraftPanel.create).click());
+  fetchMock
+    .mockResolvedValueOnce(response({ previewId: "preview", revision: 1 }))
+    .mockResolvedValueOnce(
+      new Response("%PDF", { headers: { "content-type": "application/pdf" } }),
+    );
+  vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:stored");
+  vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+  await act(async () => button(en.documentDraftDelivery.preview).click());
+  expect(host.querySelector("iframe")?.getAttribute("src")).toBe("blob:stored");
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  act(() => button(en.documentDraftDelivery.replace).click());
+  expect(fetchMock).toHaveBeenCalledTimes(3);
+  confirm.mockReturnValue(true);
+  fetchMock.mockResolvedValueOnce(response({ documentId: "document" }));
+  await act(async () => button(en.documentDraftDelivery.replace).click());
+  expect(JSON.parse(fetchMock.mock.calls[3][1].body)).toMatchObject({
+    replaceDocumentId: "document",
+  });
+  expect(attached).toHaveBeenCalledOnce();
+});
+it("requires saving dirty fields before rendering", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  edit("Unsaved");
+  expect(button(en.documentDraftDelivery.preview).disabled).toBe(true);
+  expect(host.textContent).toContain(en.documentDraftDelivery.saveFirst);
+});
+it("keeps a newly attached link across rerender and requires confirmed replacement", async () => {
+  const attached = vi.fn();
+  act(() =>
+    root.render(
+      <DocumentDraftPanel
+        countryLabels={{ AR: "Argentina" }}
+        locale="en"
+        onAttached={attached}
+        tripId="trip"
+      />,
+    ),
+  );
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:stored");
+  vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+  const render = async () => {
+    fetchMock
+      .mockResolvedValueOnce(response({ previewId: "preview", revision: 1 }))
+      .mockResolvedValueOnce(
+        new Response("%PDF", {
+          headers: { "content-type": "application/pdf" },
+        }),
+      );
+    await act(async () => button(en.documentDraftDelivery.preview).click());
+  };
+  await render();
+  fetchMock.mockResolvedValueOnce(response({ documentId: "published" }));
+  await act(async () => button(en.documentDraftDelivery.attach).click());
+  await render();
+  const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+  act(() => button(en.documentDraftDelivery.replace).click());
+  expect(confirm).toHaveBeenCalled();
+  confirm.mockReturnValue(true);
+  fetchMock.mockResolvedValueOnce(response({ documentId: "published" }));
+  await act(async () => button(en.documentDraftDelivery.replace).click());
+  expect(JSON.parse(fetchMock.mock.calls.at(-1)![1].body)).toMatchObject({
+    replaceDocumentId: "published",
+  });
+  expect(attached).toHaveBeenCalledTimes(2);
+});

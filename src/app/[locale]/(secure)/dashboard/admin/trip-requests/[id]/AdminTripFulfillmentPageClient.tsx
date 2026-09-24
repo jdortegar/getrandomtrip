@@ -256,7 +256,7 @@ export function AdminTripFulfillmentPageClient({
             <DinnerVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <ActivityVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
             <HotelVoucherPreviewAction countryLabels={countryLabels} locale={locale} trip={trip} />
-            <DocumentDraftPanel countryLabels={countryLabels} key={trip.id} locale={locale} tripId={trip.id} />
+            <DocumentDraftPanel countryLabels={countryLabels} key={trip.id} locale={locale} onAttached={() => { void fetch(`/api/admin/trip-requests/${tripId}`, { cache: "no-store" }).then(async (response) => { if (response.ok) setDocuments((await response.json()).documents); }).catch(() => undefined); }} tripId={trip.id} />
             <AddTripDocumentForm
               copy={fulfillmentDict}
               countryLabels={countryLabels}

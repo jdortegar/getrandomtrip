@@ -22,6 +22,7 @@ export function useDraftDelivery(
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DeliveryError | null>(null);
   const [attachedId, setAttachedId] = useState<string | null>(null);
+  const [publicationEvent, setPublicationEvent] = useState<string | null>(null);
   const sequence = useRef(0);
   const abort = useRef<AbortController | null>(null);
   const blobUrl = useRef<string | null>(null);
@@ -33,6 +34,7 @@ export function useDraftDelivery(
     setBusy(false);
     setError(null);
     setAttachedId(null);
+    setPublicationEvent(null);
   }
   useEffect(
     () => () => {
@@ -67,7 +69,6 @@ export function useDraftDelivery(
     const { token, signal } = begin();
     preview.current = null;
     requestId.current = null;
-    setAttachedId(null);
     setUrl(null);
     if (blobUrl.current) URL.revokeObjectURL(blobUrl.current);
     blobUrl.current = null;
@@ -135,8 +136,10 @@ export function useDraftDelivery(
       });
       await check(response);
       const result = await response.json();
-      if (token === sequence.current && typeof result.documentId === "string")
+      if (token === sequence.current && typeof result.documentId === "string") {
         setAttachedId(result.documentId);
+        setPublicationEvent(requestId.current);
+      }
     } catch (cause) {
       if (token === sequence.current)
         setError(
@@ -153,5 +156,14 @@ export function useDraftDelivery(
     requestId.current = null;
     setError(null);
   }
-  return { url, busy, error, attachedId, render, attach, resetExpiredRequest };
+  return {
+    url,
+    busy,
+    error,
+    attachedId,
+    publicationEvent,
+    render,
+    attach,
+    resetExpiredRequest,
+  };
 }

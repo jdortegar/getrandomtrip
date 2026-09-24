@@ -15,6 +15,27 @@
     "time": "Horario sugerido",
     "map": "Abrir mapa interactivo"
   },
+  "documentDraftDelivery": {
+    "preview": "Vista previa del PDF guardado",
+    "saveFirst": "Guardá los cambios antes de previsualizar o adjuntar.",
+    "attach": "Adjuntar PDF",
+    "replace": "Reemplazar PDF adjunto",
+    "confirmReplace": "¿Reemplazar el documento adjunto por esta vista previa exacta?",
+    "view": "Abrir vista previa guardada",
+    "draft": "Borrador privado",
+    "attached": "Adjunto",
+    "unpublished": "Cambios guardados sin publicar",
+    "reset": "Iniciar una nueva solicitud",
+    "resetConfirm": "La solicitud anterior venció. ¿Iniciar una nueva?",
+    "attach_in_progress": "La solicitud sigue pendiente. Reintentá la misma solicitud más tarde.",
+    "attach_request_expired": "La solicitud venció. Podés iniciar una nueva explícitamente.",
+    "attach_request_mismatch": "La solicitud ya no coincide. Reabrí el borrador.",
+    "replacement_required": "Confirmá el reemplazo del adjunto existente.",
+    "replacement_mismatch": "El adjunto cambió. Reabrí el borrador.",
+    "preview_conflict": "La vista previa cambió. Guardá y generala nuevamente.",
+    "attachment_missing": "El adjunto fue eliminado. Reabrí el borrador.",
+    "unavailable": "No se pudo completar la solicitud. Reintentá sin cambiar su identidad."
+  },
   "documentDraftPanel": {
     "title": "Borradores privados de documentos",
     "load": "Actualizar borradores",

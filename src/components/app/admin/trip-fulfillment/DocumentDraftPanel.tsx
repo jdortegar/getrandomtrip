@@ -1,20 +1,42 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import { DocumentDraftEditor } from "./DocumentDraftEditor";
 import { useDocumentDrafts } from "./useDocumentDrafts";
+import { useDraftDelivery } from "./useDraftDelivery";
 import styles from "./fulfillment.module.css";
 interface Props {
   countryLabels: Record<string, string>;
   locale: string;
   tripId: string;
+  onAttached?: () => void;
 }
-export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
+export function DocumentDraftPanel({
+  countryLabels,
+  locale,
+  tripId,
+  onAttached,
+}: Props) {
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.documentDraftPanel;
   const drafts = useDocumentDrafts(tripId);
+  const delivery = useDraftDelivery(tripId, drafts.selected, drafts.dirty);
+  const deliveryCopy = dictionary.documentDraftDelivery;
+  const notified = useRef<string | null>(null);
+  useEffect(() => {
+    if (!delivery.publicationEvent) {
+      notified.current = null;
+      return;
+    }
+    if (notified.current !== delivery.publicationEvent) {
+      notified.current = delivery.publicationEvent;
+      onAttached?.();
+    }
+  }, [delivery.publicationEvent, onAttached]);
+  const linkedId = delivery.attachedId ?? drafts.selected?.documentId;
+
   const [template, setTemplate] =
     useState<TripDocumentSnapshot["template"]>("hotel-voucher");
   const [candidate, setCandidate] = useState("");
@@ -44,7 +66,7 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
       <h3>{copy.title}</h3>
       <button
         className={styles.btn}
-        disabled={drafts.busy}
+        disabled={drafts.busy || delivery.busy}
         onClick={() => void drafts.list()}
         type="button"
       >
@@ -53,7 +75,7 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
       <label>
         {copy.template}
         <select
-          disabled={drafts.busy}
+          disabled={drafts.busy || delivery.busy}
           onChange={(event) => {
             setTemplate(event.target.value as typeof template);
             setCandidate("");
@@ -71,7 +93,7 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
         <label>
           {copy.provider}
           <select
-            disabled={drafts.busy}
+            disabled={drafts.busy || delivery.busy}
             onChange={(event) => setCandidate(event.target.value)}
             value={candidate}
           >
@@ -86,7 +108,7 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
       )}
       <button
         className={styles.btn}
-        disabled={drafts.busy}
+        disabled={drafts.busy || delivery.busy}
         onClick={() => {
           if (allowSwitch())
             void drafts.create(
@@ -104,7 +126,7 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
             <button
               className={styles.btn}
               data-open-draft
-              disabled={drafts.busy}
+              disabled={drafts.busy || delivery.busy}
               onClick={() => {
                 if (allowSwitch()) void drafts.open(row.id);
               }}
@@ -135,17 +157,93 @@ export function DocumentDraftPanel({ countryLabels, locale, tripId }: Props) {
       {drafts.selected && !drafts.dirty && !drafts.busy && (
         <p role="status">{copy.saved}</p>
       )}
+      {drafts.selected && (
+        <p role="status">
+          {delivery.attachedId
+            ? deliveryCopy.attached
+            : !drafts.selected.documentId
+              ? deliveryCopy.draft
+              : drafts.selected.publishedRevision === drafts.selected.revision
+                ? deliveryCopy.attached
+                : deliveryCopy.unpublished}
+        </p>
+      )}
       {drafts.document && (
-        <DocumentDraftEditor
-          busy={drafts.busy}
-          countryLabels={countryLabels}
-          dictionary={dictionary}
-          dirty={drafts.dirty}
-          onChange={drafts.edit}
-          onClose={drafts.close}
-          onSave={() => void drafts.save()}
-          value={drafts.document}
-        />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div>
+            {drafts.dirty && <p>{deliveryCopy.saveFirst}</p>}
+            <button
+              className={styles.btn}
+              disabled={drafts.busy || delivery.busy || drafts.dirty}
+              onClick={() => void delivery.render()}
+              type="button"
+            >
+              {deliveryCopy.preview}
+            </button>
+
+            <DocumentDraftEditor
+              busy={drafts.busy || delivery.busy}
+              countryLabels={countryLabels}
+              dictionary={dictionary}
+              dirty={drafts.dirty}
+              onChange={drafts.edit}
+              onClose={drafts.close}
+              onPreview={() => {
+                if (!drafts.dirty) void delivery.render();
+              }}
+              onSave={() => void drafts.save()}
+              value={drafts.document}
+            />
+          </div>
+          <div className="min-w-0">
+            {delivery.busy && <p role="status">{copy.pending}</p>}
+            {delivery.error && (
+              <p role="alert">{deliveryCopy[delivery.error]}</p>
+            )}
+            {delivery.error === "attach_request_expired" && (
+              <button
+                className={styles.btn}
+                onClick={() => {
+                  if (window.confirm(deliveryCopy.resetConfirm))
+                    delivery.resetExpiredRequest();
+                }}
+                type="button"
+              >
+                {deliveryCopy.reset}
+              </button>
+            )}
+            {delivery.url && (
+              <>
+                <a
+                  href={delivery.url}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  {deliveryCopy.view}
+                </a>
+                <iframe
+                  className="mt-3 h-[65dvh] w-full rounded border border-gray-200"
+                  src={delivery.url}
+                  title={deliveryCopy.preview}
+                />
+                <button
+                  className={styles.btn}
+                  disabled={delivery.busy || drafts.dirty}
+                  onClick={() => {
+                    if (
+                      !linkedId ||
+                      window.confirm(deliveryCopy.confirmReplace)
+                    )
+                      void delivery.attach(linkedId ?? undefined);
+                  }}
+                  type="button"
+                >
+                  {linkedId ? deliveryCopy.replace : deliveryCopy.attach}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </section>
   );
