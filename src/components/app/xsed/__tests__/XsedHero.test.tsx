@@ -19,3 +19,19 @@ it.each([
   expect(text).toContain(helper.textContent);
   expect(text).toContain(dict.xsedPage.xsedHero.submitLabel);
 });
+
+it.each([
+  ["en", en],
+  ["es", es],
+])("renders the home page banner's notify copy (%s)", (_, dict) => {
+  const template = document.createElement("template");
+  template.innerHTML = renderToStaticMarkup(
+    <XsedHero content={dict.home.xsedHero} />,
+  );
+  const text = template.content.textContent ?? "";
+  const helper = document.createElement("div");
+  helper.innerHTML = dict.home.xsedHero.helper;
+
+  expect(text).toContain(helper.textContent);
+  expect(text).toContain(dict.home.xsedHero.submitLabel);
+});
