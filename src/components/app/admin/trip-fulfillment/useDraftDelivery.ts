@@ -1,6 +1,22 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import type { DocumentFieldError } from "@/lib/types/DocumentValidation";
 import type { TripDocumentDraftDto } from "@/lib/types/TripDocumentDraft";
+const fieldCodes = new Set([
+  "required",
+  "too_long",
+  "invalid_country",
+  "invalid_locale",
+  "invalid_shape",
+  "invalid_type",
+  "invalid_value",
+  "invalid_array",
+  "duplicate_id",
+  "invalid_date",
+  "invalid_range",
+  "invalid_time",
+  "invalid_url",
+]);
 const codes = [
   "attach_in_progress",
   "attach_request_expired",
@@ -20,6 +36,8 @@ export function useDraftDelivery(
   const [owner, setOwner] = useState(identity);
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [validationAttempt, setValidationAttempt] = useState(0);
+  const [fieldErrors, setFieldErrors] = useState<DocumentFieldError[]>([]);
   const [error, setError] = useState<DeliveryError | null>(null);
   const [attachedId, setAttachedId] = useState<string | null>(null);
   const [publicationEvent, setPublicationEvent] = useState<string | null>(null);
@@ -33,6 +51,7 @@ export function useDraftDelivery(
     setUrl(null);
     setBusy(false);
     setError(null);
+    setFieldErrors([]);
     setAttachedId(null);
     setPublicationEvent(null);
   }
@@ -53,6 +72,7 @@ export function useDraftDelivery(
     abort.current = new AbortController();
     setBusy(true);
     setError(null);
+    setFieldErrors([]);
     return { token: sequence.current, signal: abort.current.signal };
   }
   async function check(response: Response) {
@@ -80,6 +100,38 @@ export function useDraftDelivery(
         body: JSON.stringify({ revision: draft.revision }),
         signal,
       });
+      if (response.status === 422) {
+        const body = await response.json();
+        if (token !== sequence.current) return;
+        const fields: DocumentFieldError[] = Array.isArray(body?.errors)
+          ? body.errors.slice(0, 200).flatMap((issue: unknown) => {
+              if (!issue || typeof issue !== "object") return [];
+              const { path, code } = issue as {
+                path?: unknown;
+                code?: unknown;
+              };
+              if (
+                typeof path !== "string" ||
+                path.length > 200 ||
+                !/^[\w.$]+$/.test(path)
+              )
+                return [];
+              return [
+                {
+                  path,
+                  code:
+                    typeof code === "string" && fieldCodes.has(code)
+                      ? (code as DocumentFieldError["code"])
+                      : ("invalid_value" as const),
+                },
+              ];
+            })
+          : [];
+        if (!fields.length) throw "unavailable";
+        setValidationAttempt(token);
+        setFieldErrors(fields);
+        return;
+      }
       await check(response);
       const result = await response.json();
       if (token !== sequence.current) return;
@@ -155,11 +207,14 @@ export function useDraftDelivery(
     if (error !== "attach_request_expired") return;
     requestId.current = null;
     setError(null);
+    setFieldErrors([]);
   }
   return {
     url,
     busy,
     error,
+    fieldErrors,
+    validationAttempt,
     attachedId,
     publicationEvent,
     render,

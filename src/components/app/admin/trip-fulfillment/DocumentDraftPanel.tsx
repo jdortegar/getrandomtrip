@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
+import { DocumentServerValidationContext } from "./DocumentServerValidationContext";
 import { DocumentDraftEditor } from "./DocumentDraftEditor";
 import { useDocumentDrafts } from "./useDocumentDrafts";
 import { useDraftDelivery } from "./useDraftDelivery";
@@ -26,6 +27,7 @@ export function DocumentDraftPanel({
   const drafts = useDocumentDrafts(tripId, autoLoad);
   const delivery = useDraftDelivery(tripId, drafts.selected, drafts.dirty);
   const deliveryCopy = dictionary.documentDraftDelivery;
+  const editorRef = useRef<HTMLDivElement>(null);
   const notified = useRef<string | null>(null);
   useEffect(() => {
     if (!delivery.publicationEvent) {
@@ -186,30 +188,40 @@ export function DocumentDraftPanel({
       )}
       {drafts.document && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <div>
+          <div ref={editorRef}>
             {drafts.dirty && <p>{deliveryCopy.saveFirst}</p>}
             <button
               className={styles.btn}
               disabled={drafts.busy || delivery.busy || drafts.dirty}
-              onClick={() => void delivery.render()}
+              onClick={() =>
+                editorRef.current?.querySelector("form")?.requestSubmit()
+              }
               type="button"
             >
               {deliveryCopy.preview}
             </button>
 
-            <DocumentDraftEditor
-              busy={drafts.busy || delivery.busy}
-              countryLabels={countryLabels}
-              dictionary={dictionary}
-              dirty={drafts.dirty}
-              onChange={drafts.edit}
-              onClose={drafts.close}
-              onPreview={() => {
-                if (!drafts.dirty) void delivery.render();
+            <DocumentServerValidationContext.Provider
+              value={{
+                errors: delivery.fieldErrors,
+                attempt: delivery.validationAttempt,
               }}
-              onSave={() => void drafts.save()}
-              value={drafts.document}
-            />
+            >
+              <DocumentDraftEditor
+                key={`${tripId}/${drafts.selected?.id}`}
+                busy={drafts.busy || delivery.busy}
+                countryLabels={countryLabels}
+                dictionary={dictionary}
+                dirty={drafts.dirty}
+                onChange={drafts.edit}
+                onClose={drafts.close}
+                onPreview={() => {
+                  if (!drafts.dirty) void delivery.render();
+                }}
+                onSave={() => void drafts.save()}
+                value={drafts.document}
+              />
+            </DocumentServerValidationContext.Provider>
           </div>
           <div className="min-w-0">
             {delivery.busy && <p role="status">{copy.pending}</p>}

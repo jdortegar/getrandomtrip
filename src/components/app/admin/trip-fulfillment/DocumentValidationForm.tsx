@@ -1,5 +1,6 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
+import { DocumentServerValidationContext } from "./DocumentServerValidationContext";
 import { FormValidationScope } from "@/components/ui/FormValidationScope";
 import type { DocumentParseResult } from "@/lib/types/DocumentValidation";
 import type { HotelVoucherFormCopy } from "@/lib/types/dictionary";
@@ -19,9 +20,13 @@ export function DocumentValidationForm<T>({
   submitting,
   value,
 }: Props<T>) {
+  const server = useContext(DocumentServerValidationContext);
   const [attempt, setAttempt] = useState(0);
   const result = attempt ? parse(value, "generation") : undefined;
-  const errors = result && !result.ok ? result.errors : [];
+  const errors = [
+    ...(result && !result.ok ? result.errors : []),
+    ...server.errors,
+  ];
   return (
     <form
       noValidate
@@ -35,7 +40,7 @@ export function DocumentValidationForm<T>({
     >
       <FormValidationScope
         errors={errors}
-        focusRequest={attempt}
+        focusRequest={attempt + server.attempt}
         messages={copy.errors}
       >
         {children}

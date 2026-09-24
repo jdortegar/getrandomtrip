@@ -67,7 +67,7 @@ it.each([
   ["xsed-roadmap", "stops", "[data-add-stop]"],
 ] as const)(
   "maps %s %s item errors to parser paths",
-  (template, array, selector, label) => {
+  (template, array, selector, label?: string) => {
     act(() => root.render(<Harness dictionary={es} template={template} />));
     act(() =>
       (label

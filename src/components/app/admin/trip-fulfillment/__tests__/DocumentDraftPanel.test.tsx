@@ -19,6 +19,24 @@ const draft = {
   createdAt: "now",
   updatedAt: "now",
 };
+const renderableDraft = {
+  ...draft,
+  document: {
+    template: "hotel-voucher",
+    templateVersion: 1,
+    label: "Hotel",
+    locale: "en",
+    country: "AR",
+    data: {
+      holder: "Ana",
+      guests: "Ana",
+      checkInDate: "2026-10-01",
+      checkOutDate: "2026-10-03",
+      property: { name: "Hotel", address: "Street" },
+      inclusions: [{ id: "breakfast", title: "Breakfast" }],
+    },
+  },
+};
 let root: Root;
 let host: HTMLDivElement;
 const fetchMock = vi.fn();
@@ -133,7 +151,11 @@ it("previews saved bytes, confirms replacement and refreshes attachment list", a
     ),
   );
   fetchMock.mockResolvedValueOnce(
-    response({ ...draft, documentId: "document", publishedRevision: 1 }),
+    response({
+      ...renderableDraft,
+      documentId: "document",
+      publishedRevision: 1,
+    }),
   );
   await act(async () => button(en.documentDraftPanel.create).click());
   fetchMock
@@ -175,7 +197,7 @@ it("keeps a newly attached link across rerender and requires confirmed replaceme
       />,
     ),
   );
-  fetchMock.mockResolvedValueOnce(response(draft));
+  fetchMock.mockResolvedValueOnce(response(renderableDraft));
   await act(async () => button(en.documentDraftPanel.create).click());
   vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:stored");
   vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
@@ -315,4 +337,52 @@ it("keeps creation blocked after failed initial source load and allows explicit 
   );
   await act(async () => button(en.documentDraftPanel.load).click());
   expect(button(en.documentDraftPanel.create).disabled).toBe(false);
+});
+it.each([en.documentDraftDelivery.preview, en.hotelVoucherForm.submit])(
+  "validates fields before %s without blocking incomplete draft save",
+  async (action) => {
+    fetchMock.mockResolvedValueOnce(response(draft));
+    await act(async () => button(en.documentDraftPanel.create).click());
+    await act(async () => button(action).click());
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(
+      host.querySelector('[name="label"]')?.getAttribute("aria-invalid"),
+    ).toBe("true");
+    expect(document.activeElement).toBe(host.querySelector('[name="label"]'));
+    fetchMock.mockResolvedValueOnce(response({ ...draft, revision: 2 }));
+    await act(async () => button(en.documentDraftEditor.save).click());
+    expect(fetchMock.mock.calls.at(-1)![1].method).toBe("PATCH");
+  },
+);
+it("resets attempted validation when switching drafts", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  await act(async () => button(en.hotelVoucherForm.submit).click());
+  expect(host.querySelector('[aria-invalid="true"]')).not.toBeNull();
+  fetchMock.mockResolvedValueOnce(response({ ...draft, id: "another" }));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  expect(host.querySelector('[aria-invalid="true"]')).toBeNull();
+});
+it("shows authoritative nested 422 errors inline, focuses them, and clears them on edit", async () => {
+  fetchMock.mockResolvedValueOnce(response(renderableDraft));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  fetchMock.mockResolvedValueOnce(
+    response(
+      { errors: [{ path: "data.inclusions.0.title", code: "required" }] },
+      422,
+    ),
+  );
+  await act(async () => button(en.documentDraftDelivery.preview).click());
+  const field = host.querySelector<HTMLInputElement>(
+    '[name="data.inclusions.0.title"]',
+  )!;
+  expect(field.getAttribute("aria-invalid")).toBe("true");
+  expect(
+    document.getElementById(field.getAttribute("aria-describedby")!)
+      ?.textContent,
+  ).toBe(en.hotelVoucherForm.errors.required);
+  expect(document.activeElement).toBe(field);
+  expect(host.textContent).not.toContain(en.documentDraftDelivery.unavailable);
+  edit("Updated");
+  expect(field.hasAttribute("aria-invalid")).toBe(false);
 });

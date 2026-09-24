@@ -22,8 +22,8 @@ let host: HTMLDivElement;
 let current: ReturnType<typeof useDraftDelivery>;
 const fetchMock = vi.fn();
 const revoke = vi.fn();
-function Harness({ dirty = false }) {
-  const value = useDraftDelivery("trip", draft, dirty);
+function Harness({ dirty = false, id = "draft" }) {
+  const value = useDraftDelivery("trip", { ...draft, id }, dirty);
   useEffect(() => {
     current = value;
   });
@@ -188,4 +188,47 @@ it("aborts requests and revokes preview on unmount", async () => {
   expect(signal.aborted).toBe(true);
   expect(revoke).toHaveBeenCalledWith("blob:preview");
   root = createRoot(host);
+});
+it("preserves bounded authoritative field errors and clears them on edits", async () => {
+  fetchMock.mockResolvedValueOnce(
+    json(
+      {
+        errors: [
+          { path: "data.inclusions.0.title", code: "required" },
+          { path: "data.holder", code: "private-hostname" },
+        ],
+      },
+      422,
+    ),
+  );
+  await act(async () => current.render());
+  expect(current.fieldErrors).toEqual([
+    { path: "data.inclusions.0.title", code: "required" },
+    { path: "data.holder", code: "invalid_value" },
+  ]);
+  expect(current.error).toBeNull();
+  act(() => root.render(<Harness dirty />));
+  expect(current.fieldErrors).toEqual([]);
+});
+it("ignores stale 422 JSON after a draft identity change", async () => {
+  let finish!: (body: unknown) => void;
+  fetchMock.mockResolvedValueOnce({
+    ok: false,
+    status: 422,
+    json: () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  });
+  let pending!: Promise<void>;
+  await act(async () => {
+    pending = current.render();
+  });
+  act(() => root.render(<Harness id="another-draft" />));
+  await act(async () => {
+    finish({ errors: [{ path: "label", code: "required" }] });
+    await pending;
+  });
+  expect(current.fieldErrors).toEqual([]);
+  expect(current.error).toBeNull();
 });
