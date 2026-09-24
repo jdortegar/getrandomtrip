@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Img from "@/components/common/Img";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -187,7 +187,7 @@ export function NavMobileDrawer({
             rel="noopener"
             target="_blank"
           >
-            <Img alt="" height={18} src="/assets/icons/whatsapp.svg" width={18} />
+            <Phone className="h-6 w-6" />
           </a>
 
           <div className="flex h-[38px] min-w-[92px] rounded-full bg-secondary-200 p-1">
