@@ -51,3 +51,7 @@ next-env.d.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# gentle-ai skill registry (machine-specific, auto-regenerated)
+.atl/**
+
