@@ -185,7 +185,7 @@ it("ignores deletion JSON completing after opening another draft and aborts old 
         finish = resolve;
       }),
   });
-  let pending!: Promise<void>;
+  let pending!: ReturnType<typeof current.removeSelected>;
   await act(async () => {
     pending = current.removeSelected();
   });
@@ -231,3 +231,63 @@ it("ignores an old automatic source load after changing trips", async () => {
   expect(current.drafts).toEqual([]);
   expect(current.error).toBe(null);
 });
+it("returns the adopted saved revision and validated edits for Save & preview", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => current.open("draft"));
+  const validated = { ...draft.document, label: "Ready" };
+  const saved = { ...draft, revision: 2, document: validated };
+  fetchMock.mockResolvedValueOnce(response(saved));
+  let result: unknown;
+  await act(async () => {
+    result = await current.save(validated);
+  });
+  expect(result).toEqual(saved);
+  expect(current.selected).toEqual(saved);
+  expect(JSON.parse(fetchMock.mock.calls.at(-1)![1].body)).toEqual({
+    revision: 1,
+    document: validated,
+  });
+});
+it("returns no saved revision on conflict, preserving editable content", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => current.open("draft"));
+  act(() => current.edit({ ...draft.document, label: "My changes" }));
+  fetchMock.mockResolvedValueOnce(response({}, 409));
+  let result: unknown;
+  await act(async () => {
+    result = await current.save();
+  });
+  expect(result).toBeUndefined();
+  expect(current.document?.label).toBe("My changes");
+  expect(current.error).toBe("conflict");
+});
+it.each(["edit", "switch"])(
+  "does not return a stale save after %s while response JSON is pending",
+  async (action) => {
+    fetchMock.mockResolvedValueOnce(response(draft));
+    await act(async () => current.open("draft"));
+    let finish!: (value: unknown) => void;
+    fetchMock.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    });
+    let pending!: ReturnType<typeof current.save>;
+    await act(async () => {
+      pending = current.save();
+    });
+    if (action === "edit")
+      act(() => current.edit({ ...draft.document, label: "Newer" }));
+    else act(() => root.render(<Harness tripId="other" />));
+    let result: unknown;
+    await act(async () => {
+      finish({ ...draft, revision: 2 });
+      result = await pending;
+    });
+    expect(result).toBeUndefined();
+    expect(current.selected?.revision).not.toBe(2);
+    if (action === "edit") expect(current.document?.label).toBe("Newer");
+  },
+);

@@ -202,7 +202,7 @@ const xsedBlogPostSelect = {
 type XsedBlogPostRow = Prisma.BlogPostGetPayload<{ select: typeof xsedBlogPostSelect }>;
 
 /**
- * XSED grid entries sourced from BlogPost (tagged via `travelType: ["XSED"]`,
+ * XSED grid entries sourced from BlogPost (tagged via `level: "xsed"`,
  * stamped automatically when a level="xsed" experience's "create blog post"
  * checkbox is used). This is a purely editorial/archive listing — no
  * booking flow or live capacity of its own, so soldOut never applies here.
@@ -227,7 +227,7 @@ function toXsedBlogDropEntry(
 async function findPublicXsedBlogPosts(): Promise<XsedBlogPostRow[]> {
   return prisma.blogPost.findMany({
     where: {
-      travelType: { has: "XSED" },
+      level: "xsed",
       status: "PUBLISHED",
       isActive: true,
       isReviewCopy: false,

@@ -33,6 +33,7 @@ const validDraft: BlogFormDraft = {
   gallery: [],
   travelType: [],
   excuseKey: [],
+  level: "",
   tripperNote: null,
 };
 let harness: DomHarness;

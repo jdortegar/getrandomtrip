@@ -79,12 +79,11 @@ describe("XSED experience classification", () => {
     }
   });
 
-  it("preserves the editorial marker without changing experience traveler types", () => {
+  it("returns the experience's plain traveler types — XSED is now carried on BlogPost.level, not travelType", () => {
     const experience = { type: ["couple", "family"], level: "xsed" };
     expect(getExperienceBlogTravelTypes(experience)).toEqual([
       "couple",
       "family",
-      "XSED",
     ]);
     expect(experience.type).toEqual(["couple", "family"]);
   });

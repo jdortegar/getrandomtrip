@@ -22,6 +22,7 @@ export const MUTABLE_BLOG_FIELDS = [
   "tags",
   "travelType",
   "excuseKey",
+  "level",
   "format",
   "seo",
   "faq",

@@ -109,7 +109,10 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
           return;
         }
         const value = (await response.json()) as T;
-        if (token === sequence.current) apply(value);
+        if (token === sequence.current) {
+          apply(value);
+          return value;
+        }
       } catch {
         if (token === sequence.current) setError("unavailable");
       } finally {
@@ -181,12 +184,12 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
       adopt,
     );
   }
-  function save() {
-    if (!selected || !document) return Promise.resolve();
+  function save(value: TripDocumentSnapshot | null = document) {
+    if (!selected || !value) return Promise.resolve();
     return request<TripDocumentDraftDto>(
       `/${encodeURIComponent(selected.id)}`,
       "PATCH",
-      { revision: selected.revision, document },
+      { revision: selected.revision, document: value },
       adopt,
     );
   }

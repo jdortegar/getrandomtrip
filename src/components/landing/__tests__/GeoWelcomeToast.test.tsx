@@ -1,47 +1,29 @@
 import { act, isValidElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { WELCOME_COUNTRY_STORAGE_KEY } from "@/lib/geo/welcome";
-import { GeoWelcomeToast } from "../GeoWelcomeToast";
 
 const sonner = vi.hoisted(() => ({ info: vi.fn() }));
 vi.mock("sonner", () => ({ toast: { info: sonner.info } }));
-
-// Node's experimental global localStorage shadows jsdom's; use an in-memory stub.
-function makeLocalStorageStub() {
-  const store = new Map<string, string>();
-  return {
-    clear: () => store.clear(),
-    getItem: (key: string) => store.get(key) ?? null,
-    removeItem: (key: string) => {
-      store.delete(key);
-    },
-    setItem: (key: string, value: string) => {
-      store.set(key, value);
-    },
-  };
-}
 
 (
   globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }
 ).IS_REACT_ACT_ENVIRONMENT = true;
 let container: HTMLDivElement;
 let root: Root;
+let GeoWelcomeToast: typeof import("../GeoWelcomeToast").GeoWelcomeToast;
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.useFakeTimers();
   sonner.info.mockClear();
-  Object.defineProperty(window, "localStorage", {
-    configurable: true,
-    value: makeLocalStorageStub(),
-  });
+  // Fresh module per test = fresh page load (resets the once-per-load guard).
+  vi.resetModules();
+  ({ GeoWelcomeToast } = await import("../GeoWelcomeToast"));
   container = document.createElement("div");
   root = createRoot(container);
 });
 afterEach(() => {
   act(() => root.unmount());
   vi.useRealTimers();
-  vi.restoreAllMocks();
 });
 
 function renderToast(countryCode: string) {
@@ -57,7 +39,7 @@ function renderToast(countryCode: string) {
   act(() => vi.advanceTimersByTime(1000));
 }
 
-it("welcomes a first-time visitor after a short delay, with the flag as icon", () => {
+it("welcomes the visitor after a short delay, with the flag as icon", () => {
   act(() =>
     root.render(
       <GeoWelcomeToast
@@ -75,29 +57,22 @@ it("welcomes a first-time visitor after a short delay, with the flag as icon", (
   expect(message).toBe("Welcome to Randomtrip Argentina");
   expect(isValidElement(options.icon)).toBe(true);
   expect(options.classNames.toast).toContain("!items-center");
-  expect(window.localStorage.getItem(WELCOME_COUNTRY_STORAGE_KEY)).toBe("AR");
 });
 
-it("stays quiet when the visitor was already welcomed from the same country", () => {
-  window.localStorage.setItem(WELCOME_COUNTRY_STORAGE_KEY, "AR");
+it("stays on screen longer than the default toast", () => {
   renderToast("AR");
-  expect(sonner.info).not.toHaveBeenCalled();
+  expect(sonner.info.mock.calls[0][1].duration).toBe(7000);
 });
 
-it("welcomes again when the country changes", () => {
-  window.localStorage.setItem(WELCOME_COUNTRY_STORAGE_KEY, "AR");
-  renderToast("CL");
+it("welcomes again on the next visit, even from the same country", () => {
+  renderToast("AR");
   expect(sonner.info).toHaveBeenCalledTimes(1);
-  expect(window.localStorage.getItem(WELCOME_COUNTRY_STORAGE_KEY)).toBe("CL");
 });
 
-it("still welcomes when storage is unavailable", () => {
-  vi.spyOn(window.localStorage, "getItem").mockImplementation(() => {
-    throw new Error("blocked");
-  });
-  vi.spyOn(window.localStorage, "setItem").mockImplementation(() => {
-    throw new Error("blocked");
-  });
+it("does not repeat on in-app navigation back to the landing", () => {
+  renderToast("AR");
+  act(() => root.unmount());
+  root = createRoot(container);
   renderToast("AR");
   expect(sonner.info).toHaveBeenCalledTimes(1);
 });

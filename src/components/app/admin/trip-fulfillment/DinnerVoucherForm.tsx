@@ -1,4 +1,6 @@
 "use client";
+import { DocumentFieldGroup } from "./DocumentFieldGroup";
+import { DocumentFormSubmit } from "./DocumentFormSubmit";
 
 import { DocumentValidationForm } from "./DocumentValidationForm";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
@@ -12,7 +14,6 @@ import type {
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseDinnerVoucher } from "@/lib/trip-documents/parsers/dinnerVoucher";
 import { DinnerVoucherMenu } from "./DinnerVoucherMenu";
-import styles from "./fulfillment.module.css";
 
 interface DinnerVoucherFormProps {
   dinnerCopy: DinnerVoucherPdfCopy;
@@ -66,91 +67,97 @@ export function DinnerVoucherForm({
     >
       <fieldset className="flex flex-col gap-4" disabled={submitting}>
         <legend className="mb-4 text-sm text-neutral-700">{copy.note}</legend>
-        <FormField
-          id="dinner-label"
-          name="label"
-          label={copy.label}
-          maxLength={120}
-          onChange={(e) => onChange({ ...value, label: e.target.value })}
-          required
-          value={value.label}
-        />
-        <FormSelectField
-          id="dinner-country"
-          name="country"
-          label={pdfCopy.country}
-          onChange={(e) => onChange({ ...value, country: e.target.value })}
-          required
-          value={value.country}
-        >
-          <option value="">—</option>
-          {DESTINATION_COUNTRY_CODES.map((code) => (
-            <option key={code} value={code}>
-              {countryLabels[code] ?? code}
-            </option>
-          ))}
-        </FormSelectField>
-        <FormSelectField
-          id="dinner-locale"
-          name="locale"
-          label={copy.locale}
-          onChange={(e) =>
-            onChange({ ...value, locale: e.target.value as "en" | "es" })
-          }
-          value={value.locale}
-        >
-          <option value="en">{copy.english}</option>
-          <option value="es">{copy.spanish}</option>
-        </FormSelectField>
-        {fields.map(([key, label, type, required]) => (
+        <DocumentFieldGroup label={copy.groups.metadata}>
           <FormField
-            id={`dinner-${key}`}
-            name={`data.${key}`}
-            key={key}
-            label={label}
-            maxLength={4000}
-            onChange={(e) => updateData({ [key]: e.target.value })}
-            required={required}
-            type={type}
-            value={data[key] ?? ""}
+            id="dinner-label"
+            name="label"
+            label={copy.label}
+            maxLength={120}
+            onChange={(e) => onChange({ ...value, label: e.target.value })}
+            required
+            value={value.label}
           />
-        ))}
-        {restaurantFields.map(([key, label, type, required]) => (
-          <FormField
-            id={`dinner-restaurant-${key}`}
-            name={`data.restaurant.${key}`}
-            key={key}
-            label={label}
-            maxLength={4000}
+          <FormSelectField
+            id="dinner-country"
+            name="country"
+            label={pdfCopy.country}
+            onChange={(e) => onChange({ ...value, country: e.target.value })}
+            required
+            value={value.country}
+          >
+            <option value="">—</option>
+            {DESTINATION_COUNTRY_CODES.map((code) => (
+              <option key={code} value={code}>
+                {countryLabels[code] ?? code}
+              </option>
+            ))}
+          </FormSelectField>
+          <FormSelectField
+            id="dinner-locale"
+            name="locale"
+            label={copy.locale}
             onChange={(e) =>
-              updateData({
-                restaurant: { ...data.restaurant, [key]: e.target.value },
-              })
+              onChange({ ...value, locale: e.target.value as "en" | "es" })
             }
-            required={required}
-            type={type}
-            value={data.restaurant[key] ?? ""}
+            value={value.locale}
+          >
+            <option value="en">{copy.english}</option>
+            <option value="es">{copy.spanish}</option>
+          </FormSelectField>
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.booking}>
+          {fields.map(([key, label, type, required]) => (
+            <FormField
+              id={`dinner-${key}`}
+              name={`data.${key}`}
+              key={key}
+              label={label}
+              maxLength={4000}
+              onChange={(e) => updateData({ [key]: e.target.value })}
+              required={required}
+              type={type}
+              value={data[key] ?? ""}
+            />
+          ))}
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.provider}>
+          {restaurantFields.map(([key, label, type, required]) => (
+            <FormField
+              id={`dinner-restaurant-${key}`}
+              name={`data.restaurant.${key}`}
+              key={key}
+              label={label}
+              maxLength={4000}
+              onChange={(e) =>
+                updateData({
+                  restaurant: { ...data.restaurant, [key]: e.target.value },
+                })
+              }
+              required={required}
+              type={type}
+              value={data.restaurant[key] ?? ""}
+            />
+          ))}
+        </DocumentFieldGroup>
+        <DocumentFieldGroup label={copy.groups.content}>
+          <TextAreaInput
+            id="dinner-conditions"
+            name="data.conditions"
+            label={dinnerCopy.conditions}
+            maxLength={4000}
+            onChange={(e) => updateData({ conditions: e.target.value })}
+            value={data.conditions ?? ""}
           />
-        ))}
-        <TextAreaInput
-          id="dinner-conditions"
-          name="data.conditions"
-          label={dinnerCopy.conditions}
-          maxLength={4000}
-          onChange={(e) => updateData({ conditions: e.target.value })}
-          value={data.conditions ?? ""}
-        />
-        <DinnerVoucherMenu
-          addLabel={dinnerCopy.addItem}
-          copy={copy}
-          disabled={submitting}
-          items={data.menuItems}
-          onChange={(menuItems) => updateData({ menuItems })}
-          title={dinnerCopy.menu}
-        />
-        <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
-          {copy.submit}
-        </button>
+          <DinnerVoucherMenu
+            addLabel={dinnerCopy.addItem}
+            copy={copy}
+            disabled={submitting}
+            items={data.menuItems}
+            onChange={(menuItems) => updateData({ menuItems })}
+            title={dinnerCopy.menu}
+          />
+        </DocumentFieldGroup>
+        <DocumentFormSubmit label={copy.submit} />
       </fieldset>
     </DocumentValidationForm>
   );

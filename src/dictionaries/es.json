@@ -139,6 +139,7 @@
     "unavailable": "La vista previa no está disponible. Inténtalo de nuevo."
   },
   "hotelVoucherForm": {
+    "groups": {"metadata": "Datos del documento", "booking": "Reserva y horarios", "provider": "Proveedor y ubicación", "route": "Ruta y fechas del viaje", "content": "Detalles e instrucciones"},
     "errors": {
       "invalid": "Revisa este valor.",
       "required": "Completa este campo.",
@@ -783,6 +784,8 @@
       "columns": {
         "post": "Post",
         "tripper": "Tripper",
+        "level": "Nivel",
+        "travelType": "Tipo de viaje",
         "status": "Estado",
         "updated": "Actualizado",
         "actions": "Acciones"
@@ -3991,7 +3994,7 @@
           "substeps": [
             {
               "id": "title-image",
-              "title": "Título & Imagen",
+              "title": "Información básica",
               "description": "El título y la imagen de portada son lo primero que ven tus lectores."
             },
             {
@@ -5439,5 +5442,27 @@
     "bannerRandomtripModeMessage": "Estás viendo experiencias generales de Randomtrip.",
     "bannerSwitchToRandomtrip": "Ver experiencias generales de Randomtrip",
     "bannerSwitchToTripper": "Volver a experiencias de {name}"
+  },
+  "documentWorkflow": {
+    "linkedDrafts": "Copias editables de documentos adjuntos",
+      "newDocument": "Nuevo documento",
+      "privateDrafts": "Borradores privados",
+      "draftsNote": "Solo los documentos adjuntos están disponibles para los viajeros. Los borradores son privados.",
+      "attachedDocuments": "Documentos adjuntos",
+      "uploadExisting": "Subir un PDF existente",
+      "chooseTemplate": "Elige una plantilla de documento",
+      "editDocument": "Editar documento",
+      "reviewDocument": "Revisar PDF",
+      "savePreview": "Guardar y previsualizar",
+      "backToEditing": "Volver a editar",
+      "moreActions": "Más acciones",
+      "emptyDrafts": "Todavía no hay borradores privados.",
+      "refreshError": "No se pudieron actualizar los documentos. Tus cambios están guardados. Reintenta para ver los últimos adjuntos.",
+      "retry": "Actualizar documentos",
+      "metadata": "Datos del documento",
+      "booking": "Reserva y horarios",
+      "provider": "Proveedor y ubicación",
+      "route": "Ruta y fechas del viaje",
+      "content": "Detalles e instrucciones"
   }
 }

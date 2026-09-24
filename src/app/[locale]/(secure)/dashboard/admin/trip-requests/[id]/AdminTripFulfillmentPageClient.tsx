@@ -9,6 +9,9 @@ import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripMan
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import type { ExperienceItinerary } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { TripDocumentsTable } from "@/components/app/admin/trip-fulfillment/TripDocumentsTable";
+import { useAttachedDocuments } from "@/components/app/admin/trip-fulfillment/useAttachedDocuments";
+import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import { DocumentDraftPanel } from "@/components/app/admin/trip-fulfillment/DocumentDraftPanel";
 import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/AddTripDocumentForm";
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
@@ -52,7 +55,10 @@ export function AdminTripFulfillmentPageClient({
   const [trip, setTrip] = useState<AdminTripRequest | null>(null);
   const [experienceItinerary, setExperienceItinerary] =
     useState<ExperienceItinerary | null>(null);
-  const [documents, setDocuments] = useState<TripDocumentDTO[]>([]);
+  const attached = useAttachedDocuments(tripId);
+  const { documents, replace: setDocuments } = attached;
+  const workflow = (locale === "en" ? en : es).documentWorkflow;
+  const [attachmentVersion, setAttachmentVersion] = useState(0);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [assignableExperiences, setAssignableExperiences] = useState<
     AssignableExperience[]
@@ -86,7 +92,7 @@ export function AdminTripFulfillmentPageClient({
       status: data.tripRequest.status,
     });
     setLoading(false);
-  }, [tripId]);
+  }, [tripId, setDocuments]);
 
   useEffect(() => {
     void loadTrip();
@@ -110,7 +116,8 @@ export function AdminTripFulfillmentPageClient({
   const hasChanges =
     !!trip &&
     !!draft &&
-    (draft.experienceId !== (trip.experienceId ?? "") || draft.status !== trip.status);
+    (draft.experienceId !== (trip.experienceId ?? "") ||
+      draft.status !== trip.status);
 
   async function handleSave() {
     if (!draft) return;
@@ -136,12 +143,18 @@ export function AdminTripFulfillmentPageClient({
   }
 
   async function handleDelete() {
-    const res = await fetch(`/api/admin/trip-requests/${tripId}`, { method: "DELETE" });
+    const res = await fetch(`/api/admin/trip-requests/${tripId}`, {
+      method: "DELETE",
+    });
     if (!res.ok) throw new Error("delete_failed");
     router.push(`/${locale}/dashboard/admin/trip-requests`);
   }
 
-  async function handleAddDocument(input: { label: string; country: string; file: File }) {
+  async function handleAddDocument(input: {
+    label: string;
+    country: string;
+    file: File;
+  }) {
     setAddingDoc(true);
     setAddDocError(null);
     const formData = new FormData();
@@ -156,9 +169,12 @@ export function AdminTripFulfillmentPageClient({
     setAddingDoc(false);
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      const errorKey = body?.error as keyof typeof fulfillmentDict.errors | undefined;
+      const errorKey = body?.error as
+        | keyof typeof fulfillmentDict.errors
+        | undefined;
       setAddDocError(
-        (errorKey && fulfillmentDict.errors[errorKey]) ?? fulfillmentDict.errors.generic,
+        (errorKey && fulfillmentDict.errors[errorKey]) ??
+          fulfillmentDict.errors.generic,
       );
       return;
     }
@@ -174,6 +190,7 @@ export function AdminTripFulfillmentPageClient({
     setRemovingId(null);
     if (res.ok) {
       setDocuments((prev) => prev.filter((d) => d.id !== documentId));
+      setAttachmentVersion((value) => value + 1);
     }
   }
 
@@ -205,7 +222,9 @@ export function AdminTripFulfillmentPageClient({
           <div className={styles.panelBody}>
             <div className={styles.sectionHeadingRow}>
               <div>
-                <span className={styles.sectionNumber}>{dict.sectionSummary}</span>
+                <span className={styles.sectionNumber}>
+                  {dict.sectionSummary}
+                </span>
                 <p className={styles.panelTitle} style={{ marginTop: 4 }}>
                   {dict.sectionManageTrip}
                 </p>
@@ -230,34 +249,73 @@ export function AdminTripFulfillmentPageClient({
 
         {/* Section 2 — Itinerary reference: owns its own panel wrapper,
             visually distinct since it's read-only/shared by the drop. */}
-        <TripItineraryReference copy={fulfillmentDict} experienceItinerary={experienceItinerary} />
+        <TripItineraryReference
+          copy={fulfillmentDict}
+          experienceItinerary={experienceItinerary}
+        />
 
         {/* Section 3 — Fulfillment documents: individual to this trip. */}
         <div className={styles.panel}>
           <div className={styles.panelBody}>
-            <p className={styles.panelTitle}>{fulfillmentDict.documentsTitle}</p>
+            <p className={styles.panelTitle}>
+              {fulfillmentDict.documentsTitle}
+            </p>
             <p className={styles.panelDesc}>{fulfillmentDict.documentsNote}</p>
+            <h3 className="mt-6 text-xl font-semibold text-ink">
+              {workflow.attachedDocuments}
+            </h3>
+            {attached.status === "error" && (
+              <div role="alert">
+                <p>{workflow.refreshError}</p>
+                <button
+                  className={styles.btn}
+                  onClick={() => void attached.refresh()}
+                  type="button"
+                >
+                  {workflow.retry}
+                </button>
+              </div>
+            )}
             <div style={{ marginTop: 18 }}>
-              <TripDocumentsTable
+              {(documents.length > 0 || attached.status === "ready") && (
+                <TripDocumentsTable
+                  copy={fulfillmentDict}
+                  countryLabels={countryLabels}
+                  documents={documents}
+                  onRemove={(id) => void handleRemoveDocument(id)}
+                  removingId={removingId}
+                />
+              )}
+            </div>
+            <DocumentDraftPanel
+              attachmentVersion={attachmentVersion}
+              autoLoad
+              countryLabels={countryLabels}
+              key={trip.id}
+              locale={locale}
+              onAttached={attached.refresh}
+              onEnsureAttached={attached.ensure}
+              tripId={trip.id}
+            />
+            <details className="border-t border-gray-200 pt-4">
+              <summary className="cursor-pointer text-sm font-medium text-primary">
+                {workflow.uploadExisting}
+              </summary>
+              <AddTripDocumentForm
                 copy={fulfillmentDict}
                 countryLabels={countryLabels}
-                documents={documents}
-                onRemove={(id) => void handleRemoveDocument(id)}
-                removingId={removingId}
+                errorMessage={addDocError}
+                onSubmit={handleAddDocument}
+                submitting={addingDoc}
               />
-            </div>
-            <DocumentDraftPanel autoLoad countryLabels={countryLabels} key={trip.id} locale={locale} onAttached={() => { void fetch(`/api/admin/trip-requests/${tripId}`, { cache: "no-store" }).then(async (response) => { if (response.ok) setDocuments((await response.json()).documents); }).catch(() => undefined); }} tripId={trip.id} />
-            <AddTripDocumentForm
-              copy={fulfillmentDict}
-              countryLabels={countryLabels}
-              errorMessage={addDocError}
-              onSubmit={handleAddDocument}
-              submitting={addingDoc}
-            />
+            </details>
           </div>
         </div>
 
-        <div className={styles.headerActions} style={{ justifyContent: "flex-end" }}>
+        <div
+          className={styles.headerActions}
+          style={{ justifyContent: "flex-end" }}
+        >
           <button
             className={`${styles.btn} ${styles.btnSecondary}`}
             disabled={saving || !hasChanges}

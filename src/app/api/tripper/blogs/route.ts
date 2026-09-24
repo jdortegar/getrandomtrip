@@ -11,6 +11,7 @@ import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
 import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getRandomtripUserId } from "@/lib/randomtrip-user";
+import { isValidExperienceLevel } from "@/lib/constants/packages";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -69,11 +70,12 @@ export async function GET(request: NextRequest) {
     if (statusParam) {
       where.status = statusParam.toUpperCase() as Prisma.BlogPostWhereInput["status"];
     }
-    // "level" is XSED-only for now — BlogPost has no dedicated level column,
-    // XSED is tracked via the travelType marker (see TitleImageStep).
-    if (levelParam === "xsed") {
-      where.travelType = { has: "XSED" };
-    } else if (travelTypeParam) {
+    // "level" is backed by BlogPost.level — independent of travelType (both
+    // filters can be applied together; see TitleImageStep).
+    if (levelParam && isValidExperienceLevel(levelParam)) {
+      where.level = levelParam;
+    }
+    if (travelTypeParam) {
       where.travelType = { has: travelTypeParam };
     }
     if (searchParam) {
@@ -99,6 +101,7 @@ export async function GET(request: NextRequest) {
           tags: true,
           travelType: true,
           excuseKey: true,
+          level: true,
           format: true,
           status: true,
           isActive: true,
@@ -169,11 +172,17 @@ export async function POST(request: NextRequest) {
       seo,
       travelType,
       excuseKey,
+      level,
     } = body;
 
     // Validate required fields
     if (!title) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
+    const levelValue: string | null = level && level !== "" ? level : null;
+    if (levelValue !== null && !isValidExperienceLevel(levelValue)) {
+      return NextResponse.json({ error: "Invalid level" }, { status: 400 });
     }
 
     const blogFormat = format?.toUpperCase() || "ARTICLE";
@@ -191,6 +200,16 @@ export async function POST(request: NextRequest) {
     // source is server-derived from the caller's role only — never trusted
     // from the request body — mirrors /api/tripper/experiences.
     const isAdmin = getAppRoles(user).includes("admin");
+
+    // XSED is fulfilled centrally by the admin team — only admins may tag a
+    // post with it (mirrors the client-side gate in TitleImageStep).
+    if (levelValue === "xsed" && !isAdmin) {
+      return NextResponse.json(
+        { error: "Only admins can set the XSED level" },
+        { status: 403 },
+      );
+    }
+
     // RANDOMTRIP posts are owned by the Randomtrip pseudo-user, not whichever
     // admin clicked create — createdById keeps the real creator for audit.
     const authorId = isAdmin ? await getRandomtripUserId() : user.id;
@@ -219,6 +238,7 @@ export async function POST(request: NextRequest) {
         tags: tags || [],
         excuseKey: excuseKeyValue,
         travelType: travelTypeValue,
+        level: levelValue,
         format: prismaFormat,
         coverUrl: coverUrl || null,
         seo: seo || null,
@@ -237,6 +257,7 @@ export async function POST(request: NextRequest) {
         tags: true,
         travelType: true,
         excuseKey: true,
+        level: true,
         format: true,
         status: true,
         isActive: true,

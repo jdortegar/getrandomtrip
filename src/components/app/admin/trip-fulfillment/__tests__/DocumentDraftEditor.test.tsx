@@ -189,3 +189,20 @@ it("shows nested required errors after adding a stop and identifies an empty req
     ).toBe("Completa este campo.");
   }
 });
+it.each([
+  "hotel-voucher",
+  "activity-voucher",
+  "dinner-voucher",
+  "experience-roadmap",
+  "xsed-roadmap",
+] as const)(
+  "groups %s fields without duplicate preview submits",
+  (template) => {
+    act(() => root.render(<Harness template={template} />));
+    expect(
+      host.querySelectorAll("[data-document-field-group]").length,
+    ).toBeGreaterThanOrEqual(3);
+    expect(host.querySelectorAll("button[type=submit]")).toHaveLength(0);
+    expect(button(en.documentWorkflow.savePreview)).toBeTruthy();
+  },
+);

@@ -1,8 +1,5 @@
 import { hasFlag } from "country-flag-icons";
 
-/** localStorage key holding the last country the visitor was welcomed from. */
-export const WELCOME_COUNTRY_STORAGE_KEY = "rt-welcome-country";
-
 function normalizeCountryCode(value: string | null | undefined): string | null {
   const code = value?.trim().toUpperCase() ?? "";
   return /^[A-Z]{2}$/.test(code) && hasFlag(code) ? code : null;
@@ -31,12 +28,4 @@ export function getWelcomeCountryName(code: string, locale: string): string {
   } catch {
     return code;
   }
-}
-
-/** Welcome on the first visit and again whenever the country changes. */
-export function shouldShowWelcome(
-  country: string,
-  lastWelcomedCountry: string | null,
-): boolean {
-  return country !== lastWelcomedCountry;
 }

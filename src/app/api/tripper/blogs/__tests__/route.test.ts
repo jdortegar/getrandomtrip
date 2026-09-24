@@ -11,7 +11,10 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    user: { findUnique: vi.fn() },
+    user: {
+      findUnique: vi.fn(),
+      findUniqueOrThrow: vi.fn().mockResolvedValue({ id: "randomtrip-user" }),
+    },
     blogPost: {
       findMany: vi.fn().mockResolvedValue([]),
       count: vi.fn().mockResolvedValue(0),
@@ -27,6 +30,7 @@ import { GET, POST } from "../route";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "tripper@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
+const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
 
 describe("GET /api/tripper/blogs (own list) — visibility guard", () => {
   beforeEach(() => {
@@ -72,13 +76,38 @@ describe("GET /api/tripper/blogs (own list) — visibility guard", () => {
     expect(findManyArgs.take).toBe(10);
   });
 
-  it.each([
-    ["", "solo"],
-    ["&level=essenza", "solo"],
-    ["&level=xsed", "XSED"],
-  ])(
-    "applies filters with XSED level precedence (%s), ignoring removed format",
-    async (level, type) => {
+  it("applies status/travelType/search filters, ignoring the removed format param", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    await GET(
+      new NextRequest(
+        "http://localhost/api/tripper/blogs?status=draft&format=video&travelType=solo&search=patagonia",
+      ),
+    );
+
+    const findManyArgs = (
+      prisma.blogPost.findMany as ReturnType<typeof vi.fn>
+    ).mock.calls[0][0];
+    expect(findManyArgs.where).toEqual({
+      authorId: "tripper-1",
+      isReviewCopy: false,
+      status: "DRAFT",
+      travelType: { has: "solo" },
+      title: { contains: "patagonia", mode: "insensitive" },
+    });
+    expect(prisma.blogPost.count).toHaveBeenCalledWith({
+      where: findManyArgs.where,
+    });
+  });
+
+  it.each(["essenza", "xsed", "bivouac"])(
+    "filters by level=%s on the dedicated BlogPost.level column",
+    async (level) => {
       (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
         mockSession("tripper-1"),
       );
@@ -87,26 +116,54 @@ describe("GET /api/tripper/blogs (own list) — visibility guard", () => {
       );
 
       await GET(
-        new NextRequest(
-          `http://localhost/api/tripper/blogs?status=draft&format=video&travelType=solo&search=patagonia${level}`,
-        ),
+        new NextRequest(`http://localhost/api/tripper/blogs?level=${level}`),
       );
 
       const findManyArgs = (
         prisma.blogPost.findMany as ReturnType<typeof vi.fn>
       ).mock.calls[0][0];
-      expect(findManyArgs.where).toEqual({
-        authorId: "tripper-1",
-        isReviewCopy: false,
-        status: "DRAFT",
-        travelType: { has: type },
-        title: { contains: "patagonia", mode: "insensitive" },
-      });
-      expect(prisma.blogPost.count).toHaveBeenCalledWith({
-        where: findManyArgs.where,
-      });
+      expect(findManyArgs.where.level).toBe(level);
     },
   );
+
+  it("ignores an invalid level value instead of filtering by it", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    await GET(
+      new NextRequest("http://localhost/api/tripper/blogs?level=not-a-level"),
+    );
+
+    const findManyArgs = (
+      prisma.blogPost.findMany as ReturnType<typeof vi.fn>
+    ).mock.calls[0][0];
+    expect(findManyArgs.where.level).toBeUndefined();
+  });
+
+  it("combines level and travelType filters — they are no longer mutually exclusive", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("tripper-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    await GET(
+      new NextRequest(
+        "http://localhost/api/tripper/blogs?level=xsed&travelType=solo",
+      ),
+    );
+
+    const findManyArgs = (
+      prisma.blogPost.findMany as ReturnType<typeof vi.fn>
+    ).mock.calls[0][0];
+    expect(findManyArgs.where.level).toBe("xsed");
+    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
+  });
 });
 
 describe("POST /api/tripper/blogs (create) — status is never accepted from the client", () => {
@@ -199,5 +256,92 @@ describe("POST /api/tripper/blogs (create) — status is never accepted from the
     const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(createArgs.data.travelType).toEqual([]);
     expect(createArgs.data.excuseKey).toEqual([]);
+  });
+
+  it("rejects an invalid level value with 400", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip", level: "not-a-real-level" }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(400);
+    expect(prisma.blogPost.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects level: 'xsed' from a non-admin tripper with 403", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip", level: "xsed" }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(403);
+    expect(prisma.blogPost.create).not.toHaveBeenCalled();
+  });
+
+  it("allows an admin to set level: 'xsed' and stores it on the post", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip", level: "xsed" }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(201);
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.level).toBe("xsed");
+  });
+
+  it("allows a tripper to set a non-xsed level and stores it on the post", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip", level: "essenza" }),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(201);
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.level).toBe("essenza");
+  });
+
+  it("stores null when level is omitted", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+
+    const req = new NextRequest("http://localhost/api/tripper/blogs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "My Trip" }),
+    });
+    await POST(req);
+
+    const createArgs = (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(createArgs.data.level).toBeNull();
   });
 });

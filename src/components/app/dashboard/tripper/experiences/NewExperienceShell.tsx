@@ -17,7 +17,7 @@ import {
 import { ExperienceFormContent } from "./ExperienceFormContent";
 import { ReviewActionsBar } from "./ReviewActionsBar";
 import type { ExperienceFormDraft } from "@/types/tripper";
-import { getExperienceBlogTravelTypes, normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
+import { getExperienceBlogTravelTypes, isXsedExperience, normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { isExperienceTabComplete } from "@/lib/helpers/experience-form";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
@@ -497,6 +497,9 @@ export function NewExperienceShell({
               coverUrl: finalForm.heroImage || null,
               tags: finalForm.tags,
               travelType: getExperienceBlogTravelTypes(finalForm),
+              // XSED is a level, not a travelType marker — mirrors the
+              // experience's own classification (isXsedExperience).
+              level: isXsedExperience(finalForm) ? "xsed" : null,
               excuseKey: finalForm.excuseKey[0] ?? null,
               status: "draft",
               format: "article",

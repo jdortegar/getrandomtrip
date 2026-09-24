@@ -11,7 +11,8 @@ import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
-import { getBlogTravelTypeOptions } from "@/lib/constants/blog-filters";
+import { getBlogLevelOptions, getBlogTravelTypeOptions } from "@/lib/constants/blog-filters";
+import { EXPERIENCE_LEVELS } from "@/lib/constants/packages";
 import type { AdminBlog } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
@@ -31,6 +32,19 @@ export function AdminBlogPageClient() {
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const router = useRouter();
   const travelTypeOptions = getBlogTravelTypeOptions(locale);
+  const levelOptions = getBlogLevelOptions();
+
+  function levelLabel(level: string | null): string {
+    if (!level) return "—";
+    return EXPERIENCE_LEVELS.find((l) => l.value === level)?.label ?? level;
+  }
+
+  function travelTypeLabel(travelType: string[]): string {
+    if (!travelType || travelType.length === 0) return "—";
+    return travelType
+      .map((tt) => travelTypeOptions.find((o) => o.key === tt)?.label ?? tt)
+      .join(", ");
+  }
 
   const [blogs, setBlogs] = useState<AdminBlog[]>([]);
   const [total, setTotal] = useState(0);
@@ -245,7 +259,11 @@ export function AdminBlogPageClient() {
             value={selectedLevel}
           >
             <option value="all">{copy.filters.allExperiences}</option>
-            <option value="xsed">XSED</option>
+            {levelOptions.map((level) => (
+              <option key={level.key} value={level.key}>
+                {level.label}
+              </option>
+            ))}
           </Select>
           <Select
             className={SELECT_CLASS}
@@ -336,7 +354,15 @@ export function AdminBlogPageClient() {
                       type="checkbox"
                     />
                   </th>
-                  {[cols.post, cols.tripper, cols.status, cols.updated, cols.actions].map(
+                  {[
+                    cols.post,
+                    cols.tripper,
+                    cols.level,
+                    cols.travelType,
+                    cols.status,
+                    cols.updated,
+                    cols.actions,
+                  ].map(
                     (h) => (
                       <th
                         className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink"
@@ -397,6 +423,12 @@ export function AdminBlogPageClient() {
                         <p className="mt-0.5 text-xs text-ink">
                           {item.author.email}
                         </p>
+                      </td>
+                      <td className="px-5 py-4 text-sm text-ink">
+                        {levelLabel(item.level)}
+                      </td>
+                      <td className="px-5 py-4 text-sm text-ink">
+                        {travelTypeLabel(item.travelType)}
                       </td>
                       <td className="px-5 py-4">
                         <BlogStatusBadge

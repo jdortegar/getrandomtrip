@@ -40,9 +40,11 @@ function blog(overrides: Partial<AdminBlog> = {}): AdminBlog {
   return {
     author: { email: "a@b.com", name: "Ana" },
     id: "b1",
+    level: null,
     status: "PENDING_REVIEW",
     subtitle: "",
     title: "A trip",
+    travelType: [],
     updatedAt: "2026-01-01T00:00:00.000Z",
     ...overrides,
   } as AdminBlog;
@@ -102,6 +104,50 @@ describe("AdminBlogPageClient — refetch keeps chrome mounted and dims the pane
 
     const settledPanel = container.querySelector(".overflow-hidden.rounded-xl") as HTMLElement;
     expect(settledPanel.getAttribute("aria-busy")).toBe("false");
+  });
+});
+
+describe("AdminBlogPageClient — Level and Travel type columns", () => {
+  it("renders the level label and travel-type labels, falling back to — when unset", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          blogs: [
+            blog({ id: "b1", level: "xsed", travelType: ["solo", "couple"] }),
+            blog({ id: "b2", level: null, travelType: [] }),
+          ],
+          pendingCount: 0,
+          total: 2,
+        }),
+      }),
+    );
+
+    render(<AdminBlogPageClient />);
+    await flush();
+
+    const cellsText = container.textContent ?? "";
+    expect(cellsText).toContain("XSED");
+    expect(cellsText).toContain("—");
+  });
+
+  it("lists every EXPERIENCE_LEVELS value in the level filter dropdown", async () => {
+    render(<AdminBlogPageClient />);
+    await flush();
+
+    const selects = Array.from(container.querySelectorAll("select"));
+    const levelSelect = selects[1] as HTMLSelectElement; // tab, level, travelType
+    const values = Array.from(levelSelect.options).map((o) => o.value);
+    expect(values).toEqual([
+      "all",
+      "essenza",
+      "modo-explora",
+      "explora-plus",
+      "bivouac",
+      "atelier-getaway",
+      "xsed",
+    ]);
   });
 });
 

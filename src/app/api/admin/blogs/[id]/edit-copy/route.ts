@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { prisma } from "@/lib/prisma";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
@@ -72,10 +73,17 @@ export async function PATCH(
       tags,
       travelType,
       excuseKey,
+      level,
       format,
       seo,
     } = body;
 
+    const levelValue: string | null | undefined =
+      level === undefined ? undefined : level && level !== "" ? level : null;
+    if (levelValue != null && !isValidExperienceLevel(levelValue)) {
+      return NextResponse.json({ error: "Invalid level" }, { status: 400 });
+    }
+    // No XSED admin-gate here: this whole route is admin-only already.
 
     const updated = await (prisma.blogPost.update as any)({
       where: { id: params.id },
@@ -90,6 +98,7 @@ export async function PATCH(
         ...(tags !== undefined && { tags }),
         ...(travelType !== undefined && { travelType: normalizeStringArray(travelType) }),
         ...(excuseKey !== undefined && { excuseKey: normalizeStringArray(excuseKey) }),
+        ...(levelValue !== undefined && { level: levelValue }),
         ...(format !== undefined && { format: format.toUpperCase?.() ?? format }),
         ...(seo !== undefined && { seo: seo || null }),
         // slug is intentionally never written here — copies have no public slug.
