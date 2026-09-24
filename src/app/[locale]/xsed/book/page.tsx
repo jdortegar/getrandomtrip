@@ -22,7 +22,7 @@ export default async function XsedBookPage({ params }: Props) {
 
   // ── Server gate ────────────────────────────────────────────────────────────
   // Netlify CDN injects x-country with the ISO alpha-2 country code of the
-  // request's IP. We map it to a timezone and check if it's Sunday 4pm–8pm
+  // request's IP. We map it to a timezone and check if it's Sunday 18:00–22:00
   // local time. If not, we render the unavailable page — same URL, no redirect,
   // nothing to bypass via URL manipulation.
   const [reqHeaders, session, windowEnforcementEnabled] = await Promise.all([

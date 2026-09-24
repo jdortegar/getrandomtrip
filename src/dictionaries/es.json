@@ -804,7 +804,7 @@
       },
       "xsedWindowEnforcement": {
         "toggleLabel": "Validación de ventana XSED",
-        "toggleDescription": "Cuando está activado, la compra de experiencias XSED solo se permite los domingos de 16 a 20hs (hora local). Desactivalo para permitir la compra en cualquier momento.",
+        "toggleDescription": "Cuando está activado, la compra de experiencias XSED solo se permite los domingos de 18:00 a 22:00 hs (hora local). Desactivalo para permitir la compra en cualquier momento.",
         "stateOn": "Activado",
         "stateOff": "Desactivado",
         "savedNote": "Guardado.",
@@ -862,7 +862,7 @@
   },
   "xsedUnavailable": {
     "heading": "Este DROP está agotado",
-    "subheading": "Los drops de XSED se abren los domingos de 16 a 20hs.",
+    "subheading": "Los drops de XSED se abren los domingos de 18:00 a 22:00 hs.",
     "notifyLabel": "Avisame del próximo",
     "backLabel": "Ver escapadas anteriores"
   },

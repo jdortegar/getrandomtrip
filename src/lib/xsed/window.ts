@@ -7,19 +7,20 @@
 export const DROP_DAY_OF_WEEK = 0; // Sunday
 
 /** Local time (in any LATAM timezone) when the booking window opens. */
-export const LOCAL_WINDOW_START_HOUR = 16; // 4pm
+export const LOCAL_WINDOW_START_HOUR = 18;
 
 /** Local time (in any LATAM timezone) when the booking window closes. */
-export const LOCAL_WINDOW_END_HOUR = 20; // 8pm
+export const LOCAL_WINDOW_END_HOUR = 22;
 
 /**
  * UTC outer boundary used server-side as a fast guard before running
- * the heavier auto-decrement computation. Wide enough to cover Hermosillo (UTC-7).
- *   Sunday 19:00 UTC  = 4pm ART (UTC-3)  — earliest LATAM open
- *   Monday 03:00 UTC  = 8pm Hermosillo (UTC-7) — latest LATAM close
+ * the heavier auto-decrement computation. Must cover every supported
+ * timezone's local window, including DST:
+ *   Sunday 20:00 UTC = 18:00 in America/Noronha (UTC-2) — earliest open
+ *   Monday 06:00 UTC = 22:00 in America/Tijuana (UTC-8, winter) — latest close
  */
-export const SERVER_OUTER_OPEN_UTC_HOUR = 19;
-export const SERVER_OUTER_CLOSE_UTC_HOUR = 3;
+export const SERVER_OUTER_OPEN_UTC_HOUR = 20;
+export const SERVER_OUTER_CLOSE_UTC_HOUR = 6;
 
 /** All supported LATAM IANA timezone identifiers. */
 export const SUPPORTED_TIMEZONES = [
@@ -221,7 +222,7 @@ export function detectSupportedTimezone(): string | null {
 
 /**
  * Shared (client + server).
- * Returns true if it is currently drop-day 16:00–20:00 local time in `tz`.
+ * Returns true if it is currently drop-day 18:00–22:00 local time in `tz`.
  */
 export function isLocalWindowOpen(tz: string, date = new Date()): boolean {
   const { weekday, hour } = getLocalInfo(tz, date);
@@ -246,8 +247,8 @@ export function getPhase(): "open" | "waiting" {
 /**
  * Shared (client + server).
  * Returns the UTC Date that the countdown should target:
- *   - If window is open  → end of current window (drop-day 20:00 local)
- *   - If window is closed → start of next window  (drop-day 16:00 local)
+ *   - If window is open  → end of current window (drop-day 22:00 local)
+ *   - If window is closed → start of next window  (drop-day 18:00 local)
  *
  * Falls back to 'America/Argentina/Buenos_Aires' if `tz` is null/empty.
  */
@@ -272,4 +273,21 @@ export function isWithinServerOuterBoundary(date = new Date()): boolean {
     return true;
   if (day === nextDay && hour < SERVER_OUTER_CLOSE_UTC_HOUR) return true;
   return false;
+}
+
+/**
+ * SERVER-ONLY.
+ * UTC offset (whole hours) whose users should get the drop email right now:
+ * the zone where it is one hour before LOCAL_WINDOW_START_HOUR on drop day.
+ * Western zones reach that hour after UTC midnight, so the day after the drop
+ * day counts too. Returns null when no timezone west of UTC is in its send hour.
+ */
+export function getNotifyTargetUtcOffset(date = new Date()): number | null {
+  const day = date.getUTCDay();
+  const nextDay = (DROP_DAY_OF_WEEK + 1) % 7;
+  const dayOffset =
+    day === DROP_DAY_OF_WEEK ? 0 : day === nextDay ? 24 : null;
+  if (dayOffset === null) return null;
+  const target = LOCAL_WINDOW_START_HOUR - 1 - (date.getUTCHours() + dayOffset);
+  return target < 0 && target >= -12 ? target : null;
 }

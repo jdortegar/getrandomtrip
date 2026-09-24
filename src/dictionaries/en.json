@@ -804,7 +804,7 @@
       },
       "xsedWindowEnforcement": {
         "toggleLabel": "XSED window validation",
-        "toggleDescription": "When on, XSED experience purchases are only allowed on Sundays 4-8pm local time. Turn it off to allow purchases at any time.",
+        "toggleDescription": "When on, XSED experience purchases are only allowed on Sundays 18:00–22:00 local time. Turn it off to allow purchases at any time.",
         "stateOn": "On",
         "stateOff": "Off",
         "savedNote": "Saved.",
@@ -862,7 +862,7 @@
   },
   "xsedUnavailable": {
     "heading": "This DROP is sold out",
-    "subheading": "TGIS drops open every Sunday from 4pm to 8pm.",
+    "subheading": "TGIS drops open every Sunday from 18:00 to 22:00.",
     "notifyLabel": "Notify me about the next one",
     "backLabel": "Browse past drops"
   },
@@ -981,7 +981,7 @@
         {
           "icon": "alert",
           "title": "The Alert",
-          "description": "On Sunday at 6:00 PM, <strong>you receive the hidden access.</strong><br/>You have 4 hours to book one of 10 limited escapes at a fixed price of $250 USD per person ($350 USD for solo travelers)."
+          "description": "On Sunday at 18:00, <strong>you receive the hidden access.</strong><br/>You have 4 hours to book one of 10 limited escapes at a fixed price of $250 USD per person ($350 USD for solo travelers)."
         },
         {
           "icon": "rhythm",
