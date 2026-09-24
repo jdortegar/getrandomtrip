@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
@@ -45,14 +45,17 @@ export function TripSupportModal({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [wasOpen, setWasOpen] = useState(open);
 
-  useEffect(() => {
-    if (!open) return;
-    setMessage("");
-    setSending(false);
-    setError("");
-    setSent(false);
-  }, [open]);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setMessage("");
+      setSending(false);
+      setError("");
+      setSent(false);
+    }
+  }
 
   async function handleSend() {
     if (!canSendTripSupport(message, sending)) return;

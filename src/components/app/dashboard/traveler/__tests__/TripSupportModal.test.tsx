@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripSupportModal } from "../TripSupportModal";
@@ -27,10 +27,11 @@ const copy: Pick<TripItineraryDict, "support"> = {
 let container: HTMLDivElement;
 let root: Root;
 
-function render(open = true, onClose = vi.fn()) {
-  container = document.createElement("div");
-  document.body.appendChild(container);
-  root = createRoot(container);
+function render(
+  open = true,
+  onClose = vi.fn(),
+  props: Partial<ComponentProps<typeof TripSupportModal>> = {},
+) {
   act(() => {
     root.render(
       <TripSupportModal
@@ -41,6 +42,7 @@ function render(open = true, onClose = vi.fn()) {
         startDate="2026-08-22T00:00:00.000Z"
         tripId="trip-123"
         user={{ email: "traveler@example.com", name: "Ana Traveler" }}
+        {...props}
       />,
     );
   });
@@ -70,6 +72,9 @@ function typeInto(textarea: HTMLTextAreaElement, value: string) {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  container = document.createElement("div");
+  document.body.appendChild(container);
+  root = createRoot(container);
 });
 
 afterEach(() => {
@@ -177,4 +182,82 @@ describe("TripSupportModal", () => {
 
     expect(document.body.textContent).toContain("Could not send your message.");
   });
+});
+
+
+describe("TripSupportModal compose session", () => {
+  it.each([true, false])(
+    "clears draft and status only when reopening (success: %s)",
+    async (ok) => {
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok }));
+      render();
+      act(() => typeInto(findTextarea()!, "Keep this message"));
+      await act(async () => findButton("Send")!.click());
+      const status = ok ? copy.support.successTitle : copy.support.errorGeneric;
+      expect(document.body.textContent).toContain(status);
+      render(true, vi.fn(), { tripId: "refreshed-trip" });
+      expect(document.body.textContent).toContain(status);
+      render(false);
+      render(true);
+      expect(findTextarea()?.value).toBe("");
+      expect(findButton("Send")?.disabled).toBe(true);
+      expect(document.body.textContent).not.toContain(status);
+    },
+  );
+
+  it("keeps the draft but sends refreshed context and identity", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("fetch", fetchMock);
+    render();
+    act(() => typeInto(findTextarea()!, "  My draft  "));
+    render(true, vi.fn(), {
+      copy: { support: { ...copy.support, heading: "Updated support" } },
+      destination: "Salta",
+      startDate: null,
+      tripId: "trip-new",
+      user: { email: "new@example.com", name: "New Traveler" },
+    });
+    expect(findTextarea()?.value).toBe("  My draft  ");
+    expect(document.body.textContent).toContain("Updated support");
+    await act(async () => findButton("Send")!.click());
+    const payload = JSON.parse(fetchMock.mock.calls[0][1].body);
+    expect(payload).toMatchObject({
+      email: "new@example.com",
+      name: "New Traveler",
+      interest: "Trip support",
+    });
+    expect(payload.message).toContain("My draft");
+    expect(payload.message).toContain("trip-new");
+    expect(payload.message).toContain("Salta");
+  });
+
+  it.each([false, true])(
+    "preserves request completion ownership (reopen: %s)",
+    async (reopen) => {
+      let finish!: (value: { ok: boolean }) => void;
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(
+          () =>
+            new Promise((resolve) => {
+              finish = resolve;
+            }),
+        ),
+      );
+      render();
+      act(() => typeInto(findTextarea()!, "Question"));
+      act(() => findButton("Send")!.click());
+      render(true, vi.fn(), { destination: "Salta" });
+      expect(findButton("Sending...")?.disabled).toBe(true);
+      expect(findTextarea()?.value).toBe("Question");
+      if (reopen) {
+        render(false);
+        render(true);
+        expect(findTextarea()?.value).toBe("");
+        expect(findButton("Send")?.disabled).toBe(true);
+      }
+      await act(async () => finish({ ok: true }));
+      expect(document.body.textContent).toContain(copy.support.successTitle);
+    },
+  );
 });
