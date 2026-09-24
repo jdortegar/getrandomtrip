@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 import { toast } from "sonner";
-import {
-  shouldShowWelcome,
-  WELCOME_COUNTRY_STORAGE_KEY,
-} from "@/lib/geo/welcome";
 
 const WELCOME_DELAY_MS = 1000;
+const WELCOME_DURATION_MS = 7000;
+
+// Module scope lives for one page load: every visit to the site welcomes the
+// visitor, but client-side navigation back to the landing does not repeat it.
+let welcomedThisPageLoad = false;
 
 interface GeoWelcomeToastProps {
   /** ISO 3166-1 alpha-2 code resolved on the server. */
@@ -18,33 +19,19 @@ interface GeoWelcomeToastProps {
   message: string;
 }
 
-function readLastWelcomedCountry(): string | null {
-  try {
-    return window.localStorage.getItem(WELCOME_COUNTRY_STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function rememberWelcomedCountry(countryCode: string) {
-  try {
-    window.localStorage.setItem(WELCOME_COUNTRY_STORAGE_KEY, countryCode);
-  } catch {
-    // Storage blocked (private mode): the welcome simply shows again next time.
-  }
-}
-
-/** Welcomes the visitor by country on the first visit and when the country changes. */
+/** Welcomes the visitor by country every time they enter the site. */
 export function GeoWelcomeToast({
   countryCode,
   flagSvg,
   message,
 }: GeoWelcomeToastProps) {
   useEffect(() => {
-    if (!shouldShowWelcome(countryCode, readLastWelcomedCountry())) return;
+    if (welcomedThisPageLoad) return;
 
     const timer = window.setTimeout(() => {
+      welcomedThisPageLoad = true;
       toast.info(message, {
+        duration: WELCOME_DURATION_MS,
         // The Toaster top-aligns toasts inline; center the flag with the text here.
         classNames: { toast: "!items-center" },
         icon: flagSvg ? (
@@ -56,7 +43,6 @@ export function GeoWelcomeToast({
           />
         ) : undefined,
       });
-      rememberWelcomedCountry(countryCode);
     }, WELCOME_DELAY_MS);
 
     return () => window.clearTimeout(timer);
