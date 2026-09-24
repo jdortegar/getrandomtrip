@@ -79,3 +79,10 @@ Verify DB target before application. Baseline: 1742passed/20failed/broken-next-l
 - [x] Transient activity renderer subunit of2.11–2.15: generation validation, bilingual A4 output,4MiB guard, real render/pagination checks. Persistent lifecycle integration remains pending.
 
 - [x] Transient dinner renderer subunit of2.11–2.15: bilingual output, generation guard,4MiB limit and real pagination QA; persistent delivery pending.
+
+## Completed transient subsets (not original persistent-task completion)
+- [x] Hotel admin form→private PDF preview (`1e6ffbeb`), no saved drafts/attachments/email.
+- [x] Activity endpoint, bilingual scalar/repeatable editor, request lifecycle and dashboard preview (`0380c106`–`e82c14c8`).
+- [x] Dinner endpoint, bilingual scalar/menu editor, request lifecycle and dashboard preview (`72e8c0c3`–`f4e3db5c`).
+- [ ] Both roadmap vertical previews, font/QR fidelity and remaining persistent lifecycle/publication requirements.
+- [ ] Browser PDF painting, full build/Netlify preview and external deploy-hook verification; sample dinner POST and360/1280 no-overflow checks passed only.

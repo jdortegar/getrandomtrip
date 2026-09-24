@@ -18,19 +18,22 @@ delivery:
   tracker_branch: codex/form-generated-fulfillment-pdfs
   base_branch: origin/main
   base_commit: 8c4ec55589bd8fb7379c5792fb1a52907cb8a751
-  current_slice: transient-dinner-renderer
-  current_branch: codex/pdf-dinner-renderer
+  current_slice: transient-dinner-preview-ui
+  current_branch: codex/pdf-dinner-preview-ui
   current_base: develop
   local_integration_commit: 923725a5
   preserved_pdf_tip: ace55baaa4c9c61e35e7d3a494302e3d56cef414
   local_develop_base: 010d414ce5f612a39844cd84c0b9b9e6997d2901
   tracker_seed_commit: a01b276f
   planning_commit: 84d5fc05
-  current_slice_review: pending
-  current_slice_tests_passed: 92
+  current_slice_review: passed-local-transient-scope
+  current_slice_tests_passed: 80
   schema_application: applied-development-target-empty-diff-verified
   schema_applied_commit: 14ba2e1a
-  schema_publication: awaiting-deploy-hook-verification
+  schema_publication: published-with-explicit-hook-risk-consent
+  deployment_verification: not-verified
+  historical_tracker_prs: closed-151-through-164
+  published_develop_milestone: 1e6ffbeb
   child_merge_gate: pending-integrated-verification
   tracker_pr: 151
   planning_pr: 152
@@ -49,8 +52,12 @@ delivery:
   approved_issue: user-approved-issue-link-exception
   dependency_slice_changed_lines: 726
   dependency_size_exception: pending
-  next_slice: transient-dinner-preview-endpoint
+  renderer_only_dependency: {changed_lines: 515, exception: approved, status: installed, commit: 34979cfc}
+  next_slice: remaining-roadmap-transient-preview
   awaiting_user: null
+  transient_milestones: {hotel: 1e6ffbeb, activity: e82c14c8, dinner: f4e3db5c}
+  browser_pdf_paint: unverified
+  original_persistent_scope: incomplete
 constraints:
   - Preserve unrelated existing registry and email-script changes.
   - Verify database target before applying schema changes.

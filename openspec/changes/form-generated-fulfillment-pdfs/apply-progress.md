@@ -167,3 +167,19 @@ Hotel and activity vertical previews are retained; activity UI milestone `e82c14
 | Dinner renderer | Missing-module failure |8 renderer tests; validation, locale, authored claims, empty menu,4MiB boundary and renderer failure |92 renderer/parser regressions, typecheck/targetlint; actual EN1page/ES4pages,30menu entries, accents and2HTTPSlinks |
 
 Visual QA found separate title/description nodes orphaned headings despite minPresenceAhead. One text flow with orphans/widows keeps headings with descriptions; extracted page-ending assertions failed before and pass after. Latest PNG inspected. Evidence `/private/tmp/dinner-render-qa/` and `/private/tmp/dinner-render-{red,green,typecheck}.log`. Helvetica remains interim. Next: dinner endpoint then editor/preview integration; no DB/install/server/remote work.
+
+## Transient Voucher Delivery Checkpoint (2026-09-24)
+
+Hotel (`1e6ffbeb`), activity (`e82c14c8`) and dinner (`f4e3db5c`) now have complete **transient** admin form→private PDF preview flows. These are local milestones, not completion of the original persistent-draft/publication specification. Activity commits: renderer `0380c106`, endpoint `d47a4aa6`, form `8d45f776`, repeatables `4b51bff2`, request hook `0575162c`, UI `e82c14c8`. Dinner commits: renderer `72e8c0c3`, endpoint `06b59cb1`, form `7479d556`, menu `17f3439a`, hook `da6383a9`, UI `f4e3db5c`.
+
+Both new flows preserve live-admin/trip checks, streamed128KiB request/4MiB PDF limits, generation validation, private/no-store responses, safe errors, editable buyer-locale/date suggestions, authored-only claims and stable repeatables. Hooks abort/ignore stale fetch/blob work and revoke object URLs on edit/replacement/reset/unmount. Modal close/Escape and dirty-only beforeunload guards protect unsaved input. Existing upload and trip-save handlers remain independent; no drafts, storage, attachment or email mutations were added. Dinner copy uses Diners/Comensales, not hotel terminology.
+
+| Scope | Test-first evidence | Verification |
+|---|---|---|
+| Activity endpoint/form/repeatables/hook/UI | Missing-module or new-behavior RED before each unit; provider-label EN/ES regression repaired |123 endpoint/parser/renderer;82 scalar;80 repeatable;30 hook;71 final focused tests passed |
+| Dinner endpoint/form/menu/hook/UI | Missing-module or new-behavior RED before each unit; Diners/Comensales RED4→GREEN21 across form/PDF |153 endpoint/parser/renderer;101 scalar;84 menu;45 hook;80 final focused tests passed |
+| Final dinner integration review | Independent review |60 integration tests, typecheck and new-code lint passed; existing dashboard loadTrip effect lint baseline remains unchanged |
+
+Browser QA on the existing server submitted sample dinner data and received an Open PDF preview link. At360px, dialog width360/client358/scroll358; at1280px, dialog width1024/client1022/scroll1022: no horizontal overflow. Blob navigation was not attempted after the earlier policy block, so **browser PDF painting is unverified**. Separate actual Node-rendered PDFs were visually inspected as recorded above; HappyDOM's unsupported blob-iframe warning is not browser-rendering evidence.
+
+Remaining: both roadmap forms/renderers; original draft save/versioning, storage/worker/publication/attach/replace/email integration; licensed-font fidelity, QR and complete shared layout; complete bilingual fixture suite, full build/Netlify preview and external deploy-hook verification. Prefix WIP remains deferred in stash `8bdd8a36`; no restoration or approval implied. The earlier726-line renderer+QR dependency exception remains historical/pending; only the separate renderer-only515-line exception was approved. Original pending task groups below must not be marked complete by these transient subsets.
