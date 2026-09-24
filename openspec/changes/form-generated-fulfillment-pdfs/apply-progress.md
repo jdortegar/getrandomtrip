@@ -1,7 +1,7 @@
 # Apply Progress: Form-generated Fulfillment PDFs
 
 Mode: Strict TDD. Delivery: auto-chain / feature-branch-chain; no size exception.
-Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration). Remaining: 2.2d onward; deployment packaging/smoke gates remain.
+Completed: 0.1, 0.2 (planning), 1.1 (metadata), 1.2 (validation primitives), 1.3 (XSED parser), 1.4 (experience roadmap), 1.5 (hotel voucher), 1.6 (activity voucher), 1.7 (dinner voucher), 1.8 (trip snapshots), 1.9a (source text), 1.9b (provider candidates), 1.9c (creation prefills), 2.1 (schema applied to approved development/staging database), 2.2a (live locks), 2.2b1 (candidate registration), 2.2b2 (candidate lifecycle), 2.2c1 (candidate cancellation), 2.2c2a (cleanup targets), 2.2b1-hardening (candidate URL namespace), 2.2c2b (immutable tombstone registration), 2.2d (exact-key execution). Remaining: 2.2e onward; deployment packaging/smoke gates remain.
 Boundaries: reviewed pure helpers and additive schema with adjacent tests; authorized schema application only, no application-row access, routes, dependencies or UI.
 
 ## TDD Cycle Evidence
@@ -135,3 +135,13 @@ Caller-transaction helper recomputes deterministic cleanup plans from trusted co
 | 2.2c2b | `src/lib/db/__tests__/tripDocumentCleanupRegistration.test.ts` | 66 planner/cancellation passed | Missing-module failure | 1 passed; 15 identity/clock/empty-plan failures → 23 passed; missing-readback and retained-candidate coverage → 25 passed | ID-map lookup, formatting; 194 focused regressions passed |
 
 Verification: registration + candidate registration/lifecycle/cancellation/locks + cleanup-planner selection → 194 passed; typecheck, targeted ESLint, Prettier and diff checks passed. Tests cover prefix/legacy jobs, retries, collisions, rollback after insert/read/commit or caller deletion failure, input snapshots, empty/invalid scopes and unrelated retained candidates. Unit transaction fakes do not establish live concurrency. No DB/schema/dependency/worker/endpoint changes. Next: 2.2d exact-key tombstone execution; external deploy-hook gate and renderer dependency size exception remain unchanged.
+
+## Task 2.2d: Parent-independent Exact-key Tombstone Execution
+
+Injected executor reads the durable job without parent lookups and only deletes terminal `delete` dispositions. Pending/retained/missing jobs skip; malformed identities, multi-key/prefix targets, unsafe namespaces and oversized keys reject before storage. Preview/publication keys derive from receipt identities; legacy keys must reproduce the deterministic cleanup-planner job ID. One exact delete per invocation; tombstones remain untouched after success or absence so later sweeps remove late PUT/SDK retry bytes. Read/storage failures propagate; scheduling/backoff and prefix execution remain 2.3/2.2e, not part of this unit.
+
+| Task | Test file | Safety net | RED | GREEN / triangulation | Refactor |
+|---|---|---|---|---|---|
+| 2.2d | `src/lib/trip-documents/__tests__/cleanup.test.ts` | 67 registration/planner passed | Missing-module failure | 1 passed; 13 unsafe/mismatched-job failures → 20 passed; byte-boundary/legacy-identity/read-failure coverage → 24 passed | Formatting; 218 lifecycle/planner/executor regressions passed |
+
+Verification: exact executor + planner + registration/candidate/lifecycle/cancellation/locks selection → 218 passed; typecheck, targeted ESLint, Prettier and diff checks passed. Fake storage tests cover repeated absent/successful sweeps followed by late PUT, retained/publication safety, failed deletion retry and valid Unicode 600-byte/invalid 601-byte targets. No actual storage deletion, DB, schema, dependency, worker or endpoint operation. Retained jobs require recurring worker scheduling before eventual cleanup is operational; no immediate-permanent-absence guarantee. Next: 2.2e bounded prefix tombstone execution. External publication/dependency gates unchanged.
