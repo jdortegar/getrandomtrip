@@ -1,5 +1,7 @@
 {
   "xsedRoadmapPdf": {
+    "directions": "Indicaciones",
+    "addStop": "Agregar parada",
     "mapUrl": "URL del mapa (HTTPS, opcional)",
     "note": "Introduce la ruta y el tiempo de conducción manualmente. No se calculan indicaciones ni tiempos de viaje.",
     "title": "Hoja de ruta XSED",

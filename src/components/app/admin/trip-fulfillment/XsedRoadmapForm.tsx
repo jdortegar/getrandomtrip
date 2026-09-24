@@ -10,6 +10,7 @@ import type {
 } from "@/lib/types/dictionary";
 import { DESTINATION_COUNTRY_CODES } from "@/lib/trips/destinationCountries";
 import { parseXsedRoadmap } from "@/lib/trip-documents/parsers/xsedRoadmap";
+import { XsedRoadmapStops } from "./XsedRoadmapStops";
 import styles from "./fulfillment.module.css";
 interface XsedRoadmapFormProps {
   copy: HotelVoucherFormCopy;
@@ -103,6 +104,16 @@ export function XsedRoadmapForm({
             value={value.data[key] ?? ""}
           />
         ))}
+        <XsedRoadmapStops
+          copy={copy}
+          disabled={submitting}
+          items={value.data.stops}
+          onChange={(stops) =>
+            onChange({ ...value, data: { ...value.data, stops } })
+          }
+          roadmapCopy={roadmapCopy}
+          title={roadmapCopy.stops}
+        />
         {invalid && <p role="alert">{copy.invalid}</p>}
         <button className={`${styles.btn} ${styles.btnPrimary}`} type="submit">
           {copy.submit}
