@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { TripDocumentDraftDto } from "@/lib/types/TripDocumentDraft";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import type { DocumentProviderCandidate } from "@/lib/types/DocumentProviderCandidate";
@@ -20,10 +20,11 @@ const empty: Collection = {
   drafts: [],
   candidates: { hotel: [], activity: [], dinner: [] },
 };
-export function useDocumentDrafts(tripId: string) {
+export function useDocumentDrafts(tripId: string, autoLoad = false) {
   const [collection, setCollection] = useState<Collection>(empty);
   const [selected, setSelected] = useState<TripDocumentDraftDto | null>(null);
   const [document, setDocument] = useState<TripDocumentSnapshot | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<DraftError | null>(null);
   const sequence = useRef(0);
@@ -32,6 +33,7 @@ export function useDocumentDrafts(tripId: string) {
   if (owner !== tripId) {
     setOwner(tripId);
     setCollection(empty);
+    setLoaded(false);
     setSelected(null);
     setDocument(null);
     setBusy(false);
@@ -44,12 +46,12 @@ export function useDocumentDrafts(tripId: string) {
     },
     [tripId],
   );
-  function cancel() {
+  const cancel = useCallback(() => {
     sequence.current++;
     controller.current?.abort();
     controller.current = null;
     setBusy(false);
-  }
+  }, []);
   function edit(value: TripDocumentSnapshot) {
     cancel();
     setDocument(value);
@@ -61,58 +63,91 @@ export function useDocumentDrafts(tripId: string) {
     setDocument(null);
     setError(null);
   }
-  async function request<T>(
-    path: string,
-    method: string,
-    body: unknown,
-    apply: (value: T) => void,
-  ) {
-    cancel();
-    const token = sequence.current;
+  const request = useCallback(
+    async <T>(
+      path: string,
+      method: string,
+      body: unknown,
+      apply: (value: T) => void,
+    ) => {
+      cancel();
+      const token = sequence.current;
+      const abort = new AbortController();
+      controller.current = abort;
+      setBusy(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          `/api/admin/trip-requests/${encodeURIComponent(tripId)}/document-drafts${path}`,
+          {
+            method,
+            cache: "no-store",
+            signal: abort.signal,
+            ...(body === undefined
+              ? {}
+              : {
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(body),
+                }),
+          },
+        );
+        if (token !== sequence.current) return;
+        if (!response.ok) {
+          setError(
+            response.status === 409
+              ? "conflict"
+              : response.status === 401 || response.status === 403
+                ? "forbidden"
+                : response.status === 404
+                  ? "not_found"
+                  : response.status === 400 ||
+                      response.status === 413 ||
+                      response.status === 422
+                    ? "invalid"
+                    : "unavailable",
+          );
+          return;
+        }
+        const value = (await response.json()) as T;
+        if (token === sequence.current) apply(value);
+      } catch {
+        if (token === sequence.current) setError("unavailable");
+      } finally {
+        if (token === sequence.current) setBusy(false);
+      }
+    },
+    [cancel, tripId],
+  );
+  useEffect(() => {
+    if (!autoLoad) return;
+    let active = true;
+    const token = ++sequence.current;
+    controller.current?.abort();
     const abort = new AbortController();
     controller.current = abort;
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(
-        `/api/admin/trip-requests/${encodeURIComponent(tripId)}/document-drafts${path}`,
-        {
-          method,
-          cache: "no-store",
-          signal: abort.signal,
-          ...(body === undefined
-            ? {}
-            : {
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-              }),
-        },
-      );
-      if (token !== sequence.current) return;
-      if (!response.ok) {
-        setError(
-          response.status === 409
-            ? "conflict"
-            : response.status === 401 || response.status === 403
-              ? "forbidden"
-              : response.status === 404
-                ? "not_found"
-                : response.status === 400 ||
-                    response.status === 413 ||
-                    response.status === 422
-                  ? "invalid"
-                  : "unavailable",
-        );
-        return;
-      }
-      const value = (await response.json()) as T;
-      if (token === sequence.current) apply(value);
-    } catch {
-      if (token === sequence.current) setError("unavailable");
-    } finally {
-      if (token === sequence.current) setBusy(false);
-    }
-  }
+    void fetch(
+      `/api/admin/trip-requests/${encodeURIComponent(tripId)}/document-drafts`,
+      {
+        cache: "no-store",
+        signal: abort.signal,
+      },
+    )
+      .then(async (response) => {
+        if (!response.ok) throw new Error("collection_unavailable");
+        const value = (await response.json()) as Collection;
+        if (active && token === sequence.current) {
+          setCollection(value);
+          setLoaded(true);
+        }
+      })
+      .catch(() => {
+        if (active && token === sequence.current) setError("unavailable");
+      });
+    return () => {
+      active = false;
+      abort.abort();
+    };
+  }, [autoLoad, tripId]);
   function adopt(value: TripDocumentDraftDto) {
     setSelected(value);
     setDocument(value.document);
@@ -122,7 +157,10 @@ export function useDocumentDrafts(tripId: string) {
     }));
   }
   function list() {
-    return request<Collection>("", "GET", undefined, setCollection);
+    return request<Collection>("", "GET", undefined, (value) => {
+      setCollection(value);
+      setLoaded(true);
+    });
   }
   function create(
     template: TripDocumentSnapshot["template"],
@@ -176,8 +214,9 @@ export function useDocumentDrafts(tripId: string) {
   return {
     ...collection,
     selected,
+    loaded,
     document,
-    busy,
+    busy: busy || (autoLoad && !loaded && !error),
     error,
     dirty,
     list,

@@ -245,3 +245,74 @@ it.each(["en", "es"])(
     expect(fetchMock.mock.calls[1][0]).toContain("/document-drafts/draft");
   },
 );
+it("automatically loads draft/provider choices before enabling dashboard creation", async () => {
+  let finish!: (r: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  await act(async () =>
+    root.render(
+      <DocumentDraftPanel
+        autoLoad
+        countryLabels={{ AR: "Argentina" }}
+        locale="en"
+        tripId="trip"
+      />,
+    ),
+  );
+  expect(fetchMock.mock.calls[0][0]).toBe(
+    "/api/admin/trip-requests/trip/document-drafts",
+  );
+  expect(button(en.documentDraftPanel.create).disabled).toBe(true);
+  await act(async () =>
+    finish(
+      response({
+        drafts: [draft],
+        candidates: {
+          hotel: [{ index: 0, title: "Hotel Río" }],
+          activity: [],
+          dinner: [],
+        },
+      }),
+    ),
+  );
+  expect(host.textContent).toContain("Hotel Río");
+  expect(host.querySelectorAll("[data-open-draft]")).toHaveLength(1);
+  expect(button(en.documentDraftPanel.create).disabled).toBe(false);
+  const provider = host.querySelectorAll("select")[1];
+  act(() => {
+    provider.value = "0";
+    provider.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => button(en.documentDraftPanel.create).click());
+  expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+    template: "hotel-voucher",
+    candidateIndex: 0,
+  });
+});
+it("keeps creation blocked after failed initial source load and allows explicit refresh", async () => {
+  fetchMock.mockResolvedValueOnce(response({}, 503));
+  await act(async () =>
+    root.render(
+      <DocumentDraftPanel
+        autoLoad
+        countryLabels={{ AR: "Argentina" }}
+        locale="en"
+        tripId="trip"
+      />,
+    ),
+  );
+  expect(host.textContent).toContain(en.documentDraftPanel.error);
+  expect(button(en.documentDraftPanel.create).disabled).toBe(true);
+  fetchMock.mockResolvedValueOnce(
+    response({
+      drafts: [],
+      candidates: { hotel: [], activity: [], dinner: [] },
+    }),
+  );
+  await act(async () => button(en.documentDraftPanel.load).click());
+  expect(button(en.documentDraftPanel.create).disabled).toBe(false);
+});

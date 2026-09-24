@@ -37,6 +37,8 @@
     "unavailable": "Could not complete the request. Retry without changing the request identity."
   },
   "documentDraftPanel": {
+    "generate": "Generate document",
+    "sourceNote": "Choose a template and optional source provider, or reopen a saved draft. Drafts remain private until you attach a reviewed PDF.",
     "delete": "Delete draft",
     "deleteConfirm": "Delete this private draft and discard any unsaved edits? Any attached PDF will be preserved.",
     "title": "Private document drafts",

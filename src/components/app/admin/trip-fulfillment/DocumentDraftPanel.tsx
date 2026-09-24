@@ -8,12 +8,14 @@ import { useDocumentDrafts } from "./useDocumentDrafts";
 import { useDraftDelivery } from "./useDraftDelivery";
 import styles from "./fulfillment.module.css";
 interface Props {
+  autoLoad?: boolean;
   countryLabels: Record<string, string>;
   locale: string;
   tripId: string;
   onAttached?: () => void;
 }
 export function DocumentDraftPanel({
+  autoLoad = false,
   countryLabels,
   locale,
   tripId,
@@ -21,7 +23,7 @@ export function DocumentDraftPanel({
 }: Props) {
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.documentDraftPanel;
-  const drafts = useDocumentDrafts(tripId);
+  const drafts = useDocumentDrafts(tripId, autoLoad);
   const delivery = useDraftDelivery(tripId, drafts.selected, drafts.dirty);
   const deliveryCopy = dictionary.documentDraftDelivery;
   const notified = useRef<string | null>(null);
@@ -63,7 +65,8 @@ export function DocumentDraftPanel({
   }
   return (
     <section className="my-6 flex flex-col gap-4 rounded border border-gray-200 p-4">
-      <h3>{copy.title}</h3>
+      <h3>{autoLoad ? copy.generate : copy.title}</h3>
+      {autoLoad && <p>{copy.sourceNote}</p>}
       <button
         className={styles.btn}
         disabled={drafts.busy || delivery.busy}
@@ -108,7 +111,7 @@ export function DocumentDraftPanel({
       )}
       <button
         className={styles.btn}
-        disabled={drafts.busy || delivery.busy}
+        disabled={drafts.busy || delivery.busy || (autoLoad && !drafts.loaded)}
         onClick={() => {
           if (allowSwitch())
             void drafts.create(

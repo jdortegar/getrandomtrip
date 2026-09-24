@@ -21,8 +21,8 @@ let root: Root;
 let host: HTMLDivElement;
 let current: ReturnType<typeof useDocumentDrafts>;
 const fetchMock = vi.fn();
-function Harness({ tripId = "trip" }) {
-  const result = useDocumentDrafts(tripId);
+function Harness({ tripId = "trip", autoLoad = false }) {
+  const result = useDocumentDrafts(tripId, autoLoad);
   useEffect(() => {
     current = result;
   });
@@ -200,4 +200,34 @@ it("ignores deletion JSON completing after opening another draft and aborts old 
   expect(signal.aborted).toBe(true);
   expect(current.selected?.id).toBe("other");
   expect(current.drafts).toHaveLength(2);
+});
+
+it("ignores an old automatic source load after changing trips", async () => {
+  let finish!: (value: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise((resolve) => {
+      finish = resolve;
+    }),
+  );
+  await act(async () => root.render(<Harness autoLoad />));
+  const oldSignal = fetchMock.mock.calls[0][1].signal;
+  fetchMock.mockResolvedValueOnce(
+    response({
+      drafts: [],
+      candidates: { hotel: [], activity: [], dinner: [] },
+    }),
+  );
+  await act(async () => root.render(<Harness autoLoad tripId="other" />));
+  await act(async () =>
+    finish(
+      response({
+        drafts: [draft],
+        candidates: { hotel: [], activity: [], dinner: [] },
+      }),
+    ),
+  );
+  expect(oldSignal.aborted).toBe(true);
+  expect(current.loaded).toBe(true);
+  expect(current.drafts).toEqual([]);
+  expect(current.error).toBe(null);
 });

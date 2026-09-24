@@ -37,6 +37,8 @@
     "unavailable": "No se pudo completar la solicitud. Reintentá sin cambiar su identidad."
   },
   "documentDraftPanel": {
+    "generate": "Generar documento",
+    "sourceNote": "Elegí una plantilla y un proveedor de origen opcional, o abrí un borrador guardado. Los borradores son privados hasta que adjuntes el PDF revisado.",
     "delete": "Eliminar borrador",
     "deleteConfirm": "¿Eliminar este borrador privado y descartar los cambios sin guardar? El PDF adjunto se conservará.",
     "title": "Borradores privados de documentos",
