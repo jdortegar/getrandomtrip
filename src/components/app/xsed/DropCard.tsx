@@ -6,21 +6,32 @@ import type { DropEntry } from "@/types/core";
 interface DropCardProps {
   drop: DropEntry;
   featured?: boolean;
+  /** Fill a height-capped mosaic cell so the image can shrink with the grid. */
+  fill?: boolean;
 }
 
-export function DropCard({ drop, featured = false }: DropCardProps) {
+export function DropCard({
+  drop,
+  featured = false,
+  fill = false,
+}: DropCardProps) {
+  const fillsCell = featured || fill;
+
   return (
     <Link
-      className={cn("flex flex-col text-left group", featured && "md:h-full")}
+      className={cn(
+        "flex flex-col group text-left",
+        fillsCell && "h-full min-h-0",
+      )}
       href={`/blog/${drop.slug}`}
       data-component="DropCard"
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-xl",
-          featured
-            ? "aspect-square md:aspect-auto md:flex-1 md:min-h-0 mb-2"
-            : "aspect-square mb-2",
+          "relative mb-2 min-h-0 overflow-hidden rounded-xl",
+          fillsCell
+            ? "aspect-square lg:aspect-auto lg:flex-1"
+            : "aspect-square",
         )}
       >
         <Img
@@ -48,7 +59,7 @@ export function DropCard({ drop, featured = false }: DropCardProps) {
           </div>
         )}
       </div>
-      <div className="mt-3 pb-3">
+      <div className="mt-3 shrink-0 pb-3">
         {/* <p className="font-barlow mb-1 text-xs font-bold uppercase tracking-widest text-xsed">
           {drop.date}
         </p> */}

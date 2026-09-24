@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import type { XsedPageDict } from "@/lib/types/dictionary";
 import type { DropEntry } from "@/types/core";
 import { DropCard } from "./DropCard";
@@ -30,20 +31,29 @@ export function DropGrid({ content, drops }: DropGridProps) {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-6",
+          "sm:grid-cols-2 lg:grid-cols-4",
+          drops.length >= 3 &&
+            "lg:grid-rows-2 lg:h-[calc(100dvh-var(--rt-header-h,64px)-6rem)]",
+        )}
+      >
         {drops.map((drop, index) => {
-          // The featured 2x2 cell relies on the other row-1 items (columns
-          // 2-4) to establish row height via CSS grid's implicit row sizing —
-          // with fewer than 3 drops there's nothing to size against and the
-          // spanned cell collapses to ~0 height (DropCard's featured variant
-          // uses min-h-0 to let flex-1 size the image, so nothing rescues it).
           const isFeatured = index === 0 && drops.length >= 3;
           return (
             <div
+              className={cn(
+                "min-h-0",
+                isFeatured && "md:col-span-2 md:row-span-2",
+              )}
               key={drop.number}
-              className={isFeatured ? "md:col-span-2 md:row-span-2" : ""}
             >
-              <DropCard drop={drop} featured={isFeatured} />
+              <DropCard
+                drop={drop}
+                featured={isFeatured}
+                fill={drops.length >= 3}
+              />
             </div>
           );
         })}
