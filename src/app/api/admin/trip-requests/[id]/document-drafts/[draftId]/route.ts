@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { prisma } from "@/lib/prisma";
+import { deleteTripDocumentDraft } from "@/lib/db/deleteTripDocumentDraft";
 import { readTripDocumentDraft } from "@/lib/db/createTripDocumentDraft";
 import { updateTripDocumentDraft } from "@/lib/db/updateTripDocumentDraft";
 import { MAX_DOCUMENT_REQUEST_BYTES } from "@/lib/trip-documents/validationPrimitives";
@@ -39,7 +40,11 @@ async function readInput(request: NextRequest): Promise<unknown> {
   }
 }
 
-async function handle(request: NextRequest, context: Context, update: boolean) {
+async function handle(
+  request: NextRequest,
+  context: Context,
+  update: boolean | "delete",
+) {
   try {
     const auth = await requireAdmin();
     if (!auth.ok) {
@@ -73,6 +78,24 @@ async function handle(request: NextRequest, context: Context, update: boolean) {
         large ? 413 : 400,
       );
     }
+    if (update === "delete") {
+      if (
+        !input ||
+        typeof input !== "object" ||
+        Array.isArray(input) ||
+        Object.keys(input).some((key) => key !== "revision") ||
+        !Number.isSafeInteger((input as { revision?: unknown }).revision) ||
+        Number((input as { revision?: unknown }).revision) < 1
+      )
+        return json({ error: "invalid_revision" }, 422);
+      return json(
+        await deleteTripDocumentDraft(
+          prisma,
+          scope,
+          (input as { revision: number }).revision,
+        ),
+      );
+    }
     const result = await updateTripDocumentDraft(prisma, scope, input);
     if (result.ok) return json(result.value);
     if ("error" in result)
@@ -81,7 +104,15 @@ async function handle(request: NextRequest, context: Context, update: boolean) {
         result.error === "draft_not_found" ? 404 : 409,
       );
     return json({ errors: result.errors }, 422);
-  } catch {
+  } catch (cause) {
+    if (
+      cause instanceof Error &&
+      [
+        "DOCUMENT_DRAFT_REVISION_CONFLICT",
+        "DOCUMENT_LOCK_SCOPE_MISMATCH",
+      ].includes(cause.message)
+    )
+      return json({ error: "revision_conflict" }, 409);
     return json({ error: "draft_unavailable" }, 503);
   }
 }
@@ -90,4 +121,8 @@ export function GET(request: NextRequest, context: Context) {
 }
 export function PATCH(request: NextRequest, context: Context) {
   return handle(request, context, true);
+}
+
+export function DELETE(request: NextRequest, context: Context) {
+  return handle(request, context, "delete");
 }

@@ -24,7 +24,7 @@ import { prisma } from "@/lib/prisma";
 import { updateTripDocumentDraft } from "@/lib/db/updateTripDocumentDraft";
 import { readTripDocumentDraft } from "@/lib/db/createTripDocumentDraft";
 import { loadTripDocumentSource } from "@/lib/db/loadTripDocumentSource";
-import { GET, PATCH } from "../route";
+import { GET, PATCH, DELETE } from "../route";
 const context = { params: Promise.resolve({ id: "trip", draftId: "draft" }) };
 
 function request(
@@ -179,4 +179,36 @@ it("reopens without refreshing source facts", async () => {
     draftId: "draft",
   });
   expect(loadTripDocumentSource).not.toHaveBeenCalled();
+});
+
+vi.mock("@/lib/db/deleteTripDocumentDraft", () => ({
+  deleteTripDocumentDraft: vi.fn(),
+}));
+import { deleteTripDocumentDraft } from "@/lib/db/deleteTripDocumentDraft";
+it("deletes scoped revision without exposing storage metadata", async () => {
+  vi.mocked(deleteTripDocumentDraft).mockResolvedValue({ deleted: true });
+  const response = await DELETE(
+    request(JSON.stringify({ revision: 2 })),
+    context,
+  );
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ deleted: true });
+  expect(deleteTripDocumentDraft).toHaveBeenCalledWith(
+    prisma,
+    { ownerId: "buyer", tripRequestId: "trip", draftId: "draft" },
+    2,
+  );
+});
+it("contains deletionconflicts and denies invalidrevision", async () => {
+  expect(
+    (await DELETE(request(JSON.stringify({ revision: 0 })), context)).status,
+  ).toBe(422);
+  vi.mocked(deleteTripDocumentDraft).mockRejectedValue(
+    new Error("DOCUMENT_DRAFT_REVISION_CONFLICT"),
+  );
+  expect(
+    (await DELETE(request(JSON.stringify({ revision: 2 })), context)).status,
+  ).toBe(409);
+  vi.mocked(getServerSession).mockResolvedValue(null);
+  expect((await DELETE(request(), context)).status).toBe(401);
 });
