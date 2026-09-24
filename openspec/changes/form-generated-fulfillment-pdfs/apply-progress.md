@@ -212,3 +212,9 @@ This cumulative checkpoint supersedes earlier next-template notes without removi
 - Root browser QA submitted sample experience and XSED roadmap forms; both produced Open PDF preview links. Dialogs had no horizontal overflow at360px and1280px. **Actual browser PDF painting remains unverified**: no blob navigation was attempted after the earlier IAB policy block. Node-rendered PDF visual QA is recorded separately above.
 - Original persistent specification remains incomplete: draft save/versioning, storage/publication, attach/replace/email integration, QR/licensed-font fidelity, complete fixtures/build/Netlify preview and external deploy-hook verification are pending. Next implementation scope is **persistent drafts and attachment**, not more template forms.
 - Deferred prefix-cleanup WIP stays in stash `8bdd8a36`; no restoration, schema expansion or liveness-fix approval is implied. Prior explicit publication-risk consent and dependency-exception history are unchanged.
+
+## Persistent Draft Contract Foundation (2026-09-24)
+
+First bounded persistent-draft subunit: five-template draft-mode dispatch, strict revision/document PATCH envelope and explicit admin DTO allowlist. Incomplete authored strings remain saveable; generation requirements are not applied. Stored template/version/data are validated before reopening; DTO excludes keys, hashes, internal publication identity and stale preview IDs. Snapshots are not refreshed. This does not yet implement DB CRUD or optimistic conflict enforcement.
+
+RED missing module → GREEN19contract +329parser tests (348total); nonincremental typecheck, targeted lint passed. Evidence `/private/tmp/draft-contract-{red,green,typecheck}.log`. Next: locked revision-controlled create/read/update using existing owner→trip→draft locks, then authenticated collection/item APIs and save/reopen UI. Template/version immutability and revision conflicts are mutation responsibilities, not claims of this pure contract unit.

@@ -96,3 +96,5 @@ Verify DB target before application. Baseline: 1742passed/20failed/broken-next-l
 - [x] Combined transient regression:658tests/30suites,69files scoped lint and nonincremental typecheck passed.
 
 Next: persistent draft/attachment implementation; original task groups above remain unchecked until their full contracts are verified.
+
+- [x] Persistent draft2.4 contract subunit: five-template incomplete-draft validation, positive-safe revision envelope and storage-free validated DTO; DB CRUD/conflict enforcement still pending.
