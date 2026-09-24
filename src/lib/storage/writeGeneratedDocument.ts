@@ -1,6 +1,9 @@
 import { createHash } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
-import type { TripDocumentCandidateInput } from "@/lib/types/TripDocumentCandidate";
+import type {
+  TripDocumentCandidateInput,
+  TripDocumentCandidateRuntime,
+} from "@/lib/types/TripDocumentCandidate";
 import { registerDocumentCandidate } from "@/lib/db/tripDocumentCandidates";
 import { getTripDocumentStore } from "./tripDocumentStore";
 
@@ -13,6 +16,7 @@ export async function writeGeneratedDocument(
   db: Pick<PrismaClient, "$transaction">,
   input: TripDocumentCandidateInput,
   pdf: Uint8Array,
+  runtime?: TripDocumentCandidateRuntime,
 ) {
   if (pdf.byteLength > 4 * 1024 * 1024)
     throw new Error("DOCUMENT_PDF_TOO_LARGE");
@@ -21,7 +25,7 @@ export async function writeGeneratedDocument(
     throw new Error("INVALID_DOCUMENT_PDF");
   const size = bytes.byteLength;
   const hash = createHash("sha256").update(bytes).digest("hex");
-  const receipt = await registerDocumentCandidate(db, input);
+  const receipt = await registerDocumentCandidate(db, input, runtime);
   const result = await getTripDocumentStore().set(receipt.key, bytes.buffer, {
     onlyIfNew: true,
     metadata: {
