@@ -15,6 +15,7 @@ const baseDraft: BlogFormDraft = {
   travelType: [],
   excuseKey: [],
   level: "",
+  label: "",
   tripperNote: null,
 };
 

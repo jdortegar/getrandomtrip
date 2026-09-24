@@ -509,6 +509,42 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
     expect(updateCall.data.status).toBe("DRAFT");
   });
 
+  it("stores a trimmed label and clears it on an empty string", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ label: " XSED Nº1 (AR) " }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+    await mod.PATCH(makePatchRequest({ label: "" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const calls = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls;
+    expect(calls[0][0].data.label).toBe("XSED Nº1 (AR)");
+    expect(calls[1][0].data.label).toBeNull();
+  });
+
+  it("detects a label change as a content change and reverts a PUBLISHED post to DRAFT", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1", { status: "PUBLISHED", label: "Old" }));
+
+    const mod = (await import("../route")) as RouteModule;
+    await mod.PATCH(makePatchRequest({ label: "New" }), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    const updateCall = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(updateCall.data.status).toBe("DRAFT");
+  });
+
   it("does not write level when omitted from the request body", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(

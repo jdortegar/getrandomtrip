@@ -232,6 +232,8 @@ export interface TripperBlogFormDict {
   fields: {
     title: string;
     titlePlaceholder: string;
+    label: string;
+    labelPlaceholder: string;
     subtitle: string;
     subtitlePlaceholder: string;
     coverImage: string;

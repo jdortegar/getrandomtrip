@@ -85,6 +85,7 @@ export async function GET(request: NextRequest) {
           travelType: true,
           excuseKey: true,
           level: true,
+          label: true,
           author: {
             select: {
               id: true,

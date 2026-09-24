@@ -10,6 +10,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
+import { normalizeBlogLabel } from "@/lib/blog/label";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -73,6 +74,7 @@ export async function GET(
         travelType: true,
         excuseKey: true,
         level: true,
+        label: true,
         format: true,
         status: true,
         isActive: true,
@@ -214,6 +216,7 @@ export async function PATCH(
       travelType,
       excuseKey,
       level,
+      label,
       tripperNote,
       isActive,
     } = body;
@@ -228,6 +231,8 @@ export async function PATCH(
     if (levelValue != null && !isValidExperienceLevel(levelValue)) {
       return NextResponse.json({ error: "Invalid level" }, { status: 400 });
     }
+
+    const labelValue = normalizeBlogLabel(label);
 
     // XSED is fulfilled centrally by the admin team — only admins may tag a
     // post with it (mirrors the client-side gate in TitleImageStep and the
@@ -259,6 +264,7 @@ export async function PATCH(
       (excuseKey !== undefined &&
         !eq(normalizeStringArray(excuseKey), existingBlog.excuseKey)) ||
       (levelValue !== undefined && !eq(levelValue, existingBlog.level)) ||
+      (labelValue !== undefined && !eq(labelValue, existingBlog.label)) ||
       (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format)) ||
       (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
       (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
@@ -303,6 +309,7 @@ export async function PATCH(
       updateData.excuseKey = normalizeStringArray(excuseKey);
     }
     if (levelValue !== undefined) updateData.level = levelValue;
+    if (labelValue !== undefined) updateData.label = labelValue;
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
     if (seo !== undefined) updateData.seo = seo || null;
 
@@ -352,6 +359,7 @@ export async function PATCH(
         travelType: true,
         excuseKey: true,
         level: true,
+        label: true,
         format: true,
         status: true,
         isActive: true,

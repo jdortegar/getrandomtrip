@@ -87,6 +87,12 @@ describe("computeChangedFields (blog)", () => {
     expect(result).toContain("level");
   });
 
+  it("detects label scalar field change", () => {
+    const copy = { ...base, label: "XSED Nº2 (AR)" };
+    const result = computeChangedFields(copy, { ...base, label: "XSED Nº1 (AR)" });
+    expect(result).toContain("label");
+  });
+
   it("does NOT flag level as changed when both are null", () => {
     const original = { ...base, level: null };
     const copy = { ...base, level: null };

@@ -36,6 +36,8 @@ export interface BlogPost {
   travelType: string[];
   /** One of EXPERIENCE_LEVELS' values (src/lib/constants/packages.ts), or null for none. XSED is a level, not a travelType. */
   level?: string | null;
+  /** Display ID shown on the XSED grid (e.g. "XSED Nº1 (AR)"), or null for none. */
+  label?: string | null;
   format: BlogFormat;
   status: BlogStatus;
   source?: "TRIPPER" | "RANDOMTRIP";
@@ -78,6 +80,8 @@ export interface BlogFormDraft {
   excuseKey: string[];
   /** One of EXPERIENCE_LEVELS' values, or "" for none. XSED is admin-only (see TitleImageStep). Independent of travelType. */
   level: string;
+  /** Display ID shown on the XSED grid (e.g. "XSED Nº1 (AR)"), or "" for none. */
+  label: string;
   /** Tripper's note to the admin at submission time. */
   tripperNote?: string | null;
 }
