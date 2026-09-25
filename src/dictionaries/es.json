@@ -1375,6 +1375,25 @@
       "title": "EL ASOMBRO EMPIEZA\nDONDE TERMINA\nLA CERTEZA",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
+    "trustSignal": {
+      "sectionAriaLabel": "Por qué viajar con Randomtrip",
+      "curated": {
+        "title": "CURADO CON INTENCIÓN",
+        "description": "Viajes diseñados por expertos."
+      },
+      "trippers": {
+        "title": "AMADO POR TRIPPERS",
+        "description": "Experiencias reales que inspiran."
+      },
+      "effortless": {
+        "title": "TÚ SOLO DI QUE SÍ",
+        "description": "Sin planificar. Sin comparar."
+      },
+      "discovery": {
+        "title": "MÁS ALLÁ DE TU BURBUJA",
+        "description": "Descubre lo que no buscarías."
+      }
+    },
     "homeInfo": {
       "benefitsSteps": [
         {

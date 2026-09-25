@@ -1375,6 +1375,25 @@
       "title": "WONDER BEGINS\nWHERE CERTAINTY\nENDS",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
+    "trustSignal": {
+      "sectionAriaLabel": "Why travel with Randomtrip",
+      "curated": {
+        "title": "CURATED WITH INTENTION",
+        "description": "Trips designed by experts."
+      },
+      "trippers": {
+        "title": "LOVED BY TRIPPERS",
+        "description": "Real experiences that inspire."
+      },
+      "effortless": {
+        "title": "JUST SAY YES",
+        "description": "No planning. No comparing."
+      },
+      "discovery": {
+        "title": "BEYOND YOUR BUBBLE",
+        "description": "Discover what you wouldn’t seek out."
+      }
+    },
     "homeInfo": {
       "benefitsSteps": [
         {

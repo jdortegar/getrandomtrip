@@ -5,6 +5,7 @@ import HomeInfo from "@/components/HomeInfo";
 import Hero from "@/components/Hero";
 import Blog from "@/components/Blog";
 import { ExplorationSection } from "@/components/landing/exploration";
+import { TrustSignal } from "@/components/landing/TrustSignal";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { XsedHero } from "@/components/app/xsed/XsedHero";
@@ -31,6 +32,7 @@ export function HomePageClient({
   return (
     <main style={{ scrollBehavior: "smooth" }}>
       <Hero content={home.hero} scrollIndicator variant="home" />
+      <TrustSignal copy={home.trustSignal} />
       <HomeInfo content={home.homeInfo} />
       <ExplorationSection content={home.exploration} trippers={trippers} />
       <Blog

@@ -2634,6 +2634,13 @@ export interface MarketingDictionary {
       title: string;
       videoSrc: string;
     };
+    trustSignal: {
+      sectionAriaLabel: string;
+      curated: { description: string; title: string };
+      trippers: { description: string; title: string };
+      effortless: { description: string; title: string };
+      discovery: { description: string; title: string };
+    };
     homeInfo: {
       benefitsSteps: Array<{
         description: string;
