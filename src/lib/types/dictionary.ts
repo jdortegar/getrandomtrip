@@ -2623,6 +2623,7 @@ export interface MarketingDictionary {
       message: string;
     };
     hero: {
+      accent: string;
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
       primaryCta: { ariaLabel: string; href: string; text: string };

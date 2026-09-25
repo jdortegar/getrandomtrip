@@ -1367,11 +1367,12 @@
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
         "href": "#exploration-section",
-        "text": "GETRANDOMTRIP!"
+        "text": "GET RANDOMTRIP!"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Vive lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
-      "title": "SERENDIPIA DISEÑADA",
+      "accent": "Vuelve a sentir la magia de viajar.",
+      "subtitle": "Nosotros nos encargamos de todo.\nTú solo di que sí. El destino lo descubres 48hs antes.",
+      "title": "EL ASOMBRO EMPIEZA\nDONDE TERMINA\nLA CERTEZA",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "homeInfo": {

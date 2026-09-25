@@ -30,14 +30,17 @@ export function HomePageClient({
 
   return (
     <main style={{ scrollBehavior: "smooth" }}>
-      <Hero content={home.hero} scrollIndicator />
+      <Hero content={home.hero} scrollIndicator variant="home" />
       <HomeInfo content={home.homeInfo} />
       <ExplorationSection content={home.exploration} trippers={trippers} />
       <Blog
         eyebrow={home.blog.eyebrow}
         subtitle={home.blog.subtitle}
         title={home.blog.title}
-        posts={blogPosts.map((p) => ({ ...p, href: pathForLocale(locale as Locale, p.href) }))}
+        posts={blogPosts.map((p) => ({
+          ...p,
+          href: pathForLocale(locale as Locale, p.href),
+        }))}
         viewAll={home.blog.viewAll}
       />
       <XsedHero content={home.xsedHero} />

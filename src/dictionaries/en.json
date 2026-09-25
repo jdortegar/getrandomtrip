@@ -1367,11 +1367,12 @@
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",
-        "text": "GETRANDOMTRIP!"
+        "text": "GET RANDOMTRIP!"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Live the unexpected without improvising. We design your trip <br/>and <strong>reveal the destination 48 hours before.</strong>",
-      "title": "DESIGNED SERENDIPITY",
+      "accent": "Feel the magic of travel again.",
+      "subtitle": "We take care of everything.\nYou just say yes. Discover your destination 48 hours before departure.",
+      "title": "WONDER BEGINS\nWHERE CERTAINTY\nENDS",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "homeInfo": {
