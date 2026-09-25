@@ -11,6 +11,15 @@ const content = {
   videoSrc: "",
   fallbackImage: "",
 };
+
+it("keeps the XSED hero title free of badge styling", () => {
+  const template = document.createElement("template");
+  template.innerHTML = renderToStaticMarkup(
+    <SecondaryHero content={{ ...content, title: "XSED" }} locale="es" />,
+  );
+  expect(template.content.querySelector("h2")?.textContent).toBe("XSED");
+  expect(template.content.querySelector("h2 .bg-xsed")).toBeNull();
+});
 function render(scrollIndicator?: boolean) {
   const template = document.createElement("template");
   template.innerHTML = renderToStaticMarkup(

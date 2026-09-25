@@ -24,6 +24,13 @@ describe("DropCard badge", () => {
     );
   });
 
+  it("uses orange branding without rewriting a custom drop label", () => {
+    const badge = renderBadge({ ...baseDrop, label: "XSED Nº1 (AR) · my escape" });
+    expect(badge?.classList.contains("bg-xsed")).toBe(true);
+    expect(badge?.classList.contains("text-neutral-900")).toBe(true);
+    expect(badge?.textContent).toBe("|XSED Nº1 (AR) · my escape");
+  });
+
   it("renders no badge when there is no label", () => {
     expect(renderBadge(baseDrop)).toBeNull();
   });

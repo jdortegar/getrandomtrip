@@ -1,5 +1,6 @@
 import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
 import { EXPERIENCE_LEVELS, getExperienceTypes } from "@/lib/constants/packages";
+import { ProductBadge } from "@/components/common/ProductBadge";
 
 interface ExperienceTypePillsProps {
   types: string[];
@@ -23,12 +24,10 @@ export function ExperienceTypePills({
     <div data-component="ExperienceTypePills">
       <div className="flex flex-wrap gap-1">
         {classification.type.map((t) => (
-          <span
+          <ProductBadge
             key={t}
-            className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700"
-          >
-            {typeOptions.find((et) => et.value === t)?.label ?? t}
-          </span>
+            value={typeOptions.find((et) => et.value === t)?.label ?? t}
+          />
         ))}
       </div>
       {levelLabel && (

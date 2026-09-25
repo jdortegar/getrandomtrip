@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
+import { ProductBadge } from "@/components/common/ProductBadge";
 import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
@@ -88,9 +89,9 @@ export function TripFulfillmentHeader({
           <p className={styles.pageSubtitle}>{trip.user.email}</p>
           <div className={styles.chipRow}>
             <StatusBadge label={statusLabel(trip.status)} status={trip.status} variant="trip" />
-            <span className={`${styles.chip} ${styles.chipType}`}>{trip.type}</span>
+            <ProductBadge value={trip.type} />
             {showLevelChip ? (
-              <span className={`${styles.chip} ${styles.chipType}`}>{trip.level}</span>
+              <ProductBadge value={trip.level} />
             ) : null}
             {trip.payment ? (
               <StatusBadge

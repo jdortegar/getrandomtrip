@@ -100,9 +100,22 @@ describe("TripFulfillmentHeader — type/level chip dedup", () => {
     render(baseTrip({ type: "xsed", level: "xsed" }));
 
     const chips = Array.from(container.querySelectorAll("span")).filter(
-      (el) => el.textContent === "xsed",
+      (el) => el.textContent === "XSED",
     );
     expect(chips).toHaveLength(1);
+    expect(chips[0].classList.contains("bg-xsed")).toBe(true);
+    expect(chips[0].classList.contains("text-neutral-900")).toBe(true);
+  });
+
+  it("deduplicates mixed-case XSED markers and brands a distinct XSED level", () => {
+    render(baseTrip({ type: "XSED", level: "xsed" }));
+    expect(container.querySelectorAll(".bg-xsed")).toHaveLength(1);
+  });
+
+  it("brands XSED when it is the level rather than the traveler type", () => {
+    render(baseTrip({ type: "couple", level: "xsed" }));
+    expect(container.textContent).toContain("couple");
+    expect(container.querySelector(".bg-xsed")?.textContent).toBe("XSED");
   });
 });
 
