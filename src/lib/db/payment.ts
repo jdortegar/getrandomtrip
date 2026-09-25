@@ -1,6 +1,8 @@
 import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import type { PaymentStatus, Prisma } from "@prisma/client";
+import type { PaxDetails } from "@/lib/types/PaxDetails";
+import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 
 export interface CreatePaymentData {
   userId: string;
@@ -55,30 +57,36 @@ export async function createPayment(data: CreatePaymentData) {
  * Creates or updates the single `Payment` row for a trip (unique `tripRequestId`).
  * Used when the user starts checkout again — resets to PENDING with new Stripe PaymentIntent.
  */
-export async function upsertPaymentForTripCheckout(data: CreatePaymentData) {
+export async function upsertPaymentForTripCheckout(data: CreatePaymentData & {
+  expectedTripUpdatedAt: Date;
+  level: string;
+  paxDetails: PaxDetails;
+  previousPayment: { id: string; stripePaymentIntentId: string | null } | null;
+}) {
   const currency = data.currency ?? "USD";
-
-  return prisma.payment.upsert({
-    create: {
-      amount: data.amount,
-      currency,
-      expiresAt: data.expiresAt,
-      provider: data.provider,
-      stripePaymentIntentId: data.stripePaymentIntentId,
-      status: "PENDING",
-      tripRequestId: data.tripRequestId,
-      userId: data.userId,
-    },
-    update: {
-      amount: data.amount,
-      currency,
-      expiresAt: data.expiresAt,
-      stripePaymentIntentId: data.stripePaymentIntentId,
-      /** New checkout attempt — provider will assign a new payment id via webhook. */
-      providerPaymentId: null,
-      status: "PENDING",
-    },
-    where: { tripRequestId: data.tripRequestId },
+  return prisma.$transaction(async (tx) => {
+    const conflict = () => Object.assign(new Error("Checkout changed, please retry"), { status: 409 });
+    const party = data.paxDetails;
+    const changed = await tx.tripRequest.updateMany({
+      where: { id: data.tripRequestId, userId: data.userId, updatedAt: data.expectedTripUpdatedAt,
+        status: { in: ["SAVED", "PENDING_PAYMENT"] } },
+      data: { status: "PENDING_PAYMENT", level: data.level, pax: party.adults + party.minors, paxDetails: { ...party } },
+    });
+    if (changed.count !== 1) throw conflict();
+    const fields = {
+      amount: data.amount, currency, expiresAt: data.expiresAt, provider: data.provider,
+      stripePaymentIntentId: data.stripePaymentIntentId, status: "PENDING" as const,
+    };
+    if (data.previousPayment) {
+      const updated = await tx.payment.updateMany({
+        where: { id: data.previousPayment.id, stripePaymentIntentId: data.previousPayment.stripePaymentIntentId,
+          status: { in: [...RETRYABLE_PAYMENT_STATUSES] } },
+        data: { ...fields, providerPaymentId: null },
+      });
+      if (updated.count !== 1) throw conflict();
+      return;
+    }
+    await tx.payment.create({ data: { ...fields, tripRequestId: data.tripRequestId, userId: data.userId } });
   });
 }
 
@@ -188,16 +196,19 @@ export async function updatePaymentFromStripeWebhook(
     );
   }
 
-  // Prevent late/duplicate events from overwriting a terminal status
+  // Terminal Stripe outcomes cannot be reversed by an older or duplicate event.
   const TERMINAL_STATUSES: PaymentStatus[] = [
     "APPROVED",
     "COMPLETED",
     "REFUNDED",
+    "PARTIALLY_REFUNDED",
+    "CHARGEBACK",
+    "CANCELLED",
   ];
   if (
-    TERMINAL_STATUSES.includes(payment.status) &&
-    updateData.status !== undefined &&
-    !TERMINAL_STATUSES.includes(updateData.status)
+    TERMINAL_STATUSES.includes(payment.status) ||
+    payment.status === updateData.status ||
+    (payment.stripePaymentIntentId !== null && payment.stripePaymentIntentId !== stripePaymentIntentId)
   ) {
     return payment;
   }
@@ -216,39 +227,42 @@ export async function updatePaymentFromStripeWebhook(
 
   const finalData: UpdatePaymentData = {
     ...updateData,
+    stripePaymentIntentId,
+    providerPaymentId: stripePaymentIntentId,
     providerResponse: mergedProviderResponse,
     webhookData:
       (webhookPayload as UpdatePaymentData["webhookData"]) ?? undefined,
   };
 
-  if (finalData.status === "APPROVED") {
-    // Atomic transition: only the first caller to flip the status wins.
-    // Both webhook and confirm-payment call this function; using updateMany
-    // with a status guard ensures exactly one of them gets count=1 and fires
-    // the email. The loser gets count=0 and skips it.
-    const { count } = await prisma.payment.updateMany({
-      where: {
-        id: payment.id,
-        status: { notIn: TERMINAL_STATUSES },
-      },
-      data: { ...finalData, updatedAt: new Date() },
-    });
+  // Lookup is only a snapshot: a quote or another webhook can replace it while
+  // this request waits. Every outcome, not just success, must win this guard.
+  const { count } = await prisma.payment.updateMany({
+    where: {
+      id: payment.id,
+      stripePaymentIntentId: payment.stripePaymentIntentId,
+      ...(payment.stripePaymentIntentId === null ? { providerPaymentId: stripePaymentIntentId } : {}),
+      ...(finalData.status === "APPROVED"
+        // Real settlement wins over nonterminal same-intent refresh/failure,
+        // but never over a replacement intent or terminal outcome.
+        ? { status: { notIn: TERMINAL_STATUSES } }
+        : { status: payment.status, updatedAt: payment.updatedAt }),
+    },
+    data: { ...finalData, updatedAt: new Date() },
+  });
+  if (count === 0) return payment;
 
-    if (count > 0) {
+  if (finalData.status === "APPROVED") {
       await prisma.tripRequest.update({
         where: { id: payment.tripRequestId },
         data: { status: "CONFIRMED" },
       });
       sendBookingConfirmed(payment.tripRequestId, payment.userId);
       sendAdminNewBooking(payment.tripRequestId, payment.userId);
-    }
-
-    return { ...payment, ...finalData };
   }
 
   if (finalData.status === "FAILED") {
     sendPaymentFailed(payment.tripRequestId, payment.userId);
   }
 
-  return await updatePayment(payment.id, finalData);
+  return { ...payment, ...finalData };
 }

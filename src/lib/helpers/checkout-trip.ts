@@ -5,6 +5,8 @@ export const CHECKOUT_TRIP_STATUSES = new Set([
   "PENDING_PAYMENT",
 ]);
 
+export const RETRYABLE_PAYMENT_STATUSES = ["PENDING", "FAILED", "CANCELLED", "REJECTED"] as const;
+
 export function pickCheckoutTrip<
   T extends { status: string; updatedAt: string },
 >(trips: T[]): T | null {

@@ -3,7 +3,11 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { parsePaxDetails } from "@/lib/helpers/pax-details";
+import { parsePaxDetails, paxDetailsEquals } from "@/lib/helpers/pax-details";
+import { getCheckoutLevel, getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
+import { CHECKOUT_PRICE_SELECT, checkoutPriceInputsChanged } from "@/lib/helpers/checkout-price-inputs";
+import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
+import { invalidateCheckoutForEdit } from "@/lib/payments/invalidate-checkout";
 import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
@@ -196,16 +200,20 @@ async function buildTripRequestCreateFields(
     resolvedEndDate = canonical.endDate;
   }
 
+  const xsedParty = type === "xsed"
+    ? getCheckoutPaxDetails({ type, level: String(level), pax: Number(pax) || 1, paxDetails: paxDetailsValue })
+    : null;
+
   return {
     from: (from as string) || "admin",
     type: type as string,
-    level: level as string,
+    level: xsedParty ? getCheckoutLevel({ type: "xsed", level: String(level), pax: xsedParty.adults + xsedParty.minors }) : level as string,
     originCountry: originCountry as string,
     originCity: originCity as string,
     startDate: resolvedStartDate,
     endDate: resolvedEndDate,
     nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
-    pax: (typeof pax === "number" ? pax : Number(pax)) || 1,
+    pax: xsedParty ? xsedParty.adults + xsedParty.minors : Number(pax) || 1,
     transport: normalizeTransportId(String(transport ?? "")) || "plane",
     accommodationType:
       normalizeJourneyFilterValue(String(accommodationType ?? "")) || "any",
@@ -221,7 +229,8 @@ async function buildTripRequestCreateFields(
       : [],
     addons: (addons ?? []) as Prisma.InputJsonValue,
     status: (status as TripRequestStatus) || TripRequestStatus.DRAFT,
-    ...(paxDetailsValue !== undefined ? { paxDetails: paxDetailsValue } : {}),
+    ...(xsedParty ? { paxDetails: xsedParty as unknown as Prisma.InputJsonValue }
+      : paxDetailsValue !== undefined ? { paxDetails: paxDetailsValue } : {}),
     ...(experienceId ? { experienceId: String(experienceId) } : {}),
   };
 }
@@ -345,11 +354,43 @@ export async function POST(request: NextRequest) {
     if (clientId) {
       const owned = await prisma.tripRequest.findFirst({
         where: { id: clientId, userId: user.id },
-        select: { id: true },
+        select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, updatedAt: true,
+          payment: { select: { status: true, stripePaymentIntentId: true } } },
       });
 
       if (owned) {
         const updateData = buildTripRequestPartialUpdate(body, paxDetailsValue);
+        const updatesParty = hasBodyKey(body, "pax") || hasBodyKey(body, "paxDetails");
+        if (updatesParty || hasBodyKey(body, "type") || hasBodyKey(body, "level")) {
+          const provided = parsePaxDetails(paxDetailsValue);
+          const requestedPax = hasBodyKey(body, "pax") ? Number(body.pax) : provided ? provided.adults + provided.minors : owned.pax;
+          if (!Number.isInteger(requestedPax) || requestedPax < 1 ||
+            (provided && provided.adults + provided.minors !== requestedPax)) {
+            return NextResponse.json({ error: "Traveler count and party details must agree" }, { status: 400 });
+          }
+          const party = getCheckoutPaxDetails({ type: String(body.type ?? owned.type), level: String(body.level ?? owned.level),
+            pax: requestedPax, paxDetails: paxDetailsValue === undefined ? owned.paxDetails : paxDetailsValue });
+          updateData.pax = party.adults + party.minors;
+          updateData.paxDetails = { ...party };
+        }
+        if (updatesParty || hasBodyKey(body, "type") || hasBodyKey(body, "level")) {
+          updateData.level = getCheckoutLevel({ type: String(updateData.type ?? owned.type), level: String(updateData.level ?? owned.level),
+            pax: Number(updateData.pax ?? owned.pax), paxDetails: updateData.paxDetails ?? owned.paxDetails });
+        }
+        const priceChanged = checkoutPriceInputsChanged(owned, updateData);
+        const nextParty = parsePaxDetails(updateData.paxDetails);
+        const partyChanged = nextParty !== null && !paxDetailsEquals(nextParty, owned.paxDetails);
+        const guardsCheckout = partyChanged || priceChanged;
+        // Even an apparent no-op can overwrite a newer quote's inputs after our
+        // read. Version every supplied pricing/party field without needlessly
+        // restricting unchanged fields on legitimate nonpayable transitions.
+        const guardsVersion = updatesParty || Object.keys(CHECKOUT_PRICE_SELECT).some((key) => hasBodyKey(body, key));
+        if (guardsCheckout) {
+          if (!["DRAFT", "SAVED", "PENDING_PAYMENT"].includes(owned.status)) {
+            return NextResponse.json({ error: "Trip is no longer editable" }, { status: 409 });
+          }
+          await invalidateCheckoutForEdit(owned.payment, priceChanged);
+        }
         if (Object.keys(updateData).length === 0) {
           return NextResponse.json(
             { error: "No fields to update" },
@@ -358,7 +399,10 @@ export async function POST(request: NextRequest) {
         }
         console.log("Updating trip request:", owned.id);
         const tripRequest = await prisma.tripRequest.update({
-          where: { id: owned.id },
+          where: { id: owned.id, ...(guardsVersion ? { updatedAt: owned.updatedAt } : {}), ...(guardsCheckout ? {
+            payment: { is: owned.payment ? { stripePaymentIntentId: owned.payment.stripePaymentIntentId,
+              status: { in: [...RETRYABLE_PAYMENT_STATUSES] } } : null },
+            status: { in: [TripRequestStatus.DRAFT, TripRequestStatus.SAVED, TripRequestStatus.PENDING_PAYMENT] } } : {}) },
           data: updateData,
         });
         console.log("Trip request updated:", tripRequest.id);
@@ -412,10 +456,15 @@ export async function POST(request: NextRequest) {
     let tripRequest;
     let statusCode: 200 | 201;
     if (active) {
+      const updateData = { ...fields, tripperId: active.tripperId ?? resolvedTripperId };
+      await invalidateCheckoutForEdit(active.payment, checkoutPriceInputsChanged(active, updateData));
       console.log("Updating active trip request for family:", family, active.id);
       tripRequest = await prisma.tripRequest.update({
-        where: { id: active.id },
-        data: { ...fields, tripperId: active.tripperId ?? resolvedTripperId },
+        where: { id: active.id, updatedAt: active.updatedAt,
+          status: { in: [TripRequestStatus.DRAFT, TripRequestStatus.SAVED, TripRequestStatus.PENDING_PAYMENT] },
+          payment: { is: active.payment ? { stripePaymentIntentId: active.payment.stripePaymentIntentId,
+            status: { in: [...RETRYABLE_PAYMENT_STATUSES] } } : null } },
+        data: updateData,
       });
       statusCode = 200;
     } else {
@@ -440,6 +489,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ tripRequest }, { status: statusCode });
   } catch (error) {
     console.error("Error saving trip request:", error);
+    if (error && typeof error === "object" && "status" in error && error.status === 409) {
+      return NextResponse.json({ error: error instanceof Error ? error.message : "Checkout changed, please retry" }, { status: 409 });
+    }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+      return NextResponse.json({ error: "Trip changed, please retry" }, { status: 409 });
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

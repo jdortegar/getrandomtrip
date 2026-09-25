@@ -323,6 +323,13 @@ Use `<RowActions>` from `@/components/common/RowActions` only for simple edit/de
 - Panel CTA: `<Button asChild size="sm">`
 - Never use raw styled `<a>` or `<Link>` for actions — always go through `Button`
 
+### Async action feedback
+
+- Every button that starts async work must show a visible pending state until it settles; `disabled` alone is insufficient.
+- Use a `Loader2` spinner (`aria-hidden`, `animate-spin h-4 w-4`) plus a localized progress label from the dictionary (for example, `Saving…` / `Guardando…`). Set `aria-busy` on the button.
+- Disable the action while pending and guard the handler against rapid duplicate submissions. Reset pending state in `finally`, preserve actionable error feedback, and allow retry after failure.
+- Test with a deferred promise: pending spinner/label and busy state, duplicate protection, and recovery after both success and rejection.
+
 ---
 
 ## Page Header

@@ -1,3 +1,4 @@
+import { CHECKOUT_PRICE_SELECT } from "@/lib/helpers/checkout-price-inputs";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TripRequestStatus } from "@prisma/client";
 
@@ -155,7 +156,7 @@ describe("findActiveTripRequest", () => {
         status: { in: NON_TERMINAL_TRIP_STATUSES },
       },
       orderBy: { updatedAt: "desc" },
-      select: { id: true, status: true, tripperId: true },
+      select: { ...CHECKOUT_PRICE_SELECT, id: true, status: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
     });
     expect(result).toEqual({
       id: "trip-1",
@@ -178,7 +179,7 @@ describe("findActiveTripRequest", () => {
         status: { in: NON_TERMINAL_TRIP_STATUSES },
       },
       orderBy: { updatedAt: "desc" },
-      select: { id: true, status: true, tripperId: true },
+      select: { ...CHECKOUT_PRICE_SELECT, id: true, status: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
     });
     expect(result).toBeNull();
   });

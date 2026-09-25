@@ -34,6 +34,8 @@ vi.mock("@/lib/pricing/tripper-price-overrides.server", () => ({
 }));
 
 const stripeMock = {
+  promotionCodes: { list: vi.fn() },
+  coupons: { retrieve: vi.fn() },
   paymentIntents: {
     retrieve: vi.fn(),
     create: vi.fn(),
@@ -66,10 +68,10 @@ import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides
 
 type RouteModule = typeof import("../route");
 
-function makeRequest(tripId: string) {
+function makeRequest(tripId: string, promoCode?: string | null) {
   return new Request("http://localhost/api/stripe/payment-intent", {
     method: "POST",
-    body: JSON.stringify({ tripId }),
+    body: JSON.stringify({ tripId, ...(promoCode !== undefined ? { promoCode } : {}) }),
   }) as unknown as import("next/server").NextRequest;
 }
 
@@ -104,6 +106,7 @@ describe("POST /api/stripe/payment-intent — expiry revert", () => {
 
   beforeEach(async () => {
     vi.resetAllMocks();
+    stripeMock.paymentIntents.cancel.mockResolvedValue({ id: "pi_cancelled" });
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "buyer-1" },
     });
@@ -128,6 +131,19 @@ describe("POST /api/stripe/payment-intent — expiry revert", () => {
 
     const mod = await import("../route");
     POST = mod.POST;
+  });
+
+  it("repairs legacy one-person XSED Group to Solo before pricing and persists the normalized level", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip({ type: "xsed", level: "group", pax: 1 }) as never);
+    vi.mocked(revertExpiredPendingPayment).mockResolvedValue("PENDING_PAYMENT");
+    vi.mocked(resolveBasePricePerPerson).mockImplementation(({ levelId }) => ({ offered: true, price: levelId === "solo" ? 350 : 250, source: "catalog" }));
+    vi.mocked(applyPaxMultiplier).mockImplementation((price) => price);
+    vi.mocked(calculatePaymentTotals).mockImplementation(({ basePriceUsd, logistics }) => ({ totalTrip: basePriceUsd * logistics.pax, basePerPax: basePriceUsd }) as never);
+    const res = await POST(makeRequest("trip-1"));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ total: 350, level: "solo", paxDetails: { adults: 1, minors: 0, rooms: 1 } });
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 35000 }));
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({ level: "solo", amount: 350 }));
   });
 
   it("proceeds as a normal payable checkout when the trip was PENDING_PAYMENT but had expired (reverted to SAVED)", async () => {
@@ -166,6 +182,18 @@ describe("POST /api/stripe/payment-intent — expiry revert", () => {
     expect(res.status).toBe(409);
     expect(prisma.tripRequest.update).not.toHaveBeenCalled();
   });
+
+  it("persists against the fresh version after expiry reversion updates the trip", async () => {
+    const before = new Date("2026-09-24");
+    const after = new Date("2026-09-25");
+    vi.mocked(prisma.tripRequest.findUnique)
+      .mockResolvedValueOnce(baseTrip({ updatedAt: before }) as never)
+      .mockResolvedValueOnce(baseTrip({ status: "SAVED", updatedAt: after }) as never);
+    vi.mocked(revertExpiredPendingPayment).mockResolvedValue("SAVED");
+    const result = await POST(makeRequest("trip-1"));
+    expect(result.status).toBe(200);
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({ expectedTripUpdatedAt: after }));
+  });
 });
 
 describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => {
@@ -173,6 +201,7 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
 
   beforeEach(async () => {
     vi.resetAllMocks();
+    stripeMock.paymentIntents.cancel.mockResolvedValue({ id: "pi_cancelled" });
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "buyer-1" },
     });
@@ -209,6 +238,80 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
       },
     });
   }
+
+  it.each(["PROCESSING", "APPROVED", "COMPLETED", "REFUNDED", "PARTIALLY_REFUNDED", "CHARGEBACK", "IN_PROCESS", "IN_MEDIATION"])(
+    "rejects an immutable stored payment in %s status", async (status) => {
+      vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip({ payment: { status, stripePaymentIntentId: "pi_existing" } }) as never);
+      expect((await POST(makeRequest("trip-1"))).status).toBe(409);
+      expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it("cancels only its new intent when persistence loses a trip-version race", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip() as never);
+    stripeMock.paymentIntents.create.mockResolvedValue({ id: "pi_new", client_secret: "new_secret" });
+    vi.mocked(upsertPaymentForTripCheckout).mockRejectedValue(Object.assign(new Error("Checkout changed"), { status: 409 }));
+    expect((await POST(makeRequest("trip-1"))).status).toBe(409);
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_new");
+  });
+
+  it("does not cancel a reused intent when a settlement wins the persistence race", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(tripWithExistingIntent() as never);
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_existing", status: "requires_payment_method", amount: 20000, client_secret: "old_secret" });
+    vi.mocked(upsertPaymentForTripCheckout).mockRejectedValue(Object.assign(new Error("Payment settled"), { status: 409 }));
+    expect((await POST(makeRequest("trip-1"))).status).toBe(409);
+    expect(stripeMock.paymentIntents.cancel).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported null-coupon promotions without creating an intent", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip() as never);
+    stripeMock.promotionCodes.list.mockResolvedValue({ data: [{ id: "promo", promotion: { coupon: null } }] });
+    expect((await POST(makeRequest("trip-1", "UNSUPPORTED"))).status).toBe(400);
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
+
+  it.each(["processing", "succeeded", "requires_capture"])("never replaces an intent already %s", async (status) => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(tripWithExistingIntent() as never);
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_existing", status, amount: 15000 });
+    const response = await POST(makeRequest("trip-1"));
+    expect(response.status).toBe(409);
+    expect(stripeMock.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
+
+  it("recalculates an existing percentage promo against the new party total and persists the charge", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(tripWithExistingIntent() as never);
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_existing", status: "requires_payment_method", amount: 9000,
+      metadata: { promoCode: "TEN" } });
+    stripeMock.promotionCodes.list.mockResolvedValue({ data: [{ id: "promo_ten", promotion: { coupon: { valid: true, percent_off: 10 } } }] });
+    stripeMock.paymentIntents.create.mockResolvedValue({ id: "pi_new", client_secret: "new_secret" });
+
+    const response = await POST(makeRequest("trip-1"));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ code: "TEN", discountAmount: 20, total: 180 });
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 18000 }));
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({ amount: 180 }));
+  });
+
+  it("reports the existing USD0.50 minimum for a full discount instead of displaying zero", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip() as never);
+    stripeMock.promotionCodes.list.mockResolvedValue({ data: [{ id: "promo_full", promotion: { coupon: { valid: true, percent_off: 100 } } }] });
+    stripeMock.paymentIntents.create.mockResolvedValue({ id: "pi_new", client_secret: "new_secret" });
+    const response = await POST(makeRequest("trip-1", "FULL"));
+    expect(await response.json()).toMatchObject({ discountAmount: 199.5, total: 0.5 });
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 50 }));
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({ amount: 0.5 }));
+  });
+
+  it("rejects an invalid retained promo and cancels its stale intent without a full-price fallback", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(tripWithExistingIntent() as never);
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_existing", status: "requires_payment_method", metadata: { promoCode: "OLD" } });
+    stripeMock.promotionCodes.list.mockResolvedValue({ data: [] });
+    const response = await POST(makeRequest("trip-1"));
+    expect(response.status).toBe(400);
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_existing");
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
 
   // (a) matching amount reuses the existing intent unchanged
   it("reuses the existing intent unchanged when its amount matches the current computed total", async () => {
@@ -295,7 +398,7 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
   });
 
   // (d) amounts match but client_secret is null → falls through to create
-  it("falls through to create a new intent when the matching intent has no client_secret", async () => {
+  it("cancels before replacing an intent whose client_secret is missing", async () => {
     const trip = tripWithExistingIntent();
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       trip,
@@ -314,7 +417,7 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
 
     const res = await POST(makeRequest("trip-1"));
 
-    expect(stripeMock.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_existing");
     expect(stripeMock.paymentIntents.create).toHaveBeenCalledTimes(1);
     expect(res.status).toBe(200);
     const body = await res.json();

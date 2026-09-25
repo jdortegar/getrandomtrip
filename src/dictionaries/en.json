@@ -1058,7 +1058,7 @@
       "couple": "Couple",
       "solo": "Solo",
       "family": "Family",
-      "group": "Group"
+      "group": "Friends Group"
     },
     "pax": {
       "label": "Travelers",
@@ -3009,6 +3009,7 @@
       "travelersModalDone": "Done",
       "travelersModalMinors": "Children",
       "travelersModalRooms": "Rooms",
+      "travelersModalSaving": "Saving…",
       "travelersOne": "{count} traveler",
       "travelersRoomsMany": "{count} rooms",
       "travelersRoomsOne": "{count} room",

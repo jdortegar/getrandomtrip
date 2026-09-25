@@ -107,6 +107,10 @@ src/
 - **No raw `<img>` tags** — always use `<Img>` from `@/components/common/Img`.
 - **No dark mode** — theme is forced light; never add `dark:` Tailwind variants.
 - All user-visible strings must use **i18n dictionary keys** — no hardcoded copy.
+- **Async action buttons must visibly show loading** — disabling alone is not enough.
+  Show a spinner and localized progress label, set `aria-busy`, prevent duplicate
+  submissions, and reset pending state in `finally` so failures allow retry.
+  See `.claude/rules/design-system.md` → Buttons / Links.
 
 ### Component File Order
 

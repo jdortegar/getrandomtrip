@@ -33,7 +33,12 @@ export function DashboardNavTabs({ tabs }: DashboardNavTabsProps) {
 
   return (
     <div className="overflow-x-auto" data-component="DashboardNavTabs">
-      <div className="flex justify-safe-center gap-2 pb-1 sm:gap-3">
+      <div
+        className={cn(
+          "flex gap-2 justify-safe-center min-w-full pb-1 px-4 w-max",
+          "sm:gap-3 sm:px-6 lg:px-8",
+        )}
+      >
         {tabs.map((tab) => {
           const active = isActive(tab.href, tab.exact);
           const Icon = tab.icon;

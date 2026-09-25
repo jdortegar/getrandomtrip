@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/Button";
 import { Modal, DialogTitle } from "@/components/ui/Modal";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { useRef, useState } from "react";
 
 export interface CheckoutTravelersModalCopy {
   adultsLabel: string;
@@ -17,6 +19,8 @@ export interface CheckoutTravelersModalCopy {
   done: string;
   minorsLabel: string;
   roomsLabel: string;
+  saving: string;
+  saveError: string;
 }
 
 interface CheckoutTravelersModalProps {
@@ -50,12 +54,22 @@ export function CheckoutTravelersModal({
   open,
   rooms,
 }: CheckoutTravelersModalProps) {
+  const saving = useRef(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
   async function handleDone() {
+    if (saving.current) return;
+    saving.current = true;
+    setIsSaving(true);
+    setSaveFailed(false);
     try {
       await Promise.resolve(onDone());
       onOpenChange(false);
     } catch {
-      /* parent shows toast; keep dialog open */
+      setSaveFailed(true);
+    } finally {
+      saving.current = false;
+      setIsSaving(false);
     }
   }
 
@@ -68,7 +82,7 @@ export function CheckoutTravelersModal({
     >
       <DialogTitle className="sr-only">{copy.dialogTitle}</DialogTitle>
 
-      <div className="space-y-0">
+      <fieldset className="space-y-0" disabled={isSaving}>
         <QuantityStepper
           ariaDecrease={copy.ariaDecreaseAdults}
           ariaIncrease={copy.ariaIncreaseAdults}
@@ -96,16 +110,21 @@ export function CheckoutTravelersModal({
           onValueChange={onRoomsChange}
           value={rooms}
         />
-      </div>
+      </fieldset>
+
+      {saveFailed ? <p className="mt-4 text-red-600 text-sm" role="alert">{copy.saveError}</p> : null}
 
       <Button
+        aria-busy={isSaving}
         className="mt-6 w-full"
+        disabled={isSaving}
         onClick={() => void handleDone()}
         size="lg"
         type="button"
         variant="default"
       >
-        {copy.done}
+        {isSaving ? <Loader2 aria-hidden className="animate-spin h-4 w-4" /> : null}
+        {isSaving ? copy.saving : copy.done}
       </Button>
     </Modal>
   );

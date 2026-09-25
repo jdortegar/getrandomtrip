@@ -6,6 +6,7 @@ import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { getNextWeekend, toISODate } from "@/lib/helpers/xsed-dates";
+import { paxDetailsFromTotalPax } from "@/lib/helpers/pax-details";
 import { Accordion } from "@/components/ui/accordion";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
@@ -113,8 +114,17 @@ export function XsedBookClient({
     setOpenSection("pax");
   };
 
-  // Solo is one traveler by definition, so its pax is fixed at 1.
+  const handlePaxChange = (value: string) => {
+    const count = Number(value);
+    const nextPax = Math.max(1, count || 1);
+    setPax(nextPax);
+    if (nextPax === 1) setTravelType("solo");
+    else if (nextPax > 1 && travelType === "solo") setTravelType("");
+  };
+
+  // Solo is one traveler by definition.
   const handleTravelTypeChange = (value: XsedTravelType) => {
+    if (pax === 1 && value !== "solo") return;
     setTravelType(value);
     if (value === "solo") setPax(1);
   };
@@ -158,6 +168,7 @@ export function XsedBookClient({
           originCountry,
           originCity,
           pax,
+          paxDetails: paxDetailsFromTotalPax(pax),
           startDate: toISODate(saturday),
           endDate: toISODate(sunday),
           nights: 1,
@@ -296,13 +307,10 @@ export function XsedBookClient({
                     <div className="flex flex-wrap items-start justify-start gap-6">
                       <div className="w-full max-w-32">
                         <FormField
-                          disabled={travelType === "solo"}
                           id="xsed-pax"
                           label={book.pax.label}
                           min={1}
-                          onChange={(e) =>
-                            setPax(Math.max(1, Number(e.target.value) || 1))
-                          }
+                          onChange={(e) => handlePaxChange(e.target.value)}
                           type="number"
                           value={pax}
                         />
@@ -321,9 +329,15 @@ export function XsedBookClient({
                             {book.travelType.placeholder}
                           </option>
                           <option value="solo">{book.travelType.solo}</option>
-                          <option value="couple">{book.travelType.couple}</option>
-                          <option value="family">{book.travelType.family}</option>
-                          <option value="group">{book.travelType.group}</option>
+                          <option disabled={pax === 1} value="couple">
+                            {book.travelType.couple}
+                          </option>
+                          <option disabled={pax === 1} value="family">
+                            {book.travelType.family}
+                          </option>
+                          <option disabled={pax === 1} value="group">
+                            {book.travelType.group}
+                          </option>
                         </FormSelectField>
                       </div>
                     </div>

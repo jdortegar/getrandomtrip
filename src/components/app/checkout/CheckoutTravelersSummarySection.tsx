@@ -32,6 +32,8 @@ function buildTravelersModalCopy(checkout: Dictionary["journey"]["checkout"]) {
     done: checkout.travelersModalDone,
     minorsLabel: checkout.travelersModalMinors,
     roomsLabel: checkout.travelersModalRooms,
+    saving: checkout.travelersModalSaving,
+    saveError: checkout.errors.updateTripFailed,
   };
 }
 

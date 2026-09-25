@@ -35,16 +35,15 @@ import {
 } from "@/lib/helpers/excuse-helper";
 import {
   DEFAULT_PAX_DETAILS,
-  getFixedPaxDetailsForTravelType,
-  isTravelersPartyEditable,
   paxDetailsEquals,
-  paxDetailsFromTotalPax,
-  parsePaxDetails,
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
+import type { XsedTravelType } from "@/types/core";
 import { Button } from "@/components/ui/Button";
-import { usePayment } from "@/hooks/usePayment";
+import { useCheckoutQuote } from "@/hooks/useCheckoutQuote";
+import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
+import { getCheckoutLevel, getCheckoutPaxDetails, getFixedCheckoutParty } from "@/lib/helpers/checkout-party";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "sonner";
 import { hasLocale } from "@/lib/i18n/config";
@@ -60,7 +59,7 @@ import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 
-const usd = (n: number) => `USD ${Math.round(n)}`;
+const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
 
 /** Converts a stored country value (full name or code) to a 2-letter ISO code. */
 function normalizeCountryToCode(value: string | undefined | null): string {
@@ -179,17 +178,21 @@ function CheckoutContent() {
   const { isAuthed } = useUserStore();
 
   const [dict, setDict] = useState<Dictionary | null>(null);
-  const [paxDetails, setPaxDetails] = useState(DEFAULT_PAX_DETAILS);
   const [trip, setTrip] = useState<CheckoutTripFromApi | null>(null);
   const [tripError, setTripError] = useState<string | null>(null);
   const [tripLoading, setTripLoading] = useState(true);
-  const [appliedPromocode, setAppliedPromocode] = useState<string | null>(null);
   const [promocode, setPromocode] = useState("");
   const [showPromocodeInput, setShowPromocodeInput] = useState(false);
-  const [promoDiscount, setPromoDiscount] = useState(0);
-  const [promoLoading, setPromoLoading] = useState(false);
-  const [promoError, setPromoError] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const payment = useCheckoutQuote(!tripLoading && trip && trip.id === tripIdParam?.trim() ? trip.id : undefined);
+  const paxDetails = payment.quote?.paxDetails ?? (trip ? getCheckoutPaxDetails(trip) : DEFAULT_PAX_DETAILS);
+  const checkoutLevel = payment.quote?.level ?? (trip ? getCheckoutLevel(trip) : "");
+  const [isConfirming, setIsConfirming] = useState(false);
+  const confirmingRef = useRef(false);
+  const appliedPromocode = payment.promoCode;
+  const promoDiscount = payment.quote?.discountAmount ?? 0;
+  const promoLoading = payment.pending || isConfirming;
+  const promoError = payment.error;
+  const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
   const contactFormRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
     city: "",
@@ -232,59 +235,19 @@ function CheckoutContent() {
   }
 
   async function handleApplyPromocode() {
-    const normalizedPromocode = promocode.trim().toUpperCase();
-    if (!normalizedPromocode || !trip?.id) return;
-    setPromoLoading(true);
-    setPromoError(null);
+    const code = promocode.trim().toUpperCase();
+    if (!code || !trip?.id || promoLoading || confirmingRef.current) return;
     try {
-      const res = await fetch("/api/stripe/apply-promo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tripId: trip.id,
-          promoCode: normalizedPromocode,
-        }),
-      });
-      const data = (await res.json()) as {
-        discountAmount?: number;
-        code?: string;
-        error?: string;
-      };
-      if (!res.ok) {
-        setPromoError(data.error ?? "Invalid promo code");
-        return;
-      }
-      setAppliedPromocode(data.code ?? normalizedPromocode);
-      setPromoDiscount(data.discountAmount ?? 0);
+      await payment.refresh({ promoCode: code });
       setPromocode("");
       setShowPromocodeInput(false);
-    } catch {
-      setPromoError(
-        dict?.journey?.checkout?.errors?.connectionTryAgain ??
-          "Connection error",
-      );
-    } finally {
-      setPromoLoading(false);
-    }
+    } catch { /* The quote error is shown beside payment and promo controls. */ }
   }
 
   async function handleRemovePromocode() {
-    if (!trip?.id) return;
-    setPromoLoading(true);
-    try {
-      await fetch("/api/stripe/remove-promo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tripId: trip.id }),
-      });
-    } catch {
-      // best-effort — reset locally regardless
-    } finally {
-      setAppliedPromocode(null);
-      setPromoDiscount(0);
-      setPromoError(null);
-      setPromoLoading(false);
-    }
+    if (!trip?.id || promoLoading || confirmingRef.current) return;
+    try { await payment.refresh({ promoCode: null }); }
+    catch { /* Keep confirmation blocked until the quote can be refreshed. */ }
   }
 
   useEffect(() => {
@@ -336,7 +299,7 @@ function CheckoutContent() {
                 t.id === preferredId && CHECKOUT_TRIP_STATUSES.has(t.status),
             )
           : undefined;
-        const picked = byPreferredId ?? pickCheckoutTrip(trips);
+        const picked = preferredId ? byPreferredId : pickCheckoutTrip(trips);
         if (!picked) {
           setTripError(
             dict?.journey?.checkout?.errors?.noTripToContinue ?? null,
@@ -359,43 +322,6 @@ function CheckoutContent() {
     };
   }, [dict, hasTripId, session?.user?.email, status, tripIdParam]);
 
-  useEffect(() => {
-    if (!trip?.id) return;
-    let cancelled = false;
-    createPaymentIntent(trip.id)
-      .then(({ clientSecret: secret }) => {
-        if (!cancelled) setClientSecret(secret);
-      })
-      .catch((error: unknown) => {
-        if (cancelled) return;
-        const message =
-          error instanceof Error && error.message
-            ? error.message
-            : dict?.journey?.checkout?.errors?.connectionTryAgain;
-        toast.error(message);
-      });
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trip?.id]);
-
-  useEffect(() => {
-    if (!trip?.id) return;
-    const normalizedType = normalizeTripType(trip.type);
-    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
-    if (fixedParty) {
-      setPaxDetails(fixedParty);
-      return;
-    }
-    const parsed = parsePaxDetails(trip.paxDetails);
-    if (parsed) {
-      setPaxDetails(parsed);
-      return;
-    }
-    setPaxDetails(paxDetailsFromTotalPax(trip.pax));
-  }, [trip?.id, trip?.type, trip?.pax, trip?.paxDetails]);
-
   const checkoutPax = trip
     ? Math.max(1, paxDetails.adults + paxDetails.minors)
     : 1;
@@ -407,8 +333,8 @@ function CheckoutContent() {
     selected: Array.isArray(trip?.addons) ? trip!.addons! : [],
   };
   const basePriceUsd = trip
-    ? (trip.basePriceUsd ??
-      getBasePriceFromCatalog(normalizeTripType(trip.type), trip.level) ??
+    ? ((trip.type === "xsed" ? undefined : trip.basePriceUsd) ??
+      getBasePriceFromCatalog(normalizeTripType(trip.type), checkoutLevel) ??
       0)
     : 0;
 
@@ -416,10 +342,10 @@ function CheckoutContent() {
 
   const effectiveLogistics = logistics;
 
-  const { calculateTotals, createPaymentIntent } = usePayment({
+  const previewTotals = calculatePaymentTotals({
     addons,
     avoidCount: avoidDestinations.length,
-    basePriceUsd,
+    basePriceUsd: applyPaxMultiplier(basePriceUsd, trip?.type ?? "", checkoutPax),
     filters: filtersResolved,
     logistics: effectiveLogistics ?? {
       city: "",
@@ -444,7 +370,7 @@ function CheckoutContent() {
     pax,
     avoidDestinations.length,
   );
-  const paymentTotals = calculateTotals();
+  const paymentTotals = payment.quote?.totals ?? previewTotals;
   const {
     addonsPerPax,
     basePerPax,
@@ -457,7 +383,7 @@ function CheckoutContent() {
 
   const travelType =
     trip?.type != null ? normalizeTripType(trip.type) : undefined;
-  const experience = trip?.level ?? undefined;
+  const experience = checkoutLevel || undefined;
   const excuse: string | undefined = undefined;
   const refineDetails: string[] = [];
   const startDateParamRaw = trip?.startDate ?? undefined;
@@ -503,7 +429,7 @@ function CheckoutContent() {
     if (!selectedLevel) return null;
     const sum = dict?.journey?.summary;
     return {
-      label: selectedLevel.name,
+      label: travelType === "xsed" ? (dict?.xsedBook.travelType[checkoutLevel as XsedTravelType] ?? selectedLevel.name) : selectedLevel.name,
       price: sum
         ? `${formatUSD(pricePerPerson)} ${sum.experiencePerPerson}`
         : "",
@@ -590,49 +516,35 @@ function CheckoutContent() {
   const backToJourneyHref = pathForLocale(resolvedLocale, "/journey");
 
   async function persistCheckoutTravelers(nextDetails: PaxDetails) {
-    if (!trip?.id) {
-      throw new Error("No trip");
-    }
-    const normalizedType = normalizeTripType(trip.type);
-    const fixedParty = getFixedPaxDetailsForTravelType(normalizedType);
-    const effectiveDetails = fixedParty ?? nextDetails;
-    const nextPax = Math.max(
-      1,
-      effectiveDetails.adults + effectiveDetails.minors,
-    );
-    const unchanged =
-      nextPax === trip.pax &&
-      paxDetailsEquals(effectiveDetails, trip.paxDetails);
-    if (unchanged) {
-      setPaxDetails(effectiveDetails);
-      return;
-    }
-    const res = await fetch("/api/trip-requests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        id: trip.id,
-        pax: nextPax,
-        paxDetails: effectiveDetails,
-      }),
-    });
-    if (!res.ok) {
-      const data = await res.json();
-      toast.error(
-        data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed,
-      );
-      throw new Error(data.error ?? "persist failed");
-    }
-    setPaxDetails(effectiveDetails);
-    setTrip((prev) =>
-      prev && prev.id === trip.id
-        ? { ...prev, pax: nextPax, paxDetails: effectiveDetails }
-        : prev,
-    );
+    if (!trip?.id || confirmingRef.current) throw new Error("Checkout is busy");
+    const details = getFixedCheckoutParty(trip.type, checkoutLevel) ?? nextDetails;
+    const nextPax = details.adults + details.minors;
+    if (nextPax === trip.pax && paxDetailsEquals(details, trip.paxDetails) && payment.isReady()) return;
+    await payment.refresh({ save: async () => {
+      const response = await fetch("/api/trip-requests", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: trip.id, pax: nextPax, paxDetails: details }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed);
+      }
+      const data = await response.json();
+      setTrip((previous) => previous?.id === trip.id ? { ...previous,
+        pax: nextPax, paxDetails: details,
+        level: data.tripRequest?.level ?? getCheckoutLevel({ ...previous, pax: nextPax, paxDetails: details }),
+      } : previous);
+    } });
+  }
+
+  function handlePaymentProcessingChange(processing: boolean) {
+    confirmingRef.current = processing;
+    setIsConfirming(processing);
   }
 
   const onBeforeConfirm = async (): Promise<boolean> => {
-    if (!hasTripId || !trip?.id) return false;
+    if (!hasTripId || !trip?.id || !payment.isReady()) return false;
+    const confirmedSecret = clientSecret;
     if (!session && !isAuthed) {
       useUserStore.getState().openAuth("signin");
       return false;
@@ -645,7 +557,6 @@ function CheckoutContent() {
       return false;
     }
     try {
-      await persistCheckoutTravelers(paxDetails);
       const saveRes = await fetch("/api/user/update", {
         body: JSON.stringify({
           name: formData.name.trim(),
@@ -671,7 +582,7 @@ function CheckoutContent() {
         );
         return false;
       }
-      return true;
+      return payment.isReady(confirmedSecret ?? undefined);
     } catch (err) {
       console.error("Checkout submit error:", err);
       toast.error(dict?.journey?.checkout?.errors?.connectionTryAgain);
@@ -914,19 +825,6 @@ function CheckoutContent() {
 
       <div className="container mx-auto px-4 py-12 md:px-20">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
-          <CheckoutContactCard
-            checkoutCopy={checkoutCopy}
-            clientSecret={clientSecret}
-            formData={formData}
-            formRef={contactFormRef}
-            isXsed={trip?.type === "xsed"}
-            onBack={() => router.back()}
-            onBeforeConfirm={onBeforeConfirm}
-            onFieldChange={handleChange}
-            sessionEmail={session?.user?.email || ""}
-            summary={summary}
-          />
-
           <CheckoutTravelDetailsCard
             addonsPerPaxCombined={addonsPerPaxCombined}
             appliedPromocode={appliedPromocode}
@@ -948,7 +846,7 @@ function CheckoutContent() {
             onTogglePromocodeInput={() =>
               setShowPromocodeInput((previous) => !previous)
             }
-            partyEditable={isTravelersPartyEditable(travelType)}
+            partyEditable={!isConfirming && !getFixedCheckoutParty(trip.type, checkoutLevel)}
             paxDetails={paxDetails}
             pricePerPerson={pricePerPerson}
             promocode={promocode}
@@ -960,6 +858,23 @@ function CheckoutContent() {
             totalPerPax={totalPerPax}
             totalTrip={totalTrip}
             usd={usd}
+          />
+
+          <CheckoutContactCard
+            checkoutCopy={checkoutCopy}
+            clientSecret={clientSecret}
+            formData={formData}
+            formRef={contactFormRef}
+            isXsed={trip?.type === "xsed"}
+            onBack={() => router.back()}
+            onBeforeConfirm={onBeforeConfirm}
+            onFieldChange={handleChange}
+            onPaymentProcessingChange={handlePaymentProcessingChange}
+            onRetryPayment={() => { void payment.retry().catch(() => {}); }}
+            paymentError={payment.error}
+            retryLabel={dict.errorFallback.retry}
+            sessionEmail={session?.user?.email || ""}
+            summary={summary}
           />
         </div>
 

@@ -135,6 +135,15 @@ describe("NavMobileDrawer", () => {
     renderDrawer({ isAuthed: false });
     expect(container.textContent).toContain(NAV_FIXTURE.signIn);
   });
+
+  it("uses the navbar Phone icon for WhatsApp, not the raster bubble", () => {
+    renderDrawer();
+    const whatsapp = container.querySelector(
+      `[aria-label="${NAV_FIXTURE.whatsApp}"]`,
+    );
+    expect(whatsapp?.querySelector("img")).toBeNull();
+    expect(whatsapp?.querySelector("svg")).not.toBeNull();
+  });
 });
 
 describe("Navbar — search control removed", () => {
