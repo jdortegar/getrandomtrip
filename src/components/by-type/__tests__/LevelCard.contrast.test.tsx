@@ -21,6 +21,15 @@ beforeEach(() => {
 });
 afterEach(() => act(() => root.unmount()));
 
+it("keeps an XSED level title as plain text with the regular card palette", () => {
+  act(() => root.render(<LevelCard level={{ ...level, id: "xsed", name: "XSED" }} />));
+  const title = container.querySelector("h3");
+  expect(title?.textContent).toBe("XSED");
+  expect(title?.querySelector(".bg-xsed")).toBeNull();
+  expect(title?.classList.contains("text-ink")).toBe(true);
+  expect(container.firstElementChild?.classList.contains("bg-white")).toBe(true);
+});
+
 it("changes only the surface between white and off-white cards", () => {
   act(() =>
     root.render(

@@ -37,7 +37,9 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const trip = await prisma.tripRequest.findUnique({ where: { id: params.id } });
+    const trip = await prisma.tripRequest.findUnique({
+      where: { id: params.id },
+    });
     if (!trip) {
       return NextResponse.json({ error: "trip_not_found" }, { status: 404 });
     }
@@ -59,7 +61,12 @@ export async function GET(
           })
         : Promise.resolve(null),
       prisma.payment.findUnique({
-        select: { amount: true, currency: true, status: true, tripRequestId: true },
+        select: {
+          amount: true,
+          currency: true,
+          status: true,
+          tripRequestId: true,
+        },
         where: { tripRequestId: trip.id },
       }),
       prisma.user.findUnique({
@@ -152,9 +159,15 @@ export async function PATCH(
         ? body.actualDestination.trim()
         : undefined;
     const experienceId =
-      typeof body?.experienceId === "string" ? body.experienceId.trim() : undefined;
+      typeof body?.experienceId === "string"
+        ? body.experienceId.trim()
+        : undefined;
 
-    if (!nextStatus && actualDestination === undefined && experienceId === undefined) {
+    if (
+      !nextStatus &&
+      actualDestination === undefined &&
+      experienceId === undefined
+    ) {
       return NextResponse.json(
         {
           error:
@@ -191,6 +204,7 @@ export async function PATCH(
 
     if (experienceId !== undefined) {
       data.experienceId = experienceId || null;
+      if (!experienceId) data.actualDestination = null;
     }
 
     // When an experience is assigned, the owner-active guard MUST run
@@ -304,7 +318,10 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401, headers },
+      );
     }
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -322,7 +339,10 @@ export async function DELETE(
       select: { id: true, userId: true },
     });
     if (!trip)
-      return NextResponse.json({ error: "not_found" }, { status: 404, headers });
+      return NextResponse.json(
+        { error: "not_found" },
+        { status: 404, headers },
+      );
     await withDocumentCascadeCleanup(
       prisma,
       { kind: "trip", ownerId: trip.userId, tripRequestId: trip.id },
@@ -330,7 +350,9 @@ export async function DELETE(
     );
     return NextResponse.json({ ok: true }, { headers });
   } catch (error) {
-    const conflict = error instanceof Error && error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
+    const conflict =
+      error instanceof Error &&
+      error.message === "DOCUMENT_LOCK_SCOPE_MISMATCH";
     return NextResponse.json(
       { error: conflict ? "trip_conflict" : "delete_unavailable" },
       { status: conflict ? 409 : 503, headers },

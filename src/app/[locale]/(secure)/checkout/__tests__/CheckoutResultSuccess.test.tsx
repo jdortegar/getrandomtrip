@@ -104,6 +104,16 @@ afterEach(() => {
 });
 
 describe("Checkout confirmation approval", () => {
+  it("keeps the product marker as plain text without a badge", async () => {
+    const data = summary();
+    data.trip.type = "xsed";
+    http.mockResolvedValueOnce(Response.json({ ok: true })).mockResolvedValueOnce(Response.json(data));
+    await render();
+    expect(container.querySelector(".text-amber-600")?.textContent).toBe("XSED");
+    expect(container.querySelector(".bg-xsed")).toBeNull();
+    expect(container.textContent).toContain(labels.xsedExperienceLabel);
+  });
+
   it("renders success immediately and waits for confirmation before requesting the summary", async () => {
     const confirm = deferred();
     http

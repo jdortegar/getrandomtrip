@@ -57,6 +57,7 @@ beforeEach(() => {
   } as never);
   vi.mocked(readTripDocumentDraft).mockResolvedValue({ id: "draft" } as never);
   vi.mocked(loadTripDocumentSource).mockResolvedValue({
+    experienceItinerary: null,
     trip: {},
     provider: {
       kind: "experience",

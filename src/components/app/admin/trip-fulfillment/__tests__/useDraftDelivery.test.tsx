@@ -60,6 +60,13 @@ async function preview() {
     .mockResolvedValueOnce(pdf());
   await act(async () => current.render());
 }
+it("keeps an existing preview URL live across ordinary review rerenders", async () => {
+  await preview();
+  act(() => root.render(<Harness />));
+  expect(current.url).toBe("blob:preview");
+  expect(revoke).not.toHaveBeenCalled();
+  expect(URL.createObjectURL).toHaveBeenCalledOnce();
+});
 it("renders savedrevision then fetchesidentityPDF and attacheswithout rerender", async () => {
   await preview();
   expect(current.url).toBe("blob:preview");
@@ -76,6 +83,35 @@ it("renders savedrevision then fetchesidentityPDF and attacheswithout rerender",
   });
   expect(current.attachedId).toBe("published");
 });
+it.each(["render", "attach", "replace"] as const)(
+  "tracks %s, blocks rapid duplicates, and clears rejected work for retry",
+  async (kind) => {
+    if (kind !== "render") await preview();
+    let fail!: (error: Error) => void;
+    const count = fetchMock.mock.calls.length;
+    fetchMock.mockReturnValueOnce(
+      new Promise<Response>((_resolve, reject) => {
+        fail = reject;
+      }),
+    );
+    const run = () =>
+      kind === "render"
+        ? current.render()
+        : current.attach(kind === "replace" ? "old" : undefined);
+    act(() => {
+      void run();
+      void run();
+    });
+    expect(fetchMock.mock.calls.length).toBe(count + 1);
+    expect(current.operation).toBe(kind);
+    await act(async () => fail(new Error("offline")));
+    expect(current.busy).toBe(false);
+    expect(current.operation).toBeNull();
+    fetchMock.mockResolvedValueOnce(json({}, 503));
+    await act(async () => run());
+    expect(fetchMock.mock.calls.length).toBe(count + 2);
+  },
+);
 it("preserves requestUUID for network/pending retries and only explicitly resets expired", async () => {
   await preview();
   fetchMock.mockRejectedValueOnce(new Error("network"));

@@ -15,11 +15,14 @@ import {
 import { DocumentServerValidationContext } from "./DocumentServerValidationContext";
 import { DocumentDraftEditor } from "./DocumentDraftEditor";
 import { DocumentDraftReview } from "./DocumentDraftReview";
-import { DocumentTemplatePicker } from "./DocumentTemplatePicker";
+import { DocumentDraftCreation } from "./DocumentDraftCreation";
+import { DocumentActionButton } from "./DocumentActionButton";
+import { DocumentDraftActions } from "./DocumentDraftActions";
 import { useDocumentDrafts } from "./useDocumentDrafts";
 import { useDocumentHubSync } from "./useDocumentHubSync";
 import { useDraftDelivery } from "./useDraftDelivery";
 import styles from "./fulfillment.module.css";
+import type { TripDocumentSourceSelection } from "@/lib/types/TripDocumentSource";
 interface Props {
   autoLoad?: boolean;
   countryLabels: Record<string, string>;
@@ -28,6 +31,7 @@ interface Props {
   onAttached?: () => void | Promise<unknown>;
   onEnsureAttached?: (id: string) => Promise<unknown>;
   attachmentVersion?: number;
+  source?: TripDocumentSourceSelection;
 }
 export function DocumentDraftPanel({
   autoLoad = false,
@@ -37,11 +41,12 @@ export function DocumentDraftPanel({
   onAttached,
   onEnsureAttached,
   attachmentVersion = 0,
+  source,
 }: Props) {
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.documentDraftPanel;
   const workflow = dictionary.documentWorkflow;
-  const drafts = useDocumentDrafts(tripId, autoLoad);
+  const drafts = useDocumentDrafts(tripId, autoLoad, source?.experienceId);
   const delivery = useDraftDelivery(tripId, drafts.selected, drafts.dirty);
   const deliveryCopy = dictionary.documentDraftDelivery;
   const [picker, setPicker] = useState(false);
@@ -49,17 +54,18 @@ export function DocumentDraftPanel({
   const dialogRef = useDocumentStageScroll(
     picker ? "picker" : review && delivery.url ? "review" : "edit",
   );
-  const { refreshFailed, refreshPublished } = useDocumentHubSync({
+  const { refreshFailed, refreshPublished, refreshing } = useDocumentHubSync({
     drafts,
     delivery,
     attachmentVersion,
     onAttached,
     onEnsureAttached,
   });
-  const { savePreview, cancelPending } = useSaveDocumentPreview(
-    drafts,
-    delivery,
-  );
+  const {
+    savePreview,
+    cancelPending,
+    pending: previewPending,
+  } = useSaveDocumentPreview(drafts, delivery, source?.key);
   const titles = {
     "hotel-voucher": dictionary.hotelVoucherPdf.title,
     "activity-voucher": dictionary.activityVoucherPdf.title,
@@ -67,7 +73,7 @@ export function DocumentDraftPanel({
     "experience-roadmap": dictionary.experienceRoadmapPdf.title,
     "xsed-roadmap": dictionary.xsedRoadmapPdf.title,
   };
-  const busy = drafts.busy || delivery.busy;
+  const busy = drafts.busy || delivery.busy || previewPending || refreshing;
   const row = drafts.drafts.find((item) => item.id === drafts.selected?.id);
   const linkedId =
     delivery.attachedId ?? row?.documentId ?? drafts.selected?.documentId;
@@ -94,9 +100,10 @@ export function DocumentDraftPanel({
       drafts={drafts}
       onReload={() => {
         if (allowClose() && drafts.selected)
-          void drafts.open(drafts.selected.id);
+          void drafts.open(drafts.selected.id, true);
       }}
       refreshFailed={refreshFailed}
+      refreshing={refreshing}
       refreshPublished={refreshPublished}
     />
   );
@@ -109,7 +116,7 @@ export function DocumentDraftPanel({
         </h3>
         <button
           className={`${styles.btn} ${styles.btnPrimary}`}
-          disabled={busy}
+          disabled={busy || (!!source && source.status !== "ready")}
           onClick={() => setPicker(true)}
           type="button"
         >
@@ -118,16 +125,19 @@ export function DocumentDraftPanel({
       </div>
       <p className="text-sm text-neutral-500">{workflow.draftsNote}</p>
       {!drafts.selected && !picker && feedback}
-      {(!drafts.loaded || drafts.error) && !picker && (
-        <button
-          className={styles.btn}
-          disabled={busy}
-          onClick={() => void drafts.list()}
-          type="button"
-        >
-          {copy.load}
-        </button>
-      )}
+      {(!drafts.loaded || drafts.error || drafts.operation?.kind === "list") &&
+        !picker && (
+          <DocumentActionButton
+            className={styles.btn}
+            disabled={busy}
+            onClick={() => void drafts.list()}
+            pending={drafts.operation?.kind === "list"}
+            pendingLabel={dictionary.documentActions.loading}
+            type="button"
+          >
+            {copy.load}
+          </DocumentActionButton>
+        )}
       {drafts.loaded && !drafts.drafts.some((item) => !item.documentId) && (
         <p className="text-sm text-neutral-500">{workflow.emptyDrafts}</p>
       )}
@@ -141,6 +151,10 @@ export function DocumentDraftPanel({
             void drafts.open(id);
           }
         }}
+        openingId={
+          drafts.operation?.kind === "open" ? drafts.operation.id : undefined
+        }
+        openingLabel={dictionary.documentActions.opening}
         titles={titles}
       />
       {drafts.drafts.some((item) => item.documentId) && (
@@ -158,6 +172,12 @@ export function DocumentDraftPanel({
                 void drafts.open(id);
               }
             }}
+            openingId={
+              drafts.operation?.kind === "open"
+                ? drafts.operation.id
+                : undefined
+            }
+            openingLabel={dictionary.documentActions.opening}
             titles={titles}
           />
         </>
@@ -170,7 +190,7 @@ export function DocumentDraftPanel({
       >
         <DialogContent
           ref={dialogRef}
-          className={`${styles.root} flex max-h-[92dvh] flex-col overflow-y-auto bg-white text-ink sm:max-w-5xl`}
+          className={`${styles.root} flex max-h-[92dvh] flex-col bg-white text-ink sm:max-w-5xl ${review && delivery.url ? "h-[92dvh] overflow-hidden" : "overflow-y-auto"}`}
           showCloseButton={false}
         >
           <DialogTitle>
@@ -193,66 +213,37 @@ export function DocumentDraftPanel({
           )}
           {feedback}
           {picker ? (
-            <>
-              {drafts.error && (
-                <button
-                  className={styles.btn}
-                  disabled={busy}
-                  onClick={() => void drafts.list()}
-                  type="button"
-                >
-                  {copy.load}
-                </button>
-              )}
-              <DocumentTemplatePicker
-                busy={busy || (autoLoad && !drafts.loaded)}
-                candidates={drafts.candidates}
-                copy={copy}
-                onCreate={(template, candidate) => {
-                  void drafts.create(template, candidate).then((created) => {
-                    if (created) {
-                      setPicker(false);
-                      setReview(false);
-                    }
-                  });
-                }}
-                titles={titles}
-              />
-              <button
-                className={styles.btn}
-                disabled={busy}
-                onClick={close}
-                type="button"
-              >
-                {dictionary.documentDraftEditor.close}
-              </button>
-            </>
+            <DocumentDraftCreation
+              actions={dictionary.documentActions}
+              autoLoad={autoLoad}
+              busy={busy}
+              closeLabel={dictionary.documentDraftEditor.close}
+              copy={copy}
+              drafts={drafts}
+              onClose={close}
+              onCreated={() => {
+                setPicker(false);
+                setReview(false);
+              }}
+              source={source}
+              titles={titles}
+              workflow={workflow}
+            />
           ) : (
             drafts.document && (
               <>
-                <details className="self-end">
-                  <summary className="cursor-pointer text-sm text-neutral-500">
-                    {workflow.moreActions}
-                  </summary>
-                  <button
-                    className={styles.btn}
-                    disabled={busy}
-                    onClick={() => {
-                      if (window.confirm(copy.deleteConfirm))
-                        void drafts.removeSelected();
-                    }}
-                    type="button"
-                  >
-                    {copy.delete}
-                  </button>
-                </details>
-                {!drafts.dirty && !busy && (
-                  <p className="text-sm text-neutral-500" role="status">
-                    {copy.saved}
-                  </p>
-                )}
+                <DocumentDraftActions
+                  busy={busy}
+                  copy={copy}
+                  deleting={drafts.operation?.kind === "delete"}
+                  deletingLabel={dictionary.documentActions.deleting}
+                  dirty={drafts.dirty}
+                  moreLabel={workflow.moreActions}
+                  onDelete={() => void drafts.removeSelected()}
+                />
                 {review && delivery.url ? (
                   <DocumentDraftReview
+                    actions={dictionary.documentActions}
                     backLabel={workflow.backToEditing}
                     busy={busy}
                     copy={deliveryCopy}
@@ -260,6 +251,8 @@ export function DocumentDraftPanel({
                     published={Boolean(delivery.attachedId)}
                     onAttach={(id) => void delivery.attach(id)}
                     onBack={() => setReview(false)}
+                    operation={delivery.operation}
+                    previewCopy={dictionary.documentPreview}
                     url={delivery.url}
                   />
                 ) : (
@@ -285,6 +278,13 @@ export function DocumentDraftPanel({
                         void savePreview(value);
                       }}
                       onSave={() => void drafts.save()}
+                      pending={
+                        previewPending || delivery.operation === "render"
+                          ? "preview"
+                          : drafts.operation?.kind === "save"
+                            ? "save"
+                            : null
+                      }
                       value={drafts.document}
                     />
                   </DocumentServerValidationContext.Provider>

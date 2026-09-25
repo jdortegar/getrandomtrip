@@ -43,10 +43,10 @@ export function DropCard({
         />
         {drop.label && (
           <div
-            className="font-barlow absolute left-6 top-3 flex items-center gap-1 text-base font-semibold text-white drop-shadow"
+            className="absolute bg-xsed flex font-barlow font-semibold gap-1 items-center left-6 px-2 py-1 rounded-[6px] text-base text-neutral-900 top-3"
             data-drop-badge
           >
-            <span className="text-xsed">|</span>
+            <span aria-hidden>|</span>
             <span className="font-bold">{drop.label}</span>
           </div>
         )}

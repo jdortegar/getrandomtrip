@@ -42,6 +42,25 @@ it("refreshes authoritative rows without changing unrelated trip fields", async 
     expect.objectContaining({ cache: "no-store" }),
   );
 });
+it("coalesces duplicate refreshes and clears rejection for retry", async () => {
+  let fail!: (error: Error) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((_resolve, reject) => {
+      fail = reject;
+    }),
+  );
+  act(() => {
+    void current.refresh();
+    void current.refresh();
+  });
+  expect(current.status).toBe("loading");
+  expect(fetchMock).toHaveBeenCalledOnce();
+  await act(async () => fail(new Error("offline")));
+  expect(current.status).toBe("error");
+  fetchMock.mockResolvedValueOnce(response([document]));
+  await act(async () => current.refresh());
+  expect(current.status).toBe("ready");
+});
 it("keeps existing rows and exposes refresh failure for retry rather than a false empty list", async () => {
   act(() => current.replace([document]));
   fetchMock.mockResolvedValueOnce(new Response("failure", { status: 503 }));

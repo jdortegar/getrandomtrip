@@ -1367,12 +1367,32 @@
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
         "href": "#exploration-section",
-        "text": "GETRANDOMTRIP!"
+        "text": "GET RANDOMTRIP!"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Vive lo inesperado sin improvisar. Nosotros diseñamos tu viaje <br/>y <strong>te revelamos el destino desde 48h antes.</strong>",
-      "title": "SERENDIPIA DISEÑADA",
+      "accent": "Vuelve a sentir la magia de viajar.",
+      "subtitle": "Nosotros nos encargamos de todo.\nTú solo di que sí. El destino lo descubres 48hs antes.",
+      "title": "EL ASOMBRO EMPIEZA\nDONDE TERMINA\nLA CERTEZA",
       "videoSrc": "/videos/hero-video-1.mp4"
+    },
+    "trustSignal": {
+      "sectionAriaLabel": "Por qué viajar con Randomtrip",
+      "curated": {
+        "title": "CURADO CON INTENCIÓN",
+        "description": "Viajes diseñados por expertos."
+      },
+      "trippers": {
+        "title": "AMADO POR TRIPPERS",
+        "description": "Experiencias reales que inspiran."
+      },
+      "effortless": {
+        "title": "TÚ SOLO DI QUE SÍ",
+        "description": "Sin planificar. Sin comparar."
+      },
+      "discovery": {
+        "title": "MÁS ALLÁ DE TU BURBUJA",
+        "description": "Descubre lo que no buscarías."
+      }
     },
     "homeInfo": {
       "benefitsSteps": [
@@ -5472,7 +5492,31 @@
     "bannerSwitchToRandomtrip": "Ver experiencias generales de Randomtrip",
     "bannerSwitchToTripper": "Volver a experiencias de {name}"
   },
+  "documentPreview": {
+    "loading": "Cargando PDF…",
+    "loadingPage": "Cargando…",
+    "error": "No se pudo mostrar la vista previa. Inténtalo de nuevo o abre el PDF en otra pestaña.",
+    "retry": "Reintentar vista previa",
+    "previous": "Página anterior",
+    "next": "Página siguiente",
+    "page": "Página {page} de {total}"
+  },
+  "documentActions": {
+    "creating": "Creando borrador…",
+    "loading": "Cargando borradores…",
+    "opening": "Abriendo borrador…",
+    "reloading": "Recargando borrador…",
+    "saving": "Guardando borrador…",
+    "savePreview": "Guardando y preparando PDF…",
+    "attaching": "Adjuntando PDF…",
+    "replacing": "Reemplazando PDF…",
+    "deleting": "Eliminando borrador…",
+    "refreshing": "Actualizando documentos…"
+  },
   "documentWorkflow": {
+    "sourceLoading": "Cargando la experiencia seleccionada…",
+    "sourceError": "No se pudo cargar la experiencia seleccionada. Vuelve a intentar antes de crear un documento.",
+    "sourceNote": "La selección actualiza este itinerario y los datos iniciales de documentos nuevos sin guardar el viaje. Los borradores existentes no se modifican.",
     "linkedDrafts": "Copias editables de documentos adjuntos",
       "newDocument": "Nuevo documento",
       "privateDrafts": "Borradores privados",

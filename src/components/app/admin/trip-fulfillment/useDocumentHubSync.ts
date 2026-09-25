@@ -17,11 +17,31 @@ export function useDocumentHubSync({
   onEnsureAttached,
 }: Props) {
   const [refreshFailed, setRefreshFailed] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const refreshingRef = useRef(false);
+  const sequence = useRef(0);
+  useEffect(
+    () => () => {
+      sequence.current++;
+      refreshingRef.current = false;
+    },
+    [onAttached],
+  );
   const refreshPublished = useCallback(async () => {
+    if (refreshingRef.current) return;
+    refreshingRef.current = true;
+    const token = ++sequence.current;
+    setRefreshing(true);
     try {
-      setRefreshFailed((await onAttached?.()) === false);
+      const failed = (await onAttached?.()) === false;
+      if (token === sequence.current) setRefreshFailed(failed);
     } catch {
-      setRefreshFailed(true);
+      if (token === sequence.current) setRefreshFailed(true);
+    } finally {
+      if (token === sequence.current) {
+        refreshingRef.current = false;
+        setRefreshing(false);
+      }
     }
   }, [onAttached]);
   const notified = useRef<string | null>(null);
@@ -51,5 +71,5 @@ export function useDocumentHubSync({
       void drafts.list();
     }
   }, [delivery.publicationEvent, refreshPublished, drafts]);
-  return { refreshFailed, refreshPublished };
+  return { refreshFailed, refreshPublished, refreshing };
 }

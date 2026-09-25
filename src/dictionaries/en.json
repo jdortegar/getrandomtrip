@@ -1367,12 +1367,32 @@
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",
-        "text": "GETRANDOMTRIP!"
+        "text": "GET RANDOMTRIP!"
       },
       "scrollText": "SCROLL",
-      "subtitle": "Live the unexpected without improvising. We design your trip <br/>and <strong>reveal the destination 48 hours before.</strong>",
-      "title": "DESIGNED SERENDIPITY",
+      "accent": "Feel the magic of travel again.",
+      "subtitle": "We take care of everything.\nYou just say yes. Discover your destination 48 hours before departure.",
+      "title": "WONDER BEGINS\nWHERE CERTAINTY\nENDS",
       "videoSrc": "/videos/hero-video-1.mp4"
+    },
+    "trustSignal": {
+      "sectionAriaLabel": "Why travel with Randomtrip",
+      "curated": {
+        "title": "CURATED WITH INTENTION",
+        "description": "Trips designed by experts."
+      },
+      "trippers": {
+        "title": "LOVED BY TRIPPERS",
+        "description": "Real experiences that inspire."
+      },
+      "effortless": {
+        "title": "JUST SAY YES",
+        "description": "No planning. No comparing."
+      },
+      "discovery": {
+        "title": "BEYOND YOUR BUBBLE",
+        "description": "Discover what you wouldn’t seek out."
+      }
     },
     "homeInfo": {
       "benefitsSteps": [
@@ -5472,7 +5492,31 @@
     "bannerSwitchToRandomtrip": "View general Randomtrip experiences",
     "bannerSwitchToTripper": "Switch back to {name}'s experiences"
   },
+  "documentPreview": {
+    "loading": "Loading PDF…",
+    "loadingPage": "Loading…",
+    "error": "This preview could not be displayed. Retry or open the PDF in a separate tab.",
+    "retry": "Retry preview",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {page} of {total}"
+  },
+  "documentActions": {
+    "creating": "Creating draft…",
+    "loading": "Loading drafts…",
+    "opening": "Opening draft…",
+    "reloading": "Reloading draft…",
+    "saving": "Saving draft…",
+    "savePreview": "Saving and preparing PDF…",
+    "attaching": "Attaching PDF…",
+    "replacing": "Replacing PDF…",
+    "deleting": "Deleting draft…",
+    "refreshing": "Refreshing documents…"
+  },
   "documentWorkflow": {
+    "sourceLoading": "Loading selected experience…",
+    "sourceError": "The selected experience could not be loaded. Retry before creating a new document.",
+    "sourceNote": "Your selection updates this itinerary and new document defaults without saving the trip. Existing document drafts are unchanged.",
     "linkedDrafts": "Editable copies of attached documents",
       "newDocument": "New document",
       "privateDrafts": "Private drafts",

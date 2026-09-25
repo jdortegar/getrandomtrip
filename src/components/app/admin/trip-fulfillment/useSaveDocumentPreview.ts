@@ -1,46 +1,107 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import type { useDocumentDrafts } from "./useDocumentDrafts";
 import type { useDraftDelivery } from "./useDraftDelivery";
+interface PreviewAction {
+  scope: string;
+  token: number;
+  saved?: { id: string; revision: number };
+}
+/** One action owns save, revision adoption and render: no enabled gap between them. */
 export function useSaveDocumentPreview(
   drafts: ReturnType<typeof useDocumentDrafts>,
   delivery: ReturnType<typeof useDraftDelivery>,
+  sourceKey = "",
 ) {
-  const [pendingRender, setPendingRender] = useState<{
-    id: string;
-    revision: number;
-  } | null>(null);
-  const action = useRef(0);
+  const scope = JSON.stringify([
+    drafts.selected?.tripRequestId,
+    drafts.selected?.id,
+    sourceKey,
+  ]);
+  const [pendingAction, setPendingAction] = useState<PreviewAction | null>(
+    null,
+  );
+  const [owner, setOwner] = useState(scope);
+  if (owner !== scope) {
+    setOwner(scope);
+    setPendingAction(null);
+  }
+  const sequence = useRef(0);
+  const locked = useRef(false);
+  const started = useRef<number | null>(null);
+  const { cancelRender } = delivery;
+  useLayoutEffect(
+    () => () => {
+      sequence.current++;
+      locked.current = false;
+      cancelRender();
+    },
+    [scope, cancelRender],
+  );
+
   useEffect(() => {
-    if (!pendingRender) return;
+    const action = pendingAction;
     if (
-      drafts.selected?.id === pendingRender.id &&
-      drafts.selected.revision === pendingRender.revision &&
-      !drafts.dirty &&
-      !drafts.busy
-    ) {
-      let active = true;
-      void Promise.resolve().then(() => {
-        if (active) {
-          setPendingRender(null);
-          void delivery.render();
+      !action?.saved ||
+      action.scope !== scope ||
+      action.token !== sequence.current ||
+      started.current === action.token
+    )
+      return;
+    if (drafts.busy) return;
+    started.current = action.token;
+    void Promise.resolve()
+      .then(async () => {
+        if (action.token !== sequence.current) return;
+        if (
+          drafts.selected?.id === action.saved?.id &&
+          drafts.selected?.revision === action.saved?.revision &&
+          !drafts.dirty
+        )
+          await delivery.render();
+      })
+      .finally(() => {
+        if (action.token === sequence.current) {
+          locked.current = false;
+          setPendingAction(null);
         }
       });
-      return () => {
-        active = false;
-      };
-    }
-  }, [pendingRender, drafts, delivery]);
+  }, [pendingAction, scope, drafts, delivery]);
+
   async function savePreview(value: TripDocumentSnapshot) {
-    const token = ++action.current;
-    const saved = await drafts.save(value);
-    if (saved && token === action.current)
-      setPendingRender({ id: saved.id, revision: saved.revision });
+    if (locked.current || drafts.busy || delivery.busy) return;
+    locked.current = true;
+    const token = ++sequence.current;
+    setPendingAction({ scope, token });
+    delivery.clearPreview();
+    let scheduled = false;
+    try {
+      const saved = await drafts.save(value);
+      if (saved && token === sequence.current) {
+        scheduled = true;
+        setPendingAction({
+          scope,
+          token,
+          saved: { id: saved.id, revision: saved.revision },
+        });
+      }
+    } finally {
+      if (!scheduled && token === sequence.current) {
+        locked.current = false;
+        setPendingAction(null);
+      }
+    }
   }
   function cancelPending() {
-    action.current++;
-    setPendingRender(null);
+    sequence.current++;
+    locked.current = false;
+    cancelRender();
+    setPendingAction(null);
   }
-  return { savePreview, cancelPending };
+  return {
+    savePreview,
+    cancelPending,
+    pending: pendingAction?.scope === scope,
+  };
 }

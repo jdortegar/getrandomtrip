@@ -40,6 +40,19 @@ function localeOption(label: string) {
   )!;
 }
 
+it.each(["XSED", "TGIS"])("keeps %s as plain navigation text on desktop and mobile", (label) => {
+  harness.render(
+    <Navbar backgroundPrimary dict={{ ...dict, nav: { ...dict.nav, labelXsed: label } }} locale="es" />,
+  );
+  const desktop = harness.container.querySelector('a[href="/xsed"]')!;
+  expect(desktop.textContent).toBe(label);
+  expect(desktop.querySelector(".bg-xsed, .text-xsed, span")).toBeNull();
+  harness.click(harness.container.querySelector<HTMLButtonElement>(`button[aria-label="${dict.nav.openMenu}"]`)!);
+  const mobile = harness.container.querySelector('[role="dialog"] a[href="/xsed"]')!;
+  expect(mobile.textContent).toBe(label);
+  expect(mobile.querySelector(".bg-xsed, .text-xsed, span")).toBeNull();
+});
+
 it.each([
   {
     locale: "es",

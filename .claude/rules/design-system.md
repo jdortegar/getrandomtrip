@@ -20,7 +20,7 @@ Eight canonical tokens — use nothing outside these and the Tailwind neutral sc
 | Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons, eyebrows, underlines, carousel arrow/dot buttons, focus states |
 | Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — sections/containers, icon-puck washes, links, publish state |
 | Ochre        | `#E5A51C` | `bg-feature` / `text-feature` | Brand feature/accent — high-emphasis CTA (`feature`/`pill` Button variants), KPI accent bar |
-| XSED Orange  | `#D97E4A` | `bg-xsed` / `text-xsed` / `border-xsed` | XSED sub-brand accent — scoped to `src/components/app/xsed/**` and the `tertiary` Button variant; never used as a general-purpose accent outside the XSED line |
+| XSED Orange  | `#D97E4A` | `bg-xsed` / `text-xsed` / `border-xsed` | XSED sub-brand accent — existing XSED badges/chips, `src/components/app/xsed/**`, and the `tertiary` Button variant; never a general-purpose accent outside the XSED line |
 | Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
 | Ground       | `#F3F2ED` | `bg-ground`            | Off-White — page background (`<body>`, full-page wrappers), not card surfaces |
 | Border       | `#E5E7EB` | `gray-200`             | Card borders, dividers                     |
@@ -261,6 +261,8 @@ Manual chip style when needed outside the component:
 ```
 
 Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip treatment.
+
+Existing XSED category badges/chips use `<ProductBadge value={label} />`. It uppercases only the exact product marker and uses `bg-xsed` with `text-neutral-900` for readable small text; orange with white or Ink text fails AA. This is a **badge-only** treatment: never wrap navigation, headings, tabs, prose, or plain summary/level text. Keep translated TGIS labels and free-form content unchanged. Do not use the legacy red `xsed-50`–`xsed-800` scale for orange branding.
 
 ### Toggleable filter chip (viewer clicks to select/deselect)
 

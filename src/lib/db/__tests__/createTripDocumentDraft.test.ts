@@ -170,3 +170,38 @@ it("rejects changed ownership for creation/read and rolls back failed creation",
   ).rejects.toThrow("rollback");
   expect(rollback.saved).toBe(null);
 });
+
+it.each(["selected", null])(
+  "passes explicit source %j to the locked trusted loader",
+  async (experienceId) => {
+    const fake = database();
+    const load = vi.fn(async () => source());
+    const result = await createTripDocumentDraft(
+      fake.db,
+      scope,
+      { template: "hotel-voucher", experienceId },
+      load,
+    );
+    expect(result.ok).toBe(true);
+    expect(load).toHaveBeenCalledWith(expect.anything(), "trip", experienceId);
+    expect(fake.events).toEqual(["users", "trip_requests", "create"]);
+  },
+);
+it.each(["", " ", 1, {}, ["selected"]])(
+  "rejects invalid source override %j",
+  async (experienceId) => {
+    const fake = database();
+    const load = vi.fn(async () => source());
+    expect(
+      (
+        await createTripDocumentDraft(
+          fake.db,
+          scope,
+          { template: "hotel-voucher", experienceId },
+          load,
+        )
+      ).ok,
+    ).toBe(false);
+    expect(load).not.toHaveBeenCalled();
+  },
+);

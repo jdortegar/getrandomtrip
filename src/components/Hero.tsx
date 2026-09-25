@@ -10,6 +10,7 @@ import VideoBackground from "@/components/media/VideoBackground";
 import { formatTitleWithCopyright } from "@/lib/helpers/stringHelpers";
 
 export interface HeroContent {
+  accent?: string;
   branding?: { repeatText?: string; text: string };
   fallbackImage?: string;
   primaryCta?: { ariaLabel: string; href: string; text: string };
@@ -29,6 +30,7 @@ interface HeroProps {
   id?: string;
   scrollIndicator?: boolean;
   titleClassName?: string;
+  variant?: "default" | "home";
 }
 
 // Main Hero Component
@@ -38,14 +40,20 @@ const Hero: React.FC<HeroProps> = ({
   id,
   scrollIndicator = false,
   titleClassName,
+  variant = "default",
 }) => {
+  const isHome = variant === "home";
+  const Heading = isHome ? motion.h1 : motion.h2;
+
   return (
     <section
-      id={id || "home-hero"}
       className={cn(
-        "relative h-screen flex flex-col overflow-hidden",
+        "flex flex-col overflow-hidden relative",
+        isHome ? "min-h-svh" : "h-screen",
         className,
-      )} data-component="Hero"
+      )}
+      data-component="Hero"
+      id={id || "home-hero"}
     >
       <VideoBackground
         fallbackImage={content.fallbackImage}
@@ -53,7 +61,13 @@ const Hero: React.FC<HeroProps> = ({
       />
 
       {/* Main Content - Left Aligned */}
-      <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">
+      <div
+        className={cn(
+          "flex flex-col justify-center relative rt-container z-10",
+          isHome ? "flex-1 pb-24 pt-36" : "h-full",
+          "md:px-20!",
+        )}
+      >
         {/* Top Left Branding */}
 
         {content.eyebrow ? (
@@ -64,25 +78,60 @@ const Hero: React.FC<HeroProps> = ({
           <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
         )}
 
-        <div className="max-w-3xl flex flex-col justify-center text-center lg:text-left">
-          <motion.h2
+        <div
+          className={cn(
+            "flex flex-col justify-center text-center",
+            isHome ? "max-w-5xl" : "max-w-3xl",
+            "lg:text-left",
+          )}
+        >
+          <Heading
+            animate={{ y: 0, opacity: 1 }}
             className={cn(
-              "text-center md:text-left mb-6 text-white font-barlow-condensed font-extrabold text-[60px] md:text-[80px] lg:text-[130px] z-10 leading-none [&_sup]:text-[0.6em] [&_sup]:leading-none",
+              "font-barlow-condensed font-extrabold mb-6 text-center text-white z-10 [&_sup]:text-[0.6em]",
+              "md:text-left",
+              isHome ? "text-[44px] whitespace-pre-line" : "text-[60px]",
+              isHome
+                ? "sm:text-[64px] lg:text-[100px]"
+                : "md:text-[80px] lg:text-[130px]",
+              "leading-none [&_sup]:leading-none",
               titleClassName,
             )}
             dangerouslySetInnerHTML={{
               __html: formatTitleWithCopyright(content.title),
             }}
             initial={{ y: 60, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.45, delay: 0.15 }}
           />
 
+          {isHome && content.accent && (
+            <motion.p
+              animate={{ y: 0, opacity: 1 }}
+              className={cn(
+                "font-nothing-you-could-do font-normal mb-6 text-[26px] text-feature",
+                "sm:text-[30px] md:text-left lg:text-[34px]",
+                "leading-tight",
+                "lg:leading-7",
+              )}
+              initial={{ y: 40, opacity: 0 }}
+              transition={{ duration: 0.35, delay: 0.25 }}
+            >
+              {content.accent}
+            </motion.p>
+          )}
+
           <motion.p
-            className="whitespace-pre-line text-center md:text-left font-barlow text-lg font-normal leading-relaxed text-white max-w-2xl mb-8 [&_strong]:font-bold [&_strong]:text-white"
+            animate={{ y: 0, opacity: 1 }}
+            className={cn(
+              "font-barlow font-normal mb-8 text-center text-lg text-white whitespace-pre-line [&_strong]:font-bold [&_strong]:text-white",
+              "md:text-left",
+              isHome
+                ? "leading-7 max-w-[489px] mx-auto"
+                : "leading-relaxed max-w-2xl",
+              isHome && "md:mx-0",
+            )}
             dangerouslySetInnerHTML={{ __html: content.subtitle }}
             initial={{ y: 40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.35, delay: 0.3 }}
           />
 
@@ -106,8 +155,9 @@ const Hero: React.FC<HeroProps> = ({
               transition={{ duration: 0.35, delay: 0.5 }}
             >
               <Button
-                asChild
                 aria-label={content.primaryCta.ariaLabel}
+                asChild
+                className={isHome ? "bg-transparent" : undefined}
                 size="lg"
                 variant="outline"
               >

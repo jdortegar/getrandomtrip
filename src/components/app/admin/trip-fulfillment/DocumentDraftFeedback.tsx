@@ -3,16 +3,21 @@ import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { useDocumentDrafts } from "./useDocumentDrafts";
 import type { useDraftDelivery } from "./useDraftDelivery";
 import styles from "./fulfillment.module.css";
+import { DocumentActionButton } from "./DocumentActionButton";
 interface Props {
   busy: boolean;
   dictionary: Pick<
     MarketingDictionary,
-    "documentDraftPanel" | "documentDraftDelivery" | "documentWorkflow"
+    | "documentDraftPanel"
+    | "documentDraftDelivery"
+    | "documentWorkflow"
+    | "documentActions"
   >;
   drafts: ReturnType<typeof useDocumentDrafts>;
   delivery: ReturnType<typeof useDraftDelivery>;
   onReload: () => void;
   refreshFailed: boolean;
+  refreshing: boolean;
   refreshPublished: () => Promise<void>;
 }
 export function DocumentDraftFeedback({
@@ -22,6 +27,7 @@ export function DocumentDraftFeedback({
   delivery,
   onReload,
   refreshFailed,
+  refreshing,
   refreshPublished,
 }: Props) {
   const copy = dictionary.documentDraftPanel;
@@ -35,27 +41,34 @@ export function DocumentDraftFeedback({
           {drafts.error === "conflict" ? copy.conflict : copy.error}
         </p>
       )}
-      {drafts.error === "conflict" && drafts.selected && (
-        <button
-          className={styles.btn}
-          onClick={() => {
-            onReload();
-          }}
-          type="button"
-        >
-          {copy.reload}
-        </button>
-      )}
-      {refreshFailed && (
-        <div role="alert">
-          <p>{workflow.refreshError}</p>
-          <button
+      {(drafts.error === "conflict" || drafts.operation?.kind === "reload") &&
+        drafts.selected && (
+          <DocumentActionButton
             className={styles.btn}
+            disabled={busy}
+            onClick={() => {
+              onReload();
+            }}
+            pending={drafts.operation?.kind === "reload"}
+            pendingLabel={dictionary.documentActions.reloading}
+            type="button"
+          >
+            {copy.reload}
+          </DocumentActionButton>
+        )}
+      {(refreshFailed || refreshing) && (
+        <div role="alert">
+          {refreshFailed && <p>{workflow.refreshError}</p>}
+          <DocumentActionButton
+            className={styles.btn}
+            disabled={busy}
             onClick={() => void refreshPublished()}
+            pending={refreshing}
+            pendingLabel={dictionary.documentActions.refreshing}
             type="button"
           >
             {workflow.retry}
-          </button>
+          </DocumentActionButton>
         </div>
       )}
       {delivery.attachedId && <p role="status">{deliveryCopy.attached}</p>}

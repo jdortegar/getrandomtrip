@@ -85,6 +85,12 @@ describe("TripEssentialsStrip — Length, Party, Origin, Travel type", () => {
     expect(text).toContain("mystery-type");
   });
 
+  it("keeps the travel-type value as plain text without a badge", () => {
+    render(1, 2, "Buenos Aires, Argentina", "xsed");
+    expect(container.textContent).toContain("xsed");
+    expect(container.querySelector(".bg-xsed")).toBeNull();
+  });
+
   it("never renders district, airport, or room-type text", () => {
     render(2, 2);
     const text = container.textContent ?? "";

@@ -22,7 +22,9 @@ vi.mock("@/lib/prisma", () => ({
 }));
 
 vi.mock("@/lib/admin/trip-requests", () => ({
-  attachAdminTripRequestRelations: vi.fn(() => [{ id: "trip-1", status: "COMPLETED" }]),
+  attachAdminTripRequestRelations: vi.fn(() => [
+    { id: "trip-1", status: "COMPLETED" },
+  ]),
 }));
 
 vi.mock("@/lib/email", () => ({
@@ -43,7 +45,10 @@ const mockSession = (userId: string) => ({
   user: { id: userId, email: "admin@example.com" },
 });
 
-function makePatchRequest(id: string, body: Record<string, unknown>): NextRequest {
+function makePatchRequest(
+  id: string,
+  body: Record<string, unknown>,
+): NextRequest {
   return new NextRequest(`http://localhost/api/admin/trip-requests/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
@@ -70,7 +75,9 @@ describe("GET /api/admin/trip-requests/[id]", () => {
   });
 
   it("returns 403 for a non-admin caller", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("u1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("u1"),
+    );
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockTravelerUser("u1"),
     );
@@ -88,7 +95,9 @@ describe("GET /api/admin/trip-requests/[id]", () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockAdminUser("admin-1"),
     );
-    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.GET(makeGetRequest("trip-missing"), {
       params: Promise.resolve({ id: "trip-missing" }),
@@ -103,21 +112,29 @@ describe("GET /api/admin/trip-requests/[id]", () => {
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockAdminUser("admin-1"),
     );
-    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       id: "trip-1",
       userId: "user-1",
       experienceId: "exp-1",
       status: "CONFIRMED",
     });
-    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      prisma.experience.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       id: "exp-1",
       title: "Andes Trek",
       itinerary: [{ title: "Day 1", description: "Arrival", image: null }],
       inclusions: ["Breakfast"],
       exclusions: ["Flights"],
     });
-    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    (prisma.tripDocument.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (
+      prisma.tripDocument.findMany as ReturnType<typeof vi.fn>
+    ).mockResolvedValue([
       {
         id: "doc-1",
         tripRequestId: "trip-1",
@@ -149,28 +166,64 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
     vi.resetAllMocks();
   });
 
+  it("clears the derived destination when assignment is explicitly removed", async () => {
+    vi.mocked(getServerSession).mockResolvedValue(mockSession("admin"));
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(
+      mockAdminUser("admin") as never,
+    );
+    vi.mocked(prisma.tripRequest.update).mockResolvedValue({
+      id: "trip-1",
+      userId: "buyer",
+      experienceId: null,
+    } as never);
+    const mod = (await import("../route")) as RouteModule;
+    const result = await mod.PATCH(
+      makePatchRequest("trip-1", { experienceId: "" }),
+      { params: Promise.resolve({ id: "trip-1" }) },
+    );
+    expect(result.status).toBe(200);
+    expect(prisma.tripRequest.update).toHaveBeenCalledWith({
+      where: { id: "trip-1" },
+      data: { experienceId: null, actualDestination: null },
+    });
+  });
+
   it("returns 401 when there is no session", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.PATCH(makePatchRequest("trip-1", { status: "COMPLETED" }), {
-      params: Promise.resolve({ id: "trip-1" }),
-    });
+    const res = await mod.PATCH(
+      makePatchRequest("trip-1", { status: "COMPLETED" }),
+      {
+        params: Promise.resolve({ id: "trip-1" }),
+      },
+    );
     expect(res.status).toBe(401);
   });
 
   it("returns 403 when user is not admin", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("user-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockTravelerUser("user-1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("user-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTravelerUser("user-1"),
+    );
     const mod = (await import("../route")) as RouteModule;
-    const res = await mod.PATCH(makePatchRequest("trip-1", { status: "COMPLETED" }), {
-      params: Promise.resolve({ id: "trip-1" }),
-    });
+    const res = await mod.PATCH(
+      makePatchRequest("trip-1", { status: "COMPLETED" }),
+      {
+        params: Promise.resolve({ id: "trip-1" }),
+      },
+    );
     expect(res.status).toBe(403);
   });
 
   it("generates and persists reviewToken before calling sendTripCompleted on COMPLETED transition", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
 
     const updatedTrip = {
       id: "trip-1",
@@ -185,8 +238,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
       .mockResolvedValueOnce(updatedTrip) // first update (status)
       .mockResolvedValueOnce({ ...updatedTrip, reviewToken: "test-token" }); // second update (reviewToken)
 
-    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (
+      prisma.experience.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
 
     const mod = (await import("../route")) as RouteModule;
     await mod.PATCH(makePatchRequest("trip-1", { status: "COMPLETED" }), {
@@ -194,9 +251,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
     });
 
     // Second tripRequest.update call must be for reviewToken persistence
-    const calls = (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mock.calls;
+    const calls = (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mock
+      .calls;
     const reviewTokenCall = calls.find(
-      (call: unknown[]) => (call[0] as { data?: { reviewToken?: unknown } }).data?.reviewToken !== undefined,
+      (call: unknown[]) =>
+        (call[0] as { data?: { reviewToken?: unknown } }).data?.reviewToken !==
+        undefined,
     );
     expect(reviewTokenCall).toBeTruthy();
 
@@ -205,8 +265,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
   });
 
   it("does not overwrite existing reviewToken on re-transition to COMPLETED", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
 
     const tripWithExistingToken = {
       id: "trip-1",
@@ -217,9 +281,15 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
       reviewToken: "existing-token-abc",
     };
 
-    (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue(tripWithExistingToken);
-    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue(
+      tripWithExistingToken,
+    );
+    (
+      prisma.experience.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
 
     const mod = (await import("../route")) as RouteModule;
     await mod.PATCH(makePatchRequest("trip-1", { status: "COMPLETED" }), {
@@ -227,9 +297,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
     });
 
     // reviewToken update should not be called with a new token when one already exists
-    const calls = (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mock.calls;
+    const calls = (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mock
+      .calls;
     const tokenUpdateCalls = calls.filter(
-      (call: unknown[]) => (call[0] as { data?: { reviewToken?: unknown } }).data?.reviewToken !== undefined,
+      (call: unknown[]) =>
+        (call[0] as { data?: { reviewToken?: unknown } }).data?.reviewToken !==
+        undefined,
     );
     // If existing token, no separate token update call should happen
     // The guard is: token update only happens when reviewToken is null on the returned trip
@@ -237,8 +310,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
   });
 
   it("does not call sendTripCompleted for non-COMPLETED transitions", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
 
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "trip-1",
@@ -248,8 +325,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
       experienceId: null,
       reviewToken: null,
     });
-    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (
+      prisma.experience.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
 
     const mod = (await import("../route")) as RouteModule;
     await mod.PATCH(makePatchRequest("trip-1", { status: "REVEALED" }), {
@@ -260,10 +341,16 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
   });
 
   it("returns 400 (not 422) and performs no tripRequest.update when the assigned experience's owner is inactive", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
     // No matching row because the owner-active join excludes it.
-    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
 
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.PATCH(
@@ -276,12 +363,18 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
   });
 
   it("checks owner-active BEFORE writing, and derives actualDestination from the pre-checked experience without a second lookup", async () => {
-    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
-    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue({
-      destinationCity: "Bariloche",
-      destinationCountry: "Argentina",
-    });
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockSession("admin-1"),
+    );
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      {
+        destinationCity: "Bariloche",
+        destinationCountry: "Argentina",
+      },
+    );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "trip-1",
       status: "CONFIRMED",
@@ -289,8 +382,12 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
       experienceId: "exp-active-owner",
       reviewToken: null,
     });
-    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
-    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      null,
+    );
+    (
+      prisma.experience.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
 
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.PATCH(
@@ -300,7 +397,9 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
 
     expect(res.status).toBe(200);
     expect(prisma.experience.findFirst).toHaveBeenCalledTimes(1);
-    const findFirstArgs = (prisma.experience.findFirst as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    const findFirstArgs = (
+      prisma.experience.findFirst as ReturnType<typeof vi.fn>
+    ).mock.calls[0][0];
     expect(findFirstArgs.where).toMatchObject({
       id: "exp-active-owner",
       owner: { isActive: true },
@@ -308,7 +407,8 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
     // The single tripRequest.update call must already carry the derived
     // actualDestination — no separate update-then-lookup-then-update dance.
     expect(prisma.tripRequest.update).toHaveBeenCalledTimes(1);
-    const updateArgs = (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    const updateArgs = (prisma.tripRequest.update as ReturnType<typeof vi.fn>)
+      .mock.calls[0][0];
     expect(updateArgs.data.actualDestination).toBe("Bariloche, Argentina");
   });
 });

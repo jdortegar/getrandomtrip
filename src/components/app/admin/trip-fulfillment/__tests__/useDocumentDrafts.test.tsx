@@ -21,8 +21,16 @@ let root: Root;
 let host: HTMLDivElement;
 let current: ReturnType<typeof useDocumentDrafts>;
 const fetchMock = vi.fn();
-function Harness({ tripId = "trip", autoLoad = false }) {
-  const result = useDocumentDrafts(tripId, autoLoad);
+function Harness({
+  tripId = "trip",
+  autoLoad = false,
+  experienceId,
+}: {
+  tripId?: string;
+  autoLoad?: boolean;
+  experienceId?: string | null;
+}) {
+  const result = useDocumentDrafts(tripId, autoLoad, experienceId);
   useEffect(() => {
     current = result;
   });
@@ -36,6 +44,74 @@ beforeEach(() => {
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
   act(() => root.render(<Harness />));
+});
+it("snapshots a local source without changing assignment and preserves manual edits on source changes", async () => {
+  act(() => root.render(<Harness experienceId="selected" />));
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => current.create("hotel-voucher", 0));
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+    template: "hotel-voucher",
+    candidateIndex: 0,
+    experienceId: "selected",
+  });
+  act(() => current.edit({ ...draft.document, label: "Manual" }));
+  act(() => root.render(<Harness experienceId={null} />));
+  expect(current.document?.label).toBe("Manual");
+  expect(current.dirty).toBe(true);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+it("does not cancel or drop a manual save when the local source changes", async () => {
+  fetchMock.mockResolvedValueOnce(response(draft));
+  await act(async () => current.open("draft"));
+  act(() => current.edit({ ...draft.document, label: "Manual" }));
+  let finish!: (value: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  let save!: ReturnType<typeof current.save>;
+  act(() => {
+    save = current.save();
+  });
+  const signal = fetchMock.mock.calls[1][1].signal;
+  act(() => root.render(<Harness experienceId="other" />));
+  expect(signal.aborted).toBe(false);
+  await act(async () => {
+    finish(
+      response({
+        ...draft,
+        revision: 2,
+        document: { ...draft.document, label: "Manual" },
+      }),
+    );
+    await save;
+  });
+  expect(current.selected?.revision).toBe(2);
+  expect(current.document?.label).toBe("Manual");
+});
+it("ignores a stale create even when selection changes A to B to A", async () => {
+  act(() => root.render(<Harness experienceId="A" />));
+  let finish!: (value: Response) => void;
+  fetchMock.mockReturnValueOnce(
+    new Promise<Response>((resolve) => {
+      finish = resolve;
+    }),
+  );
+  let create!: ReturnType<typeof current.create>;
+  act(() => {
+    create = current.create("hotel-voucher");
+  });
+  act(() => root.render(<Harness experienceId="B" />));
+  act(() => root.render(<Harness experienceId="A" />));
+  let created: unknown;
+  await act(async () => {
+    finish(response(draft));
+    created = await create;
+  });
+  expect(created).toBeUndefined();
+  expect(current.selected).toBeNull();
+  expect(current.busy).toBe(false);
 });
 afterEach(() => {
   act(() => root.unmount());
@@ -63,6 +139,54 @@ it("lists private drafts and creates/opens without conflating trip save", async 
     "/api/admin/trip-requests/trip/document-drafts/draft",
   );
 });
+it.each(["list", "create", "open", "save", "delete"] as const)(
+  "tracks %s and ignores rapid duplicate requests until settled",
+  async (kind) => {
+    if (kind === "save" || kind === "delete") {
+      fetchMock.mockResolvedValueOnce(response(draft));
+      await act(async () => current.open("draft"));
+    }
+    const count = fetchMock.mock.calls.length;
+    let fail!: (error: Error) => void;
+    fetchMock.mockReturnValueOnce(
+      new Promise<Response>((_resolve, reject) => {
+        fail = reject;
+      }),
+    );
+    const run = () =>
+      kind === "list"
+        ? current.list()
+        : kind === "create"
+          ? current.create("hotel-voucher")
+          : kind === "open"
+            ? current.open("other")
+            : kind === "save"
+              ? current.save()
+              : current.removeSelected();
+    act(() => {
+      void run();
+      void run();
+    });
+    expect(fetchMock.mock.calls.length).toBe(count + 1);
+    expect(current.operation?.kind).toBe(kind);
+    if (kind === "open") expect(current.operation?.id).toBe("other");
+    await act(async () => fail(new Error("offline")));
+    expect(current.operation).toBeNull();
+    expect(current.busy).toBe(false);
+    fetchMock.mockResolvedValueOnce(
+      response(
+        kind === "list"
+          ? { drafts: [], candidates: { hotel: [], activity: [], dinner: [] } }
+          : kind === "delete"
+            ? { deleted: true }
+            : draft,
+      ),
+    );
+    await act(async () => run());
+    expect(fetchMock.mock.calls.length).toBe(count + 2);
+    expect(current.operation).toBeNull();
+  },
+);
 it("saves incomplete edits with revision and keeps409 conflicts editable", async () => {
   fetchMock.mockResolvedValueOnce(response(draft));
   await act(async () => current.open("draft"));

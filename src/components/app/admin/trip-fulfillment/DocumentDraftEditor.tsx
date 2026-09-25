@@ -9,8 +9,10 @@ import { ExperienceRoadmapForm } from "./ExperienceRoadmapForm";
 import { XsedRoadmapForm } from "./XsedRoadmapForm";
 import { DocumentFormWorkflowContext } from "./DocumentFormWorkflowContext";
 import styles from "./fulfillment.module.css";
+import { DocumentActionButton } from "./DocumentActionButton";
 interface Props {
   busy: boolean;
+  pending?: "save" | "preview" | null;
   countryLabels: Record<string, string>;
   dictionary: Pick<
     MarketingDictionary,
@@ -22,6 +24,7 @@ interface Props {
     | "xsedRoadmapPdf"
     | "documentDraftEditor"
     | "documentWorkflow"
+    | "documentActions"
   >;
   dirty: boolean;
   onChange: (document: TripDocumentSnapshot) => void;
@@ -33,6 +36,7 @@ interface Props {
 /** Controlled content: only the owning panel decides when to open/reset drafts. */
 export function DocumentDraftEditor({
   busy,
+  pending = null,
   countryLabels,
   dictionary,
   dirty,
@@ -120,25 +124,29 @@ export function DocumentDraftEditor({
         >
           {copy.close}
         </button>
-        <button
+        <DocumentActionButton
           className={styles.btn}
           disabled={busy}
           onClick={onSave}
+          pending={pending === "save"}
+          pendingLabel={dictionary.documentActions.saving}
           type="button"
         >
           {copy.save}
-        </button>
+        </DocumentActionButton>
         {onPreview && (
-          <button
+          <DocumentActionButton
             className={`${styles.btn} ${styles.btnPrimary}`}
             disabled={busy}
             onClick={() =>
               formRef.current?.querySelector("form")?.requestSubmit()
             }
+            pending={pending === "preview"}
+            pendingLabel={dictionary.documentActions.savePreview}
             type="button"
           >
             {dictionary.documentWorkflow.savePreview}
-          </button>
+          </DocumentActionButton>
         )}
       </div>
     </section>
