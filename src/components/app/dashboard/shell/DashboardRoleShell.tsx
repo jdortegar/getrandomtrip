@@ -30,9 +30,7 @@ export function DashboardRoleShell({ role }: DashboardRoleShellProps) {
       <div className="rt-container">
         <DashboardPageHeading role={role} />
       </div>
-      <div className="rt-container">
-        <DashboardNavTabs tabs={tabs} />
-      </div>
+      <DashboardNavTabs tabs={tabs} />
     </div>
   );
 }
