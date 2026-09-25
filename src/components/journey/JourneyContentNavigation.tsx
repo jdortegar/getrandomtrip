@@ -77,7 +77,12 @@ export default function JourneyContentNavigation({
         >
           {/* Left Section: User Profile & Back Button */}
           {!hideProfile && (
-            <div className="flex items-center gap-4 justify-center lg:justify-start">
+            <div
+              className={cn(
+                "flex gap-4 items-center justify-start px-4",
+                "md:px-0",
+              )}
+            >
               <JourneyUserBadge labels={userBadgeLabels} />
 
               {/* Back Button */}
