@@ -6,6 +6,7 @@ import { Sparkle } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { FormField, FormSelectField } from "@/components/ui/FormField";
+import { Button } from "@/components/ui/Button";
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import type { CheckoutFormFields } from "@/types/Checkout";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -187,6 +188,10 @@ interface CheckoutContactCardProps {
   onBack: () => void;
   onBeforeConfirm: () => Promise<boolean>;
   onFieldChange: (field: keyof CheckoutFormFields, value: string) => void;
+  onPaymentProcessingChange: (processing: boolean) => void;
+  onRetryPayment: () => void;
+  paymentError: string | null;
+  retryLabel: string;
   sessionEmail: string;
   summary: Dictionary["journey"]["summary"];
 }
@@ -200,6 +205,10 @@ export function CheckoutContactCard({
   onBack,
   onBeforeConfirm,
   onFieldChange,
+  onPaymentProcessingChange,
+  onRetryPayment,
+  paymentError,
+  retryLabel,
   sessionEmail,
   summary,
 }: CheckoutContactCardProps) {
@@ -332,8 +341,14 @@ export function CheckoutContactCard({
           {checkoutCopy.paymentTitle}
         </h3>
 
-        {clientSecret ? (
+        {paymentError ? (
+          <div role="alert">
+            <p className="text-red-700 text-sm">{paymentError}</p>
+            <Button onClick={onRetryPayment} type="button" variant="secondary">{retryLabel}</Button>
+          </div>
+        ) : clientSecret ? (
           <Elements
+            key={clientSecret}
             options={{
               appearance: stripeAppearance,
               clientSecret,
@@ -363,6 +378,7 @@ export function CheckoutContactCard({
               }}
               onBeforeConfirm={onBeforeConfirm}
               onCancel={onBack}
+              onProcessingChange={onPaymentProcessingChange}
             />
           </Elements>
         ) : (

@@ -30,6 +30,7 @@ import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { tripAccessWhere } from "@/lib/travelers/travelerAccess";
+import { CHECKOUT_PRICE_SELECT } from "@/lib/helpers/checkout-price-inputs";
 
 type RouteModule = typeof import("../route");
 
@@ -137,6 +138,20 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     POST = mod.POST;
   });
 
+  it("replaces stale party details when a fresh XSED selection reuses an active trip", async () => {
+    vi.mocked(prisma.tripRequest.findFirst).mockResolvedValue({
+      id: "active-xsed", status: "SAVED", tripperId: null,
+      paxDetails: { adults: 3, minors: 2, rooms: 2 },
+    } as never);
+    vi.mocked(prisma.tripRequest.update).mockResolvedValue({ id: "active-xsed", type: "xsed" } as never);
+
+    await POST(makePostRequest({ ...fullJourneyBody, type: "xsed", level: "couple", pax: 2 }));
+
+    expect(prisma.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 } }),
+    }));
+  });
+
   // (a) First request for a family creates
   it("creates a new row when no id and no existing non-terminal row for the family", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
@@ -171,7 +186,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     expect(prisma.tripRequest.create).not.toHaveBeenCalled();
     expect(prisma.tripRequest.update).toHaveBeenCalledTimes(1);
     expect(prisma.tripRequest.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: "active-1" } }),
+      expect.objectContaining({ where: expect.objectContaining({ id: "active-1" }) }),
     );
     expect(res.status).toBe(200);
   });
@@ -259,7 +274,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
   // (e) Client-supplied id still updates directly
   it("updates the owned row directly by id without invoking the family finder", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      { id: "trip_123" },
+      { id: "trip_123", status: "SAVED", type: "group", level: "essenza", pax: 3 },
     );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "trip_123",
@@ -271,10 +286,10 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledTimes(1);
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledWith({
       where: { id: "trip_123", userId: "user-1" },
-      select: { id: true },
+      select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
     });
     expect(prisma.tripRequest.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: "trip_123" } }),
+      expect.objectContaining({ where: expect.objectContaining({ id: "trip_123" }) }),
     );
     expect(res.status).toBe(200);
   });

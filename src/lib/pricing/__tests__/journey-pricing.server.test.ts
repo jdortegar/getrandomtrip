@@ -49,6 +49,9 @@ it.each(["couple", "solo", "family"])(
   "matches POST's implicit journey slot for %s",
   async (type) => {
     vi.mocked(findActiveTripRequest).mockResolvedValue({
+    updatedAt: new Date("2026-09-25"), payment: null,
+    type: "group", level: "essenza", pax: 2, transport: "plane", accommodationType: "any",
+    climate: "any", maxTravelTime: "no-limit", departPref: "any", arrivePref: "any", avoidDestinations: [], addons: [],
       id: "active",
       tripperId: "original",
       status: "SAVED",
@@ -111,6 +114,9 @@ it("an explicit null-attribution booking stays catalog, unlike implicit upsert s
     tripperId: null,
   } as never);
   vi.mocked(findActiveTripRequest).mockResolvedValue({
+    updatedAt: new Date("2026-09-25"), payment: null,
+    type: "group", level: "essenza", pax: 2, transport: "plane", accommodationType: "any",
+    climate: "any", maxTravelTime: "no-limit", departPref: "any", arrivePref: "any", avoidDestinations: [], addons: [],
     id: "owned",
     tripperId: null,
     status: "DRAFT",
@@ -133,6 +139,9 @@ it("an explicit null-attribution booking stays catalog, unlike implicit upsert s
 });
 it("does not persist attribution or apply new liveness policy to an existing booking", async () => {
   vi.mocked(findActiveTripRequest).mockResolvedValue({
+    updatedAt: new Date("2026-09-25"), payment: null,
+    type: "group", level: "essenza", pax: 2, transport: "plane", accommodationType: "any",
+    climate: "any", maxTravelTime: "no-limit", departPref: "any", arrivePref: "any", avoidDestinations: [], addons: [],
     id: "active",
     tripperId: "historical",
     status: "SAVED",

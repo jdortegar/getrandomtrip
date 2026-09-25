@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useStripe,
   useElements,
@@ -30,6 +30,7 @@ interface StripePaymentFormProps {
   onBeforeConfirm: () => Promise<boolean>;
   /** Called when user clicks Back. */
   onCancel: () => void;
+  onProcessingChange: (processing: boolean) => void;
 }
 
 export function StripePaymentForm({
@@ -44,6 +45,7 @@ export function StripePaymentForm({
   copy,
   onBeforeConfirm,
   onCancel,
+  onProcessingChange,
 }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -54,59 +56,90 @@ export function StripePaymentForm({
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const mounted = useRef(false);
+  const inFlight = useRef(false);
+  const processingCallback = useRef(onProcessingChange);
+  useEffect(() => { processingCallback.current = onProcessingChange; }, [onProcessingChange]);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      inFlight.current = false;
+      processingCallback.current(false);
+    };
+  }, []);
+
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || inFlight.current) return;
+    inFlight.current = true;
 
     setIsProcessing(true);
+    onProcessingChange(true);
     setErrorMessage(null);
 
-    const ok = await onBeforeConfirm();
-    if (!ok) {
-      setIsProcessing(false);
-      return;
-    }
+    try {
+      const ok = await onBeforeConfirm();
+      if (!ok || !mounted.current) {
+        return;
+      }
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/${locale}/checkout/success`,
-        payment_method_data: {
-          billing_details: {
-            email: billingEmail.trim() || undefined,
-            name: billingName.trim() || undefined,
-            phone: billingPhone.trim() || undefined,
-            address: {
-              line1: billingLine1.trim() || undefined,
-              city: billingCity.trim() || undefined,
-              state: billingState.trim() || undefined,
-              postal_code: billingPostalCode.trim() || undefined,
-              country: billingCountry.trim().toUpperCase() || undefined,
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/${locale}/checkout/success`,
+          payment_method_data: {
+            billing_details: {
+              email: billingEmail.trim() || undefined,
+              name: billingName.trim() || undefined,
+              phone: billingPhone.trim() || undefined,
+              address: {
+                line1: billingLine1.trim() || undefined,
+                city: billingCity.trim() || undefined,
+                state: billingState.trim() || undefined,
+                postal_code: billingPostalCode.trim() || undefined,
+                country: billingCountry.trim().toUpperCase() || undefined,
+              },
             },
           },
         },
-      },
-      redirect: "if_required",
-    });
+        redirect: "if_required",
+      });
 
-    if (error) {
-      setErrorMessage(error.message ?? "Payment failed. Please try again.");
-      setIsProcessing(false);
-      return;
-    }
+      if (!mounted.current) return;
+      if (error) {
+        setErrorMessage(error.message ?? "Payment failed. Please try again.");
+        setIsProcessing(false);
+        onProcessingChange(false);
+        return;
+      }
 
-    // Pass payment_intent to success page so it can confirm the trip
-    // even if the Stripe webhook hasn't arrived yet.
-    const successUrl = new URL(
-      `/${locale}/checkout/success`,
-      window.location.origin,
-    );
-    if (paymentIntent?.id) {
-      successUrl.searchParams.set("payment_intent", paymentIntent.id);
-      successUrl.searchParams.set("redirect_status", paymentIntent.status);
+      // Pass payment_intent to success page so it can confirm the trip
+      // even if the Stripe webhook hasn't arrived yet.
+      const successUrl = new URL(
+        `/${locale}/checkout/success`,
+        window.location.origin,
+      );
+      if (paymentIntent?.id) {
+        successUrl.searchParams.set("payment_intent", paymentIntent.id);
+        successUrl.searchParams.set("redirect_status", paymentIntent.status);
+      }
+      window.location.href = successUrl.toString();
+    } catch (error) {
+      if (mounted.current)
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Payment failed. Please try again.",
+        );
+    } finally {
+      inFlight.current = false;
+      if (mounted.current) {
+        setIsProcessing(false);
+        processingCallback.current(false);
+      }
     }
-    window.location.href = successUrl.toString();
   }
 
   return (

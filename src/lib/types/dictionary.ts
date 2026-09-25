@@ -3121,6 +3121,7 @@ export interface MarketingDictionary {
       travelersModalDone: string;
       travelersModalMinors: string;
       travelersModalRooms: string;
+      travelersModalSaving: string;
       travelersModalAriaIncreaseAdults: string;
       travelersModalAriaIncreaseMinors: string;
       travelersModalAriaIncreaseRooms: string;

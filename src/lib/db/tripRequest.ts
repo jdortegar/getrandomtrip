@@ -1,5 +1,6 @@
 import { Prisma, TripRequestStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { CHECKOUT_PRICE_SELECT } from "@/lib/helpers/checkout-price-inputs";
 
 /**
  * Every non-terminal status a `TripRequest` can be in. A row in one of these
@@ -115,7 +116,7 @@ export async function revertExpiredPendingPaymentsForUser(
 export async function findActiveTripRequest(
   userId: string,
   family: TripFamily,
-): Promise<{ id: string; status: TripRequestStatus; tripperId: string | null } | null> {
+) {
   return prisma.tripRequest.findFirst({
     where: {
       userId,
@@ -123,6 +124,7 @@ export async function findActiveTripRequest(
       status: { in: [...NON_TERMINAL_TRIP_STATUSES] },
     },
     orderBy: { updatedAt: "desc" },
-    select: { id: true, status: true, tripperId: true },
+    select: { ...CHECKOUT_PRICE_SELECT, id: true, status: true, updatedAt: true,
+      payment: { select: { status: true, stripePaymentIntentId: true } } },
   });
 }
