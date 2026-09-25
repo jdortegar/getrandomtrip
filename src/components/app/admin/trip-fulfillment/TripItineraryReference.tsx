@@ -1,6 +1,7 @@
 import { Lock } from "lucide-react";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+import type { ExperienceItinerary } from "@/lib/types/TripDocumentSource";
 import styles from "./fulfillment.module.css";
 
 interface ItineraryDayEntry {
@@ -9,12 +10,7 @@ interface ItineraryDayEntry {
   image: string | null;
 }
 
-export interface ExperienceItinerary {
-  title: string;
-  itinerary: unknown;
-  inclusions: unknown;
-  exclusions: unknown;
-}
+export type { ExperienceItinerary } from "@/lib/types/TripDocumentSource";
 
 interface TripItineraryReferenceProps {
   copy: MarketingDictionary["adminTripFulfillment"];
@@ -31,7 +27,9 @@ export function TripItineraryReference({
   copy,
   experienceItinerary,
 }: TripItineraryReferenceProps) {
-  const days: ItineraryDayEntry[] = Array.isArray(experienceItinerary?.itinerary)
+  const days: ItineraryDayEntry[] = Array.isArray(
+    experienceItinerary?.itinerary,
+  )
     ? (experienceItinerary.itinerary as ItineraryDayEntry[])
     : [];
   const inclusions = Array.isArray(experienceItinerary?.inclusions)
@@ -48,7 +46,10 @@ export function TripItineraryReference({
     : null;
 
   return (
-    <div className={`${styles.panel} ${styles.panelReference}`} data-component="TripItineraryReference">
+    <div
+      className={`${styles.panel} ${styles.panelReference}`}
+      data-component="TripItineraryReference"
+    >
       <div className={styles.panelBody}>
         <div className={styles.sectionHeadingRow}>
           <div>
@@ -64,7 +65,10 @@ export function TripItineraryReference({
             <p className={styles.panelDesc}>{copy.itineraryReferenceBody}</p>
           </div>
           {experienceItinerary ? (
-            <button className={`${styles.btn} ${styles.btnGhost}`} type="button">
+            <button
+              className={`${styles.btn} ${styles.btnGhost}`}
+              type="button"
+            >
               {copy.openInEditor}
             </button>
           ) : null}
@@ -78,7 +82,9 @@ export function TripItineraryReference({
           <div className={styles.dayList}>
             {days.map((day, i) => (
               <div className={styles.dayRow} key={i}>
-                <span className={`${styles.dayBadge} ${styles.cond}`}>Day {i + 1}</span>
+                <span className={`${styles.dayBadge} ${styles.cond}`}>
+                  Day {i + 1}
+                </span>
                 <div className={styles.dayContent}>
                   <span className={styles.dayTitle}>{day.title}</span>
                   {day.description ? (

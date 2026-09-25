@@ -28,6 +28,7 @@ interface Draft {
 interface TripManagePanelProps {
   assignableExperiences: AssignableExperience[];
   copy: MarketingDictionary["adminTripEditModal"];
+  disabled?: boolean;
   draft: Draft;
   onChange: (draft: Draft) => void;
   statusLabel: (status: TripRequestStatus) => string;
@@ -40,6 +41,7 @@ interface TripManagePanelProps {
 export function TripManagePanel({
   assignableExperiences,
   copy,
+  disabled = false,
   draft,
   onChange,
   statusLabel,
@@ -48,6 +50,7 @@ export function TripManagePanel({
   return (
     <div className={styles.fieldGroup} data-component="TripManagePanel">
       <FormSelectField
+        disabled={disabled}
         id="fulfillment-trip-status"
         label={copy.statusLabel}
         onChange={(e) =>
@@ -63,6 +66,7 @@ export function TripManagePanel({
       </FormSelectField>
 
       <FormSelectField
+        disabled={disabled}
         id="fulfillment-trip-experience"
         label={copy.experienceLabel}
         onChange={(e) => onChange({ ...draft, experienceId: e.target.value })}

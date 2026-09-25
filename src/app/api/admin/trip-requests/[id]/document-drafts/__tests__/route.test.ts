@@ -55,6 +55,7 @@ beforeEach(() => {
       work({ tripDocumentDraft: { findMany } } as never),
   );
   vi.mocked(loadTripDocumentSource).mockResolvedValue({
+    experienceItinerary: null,
     trip: {},
     provider: {
       kind: "experience",
@@ -97,6 +98,25 @@ it("creates with DB owner, never admin identity or client snapshots", async () =
     loadTripDocumentSource,
   );
   expect(response.headers.get("cache-control")).toBe("private, no-store");
+});
+it("forwards the selected source for explicit creation and reports ineligible sources", async () => {
+  const response = await POST(
+    request(
+      '{"template":"hotel-voucher","experienceId":"selected","candidateIndex":0}',
+    ),
+    context,
+  );
+  expect(response.status).toBe(201);
+  expect(createTripDocumentDraft).toHaveBeenCalledWith(
+    prisma,
+    { ownerId: "buyer", tripRequestId: "trip" },
+    { template: "hotel-voucher", experienceId: "selected", candidateIndex: 0 },
+    loadTripDocumentSource,
+  );
+  vi.mocked(createTripDocumentDraft).mockRejectedValueOnce(
+    new Error("DOCUMENT_SOURCE_EXPERIENCE_UNAVAILABLE"),
+  );
+  expect((await POST(request(), context)).status).toBe(422);
 });
 it("lists only scoped DTOs and candidate facts without private keys", async () => {
   findMany.mockResolvedValue([

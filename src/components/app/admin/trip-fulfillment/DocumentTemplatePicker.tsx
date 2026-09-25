@@ -5,8 +5,11 @@ import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import type { DocumentProviderCandidate } from "@/lib/types/DocumentProviderCandidate";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import styles from "./fulfillment.module.css";
+import { DocumentActionButton } from "./DocumentActionButton";
 interface Props {
   busy: boolean;
+  creating?: boolean;
+  creatingLabel: string;
   candidates: Record<
     "hotel" | "activity" | "dinner",
     DocumentProviderCandidate[]
@@ -20,6 +23,8 @@ interface Props {
 }
 export function DocumentTemplatePicker({
   busy,
+  creating = false,
+  creatingLabel,
   candidates,
   copy,
   onCreate,
@@ -74,16 +79,18 @@ export function DocumentTemplatePicker({
         </FormSelectField>
       )}
       <p className="text-sm text-neutral-500">{copy.sourceNote}</p>
-      <button
+      <DocumentActionButton
         className={`${styles.btn} ${styles.btnPrimary}`}
         disabled={busy}
         onClick={() =>
           onCreate(template, candidate === "" ? undefined : Number(candidate))
         }
+        pending={creating}
+        pendingLabel={creatingLabel}
         type="button"
       >
         {copy.create}
-      </button>
+      </DocumentActionButton>
     </div>
   );
 }

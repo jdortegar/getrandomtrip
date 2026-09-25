@@ -5473,7 +5473,31 @@
     "bannerSwitchToRandomtrip": "View general Randomtrip experiences",
     "bannerSwitchToTripper": "Switch back to {name}'s experiences"
   },
+  "documentPreview": {
+    "loading": "Loading PDF…",
+    "loadingPage": "Loading…",
+    "error": "This preview could not be displayed. Retry or open the PDF in a separate tab.",
+    "retry": "Retry preview",
+    "previous": "Previous page",
+    "next": "Next page",
+    "page": "Page {page} of {total}"
+  },
+  "documentActions": {
+    "creating": "Creating draft…",
+    "loading": "Loading drafts…",
+    "opening": "Opening draft…",
+    "reloading": "Reloading draft…",
+    "saving": "Saving draft…",
+    "savePreview": "Saving and preparing PDF…",
+    "attaching": "Attaching PDF…",
+    "replacing": "Replacing PDF…",
+    "deleting": "Deleting draft…",
+    "refreshing": "Refreshing documents…"
+  },
   "documentWorkflow": {
+    "sourceLoading": "Loading selected experience…",
+    "sourceError": "The selected experience could not be loaded. Retry before creating a new document.",
+    "sourceNote": "Your selection updates this itinerary and new document defaults without saving the trip. Existing document drafts are unchanged.",
     "linkedDrafts": "Editable copies of attached documents",
       "newDocument": "New document",
       "privateDrafts": "Private drafts",

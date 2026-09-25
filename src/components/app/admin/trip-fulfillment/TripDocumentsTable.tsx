@@ -1,7 +1,14 @@
-import { Eye, Download, Trash2, FileText, Image as ImageIcon } from "lucide-react";
+import {
+  Eye,
+  Download,
+  Trash2,
+  FileText,
+  Image as ImageIcon,
+} from "lucide-react";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
 import styles from "./fulfillment.module.css";
+import { DocumentActionButton } from "./DocumentActionButton";
 
 interface TripDocumentsTableProps {
   copy: MarketingDictionary["adminTripFulfillment"];
@@ -9,6 +16,7 @@ interface TripDocumentsTableProps {
   documents: TripDocumentDTO[];
   onRemove: (documentId: string) => void;
   removingId: string | null;
+  busy?: boolean;
 }
 
 function formatUploaded(iso: string): string {
@@ -30,9 +38,14 @@ export function TripDocumentsTable({
   documents,
   onRemove,
   removingId,
+  busy = false,
 }: TripDocumentsTableProps) {
   if (documents.length === 0) {
-    return <p className={styles.panelDesc} data-component="TripDocumentsTable">{copy.documentsEmpty}</p>;
+    return (
+      <p className={styles.panelDesc} data-component="TripDocumentsTable">
+        {copy.documentsEmpty}
+      </p>
+    );
   }
 
   return (
@@ -77,18 +90,31 @@ export function TripDocumentsTable({
                   >
                     <Eye />
                   </a>
-                  <a className={styles.iconBtn} href={doc.downloadHref} title={copy.download}>
+                  <a
+                    className={styles.iconBtn}
+                    href={doc.downloadHref}
+                    title={copy.download}
+                  >
                     <Download />
                   </a>
-                  <button
-                    className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-                    disabled={removingId === doc.id}
+                  <DocumentActionButton
+                    aria-label={
+                      removingId === doc.id ? copy.removing : copy.remove
+                    }
+                    className={
+                      removingId === doc.id
+                        ? styles.btn
+                        : `${styles.iconBtn} ${styles.iconBtnDanger}`
+                    }
+                    disabled={busy || removingId !== null}
                     onClick={() => onRemove(doc.id)}
+                    pending={removingId === doc.id}
+                    pendingLabel={copy.removing}
                     title={copy.remove}
                     type="button"
                   >
                     <Trash2 />
-                  </button>
+                  </DocumentActionButton>
                 </div>
               </td>
             </tr>

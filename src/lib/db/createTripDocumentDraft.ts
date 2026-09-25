@@ -17,6 +17,7 @@ interface Scope {
 type SourceLoader = (
   tx: Prisma.TransactionClient,
   tripRequestId: string,
+  experienceId?: string | null,
 ) => Promise<{
   trip: TripDocumentSnapshotSource;
   provider: DocumentPrefillSource;
@@ -29,7 +30,7 @@ const templates = [
   "xsed-roadmap",
 ] as const;
 
-/** Caller authorizes live admin; trusted loader must read only this trip via tx.
+/** Caller authorizes live admin; trusted loader scopes trip and selected source via tx.
  * The loader runs once, inside owner/trip locks; no client snapshots accepted.
  */
 export async function createTripDocumentDraft(
@@ -44,13 +45,21 @@ export async function createTripDocumentDraft(
     Array.isArray(input) ||
     Object.getPrototypeOf(input) !== Object.prototype ||
     Reflect.ownKeys(input).some(
-      (key) => key !== "template" && key !== "candidateIndex",
+      (key) =>
+        key !== "template" &&
+        key !== "candidateIndex" &&
+        key !== "experienceId",
     )
   )
     return { ok: false as const, error: "invalid_input" as const };
   const raw = input as Record<string, unknown>;
   if (
     !templates.some((template) => template === raw.template) ||
+    (raw.experienceId !== undefined &&
+      raw.experienceId !== null &&
+      (typeof raw.experienceId !== "string" ||
+        !raw.experienceId.trim() ||
+        raw.experienceId.length > 200)) ||
     (raw.candidateIndex !== undefined &&
       (!Number.isSafeInteger(raw.candidateIndex) ||
         Number(raw.candidateIndex) < 0))
@@ -60,7 +69,11 @@ export async function createTripDocumentDraft(
     db,
     { ownerId: scope.ownerId, tripIds: [scope.tripRequestId] },
     async (tx) => {
-      const source = await loadSource(tx, scope.tripRequestId);
+      const source = await loadSource(
+        tx,
+        scope.tripRequestId,
+        raw.experienceId as string | null | undefined,
+      );
       const parsed = parseDraftDocument(
         createPrefilledDocumentSnapshot(
           raw.template as TripDocumentSnapshot["template"],

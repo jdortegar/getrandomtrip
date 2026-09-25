@@ -95,3 +95,98 @@ it("fails closed if the trip disappeared", async () => {
     "DOCUMENT_SOURCE_TRIP_NOT_FOUND",
   );
 });
+
+it("loads an assignable local override without using the saved destination", async () => {
+  const fake = database(null);
+  fake.findUnique.mockResolvedValue({
+    ...trip,
+    experience: null,
+    tripperId: "owner",
+    type: "COUPLE",
+  });
+  const findFirst = vi.fn().mockResolvedValue({
+    title: "Selected",
+    destinationCity: "Mendoza",
+    destinationCountry: "AR",
+    level: "essenza",
+    type: ["couple"],
+    hotels: [],
+    activities: [],
+    sections: [],
+    itinerary: [{ title: "Selected day", description: "Walk" }],
+    inclusions: [],
+    exclusions: [],
+  });
+  const source = await loadTripDocumentSource(
+    { ...fake.tx, experience: { findFirst } } as never,
+    "trip",
+    "selected",
+  );
+  expect(findFirst).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: {
+        id: "selected",
+        status: "ACTIVE",
+        owner: { isActive: true },
+        ownerId: "owner",
+        type: { has: "couple" },
+      },
+    }),
+  );
+  expect(source.trip.actualDestination).toBe("Mendoza, AR");
+  expect(
+    createPrefilledDocumentSnapshot(
+      "experience-roadmap",
+      source.trip,
+      source.provider,
+    ),
+  ).toMatchObject({
+    data: {
+      destination: "Mendoza, AR",
+      heading: "Selected",
+      activities: [{ title: "Selected day" }],
+    },
+  });
+});
+it("distinguishes explicit clear from omitted source without old destination leakage", async () => {
+  const fake = database({
+    title: "Saved",
+    destinationCity: "Areco",
+    destinationCountry: "AR",
+    type: [],
+  });
+  const source = await loadTripDocumentSource(fake.tx, "trip", null);
+  expect(source.trip.experience).toBeNull();
+  expect(source.trip.actualDestination).toBeNull();
+  expect(source.provider).toEqual({ kind: "experience" });
+  expect(
+    (await loadTripDocumentSource(fake.tx, "trip")).trip.actualDestination,
+  ).toBe("Areco");
+});
+it("fails closed on non-assignable override and recognizes canonical/legacy XSED", async () => {
+  const fake = database(null);
+  fake.findUnique.mockResolvedValue({
+    ...trip,
+    experience: null,
+    tripperId: null,
+    type: "xsed",
+  });
+  const findFirst = vi.fn().mockResolvedValue(null);
+  await expect(
+    loadTripDocumentSource(
+      { ...fake.tx, experience: { findFirst } } as never,
+      "trip",
+      "blocked",
+    ),
+  ).rejects.toThrow("DOCUMENT_SOURCE_EXPERIENCE_UNAVAILABLE");
+  expect(findFirst).toHaveBeenCalledWith(
+    expect.objectContaining({
+      where: {
+        id: "blocked",
+        status: "ACTIVE",
+        owner: { isActive: true },
+        AND: [{ OR: [{ level: "xsed" }, { type: { has: "XSED" } }] }],
+      },
+    }),
+  );
+});

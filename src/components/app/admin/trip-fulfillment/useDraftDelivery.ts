@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DocumentFieldError } from "@/lib/types/DocumentValidation";
 import type { TripDocumentDraftDto } from "@/lib/types/TripDocumentDraft";
 const fieldCodes = new Set([
@@ -37,6 +37,10 @@ export function useDraftDelivery(
   const [owner, setOwner] = useState(identity);
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [operation, setOperation] = useState<
+    "render" | "attach" | "replace" | null
+  >(null);
+  const activeOperation = useRef<typeof operation>(null);
   const [validationAttempt, setValidationAttempt] = useState(0);
   const [fieldErrors, setFieldErrors] = useState<DocumentFieldError[]>([]);
   const [error, setError] = useState<DeliveryError | null>(null);
@@ -52,6 +56,7 @@ export function useDraftDelivery(
     setOwner(identity);
     setUrl(null);
     setBusy(false);
+    setOperation(null);
     setError(null);
     setFieldErrors([]);
     setAttachedId(null);
@@ -66,14 +71,17 @@ export function useDraftDelivery(
       preview.current = null;
       reviewedBlob.current = null;
       requestId.current = null;
+      activeOperation.current = null;
     },
     [identity],
   );
-  function begin() {
+  function begin(operation: "render" | "attach" | "replace") {
     sequence.current++;
     abort.current?.abort();
     abort.current = new AbortController();
     setBusy(true);
+    activeOperation.current = operation;
+    setOperation(operation);
     setError(null);
     setFieldErrors([]);
     return { token: sequence.current, signal: abort.current.signal };
@@ -88,8 +96,8 @@ export function useDraftDelivery(
   }
   const base = `/api/admin/trip-requests/${encodeURIComponent(tripId)}/document-drafts/${encodeURIComponent(draft?.id ?? "")}`;
   async function render() {
-    if (!draft || dirty || busy) return;
-    const { token, signal } = begin();
+    if (!draft || dirty || activeOperation.current) return;
+    const { token, signal } = begin("render");
     preview.current = null;
     reviewedBlob.current = null;
     requestId.current = null;
@@ -187,12 +195,16 @@ export function useDraftDelivery(
             : "unavailable",
         );
     } finally {
-      if (token === sequence.current) setBusy(false);
+      if (token === sequence.current) {
+        activeOperation.current = null;
+        setBusy(false);
+        setOperation(null);
+      }
     }
   }
   async function attach(replaceDocumentId?: string) {
-    if (!draft || dirty || busy || !preview.current) return;
-    const { token, signal } = begin();
+    if (!draft || dirty || activeOperation.current || !preview.current) return;
+    const { token, signal } = begin(replaceDocumentId ? "replace" : "attach");
     requestId.current ??= crypto.randomUUID();
     try {
       const response = await fetch(`${base}/attach`, {
@@ -232,7 +244,11 @@ export function useDraftDelivery(
             : "unavailable",
         );
     } finally {
-      if (token === sequence.current) setBusy(false);
+      if (token === sequence.current) {
+        activeOperation.current = null;
+        setBusy(false);
+        setOperation(null);
+      }
     }
   }
   function resetExpiredRequest() {
@@ -241,9 +257,28 @@ export function useDraftDelivery(
     setError(null);
     setFieldErrors([]);
   }
+  const cancelRender = useCallback(() => {
+    if (activeOperation.current !== "render") return;
+    sequence.current++;
+    abort.current?.abort();
+    activeOperation.current = null;
+    setBusy(false);
+    setOperation(null);
+  }, []);
+  const clearPreview = useCallback(() => {
+    if (blobUrl.current) URL.revokeObjectURL(blobUrl.current);
+    blobUrl.current = null;
+    preview.current = null;
+    reviewedBlob.current = null;
+    requestId.current = null;
+    setUrl(null);
+  }, []);
   return {
     url,
     busy,
+    operation,
+    cancelRender,
+    clearPreview,
     error,
     fieldErrors,
     validationAttempt,

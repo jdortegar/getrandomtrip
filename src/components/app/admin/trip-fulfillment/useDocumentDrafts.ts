@@ -1,8 +1,15 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { TripDocumentDraftDto } from "@/lib/types/TripDocumentDraft";
 import type { TripDocumentSnapshot } from "@/lib/types/TripDocumentSnapshot";
 import type { DocumentProviderCandidate } from "@/lib/types/DocumentProviderCandidate";
+import type { DraftOperation } from "@/lib/types/DocumentAction";
 interface Collection {
   drafts: TripDocumentDraftDto[];
   candidates: Record<
@@ -20,15 +27,25 @@ const empty: Collection = {
   drafts: [],
   candidates: { hotel: [], activity: [], dinner: [] },
 };
-export function useDocumentDrafts(tripId: string, autoLoad = false) {
+export function useDocumentDrafts(
+  tripId: string,
+  autoLoad = false,
+  experienceId?: string | null,
+) {
   const [collection, setCollection] = useState<Collection>(empty);
   const [selected, setSelected] = useState<TripDocumentDraftDto | null>(null);
   const [document, setDocument] = useState<TripDocumentSnapshot | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [operation, setOperation] = useState<DraftOperation | null>(null);
+  const activeRequest = useRef<string | null>(null);
   const [error, setError] = useState<DraftError | null>(null);
   const sequence = useRef(0);
   const controller = useRef<AbortController | null>(null);
+  const sourceVersion = useRef(0);
+  useLayoutEffect(() => {
+    sourceVersion.current++;
+  }, [experienceId]);
   const [owner, setOwner] = useState(tripId);
   if (owner !== tripId) {
     setOwner(tripId);
@@ -37,12 +54,14 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
     setSelected(null);
     setDocument(null);
     setBusy(false);
+    setOperation(null);
     setError(null);
   }
   useEffect(
     () => () => {
       sequence.current++;
       controller.current?.abort();
+      activeRequest.current = null;
     },
     [tripId],
   );
@@ -50,7 +69,9 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
     sequence.current++;
     controller.current?.abort();
     controller.current = null;
+    activeRequest.current = null;
     setBusy(false);
+    setOperation(null);
   }, []);
   function edit(value: TripDocumentSnapshot) {
     cancel();
@@ -69,12 +90,18 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
       method: string,
       body: unknown,
       apply: (value: T) => void,
+      operation: DraftOperation,
+      isCurrent = () => true,
     ) => {
+      const requestKey = `${operation.kind}/${operation.id ?? ""}`;
+      if (activeRequest.current === requestKey) return;
       cancel();
+      activeRequest.current = requestKey;
       const token = sequence.current;
       const abort = new AbortController();
       controller.current = abort;
       setBusy(true);
+      setOperation(operation);
       setError(null);
       try {
         const response = await fetch(
@@ -91,7 +118,7 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
                 }),
           },
         );
-        if (token !== sequence.current) return;
+        if (token !== sequence.current || !isCurrent()) return;
         if (!response.ok) {
           setError(
             response.status === 409
@@ -109,14 +136,18 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
           return;
         }
         const value = (await response.json()) as T;
-        if (token === sequence.current) {
+        if (token === sequence.current && isCurrent()) {
           apply(value);
           return value;
         }
       } catch {
-        if (token === sequence.current) setError("unavailable");
+        if (token === sequence.current && isCurrent()) setError("unavailable");
       } finally {
-        if (token === sequence.current) setBusy(false);
+        if (token === sequence.current) {
+          activeRequest.current = null;
+          setBusy(false);
+          setOperation(null);
+        }
       }
     },
     [cancel, tripId],
@@ -160,28 +191,42 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
     }));
   }
   function list() {
-    return request<Collection>("", "GET", undefined, (value) => {
-      setCollection(value);
-      setLoaded(true);
-    });
+    return request<Collection>(
+      "",
+      "GET",
+      undefined,
+      (value) => {
+        setCollection(value);
+        setLoaded(true);
+      },
+      { kind: "list" },
+    );
   }
   function create(
     template: TripDocumentSnapshot["template"],
     candidateIndex?: number,
   ) {
+    const version = sourceVersion.current;
     return request<TripDocumentDraftDto>(
       "",
       "POST",
-      { template, ...(candidateIndex === undefined ? {} : { candidateIndex }) },
+      {
+        template,
+        ...(candidateIndex === undefined ? {} : { candidateIndex }),
+        ...(experienceId === undefined ? {} : { experienceId }),
+      },
       adopt,
+      { kind: "create" },
+      () => version === sourceVersion.current,
     );
   }
-  function open(id: string) {
+  function open(id: string, reload = false) {
     return request<TripDocumentDraftDto>(
       `/${encodeURIComponent(id)}`,
       "GET",
       undefined,
       adopt,
+      { kind: reload ? "reload" : "open", id },
     );
   }
   function save(value: TripDocumentSnapshot | null = document) {
@@ -191,6 +236,7 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
       "PATCH",
       { revision: selected.revision, document: value },
       adopt,
+      { kind: "save", id: selected.id },
     );
   }
   function removeSelected() {
@@ -209,6 +255,7 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
         setSelected(null);
         setDocument(null);
       },
+      { kind: "delete", id },
     );
   }
   const dirty =
@@ -220,6 +267,9 @@ export function useDocumentDrafts(tripId: string, autoLoad = false) {
     loaded,
     document,
     busy: busy || (autoLoad && !loaded && !error),
+    operation:
+      operation ??
+      (autoLoad && !loaded && !error ? { kind: "list" as const } : null),
     error,
     dirty,
     list,

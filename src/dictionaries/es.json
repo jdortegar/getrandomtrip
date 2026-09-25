@@ -5473,7 +5473,31 @@
     "bannerSwitchToRandomtrip": "Ver experiencias generales de Randomtrip",
     "bannerSwitchToTripper": "Volver a experiencias de {name}"
   },
+  "documentPreview": {
+    "loading": "Cargando PDF…",
+    "loadingPage": "Cargando…",
+    "error": "No se pudo mostrar la vista previa. Inténtalo de nuevo o abre el PDF en otra pestaña.",
+    "retry": "Reintentar vista previa",
+    "previous": "Página anterior",
+    "next": "Página siguiente",
+    "page": "Página {page} de {total}"
+  },
+  "documentActions": {
+    "creating": "Creando borrador…",
+    "loading": "Cargando borradores…",
+    "opening": "Abriendo borrador…",
+    "reloading": "Recargando borrador…",
+    "saving": "Guardando borrador…",
+    "savePreview": "Guardando y preparando PDF…",
+    "attaching": "Adjuntando PDF…",
+    "replacing": "Reemplazando PDF…",
+    "deleting": "Eliminando borrador…",
+    "refreshing": "Actualizando documentos…"
+  },
   "documentWorkflow": {
+    "sourceLoading": "Cargando la experiencia seleccionada…",
+    "sourceError": "No se pudo cargar la experiencia seleccionada. Vuelve a intentar antes de crear un documento.",
+    "sourceNote": "La selección actualiza este itinerario y los datos iniciales de documentos nuevos sin guardar el viaje. Los borradores existentes no se modifican.",
     "linkedDrafts": "Copias editables de documentos adjuntos",
       "newDocument": "Nuevo documento",
       "privateDrafts": "Borradores privados",

@@ -102,7 +102,12 @@ async function handle(
       },
     );
     return json(result);
-  } catch {
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "DOCUMENT_SOURCE_EXPERIENCE_UNAVAILABLE"
+    )
+      return json({ error: "source_unavailable" }, 422);
     return json({ error: "drafts_unavailable" }, 503);
   }
 }

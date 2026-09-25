@@ -75,6 +75,7 @@
     "negotiator": "^1.0.0",
     "next": "16.2.6",
     "next-auth": "^4.24.14",
+    "pdfjs-dist": "5.5.207",
     "qrcode": "1.5.4",
     "react": "^19.0.0",
     "react-canvas-confetti": "^2.0.7",
