@@ -1,24 +1,32 @@
 import { act, type ComponentProps, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import es from "@/dictionaries/es.json";
 import en from "@/dictionaries/en.json";
 import TripperPlanner from "@/components/tripper/TripperPlanner";
 import { JourneyPreferencesStep } from "../JourneyPreferencesStep";
 import JourneySummary from "../JourneySummary";
 
-const nav = vi.hoisted(() => ({ query: "", push: vi.fn(), replace: vi.fn() }));
+const nav = vi.hoisted(() => ({
+  locale: "en",
+  query: "",
+  push: vi.fn(),
+  replace: vi.fn(),
+}));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: nav.push, replace: nav.replace }),
   useSearchParams: () => new URLSearchParams(nav.query),
-  useParams: () => ({ locale: "en" }),
+  useParams: () => ({ locale: nav.locale }),
 }));
 // Isolate remote geo lookup, not planner state, callbacks or rendered expertise.
 vi.mock("@/components/journey/CountrySelector", () => ({
   default: ({
     value,
     onChange,
+    placeholder,
   }: {
     value: string;
+    placeholder: string;
     onChange: (name: string, code: string) => void;
   }) => (
     <select
@@ -28,7 +36,7 @@ vi.mock("@/components/journey/CountrySelector", () => ({
       }
       value={value}
     >
-      <option value="">Choose country</option>
+      <option value="">{placeholder}</option>
       <option>Argentina</option>
       <option>Chile</option>
     </select>
@@ -39,13 +47,16 @@ vi.mock("@/components/journey/CitySelector", () => ({
     value,
     onChange,
     countryCode,
+    placeholder,
   }: {
     value: string;
     onChange: (value: string) => void;
     countryCode: string;
+    placeholder: string;
   }) => (
     <input
       aria-label="City"
+      placeholder={placeholder}
       disabled={!countryCode}
       onInput={(e) => onChange(e.currentTarget.value)}
       value={value}
@@ -111,6 +122,7 @@ function expertise(data: ComponentProps<typeof TripperPlanner>["tripperData"]) {
 }
 beforeEach(() => {
   nav.query = "";
+  nav.locale = "en";
   nav.push.mockReset();
   nav.replace.mockReset();
   http.mockReset().mockImplementation(() => {
@@ -129,6 +141,67 @@ afterEach(() => {
 });
 
 describe("Journey display memo approvals", () => {
+  it("renders localized planner copy and updates fallback expertise when locale changes", () => {
+    const data = { ...tripper, name: "", availableTypes: ["family"] };
+    expertise(data);
+    expect(container.textContent).toContain(
+      "Plan your Randomtrip with this tripper",
+    );
+    for (const label of [
+      "Countries visited",
+      "Areas of expertise",
+      "Where are you traveling from?",
+      "Departure country",
+      "Departure city",
+      "Continue",
+    ])
+      expect(container.textContent).toContain(label);
+    expect(container.textContent).not.toContain("Países visitados");
+    expect(container.querySelector("select")?.textContent).toContain(
+      en.trippers.planner.countryPlaceholder,
+    );
+    expect(container.querySelector("input")?.placeholder).toBe(
+      en.trippers.planner.cityPlaceholder,
+    );
+    nav.locale = "es";
+    expertise(data);
+    expect(container.querySelector("select")?.textContent).toContain(
+      es.trippers.planner.countryPlaceholder,
+    );
+    expect(container.querySelector("input")?.placeholder).toBe(
+      es.trippers.planner.cityPlaceholder,
+    );
+    expect(container.textContent).toContain("este tripper");
+    expect(container.textContent).toContain("En Familia");
+    expect(container.textContent).toContain("Países visitados");
+    expect(expertise({ ...tripper, interests: ["Bird watching"] })).toEqual([
+      "Bird watching",
+    ]);
+  });
+
+  it("retains journey pricing and edit controls without invented social proof", () => {
+    nav.query = "travelType=couple&experience=essenza";
+    const onEdit = vi.fn();
+    render(
+      <JourneySummary
+        onEdit={onEdit}
+        summary={en.journey.summary}
+        totalsLabels={en.journey.checkout}
+      />,
+    );
+    expect(container.textContent).not.toContain(
+      en.journey.summary.favoriteAmongTravelers,
+    );
+    expect(container.textContent).not.toContain("7.0 (10)");
+    expect(container.textContent).toContain("350");
+    const edit = [...container.querySelectorAll("button")].find(
+      (el) => el.textContent === en.journey.summary.change,
+    )!;
+    act(() => edit.click());
+    expect(onEdit).toHaveBeenCalledWith("travel-type");
+    expect(es.journey.summary.favoriteAmongTravelers).not.toBe("");
+  });
+
   it("keeps empty/default preferences independent of transport", () => {
     const expected = copy.filtersLabel + copy.filtersSummaryDefault;
     expect(preferences()).toBe(expected);
@@ -197,7 +270,7 @@ describe("Journey display memo approvals", () => {
       }),
     ).toEqual(["Solo", "custom"]);
     expect(expertise({ ...tripper, availableTypes: ["family"] })).toEqual([
-      "En Familia",
+      "Family",
     ]);
   });
 
