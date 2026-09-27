@@ -15,6 +15,7 @@ export interface AdminTripExperience {
 export interface AdminTripPayment {
   amount: number;
   currency: string;
+  paidAt: string | null;
   status: string;
 }
 

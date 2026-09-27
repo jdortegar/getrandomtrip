@@ -156,6 +156,8 @@ export function AdminTripRequestsPageClient({
       <TripRequestsFilters
         copy={pageCopy}
         hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={loading || searchQuery !== debouncedSearch}
         level={levelFilter}
         onClear={clearFilters}
         onLevelChange={handleLevelChange}

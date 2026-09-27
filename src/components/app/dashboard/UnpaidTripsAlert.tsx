@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { Calendar, CreditCard, MapPin, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   TableIconButton,
   TableIconLink,
@@ -46,19 +48,37 @@ export function UnpaidTripsAlert({
   onDelete,
   trips,
 }: UnpaidTripsAlertProps) {
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deletingRef = useRef(false);
 
   if (trips.length === 0) return null;
 
   const dateLocale = locale.toLowerCase().startsWith("en") ? "en-US" : "es-ES";
 
-  async function handleDelete(tripId: string) {
-    if (!confirm(copy.unpaidTrips.deleteConfirm)) return;
-    setDeletingId(tripId);
+  function handleOpenChange(open: boolean) {
+    if (!open && !deletingRef.current) setSelectedTripId(null);
+  }
+
+  async function handleDelete() {
+    const tripId = selectedTripId;
+    if (
+      deletingRef.current ||
+      !tripId ||
+      !trips.some((trip) => trip.id === tripId)
+    )
+      return;
+
+    deletingRef.current = true;
+    setIsDeleting(true);
     try {
       await onDelete(tripId);
+      setSelectedTripId(null);
+    } catch {
+      toast.error(copy.unpaidTrips.deleteFailed);
     } finally {
-      setDeletingId(null);
+      deletingRef.current = false;
+      setIsDeleting(false);
     }
   }
 
@@ -141,9 +161,7 @@ export function UnpaidTripsAlert({
                           <p className="text-sm font-semibold text-ink">
                             {travelerTypeTitle}
                           </p>
-                          <p className="mt-0.5 text-xs text-ink">
-                            {levelName}
-                          </p>
+                          <p className="mt-0.5 text-xs text-ink">{levelName}</p>
                           <p className="mt-1 font-mono text-[10px] text-neutral-400">
                             …{ref}
                           </p>
@@ -188,9 +206,12 @@ export function UnpaidTripsAlert({
                         </TableIconLink>
                         <TableIconButton
                           danger
-                          disabled={deletingId === trip.id}
+                          disabled={isDeleting}
+                          onClick={() => {
+                            if (!deletingRef.current)
+                              setSelectedTripId(trip.id);
+                          }}
                           title={copy.unpaidTrips.deleteAction}
-                          onClick={() => handleDelete(trip.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </TableIconButton>
@@ -203,6 +224,19 @@ export function UnpaidTripsAlert({
           </table>
         </div>
       </div>
+      <ConfirmModal
+        cancelLabel={copy.unpaidTrips.deleteCancel}
+        confirmLabel={copy.unpaidTrips.deleteAction}
+        confirmingLabel={copy.unpaidTrips.deleting}
+        description={copy.unpaidTrips.deleteConfirm}
+        icon={Trash2}
+        isConfirming={isDeleting}
+        onConfirm={handleDelete}
+        onOpenChange={handleOpenChange}
+        open={trips.some((trip) => trip.id === selectedTripId)}
+        title={copy.unpaidTrips.deleteTitle}
+        tone="danger"
+      />
     </section>
   );
 }

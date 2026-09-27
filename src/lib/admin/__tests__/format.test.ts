@@ -11,6 +11,11 @@ describe("formatAdminDate", () => {
   it("returns em-dash for null", () => {
     expect(formatAdminDate(null)).toBe("—");
   });
+
+  it("formats a purchase date in the requested locale", () => {
+    expect(formatAdminDate("2026-09-27T12:00:00.000Z", "es")).toBe("27 sept 2026");
+    expect(formatAdminDate(null, "es")).toBe("—");
+  });
 });
 
 describe("formatAdminAmount", () => {

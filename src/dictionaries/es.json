@@ -253,6 +253,21 @@
     "newDrop": "Nuevo Drop"
   },
   "common": {
+    "tableFilters": {
+      "all": "Todos",
+      "clearFilters": "Limpiar filtros",
+      "count": "resultados",
+      "errorLoad": "No se pudieron cargar los resultados. Intenta de nuevo.",
+      "experience": "Experiencia",
+      "loading": "Cargando resultados…",
+      "of": "de",
+      "retry": "Reintentar",
+      "searchLabel": "Buscar",
+      "searchName": "Buscar por nombre",
+      "searchTitle": "Buscar por título",
+      "status": "Estado",
+      "type": "Tipo de viaje"
+    },
     "siteName": "Randomtrip",
     "pagination": {
       "previous": "Anterior",
@@ -984,6 +999,7 @@
         "allPayments": "Todos los pagos",
         "noPayment": "Sin pago",
         "clearFilters": "Limpiar filtros",
+        "loading": "Cargando solicitudes…",
         "of": "de",
         "count": "solicitudes",
         "searchPlaceholder": "Nombre o email…",
@@ -1008,6 +1024,7 @@
       "columns": {
         "traveler": "Viajero",
         "origin": "Origen",
+        "purchaseDate": "Fecha de compra",
         "tripDate": "Fecha del viaje",
         "typeLevel": "Tipo / Nivel",
         "status": "Estado",
@@ -1643,8 +1660,8 @@
       "allOption": "Todos",
       "excuseLabel": "Excusa / Categoría",
       "excuseSubtitle": "Elige una excusa",
-      "levelLabel": "Nivel",
-      "levelSubtitle": "Elige un nivel de experiencia",
+      "levelLabel": "Experiencia",
+      "levelSubtitle": "Elige una experiencia",
       "travelTypeLabel": "Tipo de viaje",
       "travelTypeSubtitle": "Elige cómo quieres viajar",
       "tripperLabel": "Por Tripper",
@@ -4472,13 +4489,26 @@
     },
     "trips": {
       "description": "Reservas próximas e historial de viajes completados",
+      "allExperiences": "Todas las experiencias",
+      "allTravelTypes": "Todos los tipos de viaje",
+      "clearFilters": "Limpiar filtros",
+      "emptyFiltered": "No hay viajes que coincidan con este filtro.",
+      "errorLoad": "No se pudieron cargar los viajes. Intenta de nuevo.",
+      "experienceLabel": "Experiencia",
       "eyebrow": "Inventario",
       "filterAll": "Todos",
       "filterCompleted": "Completados",
+      "filterLabel": "Estado del viaje",
       "filterUpcoming": "Próximos",
+      "loading": "Cargando viajes…",
       "of": "de",
+      "retry": "Reintentar",
+      "searchLabel": "Buscar viajes",
+      "searchPlaceholder": "Buscar por origen o referencia del viaje",
       "title": "Todos tus viajes",
-      "tripsCount": "viajes"
+      "travelTypeLabel": "Tipo de viaje",
+      "tripsCount": "viajes",
+      "xsedType": "XSED"
     },
     "reviews": {
       "eyebrow": "Valoraciones",
@@ -4564,8 +4594,11 @@
       "action": "Completar pago",
       "bookingRefLabel": "Referencia",
       "deleteAction": "Eliminar",
+      "deleteCancel": "Cancelar",
       "deleteConfirm": "¿Seguro que quieres eliminar este viaje? Esta acción no se puede deshacer.",
       "deleteFailed": "No se pudo eliminar el viaje. Intenta de nuevo.",
+      "deleteTitle": "¿Eliminar viaje?",
+      "deleting": "Eliminando…",
       "editAction": "Editar",
       "estimatedTripTotal": "Total estimado del viaje",
       "experienceSection": "Experiencia",
@@ -5215,7 +5248,7 @@
     },
     "contact": {
       "heading": "Email",
-      "email": "contacto@getrandomtrip.com",
+      "email": "hola@getrandomtrip.com",
       "socials": {
         "instagram": "getrandomtrip",
         "facebook": "getrandomtrip",

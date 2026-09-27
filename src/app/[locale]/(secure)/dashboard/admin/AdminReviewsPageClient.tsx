@@ -1,13 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Eye, EyeOff, Search, X } from "lucide-react";
+import { Check, Eye, EyeOff, X } from "lucide-react";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
+
 import { SortButton } from "@/components/ui/SortButton";
 import { TableIconButton } from "@/components/ui/TableIconButton";
-import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
+
 import type { AdminReview } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
@@ -20,12 +24,11 @@ import {
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
-const SELECT_CLASS =
-  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 type StatusFilter = "all" | "approved" | "unapproved";
 
 export function AdminReviewsPageClient() {
   const copy = useDictionary((d) => d.adminPages.reviews);
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
@@ -41,11 +44,25 @@ export function AdminReviewsPageClient() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [sortBy, setSortBy] = useState<ReviewSortBy>(REVIEW_SORT_DEFAULT.sortBy);
+  const [sortBy, setSortBy] = useState<ReviewSortBy>(
+    REVIEW_SORT_DEFAULT.sortBy,
+  );
   const [sortOrder, setSortOrder] = useState<ReviewSortOrder>(
     REVIEW_SORT_DEFAULT.sortOrder,
   );
   const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
+
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([
+      page,
+      statusFilter,
+      searchQuery,
+      debouncedSearch,
+      sortBy,
+      sortOrder,
+    ]),
+  );
 
   useEffect(() => {
     const timer = setTimeout(
@@ -56,8 +73,10 @@ export function AdminReviewsPageClient() {
   }, [searchQuery]);
 
   async function fetchReviews() {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -74,19 +93,22 @@ export function AdminReviewsPageClient() {
         reviews?: AdminReview[];
         total?: number;
       };
+      if (!isCurrent()) return;
       if (!res.ok || !data.reviews) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
+      setError(null);
       setReviews(data.reviews);
       setTotal(data.total ?? 0);
     } catch {
-      setError(copy.errorLoad);
+      if (isCurrent()) setError(copy.errorLoad);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }
 
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchReviews);
   function updateStatusFilter(value: StatusFilter) {
     setStatusFilter(value);
     setPage(1);
@@ -121,7 +143,7 @@ export function AdminReviewsPageClient() {
         method: "PATCH",
       });
       if (!res.ok) return;
-      await fetchReviews();
+      await refreshCurrentQuery();
     } finally {
       setSavingId(null);
     }
@@ -129,7 +151,7 @@ export function AdminReviewsPageClient() {
 
   useEffect(() => {
     void fetchReviews();
-  }, [page, statusFilter, debouncedSearch, sortBy, sortOrder]);
+  }, [page, statusFilter, debouncedSearch, searchQuery, sortBy, sortOrder]);
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
   if (error && !hasLoadedOnce)
@@ -141,7 +163,9 @@ export function AdminReviewsPageClient() {
   const sortCopy = copy.sort;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  function ariaSortFor(field: ReviewSortBy): "ascending" | "descending" | "none" {
+  function ariaSortFor(
+    field: ReviewSortBy,
+  ): "ascending" | "descending" | "none" {
     if (sortBy !== field) return "none";
     return sortOrder === "asc" ? "ascending" : "descending";
   }
@@ -161,71 +185,59 @@ export function AdminReviewsPageClient() {
         </h2>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) =>
-              updateStatusFilter(e.target.value as StatusFilter)
-            }
-            value={statusFilter}
-          >
-            <option value="all">{copy.filters.allStatuses}</option>
-            <option value="approved">{copy.filters.approved}</option>
-            <option value="unapproved">{copy.filters.unapproved}</option>
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {copy.count.replace("{n}", String(total))}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-              placeholder={copy.filters.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
-      </div>
+      <TableFilterToolbar
+        copy={filterCopy}
+        filters={[
+          {
+            id: "admin-reviews-status",
+            label: filterCopy.status,
+            value: statusFilter,
+            onChange: (value) => updateStatusFilter(value as StatusFilter),
+            options: [
+              { value: "all", label: filterCopy.all },
+              { value: "approved", label: copy.filters.approved },
+              { value: "unapproved", label: copy.filters.unapproved },
+            ],
+          },
+        ]}
+        hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={queryPending}
+        onClear={clearFilters}
+        search={{
+          id: "admin-reviews-search",
+          label: filterCopy.searchLabel,
+          placeholder: filterCopy.searchName,
+          value: searchQuery,
+          onChange: (value) => {
+            setSearchQuery(value);
+            setPage(1);
+          },
+        }}
+        shown={reviews.length}
+        total={total}
+      />
 
-      <TableLoadingOverlay
+      <TableQueryBoundary
         className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-        isLoading={loading}
+        copy={filterCopy}
+        error={error}
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchReviews();
+        }}
       >
-        {error && (
-          <div
-            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
-            role="alert"
-          >
-            {error}
-          </div>
-        )}
         {reviews.length === 0 ? (
-          <p className="py-16 text-center text-sm text-ink">
-            {copy.empty}
-          </p>
+          <p className="py-16 text-center text-sm text-ink">{copy.empty}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th aria-sort={ariaSortFor("traveler")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("traveler")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "traveler"}
                       ariaLabel={sortAriaLabel(cols.traveler)}
@@ -237,7 +249,10 @@ export function AdminReviewsPageClient() {
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.review}
                   </th>
-                  <th aria-sort={ariaSortFor("rating")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("rating")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "rating"}
                       ariaLabel={sortAriaLabel(cols.rating)}
@@ -249,7 +264,10 @@ export function AdminReviewsPageClient() {
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.status}
                   </th>
-                  <th aria-sort={ariaSortFor("tripper")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("tripper")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "tripper"}
                       ariaLabel={sortAriaLabel(cols.tripper)}
@@ -261,7 +279,10 @@ export function AdminReviewsPageClient() {
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.tripId}
                   </th>
-                  <th aria-sort={ariaSortFor("created")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("created")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "created"}
                       ariaLabel={sortAriaLabel(cols.created)}
@@ -378,25 +399,24 @@ export function AdminReviewsPageClient() {
                               <Check className="h-4 w-4" />
                             )}
                           </TableIconButton>
-                          {review.tripperName === null &&
-                            review.isApproved && (
-                              <TableIconButton
-                                disabled={isBusy}
-                                onClick={() =>
-                                  void updateReview(review.id, {
-                                    isApproved: review.isApproved,
-                                    isPublic: !review.isPublic,
-                                  })
-                                }
-                                title={review.isPublic ? act.hide : act.publish}
-                              >
-                                {review.isPublic ? (
-                                  <EyeOff className="h-4 w-4" />
-                                ) : (
-                                  <Eye className="h-4 w-4" />
-                                )}
-                              </TableIconButton>
-                            )}
+                          {review.tripperName === null && review.isApproved && (
+                            <TableIconButton
+                              disabled={isBusy}
+                              onClick={() =>
+                                void updateReview(review.id, {
+                                  isApproved: review.isApproved,
+                                  isPublic: !review.isPublic,
+                                })
+                              }
+                              title={review.isPublic ? act.hide : act.publish}
+                            >
+                              {review.isPublic ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </TableIconButton>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -406,16 +426,20 @@ export function AdminReviewsPageClient() {
             </table>
           </div>
         )}
-      </TableLoadingOverlay>
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={setPage}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) setPage(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
     </div>
   );
 }

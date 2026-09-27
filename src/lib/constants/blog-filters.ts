@@ -69,9 +69,11 @@ const EXCUSE_TITLE_EN: Record<string, string> = {
   "paws-adventure": "Pet-Friendly Adventure",
 };
 
-function excuseToFilterOption(e: ExcuseData, locale?: string): ExcuseFilterOption {
-  const label =
-    locale === "en" ? (EXCUSE_TITLE_EN[e.key] ?? e.title) : e.title;
+function excuseToFilterOption(
+  e: ExcuseData,
+  locale?: string,
+): ExcuseFilterOption {
+  const label = locale === "en" ? (EXCUSE_TITLE_EN[e.key] ?? e.title) : e.title;
   return { key: e.key, label };
 }
 
@@ -90,10 +92,11 @@ export interface LevelFilterOption {
 }
 
 export function getBlogLevelOptions(): LevelFilterOption[] {
+  // Prioritize XSED for the blog without changing the shared catalog order.
   return EXPERIENCE_LEVELS.map((level) => ({
     key: level.value,
     label: level.label,
-  }));
+  })).sort((a, b) => Number(b.key === "xsed") - Number(a.key === "xsed"));
 }
 
 // -----------------------------------------------------------------------------

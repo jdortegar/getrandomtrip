@@ -945,3 +945,227 @@ describe("RoleNotificationsPageClient — bulk delete and selection", () => {
     );
   });
 });
+
+describe("shared status-only filtering lifecycle", () => {
+  it.each(["success", "error"])(
+    "ignores stale %s after clearing, retains controls and protects old rows",
+    async (outcome) => {
+      const requests: {
+        url: string;
+        resolve: (response: Response) => void;
+        reject: (error: Error) => void;
+      }[] = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(
+          (url: string) =>
+            new Promise<Response>((resolve, reject) =>
+              requests.push({ url, resolve, reject }),
+            ),
+        ),
+      );
+      render(
+        <RoleNotificationsPageClient
+          audience="TRAVELER"
+          copy={copy}
+          initialNotifications={[makeNotification({ isRead: true })]}
+          initialPage={2}
+          initialStatus="all"
+          initialTotal={45}
+          initialUnreadTotal={0}
+          locale="es"
+          resolveHref={() => null}
+        />,
+      );
+      expect(requests).toHaveLength(0);
+      const toolbar = container.querySelector(
+        '[data-component="TableFilterToolbar"]',
+      )!;
+      const status = toolbar.querySelector("select")!;
+      const boundary = container.querySelector(
+        '[data-component="TableQueryBoundary"]',
+      )!;
+      expect(toolbar.querySelector('input[type="search"]')).toBeNull();
+      act(() => {
+        status.value = "unread";
+        status.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      const first = new URL(requests[0].url, "http://localhost").searchParams;
+      expect(first.get("status")).toBe("unread");
+      expect(first.get("page")).toBe("1");
+      expect(first.get("audience")).toBe("TRAVELER");
+      expect(boundary.getAttribute("aria-busy")).toBe("true");
+      expect(
+        boundary.querySelector("button[aria-current]")?.closest("[inert]"),
+      ).not.toBeNull();
+      const clear = Array.from(toolbar.querySelectorAll("button")).find(
+        (el) => el.textContent?.trim() === "Limpiar filtros",
+      )!;
+      act(() => clear.click());
+      expect(status.value).toBe("all");
+      expect(
+        new URL(requests[1].url, "http://localhost").searchParams.get("status"),
+      ).toBe("all");
+      await act(async () => {
+        if (outcome === "error") requests[0].reject(new Error("Stale"));
+        else
+          requests[0].resolve(Response.json({ notifications: [], total: 0 }));
+      });
+      expect(boundary.getAttribute("aria-busy")).toBe("true");
+      await act(async () =>
+        requests[1].resolve(
+          Response.json({
+            notifications: [
+              makeNotification({ title: "Latest", isRead: true }),
+            ],
+            total: 1,
+            unreadTotal: 0,
+          }),
+        ),
+      );
+      expect(container.querySelector('[role="alert"]')).toBeNull();
+      expect(container.textContent).toContain("Latest");
+      expect(boundary.getAttribute("aria-busy")).toBe("false");
+      expect(
+        container.querySelector('[data-component="TableFilterToolbar"] select'),
+      ).toBe(status);
+    },
+  );
+
+  it("shows localized HTTP failure and supports retry without losing SSR controls", async () => {
+    const requests: ((response: Response) => void)[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => new Promise<Response>((resolve) => requests.push(resolve))),
+    );
+    render(
+      <RoleNotificationsPageClient
+        audience="TRIPPER"
+        copy={copy}
+        initialNotifications={[]}
+        initialPage={1}
+        initialStatus="all"
+        initialTotal={0}
+        initialUnreadTotal={0}
+        locale="es"
+        resolveHref={() => null}
+      />,
+    );
+    const status = container.querySelector("select")!;
+    act(() => {
+      status.value = "read";
+      status.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await act(async () => requests[0](Response.json({}, { status: 503 })));
+    const alert = container.querySelector('[role="alert"]')!;
+    const retry = alert.querySelector("button")!;
+    expect(retry.closest("[inert]")).toBeNull();
+    act(() => retry.click());
+    expect(retry.getAttribute("aria-busy")).toBe("true");
+    expect(retry.querySelector(".animate-spin")).not.toBeNull();
+    await act(async () =>
+      requests[1](
+        Response.json({ notifications: [], total: 0, unreadTotal: 0 }),
+      ),
+    );
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    expect(container.textContent).toContain(copy.emptyStateFiltered);
+    expect(container.querySelector("select")).toBe(status);
+  });
+});
+
+it.each(["read", "all"])(
+  "a pending read mutation refreshes the current %s filter rather than its captured query",
+  async (target) => {
+    const requests: {
+      url: string;
+      method: string;
+      resolve: (response: Response) => void;
+    }[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        (url: string, init?: RequestInit) =>
+          new Promise<Response>((resolve) =>
+            requests.push({ url, method: init?.method ?? "GET", resolve }),
+          ),
+      ),
+    );
+    const initialStatus = target === "all" ? "unread" : "all";
+    render(
+      <RoleNotificationsPageClient
+        audience="TRAVELER"
+        copy={copy}
+        initialNotifications={[makeNotification()]}
+        initialPage={1}
+        initialStatus={initialStatus}
+        initialTotal={1}
+        initialUnreadTotal={1}
+        locale="es"
+        resolveHref={() => null}
+      />,
+    );
+    act(() => findRowButtonByText("Your trip is confirmed").click());
+    expect(requests[0].method).toBe("PATCH");
+    // Close the reading modal while PATCH is deferred, then change the query.
+    act(() =>
+      (
+        document.body.querySelector(
+          'button[aria-label="Cerrar"]',
+        ) as HTMLButtonElement
+      ).click(),
+    );
+    act(() => {
+      const select = container.querySelector("select")!;
+      select.value = target;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await act(async () =>
+      requests[1].resolve(
+        Response.json({ notifications: [], total: 0, unreadTotal: 1 }),
+      ),
+    );
+    await act(async () => requests[0].resolve(Response.json({ ok: true })));
+    expect(requests).toHaveLength(3);
+    expect(
+      new URL(requests[2].url, "http://localhost").searchParams.get("status"),
+    ).toBe(target);
+    await act(async () =>
+      requests[2].resolve(
+        Response.json({
+          notifications: [
+            makeNotification({ isRead: true, title: "Confirmed read" }),
+          ],
+          total: 1,
+          unreadTotal: 0,
+        }),
+      ),
+    );
+    expect(container.textContent).toContain("Confirmed read");
+  },
+);
+
+it("allows the notifications heading and mark-all action to wrap within narrow pages", () => {
+  render(
+    <RoleNotificationsPageClient
+      audience="TRAVELER"
+      copy={copy}
+      initialNotifications={[]}
+      initialPage={1}
+      initialStatus="all"
+      initialTotal={0}
+      initialUnreadTotal={1}
+      locale="es"
+      resolveHref={() => null}
+    />,
+  );
+  const heading = container.querySelector("h2")!;
+  expect(
+    heading.parentElement?.parentElement?.classList.contains("flex-wrap"),
+  ).toBe(true);
+  const action = Array.from(container.querySelectorAll("button")).find(
+    (el) => el.textContent?.trim() === copy.markAllRead,
+  )!;
+  expect(action.classList.contains("max-w-full")).toBe(true);
+  expect(action.classList.contains("whitespace-normal")).toBe(true);
+});

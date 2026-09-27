@@ -1,18 +1,15 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { NotificationAudience } from "@/components/app/dashboard/config/dashboardNavTypes";
 import { NotificationDialog } from "@/components/app/dashboard/shared/notifications/NotificationDialog";
@@ -30,7 +27,6 @@ import { publishUnreadRefresh } from "@/lib/notifications/unreadDotBus";
 import type { NotificationsDict } from "@/lib/types/dictionary";
 import type { ClientNotification } from "@/types/notifications";
 
-const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const PAGE_SIZE = NOTIFICATIONS_PAGE_SIZE;
 
 interface RoleNotificationsPageClientProps {
@@ -43,7 +39,10 @@ interface RoleNotificationsPageClientProps {
   initialTotal: number;
   initialUnreadTotal: number;
   locale: string;
-  resolveHref: (notification: ClientNotification, locale: string) => string | null;
+  resolveHref: (
+    notification: ClientNotification,
+    locale: string,
+  ) => string | null;
 }
 
 export function RoleNotificationsPageClient({
@@ -58,6 +57,7 @@ export function RoleNotificationsPageClient({
   locale,
   resolveHref,
 }: RoleNotificationsPageClientProps) {
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const [isPending, startTransition] = useTransition();
   const [notifications, setNotifications] =
@@ -67,6 +67,9 @@ export function RoleNotificationsPageClient({
   const [page, setPage] = useState(initialPage);
   const [status, setStatus] = useState<NotificationStatusFilter>(initialStatus);
   const [loading, setLoading] = useState(false); // SSR already seeded page 1
+  const [error, setError] = useState<string | null>(null);
+  const notificationQuery = JSON.stringify([audience, page, status]);
+  const beginRequest = useTableRequestGuard(notificationQuery);
   const [isBusy, setIsBusy] = useState(false); // mark-all-read
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
@@ -96,7 +99,11 @@ export function RoleNotificationsPageClient({
     status,
   });
 
-  const fetchNotifications = useCallback(async (): Promise<ClientNotification[]> => {
+  const fetchNotifications = useCallback(async (): Promise<
+    ClientNotification[]
+  > => {
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return [];
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -111,18 +118,31 @@ export function RoleNotificationsPageClient({
         total?: number;
         unreadTotal?: number;
       };
-      const list = data.notifications ?? [];
+      if (!isCurrent()) return [];
+      if (!res.ok || !data.notifications) {
+        setError(filterCopy.errorLoad);
+        return [];
+      }
+      setError(null);
+      const list = data.notifications;
       setNotifications(list);
       setTotal(data.total ?? 0);
       setUnreadTotal(data.unreadTotal ?? 0);
       // Deleting the last row of the last page must not leave an empty page.
-      const nextTotalPages = Math.max(1, Math.ceil((data.total ?? 0) / PAGE_SIZE));
+      const nextTotalPages = Math.max(
+        1,
+        Math.ceil((data.total ?? 0) / PAGE_SIZE),
+      );
       if (page > nextTotalPages) setPage(nextTotalPages); // triggers exactly one refetch
       return list;
+    } catch {
+      if (isCurrent()) setError(filterCopy.errorLoad);
+      return [];
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
-  }, [audience, page, status]);
+  }, [audience, page, status, beginRequest, filterCopy.errorLoad]);
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchNotifications);
 
   useEffect(() => {
     // The server rendered this exact query; skip the duplicate mount fetch.
@@ -146,7 +166,8 @@ export function RoleNotificationsPageClient({
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const allSelected =
-    notifications.length > 0 && notifications.every((n) => selectedIds.has(n.id));
+    notifications.length > 0 &&
+    notifications.every((n) => selectedIds.has(n.id));
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   useEffect(() => {
@@ -184,10 +205,13 @@ export function RoleNotificationsPageClient({
   // A mutation that flips a notification's read state may make it fall out
   // of (or into) the currently filtered list — refetch whenever a filter is
   // active; when unfiltered, a local patch is enough.
-  const syncAfterReadStateChange = useCallback(async () => {
-    if (status === "all") return;
-    await fetchNotifications();
-  }, [status, fetchNotifications]);
+  const syncAfterReadStateChange = useCurrentTableRefresh(
+    async (previousQuery: string) => {
+      if (status !== "all" || previousQuery !== notificationQuery) {
+        await refreshCurrentQuery();
+      }
+    },
+  );
 
   const markRead = useCallback(
     async (id: string) => {
@@ -201,7 +225,7 @@ export function RoleNotificationsPageClient({
         );
         if (!res.ok) throw new Error(String(res.status));
         publishUnreadRefresh();
-        await syncAfterReadStateChange();
+        await syncAfterReadStateChange(notificationQuery);
       } catch {
         patchLocalNotification(id, false);
         selection.updateSelected((prev) => ({ ...prev, isRead: false }));
@@ -209,7 +233,13 @@ export function RoleNotificationsPageClient({
         toast.error(copy.errors.markReadFailed);
       }
     },
-    [audience, copy.errors.markReadFailed, selection, syncAfterReadStateChange],
+    [
+      audience,
+      copy.errors.markReadFailed,
+      notificationQuery,
+      selection,
+      syncAfterReadStateChange,
+    ],
   );
 
   const markUnread = useCallback(
@@ -227,7 +257,7 @@ export function RoleNotificationsPageClient({
         );
         if (!res.ok) throw new Error(String(res.status));
         publishUnreadRefresh();
-        await syncAfterReadStateChange();
+        await syncAfterReadStateChange(notificationQuery);
       } catch {
         patchLocalNotification(id, true);
         selection.updateSelected((prev) => ({ ...prev, isRead: true }));
@@ -235,7 +265,13 @@ export function RoleNotificationsPageClient({
         toast.error(copy.errors.markUnreadFailed);
       }
     },
-    [audience, copy.errors.markUnreadFailed, selection, syncAfterReadStateChange],
+    [
+      audience,
+      copy.errors.markUnreadFailed,
+      notificationQuery,
+      selection,
+      syncAfterReadStateChange,
+    ],
   );
 
   // Bridge the hook's `onResolved` callback (declared above, before
@@ -253,12 +289,15 @@ export function RoleNotificationsPageClient({
   async function markAllRead() {
     setIsBusy(true);
     try {
-      const res = await fetch(`/api/notifications/read-all?audience=${audience}`, {
-        method: "PATCH",
-      });
+      const res = await fetch(
+        `/api/notifications/read-all?audience=${audience}`,
+        {
+          method: "PATCH",
+        },
+      );
       if (!res.ok) return;
       publishUnreadRefresh();
-      await fetchNotifications();
+      await refreshCurrentQuery();
     } catch {
       // optimistic UI; ignore transient failures
     } finally {
@@ -273,12 +312,16 @@ export function RoleNotificationsPageClient({
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/notifications/${id}`, { method: "DELETE" }).then((res) => {
-              if (!res.ok) throw new Error(String(res.status));
-            }),
+            fetch(`/api/notifications/${id}`, { method: "DELETE" }).then(
+              (res) => {
+                if (!res.ok) throw new Error(String(res.status));
+              },
+            ),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -291,7 +334,7 @@ export function RoleNotificationsPageClient({
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
         publishUnreadRefresh();
-        await fetchNotifications();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkDeleting(false);
       }
@@ -313,11 +356,11 @@ export function RoleNotificationsPageClient({
       });
       publishUnreadRefresh();
       pendingDeleteAdvanceRef.current = id;
-      await fetchNotifications();
+      await refreshCurrentQuery();
     } catch {
       toast.error(copy.errors.deleteFailed);
     }
-  }, [copy.errors.deleteFailed, fetchNotifications, selection.selectedId]);
+  }, [copy.errors.deleteFailed, refreshCurrentQuery, selection.selectedId]);
 
   // Runs once the refetch triggered by handlePaneDelete has landed, using the
   // now up-to-date `notifications`/anchor to resolve the next item. `selection`
@@ -339,7 +382,9 @@ export function RoleNotificationsPageClient({
 
   const selectedNotification = selection.selected;
   const dialogOpen = selection.selectedId !== null;
-  const notFoundVariant: "notFound" | "error" = selection.loadError ? "error" : "notFound";
+  const notFoundVariant: "notFound" | "error" = selection.loadError
+    ? "error"
+    : "notFound";
 
   const dialogTitle = selectedNotification
     ? selectedNotification.title
@@ -350,7 +395,7 @@ export function RoleNotificationsPageClient({
       : copy.pageTitle;
 
   const dialogDescription = selectedNotification
-    ? selectedNotification.body ?? selectedNotification.title
+    ? (selectedNotification.body ?? selectedNotification.title)
     : selection.paneState === "notFound"
       ? notFoundVariant === "error"
         ? copy.pane.loadError
@@ -360,7 +405,7 @@ export function RoleNotificationsPageClient({
   return (
     <div data-component="RoleNotificationsPageClient">
       <div className="space-y-6 text-left">
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-wrap gap-4 items-end justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               {copy.eyebrow}
@@ -371,7 +416,7 @@ export function RoleNotificationsPageClient({
           </div>
           {unreadTotal > 0 && (
             <Button
-              className="h-11 shrink-0 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
+              className="h-auto max-w-full min-h-11 shrink-0 whitespace-normal rounded-sm border-2 border-primary bg-primary px-6 py-2 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800"
               disabled={isBusy}
               onClick={markAllRead}
             >
@@ -388,20 +433,8 @@ export function RoleNotificationsPageClient({
           </span>
         )}
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Select
-              aria-label={copy.filters.statusLabel}
-              className={SELECT_CLASS}
-              onChange={(e) =>
-                updateStatus(parseNotificationStatus(e.target.value))
-              }
-              value={status}
-            >
-              <option value="all">{copy.filters.all}</option>
-              <option value="unread">{copy.filters.unread}</option>
-              <option value="read">{copy.filters.read}</option>
-            </Select>
+        <TableFilterToolbar
+          actions={
             <Button
               className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
               disabled={selectedIds.size === 0}
@@ -414,19 +447,41 @@ export function RoleNotificationsPageClient({
                 String(selectedIds.size),
               )}
             </Button>
-          </div>
-          <span className="text-[13px] text-neutral-400">
-            {notifications.length} {copy.filters.of} {total} {copy.filters.count}
-          </span>
-        </div>
+          }
+          copy={{ ...filterCopy, count: copy.filters.count }}
+          filters={[
+            {
+              id: `${audience}-notifications-status`,
+              label: copy.filters.statusLabel,
+              value: status,
+              onChange: (value) => updateStatus(parseNotificationStatus(value)),
+              options: [
+                { value: "all", label: copy.filters.all },
+                { value: "unread", label: copy.filters.unread },
+                { value: "read", label: copy.filters.read },
+              ],
+            },
+          ]}
+          hasActiveFilters={status !== "all"}
+          hasError={!!error}
+          isLoading={loading}
+          onClear={() => updateStatus("all")}
+          shown={notifications.length}
+          total={total}
+        />
 
         {bulkFailureMessage && (
           <p className="text-xs text-red-600">{bulkFailureMessage}</p>
         )}
 
-        <div
-          aria-busy={loading}
+        <TableQueryBoundary
           className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+          copy={filterCopy}
+          error={error}
+          isLoading={loading}
+          onRetry={() => {
+            if (!loading) void fetchNotifications();
+          }}
         >
           {notifications.length === 0 ? (
             <div className="py-16 text-center">
@@ -467,16 +522,20 @@ export function RoleNotificationsPageClient({
               </ul>
             </>
           )}
-        </div>
+        </TableQueryBoundary>
 
-        <Pagination
-          nextLabel={paginationCopy.next}
-          onPageChange={handlePageChange}
-          page={page}
-          pageOfLabel={paginationCopy.pageOf}
-          previousLabel={paginationCopy.previous}
-          totalPages={totalPages}
-        />
+        <div inert={loading || !!error || undefined}>
+          <Pagination
+            nextLabel={paginationCopy.next}
+            onPageChange={(next) => {
+              if (!loading && !error) handlePageChange(next);
+            }}
+            page={page}
+            pageOfLabel={paginationCopy.pageOf}
+            previousLabel={paginationCopy.previous}
+            totalPages={totalPages}
+          />
+        </div>
       </div>
 
       <NotificationDialog

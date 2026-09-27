@@ -40,6 +40,22 @@ describe("getBlogTravelTypeOptions — locale passthrough", () => {
 });
 
 describe("getBlogLevelOptions — regression: level is no longer XSED-only", () => {
+  it("prioritizes XSED only in blog options and preserves the shared catalog", () => {
+    const original = EXPERIENCE_LEVELS.map((level) => ({ ...level }));
+    const options = getBlogLevelOptions();
+
+    expect(options.map((option) => option.key)).toEqual([
+      "xsed",
+      "essenza",
+      "modo-explora",
+      "explora-plus",
+      "bivouac",
+      "atelier-getaway",
+    ]);
+    expect(EXPERIENCE_LEVELS).toEqual(original);
+    expect(EXPERIENCE_LEVELS[0].value).toBe("essenza");
+  });
+
   it("returns every EXPERIENCE_LEVELS value, not just xsed", () => {
     const options = getBlogLevelOptions();
     expect(options.map((o) => o.key).sort()).toEqual(

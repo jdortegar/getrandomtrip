@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import type { TripRequestStatus } from "@prisma/client";
+import type { Prisma, TripRequestStatus } from "@prisma/client";
+import {
+  isTripRequestLevel,
+  isTripRequestType,
+} from "@/lib/admin/tripRequestsFilters";
+import { resolveInitialStatusFilter } from "@/lib/admin/trip-status";
 import { toTravelerTripResponse } from "@/lib/trips/travelerTripResponse";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -54,12 +59,42 @@ export async function GET(request: NextRequest) {
     // Comma-separated to support the "upcoming" filter, which spans two
     // statuses (CONFIRMED, REVEALED).
     const statusParam = searchParams.get("status");
-    const where = statusParam
-      ? {
-          ...tripAccessWhere(user.id),
-          status: { in: statusParam.split(",") as TripRequestStatus[] },
-        }
-      : tripAccessWhere(user.id);
+    const statuses = statusParam
+      ?.split(",")
+      .filter((status) => resolveInitialStatusFilter(status) !== "ALL") as
+      | TripRequestStatus[]
+      | undefined;
+    const level = searchParams.get("level");
+    const type = searchParams.get("type");
+    const search = searchParams.get("search")?.trim();
+    const predicates: Prisma.TripRequestWhereInput[] = [];
+    // XSED bookings can encode party type in `level`; display classification
+    // treats every type=xsed trip as XSED, alongside legacy level=xsed rows.
+    if (level === "xsed") {
+      predicates.push({ OR: [{ level: "xsed" }, { type: "xsed" }] });
+    } else if (level && isTripRequestLevel(level)) {
+      predicates.push({ NOT: { type: "xsed" } });
+    }
+    // Nest both classification and text OR under AND, preserving access OR.
+    // Destinations stay excluded, including from search counts before reveal.
+    if (search) {
+      predicates.push({
+        OR: [
+          { originCity: { contains: search, mode: "insensitive" } },
+          { originCountry: { contains: search, mode: "insensitive" } },
+          { id: { contains: search, mode: "insensitive" } },
+        ],
+      });
+    }
+    const where: Prisma.TripRequestWhereInput = {
+      ...tripAccessWhere(user.id),
+      ...(statuses?.length ? { status: { in: statuses } } : {}),
+      ...(level && level !== "xsed" && isTripRequestLevel(level)
+        ? { level }
+        : {}),
+      ...(type && isTripRequestType(type) ? { type } : {}),
+      ...(predicates.length ? { AND: predicates } : {}),
+    };
 
     // Get all trips owned by OR companion-linked to this user.
     console.log("Fetching trips for userId:", user.id);
@@ -96,19 +131,20 @@ export async function GET(request: NextRequest) {
     const overridesByTripperId = await loadTripperPriceOverridesBatch(
       trips.map((trip) => trip.tripperId),
     );
-    const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId).map(
-      (trip) => ({
-        ...toTravelerTripResponse(trip),
-        basePriceUsd: resolveBasePricePerPerson({
-          levelId: trip.level,
-          overrides: trip.tripperId
-            ? (overridesByTripperId[trip.tripperId] ?? null)
-            : null,
-          travelerType: trip.type,
-        }).price,
-        role: tripRoleFor(trip, user.id),
-      }),
-    );
+    const hydratedTrips = attachPaymentsToTrips(
+      trips,
+      paymentsByTripRequestId,
+    ).map((trip) => ({
+      ...toTravelerTripResponse(trip),
+      basePriceUsd: resolveBasePricePerPerson({
+        levelId: trip.level,
+        overrides: trip.tripperId
+          ? (overridesByTripperId[trip.tripperId] ?? null)
+          : null,
+        travelerType: trip.type,
+      }).price,
+      role: tripRoleFor(trip, user.id),
+    }));
     console.log("Trips found:", trips.length);
 
     return NextResponse.json(

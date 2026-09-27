@@ -2,6 +2,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TripRequestsTable } from "../TripRequestsTable";
+import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 
@@ -25,6 +26,7 @@ const copy: MarketingDictionary["adminPages"]["tripRequests"] = {
     allPayments: "All payments",
     noPayment: "No payment",
     clearFilters: "Clear filters",
+    loading: "Loading requests…",
     of: "of",
     count: "requests",
     searchPlaceholder: "Search by traveler name or email…",
@@ -49,6 +51,7 @@ const copy: MarketingDictionary["adminPages"]["tripRequests"] = {
   columns: {
     traveler: "Traveler",
     origin: "Origin",
+    purchaseDate: "Purchase date",
     tripDate: "Trip date",
     typeLevel: "Type / Level",
     status: "Status",
@@ -117,8 +120,8 @@ function render(
         locale={overrides.locale ?? "en"}
         onSort={onSort}
         paymentStatusLabels={{}}
-        sortBy="tripDate"
-        sortOrder="asc"
+        sortBy="purchaseDate"
+        sortOrder="desc"
         trips={trips}
         tripStatusLabels={{}}
       />,
@@ -131,6 +134,42 @@ afterEach(() => {
     root?.unmount();
   });
   container?.remove();
+});
+
+describe("TripRequestsTable — purchase date column", () => {
+  it.each([0, 23])("keeps purchases at local hour %i on their local date", (hour) => {
+    const paidAt = new Date(2026, 9, 2, hour, 30).toISOString();
+    render([baseTrip({ payment: { amount: 500, currency: "USD", paidAt, status: "APPROVED" } })]);
+    expect(container.querySelectorAll("tbody td")[1].textContent).toBe("Oct 2, 2026");
+  });
+
+  it("shows recorded paidAt before trip date, not request creation or departure", () => {
+    const paidAt = "2026-09-27T12:00:00.000Z";
+    render([baseTrip({ payment: { amount: 500, currency: "USD", paidAt, status: "APPROVED" } })]);
+    const headers = Array.from(container.querySelectorAll("th"), (th) => th.textContent);
+    expect(headers.slice(0, 3)).toEqual(["Traveler", "Purchase date", "Trip date"]);
+    expect(container.querySelectorAll("tbody td")[1].textContent).toBe(formatAdminDate(paidAt));
+  });
+
+  it.each([
+    null,
+    { amount: 500, currency: "USD", paidAt: null, status: "PENDING" },
+    { amount: 500, currency: "USD", paidAt: null, status: "APPROVED" },
+  ])(
+    "uses a dash when no purchase date is recorded",
+    (payment) => {
+      render([baseTrip({ payment })]);
+      expect(container.querySelectorAll("tbody td")[1].textContent).toBe("—");
+    },
+  );
+
+  it("sorts by purchase date when its header is clicked", () => {
+    const onSort = vi.fn();
+    render([baseTrip()], onSort);
+    const button = container.querySelector('button[aria-label="Sort by Purchase date"]');
+    act(() => { button?.dispatchEvent(new MouseEvent("click", { bubbles: true })); });
+    expect(onSort).toHaveBeenCalledWith("purchaseDate");
+  });
 });
 
 describe("TripRequestsTable — trip date column", () => {
@@ -151,12 +190,12 @@ describe("TripRequestsTable — trip date column", () => {
       vi.fn(),
       { locale },
     );
-    expect(container.querySelectorAll("tbody td")[1].textContent).toBe(expected);
+    expect(container.querySelectorAll("tbody td")[2].textContent).toBe(expected);
   });
 
   it("renders a placeholder when startDate is null", () => {
     render([baseTrip({ startDate: null })]);
-    expect(container.querySelectorAll("tbody td")[1].textContent).toBe("—");
+    expect(container.querySelectorAll("tbody td")[2].textContent).toBe("—");
   });
 });
 
@@ -165,7 +204,7 @@ describe("TripRequestsTable — column sorters", () => {
     render([baseTrip()]);
     const headers = Array.from(container.querySelectorAll("th"));
     const sortableHeaders = headers.filter((th) => th.querySelector("button"));
-    expect(sortableHeaders).toHaveLength(6);
+    expect(sortableHeaders).toHaveLength(7);
     const actionsHeader = headers.find((th) => th.textContent === "Actions");
     expect(actionsHeader?.querySelector("button")).toBeNull();
   });
@@ -173,10 +212,10 @@ describe("TripRequestsTable — column sorters", () => {
   it("marks the active sort column's header with aria-sort", () => {
     render([baseTrip()]);
     const headers = Array.from(container.querySelectorAll("th"));
-    const tripDateHeader = headers.find((th) =>
-      th.textContent?.includes("Trip date"),
+    const purchaseDateHeader = headers.find((th) =>
+      th.textContent?.includes("Purchase date"),
     );
-    expect(tripDateHeader?.getAttribute("aria-sort")).toBe("ascending");
+    expect(purchaseDateHeader?.getAttribute("aria-sort")).toBe("descending");
   });
 
   it("calls onSort with the clicked field", () => {

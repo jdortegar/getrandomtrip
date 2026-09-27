@@ -74,6 +74,15 @@ export function TripRequestsTable({
                     order={sortOrder}
                   />
                 </th>
+                <th aria-sort={ariaSortFor("purchaseDate")} className="px-5 py-3 text-left">
+                  <SortButton
+                    active={sortBy === "purchaseDate"}
+                    ariaLabel={sortAriaLabel(cols.purchaseDate)}
+                    label={cols.purchaseDate}
+                    onSort={() => onSort("purchaseDate")}
+                    order={sortOrder}
+                  />
+                </th>
                 <th aria-sort={ariaSortFor("tripDate")} className="px-5 py-3 text-left">
                   <SortButton
                     active={sortBy === "tripDate"}

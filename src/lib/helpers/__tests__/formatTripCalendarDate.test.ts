@@ -26,8 +26,8 @@ describe("trip calendar dates versus event timestamps", () => {
             es: [formatTripCalendarDate(start, "es"), formatTripCalendarDate(end, "es")],
             dateOnly: formatTripCalendarDate("2026-10-03", "en"),
             missing: formatTripCalendarDate(null, "es"),
-            earlyEvent: formatAdminDate(start),
-            lateEvent: formatAdminDate("2026-10-03T23:30:00.000Z")
+            earlyEvent: formatAdminDate(start, "en"),
+            lateEvent: formatAdminDate("2026-10-03T23:30:00.000Z", "en")
           }));
         `,
         ],
