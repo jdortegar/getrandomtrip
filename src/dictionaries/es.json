@@ -1,10 +1,10 @@
 {
   "analyticsConsent": {
-    "title": "Preferencias de analítica",
-    "description": "Con tu permiso, usamos cookies de analítica para entender cómo se usan nuestras páginas públicas. La publicidad permanece desactivada. Puedes cambiar tu elección en cualquier momento.",
-    "accept": "Aceptar analítica",
-    "reject": "Rechazar analítica",
-    "preferences": "Preferencias de analítica",
+    "title": "Preferencias de Analytics",
+    "description": "Con tu permiso, usamos cookies de Analytics para entender cómo se usan nuestras páginas públicas. La publicidad permanece desactivada. Puedes cambiar tu elección en cualquier momento.",
+    "accept": "Aceptar Analytics",
+    "reject": "Rechazar Analytics",
+    "preferences": "Preferencias de Analytics",
     "close": "Cerrar"
   },
   "xsedRoadmapPdf": {

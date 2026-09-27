@@ -125,6 +125,7 @@ export function GateAwareChrome({
         <AppTracking waitlistVisible />
         <WaitlistPage
           accessDenied={accessDenied}
+          analyticsPreferencesLabel={dict.analyticsConsent.preferences}
           dict={dict.waitlist}
           onOpenLogin={() => setLoginModalOpen(true)}
           onSignOut={() => signOut()}

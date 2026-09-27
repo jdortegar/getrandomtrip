@@ -41,9 +41,16 @@ vi.mock("@/components/auth/AuthModal", () => ({
   default: () => <div data-testid="auth-modal">auth-modal</div>,
 }));
 vi.mock("@/components/waitlist/WaitlistPage", () => ({
-  WaitlistPage: ({ accessDenied }: { accessDenied?: boolean }) => (
+  WaitlistPage: ({
+    accessDenied,
+    analyticsPreferencesLabel,
+  }: {
+    accessDenied?: boolean;
+    analyticsPreferencesLabel: string;
+  }) => (
     <div
       data-access-denied={String(!!accessDenied)}
+      data-preferences-label={analyticsPreferencesLabel}
       data-testid="waitlist-page"
     >
       waitlist
@@ -83,7 +90,11 @@ function render(banner?: ReactNode) {
     root.render(
       <GateAwareChrome
         banner={banner}
-        dict={{} as unknown as Dictionary}
+        dict={
+          {
+            analyticsConsent: { preferences: "Analytics preferences" },
+          } as Dictionary
+        }
         gateEnabled
         locale={"en" as Locale}
       >
@@ -178,6 +189,9 @@ describe("GateAwareChrome — session-status guard (ADR 7)", () => {
     );
     expect(waitlistPage).not.toBeNull();
     expect(waitlistPage?.getAttribute("data-access-denied")).toBe("true");
+    expect(waitlistPage?.getAttribute("data-preferences-label")).toBe(
+      "Analytics preferences",
+    );
   });
 
   it("authenticated admin without any grant still unlocks (GATE_ALLOWED_ROLES stays an OR)", async () => {
