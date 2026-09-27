@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/seo/urls";
 import React from "react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
@@ -10,10 +11,7 @@ import {
   Nothing_You_Could_Do,
 } from "next/font/google";
 import { JsonLd } from "@/components/seo/JsonLd";
-import {
-  buildOrganizationSchema,
-  buildWebSiteSchema,
-} from "@/lib/seo/schemas";
+import { buildOrganizationSchema, buildWebSiteSchema } from "@/lib/seo/schemas";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
 
@@ -44,9 +42,7 @@ export const metadata: Metadata = {
     icon: [{ url: "/favicon.png", sizes: "48x48", type: "image/png" }],
     shortcut: [{ url: "/favicon.png", sizes: "48x48", type: "image/png" }],
   },
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com",
-  ),
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
     siteName: "Randomtrip",
@@ -64,8 +60,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Read the locale injected by middleware (set on /en/... paths).
-  // For default-locale rewrites the header is absent; fall back to DEFAULT_LOCALE.
+  // Middleware sets the actual URL locale for both English and Spanish requests.
   const headersList = await headers();
   const xLocale = headersList.get("x-locale") ?? undefined;
   const lang = hasLocale(xLocale) ? xLocale : DEFAULT_LOCALE;

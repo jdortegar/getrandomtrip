@@ -187,7 +187,7 @@ it.each(["en", "es"])(
           .map((card) => card.querySelector("h3")?.textContent),
       ).toEqual(["Explora+"]);
       expect(regular[0].querySelector("a")?.getAttribute("href")).toBe(
-        "/journey?travelType=couple&experience=essenza",
+        `${locale === "en" ? "/en" : ""}/journey?travelType=couple&experience=essenza`,
       );
       expect(
         regular[0].querySelector("a")?.classList.contains("text-ink"),
@@ -245,7 +245,7 @@ it("keeps default planner levels, tripper badges, selection and ordinary card na
   );
   act(() => cards()[0].click());
   expect(navigation.push).toHaveBeenCalledWith(
-    "/journey?travelType=couple&experience=essenza",
+    "/en/journey?travelType=couple&experience=essenza",
   );
   expect(cards()[0].querySelector("a")?.dataset.scroll).toBe("false");
 
@@ -347,19 +347,24 @@ it("prices the XSED card at the solo rate on the solo traveler-type page", async
 it.each([
   ["en", "Most popular"],
   ["es", "Más elegido"],
-])("labels the XSED and featured cards with localized badges (%s)", (locale, featured) => {
-  navigation.locale = locale;
-  const dict = locale === "en" ? en : es;
-  act(() =>
-    root.render(<ExperiencesPageClient locale={locale} tripperContext={null} />),
-  );
-  const badges = () =>
-    Array.from(container.querySelectorAll('[data-component="Label"]')).map(
-      (badge) => badge.textContent,
+])(
+  "labels the XSED and featured cards with localized badges (%s)",
+  (locale, featured) => {
+    navigation.locale = locale;
+    const dict = locale === "en" ? en : es;
+    act(() =>
+      root.render(
+        <ExperiencesPageClient locale={locale} tripperContext={null} />,
+      ),
     );
-  expect(cards()[0].textContent).toContain(dict.xsedLevelCard.badge);
-  expect(badges()).toContain(dict.xsedLevelCard.badge);
-  expect(badges()).toContain(featured);
-  const badge = container.querySelector('[data-component="Label"]');
-  expect(badge?.classList.contains("-translate-y-1/2")).toBe(true);
-});
+    const badges = () =>
+      Array.from(container.querySelectorAll('[data-component="Label"]')).map(
+        (badge) => badge.textContent,
+      );
+    expect(cards()[0].textContent).toContain(dict.xsedLevelCard.badge);
+    expect(badges()).toContain(dict.xsedLevelCard.badge);
+    expect(badges()).toContain(featured);
+    const badge = container.querySelector('[data-component="Label"]');
+    expect(badge?.classList.contains("-translate-y-1/2")).toBe(true);
+  },
+);

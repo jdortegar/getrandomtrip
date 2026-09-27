@@ -5,8 +5,11 @@ interface JsonLdProps {
 export function JsonLd({ schema }: JsonLdProps) {
   return (
     <script
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      type="application/ld+json" data-component="JsonLd"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
+      }}
+      type="application/ld+json"
+      data-component="JsonLd"
     />
   );
 }

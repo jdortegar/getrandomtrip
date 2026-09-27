@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { Button } from "@/components/ui/Button";
 import { useDictionary } from "@/hooks/useDictionary";
 
@@ -8,7 +8,10 @@ export function XsedIntro() {
   const copy = useDictionary((d) => d.home.exploration.xsedIntro);
 
   return (
-    <div className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg" data-component="XsedIntro">
+    <div
+      className="relative w-full overflow-hidden rt-container min-h-96 rounded-lg"
+      data-component="XsedIntro"
+    >
       {/* Background image */}
       <div className="relative">
         <div

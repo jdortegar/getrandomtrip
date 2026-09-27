@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { Check } from "lucide-react";
 import React from "react";
 
@@ -86,7 +86,8 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       )}
       onClick={handleClick}
       style={fill ? undefined : { height, width }}
-      {...(isButton ? { disabled, type: "button" as const } : { href })} data-component="TravelerTypeCard"
+      {...(isButton ? { disabled, type: "button" as const } : { href })}
+      data-component="TravelerTypeCard"
     >
       {selected && (
         <div className="absolute right-[-14px] top-0 z-30">

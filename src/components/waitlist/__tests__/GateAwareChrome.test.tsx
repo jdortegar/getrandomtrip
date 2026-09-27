@@ -1,3 +1,4 @@
+import { renderToString } from "react-dom/server";
 import { act, Suspense, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -5,7 +6,6 @@ import { GateAwareChrome } from "../GateAwareChrome";
 import { GATE_STORAGE_KEY } from "@/lib/constants/marketing-gate";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -257,4 +257,16 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
     expect(navbar.getAttribute("data-contained")).toBe("true");
     expect(navbar.parentElement?.previousElementSibling).toBeNull();
   });
+});
+
+it("server renders public content before any session or browser hydration", () => {
+  mockSessionState = { data: undefined, status: "loading" };
+  const html = renderToString(
+    <GateAwareChrome dict={{} as Dictionary} gateEnabled={false} locale="en">
+      <article>Visible article</article>
+    </GateAwareChrome>,
+  );
+  expect(html).toContain("Visible article");
+  expect(html).toContain('data-testid="navbar"');
+  expect(html).not.toContain('data-testid="waitlist-page"');
 });

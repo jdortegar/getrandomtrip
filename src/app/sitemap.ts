@@ -1,12 +1,14 @@
-import { resolveBlogContent } from "@/lib/blog/content-locale";
+import { availableBlogLocales } from "@/lib/seo/blogLocales";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
-import { DEFAULT_LOCALE, LOCALES } from "@/lib/i18n/config";
+import { LOCALES, type Locale } from "@/lib/i18n/config";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
+import { buildAlternates, canonicalUrl } from "@/lib/seo/urls";
+import { isGateEnabled } from "@/lib/siteSettings";
+
+export const dynamic = "force-dynamic";
 
 const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   "couple",
@@ -38,46 +40,36 @@ const STATIC_PATHS: (PathConfig & { path: string })[] = [
   { path: "xsed/drops", changeFrequency: "weekly", priority: 0.7 },
 ];
 
-function buildAlternates(path: string): {
-  languages: Record<string, string>;
-} {
-  const languages: Record<string, string> = {};
-  const pathSegment = path ? `/${path}` : "";
-  for (const locale of LOCALES) {
-    if (locale === DEFAULT_LOCALE) continue;
-    languages[locale] = `${BASE_URL}/${locale}${pathSegment}`;
-  }
-  return { languages };
-}
-
-function toSitemapEntry(
+function toSitemapEntries(
   path: string,
   config: PathConfig,
   lastModified?: Date,
-): MetadataRoute.Sitemap[number] {
-  const pathSegment = path ? `/${path}` : "";
-  const url = `${BASE_URL}/${DEFAULT_LOCALE}${pathSegment}`;
-  return {
-    alternates: buildAlternates(path),
+  available: readonly Locale[] = LOCALES,
+): MetadataRoute.Sitemap {
+  return available.map((locale) => ({
+    alternates: {
+      languages: buildAlternates(locale, path, available).languages,
+    },
     changeFrequency: config.changeFrequency,
-    lastModified: lastModified ?? new Date(),
+    ...(lastModified ? { lastModified } : {}),
     priority: config.priority,
-    url,
-  };
+    url: canonicalUrl(locale, path),
+  }));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (await isGateEnabled()) return [];
   const entries: MetadataRoute.Sitemap = [];
 
   // Static public pages
   for (const config of STATIC_PATHS) {
-    entries.push(toSitemapEntry(config.path, config));
+    entries.push(...toSitemapEntries(config.path, config));
   }
 
   // Experiences by traveler type: /experiences/by-type/[type]
   for (const slug of TRAVELER_TYPE_SLUGS) {
     entries.push(
-      toSitemapEntry(`experiences/by-type/${slug}`, {
+      ...toSitemapEntries(`experiences/by-type/${slug}`, {
         changeFrequency: "monthly",
         priority: 0.9,
       }),
@@ -92,26 +84,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     getAllTrippers(),
     prisma.user.findMany({
-      where: { roles: { has: "TRIPPER" }, tripperSlug: { not: null }, isActive: true },
+      where: {
+        roles: { has: "TRIPPER" },
+        tripperSlug: { not: null },
+        isActive: true,
+      },
       select: { tripperSlug: true, updatedAt: true },
     }),
   ]);
 
   const tripperUpdatedAt = new Map(
     tripperTimestamps
-      .filter((t): t is typeof t & { tripperSlug: string } => t.tripperSlug !== null)
+      .filter(
+        (t): t is typeof t & { tripperSlug: string } => t.tripperSlug !== null,
+      )
       .map((t) => [t.tripperSlug, t.updatedAt]),
   );
 
   for (const post of blogPosts) {
     const slug = post.slug ?? post.id;
-    const entry = toSitemapEntry(
+    const available = availableBlogLocales(post);
+    const localizedEntries = toSitemapEntries(
       `blog/${slug}`,
       { changeFrequency: "monthly", priority: 0.7 },
       post.updatedAt,
+      available,
     );
-    if (!resolveBlogContent(post, "en")) entry.alternates = undefined;
-    entries.push(entry);
+    entries.push(...localizedEntries);
   }
 
   // Dynamic: active tripper profiles + their experience pages
@@ -119,12 +118,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const slug = tripper.tripperSlug;
     const lastModified = tripperUpdatedAt.get(slug);
     entries.push(
-      toSitemapEntry(
+      ...toSitemapEntries(
         `trippers/${slug}`,
         { changeFrequency: "weekly", priority: 0.8 },
         lastModified,
       ),
-      toSitemapEntry(
+      ...toSitemapEntries(
         `experiences/by-tripper/${slug}`,
         { changeFrequency: "weekly", priority: 0.7 },
         lastModified,

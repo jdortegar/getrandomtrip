@@ -1,3 +1,4 @@
+import { buildAlternates } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { GeoWelcomeToast } from "@/components/landing/GeoWelcomeToast";
@@ -23,12 +24,8 @@ export async function generateMetadata(props: {
   const resolvedLocale = hasLocale(locale) ? locale! : "es";
   const dict = await getDictionary(resolvedLocale);
   const meta = dict.home.meta;
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
-  const canonical =
-    resolvedLocale === "es" ? siteUrl : `${siteUrl}/${resolvedLocale}`;
   return {
-    alternates: { canonical },
+    alternates: buildAlternates(resolvedLocale, "/"),
     description: meta.description,
     openGraph: {
       description: meta.description,

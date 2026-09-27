@@ -6,7 +6,6 @@ import {
   TripperTravelerTypesSection,
 } from "../TripperTravelerTypesSection";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({
@@ -67,7 +66,9 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     // The carousel underneath still renders a full row of fallback cards
     // rather than nothing — every card links to the base Randomtrip catalog.
     expect(
-      container.querySelector('a[href="/experiences/by-type/couple?catalog=randomtrip"]'),
+      container.querySelector(
+        'a[href="/en/experiences/by-type/couple?catalog=randomtrip"]',
+      ),
     ).not.toBeNull();
   });
 
@@ -108,7 +109,7 @@ describe("TripperTravelerTypesSection (spec 'Carousel Attribution-Aware Fallback
     );
 
     const coupleLink = container.querySelector(
-      'a[href="/experiences/by-type/couple?tripper=maria"]',
+      'a[href="/en/experiences/by-type/couple?tripper=maria"]',
     );
     expect(coupleLink).not.toBeNull();
     expect(coupleLink?.textContent).toContain("MARIA");

@@ -1,7 +1,12 @@
+import { availableBlogLocales } from "@/lib/seo/blogLocales";
+import { cache } from "react";
+import { buildAlternates } from "@/lib/seo/urls";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 import { blogLocaleWhere, resolveBlogContent } from "@/lib/blog/content-locale";
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { hasLocale } from "@/lib/i18n/config";
@@ -18,80 +23,86 @@ function isCuid(param: string): boolean {
   );
 }
 
-async function getBlogPost(slugOrId: string, locale: string): Promise<BlogPost | null> {
-  const rawBlog = await prisma.blogPost.findFirst({
-    where: {
-      ...blogLocaleWhere(locale),
-      isActive: true,
-      isReviewCopy: false,
-      status: "PUBLISHED",
-      ...(isCuid(slugOrId) ? { id: slugOrId } : { slug: slugOrId }),
-    },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      translations: true,
-      subtitle: true,
-      tagline: true,
-      coverUrl: true,
-      content: true,
-      blocks: true,
-      faq: true,
-      tags: true,
-      format: true,
-      source: true,
-      seo: true,
-      publishedAt: true,
-      createdAt: true,
-      updatedAt: true,
-      author: {
-        select: {
-          id: true,
-          name: true,
-          tripperSlug: true,
-          avatarUrl: true,
-          bio: true,
-          location: true,
-          motto: true,
-          specialization: true,
+const getBlogPost = cache(
+  async (
+    slugOrId: string,
+    locale: string,
+  ): Promise<(BlogPost & { availableLocales: Locale[] }) | null> => {
+    const rawBlog = await prisma.blogPost.findFirst({
+      where: {
+        ...blogLocaleWhere(locale),
+        isActive: true,
+        isReviewCopy: false,
+        status: "PUBLISHED",
+        ...(isCuid(slugOrId) ? { id: slugOrId } : { slug: slugOrId }),
+      },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        translations: true,
+        subtitle: true,
+        tagline: true,
+        coverUrl: true,
+        content: true,
+        blocks: true,
+        faq: true,
+        tags: true,
+        format: true,
+        source: true,
+        seo: true,
+        publishedAt: true,
+        createdAt: true,
+        updatedAt: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            tripperSlug: true,
+            avatarUrl: true,
+            bio: true,
+            location: true,
+            motto: true,
+            specialization: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  const blog = rawBlog && resolveBlogContent(rawBlog, locale);
-  if (!blog) return null;
+    const blog = rawBlog && resolveBlogContent(rawBlog, locale);
+    if (!blog) return null;
 
-  return {
-    id: blog.id,
-    slug: blog.slug ?? blog.id,
-    title: blog.title,
-    subtitle: blog.subtitle ?? "",
-    tagline: blog.tagline ?? "",
-    coverUrl: blog.coverUrl,
-    content: blog.content ?? "",
-    blocks: blog.blocks as unknown as BlogPost["blocks"],
-    faq: blog.faq as unknown as BlogPost["faq"],
-    tags: blog.tags,
-    format: blog.format.toLowerCase(),
-    source: blog.source,
-    seo: blog.seo as BlogPost["seo"],
-    publishedAt: blog.publishedAt?.toISOString() ?? null,
-    createdAt: blog.createdAt.toISOString(),
-    updatedAt: blog.updatedAt.toISOString(),
-    author: {
-      bio: blog.author.bio ?? "",
-      id: blog.author.id,
-      location: blog.author.location ?? "",
-      motto: blog.author.motto ?? null,
-      name: blog.author.name,
-      slug: blog.author.tripperSlug ?? "",
-      specialization: blog.author.specialization ?? null,
-      avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
-    },
-  };
-}
+    return {
+      availableLocales: availableBlogLocales(rawBlog!),
+      id: blog.id,
+      slug: blog.slug ?? blog.id,
+      title: blog.title,
+      subtitle: blog.subtitle ?? "",
+      tagline: blog.tagline ?? "",
+      coverUrl: blog.coverUrl,
+      content: blog.content ?? "",
+      blocks: blog.blocks as unknown as BlogPost["blocks"],
+      faq: blog.faq as unknown as BlogPost["faq"],
+      tags: blog.tags,
+      format: blog.format.toLowerCase(),
+      source: blog.source,
+      seo: blog.seo as BlogPost["seo"],
+      publishedAt: blog.publishedAt?.toISOString() ?? null,
+      createdAt: blog.createdAt.toISOString(),
+      updatedAt: blog.updatedAt.toISOString(),
+      author: {
+        bio: blog.author.bio ?? "",
+        id: blog.author.id,
+        location: blog.author.location ?? "",
+        motto: blog.author.motto ?? null,
+        name: blog.author.name,
+        slug: blog.author.tripperSlug ?? "",
+        specialization: blog.author.specialization ?? null,
+        avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
+      },
+    };
+  },
+);
 
 export async function generateMetadata(props: {
   params: Promise<{ locale?: string; slug: string }>;
@@ -104,6 +115,11 @@ export async function generateMetadata(props: {
   const seoDescription = blog.seo?.description ?? blog.subtitle ?? undefined;
 
   return {
+    alternates: buildAlternates(
+      hasLocale(params.locale) ? params.locale : "es",
+      `/blog/${blog.slug}`,
+      blog.availableLocales,
+    ),
     description: seoDescription,
     openGraph: {
       description: seoDescription,
@@ -124,6 +140,9 @@ export default async function BlogDetailPage(props: {
 
   if (!blog) notFound();
 
+  if (params.slug !== blog.slug)
+    permanentRedirect(pathForLocale(locale, `/blog/${blog.slug}`));
+
   const jsonLdSchema = buildBlogPostingSchema({
     authorName: blog.author.name,
     locale,
@@ -133,6 +152,7 @@ export default async function BlogDetailPage(props: {
     publishedAt: blog.publishedAt ?? undefined,
     slug: blog.slug,
     title: blog.title,
+    updatedAt: blog.updatedAt,
   });
 
   return (

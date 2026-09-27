@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { cn } from "@/lib/utils";
 import BrandingAnimation from "@/components/BrandingAnimation";
 import VideoBackground from "@/components/media/VideoBackground";

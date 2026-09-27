@@ -3,7 +3,6 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TravelerTypesCarousel } from "../TravelerTypesCarousel";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next/navigation", () => ({
@@ -64,7 +63,7 @@ describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
     );
 
     const coupleLink = container.querySelector(
-      'a[href="/experiences/by-type/couple?tripper=maria"]',
+      'a[href="/en/experiences/by-type/couple?tripper=maria"]',
     );
     expect(coupleLink).not.toBeNull();
     expect(coupleLink?.textContent).toContain("BY TRIPPER");
@@ -81,7 +80,7 @@ describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
     );
 
     const soloLink = container.querySelector(
-      'a[href="/experiences/by-type/solo?catalog=randomtrip"]',
+      'a[href="/en/experiences/by-type/solo?catalog=randomtrip"]',
     );
     expect(soloLink).not.toBeNull();
     expect(soloLink?.textContent).not.toContain("BY TRIPPER");
@@ -92,10 +91,14 @@ describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
     render(<TravelerTypesCarousel availableTypes={[]} tripperMode />);
 
     expect(
-      container.querySelector('a[href="/experiences/by-type/couple?catalog=randomtrip"]'),
+      container.querySelector(
+        'a[href="/en/experiences/by-type/couple?catalog=randomtrip"]',
+      ),
     ).not.toBeNull();
     expect(
-      container.querySelector('a[href="/experiences/by-type/solo?catalog=randomtrip"]'),
+      container.querySelector(
+        'a[href="/en/experiences/by-type/solo?catalog=randomtrip"]',
+      ),
     ).not.toBeNull();
   });
 
@@ -103,13 +106,11 @@ describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
     render(<TravelerTypesCarousel />);
 
     const coupleLink = container.querySelector(
-      'a[href="/experiences/by-type/couple"]',
+      'a[href="/en/experiences/by-type/couple"]',
     );
     expect(coupleLink).not.toBeNull();
     expect(coupleLink?.textContent).not.toContain("RANDOMTRIP");
-    expect(
-      container.querySelector('a[href*="catalog=randomtrip"]'),
-    ).toBeNull();
+    expect(container.querySelector('a[href*="catalog=randomtrip"]')).toBeNull();
   });
 
   it("coming-soon types never get an href, in or out of tripper context", () => {

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import Img from "@/components/common/Img";
 import { cn } from "@/lib/utils";
 import type { DropEntry } from "@/types/core";

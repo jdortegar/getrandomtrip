@@ -3,6 +3,9 @@ vi.mock("@/lib/prisma", () => ({
   prisma: { blogPost: { findFirst: vi.fn() } },
 }));
 vi.mock("next/navigation", () => ({
+  permanentRedirect: (path: string) => {
+    throw new Error(`REDIRECT:${path}`);
+  },
   notFound: () => {
     throw new Error("NOT_FOUND");
   },
@@ -62,5 +65,23 @@ describe("public blog metadata and structured data", () => {
     expect(schema.url).toMatch(/\/en\/blog\/shared-slug$/);
     expect(schema.mainEntityOfPage["@id"]).toBe(schema.url);
     expect(JSON.stringify(schema)).not.toContain("español");
+  });
+});
+
+it("consolidates legacy article IDs onto the locale-aware slug", async () => {
+  await expect(
+    Page({
+      params: Promise.resolve({
+        locale: "es",
+        slug: "c000000000000000000000000",
+      }),
+    }),
+  ).rejects.toThrow("REDIRECT:/blog/shared-slug");
+  const metadata = await generateMetadata({
+    params: Promise.resolve({ locale: "es", slug: "shared-slug" }),
+  });
+  expect(metadata.alternates).toEqual({
+    canonical: "https://getrandomtrip.com/blog/shared-slug",
+    languages: { es: "https://getrandomtrip.com/blog/shared-slug" },
   });
 });

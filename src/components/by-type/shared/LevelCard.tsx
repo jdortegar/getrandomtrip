@@ -13,12 +13,13 @@ import {
   Calendar,
   Sparkles,
 } from "lucide-react";
+import { localizeHref } from "@/lib/i18n/localizeHref";
 import type { Level } from "@/types/planner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
-import Link from "next/link";
-import { useDictionary } from "@/hooks/useDictionary";
+import Link from "@/components/common/LocalizedLink";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface LevelCardProps {
   /** Custom text for the top-edge badge; overrides the featured "most chosen" badge. */
@@ -76,6 +77,7 @@ export default function LevelCard({
   className,
 }: LevelCardProps) {
   const router = useRouter();
+  const locale = useLocale();
   const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
   const byRandomtripLabel = useDictionary(
     (d) => d.journey.tripperBadge.byRandomtrip,
@@ -84,11 +86,13 @@ export default function LevelCard({
     (d) => d.journey.tripperBadge.mostChosen,
   );
   const topBadge = badgeLabel ?? (featured ? mostChosenLabel : undefined);
-  const ctaHref =
+  const ctaHref = localizeHref(
+    locale,
     href ??
-    (travelerType
-      ? `/journey?travelType=${travelerType}&experience=${level.id}`
-      : `/experiences/by-type/${level.id}`);
+      (travelerType
+        ? `/journey?travelType=${travelerType}&experience=${level.id}`
+        : `/experiences/by-type/${level.id}`),
+  );
   const textColor = "text-ink";
   const bgColor = variant === "off-white" ? "bg-ground" : "bg-white";
   const borderColor = selected ? "border-primary" : "border-transparent";

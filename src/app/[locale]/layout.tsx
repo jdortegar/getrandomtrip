@@ -1,3 +1,6 @@
+import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { routeMetadata } from "@/lib/seo/routeMetadata";
 import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import BackToTopButton from "@/components/chrome/BackToTopButton";
@@ -18,6 +21,24 @@ export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
   return [{ locale: "es" }, { locale: "en" }];
+}
+
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await props.params;
+  if (!hasLocale(locale)) notFound();
+  const [requestHeaders, dict, gateEnabled] = await Promise.all([
+    headers(),
+    getDictionary(locale),
+    isGateEnabled(),
+  ]);
+  return routeMetadata(
+    requestHeaders.get("x-pathname") ?? "/__unresolved",
+    locale,
+    dict,
+    gateEnabled,
+  );
 }
 
 export default async function LocaleLayout(props: {
