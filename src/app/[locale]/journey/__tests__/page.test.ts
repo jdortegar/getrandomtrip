@@ -27,8 +27,9 @@ vi.mock("@/lib/db/tripper-queries", () => ({
     getTripperJourneyContextMock(slug),
 }));
 
-import { getAccordionForStep } from "@/app/[locale]/journey/page";
+import { getAccordionForStep } from "@/lib/helpers/journey";
 import JourneyPage from "@/app/[locale]/journey/page";
+import * as pageExports from "@/app/[locale]/journey/page";
 
 describe("JourneyPage — unvalidated tripperSlug forwarding (review finding #3)", () => {
   beforeEach(() => {
@@ -81,6 +82,10 @@ describe("JourneyPage — unvalidated tripperSlug forwarding (review finding #3)
     expect(element.props.tripperSlug).toBe("live-tripper");
     expect(element.props.tripperState.status).toBe("ok");
   });
+});
+
+it("exposes only supported Next.js page exports", () => {
+  expect(Object.keys(pageExports).sort()).toEqual(["default", "generateMetadata"]);
 });
 
 describe("getAccordionForStep", () => {

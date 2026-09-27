@@ -12,8 +12,6 @@ import { getTripperJourneyContext } from "@/lib/db/tripper-queries";
 import type { TripperContextState } from "@/types/tripper";
 import JourneyPageClient from "./JourneyPageClient";
 
-export { getAccordionForStep } from "@/lib/helpers/journey";
-
 /**
  * Resolves the journey page's tripper state from the (already
  * liveness-re-validated) attribution slug — `not_found`/`inactive` map to

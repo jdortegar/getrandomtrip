@@ -19,6 +19,7 @@ import { prisma } from "@/lib/prisma";
 import { sendTripStartVouchers } from "@/lib/email";
 
 type RouteModule = typeof import("../route");
+type PassesModule = typeof import("../passes");
 
 const VALID_SECRET = "test-cron-secret-123";
 
@@ -66,7 +67,7 @@ describe("POST /api/internal/trip-start-voucher-email — auth guard", () => {
 // ── Pass 1 ─────────────────────────────────────────────────────────────────────
 describe("runPass1", () => {
   it("queries only REVEALED/COMPLETED trips with startDate passed and voucherEmailSentAt: null", async () => {
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     await mod.runPass1(new Date());
 
     expect(prisma.tripRequest.findMany).toHaveBeenCalledWith(
@@ -85,7 +86,7 @@ describe("runPass1", () => {
       trip,
     ]);
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const now = new Date();
     const result = await mod.runPass1(now);
 
@@ -107,7 +108,7 @@ describe("runPass1", () => {
       sent: false,
     });
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass1(new Date());
 
     expect(result.sent).toBe(0);
@@ -118,7 +119,7 @@ describe("runPass1", () => {
   it("does not re-notify already-stamped trips (idempotency via the query guard)", async () => {
     (prisma.tripRequest.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass1(new Date());
 
     expect(result.sent).toBe(0);
@@ -137,7 +138,7 @@ describe("runPass1", () => {
       .mockRejectedValueOnce(new Error("Resend down"))
       .mockResolvedValueOnce({ sent: true });
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass1(new Date());
 
     expect(result.sent).toBe(1);
