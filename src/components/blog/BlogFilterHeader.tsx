@@ -31,31 +31,38 @@ interface BlogFilterHeaderProps {
 
 interface FilterDropdownCardProps {
   children: React.ReactNode;
-  className?: string;
   subtitle: string;
   title: string;
 }
 
 function FilterDropdownCard({
   children,
-  className,
   subtitle,
   title,
 }: FilterDropdownCardProps) {
   return (
     <div
       className={cn(
-        "relative w-full rounded-lg border border-neutral-200 bg-white py-1.5 px-3 shadow-sm text-left md:w-auto md:min-w-[220px] md:py-2 md:px-4",
-        className,
+        "bg-white border border-neutral-200 min-w-0 px-3 py-1.5 relative rounded-lg shadow-sm text-left w-full",
+        "md:px-4 md:py-2",
+        "focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary",
       )}
     >
-      <div className="flex justify-between gap-1 items-center w-full">
-        <p className="text-base font-semibold text-ink md:text-xl">{title}</p>
-        <span className="pointer-events-none text-ink">
-          <ChevronDown className="h-4 w-4 md:h-5 md:w-5" />
+      <div className="flex gap-1 items-center justify-between w-full">
+        <p
+          className={cn(
+            "font-semibold min-w-0 text-base text-ink truncate",
+            "md:text-xl",
+          )}
+          title={title}
+        >
+          {title}
+        </p>
+        <span className="pointer-events-none shrink-0 text-ink">
+          <ChevronDown className={cn("h-4 w-4", "md:h-5 md:w-5")} />
         </span>
       </div>
-      <p className="text-xs text-ink">{subtitle}</p>
+      <p className="text-ink text-xs">{subtitle}</p>
       {children}
     </div>
   );
@@ -121,7 +128,8 @@ export function BlogFilterHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-b border-neutral-200 pb-4 md:flex-row md:flex-wrap md:items-center",
+        "border-b border-neutral-200 gap-3 grid grid-cols-1 pb-4",
+        "md:grid-cols-2 xl:grid-cols-4",
         className,
       )}
       data-component="BlogFilterHeader"
@@ -131,7 +139,8 @@ export function BlogFilterHeader({
         title={travelTypeTitle}
       >
         <select
-          className="absolute inset-0 cursor-pointer opacity-0"
+          aria-label={labels.travelTypeLabel}
+          className="absolute cursor-pointer h-full inset-0 min-w-0 opacity-0 w-full"
           onChange={handleTravelTypeChange}
           value={value.travelTypeKey}
         >
@@ -146,7 +155,8 @@ export function BlogFilterHeader({
 
       <FilterDropdownCard subtitle={labels.levelSubtitle} title={levelTitle}>
         <select
-          className="absolute inset-0 cursor-pointer opacity-0"
+          aria-label={labels.levelLabel}
+          className="absolute cursor-pointer h-full inset-0 min-w-0 opacity-0 w-full"
           onChange={handleLevelChange}
           value={value.levelKey}
         >
@@ -161,7 +171,8 @@ export function BlogFilterHeader({
 
       <FilterDropdownCard subtitle={labels.excuseSubtitle} title={excuseTitle}>
         <select
-          className="absolute inset-0 cursor-pointer opacity-0"
+          aria-label={labels.excuseLabel}
+          className="absolute cursor-pointer h-full inset-0 min-w-0 opacity-0 w-full"
           onChange={(e) => {
             const key = e.target.value;
             onChange({ ...value, excuseKey: key || null });
@@ -178,12 +189,12 @@ export function BlogFilterHeader({
       </FilterDropdownCard>
 
       <FilterDropdownCard
-        className="md:ml-auto"
         subtitle={labels.tripperSubtitle}
         title={tripperTitle}
       >
         <select
-          className="absolute inset-0 cursor-pointer opacity-0"
+          aria-label={labels.tripperLabel}
+          className="absolute cursor-pointer h-full inset-0 min-w-0 opacity-0 w-full"
           onChange={handleTripperChange}
           value={value.tripperId ?? ""}
         >

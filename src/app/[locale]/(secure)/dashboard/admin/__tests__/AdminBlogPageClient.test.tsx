@@ -164,7 +164,7 @@ describe("AdminBlogPageClient — Level and Travel type columns", () => {
     expect(cellsText).toContain("—");
   });
 
-  it("lists every EXPERIENCE_LEVELS value in the level filter dropdown", async () => {
+  it("lists every EXPERIENCE_LEVELS value with XSED first in the level filter dropdown", async () => {
     render(<AdminBlogPageClient />);
     await flush();
 
@@ -173,12 +173,12 @@ describe("AdminBlogPageClient — Level and Travel type columns", () => {
     const values = Array.from(levelSelect.options).map((o) => o.value);
     expect(values).toEqual([
       "all",
+      "xsed",
       "essenza",
       "modo-explora",
       "explora-plus",
       "bivouac",
       "atelier-getaway",
-      "xsed",
     ]);
   });
 });
