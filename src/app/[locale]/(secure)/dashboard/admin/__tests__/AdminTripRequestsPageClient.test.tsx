@@ -146,6 +146,9 @@ describe("AdminTripRequestsPageClient — accessible mobile filters", () => {
       const panel = container.querySelector(
         '[data-component="TripRequestsFilters"]',
       )!;
+      expect(
+        panel.querySelector('[data-component="TableFilterToolbar"]'),
+      ).not.toBeNull();
       const controls = Array.from(panel.querySelectorAll("input, select"));
       expect(controls).toHaveLength(5);
       expect(
@@ -272,3 +275,174 @@ describe("AdminTripRequestsPageClient — refetch error keeps chrome mounted", (
     expect(banner?.textContent).toContain("Refetch boom");
   });
 });
+
+it("uses the shared loading/count region through debounce, refresh, clear and errors", async () => {
+  vi.useFakeTimers();
+  render();
+  await flush();
+  const toolbar = container.querySelector(
+    '[data-component="TableFilterToolbar"]',
+  )!;
+  const controls = Array.from(toolbar.querySelectorAll("input,select"));
+  const status = toolbar.querySelector('[role="status"]')!;
+  const input = toolbar.querySelector("input")!;
+  let finish!: (response: unknown) => void;
+  fetchMock().mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  const beforeSearch = fetchMock().mock.calls.length;
+  act(() => {
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )!.set!.call(input, "Ana");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  expect(status.textContent).toBe(
+    esCopy.adminPages.tripRequests.filters.loading,
+  );
+  expect(status.getAttribute("aria-busy")).toBe("true");
+  act(() => vi.advanceTimersByTime(349));
+  expect(fetchMock().mock.calls).toHaveLength(beforeSearch);
+  act(() => vi.advanceTimersByTime(1));
+  expect(lastQuery().get("search")).toBe("Ana");
+  expect(status.textContent).toBe(
+    esCopy.adminPages.tripRequests.filters.loading,
+  );
+  expect(Array.from(toolbar.querySelectorAll("input,select"))).toEqual(
+    controls,
+  );
+  expect(toolbar.querySelector("input:disabled,select:disabled")).toBeNull();
+  await act(async () =>
+    finish({
+      ok: true,
+      json: async () => ({ total: 1, tripRequests: [trip()] }),
+    }),
+  );
+  expect(status.textContent).toBe("1 de 1 solicitudes");
+  act(() => {
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )!.set!.call(input, "Pending");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  act(() => toolbar.querySelector("button")!.click());
+  expect(input.value).toBe("");
+  expect(lastQuery().has("search")).toBe(false);
+  const afterClear = fetchMock().mock.calls.length;
+  act(() => vi.advanceTimersByTime(500));
+  expect(fetchMock().mock.calls).toHaveLength(afterClear);
+  expect(status.textContent).toBe(
+    esCopy.adminPages.tripRequests.filters.loading,
+  );
+  await act(async () =>
+    finish({ ok: false, json: async () => ({ error: "Offline" }) }),
+  );
+  expect(status.textContent).toBe("");
+  expect(status.getAttribute("aria-busy")).toBe("false");
+  expect(container.querySelector('[role="alert"]')?.textContent).toContain(
+    "Offline",
+  );
+  expect(Array.from(toolbar.querySelectorAll("input,select"))).toEqual(
+    controls,
+  );
+});
+
+it.each(["debounce", "refetch", "error"])(
+  "keeps cleared results when stale requests settle during %s",
+  async (state) => {
+    vi.useFakeTimers();
+    render();
+    await flush();
+    const requests: {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+    }[] = [];
+    fetchMock().mockImplementation(
+      () =>
+        new Promise((resolve, reject) => requests.push({ resolve, reject })),
+    );
+    const toolbar = container.querySelector(
+      '[data-component="TableFilterToolbar"]',
+    )!;
+    const input = toolbar.querySelector("input")!;
+    const controls = Array.from(toolbar.querySelectorAll("input,select"));
+    await changeFilter("trip-request-type", "couple");
+    act(() => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )!.set!.call(input, "Ana");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    if (state !== "debounce") act(() => vi.advanceTimersByTime(350));
+    if (state === "error")
+      await act(async () => requests[1].reject(new Error("Current error")));
+    const clearIndex = requests.length;
+    act(() => toolbar.querySelector("button")!.click());
+    expect(lastQuery().has("type")).toBe(false);
+    expect(lastQuery().has("search")).toBe(false);
+    expect(lastQuery().get("page")).toBe("1");
+    expect(input.value).toBe("");
+    expect(
+      Array.from(toolbar.querySelectorAll("select")).every(
+        (select) => select.value === "ALL",
+      ),
+    ).toBe(true);
+    act(() => vi.advanceTimersByTime(500));
+    expect(requests).toHaveLength(clearIndex + 1);
+    await act(async () =>
+      requests[clearIndex].resolve({
+        ok: true,
+        json: async () => ({
+          total: 9,
+          tripRequests: [
+            trip({
+              user: {
+                email: "cleared@example.com",
+                id: "cleared",
+                locale: null,
+                name: "Cleared traveler",
+              },
+            }),
+          ],
+        }),
+      }),
+    );
+    await act(async () =>
+      requests[0].resolve({
+        ok: true,
+        json: async () => ({
+          total: 99,
+          tripRequests: [
+            trip({
+              user: {
+                email: "stale@example.com",
+                id: "stale",
+                locale: null,
+                name: "Stale traveler",
+              },
+            }),
+          ],
+        }),
+      }),
+    );
+    if (state === "refetch")
+      await act(async () =>
+        requests[1].reject(new Error("Stale search error")),
+      );
+    expect(container.textContent).toContain("Cleared traveler");
+    expect(container.textContent).not.toContain("Stale traveler");
+    expect(toolbar.querySelector('[role="status"]')?.textContent).toBe(
+      "1 de 9 solicitudes",
+    );
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    expect(Array.from(toolbar.querySelectorAll("input,select"))).toEqual(
+      controls,
+    );
+  },
+);

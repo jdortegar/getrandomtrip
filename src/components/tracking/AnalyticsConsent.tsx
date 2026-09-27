@@ -20,11 +20,12 @@ export default function AnalyticsConsent({
   const consent = useSyncExternalStore(
     subscribeAnalyticsConsent,
     readAnalyticsConsent,
-    () => null,
+    // The server cannot distinguish a saved choice from unanswered consent.
+    () => undefined,
   );
   const open = useAnalyticsPreferencesStore((state) => state.open);
   const setOpen = useAnalyticsPreferencesStore((state) => state.setOpen);
-  const show = open || consent === null;
+  const show = consent !== undefined && (open || consent === null);
   const showClose = open && consent !== null;
   const choose = (value: "granted" | "denied") => {
     saveAnalyticsConsent(value);

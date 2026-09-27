@@ -10,19 +10,27 @@ import {
   EyeOff,
   Pencil,
   Plus,
-  Search,
   Trash2,
-  X,
 } from "lucide-react";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
-import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
+import {
+  TableIconButton,
+  TableIconLink,
+} from "@/components/ui/TableIconButton";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { getBlogTravelTypeOptions } from "@/lib/constants/blog-filters";
-import { resolveBlogRowAction, isBlogRowLockedForDeletion } from "@/lib/blog/row-actions";
+import {
+  resolveBlogRowAction,
+  isBlogRowLockedForDeletion,
+} from "@/lib/blog/row-actions";
 import { useDictionary } from "@/hooks/useDictionary";
 import type { TripperBlogsDict } from "@/lib/types/dictionary";
 import type { BlogFormat, BlogPost } from "@/types/blog";
@@ -35,8 +43,6 @@ const BLOG_STATUSES = [
   "published",
 ] as const;
 
-const SELECT_CLASS =
-  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
 
@@ -47,13 +53,20 @@ interface BlogPageClientProps {
   isAdmin?: boolean;
 }
 
-export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientProps) {
+export function BlogPageClient({
+  dict: copy,
+  locale,
+  isAdmin,
+}: BlogPageClientProps) {
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const [isPending, startTransition] = useTransition();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
+  const [error, setError] = useState<string | null>(null);
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedTravelType, setSelectedTravelType] = useState("all");
@@ -63,11 +76,15 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
   // Id of the post pending delete confirmation. null = modal closed.
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
-  const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(null);
+  const [unpublishTargetId, setUnpublishTargetId] = useState<string | null>(
+    null,
+  );
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(
+    null,
+  );
   const filtersRef = useRef<HTMLDivElement>(null);
   const selectAllRef = useRef<HTMLInputElement>(null);
 
@@ -87,12 +104,30 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
 
   // Debounce the search input — it now drives a server query, not an
   // in-memory filter, so we don't want a request per keystroke.
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([
+      page,
+      selectedStatus,
+      selectedLevel,
+      selectedTravelType,
+      searchQuery,
+      debouncedSearch,
+    ]),
+  );
+
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const fetchBlogs = useCallback(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -101,7 +136,8 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
       });
       if (selectedStatus !== "all") params.set("status", selectedStatus);
       if (selectedLevel !== "all") params.set("level", selectedLevel);
-      if (selectedTravelType !== "all") params.set("travelType", selectedTravelType);
+      if (selectedTravelType !== "all")
+        params.set("travelType", selectedTravelType);
       if (debouncedSearch) params.set("search", debouncedSearch);
 
       const res = await fetch(`/api/tripper/blogs?${params.toString()}`);
@@ -109,12 +145,30 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
         blogs?: BlogPost[];
         total?: number;
       };
+      if (!isCurrent()) return;
+      if (!res.ok || !data.blogs) {
+        setError(filterCopy.errorLoad);
+        return;
+      }
+      setError(null);
       setPosts(data.blogs ?? []);
       setTotal(data.total ?? 0);
+    } catch {
+      if (isCurrent()) setError(filterCopy.errorLoad);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
-  }, [page, selectedStatus, selectedLevel, selectedTravelType, debouncedSearch]);
+  }, [
+    beginRequest,
+    searchQuery,
+    filterCopy.errorLoad,
+    page,
+    selectedStatus,
+    selectedLevel,
+    selectedTravelType,
+    debouncedSearch,
+  ]);
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchBlogs);
 
   useEffect(() => {
     void fetchBlogs();
@@ -192,12 +246,16 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/tripper/blogs/${id}`, { method: "DELETE" }).then((res) => {
-              if (!res.ok) throw new Error(String(res.status));
-            }),
+            fetch(`/api/tripper/blogs/${id}`, { method: "DELETE" }).then(
+              (res) => {
+                if (!res.ok) throw new Error(String(res.status));
+              },
+            ),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -209,7 +267,7 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
         );
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
-        await fetchBlogs();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkDeleting(false);
       }
@@ -227,7 +285,7 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
           method: "DELETE",
         });
         if (res.ok) {
-          await fetchBlogs();
+          await refreshCurrentQuery();
         }
       } finally {
         setDeletingId(null);
@@ -245,7 +303,7 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
           body: JSON.stringify({ isActive }),
         });
         if (res.ok) {
-          await fetchBlogs();
+          await refreshCurrentQuery();
         }
       } finally {
         setTogglingId(null);
@@ -276,7 +334,8 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
     return copy.status[key] ?? status;
   }
 
-  if (loading) return <LoadingSpinner data-component="BlogPageClient" />;
+  if (loading && !hasLoadedOnce)
+    return <LoadingSpinner data-component="BlogPageClient" />;
 
   return (
     <div className="space-y-6 text-left" data-component="BlogPageClient">
@@ -300,111 +359,117 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
         </Button>
       </div>
 
-      <div
-        className="flex flex-wrap items-center justify-between gap-3"
-        ref={filtersRef}
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedStatusAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedStatus}
-          >
-            <option value="all">{copy.filters.allStatuses}</option>
-            {BLOG_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {statusLabel(status)}
-              </option>
-            ))}
-          </Select>
-          {isAdmin && (
-            <Select
-              className={SELECT_CLASS}
-              onChange={(e) => {
-                setSelectedLevelAndClear(e.target.value);
-                scrollToFilters();
-              }}
-              value={selectedLevel}
-            >
-              <option value="all">{copy.filters.allExperiences}</option>
-              <option value="xsed">XSED</option>
-            </Select>
-          )}
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedTravelTypeAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedTravelType}
-          >
-            <option value="all">{copy.filters.allTravelTypes}</option>
-            {travelTypeOptions.map((travelType) => (
-              <option key={travelType.key} value={travelType.key}>
-                {travelType.label}
-              </option>
-            ))}
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
+      <div ref={filtersRef}>
+        <TableFilterToolbar
+          actions={
+            <Button
+              className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-4 text-[13px] font-semibold uppercase tracking-[1px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkDeleteConfirmOpen(true)}
               type="button"
             >
-              <X className="h-3.5 w-3.5" />
-              {copy.filters.clearFilters}
-            </button>
-          )}
-          <Button
-            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-4 text-[13px] font-semibold uppercase tracking-[1px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
-            disabled={selectedIds.size === 0}
-            onClick={() => setBulkDeleteConfirmOpen(true)}
-            type="button"
-          >
-            <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-            {copy.bulkActions.deleteSelected.replace(
-              "{count}",
-              String(selectedIds.size),
-            )}
-          </Button>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {posts.length} {copy.filters.of} {total} {copy.filters.count}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedIds(new Set());
-                setPage(1);
-              }}
-              placeholder={copy.filters.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
+              <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+              {copy.bulkActions.deleteSelected.replace(
+                "{count}",
+                String(selectedIds.size),
+              )}
+            </Button>
+          }
+          copy={filterCopy}
+          filters={[
+            {
+              id: "tripper-blog-status",
+              label: filterCopy.status,
+              value: selectedStatus,
+              onChange: (value) => {
+                setSelectedStatusAndClear(value);
+                scrollToFilters();
+              },
+              options: [
+                { value: "all", label: filterCopy.all },
+                ...BLOG_STATUSES.map((value) => ({
+                  value,
+                  label: statusLabel(value),
+                })),
+              ],
+            },
+            ...(isAdmin
+              ? [
+                  {
+                    id: "tripper-blog-experience",
+                    label: filterCopy.experience,
+                    value: selectedLevel,
+                    onChange: (value: string) => {
+                      setSelectedLevelAndClear(value);
+                      scrollToFilters();
+                    },
+                    options: [
+                      { value: "all", label: filterCopy.all },
+                      { value: "xsed", label: "XSED" },
+                    ],
+                  },
+                ]
+              : []),
+            {
+              id: "tripper-blog-type",
+              label: filterCopy.type,
+              value: selectedTravelType,
+              onChange: (value) => {
+                setSelectedTravelTypeAndClear(value);
+                scrollToFilters();
+              },
+              options: [
+                { value: "all", label: filterCopy.all },
+                ...travelTypeOptions.map((option) => ({
+                  value: option.key,
+                  label: option.label,
+                })),
+              ],
+            },
+          ]}
+          hasActiveFilters={hasActiveFilters}
+          hasError={!!error}
+          isLoading={queryPending}
+          onClear={clearFilters}
+          search={{
+            id: "tripper-blog-search",
+            label: filterCopy.searchLabel,
+            placeholder: filterCopy.searchTitle,
+            value: searchQuery,
+            onChange: (value) => {
+              setSearchQuery(value);
+              setSelectedIds(new Set());
+              setPage(1);
+            },
+          }}
+          shown={posts.length}
+          total={total}
+        />
       </div>
 
       {bulkFailureMessage && (
         <p className="text-xs text-red-600">{bulkFailureMessage}</p>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <TableQueryBoundary
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        copy={filterCopy}
+        error={error}
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchBlogs();
+        }}
+      >
         {posts.length === 0 ? (
           <div className="py-16 text-center">
             <p className="mb-4 text-sm text-ink">
-              {total === 0 && !hasActiveFilters
-                ? copy.emptyState.noPosts
-                : copy.emptyState.noMatch}
+              {queryPending
+                ? filterCopy.loading
+                : total === 0 && !hasActiveFilters
+                  ? copy.emptyState.noPosts
+                  : copy.emptyState.noMatch}
             </p>
-            {total === 0 && !hasActiveFilters && (
+            {!queryPending && total === 0 && !hasActiveFilters && (
               <Button asChild className="mx-auto max-w-xs" size="sm">
                 <Link href={`${basePath}/new`}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -471,14 +536,18 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
                           className="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
                           disabled={rowLocked}
                           onChange={() => toggleRowSelected(post.id)}
-                          title={rowLocked ? copy.table.lockedForDeletion : undefined}
+                          title={
+                            rowLocked ? copy.table.lockedForDeletion : undefined
+                          }
                           type="checkbox"
                         />
                       </td>
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-ink">
                           {post.title}
-                          <span className="block font-normal text-neutral-500 text-xs">{copy.form.contentLanguage.canonicalLabel}</span>
+                          <span className="block font-normal text-neutral-500 text-xs">
+                            {copy.form.contentLanguage.canonicalLabel}
+                          </span>
                         </p>
                         {post.subtitle && (
                           <p className="mt-0.5 text-xs text-ink">
@@ -520,14 +589,16 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
                               <Pencil className="h-4 w-4" />
                             </TableIconLink>
                           )}
-                          {publicHref && post.status === "published" && post.isActive && (
-                            <TableIconLink
-                              href={publicHref}
-                              title={copy.table.view}
-                            >
-                              <ArrowUpRight className="h-4 w-4" />
-                            </TableIconLink>
-                          )}
+                          {publicHref &&
+                            post.status === "published" &&
+                            post.isActive && (
+                              <TableIconLink
+                                href={publicHref}
+                                title={copy.table.view}
+                              >
+                                <ArrowUpRight className="h-4 w-4" />
+                              </TableIconLink>
+                            )}
                           {post.status === "published" && (
                             <TableIconButton
                               disabled={isBusy}
@@ -582,16 +653,20 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
             </table>
           </div>
         )}
-      </div>
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={handlePageChange}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) handlePageChange(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
 
       <ConfirmModal
         open={unpublishTargetId !== null}

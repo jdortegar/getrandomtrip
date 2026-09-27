@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Search, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { BulkDeleteUsersModal } from "@/components/app/admin/BulkDeleteUsersModal";
 import { DeleteUserModal } from "@/components/app/admin/DeleteUserModal";
@@ -21,12 +25,9 @@ interface AdminUsersPageClientProps {
   copy: MarketingDictionary["adminUsers"];
 }
 
-function withCount(template: string, count: number): string {
-  return template.replace("{count}", String(count));
-}
-
 export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const locale = useLocale();
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const { data: session } = useSession();
   const currentUserId = session?.user?.id ?? null;
@@ -40,20 +41,34 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   const [invitingId, setInvitingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [bulkSelectedIds, setBulkSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkSelectedIds, setBulkSelectedIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(
+    null,
+  );
   const selectAllRef = useRef<HTMLInputElement>(null);
 
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([page, searchQuery, debouncedSearch]),
+  );
+
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const fetchUsers = useCallback(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -67,18 +82,21 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         error?: string;
         total?: number;
       };
+      if (!isCurrent()) return;
       if (res.ok && data.users) {
+        setError(null);
         setUsers(data.users);
         setTotal(data.total ?? 0);
       } else {
         setError(data.error ?? copy.errorFallback);
       }
     } catch {
-      setError(copy.errorFallback);
+      if (isCurrent()) setError(copy.errorFallback);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
-  }, [page, debouncedSearch, copy.errorFallback]);
+  }, [beginRequest, searchQuery, page, debouncedSearch, copy.errorFallback]);
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchUsers);
 
   useEffect(() => {
     void fetchUsers();
@@ -99,6 +117,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
       setUsers((prev) =>
         prev.map((u) => (u.id === id ? { ...u, inviteStatus: "invited" } : u)),
       );
+      await refreshCurrentQuery();
     } finally {
       setInvitingId(null);
     }
@@ -147,12 +166,16 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/admin/users/${id}`, { method: "DELETE" }).then((res) => {
-              if (!res.ok) throw new Error(String(res.status));
-            }),
+            fetch(`/api/admin/users/${id}`, { method: "DELETE" }).then(
+              (res) => {
+                if (!res.ok) throw new Error(String(res.status));
+              },
+            ),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -164,11 +187,19 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         );
         setBulkSelectedIds(new Set());
         setBulkDeleteOpen(false);
-        await fetchUsers();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkDeleting(false);
       }
     })();
+  }
+
+  const hasActiveFilters = searchQuery !== "";
+  function clearFilters() {
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setPage(1);
+    setBulkSelectedIds(new Set());
   }
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
@@ -181,69 +212,84 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <Button
-          className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
-          disabled={bulkSelectedIds.size === 0}
-          onClick={() => setBulkDeleteOpen(true)}
-          type="button"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          {copy.bulkActions.deleteSelected.replace(
-            "{count}",
-            String(bulkSelectedIds.size),
-          )}
-        </Button>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {withCount(copy.usersCount, total)}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setBulkSelectedIds(new Set());
-                setPage(1);
-              }}
-              placeholder={copy.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
-      </div>
+      <TableFilterToolbar
+        actions={
+          <Button
+            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+            disabled={bulkSelectedIds.size === 0}
+            onClick={() => setBulkDeleteOpen(true)}
+            type="button"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            {copy.bulkActions.deleteSelected.replace(
+              "{count}",
+              String(bulkSelectedIds.size),
+            )}
+          </Button>
+        }
+        copy={filterCopy}
+        filters={[]}
+        hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={queryPending}
+        onClear={clearFilters}
+        search={{
+          id: "admin-users-search",
+          label: filterCopy.searchLabel,
+          placeholder: filterCopy.searchName,
+          value: searchQuery,
+          onChange: (value) => {
+            setSearchQuery(value);
+            setBulkSelectedIds(new Set());
+            setPage(1);
+          },
+        }}
+        shown={users.length}
+        total={total}
+      />
 
       {bulkFailureMessage && (
         <p className="text-xs text-red-600">{bulkFailureMessage}</p>
       )}
 
-      <UsersTable
-        allSelectableChecked={allSelectableChecked}
-        bulkSelectedIds={bulkSelectedIds}
-        copy={copy}
-        currentUserId={currentUserId}
+      <TableQueryBoundary
+        copy={filterCopy}
         error={error}
-        invitingId={invitingId}
-        isLoading={loading}
-        locale={locale}
-        onDelete={setDeleteTargetId}
-        onInvite={(id) => void inviteAsTripper(id)}
-        onToggleBulkSelect={toggleBulkSelect}
-        onToggleSelectAll={toggleSelectAll}
-        selectAllRef={selectAllRef}
-        users={users}
-      />
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchUsers();
+        }}
+      >
+        <UsersTable
+          allSelectableChecked={allSelectableChecked}
+          bulkSelectedIds={bulkSelectedIds}
+          copy={copy}
+          currentUserId={currentUserId}
+          error={null}
+          invitingId={invitingId}
+          isLoading={queryPending}
+          locale={locale}
+          onDelete={setDeleteTargetId}
+          onInvite={(id) => void inviteAsTripper(id)}
+          onToggleBulkSelect={toggleBulkSelect}
+          onToggleSelectAll={toggleSelectAll}
+          selectAllRef={selectAllRef}
+          users={users}
+        />
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={handlePageChange}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) handlePageChange(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
 
       <BulkDeleteUsersModal
         copy={copy}
@@ -263,6 +309,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
             setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
             setTotal((prev) => Math.max(0, prev - 1));
             setDeleteTargetId(null);
+            void refreshCurrentQuery();
           }}
           open
           user={deleteTarget}

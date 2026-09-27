@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AdminTripRequest, StatusFilterValue } from "@/lib/admin/types";
 import type { TripRequestStatus } from "@/lib/admin/trip-status";
 import type {
@@ -64,7 +64,10 @@ export function useTripRequests({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const requestId = useRef(0);
+
   const load = useCallback(async () => {
+    const currentRequest = ++requestId.current;
     setLoading(true);
     setError(null);
     const params = new URLSearchParams({
@@ -81,15 +84,14 @@ export function useTripRequests({
     if (sortBy) params.set("sortBy", sortBy);
     if (sortOrder) params.set("sortOrder", sortOrder);
     try {
-      const res = await fetch(
-        `/api/admin/trip-requests?${params.toString()}`,
-      );
+      const res = await fetch(`/api/admin/trip-requests?${params.toString()}`);
       const data = (await res.json()) as {
         error?: string;
         tripRequests?: AdminTripRequest[];
         total?: number;
         statusCounts?: Record<TripRequestStatus, number>;
       };
+      if (currentRequest !== requestId.current) return;
       if (!res.ok) {
         setError(data.error ?? errorLoad);
         return;
@@ -98,9 +100,9 @@ export function useTripRequests({
       setTotal(data.total ?? 0);
       setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
     } catch {
-      setError(errorLoad);
+      if (currentRequest === requestId.current) setError(errorLoad);
     } finally {
-      setLoading(false);
+      if (currentRequest === requestId.current) setLoading(false);
     }
   }, [
     errorLoad,
@@ -117,6 +119,9 @@ export function useTripRequests({
 
   useEffect(() => {
     void load();
+    return () => {
+      requestId.current += 1;
+    };
   }, [load]);
 
   return { error, loading, refresh: load, statusCounts, total, trips };

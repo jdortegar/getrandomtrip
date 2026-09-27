@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "sonner";
 import {
   DashboardStatsGrid,
   UnpaidTripsAlert,
@@ -115,7 +114,6 @@ export function TravelerHomePageClient({
         method: "DELETE",
       });
       if (!res.ok) {
-        toast.error(copy.unpaidTrips.deleteFailed);
         throw new Error("Trip delete failed");
       }
       setTrips((prev) => {
@@ -124,16 +122,22 @@ export function TravelerHomePageClient({
         return next;
       });
     },
-    [copy.unpaidTrips.deleteFailed, payments],
+    [payments],
   );
 
   return (
     <>
       <DashboardRoleToast message={roleToast} />
       {loading ? (
-        <DashboardSkeleton variant="home" data-component="TravelerHomePageClient" />
+        <DashboardSkeleton
+          variant="home"
+          data-component="TravelerHomePageClient"
+        />
       ) : (
-        <div className="space-y-10 py-10" data-component="TravelerHomePageClient">
+        <div
+          className="space-y-10 py-10"
+          data-component="TravelerHomePageClient"
+        >
           <section>
             <div className="mb-5">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

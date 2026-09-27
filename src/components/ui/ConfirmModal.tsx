@@ -1,6 +1,6 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
+import { Loader2, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import {
@@ -42,11 +42,13 @@ export interface ConfirmModalProps {
   description: ReactNode;
   cancelLabel: string;
   confirmLabel: string;
+  /** Localized progress label shown while confirming; falls back to confirmLabel. */
+  confirmingLabel?: string;
   /** Icon shown in the header puck and prefixed on the confirm button. */
   icon: LucideIcon;
   /** "danger" for destructive actions (red), "neutral" for everything else. Defaults to "neutral". */
   tone?: ConfirmModalTone;
-  /** Disables the confirm button while the action is in flight. */
+  /** Shows pending feedback and disables action buttons while confirming. */
   isConfirming?: boolean;
 }
 
@@ -59,18 +61,20 @@ export function ConfirmModal({
   description,
   cancelLabel,
   confirmLabel,
+  confirmingLabel,
   icon: Icon,
   tone = "neutral",
-  isConfirming,
+  isConfirming = false,
 }: ConfirmModalProps) {
   const toneStyles = TONE_STYLES[tone];
 
   return (
     <Modal
-      open={open}
+      className="max-w-md"
+      data-component="ConfirmModal"
       onOpenChange={onOpenChange}
-      showCloseButton
-      className="max-w-md" data-component="ConfirmModal"
+      open={open}
+      showCloseButton={!isConfirming}
     >
       <DialogHeader>
         <div
@@ -89,16 +93,25 @@ export function ConfirmModal({
         </DialogDescription>
       </DialogHeader>
       <DialogFooter className="mt-6">
-        <Button variant="secondary" onClick={() => onOpenChange(false)}>
+        <Button
+          disabled={isConfirming}
+          onClick={() => onOpenChange(false)}
+          variant="secondary"
+        >
           {cancelLabel}
         </Button>
         <Button
-          variant={toneStyles.confirmVariant}
+          aria-busy={isConfirming}
           disabled={isConfirming}
           onClick={onConfirm}
+          variant={toneStyles.confirmVariant}
         >
-          <Icon className="mr-1 h-4 w-4" />
-          {confirmLabel}
+          {isConfirming ? (
+            <Loader2 aria-hidden="true" className="animate-spin h-4 mr-1 w-4" />
+          ) : (
+            <Icon aria-hidden="true" className="h-4 mr-1 w-4" />
+          )}
+          {isConfirming ? (confirmingLabel ?? confirmLabel) : confirmLabel}
         </Button>
       </DialogFooter>
     </Modal>

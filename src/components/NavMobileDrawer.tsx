@@ -197,7 +197,7 @@ export function NavMobileDrawer({
                 aria-label={nav?.selectLanguage}
                 aria-pressed={currentLocale === loc}
                 className={cn(
-                  "flex-1 rounded-full px-3 text-xs font-semibold uppercase",
+                  "cursor-pointer flex-1 font-semibold px-3 rounded-full text-xs uppercase",
                   currentLocale === loc ? "bg-white text-primary" : "text-primary/70",
                 )}
                 onClick={() => onLocaleChange(loc)}

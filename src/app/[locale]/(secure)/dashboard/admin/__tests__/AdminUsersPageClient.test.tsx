@@ -86,7 +86,7 @@ describe("AdminUsersPageClient — refetch error keeps chrome mounted", () => {
     });
 
     const searchInput = container.querySelector(
-      'input[type="text"]',
+      'input[type="search"]',
     ) as HTMLInputElement;
     expect(searchInput).not.toBeNull();
 
@@ -106,7 +106,7 @@ describe("AdminUsersPageClient — refetch error keeps chrome mounted", () => {
       await vi.advanceTimersByTimeAsync(400);
     });
 
-    expect(container.querySelector('input[type="text"]')).not.toBeNull();
+    expect(container.querySelector('input[type="search"]')).not.toBeNull();
     const banner = container.querySelector('[role="alert"]');
     expect(banner).not.toBeNull();
     expect(banner?.textContent).toContain("Refetch boom");
