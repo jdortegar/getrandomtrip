@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
       type,
     });
     const sortBy = parseTripRequestSortBy(searchParams.get("sortBy"));
-    const sortOrder = parseTripRequestSortOrder(searchParams.get("sortOrder"));
+    const sortOrder = parseTripRequestSortOrder(searchParams.get("sortOrder"), sortBy);
 
     // `tripDate` is anchored to "now" (soonest-upcoming-first, not a plain
     // chronological column sort) — Prisma's `orderBy` can't express that
@@ -155,6 +155,7 @@ export async function GET(request: NextRequest) {
             select: {
               amount: true,
               currency: true,
+              paidAt: true,
               status: true,
             },
             where: { tripRequestId: tripRequest.id },
@@ -189,7 +190,10 @@ export async function GET(request: NextRequest) {
     const paymentsByTripRequestId: Record<string, AdminTripPayment> = {};
     for (const entry of paymentEntries) {
       if (!entry) continue;
-      paymentsByTripRequestId[entry.tripRequestId] = entry.payment;
+      paymentsByTripRequestId[entry.tripRequestId] = {
+        ...entry.payment,
+        paidAt: entry.payment.paidAt?.toISOString() ?? null,
+      };
     }
 
     const usersById: Record<string, AdminTripUser> = {};

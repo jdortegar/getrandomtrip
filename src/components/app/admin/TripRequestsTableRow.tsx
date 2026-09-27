@@ -7,6 +7,7 @@ import { StatusBadge } from "./StatusBadge";
 interface TripRequestsTableRowProps {
   editHref: string;
   editTitle: string;
+  locale: string;
   paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
   tripStatusLabels: Record<string, string>;
@@ -15,6 +16,7 @@ interface TripRequestsTableRowProps {
 export function TripRequestsTableRow({
   editHref,
   editTitle,
+  locale,
   paymentStatusLabels,
   trip,
   tripStatusLabels,
@@ -26,6 +28,9 @@ export function TripRequestsTableRow({
           {trip.user.name}
         </p>
         <p className="mt-0.5 text-xs text-ink">{trip.user.email}</p>
+      </td>
+      <td className="px-5 py-4 text-sm text-neutral-500">
+        {formatAdminDate(trip.payment?.paidAt ?? null, locale)}
       </td>
       <td className="px-5 py-4 text-sm text-neutral-700">
         {formatAdminDate(trip.startDate)}

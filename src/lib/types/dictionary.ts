@@ -1826,6 +1826,7 @@ export interface AdminPagesDict {
     columns: {
       traveler: string;
       origin: string;
+      purchaseDate: string;
       tripDate: string;
       typeLevel: string;
       status: string;

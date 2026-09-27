@@ -73,6 +73,7 @@ import TripStartVouchers, {
 } from "@/emails/TripStartVouchers";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { getXsedLevel } from "@/lib/data/xsed-catalog";
+import { getAdminEmails, getAdminRecipients } from "@/lib/email/getAdminRecipients";
 import type { MailAttachment } from "@/lib/helpers/sendMail";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -328,8 +329,7 @@ export function sendExperienceSubmitted(
 
       if (!experience?.title) return;
 
-      const to =
-        process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const to = await getAdminEmails();
 
       await sendMail({
         to,
@@ -378,14 +378,7 @@ export function sendAdminNewBooking(
 
       if (!user?.email || !tripRequest || !payment) return;
 
-      const admins = await prisma.user.findMany({
-        where: { roles: { has: "ADMIN" } },
-        select: { email: true },
-      });
-      const adminEmails =
-        admins.length > 0
-          ? admins.map((a) => a.email)
-          : [process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com"];
+      const adminEmails = await getAdminEmails();
       const departureDate = tripRequest.startDate
         ? tripRequest.startDate.toLocaleDateString("es-AR", {
             year: "numeric",
@@ -488,11 +481,11 @@ export function sendExperienceCopyApproved(
 
       if (!experience?.title) return;
 
-      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
 
       await sendMail({
-        to: adminEmail,
+        to: adminEmails,
         subject: copyApprovedSubjects.es,
         content: {
           react: React.createElement(ExperienceCopyApproved, {
@@ -528,11 +521,11 @@ export function sendExperienceCopyRejected(
 
       if (!experience?.title) return;
 
-      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
 
       await sendMail({
-        to: adminEmail,
+        to: adminEmails,
         subject: copyRejectedSubjects.es,
         content: {
           react: React.createElement(ExperienceCopyRejected, {
@@ -552,7 +545,7 @@ export function sendExperienceCopyRejected(
 export function sendBlogSubmitted(blogId: string, tripperId: string): void {
   void (async () => {
     try {
-      const [blog, tripper, admins] = await Promise.all([
+      const [blog, tripper, to] = await Promise.all([
         prisma.blogPost.findUnique({
           where: { id: blogId },
           select: { title: true },
@@ -561,19 +554,10 @@ export function sendBlogSubmitted(blogId: string, tripperId: string): void {
           where: { id: tripperId },
           select: { name: true },
         }),
-        prisma.user.findMany({
-          where: { roles: { has: "ADMIN" } },
-          select: { email: true },
-        }),
+        getAdminEmails(),
       ]);
 
       if (!blog?.title) return;
-
-      const adminEmails = admins.map((a) => a.email);
-      const to =
-        adminEmails.length > 0
-          ? adminEmails
-          : [process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com"];
 
       const result = await sendMail({
         to,
@@ -652,11 +636,11 @@ export function sendBlogCopyApproved(blogId: string, tripperId: string): void {
 
       if (!blog?.title) return;
 
-      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
 
       await sendMail({
-        to: adminEmail,
+        to: adminEmails,
         subject: blogCopyApprovedSubjects.es,
         content: {
           react: React.createElement(BlogCopyApproved, {
@@ -689,11 +673,11 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
 
       if (!blog?.title) return;
 
-      const adminEmail = process.env.ADMIN_EMAIL ?? "hola@getrandomtrip.com";
+      const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
 
       await sendMail({
-        to: adminEmail,
+        to: adminEmails,
         subject: blogCopyRejectedSubjects.es,
         content: {
           react: React.createElement(BlogCopyRejected, {
@@ -724,10 +708,7 @@ export function sendDestinationAssignmentReminder(
             user: { select: { name: true } },
           },
         }),
-        prisma.user.findMany({
-          where: { roles: { has: "ADMIN" } },
-          select: { email: true, name: true, locale: true },
-        }),
+        getAdminRecipients(),
       ]);
 
       if (!tripRequest) return;
@@ -1043,7 +1024,7 @@ export async function sendContactFormSubmission(params: {
 
   await sendMail({
     attachments: params.attachments,
-    to: "hola@getrandomtrip.com",
+    to: await getAdminEmails(),
     subject: `Contact form - ${params.interest}`,
     replyTo: params.email,
     content: {

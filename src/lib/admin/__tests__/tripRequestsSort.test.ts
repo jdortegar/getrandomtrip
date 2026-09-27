@@ -4,11 +4,13 @@ import {
   parseTripRequestSortOrder,
   sortTripDatesByProximity,
   TRIP_REQUEST_SORT_DEFAULT,
+  TRIP_REQUEST_SORT_INITIAL_ORDER,
   tripRequestListOrderBy,
 } from "../tripRequestsSort";
 
 describe("parseTripRequestSortBy", () => {
   it("accepts every known sort field", () => {
+    expect(parseTripRequestSortBy("purchaseDate")).toBe("purchaseDate");
     expect(parseTripRequestSortBy("tripDate")).toBe("tripDate");
     expect(parseTripRequestSortBy("traveler")).toBe("traveler");
     expect(parseTripRequestSortBy("origin")).toBe("origin");
@@ -28,6 +30,12 @@ describe("parseTripRequestSortBy", () => {
 });
 
 describe("parseTripRequestSortOrder", () => {
+  it("preserves each selected field's first-click direction", () => {
+    expect(parseTripRequestSortOrder(undefined, "tripDate")).toBe("asc");
+    expect(parseTripRequestSortOrder("sideways", "traveler")).toBe("asc");
+    expect(parseTripRequestSortOrder(null, "purchaseDate")).toBe("desc");
+  });
+
   it("accepts asc and desc", () => {
     expect(parseTripRequestSortOrder("asc")).toBe("asc");
     expect(parseTripRequestSortOrder("desc")).toBe("desc");
@@ -43,7 +51,23 @@ describe("parseTripRequestSortOrder", () => {
   });
 });
 
+describe("purchase-date defaults", () => {
+  it("shows newest recorded purchases first", () => {
+    expect(TRIP_REQUEST_SORT_DEFAULT).toEqual({ sortBy: "purchaseDate", sortOrder: "desc" });
+    expect(TRIP_REQUEST_SORT_INITIAL_ORDER.purchaseDate).toBe("desc");
+    expect(TRIP_REQUEST_SORT_INITIAL_ORDER.tripDate).toBe("asc");
+  });
+});
+
 describe("tripRequestListOrderBy", () => {
+  it.each(["asc", "desc"] as const)("orders purchase dates %s with unknown dates last and deterministic ties", (order) => {
+    expect(tripRequestListOrderBy("purchaseDate", order)).toEqual([
+      { payment: { paidAt: { sort: order, nulls: "last" } } },
+      { createdAt: "desc" },
+      { id: "asc" },
+    ]);
+  });
+
   it("orders by startDate for tripDate", () => {
     expect(tripRequestListOrderBy("tripDate", "asc")).toEqual([
       { startDate: "asc" },

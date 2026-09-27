@@ -47,11 +47,12 @@ const NAV_LINKS: NavLink[] = [
     labelKey: "labelInspiration",
     ariaKey: "ariaLabelInspiration",
   },
-  {
-    href: "/about-us",
-    labelKey: "labelNosotros",
-    ariaKey: "ariaLabelNosotros",
-  },
+  // TODO(2026-09-29): Restore About Us in desktop and mobile navigation.
+  // {
+  //   href: "/about-us",
+  //   labelKey: "labelNosotros",
+  //   ariaKey: "ariaLabelNosotros",
+  // },
   {
     href: "/contact",
     labelKey: "labelContact",

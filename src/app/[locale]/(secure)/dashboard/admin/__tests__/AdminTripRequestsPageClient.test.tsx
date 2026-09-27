@@ -446,3 +446,40 @@ it.each(["debounce", "refetch", "error"])(
     );
   },
 );
+
+describe("AdminTripRequestsPageClient — purchase date sorting", () => {
+  it.each([["en", "Purchase date"], ["es", "Fecha de compra"]])("defaults to newest purchases with a localized %s header", async (language, label) => {
+    locale = language;
+    render();
+    await flush();
+    expect(lastQuery().get("sortBy")).toBe("purchaseDate");
+    expect(lastQuery().get("sortOrder")).toBe("desc");
+    const header = Array.from(container.querySelectorAll("th")).find((th) => th.textContent === label);
+    expect(header?.getAttribute("aria-sort")).toBe("descending");
+  });
+
+  it("toggles purchase order, resets pagination, and preserves trip-date first-click behavior", async () => {
+    locale = "en";
+    fetchMock().mockResolvedValue({ ok: true, json: async () => ({ total: 53, tripRequests: [trip()] }) });
+    render();
+    await flush();
+    await act(async () => {
+      container.querySelector('[data-component="Pagination"] button:last-child')?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+    expect(lastQuery().get("page")).toBe("2");
+    async function clickSort(field: string) {
+      await act(async () => {
+        container.querySelector(`button[aria-label="Sort by ${field}"]`)?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      });
+    }
+    await clickSort("Purchase date");
+    expect(lastQuery().get("sortOrder")).toBe("asc");
+    expect(lastQuery().get("page")).toBe("1");
+    await clickSort("Trip date");
+    expect(lastQuery().get("sortBy")).toBe("tripDate");
+    expect(lastQuery().get("sortOrder")).toBe("asc");
+    await clickSort("Purchase date");
+    expect(lastQuery().get("sortBy")).toBe("purchaseDate");
+    expect(lastQuery().get("sortOrder")).toBe("desc");
+  });
+});

@@ -1024,6 +1024,7 @@
       "columns": {
         "traveler": "Traveler",
         "origin": "Origin",
+        "purchaseDate": "Purchase date",
         "tripDate": "Trip date",
         "typeLevel": "Type / Level",
         "status": "Status",
@@ -5247,7 +5248,7 @@
     },
     "contact": {
       "heading": "Email",
-      "email": "contacto@getrandomtrip.com",
+      "email": "hola@getrandomtrip.com",
       "socials": {
         "instagram": "getrandomtrip",
         "facebook": "getrandomtrip",

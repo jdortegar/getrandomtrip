@@ -45,7 +45,6 @@ const LINKS: NavLink[] = [
   { href: "/experiences", labelKey: "labelExperiences", ariaKey: "ariaLabelExperiences" },
   { href: "/xsed", labelKey: "labelXsed", ariaKey: "ariaLabelXsed" },
   { href: "/blog", labelKey: "labelInspiration", ariaKey: "ariaLabelInspiration" },
-  { href: "/about-us", labelKey: "labelNosotros", ariaKey: "ariaLabelNosotros" },
   { href: "/contact", labelKey: "labelContact", ariaKey: "ariaLabelContact" },
 ];
 
@@ -100,7 +99,7 @@ describe("NavMobileDrawer", () => {
     expect(container.querySelector('[role="dialog"]')).toBeNull();
   });
 
-  it("renders all six nav links when open, and Escape fires onClose", () => {
+  it("renders all supplied nav links when open, and Escape fires onClose", () => {
     const { onClose } = renderDrawer();
 
     for (const link of LINKS) {

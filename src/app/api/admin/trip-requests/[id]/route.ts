@@ -64,6 +64,7 @@ export async function GET(
         select: {
           amount: true,
           currency: true,
+          paidAt: true,
           status: true,
           tripRequestId: true,
         },
@@ -88,6 +89,7 @@ export async function GET(
             [payment.tripRequestId]: {
               amount: payment.amount,
               currency: payment.currency,
+              paidAt: payment.paidAt?.toISOString() ?? null,
               status: payment.status,
             },
           }
@@ -269,6 +271,7 @@ export async function PATCH(
         select: {
           amount: true,
           currency: true,
+          paidAt: true,
           status: true,
           tripRequestId: true,
         },
@@ -294,6 +297,7 @@ export async function PATCH(
             [payment.tripRequestId]: {
               amount: payment.amount,
               currency: payment.currency,
+              paidAt: payment.paidAt?.toISOString() ?? null,
               status: payment.status,
             },
           }
