@@ -19,7 +19,10 @@ import type { FieldPeek } from "@/components/ui/field-peek";
 import type { BlogImageState, SaveStatus } from "./NewBlogPostShell";
 
 interface BlogFormContentProps {
+  optionalContent?: boolean;
+  validationDraft?: BlogFormDraft;
   activeTab: string;
+  contentLanguageSlot?: React.ReactNode;
   copy: TripperBlogFormDict;
   draft: BlogFormDraft;
   imageState: BlogImageState;
@@ -57,11 +60,14 @@ function resolveStepContent(
   makeSectionPeek?: (index: number, entryKey: "title" | "description") => FieldPeek | undefined,
   makeFaqPeek?: (index: number, entryKey: "question" | "answer") => FieldPeek | undefined,
   isAdmin?: boolean,
+  contentLanguageSlot?: React.ReactNode,
+  readOnly?: boolean,
 ): React.ReactNode {
   if (activeTab === "general") {
     if (substepId === "title-image") {
       return (
         <TitleImageStep
+          contentLanguageSlot={contentLanguageSlot}
           copy={copy}
           draft={draft}
           onChange={onChange}
@@ -69,6 +75,7 @@ function resolveStepContent(
           changedFieldSet={changedFieldSet}
           peek={makePeek}
           isAdmin={isAdmin}
+          readOnly={readOnly}
         />
       );
     }
@@ -143,7 +150,10 @@ function SaveIndicator({
 }
 
 export function BlogFormContent({
+  optionalContent = false,
+  validationDraft,
   activeTab,
+  contentLanguageSlot,
   copy,
   draft,
   imageState,
@@ -236,8 +246,8 @@ export function BlogFormContent({
 
   const isLastTab = tabs[tabs.length - 1]?.id === activeTab;
   const hasValues = !!(draft.title || draft.subtitle || draft.coverUrl);
-  const canContinue = isBlogTabEligible(activeTab, draft);
-  const allTabsEligible = tabs.every((t) => isBlogTabEligible(t.id, draft));
+  const canContinue = optionalContent || isBlogTabEligible(activeTab, draft);
+  const allTabsEligible = tabs.every((t) => isBlogTabEligible(t.id, validationDraft ?? draft));
   const missingFields = canContinue
     ? []
     : getMissingBlogFields(activeTab, draft, copy.fields as Record<string, string>);
@@ -253,8 +263,11 @@ export function BlogFormContent({
       >
         {currentTab.substeps.map((substep) => (
           <JourneyDropdown key={substep.id} value={substep.id} label={substep.title}>
-            {/* fieldset wraps only form content so accordion trigger stays clickable */}
-            <fieldset disabled={readOnly} className="contents">
+            {/* Basic Info disables its editable fields, not its language selector. */}
+            <fieldset
+              className="contents"
+              disabled={readOnly && !(activeTab === "general" && substep.id === "title-image")}
+            >
               {resolveStepContent(
                 activeTab,
                 substep.id,
@@ -267,6 +280,8 @@ export function BlogFormContent({
                 makeSectionPeek,
                 makeFaqPeek,
                 isAdmin,
+                contentLanguageSlot,
+                readOnly,
               )}
             </fieldset>
           </JourneyDropdown>

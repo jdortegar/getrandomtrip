@@ -1,3 +1,5 @@
+import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
+import type { Prisma } from "@prisma/client";
 // ============================================================================
 // GET /api/blogs - Get all published blog posts (public, with pagination)
 // ============================================================================
@@ -14,6 +16,7 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const locale = searchParams.get("locale") === "en" ? "en" : "es";
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "12", 10);
     const tripperId = searchParams.get("tripperId");
@@ -23,15 +26,8 @@ export async function GET(request: NextRequest) {
     const excuseKey = searchParams.get("excuseKey");
     const skip = (page - 1) * limit;
 
-    const where: {
-      authorId?: string | { in: string[] };
-      excuseKey?: { has: string };
-      status: BlogStatus;
-      travelType?: { has: string };
-      level?: string;
-      isReviewCopy: boolean;
-      isActive: boolean;
-    } = {
+    const where: Prisma.BlogPostWhereInput = {
+      ...blogLocaleWhere(locale),
       status: BlogStatus.PUBLISHED,
       // Review copies (isReviewCopy: true) share authorId with the original
       // and must never leak into public listings.
@@ -76,6 +72,7 @@ export async function GET(request: NextRequest) {
         id: true,
         slug: true,
         title: true,
+        translations: true,
         subtitle: true,
         tagline: true,
         coverUrl: true,
@@ -96,16 +93,18 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    const localizedBlogs = resolveBlogList(allBlogs, locale);
+
     type BlogWithAuthor = (typeof allBlogs)[number];
 
     // Round-robin across trippers, preserving each tripper's internal
     // recency order (their most recent post still comes before their older ones).
     const interleavedBlogs = interleavePostsByAuthor(
-      allBlogs,
+      localizedBlogs,
       (blog: BlogWithAuthor) => blog.author.id,
     );
 
-    const total = allBlogs.length;
+    const total = localizedBlogs.length;
     const blogs = interleavedBlogs.slice(skip, skip + limit);
 
     // Transform to match frontend type (author included via select)

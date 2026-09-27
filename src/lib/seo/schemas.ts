@@ -53,6 +53,7 @@ export function buildPersonSchema(
 }
 
 interface BlogPostingSchemaInput {
+  locale?: string;
   authorName: string;
   createdAt: string | Date;
   description?: string | null;
@@ -66,6 +67,7 @@ export function buildBlogPostingSchema(
   post: BlogPostingSchemaInput,
 ): Record<string, unknown> {
   const datePublished = post.publishedAt ?? post.createdAt;
+  const url = `${BASE_URL}${post.locale ? `/${post.locale}` : ""}/blog/${post.slug}`;
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -81,10 +83,11 @@ export function buildBlogPostingSchema(
     headline: post.title,
     ...(post.heroImage ? { image: post.heroImage } : {}),
     mainEntityOfPage: {
-      "@id": `${BASE_URL}/blog/${post.slug}`,
+      "@id": url,
       "@type": "WebPage",
     },
-    url: `${BASE_URL}/blog/${post.slug}`,
+    url,
+    ...(post.locale ? { inLanguage: post.locale } : {}),
   };
 }
 

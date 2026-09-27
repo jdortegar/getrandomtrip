@@ -1,3 +1,4 @@
+import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
 import { isPublicXsedExperience, PUBLIC_XSED_EXPERIENCE_WHERE } from "@/lib/xsed/publication";
 import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import type { Prisma, TripRequestStatus } from "@prisma/client";
@@ -191,6 +192,7 @@ export async function getPublicDropEntries(
 }
 
 const xsedBlogPostSelect = {
+  translations: true,
   id: true,
   slug: true,
   title: true,
@@ -226,9 +228,10 @@ function toXsedBlogDropEntry(
   };
 }
 
-async function findPublicXsedBlogPosts(): Promise<XsedBlogPostRow[]> {
-  return prisma.blogPost.findMany({
+async function findPublicXsedBlogPosts(locale: string): Promise<XsedBlogPostRow[]> {
+  const posts = await prisma.blogPost.findMany({
     where: {
+      ...blogLocaleWhere(locale),
       level: "xsed",
       status: "PUBLISHED",
       isActive: true,
@@ -237,10 +240,11 @@ async function findPublicXsedBlogPosts(): Promise<XsedBlogPostRow[]> {
     orderBy: { createdAt: "desc" },
     select: xsedBlogPostSelect,
   });
+  return resolveBlogList(posts, locale);
 }
 
 export async function getXsedBlogDropsForGrid(locale: string): Promise<DropEntry[]> {
-  const posts = await findPublicXsedBlogPosts();
+  const posts = await findPublicXsedBlogPosts(locale);
   return posts.map((post, i) => toXsedBlogDropEntry(post, i, posts.length, locale));
 }
 
@@ -249,7 +253,7 @@ export async function getPublicXsedBlogDropEntries(
   offset: number = 0,
   limit: number = 6,
 ): Promise<{ drops: DropEntry[]; hasMore: boolean }> {
-  const posts = await findPublicXsedBlogPosts();
+  const posts = await findPublicXsedBlogPosts(locale);
   const page = posts.slice(offset, offset + limit);
   const drops = page.map((post, i) =>
     toXsedBlogDropEntry(post, offset + i, posts.length, locale),

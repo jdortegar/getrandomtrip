@@ -84,18 +84,18 @@ it("renders nonempty results and does not refetch on an unchanged parent rerende
     harness.container.querySelector('a[href="/en/blog/first-story"]')
       ?.textContent,
   ).toContain("First story");
-  expect(requests).toEqual(["/api/blogs?limit=12&page=1"]);
+  expect(requests).toEqual(["/api/blogs?limit=12&locale=en&page=1"]);
   await render();
   expect(titles()).toEqual(["First story"]);
-  expect(requests).toEqual(["/api/blogs?limit=12&page=1"]);
+  expect(requests).toEqual(["/api/blogs?limit=12&locale=en&page=1"]);
 });
 
 it("appends page two and shows the terminal listing message", async () => {
   await render();
   await loadMore();
   expect(requests).toEqual([
-    "/api/blogs?limit=12&page=1",
-    "/api/blogs?limit=12&page=2",
+    "/api/blogs?limit=12&locale=en&page=1",
+    "/api/blogs?limit=12&locale=en&page=2",
   ]);
   expect(titles()).toEqual(["First story", "Second story"]);
   expect(harness.container.textContent).toContain(copy.seenAll);
@@ -116,7 +116,7 @@ it("resets pagination and replaces the list when the real level filter changes",
     select.value = "xsed";
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  expect(requests.at(-1)).toBe("/api/blogs?limit=12&page=1&level=xsed");
+  expect(requests.at(-1)).toBe("/api/blogs?limit=12&locale=en&page=1&level=xsed");
   expect(titles()).toEqual(["XSED story"]);
   await act(async () =>
     select.dispatchEvent(new Event("change", { bubbles: true })),
@@ -126,6 +126,6 @@ it("resets pagination and replaces the list when the real level filter changes",
     select.value = "";
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  expect(requests.at(-1)).toBe("/api/blogs?limit=12&page=1");
+  expect(requests.at(-1)).toBe("/api/blogs?limit=12&locale=en&page=1");
   expect(titles()).toEqual(["First story"]);
 });

@@ -606,6 +606,9 @@ model BlogPost {
   // Rich text body (HTML from editor)
   content String? @db.Text
 
+  // Canonical copy remains Spanish; optional authored English includes server-derived readiness.
+  translations Json?
+
   // Legacy content blocks (JSON); kept for backward compat / gallery extraction
   blocks Json @default("[]")
 

@@ -28,14 +28,6 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
   containScroll: false,
 };
 
-const EDGE_HOLD = 1;
-const FADE_WIDTH = 4;
-const MASKS: Record<OverflowSide, string> = {
-  left: `linear-gradient(to right, transparent ${EDGE_HOLD}%, black ${EDGE_HOLD + FADE_WIDTH}%)`,
-  right: `linear-gradient(to right, black ${100 - EDGE_HOLD - FADE_WIDTH}%, transparent ${100 - EDGE_HOLD}%)`,
-  both: `linear-gradient(to right, transparent ${EDGE_HOLD}%, black ${EDGE_HOLD + FADE_WIDTH}%, black ${100 - EDGE_HOLD - FADE_WIDTH}%, transparent ${100 - EDGE_HOLD}%)`,
-};
-
 const EmblaCarousel = ({
   accentColor,
   children,
@@ -122,18 +114,13 @@ const EmblaCarousel = ({
     </div>
   );
 
-  const mask = overflow ? MASKS[overflow] : undefined;
-  const maskStyle = mask
-    ? { maskImage: mask, WebkitMaskImage: mask }
-    : undefined;
-
   return (
     <div className="@container mx-auto w-full overflow-x-clip" data-component="EmblaCarousel">
       {arrows && (
         <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>
       )}
 
-      <div style={isStatic ? undefined : maskStyle}>
+      <div>
         <div
           ref={isStatic ? undefined : emblaRef}
           className={cn(

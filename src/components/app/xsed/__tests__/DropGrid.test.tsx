@@ -22,7 +22,28 @@ function drop(n: number): DropEntry {
   };
 }
 
-describe("DropGrid mosaic height", () => {
+describe("DropGrid", () => {
+  it("omits the entire section when there are no drops", () => {
+    const html = renderToStaticMarkup(<DropGrid content={content} drops={[]} />);
+
+    expect(html).toBe("");
+  });
+
+  it("keeps the section copy, drop, and view-all link when a drop exists", () => {
+    const html = renderToStaticMarkup(
+      <DropGrid content={content} drops={[drop(1)]} />,
+    );
+
+    expect(html).toContain("<section");
+    expect(html).toContain(content.eyebrow);
+    expect(html).toContain(content.title);
+    expect(html).toContain(content.titleHighlight);
+    expect(html).toContain(content.description);
+    expect(html).toContain("Drop 1");
+    expect(html).toContain(`href="${content.ctaHref}"`);
+    expect(html).toContain(content.ctaLabel);
+  });
+
   it("caps the mosaic to the viewport when a featured cell is used", () => {
     const html = renderToStaticMarkup(
       <DropGrid content={content} drops={[drop(1), drop(2), drop(3)]} />,

@@ -1,3 +1,7 @@
+import { equalBlogJson } from "@/lib/blog/equal-json";
+import { ZodError } from "zod";
+import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
+import { Prisma } from "@prisma/client";
 // ============================================================================
 // GET /api/tripper/blogs/[id] - Get a single blog post by ID for tripper
 // PATCH /api/tripper/blogs/[id] - Update a blog post by ID for tripper
@@ -69,6 +73,7 @@ export async function GET(
         coverUrl: true,
         content: true,
         blocks: true,
+        translations: true,
         faq: true,
         tags: true,
         travelType: true,
@@ -123,6 +128,9 @@ export async function GET(
 
     return NextResponse.json({ blog: transformedBlog });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("Error fetching blog:", error);
     return NextResponse.json(
       { error: "Internal server error" },
@@ -200,6 +208,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    const translations = normalizeBlogTranslations(body.translations);
     const {
       title,
       subtitle,
@@ -248,10 +257,10 @@ export async function PATCH(
     // Autosave fires on mount even when nothing changed — we must not
     // penalise no-ops, and review-mechanism fields (tripperNote, slug,
     // publishedAt) must never trigger a revert.
-    const eq = (a: unknown, b: unknown) =>
-      JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+    const eq = equalBlogJson;
 
     const contentChanged =
+      (translations !== undefined && !eq(translations, existingBlog.translations)) ||
       (title !== undefined && !eq(title, existingBlog.title)) ||
       (subtitle !== undefined && !eq(subtitle || null, existingBlog.subtitle)) ||
       (tagline !== undefined && !eq(tagline || null, existingBlog.tagline)) ||
@@ -281,7 +290,7 @@ export async function PATCH(
     // Convert string enums to uppercase for Prisma
     const { slugify } = await import("@/lib/helpers/slugify");
     const updateData: any = {};
-    if (title !== undefined) {
+    if (title !== undefined && title !== existingBlog.title) {
       updateData.title = title;
       const baseSlug = slugify(title) || "post";
       let slug = baseSlug;
@@ -300,6 +309,7 @@ export async function PATCH(
     if (tagline !== undefined) updateData.tagline = tagline || null;
     if (content !== undefined) updateData.content = content ?? null;
     if (blocks !== undefined) updateData.blocks = blocks;
+    if (translations !== undefined) updateData.translations = translations === null ? Prisma.DbNull : translations;
     if (faq !== undefined) updateData.faq = faq ?? null;
     if (tags !== undefined) updateData.tags = tags;
     if (travelType !== undefined) {
@@ -354,6 +364,7 @@ export async function PATCH(
         coverUrl: true,
         content: true,
         blocks: true,
+        translations: true,
         faq: true,
         tags: true,
         travelType: true,
@@ -382,6 +393,9 @@ export async function PATCH(
 
     return NextResponse.json({ blog: transformedBlog });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("Error updating blog:", error);
     return NextResponse.json(
       { error: "Internal server error" },
@@ -462,6 +476,9 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("Error deleting blog:", error);
     return NextResponse.json(
       { error: "Internal server error" },

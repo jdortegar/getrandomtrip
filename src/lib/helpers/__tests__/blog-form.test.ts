@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   buildBlogSubmitPayload,
+  getBlogLocaleDraft,
+  pickBlogContentDraft,
   getBlogCompleteness,
   isBlogTabComplete,
   isBlogTabEligible,
@@ -299,5 +301,41 @@ describe("buildBlogSubmitPayload", () => {
     const payload = buildBlogSubmitPayload(draft);
     const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
     expect(roundTripped.level).toBe("essenza");
+  });
+});
+
+
+describe("bilingual blog round-trip", () => {
+  it("does not copy Spanish into an empty English draft and shares media", () => {
+    const draft = mapBlogPostToDraft({ title: "Español", content: "<p>Hola</p>", coverUrl: "/cover.jpg", blocks: [{ type: "image", url: "/shared.jpg", caption: "Español" }] });
+    expect(getBlogLocaleDraft(draft, "en")).toMatchObject({ title: "", subtitle: "", coverUrl: "/cover.jpg", gallery: ["/shared.jpg"] });
+    expect(getBlogLocaleDraft(draft, "en").sections).toEqual([{ title: "", description: "" }]);
+  });
+  it("preserves exact legacy Spanish HTML, FAQ, SEO and captions when saving English", () => {
+    const post: Partial<BlogPost> = { title: "Español", tagline: "Bajada", content: "  <p>Contenido legacy</p>  ", blocks: [{ type: "paragraph", text: "Legacy" }, { type: "image", url: "/shared.jpg", caption: "Español" }], faq: { items: [{ question: "¿Qué?", answer: "Viajar" }] }, seo: { title: "SEO español" } };
+    const draft = mapBlogPostToDraft(post);
+    draft.english = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English", sections: [{ title: "Heading", description: "<p>English</p>" }] };
+    const payload = buildBlogSubmitPayload(draft);
+    expect(payload).toMatchObject(post);
+    expect(payload).toMatchObject({ translations: { en: { title: "English", blocks: [{ type: "section", title: "Heading", description: "<p>English</p>" }] } } });
+    expect(mapBlogPostToDraft(payload as Partial<BlogPost>).english?.title).toBe("English");
+  });
+  it("preserves Spanish block ordering and duplicate URLs with distinct captions verbatim", () => {
+    const post: Partial<BlogPost> = { title: "Español", subtitle: "  Subtítulo  ", content: "<p>Texto original</p>", blocks: [
+      { type: "image", url: "/same.jpg", caption: "Primera" },
+      { type: "section", title: "Sección", description: "<p>Texto original</p>" },
+      { type: "image", url: "/same.jpg", caption: "Segunda" },
+    ] };
+    const draft = mapBlogPostToDraft(post);
+    draft.english = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English" };
+    const payload = buildBlogSubmitPayload(draft);
+    expect(payload.blocks).toEqual(post.blocks);
+    expect(payload.content).toBe(post.content);
+    expect(payload.subtitle).toBe(post.subtitle);
+  });
+  it("round-trips partial English and clears without changing Spanish", () => {
+    const draft = mapBlogPostToDraft({ title: "Español", translations: { en: { title: "Work in progress" } } });
+    expect(buildBlogSubmitPayload(draft)).toMatchObject({ title: "Español", translations: { en: { title: "Work in progress", content: null } } });
+    expect(buildBlogSubmitPayload({ ...draft, english: null })).toMatchObject({ title: "Español", translations: null });
   });
 });

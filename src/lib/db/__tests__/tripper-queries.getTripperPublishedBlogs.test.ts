@@ -53,6 +53,7 @@ describe("getTripperPublishedBlogs — visibility guard", () => {
         id: "post-1",
         slug: "post-1-slug",
         title: "Post One",
+        translations: { en: { title: "English One", content: "<p>English</p>", ready: true } },
         subtitle: null,
         coverUrl: "/covers/one.jpg",
         tags: [],

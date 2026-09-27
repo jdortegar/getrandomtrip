@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import type { ReactNode } from "react";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
 import { MultiSelectInput } from "@/components/ui/MultiSelectInput";
@@ -14,6 +15,7 @@ import type { FieldPeek } from "@/components/ui/field-peek";
 import type { BlogImageState } from "../NewBlogPostShell";
 
 interface Props {
+  contentLanguageSlot?: ReactNode;
   copy: TripperBlogFormDict;
   draft: BlogFormDraft;
   onChange: BlogFormDraftOnChange;
@@ -23,11 +25,12 @@ interface Props {
   peek?: (field: keyof BlogFormDraft, diffKey?: string) => FieldPeek | undefined;
   /** XSED is fulfilled centrally by the admin team — only admins can tag a blog post as XSED. */
   isAdmin?: boolean;
+  readOnly?: boolean;
 }
 
 const req = <span className="text-red-500 ml-0.5">*</span>;
 
-export function TitleImageStep({ copy, draft, onChange, imageState, changedFieldSet, peek, isAdmin }: Props) {
+export function TitleImageStep({ contentLanguageSlot, copy, draft, onChange, imageState, changedFieldSet, peek, isAdmin, readOnly }: Props) {
   const params = useParams();
   const locale = (params?.locale as string) ?? "es";
   const { fields } = copy;
@@ -64,106 +67,110 @@ export function TitleImageStep({ copy, draft, onChange, imageState, changedField
         {copy.contentTabs[0]?.substeps[0]?.description}
       </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="sm:col-span-2">
+      {contentLanguageSlot}
+
+      <fieldset className="space-y-5" disabled={readOnly}>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="sm:col-span-2">
+            <FormField
+              id="blog-title"
+              label={<>{fields.title}{req}</>}
+              placeholder={fields.titlePlaceholder}
+              value={draft.title}
+              onChange={(e) => onChange("title", e.target.value)}
+              className={ch("title")}
+              peek={peek?.("title")}
+            />
+          </div>
+
           <FormField
-            id="blog-title"
-            label={<>{fields.title}{req}</>}
-            placeholder={fields.titlePlaceholder}
-            value={draft.title}
-            onChange={(e) => onChange("title", e.target.value)}
-            className={ch("title")}
-            peek={peek?.("title")}
+            id="blog-label"
+            label={fields.label}
+            placeholder={fields.labelPlaceholder}
+            maxLength={BLOG_LABEL_MAX_LENGTH}
+            value={draft.label}
+            onChange={(e) => onChange("label", e.target.value)}
+            className={ch("label")}
+            peek={peek?.("label")}
           />
         </div>
 
         <FormField
-          id="blog-label"
-          label={fields.label}
-          placeholder={fields.labelPlaceholder}
-          maxLength={BLOG_LABEL_MAX_LENGTH}
-          value={draft.label}
-          onChange={(e) => onChange("label", e.target.value)}
-          className={ch("label")}
-          peek={peek?.("label")}
+          id="blog-subtitle"
+          label={fields.subtitle}
+          placeholder={fields.subtitlePlaceholder}
+          value={draft.subtitle}
+          onChange={(e) => onChange("subtitle", e.target.value)}
+          className={ch("subtitle")}
+          peek={peek?.("subtitle")}
         />
-      </div>
 
-      <FormField
-        id="blog-subtitle"
-        label={fields.subtitle}
-        placeholder={fields.subtitlePlaceholder}
-        value={draft.subtitle}
-        onChange={(e) => onChange("subtitle", e.target.value)}
-        className={ch("subtitle")}
-        peek={peek?.("subtitle")}
-      />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex flex-col gap-1">
+            <MultiSelectInput
+              id="blog-travel-type"
+              label={fields.travelType}
+              options={travelTypeOptions}
+              value={draft.travelType}
+              onChange={handleTravelTypeChange}
+              placeholder={fields.travelTypePlaceholder}
+              triggerClassName={ch("travelType")}
+            />
+            <p className="text-xs text-neutral-400">{fields.travelTypeHint}</p>
+          </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="flex flex-col gap-1">
+          <FormSelectField
+            id="blog-level"
+            label={fields.level}
+            className={cn("bg-gray-100 border-transparent px-4 py-3.5", ch("level"))}
+            value={draft.level}
+            onChange={(e) => handleLevelChange(e.target.value)}
+          >
+            <option value="">{fields.levelNone}</option>
+            {availableLevels.map((level) => (
+              <option key={level.value} value={level.value}>
+                {level.label}
+              </option>
+            ))}
+          </FormSelectField>
+
           <MultiSelectInput
-            id="blog-travel-type"
-            label={fields.travelType}
-            options={travelTypeOptions}
-            value={draft.travelType}
-            onChange={handleTravelTypeChange}
-            placeholder={fields.travelTypePlaceholder}
-            triggerClassName={ch("travelType")}
+            id="blog-excuse"
+            label={fields.excuseKey}
+            options={excuseOptions}
+            placeholder={fields.excuseKeyPlaceholder}
+            hint={fields.excuseKeyHint}
+            value={draft.excuseKey}
+            onChange={(v) => onChange("excuseKey", v)}
+            triggerClassName={ch("excuseKey")}
           />
-          <p className="text-xs text-neutral-400">{fields.travelTypeHint}</p>
         </div>
 
-        <FormSelectField
-          id="blog-level"
-          label={fields.level}
-          className={cn("bg-gray-100 border-transparent px-4 py-3.5", ch("level"))}
-          value={draft.level}
-          onChange={(e) => handleLevelChange(e.target.value)}
-        >
-          <option value="">{fields.levelNone}</option>
-          {availableLevels.map((level) => (
-            <option key={level.value} value={level.value}>
-              {level.label}
-            </option>
-          ))}
-        </FormSelectField>
+        {/* Cover image */}
+        <div className="space-y-2">
+          <label className="block font-normal text-gray-600 text-base">
+            {fields.coverImage}
+            {req}
+          </label>
+          <p className="text-xs text-neutral-400 -mt-1">{fields.coverImageHint}</p>
 
-        <MultiSelectInput
-          id="blog-excuse"
-          label={fields.excuseKey}
-          options={excuseOptions}
-          placeholder={fields.excuseKeyPlaceholder}
-          hint={fields.excuseKeyHint}
-          value={draft.excuseKey}
-          onChange={(v) => onChange("excuseKey", v)}
-          triggerClassName={ch("excuseKey")}
-        />
-      </div>
-
-      {/* Cover image */}
-      <div className="space-y-2">
-        <label className="block font-normal text-gray-600 text-base">
-          {fields.coverImage}
-          {req}
-        </label>
-        <p className="text-xs text-neutral-400 -mt-1">{fields.coverImageHint}</p>
-
-        <ImageUploadTile
-          alt={fields.coverImage}
-          className={ch("coverUrl")}
-          copyrightHint={fields.copyrightHint}
-          minHeight={720}
-          minWidth={1280}
-          onRemove={onCoverRemove}
-          onSelect={onCoverSelect}
-          sizeHint={fields.coverImageSizeHint}
-          tooSmallLabel={fields.imageTooSmall}
-          uploadLabel={fields.uploadImage}
-          uploading={coverUploading}
-          uploadingLabel={fields.uploading}
-          value={draft.coverUrl}
-        />
-      </div>
+          <ImageUploadTile
+            alt={fields.coverImage}
+            className={ch("coverUrl")}
+            copyrightHint={fields.copyrightHint}
+            minHeight={720}
+            minWidth={1280}
+            onRemove={onCoverRemove}
+            onSelect={onCoverSelect}
+            sizeHint={fields.coverImageSizeHint}
+            tooSmallLabel={fields.imageTooSmall}
+            uploadLabel={fields.uploadImage}
+            uploading={coverUploading}
+            uploadingLabel={fields.uploading}
+            value={draft.coverUrl}
+          />
+        </div>
+      </fieldset>
     </div>
   );
 }

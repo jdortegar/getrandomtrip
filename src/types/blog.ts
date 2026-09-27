@@ -5,7 +5,24 @@ export type BlogStatus =
   | "published";
 export type BlogFormat = "article" | "photo" | "video" | "mixed";
 
+export interface BlogTranslation {
+  title?: string;
+  subtitle?: string | null;
+  tagline?: string | null;
+  content?: string | null;
+  blocks?: BlogPost["blocks"];
+  faq?: BlogPost["faq"];
+  seo?: BlogPost["seo"] | null;
+  /** Server-derived only; ignored on client writes. */
+  ready?: boolean;
+}
+
+export interface BlogTranslations {
+  en?: BlogTranslation | null;
+}
+
 export interface BlogPost {
+  translations?: BlogTranslations | null;
   id: string;
   slug?: string;
   authorId: string;
@@ -64,7 +81,23 @@ export interface BlogPost {
  * `buildBlogSubmitPayload` (src/lib/helpers/blog-form.ts) converts it into
  * the POST/PATCH `/api/tripper/blogs` payload.
  */
+export interface BlogContentDraft {
+  originalPost?: Partial<BlogPost>;
+  title: string;
+  subtitle: string;
+  featureText: string;
+  featureAttribution: string;
+  sections: { title: string; description: string }[];
+  faq: { question: string; answer: string }[];
+  tagline?: string;
+  seo?: BlogPost["seo"];
+}
+
 export interface BlogFormDraft {
+  originalPost?: Partial<BlogPost>;
+  english?: BlogContentDraft | null;
+  tagline?: string;
+  seo?: BlogPost["seo"];
   status: BlogStatus;
   title: string;
   subtitle: string;

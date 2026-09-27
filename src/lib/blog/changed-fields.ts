@@ -1,3 +1,4 @@
+import { equalBlogJson } from "./equal-json";
 // ============================================================================
 // Blog changed-fields utility
 // Computes the set of mutable fields that differ between a review copy and
@@ -19,6 +20,7 @@ export const MUTABLE_BLOG_FIELDS = [
   "coverUrl",
   "content",
   "blocks",
+  "translations",
   "tags",
   "travelType",
   "excuseKey",
@@ -34,7 +36,7 @@ export type MutableBlogField = (typeof MUTABLE_BLOG_FIELDS)[number];
 /**
  * JSON-serializable fields — compared via JSON.stringify for deep equality.
  */
-const JSON_FIELDS = new Set<string>(["blocks", "seo", "faq"]);
+const JSON_FIELDS = new Set<string>(["blocks", "translations", "seo", "faq"]);
 
 /**
  * Array fields (scalar arrays) — compared by serializing to JSON.
@@ -45,7 +47,7 @@ type FieldRecord = Record<string, unknown>;
 
 function fieldEqual(field: string, a: unknown, b: unknown): boolean {
   if (JSON_FIELDS.has(field) || ARRAY_FIELDS.has(field)) {
-    return JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+    return equalBlogJson(a, b);
   }
   // Scalar comparison — treat null and undefined as equivalent nullish
   if (a == null && b == null) return true;

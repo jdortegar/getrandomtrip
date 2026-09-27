@@ -1597,6 +1597,19 @@
     }
   },
   "blogPage": {
+    "detail": {
+      "travel": "Travel",
+      "breadcrumb": "Tripper Inspirations",
+      "emptyBody": "This post does not have content yet.",
+      "moreEyebrow": "EXPLORE",
+      "moreTitle": "MORE OF MY ADVENTURES",
+      "moreSubtitle": "Notes, guides and inspiring moments. First-hand stories.",
+      "viewAll": "View all",
+      "exploreMore": "Explore more stories",
+      "testimonials": "What travelers say about {name}",
+      "notFound": "This post does not exist or is no longer available.",
+      "back": "Back to the blog"
+    },
     "backToProfile": "← Back to {name}'s profile",
     "emptySubtitle": "Our trippers are working on amazing content. Come back soon!",
     "emptyTitle": "No posts published yet",
@@ -3980,6 +3993,14 @@
       }
     },
     "form": {
+      "contentLanguage": {
+        "label": "Content language",
+        "es": "Spanish",
+        "en": "English",
+        "hint": "English is optional. It is public only when a title and article content are present. Images and categories are shared.",
+        "canonicalLabel": "Original content: Spanish",
+        "unavailable": "This article does not have an English version yet."
+      },
       "nav": {
         "progress": "Progress"
       },

@@ -1,5 +1,6 @@
 "use client";
 
+import { useDictionary } from "@/hooks/useDictionary";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Section from "@/components/layout/Section";
@@ -61,6 +62,9 @@ interface BlogPostClientProps {
 }
 
 export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
+  const copy = useDictionary((dictionary) => dictionary.blogPage.detail);
+  const [authorPostsLocale, setAuthorPostsLocale] = useState(locale);
+  const [otherPostsLocale, setOtherPostsLocale] = useState(locale);
   const [authorPosts, setAuthorPosts] = useState<BlogCardPost[]>([]);
   const [otherPosts, setOtherPosts] = useState<BlogCardPost[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -81,15 +85,16 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
 
   useEffect(() => {
     if (!blog.author?.id) return;
+    let cancelled = false;
     const authorId = blog.author.id;
     const currentId = blog.id;
     const currentSlug = blog.slug;
 
     async function fetchAuthorPosts() {
       try {
-        const res = await fetch(`/api/blogs?tripperId=${authorId}&limit=6`);
+        const res = await fetch(`/api/blogs?tripperId=${authorId}&limit=6&locale=${locale}`);
         const data = await res.json();
-        if (!res.ok || !Array.isArray(data.blogs)) return;
+        if (cancelled || !res.ok || !Array.isArray(data.blogs)) return;
         const posts: BlogCardPost[] = data.blogs
           .filter(
             (b: { id?: string; slug?: string }) =>
@@ -104,32 +109,35 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
               coverUrl: string;
               tags: string[];
             }) => ({
-              category: b.tags?.[0] ?? "Viajes",
+              category: b.tags?.[0] ?? copy.travel,
               href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
           );
+        setAuthorPostsLocale(locale);
         setAuthorPosts(posts);
       } catch {
-        setAuthorPosts([]);
+        if (!cancelled) setAuthorPosts([]);
       }
     }
 
     fetchAuthorPosts();
-  }, [blog.id, blog.slug, blog.author?.id, locale]);
+    return () => { cancelled = true; };
+  }, [blog.id, blog.slug, blog.author?.id, locale, copy.travel]);
 
   useEffect(() => {
     if (!isSofia) return;
+    let cancelled = false;
 
     const currentId = blog.id;
     const currentSlug = blog.slug;
 
     async function fetchOtherPosts() {
       try {
-        const res = await fetch(`/api/blogs?limit=8`);
+        const res = await fetch(`/api/blogs?limit=8&locale=${locale}`);
         const data = await res.json();
-        if (!res.ok || !Array.isArray(data.blogs)) return;
+        if (cancelled || !res.ok || !Array.isArray(data.blogs)) return;
         const posts: BlogCardPost[] = data.blogs
           .filter(
             (b: { id?: string; slug?: string }) =>
@@ -145,20 +153,22 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
               coverUrl: string;
               tags: string[];
             }) => ({
-              category: b.tags?.[0] ?? "Viajes",
+              category: b.tags?.[0] ?? copy.travel,
               href: pathForLocale(locale as Locale, `/blog/${b.slug ?? b.id}`),
               image: b.coverUrl,
               title: b.title,
             }),
           );
+        setOtherPostsLocale(locale);
         setOtherPosts(posts);
       } catch {
-        setOtherPosts([]);
+        if (!cancelled) setOtherPosts([]);
       }
     }
 
     fetchOtherPosts();
-  }, [blog.id, blog.slug, isSofia, locale]);
+    return () => { cancelled = true; };
+  }, [blog.id, blog.slug, isSofia, locale, copy.travel]);
 
   const carouselImages = useMemo(() => {
     const items: { url: string; caption?: string }[] = [];
@@ -192,7 +202,9 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
   const firstSection = sectionBlocks[0];
   const remainingSections = sectionBlocks.slice(1);
 
-  const displayPosts = isSofia ? otherPosts : authorPosts;
+  const displayPosts = isSofia
+    ? (otherPostsLocale === locale ? otherPosts : [])
+    : (authorPostsLocale === locale ? authorPosts : []);
 
   return (
     <>
@@ -212,7 +224,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
       <Section className="text-left items-start">
         <Breadcrumb
           items={[
-            { href: pathForLocale(locale as Locale, "/blog"), label: "Tripper Inspirations" },
+            { href: pathForLocale(locale as Locale, "/blog"), label: copy.breadcrumb },
             { label: blog.title },
           ]}
         />
@@ -231,7 +243,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
         ) : (
           <BlogArticle
             content={blog.content}
-            emptyMessage="Este post aún no tiene contenido."
+            emptyMessage={copy.emptyBody}
             showTitle={false}
             title={blog.title}
           />
@@ -253,7 +265,7 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
       </Section>
       <LightboxCarousel images={carouselImages} className="bg-gray-50" />
 
-      {(quoteBlock?.text || blog.author.motto) && (
+      {(quoteBlock?.text || (locale === "en" ? null : blog.author.motto)) && (
         <TripperMottoBanner
           attributionOverride={quoteBlock?.cite}
           authorName={blog.author.name}
@@ -264,31 +276,31 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
               : blog.author.avatarUrl
           }
           backgroundImageUrl={blog.coverUrl ?? ""}
-          motto={quoteBlock?.text || blog.author.motto || ""}
-          specialization={blog.author.specialization} data-component="BlogPostClient"
+          motto={quoteBlock?.text || (locale === "en" ? null : blog.author.motto) || ""}
+          specialization={locale === "en" ? undefined : blog.author.specialization} data-component="BlogPostClient"
         />
       )}
 
       {displayPosts.length > 0 && (
         <Blog
           className="bg-gray-50"
-          eyebrow="EXPLORA"
+          eyebrow={copy.moreEyebrow}
           id="more-posts"
           paneClassName="bg-gray-50"
           posts={displayPosts}
-          subtitle="Notas, guías y momentos que inspiran. Escritos en primera persona."
-          title="MÁS DE MIS AVENTURAS"
+          subtitle={copy.moreSubtitle}
+          title={copy.moreTitle}
           viewAll={{
             href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
-            subtitle: "Explora más contenido",
-            title: "Ver Todo",
+            subtitle: copy.exploreMore,
+            title: copy.viewAll,
           }} data-component="BlogPostClient"
         />
       )}
 
       <Testimonials
         testimonials={testimonials}
-        title={`Lo que dicen sobre ${blog.author.name}`}
+        title={copy.testimonials.replace("{name}", blog.author.name)}
       />
     </>
   );
@@ -301,19 +313,20 @@ export function BlogPostErrorView({
   error?: string;
   locale: string;
 }) {
+  const copy = useDictionary((dictionary) => dictionary.blogPage.detail);
   return (
     <Section data-component="BlogPostErrorView">
       <div className="mx-auto max-w-4xl">
         <div className="py-12 text-center">
           <p className="mb-4 text-ink">
-            {error ?? "El post que buscas no existe o ya no está disponible."}
+            {error ?? copy.notFound}
           </p>
           <Link
             className="inline-flex items-center text-blue-600 hover:text-blue-700"
             href={pathForLocale(locale as Locale, "/blog")}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver al Blog
+            {copy.back}
           </Link>
         </div>
       </div>

@@ -66,6 +66,7 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
         id: "post-3",
         slug: null,
         title: "Post Three",
+        translations: { en: { title: "English Three", content: "<p>English body</p>", ready: true } },
         subtitle: null,
         coverUrl: "/covers/three.jpg",
         tags: [],
@@ -84,7 +85,8 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     ]);
 
     const resultEn = await getRecentPublishedBlogs(5, "en");
-    expect(resultEn[0].category).toBe("Travel");
+    expect(resultEn[0]).toMatchObject({ category: "Travel", title: "English Three" });
+    expect(vi.mocked(prisma.blogPost.findMany).mock.calls.at(-1)?.[0]?.where?.translations).toEqual({ path: ["en", "ready"], equals: true });
   });
 
   it("returns an empty array on query failure instead of throwing", async () => {

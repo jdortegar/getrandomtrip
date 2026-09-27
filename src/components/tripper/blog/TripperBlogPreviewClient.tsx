@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { resolveBlogContent } from "@/lib/blog/content-locale";
+import { BlogContentLanguage } from "@/components/app/dashboard/tripper/blog/BlogContentLanguage";
 import BlogArticle from "@/components/blog/BlogArticle";
 import BlogPostHero from "@/components/blog/BlogPostHero";
 import FaqSection from "@/components/display/FaqSection";
@@ -39,7 +41,8 @@ export function TripperBlogPreviewClient() {
   const postId = params?.id?.toString() ?? "";
   const tripperBlogs = useDictionary((d) => d.tripperBlogs);
 
-  const [post, setPost] = useState<PreviewBlogPost | null>(null);
+  const [contentLocale, setContentLocale] = useState<"es" | "en">("es");
+  const [rawPost, setPost] = useState<PreviewBlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,6 +91,8 @@ export function TripperBlogPreviewClient() {
     tripperBlogs.previewPage.loadError,
   ]);
 
+  const post = rawPost && resolveBlogContent(rawPost, contentLocale);
+
   const carouselImages = useMemo(() => {
     if (!post) return [];
     const items: { url: string; caption?: string }[] = [];
@@ -102,13 +107,13 @@ export function TripperBlogPreviewClient() {
       }
     });
     return items;
-  }, [post?.coverUrl, post?.blocks]);
+  }, [post]);
 
   if (loading || sessionStatus === "loading") {
     return <LoadingSpinner data-component="TripperBlogPreviewClient" />;
   }
 
-  if (error || !post) {
+  if (error || !rawPost) {
     return (
       <Section data-component="TripperBlogPreviewClient">
         <div className="rt-container max-w-3xl py-12">
@@ -124,6 +129,13 @@ export function TripperBlogPreviewClient() {
       </Section>
     );
   }
+
+  if (!post) return (
+    <Section>
+      <BlogContentLanguage copy={tripperBlogs.form.contentLanguage} locale={contentLocale} onChange={setContentLocale} />
+      <p>{tripperBlogs.form.contentLanguage.unavailable}</p>
+    </Section>
+  );
 
   const author = post.author;
   const faqItems = (() => {
@@ -149,6 +161,7 @@ export function TripperBlogPreviewClient() {
         </Link>
       </div>
 
+      <BlogContentLanguage copy={tripperBlogs.form.contentLanguage} locale={contentLocale} onChange={setContentLocale} />
       <BlogPostHero
         author={{
           avatarUrl: author?.avatarUrl ?? "",

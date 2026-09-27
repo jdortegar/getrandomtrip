@@ -1,3 +1,4 @@
+import { blogLocaleWhere, resolveBlogContent } from "@/lib/blog/content-locale";
 // ============================================================================
 // GET /api/blogs/[id] - Get a single published blog post by ID or slug (public)
 // ============================================================================
@@ -5,6 +6,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
+
+export const dynamic = "force-dynamic";
 
 /** CUIDs start with 'c' and are 25 chars; slug is lowercase with dashes */
 function isCuid(param: string): boolean {
@@ -20,9 +23,11 @@ export async function GET(
   const params = await props.params;
   try {
     const idOrSlug = params.id;
+    const locale = request.nextUrl.searchParams.get("locale") === "en" ? "en" : "es";
 
-    const blog = await prisma.blogPost.findFirst({
+    const rawBlog = await prisma.blogPost.findFirst({
       where: {
+        ...blogLocaleWhere(locale),
         status: "PUBLISHED",
         // Review copies (isReviewCopy: true) share id/authorId patterns with
         // the original and must never leak into public detail lookups.
@@ -36,6 +41,7 @@ export async function GET(
         id: true,
         slug: true,
         title: true,
+        translations: true,
         subtitle: true,
         tagline: true,
         coverUrl: true,
@@ -63,6 +69,7 @@ export async function GET(
       },
     });
 
+    const blog = rawBlog && resolveBlogContent(rawBlog, locale);
     if (!blog) {
       return NextResponse.json(
         { error: "Blog post not found" },

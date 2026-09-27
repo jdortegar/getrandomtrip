@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { AlertCircle, Check } from "lucide-react";
@@ -14,10 +14,14 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/Modal";
+import { BlogContentLanguage } from "./BlogContentLanguage";
 import { BlogFormContent } from "./BlogFormContent";
 import { BlogReviewActionsBar } from "./BlogReviewActionsBar";
 import type { BlogFormDraft } from "@/types/blog";
 import {
+  BLOG_LOCALIZED_DRAFT_FIELDS,
+  getBlogLocaleDraft,
+  pickBlogContentDraft,
   buildBlogSubmitPayload,
   isBlogTabComplete,
   isBlogTabEligible,
@@ -147,7 +151,28 @@ export function NewBlogPostShell({
   const [openSectionId, setOpenSectionId] = useState(
     tabs[0]?.substeps[0]?.id ?? "",
   );
+  const contentGenerationRef = useRef(0);
+  const contentGeneration = contentGenerationRef.current;
+  const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const [contentLocale, setContentLocale] = useState<"es" | "en">("es");
+  const contentLanguageRef = useRef<HTMLSelectElement>(null);
+  const restoreLanguageFocusRef = useRef(false);
   const [draft, setDraft] = useState<BlogFormDraft>(initialDraft ?? EMPTY_DRAFT);
+
+  useLayoutEffect(() => {
+    if (restoreLanguageFocusRef.current) {
+      contentLanguageRef.current?.focus({ preventScroll: true });
+      restoreLanguageFocusRef.current = false;
+    }
+  }, [contentLocale]);
+
+  const displayedDraft = getBlogLocaleDraft(draft, contentLocale);
+  const displayedOriginal = originalDraft && getBlogLocaleDraft(originalDraft, contentLocale);
+  const displayedChangedFields = contentLocale === "en"
+    ? (changedFields ?? []).filter((field) => !["title", "subtitle", "tagline", "blocks", "faq", "seo"].includes(field)).concat(
+        changedFields?.includes("translations") ? ["title", "subtitle", "tagline", "blocks", "faq", "seo"] : [],
+      )
+    : changedFields;
 
   // Derived read-only flag — controlled by mode and status, mirrors
   // NewExperienceShell's isReadOnly exactly. 'tripper': editable except
@@ -183,6 +208,7 @@ export function NewBlogPostShell({
 
   const persistDraft = useCallback(
     async (snapshot: BlogFormDraft) => {
+      const task = saveQueueRef.current.then(async () => {
       setSaveStatus("saving");
       try {
         const payload = buildBlogSubmitPayload(snapshot);
@@ -214,10 +240,15 @@ export function NewBlogPostShell({
         setSaveStatus("saved");
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
         savedTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
+        return true;
       } catch {
         setSaveStatus("error");
         toast.error(dict.toasts.saveError);
+        return false;
       }
+      });
+      saveQueueRef.current = task.then(() => undefined);
+      return task;
     },
     [dict.toasts.saveError, mode, adminCopyId],
   );
@@ -242,7 +273,7 @@ export function NewBlogPostShell({
   }
 
   function canNavigateTo(targetTabId: string): boolean {
-    if (mode !== "tripper") return true;
+    if (mode !== "tripper" || contentLocale === "en") return true;
     const targetIndex = tabs.findIndex((t) => t.id === targetTabId);
     const currentIndex = tabs.findIndex((t) => t.id === activeTab);
     if (targetIndex <= currentIndex) return true;
@@ -285,7 +316,9 @@ export function NewBlogPostShell({
   }
 
   function handleClearAll() {
-    setDraft(EMPTY_DRAFT);
+    if (contentLocale === "en") {
+      setDraft((prev) => ({ ...prev, english: null }));
+    } else setDraft({ ...EMPTY_DRAFT, english: draft.english });
   }
 
   // Editing an already-published RANDOMTRIP post: there is no review step —
@@ -322,7 +355,7 @@ export function NewBlogPostShell({
     const finalDraft = { ...draft, tripperNote: submitNote };
     setDraft(finalDraft);
     try {
-      await persistDraft(finalDraft);
+      if (!await persistDraft(finalDraft)) throw new Error("Failed to save draft");
       if (!draftIdRef.current) throw new Error("Failed to save draft");
 
       if (isEditingLiveRandomtrip) {
@@ -357,7 +390,18 @@ export function NewBlogPostShell({
   }
 
   function handleChange<K extends keyof BlogFormDraft>(key: K, value: BlogFormDraft[K]) {
-    setDraft((prev) => ({ ...prev, [key]: value }));
+    if (contentGeneration !== contentGenerationRef.current) return;
+    setDraft((prev) => contentLocale === "en" && BLOG_LOCALIZED_DRAFT_FIELDS.has(key)
+      ? { ...prev, english: { ...pickBlogContentDraft(getBlogLocaleDraft(prev, "en")), [key]: value } }
+      : { ...prev, [key]: value });
+  }
+
+  function handleContentLocaleChange(language: "es" | "en") {
+    if (language === contentLocale) return;
+    // Native option menus can blur before change; this handler only serves the selector.
+    restoreLanguageFocusRef.current = true;
+    contentGenerationRef.current += 1;
+    setContentLocale(language);
   }
 
   async function handleCoverSelect(file: File) {
@@ -510,9 +554,21 @@ export function NewBlogPostShell({
 
           <div className="min-w-0 flex-1">
             <BlogFormContent
+              key={contentLocale}
+              validationDraft={draft}
+              optionalContent={contentLocale === "en"}
               activeTab={activeTab}
+              contentLanguageSlot={
+                <BlogContentLanguage
+                  copy={dict.contentLanguage}
+                  disabled={isFinishing}
+                  locale={contentLocale}
+                  onChange={handleContentLocaleChange}
+                  selectRef={contentLanguageRef}
+                />
+              }
               copy={effectiveDict}
-              draft={draft}
+              draft={displayedDraft}
               imageState={imageState}
               isFinishing={isFinishing}
               saveStatus={saveStatus}
@@ -528,8 +584,8 @@ export function NewBlogPostShell({
               reviewActionsSlot={
                 shouldSwapFooterForReviewActions(mode) ? reviewActionsSlot : undefined
               }
-              changedFields={changedFields}
-              originalDraft={originalDraft}
+              changedFields={displayedChangedFields}
+              originalDraft={displayedOriginal}
               isAdmin={isAdminProp ?? (mode !== undefined && mode !== "tripper")}
             />
           </div>
