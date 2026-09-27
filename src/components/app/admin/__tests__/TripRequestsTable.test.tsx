@@ -16,6 +16,10 @@ const copy: MarketingDictionary["adminPages"]["tripRequests"] = {
   errorLoad: "Failed to load trip requests.",
   empty: "No trip requests found.",
   filters: {
+    all: "All",
+    typeLabel: "Trip type",
+    levelLabel: "Level",
+    searchLabel: "Search travelers",
     allStatuses: "All statuses",
     allTypes: "All types",
     allLevels: "All levels",

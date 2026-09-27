@@ -1775,6 +1775,10 @@ export interface AdminPagesDict {
     errorLoad: string;
     empty: string;
     filters: {
+      all: string;
+      typeLabel: string;
+      levelLabel: string;
+      searchLabel: string;
       allStatuses: string;
       allTypes: string;
       allLevels: string;

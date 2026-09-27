@@ -974,6 +974,10 @@
       "errorLoad": "Failed to load trip requests.",
       "empty": "No trip requests found.",
       "filters": {
+        "all": "All",
+        "typeLabel": "Trip type",
+        "levelLabel": "Level",
+        "searchLabel": "Search travelers",
         "allStatuses": "All statuses",
         "allTypes": "All types",
         "allLevels": "All levels",
@@ -982,7 +986,7 @@
         "clearFilters": "Clear filters",
         "of": "of",
         "count": "requests",
-        "searchPlaceholder": "Search by traveler name or email…",
+        "searchPlaceholder": "Name or email…",
         "types": {
           "solo": "Solo",
           "couple": "Couple",
