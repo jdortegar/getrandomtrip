@@ -106,20 +106,22 @@ describe("GET /api/stripe/trip-summary", () => {
   });
 
   it("includes paxDetails and roster in the trip payload", async () => {
-    (
-      findPaymentByStripeIntentId as ReturnType<typeof vi.fn>
-    ).mockResolvedValue({
-      amount: 1000,
-      currency: "usd",
-      userId: "buyer-1",
-      stripePaymentIntentId: null,
-      tripRequest: makeTripRow(),
-    });
+    (findPaymentByStripeIntentId as ReturnType<typeof vi.fn>).mockResolvedValue(
+      {
+        amount: 1000,
+        status: "APPROVED",
+        currency: "usd",
+        userId: "buyer-1",
+        stripePaymentIntentId: null,
+        tripRequest: makeTripRow(),
+      },
+    );
 
     const res = await GET(makeRequest());
     expect(res.status).toBe(200);
 
     const body = await res.json();
+    expect(body.payment.status).toBe("APPROVED");
     expect(body.trip.paxDetails).toEqual({ adults: 2, minors: 1 });
     expect(body.trip.roster).toBeDefined();
     expect(body.trip.roster.cap).toBe(2);

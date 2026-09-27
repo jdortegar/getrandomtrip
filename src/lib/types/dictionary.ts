@@ -2389,6 +2389,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  analyticsConsent: { title: string; description: string; accept: string; reject: string; preferences: string; close: string };
   experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
   xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
   documentPreview: { loading: string; loadingPage: string; error: string; retry: string; previous: string; next: string; page: string };

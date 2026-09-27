@@ -1,3 +1,4 @@
+import AnalyticsConsent from "@/components/tracking/AnalyticsConsent";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { routeMetadata } from "@/lib/seo/routeMetadata";
@@ -8,7 +9,6 @@ import { GlobalAuthModal } from "@/components/providers/GlobalAuthModal";
 import SessionProvider from "@/components/providers/SessionProvider";
 import SetLocaleLang from "@/components/providers/SetLocaleLang";
 import SyncLocale from "@/components/providers/SyncLocale";
-import AppTracking from "@/components/tracking/AppTracking";
 import { Toaster } from "@/components/ui/toaster";
 import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
 import { AttributionModeBanner } from "@/components/tripper/AttributionModeBanner";
@@ -62,9 +62,6 @@ export default async function LocaleLayout(props: {
     <SessionProvider>
       <SetLocaleLang locale={localeTyped} />
       <SyncLocale />
-      <Suspense fallback={null}>
-        <AppTracking />
-      </Suspense>
       <GateAwareChrome
         banner={
           <Suspense fallback={null}>
@@ -77,6 +74,7 @@ export default async function LocaleLayout(props: {
       >
         {children}
       </GateAwareChrome>
+      <AnalyticsConsent copy={dict.analyticsConsent} />
       <GlobalAuthModal dict={dict} />
       <BackToTopButton />
       <Toaster />

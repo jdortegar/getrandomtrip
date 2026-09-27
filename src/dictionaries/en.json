@@ -1,4 +1,12 @@
 {
+  "analyticsConsent": {
+    "title": "Analytics preferences",
+    "description": "With your permission, we use analytics cookies to understand how our public pages are used. Advertising remains disabled. You can change your choice at any time.",
+    "accept": "Accept analytics",
+    "reject": "Reject analytics",
+    "preferences": "Analytics preferences",
+    "close": "Close"
+  },
   "xsedRoadmapPdf": {
     "directions": "Directions",
     "addStop": "Add stop",

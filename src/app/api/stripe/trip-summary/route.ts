@@ -5,6 +5,8 @@ import { findPaymentByStripeIntentId } from "@/lib/db/payment";
 import { getStripe } from "@/lib/stripe";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 
+export const dynamic = "force-dynamic";
+
 /**
  * GET /api/stripe/trip-summary?paymentIntentId=pi_xxx
  *
@@ -58,6 +60,7 @@ export async function GET(request: NextRequest) {
     payment: {
       amount: payment.amount,
       currency: payment.currency,
+      status: payment.status,
       receiptUrl,
     },
     trip: {

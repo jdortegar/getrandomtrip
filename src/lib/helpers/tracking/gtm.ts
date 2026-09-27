@@ -1,48 +1,57 @@
 "use client";
 
+import { sanitizeEvent } from "./privacy";
+import { currentAnalyticsPage } from "./runtime";
+
 export interface PurchaseItem {
   id: string;
   name: string;
   quantity: number;
   price: number;
 }
+export type GTMEvents = { event: string; [key: string]: unknown };
+const sentPurchases = new Set<string>();
 
-export type GTMEvents =
-  | { event: "page_view"; page_path: string }
-  | {
-      event: "purchase";
-      transaction_id: string;
-      value: number;
-      currency?: string;
-      items?: PurchaseItem[];
-    }
-  | { event: "sign_up"; method: string }
-  | { event: "login"; method: string }
-  | { event: "generate_lead"; trip_type?: string; origin?: string }
-  | { event: "begin_checkout"; trip_type?: string; value?: number; currency?: string }
-  | { event: "review_submit"; rating: number }
-  | { event: "newsletter_subscribe" }
-  | { event: "waitlist_join" }
-  | { event: "click_button"; label: string }
-  | { event: "scroll_depth"; page_path: string; percent: number }
-  | { event: "set_user"; user_id: string }
-  | { event: "set_user_properties"; user_type: string };
-
-declare global {
-  interface Window {
-    dataLayer?: GTMEvents[];
-  }
+export function trackCustomEvent(data: GTMEvents): boolean {
+  const page = currentAnalyticsPage();
+  const safe = sanitizeEvent(data);
+  if (
+    !page ||
+    !safe ||
+    (page.purchaseOnly && safe.event !== "purchase") ||
+    (!page.purchaseOnly && safe.event === "purchase")
+  )
+    return false;
+  const { purchaseOnly: _purchaseOnly, ...fields } = page;
+  window.dataLayer = window.dataLayer ?? [];
+  // Clear event-specific values so GTM does not reuse a previous event's fields.
+  window.dataLayer.push({
+    user_id: null,
+    user_type: null,
+    user_properties: null,
+    method: null,
+    percent: null,
+    trip_type: null,
+    transaction_id: null,
+    value: null,
+    currency: null,
+    ...fields,
+    ...safe,
+  });
+  return true;
 }
 
-const pushToDataLayer = <T extends GTMEvents>(data: T): void => {
-  if (typeof window !== "undefined") {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(data);
-  }
-};
-
-export function trackPageview(page_path: string): void {
-  pushToDataLayer({ event: "page_view", page_path });
+export function trackPageview(): boolean {
+  return trackCustomEvent({ event: "page_view" });
+}
+export function trackScrollDepth(percent: number): boolean {
+  return trackCustomEvent({ event: "scroll_depth", percent });
+}
+export function trackSignUp(method: string): boolean {
+  return trackCustomEvent({ event: "sign_up", method });
+}
+export function trackButtonClick(_label: string): void {
+  /* Free-text click labels are intentionally not collected. */
 }
 
 export function trackPurchase(params: {
@@ -50,30 +59,20 @@ export function trackPurchase(params: {
   value: number;
   currency?: string;
   items?: PurchaseItem[];
-}): void {
-  pushToDataLayer({ event: "purchase", ...params });
-}
-
-export function trackSignUp(method: string): void {
-  pushToDataLayer({ event: "sign_up", method });
-}
-
-export function trackButtonClick(label: string): void {
-  pushToDataLayer({ event: "click_button", label });
-}
-
-export function trackScrollDepth(percent: number, page_path: string): void {
-  pushToDataLayer({ event: "scroll_depth", page_path, percent });
-}
-
-export function setUser(user_id: string): void {
-  pushToDataLayer({ event: "set_user", user_id });
-}
-
-export function setUserProperties(user_type: string): void {
-  pushToDataLayer({ event: "set_user_properties", user_type });
-}
-
-export function trackCustomEvent<T extends GTMEvents>(data: T): void {
-  pushToDataLayer(data);
+}): boolean {
+  const key = `rt-purchase-${params.transaction_id}`;
+  try {
+    if (window.localStorage.getItem(key) === "1") return false;
+  } catch {
+    /* In-memory dedup remains available. */
+  }
+  if (sentPurchases.has(key)) return false;
+  if (!trackCustomEvent({ event: "purchase", ...params })) return false;
+  sentPurchases.add(key);
+  try {
+    window.localStorage.setItem(key, "1");
+  } catch {
+    /* Do not retry within this page lifecycle. */
+  }
+  return true;
 }

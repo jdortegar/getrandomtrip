@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import AppTracking from "@/components/tracking/AppTracking";
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/Navbar";
 import { NavbarChromeContext } from "@/context/NavbarChromeContext";
@@ -89,6 +90,7 @@ export function GateAwareChrome({
 
   const normalChrome = (
     <>
+      <AppTracking />
       {banner}
       <div className="relative">
         <Navbar
@@ -120,6 +122,7 @@ export function GateAwareChrome({
 
     return (
       <>
+        <AppTracking waitlistVisible />
         <WaitlistPage
           accessDenied={accessDenied}
           dict={dict.waitlist}
