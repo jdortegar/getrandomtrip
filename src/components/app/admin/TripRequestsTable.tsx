@@ -130,6 +130,7 @@ export function TripRequestsTable({
                   editHref={`/${locale}/dashboard/admin/trip-requests/${trip.id}`}
                   editTitle={copy.edit}
                   key={trip.id}
+                  locale={locale}
                   paymentStatusLabels={paymentStatusLabels}
                   trip={trip}
                   tripStatusLabels={tripStatusLabels}

@@ -1,12 +1,13 @@
 import { Pencil } from "lucide-react";
 import { TableIconLink } from "@/components/ui/TableIconButton";
-import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
+import { formatTripCalendarDate } from "@/lib/helpers/formatTripCalendarDate";
 import { StatusBadge } from "./StatusBadge";
 
 interface TripRequestsTableRowProps {
   editHref: string;
   editTitle: string;
+  locale: string;
   paymentStatusLabels: Record<string, string>;
   trip: AdminTripRequest;
   tripStatusLabels: Record<string, string>;
@@ -15,6 +16,7 @@ interface TripRequestsTableRowProps {
 export function TripRequestsTableRow({
   editHref,
   editTitle,
+  locale,
   paymentStatusLabels,
   trip,
   tripStatusLabels,
@@ -28,7 +30,7 @@ export function TripRequestsTableRow({
         <p className="mt-0.5 text-xs text-ink">{trip.user.email}</p>
       </td>
       <td className="px-5 py-4 text-sm text-neutral-700">
-        {formatAdminDate(trip.startDate)}
+        {formatTripCalendarDate(trip.startDate, locale)}
       </td>
       <td className="px-5 py-4 text-sm text-neutral-700">
         {trip.originCity}, {trip.originCountry}

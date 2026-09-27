@@ -221,7 +221,11 @@ export function AdminTripFulfillmentPageClient({
                 statusLabel={statusLabel}
                 trip={trip}
               />
-              <TripRequestDetails labels={dict.details} trip={trip} />
+              <TripRequestDetails
+                labels={dict.details}
+                locale={locale}
+                trip={trip}
+              />
             </div>
             <div style={{ marginTop: 22 }}>
               <TripDangerZone copy={dict} onDelete={handleDelete} />

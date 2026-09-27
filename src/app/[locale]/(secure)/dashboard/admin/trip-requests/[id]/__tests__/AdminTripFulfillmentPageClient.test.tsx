@@ -6,7 +6,9 @@ import { AdminTripFulfillmentPageClient } from "../AdminTripFulfillmentPageClien
 import type { TripDocumentSourceSelection } from "@/lib/types/TripDocumentSource";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/components/app/admin/TripRequestDetails", () => ({
-  TripRequestDetails: () => null,
+  TripRequestDetails: ({ locale }: { locale: string }) => (
+    <span data-details-locale>{locale}</span>
+  ),
 }));
 vi.mock(
   "@/components/app/admin/trip-fulfillment/TripFulfillmentHeader",
@@ -75,13 +77,13 @@ const fetchMock = vi.fn();
 let root: Root;
 let host: HTMLDivElement;
 let savedTrip = trip;
-function page(tripId = "trip") {
+function page(tripId = "trip", locale = "en") {
   return (
     <AdminTripFulfillmentPageClient
       countryLabels={{ AR: "Argentina" }}
       dict={en.adminTripEditModal}
       fulfillmentDict={en.adminTripFulfillment}
-      locale="en"
+      locale={locale}
       paymentStatusLabels={{}}
       tripId={tripId}
     />
@@ -140,6 +142,10 @@ function button(text: string) {
     (node) => node.textContent === text,
   )!;
 }
+it("passes the selected locale to booking details", async () => {
+  await act(async () => root.render(page("trip", "es")));
+  expect(host.querySelector("[data-details-locale]")?.textContent).toBe("es");
+});
 it("previews local selection and new PDF candidates without PATCH while retaining manual PDF state", async () => {
   act(() => button("Edit PDF").click());
   await select("fulfillment-trip-status", "CONFIRMED");
