@@ -321,3 +321,66 @@ describe("AdminBlogPageClient — RANDOMTRIP edit stays under the admin dashboar
     expect(hrefs.some((h) => h?.includes("/dashboard/tripper/blog/"))).toBe(false);
   });
 });
+
+it("single deletion refreshes the current filter when the query changes while DELETE is pending", async () => {
+  const requests: {
+    url: string;
+    method: string;
+    resolve: (response: Response) => void;
+  }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      (url: string, init?: RequestInit) =>
+        new Promise<Response>((resolve) =>
+          requests.push({ url, method: init?.method ?? "GET", resolve }),
+        ),
+    ),
+  );
+  render(<AdminBlogPageClient />);
+  await act(async () =>
+    requests[0].resolve(
+      Response.json({
+        blogs: [blog({ status: "DRAFT" })],
+        total: 1,
+        pendingCount: 0,
+      }),
+    ),
+  );
+  const action = Array.from(
+    container.querySelectorAll('[data-component="TableIconButton"]'),
+  )
+    .find((el) => el.textContent?.trim() === "Eliminar")!
+    .querySelector("button")!;
+  act(() => action.click());
+  const confirm = Array.from(
+    document.body.querySelectorAll('[role="dialog"] button'),
+  ).find((el) => el.textContent?.trim() === "Eliminar") as HTMLButtonElement;
+  act(() => confirm.click());
+  expect(requests[1].method).toBe("DELETE");
+  act(() => {
+    const select = container.querySelector("select")!;
+    select.value = "pending";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await act(async () =>
+    requests[2].resolve(
+      Response.json({ blogs: [], total: 0, pendingCount: 0 }),
+    ),
+  );
+  await act(async () => requests[1].resolve(Response.json({ ok: true })));
+  expect(requests).toHaveLength(4);
+  expect(
+    new URL(requests[3].url, "http://localhost").searchParams.get("status"),
+  ).toBe("PENDING_REVIEW,PENDING_TRIPPER_REVIEW");
+  await act(async () =>
+    requests[3].resolve(
+      Response.json({
+        blogs: [blog({ title: "Current pending" })],
+        total: 1,
+        pendingCount: 1,
+      }),
+    ),
+  );
+  expect(container.textContent).toContain("Current pending");
+});

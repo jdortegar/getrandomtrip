@@ -542,14 +542,27 @@ export interface TravelerDashboardDict {
     title: string;
   };
   trips: {
+    allExperiences: string;
+    allTravelTypes: string;
+    clearFilters: string;
     description: string;
+    emptyFiltered: string;
+    errorLoad: string;
+    experienceLabel: string;
     eyebrow: string;
     filterAll: string;
     filterCompleted: string;
+    filterLabel: string;
     filterUpcoming: string;
+    loading: string;
     of: string;
+    retry: string;
+    searchLabel: string;
+    searchPlaceholder: string;
     title: string;
+    travelTypeLabel: string;
     tripsCount: string;
+    xsedType: string;
   };
 }
 
@@ -1788,6 +1801,7 @@ export interface AdminPagesDict {
       allPayments: string;
       noPayment: string;
       clearFilters: string;
+      loading: string;
       of: string;
       count: string;
       searchPlaceholder: string;
@@ -2471,6 +2485,21 @@ export interface MarketingDictionary {
     tripperOs: string;
   };
   common: {
+    tableFilters: {
+      all: string;
+      clearFilters: string;
+      count: string;
+      errorLoad: string;
+      experience: string;
+      loading: string;
+      of: string;
+      retry: string;
+      searchLabel: string;
+      searchName: string;
+      searchTitle: string;
+      status: string;
+      type: string;
+    };
     siteName: string;
     pagination: {
       previous: string;

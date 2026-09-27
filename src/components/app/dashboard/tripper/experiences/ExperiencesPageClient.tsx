@@ -7,11 +7,18 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
-import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
+import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
+import {
+  TableIconButton,
+  TableIconLink,
+} from "@/components/ui/TableIconButton";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
-import { Eye, EyeOff, Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { useDictionary } from "@/hooks/useDictionary";
 import {
   EXPERIENCE_LEVELS,
@@ -21,8 +28,6 @@ import {
 import type { ExperienceListItem } from "@/types/tripper";
 import type { TripperExperiencesDict } from "@/lib/types/dictionary";
 
-const SELECT_CLASS =
-  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
 
@@ -47,12 +52,15 @@ export default function ExperiencesPageClient({
   dict: copy,
   locale,
 }: ExperiencesPageClientProps) {
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const [isPending, startTransition] = useTransition();
   const [experiences, setExperiences] = useState<ExperienceListItem[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const hasLoadedOnce = useHasLoadedOnce(loading);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTravelType, setSelectedTravelType] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedLevel, setSelectedLevel] = useState("all");
@@ -65,7 +73,9 @@ export default function ExperiencesPageClient({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(
+    null,
+  );
   const filtersRef = useRef<HTMLDivElement>(null);
   const selectAllRef = useRef<HTMLInputElement>(null);
 
@@ -79,12 +89,30 @@ export default function ExperiencesPageClient({
     selectedLevel !== "all" ||
     searchQuery !== "";
 
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([
+      page,
+      selectedStatus,
+      selectedLevel,
+      selectedTravelType,
+      searchQuery,
+      debouncedSearch,
+    ]),
+  );
+
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const fetchExperiences = useCallback(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -101,12 +129,30 @@ export default function ExperiencesPageClient({
         experiences?: ExperienceListItem[];
         total?: number;
       };
+      if (!isCurrent()) return;
+      if (!res.ok || !data.experiences) {
+        setError(filterCopy.errorLoad);
+        return;
+      }
+      setError(null);
       setExperiences(data.experiences ?? []);
       setTotal(data.total ?? 0);
+    } catch {
+      if (isCurrent()) setError(filterCopy.errorLoad);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
-  }, [page, selectedStatus, selectedTravelType, selectedLevel, debouncedSearch]);
+  }, [
+    beginRequest,
+    searchQuery,
+    filterCopy.errorLoad,
+    page,
+    selectedStatus,
+    selectedTravelType,
+    selectedLevel,
+    debouncedSearch,
+  ]);
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchExperiences);
 
   useEffect(() => {
     void fetchExperiences();
@@ -187,7 +233,9 @@ export default function ExperiencesPageClient({
             ),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -199,7 +247,7 @@ export default function ExperiencesPageClient({
         );
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
-        await fetchExperiences();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkDeleting(false);
       }
@@ -234,7 +282,7 @@ export default function ExperiencesPageClient({
               : copy.table.deleteFailed,
         );
         // Refetch either way so a stale canDelete flag is corrected.
-        await fetchExperiences();
+        await refreshCurrentQuery();
       } catch {
         setBulkFailureMessage(copy.table.deleteFailed);
       } finally {
@@ -253,7 +301,7 @@ export default function ExperiencesPageClient({
           body: JSON.stringify({ isActive: !current }),
         });
         if (res.ok) {
-          await fetchExperiences();
+          await refreshCurrentQuery();
         }
       } finally {
         setTogglingId(null);
@@ -261,7 +309,8 @@ export default function ExperiencesPageClient({
     });
   }
 
-  if (loading) return <LoadingSpinner data-component="ExperiencesPageClient" />;
+  if (loading && !hasLoadedOnce)
+    return <LoadingSpinner data-component="ExperiencesPageClient" />;
 
   return (
     <div className="space-y-6 text-left" data-component="ExperiencesPageClient">
@@ -287,97 +336,85 @@ export default function ExperiencesPageClient({
       </div>
 
       {/* Filters */}
-      <div
-        ref={filtersRef}
-        className="flex flex-wrap items-center justify-between gap-3"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedStatusAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedStatus}
-          >
-            <option value="all">{copy.filters.allStatuses}</option>
-            {EXPERIENCE_STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>
-                {copy.status[s.value as keyof typeof copy.status]}
-              </option>
-            ))}
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedTravelTypeAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedTravelType}
-          >
-            <option value="all">{copy.filters.allTypes}</option>
-            {getExperienceTypes(locale).map((travelType) => (
-              <option key={travelType.value} value={travelType.value}>
-                {travelType.label}
-              </option>
-            ))}
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => {
-              setSelectedLevelAndClear(e.target.value);
-              scrollToFilters();
-            }}
-            value={selectedLevel}
-          >
-            <option value="all">{copy.filters.allLevels}</option>
-            {EXPERIENCE_LEVELS.map((level) => (
-              <option key={level.value} value={level.value}>
-                {level.label}
-              </option>
-            ))}
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
+      <div ref={filtersRef}>
+        <TableFilterToolbar
+          actions={
+            <Button
+              className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+              disabled={selectedIds.size === 0}
+              onClick={() => setBulkDeleteConfirmOpen(true)}
+              type="button"
             >
-              <X className="h-3.5 w-3.5" />
-              {copy.filters.clearFilters}
-            </button>
-          )}
-          <Button
-            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
-            disabled={selectedIds.size === 0}
-            onClick={() => setBulkDeleteConfirmOpen(true)}
-            type="button"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            {copy.bulkActions.deleteSelected.replace(
-              "{count}",
-              String(selectedIds.size),
-            )}
-          </Button>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {experiences.length} {copy.filters.of} {total} {copy.filters.count}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedIds(new Set());
-                setPage(1);
-              }}
-              placeholder={copy.filters.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
+              <Trash2 className="mr-2 h-4 w-4" />
+              {copy.bulkActions.deleteSelected.replace(
+                "{count}",
+                String(selectedIds.size),
+              )}
+            </Button>
+          }
+          copy={filterCopy}
+          filters={[
+            {
+              id: "tripper-experiences-status",
+              label: filterCopy.status,
+              value: selectedStatus,
+              onChange: (value) => {
+                setSelectedStatusAndClear(value);
+                scrollToFilters();
+              },
+              options: [
+                { value: "all", label: filterCopy.all },
+                ...EXPERIENCE_STATUSES.map((option) => ({
+                  value: option.value,
+                  label: copy.status[option.value as keyof typeof copy.status],
+                })),
+              ],
+            },
+            {
+              id: "tripper-experiences-type",
+              label: filterCopy.type,
+              value: selectedTravelType,
+              onChange: (value) => {
+                setSelectedTravelTypeAndClear(value);
+                scrollToFilters();
+              },
+              options: [
+                { value: "all", label: filterCopy.all },
+                ...getExperienceTypes(locale),
+              ],
+            },
+            {
+              id: "tripper-experiences-experience",
+              label: filterCopy.experience,
+              value: selectedLevel,
+              onChange: (value: string) => {
+                setSelectedLevelAndClear(value);
+                scrollToFilters();
+              },
+              options: [
+                { value: "all", label: filterCopy.all },
+                ...EXPERIENCE_LEVELS,
+              ],
+            },
+          ]}
+          hasActiveFilters={hasActiveFilters}
+          hasError={!!error}
+          isLoading={queryPending}
+          onClear={clearFilters}
+          search={{
+            id: "tripper-experiences-search",
+            label: filterCopy.searchLabel,
+            placeholder: filterCopy.searchTitle,
+            value: searchQuery,
+            onChange: (value) => {
+              setSearchQuery(value);
+              setSelectedIds(new Set());
+              setPage(1);
+            },
+          }}
+          shown={experiences.length}
+          total={total}
+        />
       </div>
 
       {bulkFailureMessage && (
@@ -385,15 +422,25 @@ export default function ExperiencesPageClient({
       )}
 
       {/* Table panel */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <TableQueryBoundary
+        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
+        copy={filterCopy}
+        error={error}
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchExperiences();
+        }}
+      >
         {experiences.length === 0 ? (
           <div className="py-16 text-center">
             <p className="mb-4 text-sm text-ink">
-              {total === 0 && !hasActiveFilters
-                ? copy.emptyState.noExperiences
-                : copy.emptyState.noMatch}
+              {queryPending
+                ? filterCopy.loading
+                : total === 0 && !hasActiveFilters
+                  ? copy.emptyState.noExperiences
+                  : copy.emptyState.noMatch}
             </p>
-            {total === 0 && !hasActiveFilters && (
+            {!queryPending && total === 0 && !hasActiveFilters && (
               <Button asChild className="mx-auto max-w-xs" size="sm">
                 <Link href={`${basePath}/new`}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -543,7 +590,10 @@ export default function ExperiencesPageClient({
                       {/* Actions */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1.5">
-                          <TableIconLink href={editHref} title={copy.table.edit}>
+                          <TableIconLink
+                            href={editHref}
+                            title={copy.table.edit}
+                          >
                             <Pencil className="h-4 w-4" />
                           </TableIconLink>
                           <TableIconButton
@@ -587,16 +637,20 @@ export default function ExperiencesPageClient({
             </table>
           </div>
         )}
-      </div>
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={handlePageChange}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) handlePageChange(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
 
       <ConfirmModal
         open={deleteTargetId !== null}

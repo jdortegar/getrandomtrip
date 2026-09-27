@@ -253,6 +253,21 @@
     "newDrop": "Nuevo Drop"
   },
   "common": {
+    "tableFilters": {
+      "all": "Todos",
+      "clearFilters": "Limpiar filtros",
+      "count": "resultados",
+      "errorLoad": "No se pudieron cargar los resultados. Intenta de nuevo.",
+      "experience": "Experiencia",
+      "loading": "Cargando resultados…",
+      "of": "de",
+      "retry": "Reintentar",
+      "searchLabel": "Buscar",
+      "searchName": "Buscar por nombre",
+      "searchTitle": "Buscar por título",
+      "status": "Estado",
+      "type": "Tipo de viaje"
+    },
     "siteName": "Randomtrip",
     "pagination": {
       "previous": "Anterior",
@@ -984,6 +999,7 @@
         "allPayments": "Todos los pagos",
         "noPayment": "Sin pago",
         "clearFilters": "Limpiar filtros",
+        "loading": "Cargando solicitudes…",
         "of": "de",
         "count": "solicitudes",
         "searchPlaceholder": "Nombre o email…",
@@ -4472,13 +4488,26 @@
     },
     "trips": {
       "description": "Reservas próximas e historial de viajes completados",
+      "allExperiences": "Todas las experiencias",
+      "allTravelTypes": "Todos los tipos de viaje",
+      "clearFilters": "Limpiar filtros",
+      "emptyFiltered": "No hay viajes que coincidan con este filtro.",
+      "errorLoad": "No se pudieron cargar los viajes. Intenta de nuevo.",
+      "experienceLabel": "Experiencia",
       "eyebrow": "Inventario",
       "filterAll": "Todos",
       "filterCompleted": "Completados",
+      "filterLabel": "Estado del viaje",
       "filterUpcoming": "Próximos",
+      "loading": "Cargando viajes…",
       "of": "de",
+      "retry": "Reintentar",
+      "searchLabel": "Buscar viajes",
+      "searchPlaceholder": "Buscar por origen o referencia del viaje",
       "title": "Todos tus viajes",
-      "tripsCount": "viajes"
+      "travelTypeLabel": "Tipo de viaje",
+      "tripsCount": "viajes",
+      "xsedType": "XSED"
     },
     "reviews": {
       "eyebrow": "Valoraciones",

@@ -192,7 +192,7 @@ describe("AdminReviewsPageClient — sort composes with filter, search, and pagi
     });
 
     const searchInput = container.querySelector(
-      'input[type="text"]',
+      'input[type="search"]',
     ) as HTMLInputElement;
     await act(async () => {
       setNativeInputValue(searchInput, "Ana");
@@ -280,4 +280,53 @@ describe("AdminReviewsPageClient — refetch error keeps chrome mounted", () => 
     expect(banner).not.toBeNull();
     expect(banner?.textContent).toContain("Refetch boom");
   });
+});
+
+it("refreshes the current filter after an approval started under a previous query", async () => {
+  const requests: {
+    url: string;
+    method: string;
+    resolve: (response: Response) => void;
+  }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      (url: string, init?: RequestInit) =>
+        new Promise<Response>((resolve) =>
+          requests.push({ url, method: init?.method ?? "GET", resolve }),
+        ),
+    ),
+  );
+  render(<AdminReviewsPageClient />);
+  await act(async () =>
+    requests[0].resolve(
+      Response.json({
+        reviews: [{ ...sampleReview(), isApproved: false }],
+        total: 1,
+      }),
+    ),
+  );
+  const approve = Array.from(
+    container.querySelectorAll('[data-component="TableIconButton"]'),
+  )
+    .find((el) => el.textContent?.includes("Aprobar"))!
+    .querySelector("button")!;
+  act(() => approve.click());
+  expect(requests[1].method).toBe("PATCH");
+  act(() => {
+    const select = container.querySelector("select")!;
+    select.value = "approved";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  expect(requests[2].url).toContain("status=approved");
+  await act(async () =>
+    requests[2].resolve(Response.json({ reviews: [], total: 0 })),
+  );
+  await act(async () => requests[1].resolve(Response.json({ ok: true })));
+  expect(requests).toHaveLength(4);
+  expect(requests[3].url).toContain("status=approved");
+  await act(async () =>
+    requests[3].resolve(Response.json({ reviews: [sampleReview()], total: 1 })),
+  );
+  expect(container.textContent).toContain("Ana");
 });

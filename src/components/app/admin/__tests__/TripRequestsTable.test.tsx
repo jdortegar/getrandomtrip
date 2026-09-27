@@ -26,6 +26,7 @@ const copy: MarketingDictionary["adminPages"]["tripRequests"] = {
     allPayments: "All payments",
     noPayment: "No payment",
     clearFilters: "Clear filters",
+    loading: "Loading requests…",
     of: "of",
     count: "requests",
     searchPlaceholder: "Search by traveler name or email…",

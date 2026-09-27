@@ -180,20 +180,27 @@ export interface PaginatedTrips {
  * badge, which all need the caller's full trip list, not a page of it).
  */
 export async function getPaginatedTrips(params: {
+  level?: string;
   page: number;
   limit: number;
+  search?: string;
   /** Comma-separated statuses, e.g. "CONFIRMED,REVEALED" for "upcoming". */
   status?: string;
+  type?: string;
 }): Promise<PaginatedTrips> {
   const query = new URLSearchParams({
     page: String(params.page),
     limit: String(params.limit),
   });
   if (params.status) query.set("status", params.status);
+  if (params.level) query.set("level", params.level);
+  if (params.type) query.set("type", params.type);
+  if (params.search?.trim()) query.set("search", params.search.trim());
 
   const response = await fetch(`/api/trips?${query.toString()}`);
   const data = (await response.json()) as TripsApiResponse;
-  if (data.error) throw new Error(data.error);
+  if (!response.ok || data.error)
+    throw new Error(data.error ?? "Could not load trips");
 
   const rawTrips = data.trips ?? [];
   return { trips: rawTrips.map(mapTripFromApi), total: data.total ?? 0 };

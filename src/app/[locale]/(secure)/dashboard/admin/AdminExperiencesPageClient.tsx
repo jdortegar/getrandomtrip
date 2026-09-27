@@ -8,21 +8,26 @@ import {
   Eye,
   EyeOff,
   Pencil,
-  Search,
   Star,
   StarOff,
   Trash2,
-  X,
 } from "lucide-react";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
 import { ExperienceTypePills } from "@/components/common/ExperienceTypePills";
 import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
+
 import { SortButton } from "@/components/ui/SortButton";
-import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
-import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
+import {
+  TableIconButton,
+  TableIconLink,
+} from "@/components/ui/TableIconButton";
+
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   EXPERIENCE_SORT_DEFAULT,
@@ -53,7 +58,6 @@ type StatusFilter =
   | "INACTIVE"
   | "ARCHIVED";
 
-const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
 const PENDING_STATUSES = "PENDING_REVIEW,PENDING_TRIPPER_REVIEW";
@@ -80,11 +84,15 @@ function parseStatusFilter(value: string | null): StatusFilter {
 }
 
 function parseTypeFilter(value: string | null): string {
-  return value && EXPERIENCE_TYPES.some((t) => t.value === value) ? value : "ALL";
+  return value && EXPERIENCE_TYPES.some((t) => t.value === value)
+    ? value
+    : "ALL";
 }
 
 function parseLevelFilter(value: string | null): string {
-  return value && EXPERIENCE_LEVELS.some((l) => l.value === value) ? value : "ALL";
+  return value && EXPERIENCE_LEVELS.some((l) => l.value === value)
+    ? value
+    : "ALL";
 }
 
 function parsePage(value: string | null): number {
@@ -94,6 +102,7 @@ function parsePage(value: string | null): number {
 
 export function AdminExperiencesPageClient() {
   const copy = useDictionary((d) => d.adminPages.experiences);
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
@@ -135,9 +144,25 @@ export function AdminExperiencesPageClient() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [archiveConfirmOpen, setArchiveConfirmOpen] = useState(false);
   const [isBulkArchiving, setIsBulkArchiving] = useState(false);
-  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(
+    null,
+  );
   const selectAllRef = useRef<HTMLInputElement>(null);
   const isFirstSearchEffect = useRef(true);
+
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([
+      page,
+      statusFilter,
+      typeFilter,
+      levelFilter,
+      sortBy,
+      sortOrder,
+      searchQuery,
+      debouncedSearch,
+    ]),
+  );
 
   useEffect(() => {
     if (isFirstSearchEffect.current) {
@@ -152,7 +177,9 @@ export function AdminExperiencesPageClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
-  const selectableVisible = experiences.filter((e) => !isLockedForSelection(e.status));
+  const selectableVisible = experiences.filter(
+    (e) => !isLockedForSelection(e.status),
+  );
   const allSelectableSelected =
     selectableVisible.length > 0 &&
     selectableVisible.every((e) => selectedIds.has(e.id));
@@ -168,7 +195,10 @@ export function AdminExperiencesPageClient() {
     setStatusFilter(next);
     setSelectedIds(new Set());
     setPage(1);
-    updateQuery({ status: next === "PENDING" ? undefined : next, page: undefined });
+    updateQuery({
+      status: next === "PENDING" ? undefined : next,
+      page: undefined,
+    });
   }
 
   function handleTypeChange(next: string) {
@@ -263,7 +293,9 @@ export function AdminExperiencesPageClient() {
             }),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -275,7 +307,7 @@ export function AdminExperiencesPageClient() {
         );
         setSelectedIds(new Set());
         setArchiveConfirmOpen(false);
-        await fetchExperiences();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkArchiving(false);
       }
@@ -283,8 +315,10 @@ export function AdminExperiencesPageClient() {
   }
 
   const fetchExperiences = useCallback(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -308,19 +342,23 @@ export function AdminExperiencesPageClient() {
         total?: number;
         pendingCount?: number;
       };
+      if (!isCurrent()) return;
       if (!res.ok || !data.experiences) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
+      setError(null);
       setExperiences(data.experiences);
       setTotal(data.total ?? 0);
       setPendingCount(data.pendingCount ?? 0);
     } catch {
-      setError(copy.errorLoad);
+      if (isCurrent()) setError(copy.errorLoad);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }, [
+    beginRequest,
+    searchQuery,
     page,
     statusFilter,
     typeFilter,
@@ -330,6 +368,7 @@ export function AdminExperiencesPageClient() {
     debouncedSearch,
     copy.errorLoad,
   ]);
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchExperiences);
 
   async function updateExperience(
     id: string,
@@ -343,7 +382,7 @@ export function AdminExperiencesPageClient() {
         method: "PATCH",
       });
       if (!res.ok) return;
-      await fetchExperiences();
+      await refreshCurrentQuery();
     } finally {
       setSavingId(null);
     }
@@ -356,15 +395,19 @@ export function AdminExperiencesPageClient() {
     setSavingId(id);
     setBulkFailureMessage(null);
     try {
-      const res = await fetch(`/api/admin/experiences/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/experiences/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         // 409 = the server's deletion rule refused (bookings / in review).
         setBulkFailureMessage(
-          res.status === 409 ? copy.actions.deleteBlocked : copy.actions.deleteFailed,
+          res.status === 409
+            ? copy.actions.deleteBlocked
+            : copy.actions.deleteFailed,
         );
       }
       // Refetch either way so a stale canDelete flag is corrected.
-      await fetchExperiences();
+      await refreshCurrentQuery();
     } catch {
       setBulkFailureMessage(copy.actions.deleteFailed);
     } finally {
@@ -375,8 +418,8 @@ export function AdminExperiencesPageClient() {
   const deleteTarget = experiences.find((e) => e.id === deleteTargetId);
 
   useEffect(() => {
-    void fetchExperiences();
-  }, [fetchExperiences]);
+    void refreshCurrentQuery();
+  }, [fetchExperiences, refreshCurrentQuery]);
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
   if (error && !hasLoadedOnce)
@@ -416,61 +459,8 @@ export function AdminExperiencesPageClient() {
         </h2>
       </div>
 
-      {/* Filter row */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) =>
-              handleStatusChange(e.target.value as StatusFilter)
-            }
-            value={statusFilter}
-          >
-            <option value="ALL">{copy.tabs.all}</option>
-            <option value="PENDING">
-              {pendingCount > 0
-                ? `${copy.tabs.pending} (${pendingCount})`
-                : copy.tabs.pending}
-            </option>
-            <option value="DRAFT">{st.DRAFT}</option>
-            <option value="ACTIVE">{st.ACTIVE}</option>
-            <option value="INACTIVE">{st.INACTIVE}</option>
-            <option value="ARCHIVED">{st.ARCHIVED}</option>
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => handleTypeChange(e.target.value)}
-            value={typeFilter}
-          >
-            <option value="ALL">{copy.filters.allTypes}</option>
-            {experienceTypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => handleLevelChange(e.target.value)}
-            value={levelFilter}
-          >
-            <option value="ALL">{copy.filters.allLevels}</option>
-            {EXPERIENCE_LEVELS.map((level) => (
-              <option key={level.value} value={level.value}>
-                {level.label}
-              </option>
-            ))}
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" />
-              {copy.filters.clearFilters}
-            </button>
-          )}
+      <TableFilterToolbar
+        actions={
           <Button
             className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
             disabled={selectedIds.size === 0}
@@ -483,46 +473,84 @@ export function AdminExperiencesPageClient() {
               String(selectedIds.size),
             )}
           </Button>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {copy.count.replace("{n}", String(total))}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedIds(new Set());
-                setPage(1);
-                updateQuery({ page: undefined });
-              }}
-              placeholder={copy.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
-      </div>
+        }
+        copy={filterCopy}
+        filters={[
+          {
+            id: "admin-experiences-status",
+            label: filterCopy.status,
+            value: statusFilter,
+            onChange: (value) => handleStatusChange(value as StatusFilter),
+            options: [
+              { value: "ALL", label: copy.tabs.all },
+              {
+                value: "PENDING",
+                label:
+                  pendingCount > 0
+                    ? `${copy.tabs.pending} (${pendingCount})`
+                    : copy.tabs.pending,
+              },
+              ...["DRAFT", "ACTIVE", "INACTIVE", "ARCHIVED"].map((value) => ({
+                value,
+                label: st[value as keyof typeof st],
+              })),
+            ],
+          },
+          {
+            id: "admin-experiences-type",
+            label: filterCopy.type,
+            value: typeFilter,
+            onChange: handleTypeChange,
+            options: [
+              { value: "ALL", label: filterCopy.all },
+              ...experienceTypes,
+            ],
+          },
+          {
+            id: "admin-experiences-experience",
+            label: filterCopy.experience,
+            value: levelFilter,
+            onChange: handleLevelChange,
+            options: [
+              { value: "ALL", label: filterCopy.all },
+              ...EXPERIENCE_LEVELS,
+            ],
+          },
+        ]}
+        hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={queryPending}
+        onClear={clearFilters}
+        search={{
+          id: "admin-experiences-search",
+          label: filterCopy.searchLabel,
+          placeholder: filterCopy.searchTitle,
+          value: searchQuery,
+          onChange: (value) => {
+            setSearchQuery(value);
+            setSelectedIds(new Set());
+            updateQuery({ page: undefined });
+            setPage(1);
+          },
+        }}
+        shown={experiences.length}
+        total={total}
+      />
 
       {bulkFailureMessage && (
         <p className="text-xs text-red-600">{bulkFailureMessage}</p>
       )}
 
       {/* Table panel */}
-      <TableLoadingOverlay
+      <TableQueryBoundary
         className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-        isLoading={loading}
+        copy={filterCopy}
+        error={error}
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchExperiences();
+        }}
       >
-        {error && (
-          <div
-            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
-            role="alert"
-          >
-            {error}
-          </div>
-        )}
         {experiences.length === 0 ? (
           <p className="py-16 text-center text-sm text-ink">
             {statusFilter === "PENDING" ? copy.emptyPending : copy.empty}
@@ -542,7 +570,10 @@ export function AdminExperiencesPageClient() {
                       type="checkbox"
                     />
                   </th>
-                  <th aria-sort={ariaSortFor("experience")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("experience")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "experience"}
                       ariaLabel={sortAriaLabel(cols.experience)}
@@ -551,7 +582,10 @@ export function AdminExperiencesPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th aria-sort={ariaSortFor("tripper")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("tripper")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "tripper"}
                       ariaLabel={sortAriaLabel(cols.tripper)}
@@ -563,7 +597,10 @@ export function AdminExperiencesPageClient() {
                   <th className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink">
                     {cols.typeLevel}
                   </th>
-                  <th aria-sort={ariaSortFor("status")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("status")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "status"}
                       ariaLabel={sortAriaLabel(cols.status)}
@@ -572,7 +609,10 @@ export function AdminExperiencesPageClient() {
                       order={sortOrder}
                     />
                   </th>
-                  <th aria-sort={ariaSortFor("updated")} className="px-5 py-3 text-left">
+                  <th
+                    aria-sort={ariaSortFor("updated")}
+                    className="px-5 py-3 text-left"
+                  >
                     <SortButton
                       active={sortBy === "updated"}
                       ariaLabel={sortAriaLabel(cols.updated)}
@@ -608,14 +648,19 @@ export function AdminExperiencesPageClient() {
                         }
                       }}
                     >
-                      <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-5 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           aria-label={copy.selectRow}
                           checked={selectedIds.has(item.id)}
                           className="h-4 w-4 rounded border-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
                           disabled={rowLocked}
                           onChange={() => toggleRowSelected(item.id)}
-                          title={rowLocked ? copy.lockedForSelection : undefined}
+                          title={
+                            rowLocked ? copy.lockedForSelection : undefined
+                          }
                           type="checkbox"
                         />
                       </td>
@@ -656,11 +701,14 @@ export function AdminExperiencesPageClient() {
                         </p>
                       </td>
                       <td className="px-5 py-4 text-sm text-ink">
-                        {new Date(item.updatedAt).toLocaleDateString(dateLocale, {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                        {new Date(item.updatedAt).toLocaleDateString(
+                          dateLocale,
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
                       </td>
                       <td className="px-5 py-4">
                         {isPending ? (
@@ -702,7 +750,9 @@ export function AdminExperiencesPageClient() {
                                   isFeatured: !item.isFeatured,
                                 })
                               }
-                              title={item.isFeatured ? act.unfeature : act.feature}
+                              title={
+                                item.isFeatured ? act.unfeature : act.feature
+                              }
                             >
                               {item.isFeatured ? (
                                 <StarOff className="h-4 w-4" />
@@ -714,7 +764,9 @@ export function AdminExperiencesPageClient() {
                               danger
                               disabled={isBusy || !item.canDelete}
                               onClick={() => setDeleteTargetId(item.id)}
-                              title={item.canDelete ? act.delete : act.deleteBlocked}
+                              title={
+                                item.canDelete ? act.delete : act.deleteBlocked
+                              }
                             >
                               <Trash2 className="h-4 w-4" />
                             </TableIconButton>
@@ -728,16 +780,20 @@ export function AdminExperiencesPageClient() {
             </table>
           </div>
         )}
-      </TableLoadingOverlay>
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={handlePageChange}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) handlePageChange(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
 
       <ConfirmModal
         open={deleteTargetId !== null}
@@ -748,7 +804,10 @@ export function AdminExperiencesPageClient() {
         icon={Trash2}
         tone="danger"
         title={act.deleteTitle}
-        description={act.deleteConfirmMessage.replace("{{title}}", deleteTarget?.title ?? "")}
+        description={act.deleteConfirmMessage.replace(
+          "{{title}}",
+          deleteTarget?.title ?? "",
+        )}
         cancelLabel={copy.bulkActions.cancel}
         confirmLabel={act.delete}
       />

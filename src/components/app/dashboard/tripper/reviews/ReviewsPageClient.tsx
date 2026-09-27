@@ -1,13 +1,13 @@
 "use client";
 
-import { MessageSquare, Search, Star, ThumbsUp, TrendingUp, X } from "lucide-react";
+import { MessageSquare, Star, ThumbsUp, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
 import { SortButton } from "@/components/ui/SortButton";
-import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import {
@@ -21,8 +21,6 @@ import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
-const SELECT_CLASS =
-  "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 type StatusFilter = "all" | "approved" | "unapproved";
 
 export interface TripperReview {
@@ -76,13 +74,18 @@ function npsColor(nps: number): string {
   return "text-red-600";
 }
 
-export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps) {
+export function ReviewsPageClient({
+  dict: copy,
+  locale,
+}: ReviewsPageClientProps) {
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const [reviews, setReviews] = useState<TripperReview[]>([]);
   const [stats, setStats] = useState<ReviewsStats>(EMPTY_STATS);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const hasLoadedOnce = useHasLoadedOnce(loading);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -97,6 +100,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   );
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
   const { averageRating, detractors, nps, promoters, totalReviews } = stats;
+  const queryPending = loading || searchQuery !== debouncedSearch;
   const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
 
   useEffect(() => {
@@ -108,11 +112,11 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
   }, [searchQuery]);
 
   useEffect(() => {
+    if (searchQuery !== debouncedSearch) return;
     let cancelled = false;
 
     async function fetchReviews() {
       setLoading(true);
-      setError(null);
       try {
         const params = new URLSearchParams({
           page: String(page),
@@ -134,6 +138,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           setError(data.error ?? copy.errorLoad);
           return;
         }
+        setError(null);
         setReviews(data.reviews ?? []);
         setTotal(data.total ?? 0);
         setStats({
@@ -154,7 +159,15 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     return () => {
       cancelled = true;
     };
-  }, [page, statusFilter, debouncedSearch, sortBy, sortOrder]);
+  }, [
+    page,
+    statusFilter,
+    searchQuery,
+    debouncedSearch,
+    sortBy,
+    sortOrder,
+    retryAttempt,
+  ]);
 
   function updateStatusFilter(value: StatusFilter) {
     setStatusFilter(value);
@@ -193,7 +206,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
       });
-      if (!res.ok) {
+      if (res.ok) {
+        // Reconcile the current query even if its rows changed during the PATCH.
+        setRetryAttempt((attempt) => attempt + 1);
+      } else {
         // Revert on failure
         setReviews((prev) =>
           prev.map((r) =>
@@ -212,9 +228,17 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
     }
   }
 
-  if (loading && !hasLoadedOnce) return <LoadingSpinner data-component="ReviewsPageClient" />;
+  if (loading && !hasLoadedOnce)
+    return <LoadingSpinner data-component="ReviewsPageClient" />;
   if (error && !hasLoadedOnce)
-    return <div className="p-8 text-center text-sm text-red-600" data-component="ReviewsPageClient">{error}</div>;
+    return (
+      <div
+        className="p-8 text-center text-sm text-red-600"
+        data-component="ReviewsPageClient"
+      >
+        {error}
+      </div>
+    );
 
   const kpis: KpiCard[] = [
     {
@@ -307,9 +331,7 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
                     {card.value}
                   </p>
                   {card.caption && (
-                    <p className="mt-1 text-xs text-ink">
-                      {card.caption}
-                    </p>
+                    <p className="mt-1 text-xs text-ink">{card.caption}</p>
                   )}
                 </div>
               </div>
@@ -318,49 +340,42 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
         })}
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) =>
-              updateStatusFilter(e.target.value as StatusFilter)
-            }
-            value={statusFilter}
-          >
-            <option value="all">{copy.filters.allStatuses}</option>
-            <option value="approved">{copy.filters.approved}</option>
-            <option value="unapproved">{copy.filters.unapproved}</option>
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-          <input
-            className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setPage(1);
-            }}
-            placeholder={copy.filters.searchPlaceholder}
-            type="text"
-            value={searchQuery}
-          />
-        </div>
-      </div>
+      <TableFilterToolbar
+        copy={filterCopy}
+        filters={[
+          {
+            id: "tripper-reviews-status",
+            label: filterCopy.status,
+            value: statusFilter,
+            onChange: (value) => updateStatusFilter(value as StatusFilter),
+            options: [
+              { value: "all", label: filterCopy.all },
+              { value: "approved", label: copy.filters.approved },
+              { value: "unapproved", label: copy.filters.unapproved },
+            ],
+          },
+        ]}
+        hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={queryPending}
+        onClear={clearFilters}
+        search={{
+          id: "tripper-reviews-search",
+          label: filterCopy.searchLabel,
+          placeholder: filterCopy.searchName,
+          value: searchQuery,
+          onChange: (value) => {
+            setSearchQuery(value);
+            setPage(1);
+          },
+        }}
+        shown={reviews.length}
+        total={total}
+      />
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-5 py-4">
-          <h3 className="text-xl font-semibold text-ink">
-            {copy.list.title}
-          </h3>
+          <h3 className="text-xl font-semibold text-ink">{copy.list.title}</h3>
         </div>
 
         <div
@@ -370,7 +385,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
         >
           <SortButton
             active={sortBy === "rating"}
-            ariaLabel={copy.sort.ariaSortBy.replace("{field}", copy.sort.rating)}
+            ariaLabel={copy.sort.ariaSortBy.replace(
+              "{field}",
+              copy.sort.rating,
+            )}
             ariaPressed={sortBy === "rating"}
             label={copy.sort.rating}
             onSort={() => toggleSort("rating")}
@@ -378,7 +396,10 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           />
           <SortButton
             active={sortBy === "created"}
-            ariaLabel={copy.sort.ariaSortBy.replace("{field}", copy.sort.created)}
+            ariaLabel={copy.sort.ariaSortBy.replace(
+              "{field}",
+              copy.sort.created,
+            )}
             ariaPressed={sortBy === "created"}
             label={copy.sort.created}
             onSort={() => toggleSort("created")}
@@ -386,15 +407,14 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
           />
         </div>
 
-        <TableLoadingOverlay isLoading={loading}>
-          {error && (
-            <div
-              className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
+        <TableQueryBoundary
+          copy={filterCopy}
+          error={error}
+          isLoading={queryPending}
+          onRetry={() => {
+            if (!queryPending) setRetryAttempt((value) => value + 1);
+          }}
+        >
           {reviews.length === 0 ? (
             <div className="py-16 text-center">
               <p className="mb-2 text-sm font-semibold text-neutral-700">
@@ -488,17 +508,21 @@ export function ReviewsPageClient({ dict: copy, locale }: ReviewsPageClientProps
               ))}
             </ul>
           )}
-        </TableLoadingOverlay>
+        </TableQueryBoundary>
       </div>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={setPage}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) setPage(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
     </div>
   );
 }

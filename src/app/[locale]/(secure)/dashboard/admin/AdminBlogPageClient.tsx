@@ -2,16 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Pencil, Search, Trash2, X } from "lucide-react";
+import { ArrowRight, Pencil, Trash2 } from "lucide-react";
+import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
+import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
+import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
+import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Pagination } from "@/components/ui/Pagination";
-import { Select } from "@/components/ui/Select";
-import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
-import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
-import { getBlogLevelOptions, getBlogTravelTypeOptions } from "@/lib/constants/blog-filters";
+
+import {
+  TableIconButton,
+  TableIconLink,
+} from "@/components/ui/TableIconButton";
+
+import {
+  getBlogLevelOptions,
+  getBlogTravelTypeOptions,
+} from "@/lib/constants/blog-filters";
 import { EXPERIENCE_LEVELS } from "@/lib/constants/packages";
 import type { AdminBlog } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
@@ -22,11 +32,11 @@ type Tab = "all" | "pending";
 
 const PENDING_STATUSES = new Set(["PENDING_REVIEW", "PENDING_TRIPPER_REVIEW"]);
 const PAGE_SIZE = 20;
-const SELECT_CLASS = "h-11 rounded-lg border border-gray-200 shadow-sm text-sm";
 const SEARCH_DEBOUNCE_MS = 350;
 
 export function AdminBlogPageClient() {
   const copy = useDictionary((d) => d.adminPages.blog);
+  const filterCopy = useDictionary((d) => d.common.tableFilters);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
@@ -66,20 +76,41 @@ export function AdminBlogPageClient() {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [bulkDeleteConfirmOpen, setBulkDeleteConfirmOpen] = useState(false);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
-  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(null);
+  const [bulkFailureMessage, setBulkFailureMessage] = useState<string | null>(
+    null,
+  );
   const selectAllRef = useRef<HTMLInputElement>(null);
 
   const hasActiveFilters =
-    selectedLevel !== "all" || selectedTravelType !== "all" || searchQuery !== "";
+    selectedLevel !== "all" ||
+    selectedTravelType !== "all" ||
+    searchQuery !== "";
+
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(
+    JSON.stringify([
+      page,
+      tab,
+      selectedLevel,
+      selectedTravelType,
+      searchQuery,
+      debouncedSearch,
+    ]),
+  );
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(
+      () => setDebouncedSearch(searchQuery),
+      SEARCH_DEBOUNCE_MS,
+    );
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   async function fetchBlogs() {
+    if (searchQuery !== debouncedSearch) return;
+    const isCurrent = beginRequest();
+    if (!isCurrent()) return;
     setLoading(true);
-    setError(null);
     try {
       const params = new URLSearchParams({
         page: String(page),
@@ -89,7 +120,8 @@ export function AdminBlogPageClient() {
         params.set("status", Array.from(PENDING_STATUSES).join(","));
       }
       if (selectedLevel !== "all") params.set("level", selectedLevel);
-      if (selectedTravelType !== "all") params.set("travelType", selectedTravelType);
+      if (selectedTravelType !== "all")
+        params.set("travelType", selectedTravelType);
       if (debouncedSearch) params.set("search", debouncedSearch);
       const res = await fetch(`/api/admin/blogs?${params.toString()}`);
       const data = (await res.json()) as {
@@ -98,23 +130,33 @@ export function AdminBlogPageClient() {
         total?: number;
         pendingCount?: number;
       };
+      if (!isCurrent()) return;
       if (!res.ok || !data.blogs) {
         setError(data.error ?? copy.errorLoad);
         return;
       }
+      setError(null);
       setBlogs(data.blogs);
       setTotal(data.total ?? 0);
       setPendingCount(data.pendingCount ?? 0);
     } catch {
-      setError(copy.errorLoad);
+      if (isCurrent()) setError(copy.errorLoad);
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }
 
+  const refreshCurrentQuery = useCurrentTableRefresh(fetchBlogs);
   useEffect(() => {
     void fetchBlogs();
-  }, [page, tab, selectedLevel, selectedTravelType, debouncedSearch]);
+  }, [
+    page,
+    tab,
+    selectedLevel,
+    selectedTravelType,
+    debouncedSearch,
+    searchQuery,
+  ]);
 
   // All hooks must run before the early returns below (Rules of Hooks) —
   // this derives from `blogs`/`selectedIds`, which are already up to date
@@ -194,7 +236,7 @@ export function AdminBlogPageClient() {
     setDeletingId(id);
     void fetch(`/api/admin/blogs/${id}`, { method: "DELETE" })
       .then((res) => {
-        if (res.ok) return fetchBlogs();
+        if (res.ok) return refreshCurrentQuery();
       })
       .finally(() => setDeletingId(null));
   }
@@ -206,12 +248,16 @@ export function AdminBlogPageClient() {
       try {
         const results = await Promise.allSettled(
           ids.map((id) =>
-            fetch(`/api/admin/blogs/${id}`, { method: "DELETE" }).then((res) => {
-              if (!res.ok) throw new Error(String(res.status));
-            }),
+            fetch(`/api/admin/blogs/${id}`, { method: "DELETE" }).then(
+              (res) => {
+                if (!res.ok) throw new Error(String(res.status));
+              },
+            ),
           ),
         );
-        const failedCount = results.filter((r) => r.status === "rejected").length;
+        const failedCount = results.filter(
+          (r) => r.status === "rejected",
+        ).length;
         const successCount = ids.length - failedCount;
         setBulkFailureMessage(
           failedCount > 0
@@ -223,7 +269,7 @@ export function AdminBlogPageClient() {
         );
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
-        await fetchBlogs();
+        await refreshCurrentQuery();
       } finally {
         setIsBulkDeleting(false);
       }
@@ -242,55 +288,8 @@ export function AdminBlogPageClient() {
         </h2>
       </div>
 
-      {/* Filter row */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => handleTabChange(e.target.value as Tab)}
-            value={tab}
-          >
-            <option value="all">{copy.tabs.all}</option>
-            <option value="pending">
-              {pendingCount > 0
-                ? `${copy.tabs.pending} (${pendingCount})`
-                : copy.tabs.pending}
-            </option>
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => setSelectedLevelAndClear(e.target.value)}
-            value={selectedLevel}
-          >
-            <option value="all">{copy.filters.allExperiences}</option>
-            {levelOptions.map((level) => (
-              <option key={level.key} value={level.key}>
-                {level.label}
-              </option>
-            ))}
-          </Select>
-          <Select
-            className={SELECT_CLASS}
-            onChange={(e) => setSelectedTravelTypeAndClear(e.target.value)}
-            value={selectedTravelType}
-          >
-            <option value="all">{copy.filters.allTravelTypes}</option>
-            {travelTypeOptions.map((travelType) => (
-              <option key={travelType.key} value={travelType.key}>
-                {travelType.label}
-              </option>
-            ))}
-          </Select>
-          {hasActiveFilters && (
-            <button
-              className="flex h-11 items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-4 text-[13px] font-medium text-neutral-600 transition-colors hover:border-gray-300 hover:bg-neutral-50"
-              onClick={clearFilters}
-              type="button"
-            >
-              <X className="h-3.5 w-3.5" />
-              {copy.filters.clearFilters}
-            </button>
-          )}
+      <TableFilterToolbar
+        actions={
           <Button
             className={cn(
               "font-semibold h-11 px-4 rounded-sm text-[13px] tracking-[1px] uppercase",
@@ -302,47 +301,90 @@ export function AdminBlogPageClient() {
             variant="destructive"
           >
             <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-            {copy.bulkActions.deleteSelected.replace("{count}", String(selectedIds.size))}
+            {copy.bulkActions.deleteSelected.replace(
+              "{count}",
+              String(selectedIds.size),
+            )}
           </Button>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-neutral-400">
-            {blogs.length} {copy.filters.of} {total} {copy.filters.count}
-          </span>
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-            <input
-              className="h-11 w-56 rounded-lg border border-gray-200 pl-9 pr-3 text-sm shadow-sm placeholder:text-neutral-400 focus:border-gray-300 focus:outline-none"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSelectedIds(new Set());
-                setPage(1);
-              }}
-              placeholder={copy.filters.searchPlaceholder}
-              type="text"
-              value={searchQuery}
-            />
-          </div>
-        </div>
-      </div>
+        }
+        copy={filterCopy}
+        filters={[
+          {
+            id: "admin-blog-status",
+            label: filterCopy.status,
+            value: tab,
+            onChange: (value) => handleTabChange(value as Tab),
+            options: [
+              { value: "all", label: copy.tabs.all },
+              {
+                value: "pending",
+                label:
+                  pendingCount > 0
+                    ? `${copy.tabs.pending} (${pendingCount})`
+                    : copy.tabs.pending,
+              },
+            ],
+          },
+          {
+            id: "admin-blog-experience",
+            label: filterCopy.experience,
+            value: selectedLevel,
+            onChange: setSelectedLevelAndClear,
+            options: [
+              { value: "all", label: filterCopy.all },
+              ...levelOptions.map((option) => ({
+                value: option.key,
+                label: option.label,
+              })),
+            ],
+          },
+          {
+            id: "admin-blog-type",
+            label: filterCopy.type,
+            value: selectedTravelType,
+            onChange: setSelectedTravelTypeAndClear,
+            options: [
+              { value: "all", label: filterCopy.all },
+              ...travelTypeOptions.map((option) => ({
+                value: option.key,
+                label: option.label,
+              })),
+            ],
+          },
+        ]}
+        hasActiveFilters={hasActiveFilters}
+        hasError={!!error}
+        isLoading={queryPending}
+        onClear={clearFilters}
+        search={{
+          id: "admin-blog-search",
+          label: filterCopy.searchLabel,
+          placeholder: filterCopy.searchTitle,
+          value: searchQuery,
+          onChange: (value) => {
+            setSearchQuery(value);
+            setSelectedIds(new Set());
+            setPage(1);
+          },
+        }}
+        shown={blogs.length}
+        total={total}
+      />
 
       {bulkFailureMessage && (
         <p className="text-xs text-red-600">{bulkFailureMessage}</p>
       )}
 
       {/* Table panel */}
-      <TableLoadingOverlay
+      <TableQueryBoundary
         className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-        isLoading={loading}
+        copy={filterCopy}
+        error={error}
+        isLoading={queryPending}
+        onRetry={() => {
+          if (!queryPending) void fetchBlogs();
+        }}
       >
-        {error && (
-          <div
-            className="border-b border-red-100 bg-red-50 p-3 text-center text-sm text-red-600"
-            role="alert"
-          >
-            {error}
-          </div>
-        )}
         {blogs.length === 0 ? (
           <p className="py-16 text-center text-sm text-ink">
             {tab === "pending" ? copy.emptyPending : copy.empty}
@@ -370,16 +412,14 @@ export function AdminBlogPageClient() {
                     cols.status,
                     cols.updated,
                     cols.actions,
-                  ].map(
-                    (h) => (
-                      <th
-                        className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink"
-                        key={h}
-                      >
-                        {h}
-                      </th>
-                    ),
-                  )}
+                  ].map((h) => (
+                    <th
+                      className="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink"
+                      key={h}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -399,13 +439,20 @@ export function AdminBlogPageClient() {
                       key={item.id}
                       onClick={() => {
                         if (isPending) {
-                          router.push(`/${locale}/dashboard/admin/blog/${item.id}`);
+                          router.push(
+                            `/${locale}/dashboard/admin/blog/${item.id}`,
+                          );
                         } else if (isRandomtrip) {
-                          router.push(`/${locale}/dashboard/admin/blog/${item.id}/edit`);
+                          router.push(
+                            `/${locale}/dashboard/admin/blog/${item.id}/edit`,
+                          );
                         }
                       }}
                     >
-                      <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-5 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           aria-label={copy.table.selectRow}
                           checked={selectedIds.has(item.id)}
@@ -437,19 +484,26 @@ export function AdminBlogPageClient() {
                         <BlogStatusBadge
                           status={item.status}
                           label={
-                            copy.status[item.status as keyof typeof copy.status] ??
-                            item.status
+                            copy.status[
+                              item.status as keyof typeof copy.status
+                            ] ?? item.status
                           }
                         />
                       </td>
                       <td className="px-5 py-4 text-sm text-ink">
-                        {new Date(item.updatedAt).toLocaleDateString(dateLocale, {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                        {new Date(item.updatedAt).toLocaleDateString(
+                          dateLocale,
+                          {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
                       </td>
-                      <td className="px-5 py-4" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-5 py-4"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <div className="flex items-center gap-1.5">
                           {isPending && (
                             <TableIconLink
@@ -471,7 +525,9 @@ export function AdminBlogPageClient() {
                             danger
                             disabled={isBusy || isPending}
                             onClick={() => setDeleteTargetId(item.id)}
-                            title={isPending ? act.lockedForDeletion : act.delete}
+                            title={
+                              isPending ? act.lockedForDeletion : act.delete
+                            }
                           >
                             <Trash2 className="h-4 w-4" />
                           </TableIconButton>
@@ -484,16 +540,20 @@ export function AdminBlogPageClient() {
             </table>
           </div>
         )}
-      </TableLoadingOverlay>
+      </TableQueryBoundary>
 
-      <Pagination
-        nextLabel={paginationCopy.next}
-        onPageChange={handlePageChange}
-        page={page}
-        pageOfLabel={paginationCopy.pageOf}
-        previousLabel={paginationCopy.previous}
-        totalPages={totalPages}
-      />
+      <div inert={queryPending || !!error || undefined}>
+        <Pagination
+          nextLabel={paginationCopy.next}
+          onPageChange={(next) => {
+            if (!queryPending && !error) handlePageChange(next);
+          }}
+          page={page}
+          pageOfLabel={paginationCopy.pageOf}
+          previousLabel={paginationCopy.previous}
+          totalPages={totalPages}
+        />
+      </div>
 
       <ConfirmModal
         open={deleteTargetId !== null}
@@ -517,7 +577,10 @@ export function AdminBlogPageClient() {
         isConfirming={isBulkDeleting}
         icon={Trash2}
         tone="danger"
-        title={copy.bulkActions.confirmTitle.replace("{count}", String(selectedIds.size))}
+        title={copy.bulkActions.confirmTitle.replace(
+          "{count}",
+          String(selectedIds.size),
+        )}
         description={copy.bulkActions.confirmBody}
         cancelLabel={copy.bulkActions.cancel}
         confirmLabel={copy.bulkActions.confirm}

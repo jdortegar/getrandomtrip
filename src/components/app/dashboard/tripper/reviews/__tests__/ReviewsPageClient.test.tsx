@@ -203,7 +203,7 @@ describe("ReviewsPageClient — sort composes with filter, search, and paginatio
     });
 
     const searchInput = container.querySelector(
-      'input[type="text"]',
+      'input[type="search"]',
     ) as HTMLInputElement;
     await act(async () => {
       setNativeInputValue(searchInput, "Ana");
@@ -304,4 +304,116 @@ describe("ReviewsPageClient — non-goal sort options (must NOT render)", () => 
       ]),
     );
   });
+});
+
+describe("shared toolbar request lifecycle", () => {
+  it("keeps controls mounted through debounce, ignores stale errors, and retries the active query", async () => {
+    vi.useFakeTimers();
+    const requests: {
+      url: string;
+      resolve: (response: Response) => void;
+      reject: (error: Error) => void;
+    }[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        (url: string) =>
+          new Promise<Response>((resolve, reject) =>
+            requests.push({ url, resolve, reject }),
+          ),
+      ),
+    );
+    render(<ReviewsPageClient dict={copy} locale="es" />);
+    await act(async () =>
+      requests[0].resolve(Response.json({ reviews: [], total: 0 })),
+    );
+    const toolbar = container.querySelector(
+      '[data-component="TableFilterToolbar"]',
+    )!;
+    const field = toolbar.querySelector("input")!;
+    act(() => setNativeInputValue(field, "Ana"));
+    const boundary = container.querySelector(
+      '[data-component="TableQueryBoundary"]',
+    )!;
+    expect(boundary.getAttribute("aria-busy")).toBe("true");
+    expect(boundary.querySelector("[inert]")).not.toBeNull();
+    act(() => vi.advanceTimersByTime(349));
+    expect(requests).toHaveLength(1);
+    act(() => vi.advanceTimersByTime(1));
+    expect(requests[1].url).toContain("search=Ana");
+    act(() => buttonWithText("Limpiar filtros").click());
+    expect(field.value).toBe("");
+    expect(requests[2].url).not.toContain("search=");
+    await act(async () => requests[1].reject(new Error("Stale")));
+    expect(boundary.getAttribute("aria-busy")).toBe("true");
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    await act(async () =>
+      requests[2].resolve(Response.json({}, { status: 503 })),
+    );
+    const retry = container.querySelector(
+      '[role="alert"] button',
+    ) as HTMLButtonElement;
+    expect(retry.closest("[inert]")).toBeNull();
+    act(() => retry.click());
+    expect(retry.getAttribute("aria-busy")).toBe("true");
+    await act(async () =>
+      requests[3].resolve(Response.json({ reviews: [], total: 0 })),
+    );
+    expect(container.querySelector('[role="alert"]')).toBeNull();
+    expect(boundary.getAttribute("aria-busy")).toBe("false");
+    expect(toolbar.querySelector("input")).toBe(field);
+  });
+});
+
+it("reconciles optimistic publication with the current filter after a deferred PATCH", async () => {
+  const requests: {
+    url: string;
+    method: string;
+    resolve: (response: Response) => void;
+  }[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      (url: string, init?: RequestInit) =>
+        new Promise<Response>((resolve) =>
+          requests.push({ url, method: init?.method ?? "GET", resolve }),
+        ),
+    ),
+  );
+  const review = {
+    id: "r1",
+    content: "Great",
+    createdAt: "2026-01-01",
+    isApproved: true,
+    isPublic: false,
+    rating: 5,
+    title: "",
+    userName: "Ana",
+    userAvatar: null,
+    packageTitle: "Trip",
+  };
+  render(<ReviewsPageClient dict={copy} locale="es" />);
+  await act(async () =>
+    requests[0].resolve(Response.json({ reviews: [review], total: 1 })),
+  );
+  const publish = buttonWithText("Publicar");
+  act(() => publish.click());
+  expect(requests[1].method).toBe("PATCH");
+  act(() => {
+    const select = container.querySelector("select")!;
+    select.value = "approved";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await act(async () =>
+    requests[2].resolve(Response.json({ reviews: [review], total: 1 })),
+  );
+  await act(async () => requests[1].resolve(Response.json({ ok: true })));
+  expect(requests).toHaveLength(4);
+  expect(requests[3].url).toContain("status=approved");
+  await act(async () =>
+    requests[3].resolve(
+      Response.json({ reviews: [{ ...review, isPublic: true }], total: 1 }),
+    ),
+  );
+  expect(buttonWithText("Publicado").disabled).toBe(false);
 });

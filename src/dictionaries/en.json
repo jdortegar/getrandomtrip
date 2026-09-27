@@ -253,6 +253,21 @@
     "newDrop": "New Drop"
   },
   "common": {
+    "tableFilters": {
+      "all": "All",
+      "clearFilters": "Clear filters",
+      "count": "results",
+      "errorLoad": "Could not load results. Please try again.",
+      "experience": "Experience",
+      "loading": "Loading results…",
+      "of": "of",
+      "retry": "Retry",
+      "searchLabel": "Search",
+      "searchName": "Search by name",
+      "searchTitle": "Search by title",
+      "status": "Status",
+      "type": "Travel type"
+    },
     "siteName": "Randomtrip",
     "pagination": {
       "previous": "Previous",
@@ -984,6 +999,7 @@
         "allPayments": "All payments",
         "noPayment": "No payment",
         "clearFilters": "Clear filters",
+        "loading": "Loading requests…",
         "of": "of",
         "count": "requests",
         "searchPlaceholder": "Name or email…",
@@ -4472,13 +4488,26 @@
     },
     "trips": {
       "description": "Upcoming bookings and completed travel history",
+      "allExperiences": "All experiences",
+      "allTravelTypes": "All travel types",
+      "clearFilters": "Clear filters",
+      "emptyFiltered": "No trips match this filter.",
+      "errorLoad": "Could not load trips. Please try again.",
+      "experienceLabel": "Experience",
       "eyebrow": "Inventory",
       "filterAll": "All",
       "filterCompleted": "Completed",
+      "filterLabel": "Trip status",
       "filterUpcoming": "Upcoming",
+      "loading": "Loading trips…",
       "of": "of",
+      "retry": "Retry",
+      "searchLabel": "Search trips",
+      "searchPlaceholder": "Search by origin or trip reference",
       "title": "All your trips",
-      "tripsCount": "trips"
+      "travelTypeLabel": "Travel type",
+      "tripsCount": "trips",
+      "xsedType": "XSED"
     },
     "reviews": {
       "eyebrow": "Ratings",
