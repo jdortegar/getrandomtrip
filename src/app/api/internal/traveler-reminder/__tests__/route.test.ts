@@ -27,6 +27,7 @@ import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerReminderEmail } from "@/lib/email";
 
 type RouteModule = typeof import("../route");
+type PassesModule = typeof import("../passes");
 
 const VALID_SECRET = "test-cron-secret-123";
 
@@ -81,7 +82,7 @@ describe("runPass1", () => {
       "fresh-plaintext-token",
     );
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const now = new Date();
     const result = await mod.runPass1(now);
 
@@ -98,7 +99,7 @@ describe("runPass1", () => {
   });
 
   it("queries only INVITED rows with reminderSentAt: null inside the pre-cutoff window", async () => {
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const now = new Date();
     await mod.runPass1(now);
 
@@ -115,7 +116,7 @@ describe("runPass1", () => {
   it("sends nothing when there are no candidates", async () => {
     (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass1(new Date());
 
     expect(result.reminded).toBe(0);
@@ -128,7 +129,7 @@ describe("runPass1", () => {
       .mockResolvedValueOnce([{ id: "trav-1" }])
       .mockResolvedValueOnce([]);
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const firstRun = await mod.runPass1(new Date());
     const secondRun = await mod.runPass1(new Date());
 
@@ -146,7 +147,7 @@ describe("runPass1", () => {
       .mockRejectedValueOnce(new Error("DB error"))
       .mockResolvedValueOnce("token-ok");
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass1(new Date());
 
     expect(result.reminded).toBe(1);
@@ -162,7 +163,7 @@ describe("runPass2", () => {
       count: 2,
     });
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const now = new Date();
     const result = await mod.runPass2(now);
 
@@ -182,7 +183,7 @@ describe("runPass2", () => {
       count: 0,
     });
 
-    const mod = (await import("../route")) as RouteModule;
+    const mod = (await import("../passes")) as PassesModule;
     const result = await mod.runPass2(new Date());
 
     expect(result.locked).toBe(0);

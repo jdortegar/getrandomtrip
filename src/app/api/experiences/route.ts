@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
@@ -5,7 +6,27 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/experiences - Get all experiences for a tripper
+// Public catalog fields only. Authoring uses /api/tripper/experiences or /api/admin/experiences.
+const PUBLIC_EXPERIENCE_SELECT = {
+  id: true,
+  title: true,
+  teaser: true,
+  heroImage: true,
+  type: true,
+  level: true,
+  tags: true,
+  minNights: true,
+  maxNights: true,
+  minPax: true,
+  maxPax: true,
+  basePrice: true,
+  currency: true,
+  isFeatured: true,
+  likes: true,
+  owner: { select: { id: true, name: true, tripperSlug: true } },
+} satisfies Prisma.ExperienceSelect;
+
+// GET /api/experiences - Published public experiences for a tripper
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -21,27 +42,21 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const where: any = {
+    const where: Prisma.ExperienceWhereInput = {
+      status: "ACTIVE",
+      isReviewCopy: false,
       isActive: true,
       ownerId: tripperId,
       owner: { isActive: true },
     };
 
-    if (type) where.type = type;
+    if (type) where.type = { has: type };
     if (level) where.level = level;
 
     const experiences = await prisma.experience.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-          },
-        },
-      },
+      select: PUBLIC_EXPERIENCE_SELECT,
     });
 
     return NextResponse.json({ experiences }, { status: 200 });

@@ -6,6 +6,7 @@ import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
 import type { Trip } from "@/lib/utils/trips";
@@ -83,7 +84,7 @@ export function UpcomingTripsList({
                 getTripExperienceDisplay(trip, locale);
               const startDate = new Date(trip.startDate).toLocaleDateString(
                 dateLocale,
-                { day: "numeric", month: "short", year: "numeric" },
+                { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" },
               );
               const statusLabel =
                 copy.tripStatus[trip.status as keyof typeof copy.tripStatus] ??
@@ -105,7 +106,7 @@ export function UpcomingTripsList({
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-ink">
-                        {trip.actualDestination ?? copy.allTrips.emptyDestination}
+                        {(isFulfillmentVisible(trip.status, false) ? trip.actualDestination : null) ?? copy.allTrips.emptyDestination}
                       </p>
                       <p className="mt-0.5 truncate text-xs text-ink">
                         {travelerTypeTitle} · {levelName}

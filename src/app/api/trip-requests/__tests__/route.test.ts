@@ -57,6 +57,8 @@ const fullJourneyBody = {
   originCity: "Buenos Aires",
   pax: 2,
   nights: 3,
+  startDate: "2099-01-01",
+  endDate: "2099-01-04",
 };
 
 function makeGetRequest() {
@@ -140,7 +142,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
 
   it("replaces stale party details when a fresh XSED selection reuses an active trip", async () => {
     vi.mocked(prisma.tripRequest.findFirst).mockResolvedValue({
-      id: "active-xsed", status: "SAVED", tripperId: null,
+      id: "active-xsed", status: "SAVED", startDate: new Date("2099-01-01"), endDate: new Date("2099-01-04"), tripperId: null,
       paxDetails: { adults: 3, minors: 2, rooms: 2 },
     } as never);
     vi.mocked(prisma.tripRequest.update).mockResolvedValue({ id: "active-xsed", type: "xsed" } as never);
@@ -172,7 +174,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
   // (b) Repeated journey entry without id updates the same row
   it("updates the existing active journey row instead of creating a second one", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      { id: "active-1", status: "SAVED", tripperId: null },
+      { id: "active-1", status: "SAVED", startDate: new Date("2099-01-01"), endDate: new Date("2099-01-04"), tripperId: null },
     );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "active-1",
@@ -274,7 +276,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
   // (e) Client-supplied id still updates directly
   it("updates the owned row directly by id without invoking the family finder", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      { id: "trip_123", status: "SAVED", type: "group", level: "essenza", pax: 3 },
+      { id: "trip_123", status: "SAVED", startDate: new Date("2099-01-01"), endDate: new Date("2099-01-04"), type: "group", level: "essenza", pax: 3 },
     );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "trip_123",
@@ -286,7 +288,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledTimes(1);
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledWith({
       where: { id: "trip_123", userId: "user-1" },
-      select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
+      select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
     });
     expect(prisma.tripRequest.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ id: "trip_123" }) }),
@@ -337,7 +339,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
   // (h) Tripper attribution on reuse: never clobber an existing non-null tripperId
   it("preserves a non-null tripperId on the reused row instead of overwriting it", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      { id: "active-5", status: "SAVED", tripperId: "tripper-99" },
+      { id: "active-5", status: "SAVED", startDate: new Date("2099-01-01"), endDate: new Date("2099-01-04"), tripperId: "tripper-99" },
     );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "active-5",
@@ -436,7 +438,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
 
   it("revalidates the xsed pages when reusing an existing xsed row", async () => {
     (prisma.tripRequest.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      { id: "active-8", status: "PENDING_PAYMENT", tripperId: null },
+      { id: "active-8", status: "PENDING_PAYMENT", startDate: new Date("2099-01-01"), endDate: new Date("2099-01-04"), tripperId: null },
     );
     (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
       id: "active-8",

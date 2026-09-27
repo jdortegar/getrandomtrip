@@ -55,6 +55,7 @@ const mockTrip = {
   id: "trip-1",
   userId: "user-1",
   status: "CONFIRMED",
+  actualDestination: "Tulum, Mexico",
   startDate: new Date("2026-08-01T00:00:00.000Z"),
   travelersLockedAt: null,
   payment: null,
@@ -118,7 +119,7 @@ describe("GET /api/trips/[id]", () => {
     expect(res.status).toBe(403);
   });
 
-  it("returns 200 with experience including heroImage, destinationCity, destinationCountry", async () => {
+  it("returns public experience metadata but hides destination before reveal", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { email: "test@example.com" },
     });
@@ -132,8 +133,8 @@ describe("GET /api/trips/[id]", () => {
     const body = await res.json();
     expect(body.trip).toBeDefined();
     expect(body.trip.experience.heroImage).toBe("https://example.com/hero.jpg");
-    expect(body.trip.experience.destinationCity).toBe("Tulum");
-    expect(body.trip.experience.destinationCountry).toBe("Mexico");
+    expect(body.trip.experience.destinationCity).toBeUndefined();
+    expect(body.trip.experience.destinationCountry).toBeUndefined();
   });
 
   it("returns 200 for a companion linked via TripTraveler.userId to a trip bought by someone else", async () => {
@@ -172,6 +173,8 @@ describe("GET /api/trips/[id]", () => {
     const res = await GET(makeRequest(), makeProps("trip-1"));
     expect(res.status).toBe(200);
     const body = await res.json();
+    expect(body.trip.actualDestination).toBeNull();
+    expect(body.trip.experience.destinationCity).toBeUndefined();
     expect(body.trip.experience.itinerary).toBeUndefined();
     expect(body.trip.experience.inclusions).toBeUndefined();
     expect(body.trip.experience.exclusions).toBeUndefined();
@@ -201,6 +204,8 @@ describe("GET /api/trips/[id]", () => {
       const res = await GET(makeRequest(), makeProps("trip-1"));
       expect(res.status).toBe(200);
       const body = await res.json();
+      expect(body.trip.actualDestination).toBe("Tulum, Mexico");
+      expect(body.trip.experience.destinationCity).toBe("Tulum");
       expect(body.trip.experience.itinerary).toBeDefined();
       expect(body.trip.experience.inclusions).toEqual(["Breakfast"]);
       expect(body.trip.experience.exclusions).toEqual(["Flights"]);

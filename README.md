@@ -1,7 +1,7 @@
 # Randomtrip (frontend)
 
 Next.js 14 + TypeScript + Tailwind + Zustand.  
-Deploy: Netlify — https://getrandomtrip.netlify.app/
+Deploy: Netlify — https://getrandomtrip.com
 
 ## Características clave
 

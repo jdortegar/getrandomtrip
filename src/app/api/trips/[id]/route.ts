@@ -5,10 +5,16 @@ import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup"
 import { prisma } from "@/lib/prisma";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import {
+  toTravelerTripResponse,
+  TRAVELER_EXPERIENCE_SELECT,
+} from "@/lib/trips/travelerTripResponse";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
+
+export const dynamic = "force-dynamic";
 
 // GET /api/trips/[id] - Get a specific trip
 export async function GET(
@@ -37,18 +43,7 @@ export async function GET(
       where: { id: params.id },
       include: {
         payment: true,
-        experience: {
-          select: {
-            id: true,
-            title: true,
-            itinerary: true,
-            inclusions: true,
-            exclusions: true,
-            heroImage: true,
-            destinationCity: true,
-            destinationCountry: true,
-          },
-        },
+        experience: { select: TRAVELER_EXPERIENCE_SELECT },
       },
     });
 
@@ -71,23 +66,13 @@ export async function GET(
     // exclusions/documents entirely, not just hide them client-side.
     const visible = isFulfillmentVisible(trip.status, false);
 
-    let responseTrip: typeof trip & { documents?: ReturnType<typeof toTripDocumentDTO>[] } = trip;
-
-    if (visible) {
-      const documents = await prisma.tripDocument.findMany({
-        where: { tripRequestId: trip.id },
-        orderBy: { createdAt: "desc" },
-      });
-      responseTrip = { ...trip, documents: documents.map(toTripDocumentDTO) };
-    } else if (trip.experience) {
-      const {
-        itinerary: _itinerary,
-        inclusions: _inclusions,
-        exclusions: _exclusions,
-        ...restExperience
-      } = trip.experience;
-      responseTrip = { ...trip, experience: restExperience as typeof trip.experience };
-    }
+    const responseTrip = toTravelerTripResponse(trip);
+    const documents = visible
+      ? (await prisma.tripDocument.findMany({
+          where: { tripRequestId: trip.id },
+          orderBy: { createdAt: "desc" },
+        })).map(toTripDocumentDTO)
+      : undefined;
 
     // Resolved server-side so the displayed price always matches what
     // checkout will charge (tripper override, or global catalog fallback).
@@ -101,7 +86,7 @@ export async function GET(
     }).price;
 
     return NextResponse.json(
-      { trip: { ...responseTrip, basePriceUsd, roster } },
+      { trip: { ...responseTrip, basePriceUsd, roster, ...(visible && { documents }) } },
       { status: 200 },
     );
   } catch (error) {

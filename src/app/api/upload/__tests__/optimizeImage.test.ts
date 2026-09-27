@@ -26,7 +26,7 @@ vi.mock("@netlify/blobs", () => ({
   getStore: vi.fn(),
 }));
 
-import { optimizeImage } from "../route";
+import { optimizeImage } from "@/lib/images/optimizeImage";
 
 describe("optimizeImage", () => {
   beforeEach(() => {

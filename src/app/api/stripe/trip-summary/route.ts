@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
     },
     trip: {
       id: trip.id,
+      status: trip.status,
       endDate: trip.endDate?.toISOString() ?? null,
       level: trip.level,
       nights: trip.nights,

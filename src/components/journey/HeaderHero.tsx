@@ -115,8 +115,10 @@ function HeaderHeroVideoBackground({
           poster={fallbackImage}
           preload="metadata"
         >
-          <source src={videoSrc.replace(".mp4", ".webm")} type="video/webm" />
-          <source src={videoSrc} type="video/mp4" />
+          <source
+            src={videoSrc}
+            type={videoSrc.split(/[?#]/)[0].endsWith(".webm") ? "video/webm" : "video/mp4"}
+          />
         </video>
       )}
 

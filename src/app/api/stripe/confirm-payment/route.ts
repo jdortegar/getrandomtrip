@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { authOptions } from "@/lib/auth";
-import { updatePaymentFromStripeWebhook } from "@/lib/db/payment";
+import { findPaymentByProviderId, findPaymentByStripeIntentId, updatePaymentFromStripeWebhook } from "@/lib/db/payment";
 import type { UpdatePaymentData } from "@/lib/db/payment";
 
 /**
@@ -32,11 +32,20 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!paymentIntentId) {
+  if (typeof paymentIntentId !== "string" || !paymentIntentId.startsWith("pi_")) {
     return NextResponse.json(
       { error: "paymentIntentId is required" },
       { status: 400 },
     );
+  }
+
+  const payment = (await findPaymentByStripeIntentId(paymentIntentId)) ??
+    (await findPaymentByProviderId(paymentIntentId));
+  if (!payment) {
+    return NextResponse.json({ error: "Payment record not found" }, { status: 404 });
+  }
+  if (payment.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   let intent: Stripe.PaymentIntent;

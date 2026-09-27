@@ -5,6 +5,8 @@
  * Each type exports content per locale (es, en).
  */
 
+import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import { couple } from "./couple";
 import { solo } from "./solo";
 import { family } from "./family";
@@ -181,34 +183,28 @@ export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   "paws",
 ];
 
-/** Card display data (subtitle, img) per slug for journey/tripper type selection. */
+/** Card imagery per slug for journey/tripper type selection. */
 const CARD_BY_SLUG: Record<
   TravelerTypeSlug,
-  { img: string; subtitle: string }
+  { img: string }
 > = {
   couple: {
     img: "/images/journey-types/couple-traveler.png",
-    subtitle: "Creen recuerdos juntos",
   },
   family: {
     img: "/images/journey-types/family-traveler.jpg",
-    subtitle: "Aventuras para todos",
   },
   group: {
     img: "/images/journey-types/friends-group.jpg",
-    subtitle: "Experiencias compartidas",
   },
   honeymoon: {
     img: "/images/journey-types/honeymoon-same-sex.jpg",
-    subtitle: "El comienzo perfecto",
   },
   paws: {
     img: "/images/journey-types/paws-card.jpg",
-    subtitle: "Con tu mascota de viaje",
   },
   solo: {
     img: "/images/journey-types/solo-traveler.png",
-    subtitle: "Descubre el mundo a tu ritmo",
   },
 };
 
@@ -224,13 +220,14 @@ export interface TravelerTypeOption {
  * Uses labels from each type's meta for the given locale.
  */
 export function getTravelerTypeOptions(locale?: string): TravelerTypeOption[] {
+  const localizedSubtitles = (locale === "en" ? en : es).journey.travelerTypeSubtitles;
   return TRAVELER_TYPE_SLUGS.map((slug) => {
     const data = getTravelerType(slug, locale);
     const card = CARD_BY_SLUG[slug];
     return {
       key: slug,
       title: data?.meta.label ?? slug,
-      subtitle: card.subtitle,
+      subtitle: localizedSubtitles[slug],
       img: card.img,
     };
   });

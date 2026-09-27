@@ -13,6 +13,7 @@ interface RefreshOptions {
 export function useCheckoutQuote(tripId?: string) {
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [pending, setPending] = useState(false);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [promoCode, setPromoCode] = useState<string | null>(null);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
@@ -30,6 +31,7 @@ export function useCheckoutQuote(tripId?: string) {
       lastOptions.current = options;
       setPending(true);
       setError(null);
+      setErrorCode(null);
       setQuote(null);
       const isCurrent = () =>
         currentTrip.current === tripId && revision.current === version;
@@ -53,7 +55,7 @@ export function useCheckoutQuote(tripId?: string) {
             const data = await response.json();
             if (isCurrent() && "code" in data) setPromoCode(data.code);
             if (!response.ok)
-              throw new Error(data.error ?? "Could not refresh checkout");
+              throw Object.assign(new Error(data.error ?? "Could not refresh checkout"), { code: data.errorCode });
             if (!data.clientSecret || !Number.isFinite(data.total))
               throw new Error("Invalid checkout quote");
             if (isCurrent()) {
@@ -63,12 +65,14 @@ export function useCheckoutQuote(tripId?: string) {
             }
             return data as CheckoutQuote;
           } catch (cause) {
-            if (isCurrent())
+            if (isCurrent()) {
+              setErrorCode(cause instanceof Error && "code" in cause && typeof cause.code === "string" ? cause.code : null);
               setError(
                 cause instanceof Error
                   ? cause.message
                   : "Could not refresh checkout",
               );
+            }
             throw cause;
           } finally {
             if (isCurrent()) setPending(false);
@@ -108,6 +112,7 @@ export function useCheckoutQuote(tripId?: string) {
     quote,
     pending,
     error,
+    errorCode,
     refresh,
     promoCode,
     retry: () => refresh(lastOptions.current),

@@ -247,8 +247,6 @@ export default function JourneySummary({
       image: card?.img,
       label: TRAVELER_TYPE_LABELS[travelType] || card?.title || travelType,
       price: selectedLevel ? formatUSD(price) : undefined,
-      rating: 7.0,
-      reviews: 10,
     };
   }, [travelType, selectedLevel, locale, tripperPriceOverrides]);
 
@@ -550,14 +548,6 @@ export default function JourneySummary({
                 {summary.travelTypeSection} | {selectedTravelTypeInfo.label}
               </p>
               <div className="flex items-center justify-between">
-                {selectedTravelTypeInfo.rating != null && (
-                  <p className={cn("mt-1", captionClass)}>
-                    {summary.favoriteAmongTravelers}
-                    {selectedTravelTypeInfo.rating.toFixed(1)}
-                    {selectedTravelTypeInfo.reviews != null &&
-                      ` (${selectedTravelTypeInfo.reviews})`}
-                  </p>
-                )}
                 <button
                   className={actionButtonClass}
                   onClick={() => onEdit?.("travel-type")}

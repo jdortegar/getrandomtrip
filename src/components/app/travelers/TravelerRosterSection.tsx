@@ -73,6 +73,7 @@ export const TravelerRosterSection = forwardRef<
     ? new Date(roster.deadline).toLocaleDateString(locale, {
         day: "numeric",
         month: "short",
+        timeZone: "UTC",
       })
     : null;
 

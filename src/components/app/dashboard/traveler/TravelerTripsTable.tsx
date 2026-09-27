@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Pagination } from "@/components/ui/Pagination";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
 import type { Trip } from "@/lib/utils/trips";
@@ -169,7 +170,7 @@ export function TravelerTripsTable({
                     getTripExperienceDisplay(trip, locale);
                   const startDate = new Date(trip.startDate).toLocaleDateString(
                     locale.startsWith("en") ? "en-US" : "es-ES",
-                    { day: "numeric", month: "short", year: "numeric" },
+                    { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" },
                   );
                   const statusLabel =
                     copy.tripStatus[
@@ -194,7 +195,7 @@ export function TravelerTripsTable({
                       {/* Destination */}
                       <td className="hidden px-5 py-4 sm:table-cell">
                         <p className="text-sm font-semibold text-ink">
-                          {trip.actualDestination ??
+                          {(isFulfillmentVisible(trip.status, false) ? trip.actualDestination : null) ??
                             copy.allTrips.emptyDestination}
                         </p>
                         <p className="mt-0.5 flex items-center gap-1 text-xs text-ink">

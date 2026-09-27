@@ -64,6 +64,7 @@ describe("atomic checkout quote persistence", () => {
   });
   it("updates the amount and canonical party together when both guards match", async () => {
     await upsertPaymentForTripCheckout(data);
+    expect(tx.tripRequest.updateMany.mock.invocationCallOrder[0]).toBeLessThan(tx.payment.updateMany.mock.invocationCallOrder[0]);
     expect(tx.tripRequest.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
         data: {

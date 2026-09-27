@@ -1,5 +1,6 @@
 "use client";
 
+import { isTripStartDateEligible } from "@/lib/helpers/tripCalendarDate";
 import { useRef, useState, useEffect, useId } from "react";
 import { Check } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -112,7 +113,7 @@ export default function JourneyProgressSidebar({
       case "excuse":
         return !!(travelType && experience && (excuse || !hasExcuseStep));
       case "details":
-        return !!(originCountry && originCity && startDate && nights);
+        return !!(originCountry && originCity && isTripStartDateEligible(startDate, travelType ?? undefined) && Number(nights) > 0);
       case "preferences":
         return isCompleteTransportOrderParam(
           searchParams.get("transportOrder"),
@@ -158,7 +159,7 @@ export default function JourneyProgressSidebar({
         return !!(originCountry && originCity);
       }
       if (substepId === "dates") {
-        return !!(startDate && nights);
+        return isTripStartDateEligible(startDate, travelType ?? undefined) && Number(nights) > 0;
       }
       if (substepId === "transport") {
         return !!transportOrder;

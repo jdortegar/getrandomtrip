@@ -41,6 +41,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 function makeTripRow() {
   return {
     id: "trip-1",
+    status: "CONFIRMED",
     userId: "buyer-1",
     startDate: new Date(Date.now() + 30 * DAY_MS),
     endDate: new Date(Date.now() + 34 * DAY_MS),
@@ -122,6 +123,7 @@ describe("GET /api/stripe/trip-summary", () => {
 
     const body = await res.json();
     expect(body.payment.status).toBe("APPROVED");
+    expect(body.trip.status).toBe("CONFIRMED");
     expect(body.trip.paxDetails).toEqual({ adults: 2, minors: 1 });
     expect(body.trip.roster).toBeDefined();
     expect(body.trip.roster.cap).toBe(2);

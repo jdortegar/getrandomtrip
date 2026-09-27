@@ -1577,6 +1577,20 @@
     "travelTypeTitle": "By traveler type"
   },
   "trippers": {
+    "planner": {
+      "title": "Plan your Randomtrip with {{name}}",
+      "description": "{{name}} specializes in creating unforgettable experiences. Follow these steps to start planning your next great trip.",
+      "fallbackName": "this tripper",
+      "visitedCountries": "Countries visited",
+      "expertise": "Areas of expertise",
+      "originTitle": "Where are you traveling from?",
+      "originDescription": "{{name}} will design your experience from your departure city",
+      "countryLabel": "Departure country",
+      "cityLabel": "Departure city",
+      "countryPlaceholder": "Select your country",
+      "cityPlaceholder": "Select a city",
+      "continueLabel": "Continue →"
+    },
     "hero": {
       "description": "Explore profiles of expert travelers who curate authentic and memorable experiences.",
       "subtitle": "MEET THE TEAM",
@@ -1656,6 +1670,14 @@
     }
   },
   "journey": {
+    "travelerTypeSubtitles": {
+      "solo": "Discover the world at your own pace",
+      "couple": "Create memories together",
+      "group": "Shared experiences",
+      "family": "Adventures for everyone",
+      "honeymoon": "The perfect beginning",
+      "paws": "Travel with your pet"
+    },
     "completionLabels": {
       "completed": "Completed",
       "incomplete": "Incomplete"
@@ -2994,6 +3016,11 @@
       "paymentBack": "Back",
       "paymentSubmit": "Pay now",
       "paymentProcessing": "Processing...",
+      "paymentLoading": "Loading secure payment form…",
+      "paymentLoadError": "The secure payment form could not load. Please retry or check your connection.",
+      "reviewTripDates": "Review trip dates",
+      "paymentRetry": "Reload payment form",
+      "paymentFailed": "Payment failed. Please try again.",
       "contactCityLabel": "City",
       "contactCountryLabel": "Country",
       "contactEmailHelper": "This email is associated with your account",
@@ -3006,6 +3033,7 @@
       "contactTitle": "Contact information",
       "contactZipCodeLabel": "ZIP / Postal code",
       "errors": {
+        "invalidDates": "Your trip dates are missing, invalid, or no longer available. Go to your trips to review the dates before paying.",
         "connectionTryAgain": "Connection error. Please try again.",
         "idDocumentRequired": "Please enter your ID or passport number.",
         "loadTripFailed": "Error loading trip",
@@ -3093,6 +3121,15 @@
       "subtitle": "PAYMENT <span style=\"color: #E5A51C\">CONFIRMATION</span>"
     },
     "page": {
+      "resultTitle": "Payment status",
+      "resultDescription": "Check the status of your Randomtrip payment and booking.",
+      "verifyingTitle": "Verifying your payment",
+      "pendingTitle": "Payment not confirmed yet",
+      "pendingDescription": "Your payment is still being verified. Do not pay again while we check its status.",
+      "verificationError": "We could not verify your payment. Check its status again or contact support before paying again.",
+      "missingPayment": "No payment reference was provided. Check your trips or contact support.",
+      "checkPaymentStatus": "Check payment status",
+      "paymentNotCompleted": "The payment or booking was not completed. Check your trips before trying again.",
       "title": "Thank you for your purchase!",
       "body": "Your Randomtrip surprise adventure is confirmed.",
       "messageApproved": "Payment approved. Your surprise trip is confirmed.",

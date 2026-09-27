@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
+import { parseTripCalendarDate, validateTripDates } from "@/lib/helpers/tripCalendarDate";
+import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import {
+  toTravelerTripResponse,
+  TRAVELER_EXPERIENCE_SELECT,
+} from "@/lib/trips/travelerTripResponse";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parsePaxDetails, paxDetailsEquals } from "@/lib/helpers/pax-details";
@@ -14,8 +20,14 @@ import {
   normalizeTransportId,
 } from "@/lib/helpers/transport";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
-import { findActiveTripRequest, tripFamilyOf } from "@/lib/db/tripRequest";
+import {
+  findActiveTripRequest,
+  NON_TERMINAL_TRIP_STATUSES,
+  tripFamilyOf,
+} from "@/lib/db/tripRequest";
 import { Prisma, TripRequestStatus } from "@prisma/client";
+
+export const dynamic = "force-dynamic";
 
 /**
  * For Xsed trips, startDate must be the Saturday that follows the next
@@ -265,13 +277,13 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: "desc" },
       include: {
         payment: true,
-        experience: true,
+        experience: { select: TRAVELER_EXPERIENCE_SELECT },
       },
     });
     console.log("Trip requests found:", tripRequests.length);
 
     const taggedTripRequests = tripRequests.map((trip) => ({
-      ...trip,
+      ...toTravelerTripResponse(trip),
       role: tripRoleFor(trip, user.id),
     }));
 
@@ -328,6 +340,22 @@ export async function POST(request: NextRequest) {
       tripper: tripperSlug,
     } = body;
 
+    for (const key of ["startDate", "endDate"]) {
+      if (hasBodyKey(body, key) && body[key] != null && body[key] !== "" && !parseTripCalendarDate(body[key])) {
+        return NextResponse.json({ error: `Invalid ${key}`, errorCode: "INVALID_TRIP_DATES" }, { status: 400 });
+      }
+    }
+    const isAdmin = hasRoleAccess(user, "admin");
+    const writesStatus = hasBodyKey(body, "status");
+    if (writesStatus && (typeof body.status !== "string" ||
+      !Object.values(TripRequestStatus).includes(body.status as TripRequestStatus))) {
+      return NextResponse.json({ error: "Invalid trip status" }, { status: 400 });
+    }
+    if (!isAdmin && writesStatus &&
+      !["DRAFT", "SAVED", "PENDING_PAYMENT"].includes(String(body.status))) {
+      return NextResponse.json({ error: "Trip status is managed by the server" }, { status: 403 });
+    }
+
     let paxDetailsValue:
       | Prisma.InputJsonValue
       | Prisma.NullableJsonNullValueInput
@@ -354,12 +382,21 @@ export async function POST(request: NextRequest) {
     if (clientId) {
       const owned = await prisma.tripRequest.findFirst({
         where: { id: clientId, userId: user.id },
-        select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, updatedAt: true,
+        select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true,
           payment: { select: { status: true, stripePaymentIntentId: true } } },
       });
 
       if (owned) {
+        if (!isAdmin && !NON_TERMINAL_TRIP_STATUSES.some((status) => status === owned.status)) {
+          return NextResponse.json({ error: "Trip is no longer editable" }, { status: 409 });
+        }
+        if (!isAdmin && body.status === "PENDING_PAYMENT" && owned.status !== "PENDING_PAYMENT") {
+          return NextResponse.json({ error: "Checkout manages pending payment status" }, { status: 403 });
+        }
         const updateData = buildTripRequestPartialUpdate(body, paxDetailsValue);
+        const dateError = validateTripDates({ ...owned, ...updateData });
+        if (dateError) return NextResponse.json({ error: dateError, errorCode: "INVALID_TRIP_DATES" }, { status: 400 });
+        const updatesDates = hasBodyKey(body, "startDate") || hasBodyKey(body, "endDate");
         const updatesParty = hasBodyKey(body, "pax") || hasBodyKey(body, "paxDetails");
         if (updatesParty || hasBodyKey(body, "type") || hasBodyKey(body, "level")) {
           const provided = parsePaxDetails(paxDetailsValue);
@@ -380,11 +417,11 @@ export async function POST(request: NextRequest) {
         const priceChanged = checkoutPriceInputsChanged(owned, updateData);
         const nextParty = parsePaxDetails(updateData.paxDetails);
         const partyChanged = nextParty !== null && !paxDetailsEquals(nextParty, owned.paxDetails);
-        const guardsCheckout = partyChanged || priceChanged;
+        const guardsCheckout = updatesDates || partyChanged || priceChanged || (!isAdmin && writesStatus);
         // Even an apparent no-op can overwrite a newer quote's inputs after our
         // read. Version every supplied pricing/party field without needlessly
         // restricting unchanged fields on legitimate nonpayable transitions.
-        const guardsVersion = updatesParty || Object.keys(CHECKOUT_PRICE_SELECT).some((key) => hasBodyKey(body, key));
+        const guardsVersion = updatesDates || (!isAdmin && writesStatus) || updatesParty || Object.keys(CHECKOUT_PRICE_SELECT).some((key) => hasBodyKey(body, key));
         if (guardsCheckout) {
           if (!["DRAFT", "SAVED", "PENDING_PAYMENT"].includes(owned.status)) {
             return NextResponse.json({ error: "Trip is no longer editable" }, { status: 409 });
@@ -406,7 +443,7 @@ export async function POST(request: NextRequest) {
           data: updateData,
         });
         console.log("Trip request updated:", tripRequest.id);
-        return NextResponse.json({ tripRequest }, { status: 200 });
+        return NextResponse.json({ tripRequest: toTravelerTripResponse(tripRequest) }, { status: 200 });
       }
 
       // Stale/unowned id. Only fall through to family resolution when the
@@ -451,7 +488,12 @@ export async function POST(request: NextRequest) {
     }
 
     const fields = await buildTripRequestCreateFields(body, paxDetailsValue);
+    const dateError = validateTripDates(fields);
+    if (dateError) return NextResponse.json({ error: dateError, errorCode: "INVALID_TRIP_DATES" }, { status: 400 });
     const active = await findActiveTripRequest(user.id, family);
+    if (!isAdmin && body.status === "PENDING_PAYMENT" && active?.status !== "PENDING_PAYMENT") {
+      return NextResponse.json({ error: "Checkout manages pending payment status" }, { status: 403 });
+    }
 
     let tripRequest;
     let statusCode: 200 | 201;
@@ -486,7 +528,7 @@ export async function POST(request: NextRequest) {
       revalidatePath("/en/xsed/drops");
     }
 
-    return NextResponse.json({ tripRequest }, { status: statusCode });
+    return NextResponse.json({ tripRequest: toTravelerTripResponse(tripRequest) }, { status: statusCode });
   } catch (error) {
     console.error("Error saving trip request:", error);
     if (error && typeof error === "object" && "status" in error && error.status === 409) {

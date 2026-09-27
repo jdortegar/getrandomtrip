@@ -695,10 +695,6 @@
    own min-height stays untouched — `.heroGated` only forces the wrapper to
    100svh while the gate is up, so a returning visitor (gate already opened)
    sees the hero at its normal height with no full-viewport jump. */
-:global(body.rt-scratch-locked) {
-  overflow: hidden;
-}
-
 .scratchWrap {
   position: relative;
   overflow: hidden;

@@ -25,6 +25,8 @@ const trip = {
   nights: 3,
   paxDetails: { adults: 2, minors: 0, rooms: 1 },
   status: "PENDING_PAYMENT",
+  startDate: new Date("2099-01-01"),
+  endDate: new Date("2099-01-04"),
   updatedAt: new Date(1),
   from: "admin",
   originCountry: "Argentina",
@@ -124,7 +126,8 @@ describe("checkout-sensitive trip edits", () => {
     });
   });
 
-  it("does not restrict a nonprice status transition on a settled trip", async () => {
+  it("preserves an admin nonprice status transition on a settled trip", async () => {
+    db.user.findUnique.mockResolvedValue({ id: "buyer", roles: ["ADMIN"] });
     db.tripRequest.findFirst.mockResolvedValue({
       ...trip,
       status: "CONFIRMED",
@@ -246,6 +249,7 @@ describe("checkout-sensitive trip edits", () => {
           request({
             ...trip,
             id: undefined,
+            status: "SAVED",
             type: "xsed",
             level: "group",
             pax: 1,

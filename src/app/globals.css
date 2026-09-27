@@ -403,3 +403,8 @@ html.lenis {
 @utility justify-safe-center {
   justify-content: safe center;
 }
+
+/* Global body state cannot be declared in a pure CSS module. */
+body.rt-scratch-locked {
+  overflow: hidden;
+}

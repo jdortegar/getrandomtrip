@@ -21,7 +21,7 @@ const baseValues: JourneyStepValues = {
   hasExcuseStep: false,
   effectiveOriginCountry: "Argentina",
   effectiveOriginCity: "Buenos Aires",
-  effectiveStartDate: "2026-08-01",
+  effectiveStartDate: "2099-08-01",
   effectiveNights: 5,
   transport: "flight",
 };
@@ -476,7 +476,7 @@ describe("isSubstepValueComplete", () => {
     expect(
       isSubstepValueComplete("details", "dates", {
         ...baseCtx,
-        startDate: "2026-08-01",
+        startDate: "2099-08-01",
         nights: 3,
       }),
     ).toBe(true);

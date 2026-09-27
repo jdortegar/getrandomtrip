@@ -1,9 +1,37 @@
 "use client";
 
-import { DayPicker } from "react-day-picker";
+import type { CSSProperties } from "react";
+import {
+  DayPicker,
+  formatCaption,
+  getDefaultClassNames,
+} from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { enUS, es } from "react-day-picker/locale";
+import { isTripStartDateEligible, parseTripCalendarDate } from "@/lib/helpers/tripCalendarDate";
 import { cn } from "@/lib/utils";
+
+const defaultClassNames = getDefaultClassNames();
+// Match seven columns to the card's content width, not the viewport. Keep
+// full-height targets when nested mobile padding leaves less than 308px.
+const responsiveCalendarStyles = {
+  "--rdp-day-height": "44px",
+  "--rdp-day-width": "min(44px, calc(100cqi / 7))",
+  "--rdp-day_button-height": "44px",
+  "--rdp-day_button-width": "var(--rdp-day-width)",
+} as CSSProperties;
+
+const formatCapitalizedMonthCaption: typeof formatCaption = (
+  month,
+  options,
+  dateLib,
+) => {
+  const caption = formatCaption(month, options, dateLib);
+  return (
+    caption.charAt(0).toLocaleUpperCase(options?.locale?.code) +
+    caption.slice(1)
+  );
+};
 
 function formatDateParam(date: Date) {
   const y = date.getFullYear();
@@ -13,10 +41,8 @@ function formatDateParam(date: Date) {
 }
 
 function parseDateParam(value: string | undefined) {
-  if (!value) return undefined;
-  const [y, m, d] = value.split("-").map(Number);
-  if (!y || !m || !d) return undefined;
-  return new Date(y, m - 1, d);
+  const date = parseTripCalendarDate(value);
+  return date ? new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) : undefined;
 }
 
 function addDays(date: Date, days: number): Date {
@@ -98,7 +124,7 @@ export function JourneyDatesPicker({
 
   const dayPickerLocale = dayPickerLocaleFromDocument();
 
-  const from = parseDateParam(startDate);
+  const from = isTripStartDateEligible(startDate) ? parseDateParam(startDate) : undefined;
   const rangeEnd = from != null ? addDays(from, tripNights) : undefined;
 
   const notify = (newStart: string | undefined) => {
@@ -115,6 +141,7 @@ export function JourneyDatesPicker({
       notify(undefined);
       return;
     }
+    if (!isTripStartDateEligible(formatDateParam(date))) return;
     notify(formatDateParam(date));
     onConfirm?.();
   };
@@ -137,15 +164,18 @@ export function JourneyDatesPicker({
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-gray-300 bg-white p-4 text-center">
+      <div className="@container mt-4 rounded-lg border border-gray-300 bg-white p-4 text-center">
         <DayPicker
           classNames={{
             chevron: "fill-primary",
-            day: "text-gray-500",
+            day: cn(defaultClassNames.day, "text-gray-500"),
             selected:
               "bg-primary border-primary text-white rounded-full rounded-r-none",
             today: "border-primary",
           }}
+          disabled={(date) => !isTripStartDateEligible(formatDateParam(date))}
+          formatters={{ formatCaption: formatCapitalizedMonthCaption }}
+          labels={{ labelGrid: formatCapitalizedMonthCaption }}
           locale={dayPickerLocale}
           mode="single"
           modifiers={{
@@ -163,6 +193,7 @@ export function JourneyDatesPicker({
           numberOfMonths={2}
           onSelect={handleSelect}
           selected={from}
+          style={responsiveCalendarStyles}
         />
         <p className="mt-2 text-sm text-gray-500">{labels.availableFromHint}</p>
       </div>

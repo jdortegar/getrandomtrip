@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocale } from "@/hooks/useDictionary";
+import { useDictionary, useLocale } from "@/hooks/useDictionary";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { localizeHref } from "@/lib/i18n/localizeHref";
 import { useRouter } from "next/navigation";
 import CountryFlag from "@/components/common/CountryFlag";
@@ -31,13 +32,14 @@ export default function TripperPlanner({
 }: Props) {
   const router = useRouter();
   const locale = useLocale();
+  const copy = useDictionary((dict) => dict.trippers.planner);
   const [country, setCountry] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [city, setCity] = useState("");
   const sectionRef = useRef<HTMLDivElement>(null);
 
   const firstName =
-    tripperData.name?.split(" ")[0] || tripperData.name || "este tripper";
+    tripperData.name?.split(" ")[0] || tripperData.name || copy.fallbackName;
 
   const visitedCountries = useMemo(() => {
     if (tripperData.destinations?.length) return tripperData.destinations;
@@ -55,8 +57,8 @@ export default function TripperPlanner({
   const expertiseAreas = useMemo(() => {
     if (tripperData.interests?.length) return tripperData.interests;
     const availableTypes = tripperData.availableTypes || [];
-    return availableTypes.map((t) => getTypeLabel(t) || t).filter(Boolean);
-  }, [tripperData.interests, tripperData.availableTypes]);
+    return availableTypes.map((t) => getTypeLabel(t, locale) || t).filter(Boolean);
+  }, [tripperData.interests, tripperData.availableTypes, locale]);
 
   const canContinue = country.trim().length > 0 && city.trim().length > 0;
 
@@ -97,8 +99,8 @@ export default function TripperPlanner({
       className="py-20"
       fullWidth={true}
       id="planner-section"
-      subtitle={`${tripperData.name} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.`}
-      title={`Planificá tu Randomtrip con ${firstName}`}
+      subtitle={interpolateTemplate(copy.description, { name: tripperData.name || copy.fallbackName })}
+      title={interpolateTemplate(copy.title, { name: firstName })}
       data-component="TripperPlanner"
     >
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-4 sm:px-6 lg:px-8">
@@ -106,7 +108,7 @@ export default function TripperPlanner({
         <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
           <div className="flex flex-col items-center">
             <h3 className="font-barlow-condensed text-center text-xl font-bold uppercase tracking-wide text-neutral-700">
-              Países visitados
+              {copy.visitedCountries}
             </h3>
             <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2">
               {visitedCountries.length > 0 ? (
@@ -127,7 +129,7 @@ export default function TripperPlanner({
 
           <div className="flex flex-col items-center border-neutral-200 md:items-start md:border-l md:pl-12">
             <h3 className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-neutral-700">
-              Áreas de expertise
+              {copy.expertise}
             </h3>
             <ul className="mt-3 list-inside list-disc space-y-1 text-left text-sm text-ink">
               {expertiseAreas.length > 0 ? (
@@ -147,21 +149,21 @@ export default function TripperPlanner({
         <div className="mx-auto flex w-full max-w-2xl flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-2 text-center">
             <h3 className="font-barlow-condensed text-xl font-bold uppercase tracking-wide text-neutral-700">
-              ¿Desde dónde viajas?
+              {copy.originTitle}
             </h3>
             <p className="text-sm text-ink">
-              {firstName} diseñará tu experiencia desde tu ciudad de origen
+              {interpolateTemplate(copy.originDescription, { name: firstName })}
             </p>
           </div>
 
           <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-neutral-600">
-                País de salida
+                {copy.countryLabel}
               </label>
               <CountrySelector
                 onChange={handleCountryChange}
-                placeholder="Selecciona tu país"
+                placeholder={copy.countryPlaceholder}
                 size="lg"
                 value={country}
               />
@@ -169,12 +171,12 @@ export default function TripperPlanner({
 
             <div className="flex flex-col gap-1.5 text-left">
               <label className="text-sm font-medium text-neutral-600">
-                Ciudad de salida
+                {copy.cityLabel}
               </label>
               <CitySelector
                 countryCode={countryCode}
                 onChange={setCity}
-                placeholder="Selecciona una ciudad"
+                placeholder={copy.cityPlaceholder}
                 size="lg"
                 value={city}
               />
@@ -188,7 +190,7 @@ export default function TripperPlanner({
             size="lg"
             variant="pill"
           >
-            Continuar →
+            {copy.continueLabel}
           </Button>
         </div>
       </div>

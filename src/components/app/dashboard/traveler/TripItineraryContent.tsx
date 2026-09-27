@@ -56,15 +56,17 @@ export function TripItineraryContent() {
       .finally(() => setLoading(false));
   }, [session, tripId]);
 
+  const scratchGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
+
   // Body scroll lock while the scratch gate is up — a class (not an inline
   // style) so it composes cleanly and always cleans up on completion/unmount.
   useEffect(() => {
-    if (heroRevealed) return;
+    if (!scratchGateVisible) return;
     document.body.classList.add(BODY_LOCK_CLASS);
     return () => {
       document.body.classList.remove(BODY_LOCK_CLASS);
     };
-  }, [heroRevealed]);
+  }, [scratchGateVisible]);
 
   // Force a reflow before flipping the stagger class — without it, the browser
   // can coalesce <main>'s hidden-state paint with the revealed-state paint and

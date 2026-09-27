@@ -205,9 +205,12 @@ export async function updatePaymentFromStripeWebhook(
     "CHARGEBACK",
     "CANCELLED",
   ];
+  const repairsApprovedBooking = payment.status === "APPROVED" &&
+    updateData.status === "APPROVED" &&
+    ["DRAFT", "SAVED", "PENDING_PAYMENT"].includes(payment.tripRequest.status);
   if (
-    TERMINAL_STATUSES.includes(payment.status) ||
-    payment.status === updateData.status ||
+    (!repairsApprovedBooking && TERMINAL_STATUSES.includes(payment.status)) ||
+    (!repairsApprovedBooking && payment.status === updateData.status) ||
     (payment.stripePaymentIntentId !== null && payment.stripePaymentIntentId !== stripePaymentIntentId)
   ) {
     return payment;
@@ -234,32 +237,45 @@ export async function updatePaymentFromStripeWebhook(
       (webhookPayload as UpdatePaymentData["webhookData"]) ?? undefined,
   };
 
-  // Lookup is only a snapshot: a quote or another webhook can replace it while
-  // this request waits. Every outcome, not just success, must win this guard.
-  const { count } = await prisma.payment.updateMany({
-    where: {
-      id: payment.id,
-      stripePaymentIntentId: payment.stripePaymentIntentId,
-      ...(payment.stripePaymentIntentId === null ? { providerPaymentId: stripePaymentIntentId } : {}),
-      ...(finalData.status === "APPROVED"
-        // Real settlement wins over nonterminal same-intent refresh/failure,
-        // but never over a replacement intent or terminal outcome.
-        ? { status: { notIn: TERMINAL_STATUSES } }
-        : { status: payment.status, updatedAt: payment.updatedAt }),
-    },
-    data: { ...finalData, updatedAt: new Date() },
+  // Match checkout's lock order: TripRequest before Payment. The provisional
+  // promotion is invisible until commit and must roll back if the claim is lost.
+  const lostClaim = new Error("Payment claim changed");
+  const outcome = await prisma.$transaction(async (tx) => {
+    const promoted = finalData.status === "APPROVED"
+      ? await tx.tripRequest.updateMany({
+          where: {
+            id: payment.tripRequestId,
+            status: { in: ["DRAFT", "SAVED", "PENDING_PAYMENT"] },
+          },
+          data: { status: "CONFIRMED" },
+        })
+      : { count: 0 };
+    const { count } = await tx.payment.updateMany({
+      where: {
+        id: payment.id,
+        stripePaymentIntentId: payment.stripePaymentIntentId,
+        ...(payment.stripePaymentIntentId === null ? { providerPaymentId: stripePaymentIntentId } : {}),
+        ...(repairsApprovedBooking
+          ? { status: "APPROVED" }
+          : finalData.status === "APPROVED"
+            ? { status: { notIn: TERMINAL_STATUSES } }
+            : { status: payment.status, updatedAt: payment.updatedAt }),
+      },
+      data: { ...finalData, updatedAt: new Date() },
+    });
+    if (count === 0) throw lostClaim;
+    return { changed: true, confirmed: promoted.count === 1 };
+  }).catch((error: unknown) => {
+    if (error === lostClaim) return { changed: false, confirmed: false };
+    throw error;
   });
-  if (count === 0) return payment;
+  if (!outcome.changed) return payment;
 
-  if (finalData.status === "APPROVED") {
-      await prisma.tripRequest.update({
-        where: { id: payment.tripRequestId },
-        data: { status: "CONFIRMED" },
-      });
-      sendBookingConfirmed(payment.tripRequestId, payment.userId);
-      sendAdminNewBooking(payment.tripRequestId, payment.userId);
+  // External side effects only after commit and only for the winning promotion.
+  if (outcome.confirmed) {
+    sendBookingConfirmed(payment.tripRequestId, payment.userId);
+    sendAdminNewBooking(payment.tripRequestId, payment.userId);
   }
-
   if (finalData.status === "FAILED") {
     sendPaymentFailed(payment.tripRequestId, payment.userId);
   }
