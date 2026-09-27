@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client";
 /** Sortable dimensions for the admin trip-requests table — every real
  * column except Actions. */
 export const TRIP_REQUEST_SORT_FIELDS = [
+  "purchaseDate",
   "tripDate",
   "traveler",
   "origin",
@@ -13,20 +14,18 @@ export const TRIP_REQUEST_SORT_FIELDS = [
 export type TripRequestSortBy = (typeof TRIP_REQUEST_SORT_FIELDS)[number];
 export type TripRequestSortOrder = "asc" | "desc";
 
-/** Soonest-upcoming-trip-first — anchored to "now", not a plain chronological
- * sort (see `sortTripDatesByProximity`). Matches the operational read of
- * this table: what's coming up next matters more than raw date order. */
+/** Newest recorded purchase first; requests without a purchase date stay last. */
 export const TRIP_REQUEST_SORT_DEFAULT = {
-  sortBy: "tripDate",
-  sortOrder: "asc",
+  sortBy: "purchaseDate",
+  sortOrder: "desc",
 } as const;
 
-/** First-click direction per field: trip date -> soonest upcoming first,
- * names -> a-z. */
+/** First-click direction: newest purchase, soonest upcoming trip, names a-z. */
 export const TRIP_REQUEST_SORT_INITIAL_ORDER: Record<
   TripRequestSortBy,
   TripRequestSortOrder
 > = {
+  purchaseDate: "desc",
   tripDate: "asc",
   traveler: "asc",
   origin: "asc",
@@ -44,10 +43,13 @@ export function parseTripRequestSortBy(value: unknown): TripRequestSortBy {
     : TRIP_REQUEST_SORT_DEFAULT.sortBy;
 }
 
-export function parseTripRequestSortOrder(value: unknown): TripRequestSortOrder {
+export function parseTripRequestSortOrder(
+  value: unknown,
+  sortBy: TripRequestSortBy = TRIP_REQUEST_SORT_DEFAULT.sortBy,
+): TripRequestSortOrder {
   return value === "asc" || value === "desc"
     ? value
-    : TRIP_REQUEST_SORT_DEFAULT.sortOrder;
+    : TRIP_REQUEST_SORT_INITIAL_ORDER[sortBy];
 }
 
 /**
@@ -93,6 +95,8 @@ export function tripRequestListOrderBy(
 ): Prisma.TripRequestOrderByWithRelationInput[] {
   const tie = [{ createdAt: "desc" as const }, { id: "asc" as const }];
   switch (sortBy) {
+    case "purchaseDate":
+      return [{ payment: { paidAt: { sort: sortOrder, nulls: "last" } } }, ...tie];
     case "traveler":
       return [{ user: { name: sortOrder } }, ...tie];
     case "origin":

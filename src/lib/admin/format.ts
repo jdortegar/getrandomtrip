@@ -1,6 +1,6 @@
-export function formatAdminDate(iso: string | null): string {
+export function formatAdminDate(iso: string | null, locale = "en-US"): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", {
+  return new Date(iso).toLocaleDateString(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",

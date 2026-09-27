@@ -1024,6 +1024,7 @@
       "columns": {
         "traveler": "Traveler",
         "origin": "Origin",
+        "purchaseDate": "Purchase date",
         "tripDate": "Trip date",
         "typeLevel": "Type / Level",
         "status": "Status",

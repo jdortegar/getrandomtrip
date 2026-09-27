@@ -27,6 +27,7 @@ vi.mock("@/lib/admin/trip-requests", () => ({
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
 const mockSession = (userId: string) => ({
@@ -66,10 +67,49 @@ describe("GET /api/admin/trip-requests", () => {
     expect(res.status).toBe(401);
   });
 
-  // These three are about generic page/limit mechanics, not about sort
-  // behavior — `sortBy=type` routes them through the plain DB-level
-  // skip/take path (the default `sortBy=tripDate` path paginates in
-  // memory instead; see the "default tripDate sort" describe block below).
+  it.each(["", "?sortBy=unknown&sortOrder=sideways"])("defaults to newest purchases via DB sorting and pagination (%s)", async (query) => {
+    const res = await GET(makeRequest(query));
+    expect(res.status).toBe(200);
+    expect(prisma.tripRequest.findMany).toHaveBeenCalledWith({
+      where: {},
+      orderBy: [
+        { payment: { paidAt: { sort: "desc", nulls: "last" } } },
+        { createdAt: "desc" },
+        { id: "asc" },
+      ],
+      skip: 0,
+      take: 20,
+    });
+    expect(prisma.tripRequest.count).toHaveBeenCalledWith({ where: {} });
+  });
+
+  it("keeps purchase-date pagination and filters in the database", async () => {
+    await GET(makeRequest("?sortBy=purchaseDate&sortOrder=asc&page=2&limit=10&paymentStatus=NO_PAYMENT"));
+    expect(prisma.tripRequest.findMany).toHaveBeenCalledWith({
+      where: { payment: null },
+      orderBy: [
+        { payment: { paidAt: { sort: "asc", nulls: "last" } } },
+        { createdAt: "desc" },
+        { id: "asc" },
+      ],
+      skip: 10,
+      take: 10,
+    });
+  });
+
+  it.each([new Date("2026-09-27T12:00:00.000Z"), null])("returns the recorded paidAt, including null", async (paidAt) => {
+    const actual = await vi.importActual<typeof import("@/lib/admin/trip-requests")>("@/lib/admin/trip-requests");
+    vi.mocked(attachAdminTripRequestRelations).mockImplementationOnce(actual.attachAdminTripRequestRelations);
+    vi.mocked(prisma.payment.findUnique).mockResolvedValue({
+      amount: 500, currency: "USD", paidAt, status: "APPROVED",
+    } as never);
+    const res = await GET(makeRequest());
+    expect(prisma.payment.findUnique).toHaveBeenCalledWith({
+      select: { amount: true, currency: true, paidAt: true, status: true },
+      where: { tripRequestId: "trip-1" },
+    });
+    expect((await res.json()).tripRequests[0].payment.paidAt).toBe(paidAt?.toISOString() ?? null);
+  });
 
   it("defaults to page 1, limit 20, no status filter", async () => {
     const res = await GET(makeRequest("?sortBy=type"));
@@ -199,7 +239,7 @@ describe("GET /api/admin/trip-requests", () => {
   });
 });
 
-describe("GET /api/admin/trip-requests — default tripDate sort", () => {
+describe("GET /api/admin/trip-requests — selectable tripDate sort", () => {
   let GET: RouteModule["GET"];
 
   const soon = { id: "soon", userId: "u1", experienceId: null, status: "CONFIRMED", startDate: "2026-08-15T00:00:00.000Z" };
@@ -234,8 +274,8 @@ describe("GET /api/admin/trip-requests — default tripDate sort", () => {
     vi.useRealTimers();
   });
 
-  it("defaults to tripDate sort with no sortBy param, soonest upcoming first", async () => {
-    const res = await GET(makeRequest());
+  it("preserves tripDate soonest-upcoming sorting when selected", async () => {
+    const res = await GET(makeRequest("?sortBy=tripDate"));
     const body = await res.json();
     expect(body.tripRequests.map((t: { id: string }) => t.id)).toEqual([
       "soon",
@@ -246,19 +286,19 @@ describe("GET /api/admin/trip-requests — default tripDate sort", () => {
   });
 
   it("does not call prisma.tripRequest.count for the tripDate path (paginates in memory)", async () => {
-    await GET(makeRequest());
+    await GET(makeRequest("?sortBy=tripDate"));
     expect(prisma.tripRequest.count).not.toHaveBeenCalled();
   });
 
   it("reports the full matching count as total, independent of page size", async () => {
-    const res = await GET(makeRequest("?limit=2"));
+    const res = await GET(makeRequest("?sortBy=tripDate&limit=2"));
     const body = await res.json();
     expect(body.total).toBe(4);
     expect(body.tripRequests).toHaveLength(2);
   });
 
   it("slices the proximity-sorted list per page", async () => {
-    const res = await GET(makeRequest("?limit=2&page=2"));
+    const res = await GET(makeRequest("?sortBy=tripDate&limit=2&page=2"));
     const body = await res.json();
     expect(body.tripRequests.map((t: { id: string }) => t.id)).toEqual([
       "recent-past",
@@ -267,7 +307,7 @@ describe("GET /api/admin/trip-requests — default tripDate sort", () => {
   });
 
   it("reverses to furthest-past-first when sortOrder=desc", async () => {
-    const res = await GET(makeRequest("?sortOrder=desc"));
+    const res = await GET(makeRequest("?sortBy=tripDate&sortOrder=desc"));
     const body = await res.json();
     expect(body.tripRequests.map((t: { id: string }) => t.id)).toEqual([
       "old-past",
