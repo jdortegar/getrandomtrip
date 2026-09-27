@@ -143,7 +143,7 @@ export default function TripperSettingsPageClient({
         const [profileRes, experiencesRes, reviewsRes, dashboardRes] =
           await Promise.all([
             fetch("/api/user/tripper"),
-            fetch(`/api/experiences?ownerId=${currentUser.id}`),
+            fetch("/api/tripper/experiences?limit=1"),
             fetch("/api/tripper/reviews"),
             fetch("/api/tripper/dashboard"),
           ]);
@@ -169,11 +169,11 @@ export default function TripperSettingsPageClient({
 
         if (experiencesRes.ok) {
           const experiencesData = (await experiencesRes.json()) as {
-            experiences?: unknown[];
+            total?: number;
           };
           setStats((s) => ({
             ...s,
-            totalExperiences: experiencesData.experiences?.length ?? 0,
+            totalExperiences: experiencesData.total ?? 0,
           }));
         }
 
