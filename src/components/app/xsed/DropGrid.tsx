@@ -14,6 +14,8 @@ interface DropGridProps {
 }
 
 export function DropGrid({ content, drops }: DropGridProps) {
+  if (drops.length === 0) return null;
+
   return (
     <Section data-component="DropGrid">
       <div className="mb-12 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">

@@ -68,7 +68,10 @@ export default async function XsedPage(props: LocaleParams) {
       ) : null}
       <MultiColumnIconText content={dict.xsedPage.iconText} />
       <DropGrid content={dict.xsedPage.dropGrid} drops={gridDrops} />
-      <FaqBlock copy={dict.xsedPage.faq} />
+      <FaqBlock
+        className={gridDrops.length > 0 ? "pt-0!" : ""}
+        copy={dict.xsedPage.faq}
+      />
 
       <XsedHero content={dict.xsedPage.xsedHero} />
       <Testimonials
