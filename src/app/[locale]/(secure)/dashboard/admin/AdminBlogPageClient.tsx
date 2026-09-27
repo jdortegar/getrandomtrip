@@ -292,10 +292,14 @@ export function AdminBlogPageClient() {
             </button>
           )}
           <Button
-            className="h-11 rounded-sm border-2 border-red-600 bg-red-600 px-4 text-[13px] font-semibold uppercase tracking-[1px] text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-400"
+            className={cn(
+              "font-semibold h-11 px-4 rounded-sm text-[13px] tracking-[1px] uppercase",
+              "disabled:bg-gray-100 disabled:border-gray-200 disabled:cursor-not-allowed disabled:text-gray-400",
+            )}
             disabled={selectedIds.size === 0}
             onClick={() => setBulkDeleteConfirmOpen(true)}
             type="button"
+            variant="destructive"
           >
             <Trash2 className="mr-1.5 h-3.5 w-3.5" />
             {copy.bulkActions.deleteSelected.replace("{count}", String(selectedIds.size))}
