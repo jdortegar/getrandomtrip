@@ -3,28 +3,22 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import {
-  COOKIE_LOCALE,
-  DEFAULT_LOCALE,
-  LOCALES,
-  hasLocale,
-  type Locale,
-} from "./config";
-import { pathForLocale, pathWithoutLocale } from "./pathForLocale";
+import { COOKIE_LOCALE, DEFAULT_LOCALE, LOCALES, type Locale } from "./config";
+import { pathWithoutLocale } from "./pathForLocale";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
-function getLocaleFromRequest(request: NextRequest): Locale {
-  const cookie = request.cookies.get(COOKIE_LOCALE)?.value;
-  if (hasLocale(cookie)) return cookie;
-
-  // No cookie: use default locale so / always stays on default (es), no redirect to /en
-  return DEFAULT_LOCALE;
+function requestHeaders(request: NextRequest, locale: Locale): Headers {
+  const headers = new Headers(request.headers);
+  // Overwrite inbound values; metadata must describe the actual requested URL.
+  headers.set("x-locale", locale);
+  headers.set("x-pathname", request.nextUrl.pathname);
+  return headers;
 }
 
 export function handleI18n(request: NextRequest): NextResponse | null {
   const url = request.nextUrl.clone();
-  const { pathname, search, hash } = url;
+  const { pathname } = url;
   const pathnameLower = pathname.toLowerCase();
 
   // Skip API, _next, static assets
@@ -58,7 +52,9 @@ export function handleI18n(request: NextRequest): NextResponse | null {
     }
 
     // /en/... -> continue (other locales keep prefix)
-    const res = NextResponse.next();
+    const res = NextResponse.next({
+      request: { headers: requestHeaders(request, locale) },
+    });
     res.cookies.set(COOKIE_LOCALE, locale, {
       path: "/",
       maxAge: COOKIE_MAX_AGE,
@@ -67,38 +63,14 @@ export function handleI18n(request: NextRequest): NextResponse | null {
     return res;
   }
 
-  // No locale in path: detect and either rewrite (default) or redirect (other)
-  // Payment return path: Mercado Pago redirects to /checkout?result=... or /checkout/failure|success|pending; keep default locale when no prefix.
-  const paymentReturnPaths = [
-    "/checkout",
-    "/checkout/failure",
-    "/checkout/pending",
-    "/checkout/success",
-  ];
-  const isPaymentReturn = pathname
-    ? paymentReturnPaths.includes(pathname)
-    : false;
-  const locale = isPaymentReturn
-    ? DEFAULT_LOCALE
-    : getLocaleFromRequest(request);
+  // URL, not a previous language cookie, determines canonical content.
+  const locale = DEFAULT_LOCALE;
 
-  if (locale === DEFAULT_LOCALE) {
-    // Rewrite to /es/... so [locale] segment is "es"
-    url.pathname = `/es${pathname === "/" ? "" : pathname}`;
-    const res = NextResponse.rewrite(url);
-    res.cookies.set(COOKIE_LOCALE, locale, {
-      path: "/",
-      maxAge: COOKIE_MAX_AGE,
-      sameSite: "lax",
-    });
-    return res;
-  }
-
-  // Redirect to /en/... (or other non-default)
-  url.pathname = pathForLocale(locale, pathname || "/");
-  url.search = search;
-  url.hash = hash;
-  const res = NextResponse.redirect(url, 308);
+  // Rewrite to /es/... so [locale] resolves without redirecting the public URL.
+  url.pathname = `/es${pathname === "/" ? "" : pathname}`;
+  const res = NextResponse.rewrite(url, {
+    request: { headers: requestHeaders(request, locale) },
+  });
   res.cookies.set(COOKIE_LOCALE, locale, {
     path: "/",
     maxAge: COOKIE_MAX_AGE,

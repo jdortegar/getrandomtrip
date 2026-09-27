@@ -1,5 +1,5 @@
-const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
+import { canonicalUrl, SITE_URL as BASE_URL } from "@/lib/seo/urls";
 
 export function buildOrganizationSchema(): Record<string, unknown> {
   return {
@@ -35,6 +35,7 @@ interface PersonSchemaInput {
 
 export function buildPersonSchema(
   tripper: PersonSchemaInput,
+  locale: Locale = "es",
 ): Record<string, unknown> {
   const image = tripper.heroImage ?? tripper.avatarUrl ?? undefined;
   return {
@@ -43,7 +44,7 @@ export function buildPersonSchema(
     ...(tripper.bio ? { description: tripper.bio } : {}),
     ...(image ? { image } : {}),
     name: tripper.name,
-    url: `${BASE_URL}/trippers/${tripper.slug}`,
+    url: canonicalUrl(locale, `/trippers/${tripper.slug}`),
     worksFor: {
       "@type": "Organization",
       name: "Randomtrip",
@@ -61,13 +62,17 @@ interface BlogPostingSchemaInput {
   publishedAt?: string | Date | null;
   slug: string;
   title: string;
+  updatedAt?: string | Date;
 }
 
 export function buildBlogPostingSchema(
   post: BlogPostingSchemaInput,
 ): Record<string, unknown> {
   const datePublished = post.publishedAt ?? post.createdAt;
-  const url = `${BASE_URL}${post.locale ? `/${post.locale}` : ""}/blog/${post.slug}`;
+  const url = canonicalUrl(
+    hasLocale(post.locale) ? post.locale : "es",
+    `/blog/${post.slug}`,
+  );
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -75,6 +80,14 @@ export function buildBlogPostingSchema(
       "@type": "Person",
       name: post.authorName,
     },
+    ...(post.updatedAt
+      ? {
+          dateModified:
+            post.updatedAt instanceof Date
+              ? post.updatedAt.toISOString()
+              : post.updatedAt,
+        }
+      : {}),
     datePublished:
       datePublished instanceof Date
         ? datePublished.toISOString()
@@ -96,9 +109,7 @@ interface FAQItem {
   question: string;
 }
 
-export function buildFAQPageSchema(
-  items: FAQItem[],
-): Record<string, unknown> {
+export function buildFAQPageSchema(items: FAQItem[]): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",

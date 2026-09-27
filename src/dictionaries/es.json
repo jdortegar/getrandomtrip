@@ -1,4 +1,12 @@
 {
+  "analyticsConsent": {
+    "title": "Preferencias de Analytics",
+    "description": "Con tu permiso, usamos cookies de Analytics para entender cómo se usan nuestras páginas públicas. La publicidad permanece desactivada. Puedes cambiar tu elección en cualquier momento.",
+    "accept": "Aceptar Analytics",
+    "reject": "Rechazar Analytics",
+    "preferences": "Preferencias de Analytics",
+    "close": "Cerrar"
+  },
   "xsedRoadmapPdf": {
     "directions": "Indicaciones",
     "addStop": "Agregar parada",
@@ -966,6 +974,10 @@
       "errorLoad": "Error al cargar las solicitudes de viaje.",
       "empty": "No se encontraron solicitudes de viaje.",
       "filters": {
+        "all": "Todos",
+        "typeLabel": "Tipo de viaje",
+        "levelLabel": "Nivel",
+        "searchLabel": "Buscar viajeros",
         "allStatuses": "Todos los estados",
         "allTypes": "Todos los tipos",
         "allLevels": "Todos los niveles",
@@ -974,7 +986,7 @@
         "clearFilters": "Limpiar filtros",
         "of": "de",
         "count": "solicitudes",
-        "searchPlaceholder": "Buscar por nombre o email del viajero…",
+        "searchPlaceholder": "Nombre o email…",
         "types": {
           "solo": "Solo",
           "couple": "En pareja",

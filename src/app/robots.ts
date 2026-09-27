@@ -1,9 +1,9 @@
+import { SITE_URL } from "@/lib/seo/urls";
 import { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://getrandomtrip.com";
   return {
     rules: { userAgent: "*", allow: "/" },
-    sitemap: `${base}/sitemap.xml`,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

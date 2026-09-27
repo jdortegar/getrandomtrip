@@ -1,3 +1,4 @@
+import { renderToString } from "react-dom/server";
 import { act, Suspense, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -5,7 +6,6 @@ import { GateAwareChrome } from "../GateAwareChrome";
 import { GATE_STORAGE_KEY } from "@/lib/constants/marketing-gate";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
-
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -41,9 +41,16 @@ vi.mock("@/components/auth/AuthModal", () => ({
   default: () => <div data-testid="auth-modal">auth-modal</div>,
 }));
 vi.mock("@/components/waitlist/WaitlistPage", () => ({
-  WaitlistPage: ({ accessDenied }: { accessDenied?: boolean }) => (
+  WaitlistPage: ({
+    accessDenied,
+    analyticsPreferencesLabel,
+  }: {
+    accessDenied?: boolean;
+    analyticsPreferencesLabel: string;
+  }) => (
     <div
       data-access-denied={String(!!accessDenied)}
+      data-preferences-label={analyticsPreferencesLabel}
       data-testid="waitlist-page"
     >
       waitlist
@@ -83,7 +90,11 @@ function render(banner?: ReactNode) {
     root.render(
       <GateAwareChrome
         banner={banner}
-        dict={{} as unknown as Dictionary}
+        dict={
+          {
+            analyticsConsent: { preferences: "Analytics preferences" },
+          } as Dictionary
+        }
         gateEnabled
         locale={"en" as Locale}
       >
@@ -178,6 +189,9 @@ describe("GateAwareChrome — session-status guard (ADR 7)", () => {
     );
     expect(waitlistPage).not.toBeNull();
     expect(waitlistPage?.getAttribute("data-access-denied")).toBe("true");
+    expect(waitlistPage?.getAttribute("data-preferences-label")).toBe(
+      "Analytics preferences",
+    );
   });
 
   it("authenticated admin without any grant still unlocks (GATE_ALLOWED_ROLES stays an OR)", async () => {
@@ -257,4 +271,16 @@ describe("GateAwareChrome — banner prop (design ADR-9, tripper-attribution PR3
     expect(navbar.getAttribute("data-contained")).toBe("true");
     expect(navbar.parentElement?.previousElementSibling).toBeNull();
   });
+});
+
+it("server renders public content before any session or browser hydration", () => {
+  mockSessionState = { data: undefined, status: "loading" };
+  const html = renderToString(
+    <GateAwareChrome dict={{} as Dictionary} gateEnabled={false} locale="en">
+      <article>Visible article</article>
+    </GateAwareChrome>,
+  );
+  expect(html).toContain("Visible article");
+  expect(html).toContain('data-testid="navbar"');
+  expect(html).not.toContain('data-testid="waitlist-page"');
 });

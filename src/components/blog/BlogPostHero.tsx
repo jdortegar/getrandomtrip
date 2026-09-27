@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import Image from "next/image";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -76,7 +76,8 @@ export default function BlogPostHero({
       className={cn(
         "relative flex min-h-[80vh] flex-col justify-center overflow-hidden",
         className,
-      )} data-component="BlogPostHero"
+      )}
+      data-component="BlogPostHero"
     >
       <div className="absolute inset-0">
         <Image

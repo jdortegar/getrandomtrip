@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Img from "@/components/common/Img";
+import { AnalyticsPreferencesLink } from "@/components/tracking/AnalyticsPreferencesLink";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -161,6 +162,11 @@ export default function Footer({ dict, locale }: FooterProps) {
                   >
                     {f.refundPolicy}
                   </Link>
+                </li>
+                <li>
+                  <AnalyticsPreferencesLink
+                    label={dict.analyticsConsent.preferences}
+                  />
                 </li>
               </ul>
             </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { X } from "lucide-react";
 
 const DEBOUNCE_MS = 300;
@@ -113,7 +113,8 @@ export default function TripperSearchModal({
       aria-modal="true"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
-      }} data-component="TripperSearchModal"
+      }}
+      data-component="TripperSearchModal"
     >
       <div className="relative w-full max-w-xl rounded-lg border border-gray-200 bg-white shadow-2xl">
         <button

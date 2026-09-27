@@ -4,6 +4,7 @@ import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
+import { AnalyticsPreferencesLink } from "@/components/tracking/AnalyticsPreferencesLink";
 
 interface WaitlistDict {
   accessDeniedBody: string;
@@ -29,6 +30,7 @@ interface WaitlistDict {
 interface WaitlistPageProps {
   /** True when a real session exists but the user's role isn't admin/tripper. */
   accessDenied?: boolean;
+  analyticsPreferencesLabel: string;
   dict: WaitlistDict;
   onOpenLogin: () => void;
   onSignOut?: () => void;
@@ -36,6 +38,7 @@ interface WaitlistPageProps {
 
 export function WaitlistPage({
   accessDenied = false,
+  analyticsPreferencesLabel,
   dict,
   onOpenLogin,
   onSignOut,
@@ -207,6 +210,9 @@ export function WaitlistPage({
               </svg>
             </a>
           </div>
+          <footer className="mt-6 text-center">
+            <AnalyticsPreferencesLink label={analyticsPreferencesLabel} />
+          </footer>
         </div>
       </div>
     </section>

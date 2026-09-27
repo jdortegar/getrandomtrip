@@ -1,13 +1,15 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { ChevronDown, LogOut } from "lucide-react";
 import { signOut as nextAuthSignOut } from "next-auth/react";
 import type { User } from "@/types/core";
 import { useMenuState } from "@/hooks/useMenuState";
+import { useLocale } from "@/hooks/useDictionary";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { TripperUnreadDot } from "@/components/app/dashboard/tripper/TripperUnreadDot";
+import { localizeHref } from "@/lib/i18n/localizeHref";
 
 /** Minimal user shape for navbar (all optional). */
 type NavbarUser = Partial<Pick<User, "name" | "avatar" | "role" | "roles">>;
@@ -51,6 +53,7 @@ export function NavbarProfile({
   session,
   user,
 }: NavbarProfileProps) {
+  const locale = useLocale();
   const { isOpen, toggle, close, menuRef } = useMenuState();
   const sessionUser = session?.user as
     | { role?: string; roles?: User["roles"] }
@@ -71,7 +74,7 @@ export function NavbarProfile({
 
   const handleSignOut = () => {
     if (session) {
-      nextAuthSignOut({ callbackUrl: "/" });
+      nextAuthSignOut({ callbackUrl: localizeHref(locale, "/") });
     } else {
       onSignOut();
     }

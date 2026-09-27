@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import SafeImage from "@/components/SafeImage";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,11 @@ export default function TripperCard({
   className,
 }: TripperCardProps) {
   return (
-    <Link href={`/trippers/${href}`} className="block relative" data-component="TripperCard">
+    <Link
+      href={`/trippers/${href}`}
+      className="block relative"
+      data-component="TripperCard"
+    >
       <div
         className={cn(
           "group rounded-lg overflow-hidden shadow-xl bg-white aspect-269/230 w-full relative block origin-center",

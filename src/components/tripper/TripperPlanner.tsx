@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "@/hooks/useDictionary";
+import { localizeHref } from "@/lib/i18n/localizeHref";
 import { useRouter } from "next/navigation";
 import CountryFlag from "@/components/common/CountryFlag";
 import Section from "@/components/layout/Section";
@@ -28,6 +30,7 @@ export default function TripperPlanner({
   tripperPackagesByType = {},
 }: Props) {
   const router = useRouter();
+  const locale = useLocale();
   const [country, setCountry] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [city, setCity] = useState("");
@@ -64,7 +67,7 @@ export default function TripperPlanner({
       originCity: city,
       originCountry: country,
     });
-    router.push(`/journey?${params.toString()}`);
+    router.push(localizeHref(locale, `/journey?${params.toString()}`));
   };
 
   const handleCountryChange = (name: string, code: string) => {
@@ -95,7 +98,8 @@ export default function TripperPlanner({
       fullWidth={true}
       id="planner-section"
       subtitle={`${tripperData.name} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.`}
-      title={`Planificá tu Randomtrip con ${firstName}`} data-component="TripperPlanner"
+      title={`Planificá tu Randomtrip con ${firstName}`}
+      data-component="TripperPlanner"
     >
       <div className="mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-4 sm:px-6 lg:px-8">
         {/* Countries + expertise */}

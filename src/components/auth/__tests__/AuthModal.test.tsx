@@ -1,10 +1,16 @@
+vi.mock("@/lib/helpers/tracking/gtm", () => ({
+  trackCustomEvent: vi.fn(),
+  trackButtonClick: vi.fn(),
+}));
+import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // React 19 requires this flag set before any `act(...)` call in a non-RTL harness.
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT =
-  true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT?: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 vi.mock("next-auth/react", () => ({
   signIn: vi.fn(),
@@ -28,7 +34,8 @@ function makeLocalStorageStub() {
     clear: () => {
       store = new Map();
     },
-    getItem: (key: string) => (store.has(key) ? (store.get(key) as string) : null),
+    getItem: (key: string) =>
+      store.has(key) ? (store.get(key) as string) : null,
     removeItem: (key: string) => {
       store.delete(key);
     },
@@ -97,9 +104,7 @@ async function submitForm() {
   });
 }
 
-function mockFetchSequence(
-  activeTrippersResponse: Promise<Response> | null,
-) {
+function mockFetchSequence(activeTrippersResponse: Promise<Response> | null) {
   const fetchMock = vi.fn((url: string) => {
     if (url === "/api/trippers/active") {
       return (
@@ -155,9 +160,7 @@ function getGoogleButton(): HTMLButtonElement {
 
 async function clickGoogleButton() {
   await act(async () => {
-    getGoogleButton().dispatchEvent(
-      new MouseEvent("click", { bubbles: true }),
-    );
+    getGoogleButton().dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await Promise.resolve();
     await Promise.resolve();
   });
@@ -187,9 +190,7 @@ describe("AuthModal register submit — referredByTripperSlug mandatory picker",
     });
     const fetchMock = mockFetchSequence(pending);
 
-    render(
-      <AuthModal defaultMode="register" isOpen onClose={() => {}} />,
-    );
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
     fillRequiredFields();
     await submitForm();
 
@@ -223,9 +224,7 @@ describe("AuthModal register submit — referredByTripperSlug mandatory picker",
       ),
     );
 
-    render(
-      <AuthModal defaultMode="register" isOpen onClose={() => {}} />,
-    );
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
     fillRequiredFields();
 
     await act(async () => {
@@ -253,9 +252,7 @@ describe("AuthModal register submit — referredByTripperSlug mandatory picker",
       ),
     );
 
-    render(
-      <AuthModal defaultMode="register" isOpen onClose={() => {}} />,
-    );
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
     fillRequiredFields();
 
     // Let the pre-fill fetch resolve first.
@@ -288,9 +285,7 @@ describe("AuthModal register submit — referredByTripperSlug mandatory picker",
       ),
     );
 
-    render(
-      <AuthModal defaultMode="register" isOpen onClose={() => {}} />,
-    );
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
     fillRequiredFields();
 
     await act(async () => {
@@ -311,7 +306,7 @@ describe("AuthModal register submit — referredByTripperSlug mandatory picker",
 });
 
 describe("AuthModal Google sign-in — mandatory picker gates the OAuth redirect too", () => {
-  it("blocks signIn(\"google\") and never calls the mode-sync endpoint when the picker is still undecided", async () => {
+  it('blocks signIn("google") and never calls the mode-sync endpoint when the picker is still undecided', async () => {
     const fetchMock = mockFetchSequence(
       Promise.resolve(
         new Response(JSON.stringify({ trippers: [], current: null }), {
@@ -405,7 +400,7 @@ describe("AuthModal Google sign-in — mandatory picker gates the OAuth redirect
     );
   });
 
-  it("does not gate login mode — signIn(\"google\") fires immediately with no picker/sync involved", async () => {
+  it('does not gate login mode — signIn("google") fires immediately with no picker/sync involved', async () => {
     const fetchMock = mockFetchSequence(null);
 
     render(<AuthModal defaultMode="login" isOpen onClose={() => {}} />);
@@ -534,4 +529,31 @@ describe("AuthModal Google callback translation capture", () => {
       ).toBe(false);
     },
   );
+});
+
+it("tracks successful email registration even when verification prevents automatic login", async () => {
+  mockFetchSequence(null);
+  signInMock.mockResolvedValue({ error: "EMAIL_NOT_VERIFIED", ok: false });
+  render(
+    <AuthModal defaultMode="register" dict={en} isOpen onClose={() => {}} />,
+  );
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
+  fillRequiredFields();
+  const select = container.querySelector("select")!;
+  setSelectValue(select, "none");
+  await submitForm();
+  expect(trackCustomEvent).toHaveBeenCalledExactlyOnceWith({
+    event: "sign_up",
+    method: "email",
+  });
+});
+it("does not call an OAuth button click a successful authentication", async () => {
+  mockFetchSequence(null);
+  render(<AuthModal defaultMode="login" dict={en} isOpen onClose={() => {}} />);
+  await clickGoogleButton();
+  expect(signInMock).toHaveBeenCalledWith("google", expect.anything());
+  expect(trackCustomEvent).not.toHaveBeenCalled();
 });

@@ -210,7 +210,7 @@ describe("Journey display memo approvals", () => {
     },
   );
 
-  it("retains origin clearing and the encoded unprefixed journey destination", () => {
+  it("retains origin clearing and the encoded locale-aware journey destination", () => {
     expertise(tripper);
     const country = container.querySelector<HTMLSelectElement>("select")!;
     const city = container.querySelector<HTMLInputElement>("input")!;
@@ -242,7 +242,7 @@ describe("Journey display memo approvals", () => {
     });
     act(() => button.click());
     expect(nav.push).toHaveBeenCalledExactlyOnceWith(
-      "/journey?tripper=ana+%26+friends&originCity=Vi%C3%B1a+del+Mar&originCountry=Chile",
+      "/en/journey?tripper=ana+%26+friends&originCity=Vi%C3%B1a+del+Mar&originCountry=Chile",
     );
   });
   it("refreshes custom transport text on a dictionary-only rerender", () => {

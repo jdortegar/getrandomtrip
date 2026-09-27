@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { Button } from "@/components/ui/Button";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { TripperCarouselCard } from "@/components/app/about-us/TripperCarouselCard";

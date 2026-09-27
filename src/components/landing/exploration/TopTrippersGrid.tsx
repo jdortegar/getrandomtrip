@@ -3,7 +3,7 @@
 import React from "react";
 import TripperCard from "@/components/TripperCard";
 import { motion } from "framer-motion";
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { Button } from "@/components/ui/Button";
 
 interface TopTrippersGridProps {

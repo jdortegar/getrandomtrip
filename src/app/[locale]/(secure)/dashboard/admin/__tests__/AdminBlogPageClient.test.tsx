@@ -2,13 +2,17 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminBlogPageClient } from "@/app/[locale]/(secure)/dashboard/admin/AdminBlogPageClient";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
 import type { AdminBlog } from "@/lib/admin/types";
 
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
+const navigation = vi.hoisted(() => ({ locale: "es" }));
+
 vi.mock("next/navigation", () => ({
-  useParams: () => ({ locale: "es" }),
+  useParams: () => ({ locale: navigation.locale }),
   useRouter: () => ({ push: vi.fn() }),
 }));
 
@@ -51,6 +55,7 @@ function blog(overrides: Partial<AdminBlog> = {}): AdminBlog {
 }
 
 beforeEach(() => {
+  navigation.locale = "es";
   vi.stubGlobal(
     "fetch",
     vi.fn().mockResolvedValue({
@@ -67,6 +72,33 @@ afterEach(() => {
   container?.remove();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+describe("AdminBlogPageClient — post title cell", () => {
+  it.each([
+    { locale: "es", copy: esCopy },
+    { locale: "en", copy: enCopy },
+  ])(
+    "shows only the title without subtitle or original-language metadata in $locale",
+    async ({ locale, copy }) => {
+      navigation.locale = locale;
+      const post = blog({ subtitle: "A surprise destination awaits" });
+      fetchMock().mockResolvedValue({
+        ok: true,
+        json: async () => ({ blogs: [post], pendingCount: 1, total: 1 }),
+      });
+
+      render(<AdminBlogPageClient />);
+      await flush();
+
+      const titleCell = container.querySelector("tbody tr td:nth-child(2)");
+      expect(titleCell?.textContent).toBe(post.title);
+      expect(container.textContent).not.toContain(post.subtitle);
+      expect(container.textContent).not.toContain(
+        copy.tripperBlogs.form.contentLanguage.canonicalLabel,
+      );
+    },
+  );
 });
 
 describe("AdminBlogPageClient — refetch keeps chrome mounted and dims the panel", () => {
@@ -212,6 +244,61 @@ describe("AdminBlogPageClient — single delete uses the in-app confirm dialog",
     await flush();
 
     expect(fetchMock()).toHaveBeenCalledWith("/api/admin/blogs/b1", { method: "DELETE" });
+  });
+});
+
+describe("AdminBlogPageClient — bulk delete uses destructive styling", () => {
+  it("keeps red hover styling and requires a selection and confirmation before deleting", async () => {
+    const copy = esCopy.adminPages.blog.bulkActions;
+    fetchMock().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        blogs: [blog({ status: "DRAFT" })],
+        pendingCount: 0,
+        total: 1,
+      }),
+    });
+
+    render(<AdminBlogPageClient />);
+    await flush();
+
+    const bulkDelete = Array.from(container.querySelectorAll("button")).find(
+      (button) => button.textContent === copy.deleteSelected.replace("{count}", "0"),
+    ) as HTMLButtonElement;
+    expect(bulkDelete.disabled).toBe(true);
+    expect(Array.from(bulkDelete.classList)).toEqual(expect.arrayContaining([
+      "bg-red-600", "border-red-600", "text-white",
+      "hover:bg-red-700", "hover:border-red-700", "focus-visible:ring-red-600/20",
+      "h-11", "px-4", "rounded-sm", "text-[13px]", "tracking-[1px]",
+      "disabled:bg-gray-100", "disabled:border-gray-200",
+      "disabled:cursor-not-allowed", "disabled:text-gray-400",
+    ]));
+    expect(bulkDelete.classList.contains("hover:border-primary/90")).toBe(false);
+
+    act(() => bulkDelete.click());
+    expect(document.body.querySelector('[role="dialog"]')).toBeNull();
+
+    const checkbox = container.querySelector("tbody input[type=checkbox]") as HTMLInputElement;
+    act(() => checkbox.click());
+    expect(bulkDelete.disabled).toBe(false);
+    expect(bulkDelete.textContent).toBe(copy.deleteSelected.replace("{count}", "1"));
+
+    act(() => bulkDelete.click());
+    await flush();
+    const dialog = document.body.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog.textContent).toContain(copy.confirmTitle.replace("{count}", "1"));
+    expect(
+      fetchMock().mock.calls.some(([, init]) => (init as RequestInit)?.method === "DELETE"),
+    ).toBe(false);
+
+    const confirmButton = Array.from(dialog.querySelectorAll("button")).find(
+      (button) => button.textContent === copy.confirm,
+    ) as HTMLButtonElement;
+    await act(async () => confirmButton.click());
+    await flush();
+
+    expect(fetchMock()).toHaveBeenCalledWith("/api/admin/blogs/b1", { method: "DELETE" });
+    expect(bulkDelete.disabled).toBe(true);
   });
 });
 

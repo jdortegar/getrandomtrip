@@ -147,16 +147,23 @@ export default function AuthModal({
 
     fetch("/api/trippers/active")
       .then((res) => (res.ok ? res.json() : null))
-      .then((data: { trippers?: ActiveTripperOption[]; current?: string | null } | null) => {
-        if (!data) return;
-        // Only mark as fetched on success — a failed/aborted request must
-        // not permanently block retries (see handleClose's reset comment).
-        setHasFetchedActiveTrippers(true);
-        setActiveTrippers(data.trippers ?? []);
-        if (data.current) {
-          setReferredByTripperSlug((prev) => prev || data.current!);
-        }
-      })
+      .then(
+        (
+          data: {
+            trippers?: ActiveTripperOption[];
+            current?: string | null;
+          } | null,
+        ) => {
+          if (!data) return;
+          // Only mark as fetched on success — a failed/aborted request must
+          // not permanently block retries (see handleClose's reset comment).
+          setHasFetchedActiveTrippers(true);
+          setActiveTrippers(data.trippers ?? []);
+          if (data.current) {
+            setReferredByTripperSlug((prev) => prev || data.current!);
+          }
+        },
+      )
       .catch(() => {
         // No-op — register still works with the "not yet decided" default,
         // which falls back to the cookie server-side on submit.
@@ -236,9 +243,12 @@ export default function AuthModal({
 
         if (!response.ok) {
           throw new Error(
-            registerErrorMessage(data.error, t) ?? (t?.loginFailed ?? ""),
+            registerErrorMessage(data.error, t) ?? t?.loginFailed ?? "",
           );
         }
+
+        // Account creation succeeded even when email verification blocks auto-login.
+        trackCustomEvent({ event: "sign_up", method: "email" });
 
         // Auto-login after successful registration — now gated by the
         // verification requirement, so this is expected to return
@@ -265,8 +275,7 @@ export default function AuthModal({
         }
 
         // Handle successful authentication
-        trackCustomEvent({ event: "sign_up", method: "email" });
-        handleAuthSuccess();
+        if (result?.ok) handleAuthSuccess();
       } else {
         // Login existing user
         const result = await signIn("credentials", {
@@ -297,8 +306,10 @@ export default function AuthModal({
         } else {
           localStorage.removeItem("auth-remember-email");
         }
-        trackCustomEvent({ event: "login", method: "email" });
-        handleAuthSuccess();
+        if (result?.ok) {
+          trackCustomEvent({ event: "login", method: "email" });
+          handleAuthSuccess();
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : (t?.loginFailed ?? ""));
@@ -362,7 +373,6 @@ export default function AuthModal({
       }
       setIsLoading(false);
     }
-    trackCustomEvent({ event: mode === "register" ? "sign_up" : "login", method: "google" });
     // Use current page as callback - let the page handle what happens next
     await signIn("google", { callbackUrl: window.location.href });
   }, [mode, referredByTripperSlug, googleReferralRequired, googleLoginFailed]);
@@ -404,7 +414,8 @@ export default function AuthModal({
         if (e.target === e.currentTarget) {
           handleClose();
         }
-      }} data-component="AuthModal"
+      }}
+      data-component="AuthModal"
     >
       <div className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl border border-gray-200">
         {/* Close button */}
@@ -579,9 +590,7 @@ export default function AuthModal({
                     <FormSelectField
                       id="auth-referred-by-tripper"
                       label={t?.referredByLabel}
-                      onChange={(e) =>
-                        setReferredByTripperSlug(e.target.value)
-                      }
+                      onChange={(e) => setReferredByTripperSlug(e.target.value)}
                       required
                       value={referredByTripperSlug}
                     >

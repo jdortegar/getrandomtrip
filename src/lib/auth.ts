@@ -172,6 +172,8 @@ export const authOptions: NextAuthOptions = {
         where: { email: user.email },
       });
 
+      const isNewGoogleUser = account?.provider === "google" && !dbUser;
+
       // For OAuth (Google), create user if doesn't exist
       if (account?.provider === "google" && !dbUser) {
         // Optional Tripper invite carried through OAuth via a short-lived
@@ -246,10 +248,18 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
+      if (account?.provider === "google") {
+        user.analyticsAuthSuccess = {
+          event: isNewGoogleUser ? "sign_up" : "login",
+          id: crypto.randomUUID(),
+          issuedAt: Date.now(),
+        };
+      }
       return true;
     },
     async jwt({ token, user, trigger, account }) {
       if (user) {
+        token.analyticsAuthSuccess = user.analyticsAuthSuccess;
         token.id = user.id;
 
         // If signing in with OAuth, ensure we have the DB user ID
@@ -282,6 +292,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
+      session.analyticsAuthSuccess = token.analyticsAuthSuccess;
       if (session.user) {
         session.user.id = token.id as string;
 
@@ -323,7 +334,8 @@ export const authOptions: NextAuthOptions = {
           if (dbUser.avatarUrl) {
             session.user.image = dbUser.avatarUrl;
           }
-          session.user.avatarUrlOriginal = dbUser.avatarUrlOriginal ?? undefined;
+          session.user.avatarUrlOriginal =
+            dbUser.avatarUrlOriginal ?? undefined;
           session.user.address = dbUser.address as
             | Record<string, string>
             | null

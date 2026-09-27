@@ -38,6 +38,7 @@ interface TripSummaryData {
   payment: {
     amount: number;
     currency: string;
+    status: string;
     receiptUrl: string | null;
   };
 }
@@ -99,24 +100,36 @@ export default function CheckoutResultSuccess({
     // roster lookup only materializes traveler rows for an APPROVED payment.
     // Firing both in parallel raced the two and could leave the roster
     // permanently empty if trip-summary won.
+    let confirmed = false;
     fetch("/api/stripe/confirm-payment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ paymentIntentId }),
     })
+      .then(async (response) => {
+        if (response.ok)
+          confirmed = (await response.json()).status === "succeeded";
+      })
       .catch(() => {})
       .then(() =>
-        fetch(`/api/stripe/trip-summary?paymentIntentId=${paymentIntentId}`),
+        fetch(
+          `/api/stripe/trip-summary?paymentIntentId=${encodeURIComponent(paymentIntentId)}`,
+        ),
       )
-      .then((r) => r?.json())
+      .then((response) => {
+        if (!response.ok) throw new Error("Payment summary unavailable");
+        return response.json();
+      })
       .then((data: TripSummaryData | undefined) => {
         if (!data) return;
         setTripData(data);
-        trackPurchase({
-          transaction_id: paymentIntentId,
-          value: data.payment.amount,
-          currency: data.payment.currency.toUpperCase(),
-        });
+        if (confirmed && data.payment.status === "APPROVED") {
+          trackPurchase({
+            transaction_id: paymentIntentId,
+            value: data.payment.amount,
+            currency: data.payment.currency.toUpperCase(),
+          });
+        }
       })
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -216,7 +229,9 @@ export default function CheckoutResultSuccess({
                       alt=""
                       height={72}
                       src="/assets/logos/iso-randomtrip.svg"
-                      style={{ filter: "brightness(0) saturate(0) invert(60%)" }}
+                      style={{
+                        filter: "brightness(0) saturate(0) invert(60%)",
+                      }}
                       unoptimized
                       width={72}
                     />

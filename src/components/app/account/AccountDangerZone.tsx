@@ -5,6 +5,8 @@ import { signOut } from "next-auth/react";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { useLocale } from "@/hooks/useDictionary";
+import { localizeHref } from "@/lib/i18n/localizeHref";
 
 type BlockReason = "ACTIVE_TRIPS" | "OWNED_EXPERIENCES" | "ADMIN_ROLE";
 
@@ -34,6 +36,7 @@ function blockedMessage(
 }
 
 export function AccountDangerZone({ copy }: AccountDangerZoneProps) {
+  const locale = useLocale();
   const [confirming, setConfirming] = useState(false);
   const [deactivating, setDeactivating] = useState(false);
   const [error, setError] = useState("");
@@ -48,7 +51,7 @@ export function AccountDangerZone({ copy }: AccountDangerZoneProps) {
       };
 
       if (response.ok) {
-        await signOut({ callbackUrl: "/" });
+        await signOut({ callbackUrl: localizeHref(locale, "/") });
         return;
       }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import VideoBackground from "@/components/media/VideoBackground";
@@ -26,7 +26,8 @@ export function XsedHero({
       className={cn(
         "relative flex h-screen flex-col overflow-hidden",
         className,
-      )} data-component="XsedHero"
+      )}
+      data-component="XsedHero"
     >
       <VideoBackground
         fallbackImage={content.backgroundImage}

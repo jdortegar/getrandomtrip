@@ -1,3 +1,8 @@
+vi.mock("@/lib/helpers/tracking/gtm", () => ({
+  trackPurchase: vi.fn(),
+  trackButtonClick: vi.fn(),
+}));
+import { trackPurchase } from "@/lib/helpers/tracking/gtm";
 import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -86,6 +91,7 @@ function button(name: string) {
   )!;
 }
 beforeEach(() => {
+  vi.mocked(trackPurchase).mockClear();
   navigation.query = "payment_intent=pi_query&redirect_status=succeeded";
   navigation.push.mockReset();
   http.mockReset().mockImplementation(async (url) => {
@@ -107,9 +113,13 @@ describe("Checkout confirmation approval", () => {
   it("keeps the product marker as plain text without a badge", async () => {
     const data = summary();
     data.trip.type = "xsed";
-    http.mockResolvedValueOnce(Response.json({ ok: true })).mockResolvedValueOnce(Response.json(data));
+    http
+      .mockResolvedValueOnce(Response.json({ ok: true }))
+      .mockResolvedValueOnce(Response.json(data));
     await render();
-    expect(container.querySelector(".text-amber-600")?.textContent).toBe("XSED");
+    expect(container.querySelector(".text-amber-600")?.textContent).toBe(
+      "XSED",
+    );
     expect(container.querySelector(".bg-xsed")).toBeNull();
     expect(container.textContent).toContain(labels.xsedExperienceLabel);
   });
@@ -280,3 +290,32 @@ describe("Checkout confirmation approval", () => {
     expect(button(labels.saveTravelersAction)).toBeUndefined();
   });
 });
+
+it.each([
+  [200, "succeeded", "APPROVED", true],
+  [500, "succeeded", "APPROVED", false],
+  [200, "processing", "APPROVED", false],
+  [200, "succeeded", "PENDING", false],
+])(
+  "purchase requires confirmed server success: %s %s %s",
+  async (httpStatus, confirmation, status, expected) => {
+    http
+      .mockResolvedValueOnce(
+        Response.json({ status: confirmation }, { status: httpStatus }),
+      )
+      .mockResolvedValueOnce(
+        Response.json({
+          ...summary(),
+          payment: { ...summary().payment, status },
+        }),
+      );
+    await render();
+    expect(trackPurchase).toHaveBeenCalledTimes(expected ? 1 : 0);
+    if (expected)
+      expect(trackPurchase).toHaveBeenCalledWith({
+        transaction_id: "pi_query",
+        value: 250,
+        currency: "USD",
+      });
+  },
+);

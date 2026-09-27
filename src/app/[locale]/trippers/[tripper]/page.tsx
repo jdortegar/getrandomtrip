@@ -43,10 +43,12 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const result = await getTripperBySlug(params.tripper);
 
-  if (result.status !== "ok") return { title: "Randomtrip" };
+  if (result.status !== "ok")
+    return { title: "Randomtrip", robots: { index: false, follow: false } };
 
   const { tripper } = result;
-  const ogImage = tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
+  const ogImage =
+    tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
 
   return {
     title: `${tripper.name} | Randomtrip`,
@@ -99,7 +101,11 @@ export default async function Page(props: {
   const availableTypesFromPackages = tripperData.availableTypes ?? [];
 
   // Fetch published blog posts for this tripper
-  const rawPublishedBlogs = await getTripperPublishedBlogs(tripperData.id, 6, locale);
+  const rawPublishedBlogs = await getTripperPublishedBlogs(
+    tripperData.id,
+    6,
+    locale,
+  );
   const publishedBlogs = rawPublishedBlogs.map((p) => ({
     ...p,
     href: pathForLocale(locale, p.href),
@@ -108,13 +114,16 @@ export default async function Page(props: {
   return (
     <main className="bg-white text-slate-900">
       <JsonLd
-        schema={buildPersonSchema({
-          avatarUrl: tripperData.avatarUrl,
-          bio: tripperData.bio,
-          heroImage: tripperData.heroImage,
-          name: tripperData.name,
-          slug: tripperData.tripperSlug,
-        })}
+        schema={buildPersonSchema(
+          {
+            avatarUrl: tripperData.avatarUrl,
+            bio: tripperData.bio,
+            heroImage: tripperData.heroImage,
+            name: tripperData.name,
+            slug: tripperData.tripperSlug,
+          },
+          locale,
+        )}
       />
       <TripperHero tripper={tripperData} />
 
@@ -161,7 +170,10 @@ export default async function Page(props: {
           subtitle="Notas, guías y momentos que inspiran de este tripper."
           title={`Inspiración de ${tripperData.name}`}
           viewAll={{
-            href: pathForLocale(locale, `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`),
+            href: pathForLocale(
+              locale,
+              `/blog?tripperId=${tripperData.id}&tripper=${encodeURIComponent(tripperData.name)}`,
+            ),
             subtitle: "Explora más contenido",
             title: "Ver Todo",
           }}

@@ -1,7 +1,9 @@
+import type { AnalyticsAuthSuccess } from "@/lib/types/AnalyticsAuthSuccess";
 import "next-auth";
 
 declare module "next-auth" {
   interface Session {
+    analyticsAuthSuccess?: AnalyticsAuthSuccess;
     user: {
       id: string;
       address?: Record<string, string> | null;
@@ -22,6 +24,7 @@ declare module "next-auth" {
   }
 
   interface User {
+    analyticsAuthSuccess?: AnalyticsAuthSuccess;
     id: string;
     email: string;
     name: string;
@@ -31,6 +34,7 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
+    analyticsAuthSuccess?: AnalyticsAuthSuccess;
     id: string;
     /**
      * Referring tripper's slug (design ADR-5), re-derived server-side in the
