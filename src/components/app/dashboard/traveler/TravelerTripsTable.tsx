@@ -93,7 +93,7 @@ export function TravelerTripsTable({
           </p>
         </div>
         <Button asChild size="md">
-          <Link href="/journey">
+          <Link href={pathForLocale(locale as Locale, "/journey")}>
             <Plus className="h-4 w-4" />
             {copy.upcomingTrips.emptyCta}
           </Link>

@@ -7,6 +7,7 @@ import GlobalError from "../global-error";
 const { captureException } = vi.hoisted(() => ({ captureException: vi.fn() }));
 vi.mock("@sentry/nextjs", () => ({ captureException }));
 vi.mock("@/components/Navbar", () => ({ default: () => null }));
+vi.mock("next/navigation", () => ({ usePathname: () => window.location.pathname }));
 vi.mock("@/components/layout/Section", () => ({
   default: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -27,6 +28,20 @@ it("reports the existing boundary error and preserves retry", () => {
   expect(container.textContent).toContain("Error Inesperado");
   act(() => container.querySelector("button")?.click());
   expect(reset).toHaveBeenCalledOnce();
+  act(() => root.unmount());
+});
+
+it.each([
+  ["/en/checkout", "/en"],
+  ["/checkout", "/"],
+  ["/es/checkout", "/"],
+  ["/english", "/"],
+])("keeps the recovery home link canonical at %s", (path, href) => {
+  window.history.replaceState(null, "", path);
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  act(() => root.render(<ErrorPage error={new Error("Failure")} reset={vi.fn()} />));
+  expect(container.querySelector("a")?.getAttribute("href")).toBe(href);
   act(() => root.unmount());
 });
 

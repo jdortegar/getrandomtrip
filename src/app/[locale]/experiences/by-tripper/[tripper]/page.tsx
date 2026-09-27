@@ -13,6 +13,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { getExcuseTitle, getExcuseImage } from "@/lib/helpers/excuse-helper";
 import { getLevelById } from "@/lib/utils/experiencesData";
+import { hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 // Helper function to get duration and activity ranges based on level
 function getLevelInfo(level: string) {
@@ -81,12 +83,13 @@ export async function generateMetadata(props: {
 }
 
 export default async function Page(props: {
-  params: Promise<{ tripper: string }>;
+  params: Promise<{ locale: string; tripper: string }>;
 }) {
   const params = await props.params;
+  const locale = hasLocale(params.locale) ? params.locale : "es";
   // Guard si viene vacío o 'undefined'
   if (!params?.tripper || params.tripper === "undefined") {
-    redirect("/experiences/by-type/group");
+    redirect(pathForLocale(locale, "/experiences/by-type/group"));
   }
 
   // Fetch from database — three-way discriminated result
@@ -124,7 +127,7 @@ export default async function Page(props: {
         <div className="rt-container px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/trippers">
+              <Link href={pathForLocale(locale, "/trippers")}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver a Trippers
               </Link>
@@ -169,7 +172,7 @@ export default async function Page(props: {
             </div>
             <div className="flex gap-2">
               <Button asChild>
-                <Link href={`/trippers/${dbTripper.tripperSlug}`}>
+                <Link href={pathForLocale(locale, `/trippers/${dbTripper.tripperSlug}`)}>
                   Ver Perfil
                 </Link>
               </Button>
@@ -189,7 +192,7 @@ export default async function Page(props: {
               {dbTripper.name} aún no ha creado experiencias de viaje.
             </p>
             <Button asChild>
-              <Link href="/trippers">Explorar otros Trippers</Link>
+              <Link href={pathForLocale(locale, "/trippers")}>Explorar otros Trippers</Link>
             </Button>
           </div>
         ) : (

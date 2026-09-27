@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/common/LocalizedLink";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";

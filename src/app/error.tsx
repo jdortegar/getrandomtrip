@@ -3,10 +3,12 @@
 import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
 import { AlertTriangle, Home, RotateCcw } from "lucide-react";
+import { localizeHref } from "@/lib/i18n/localizeHref";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -14,6 +16,8 @@ interface ErrorPageProps {
 }
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  const pathname = usePathname();
+  const locale = pathname?.split("/")[1] === "en" ? "en" : "es";
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
@@ -44,7 +48,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
                 Intentar de nuevo
               </Button>
               <Button variant="secondary" size="lg" asChild>
-                <Link href="/">
+                <Link href={localizeHref(locale, "/")}>
                   <Home className="w-4 h-4 mr-2" />
                   Ir al Inicio
                 </Link>

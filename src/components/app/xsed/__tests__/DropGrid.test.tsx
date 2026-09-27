@@ -1,7 +1,14 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { DropEntry } from "@/types/core";
 import { DropGrid } from "../DropGrid";
+
+const navigation = vi.hoisted(() => ({ locale: "es" }));
+vi.mock("next/navigation", () => ({ useParams: () => navigation }));
+
+beforeEach(() => {
+  navigation.locale = "es";
+});
 
 const content = {
   ctaHref: "/xsed/drops",
@@ -23,6 +30,15 @@ function drop(n: number): DropEntry {
 }
 
 describe("DropGrid", () => {
+  it.each(["en", "es"])("keeps the %s locale in the view-all CTA", (locale) => {
+    navigation.locale = locale;
+    const html = renderToStaticMarkup(
+      <DropGrid content={content} drops={[drop(1)]} />,
+    );
+
+    expect(html).toContain(`href="${locale === "en" ? "/en" : ""}/xsed/drops"`);
+  });
+
   it("omits the entire section when there are no drops", () => {
     const html = renderToStaticMarkup(<DropGrid content={content} drops={[]} />);
 
