@@ -962,6 +962,16 @@
       }
     },
     "features": {
+      "xsedCampaign": {
+        "dateLabel": "Campaign start date",
+        "description": "Week 1 starts on this date and the number increases every 7 days, using Buenos Aires time. Before this date, week 1 is shown. Changes affect only the displayed number, not drops or booking windows.",
+        "errorSave": "Couldn't save the start date. Please try again.",
+        "invalidDate": "Enter a valid start date.",
+        "save": "Save date",
+        "savedNote": "Start date saved. Reload public pages to see the updated week.",
+        "saving": "Saving…",
+        "title": "TGIS campaign week"
+      },
       "siteAccessGate": {
         "toggleLabel": "Waitlist gate",
         "toggleDescription": "When on, visitors without an invited account see the early-access waitlist instead of the site. Invited users always get through.",

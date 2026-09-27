@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Switch } from "@/components/ui/Switch";
 import { useDictionary } from "@/hooks/useDictionary";
+import { XsedCampaignSettingsCard } from "@/components/app/admin/XsedCampaignSettingsCard";
+import { isCampaignDate } from "@/lib/xsed/campaign";
 
 interface ToggleCardCopy {
   errorLoad: string;
@@ -37,9 +39,7 @@ function FeatureToggleCard({
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between gap-6">
         <div>
-          <h3 className="text-xl font-semibold text-ink">
-            {copy.toggleLabel}
-          </h3>
+          <h3 className="text-xl font-semibold text-ink">{copy.toggleLabel}</h3>
           <p className="mt-1 max-w-xl text-sm text-neutral-600">
             {copy.toggleDescription}
           </p>
@@ -75,6 +75,7 @@ function FeatureToggleCard({
 
 interface FeatureFlags {
   gateEnabled: boolean;
+  xsedCampaignStartDate: string;
   xsedWindowEnforcementEnabled: boolean;
 }
 
@@ -82,6 +83,9 @@ export function AdminFeaturesPageClient() {
   const copy = useDictionary((d) => d.adminPages.features);
 
   const [gateEnabled, setGateEnabled] = useState<boolean | null>(null);
+  const [campaignStartDate, setCampaignStartDate] = useState<string | null>(
+    null,
+  );
   const [xsedWindowEnforcementEnabled, setXsedWindowEnforcementEnabled] =
     useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,7 +96,9 @@ export function AdminFeaturesPageClient() {
   const [gateSavedNote, setGateSavedNote] = useState(false);
 
   const [savingXsedWindow, setSavingXsedWindow] = useState(false);
-  const [xsedWindowSaveError, setXsedWindowSaveError] = useState<string | null>(null);
+  const [xsedWindowSaveError, setXsedWindowSaveError] = useState<string | null>(
+    null,
+  );
   const [xsedWindowSavedNote, setXsedWindowSavedNote] = useState(false);
 
   useEffect(() => {
@@ -107,12 +113,14 @@ export function AdminFeaturesPageClient() {
         if (
           !res.ok ||
           typeof data.gateEnabled !== "boolean" ||
-          typeof data.xsedWindowEnforcementEnabled !== "boolean"
+          typeof data.xsedWindowEnforcementEnabled !== "boolean" ||
+          !isCampaignDate(data.xsedCampaignStartDate)
         ) {
           setLoadError(data.error ?? copy.siteAccessGate.errorLoad);
           return;
         }
         setGateEnabled(data.gateEnabled);
+        setCampaignStartDate(data.xsedCampaignStartDate);
         setXsedWindowEnforcementEnabled(data.xsedWindowEnforcementEnabled);
       } catch {
         setLoadError(copy.siteAccessGate.errorLoad);
@@ -173,7 +181,9 @@ export function AdminFeaturesPageClient() {
       };
       if (!res.ok || typeof data.xsedWindowEnforcementEnabled !== "boolean") {
         setXsedWindowEnforcementEnabled(previous);
-        setXsedWindowSaveError(data.error ?? copy.xsedWindowEnforcement.errorSave);
+        setXsedWindowSaveError(
+          data.error ?? copy.xsedWindowEnforcement.errorSave,
+        );
         return;
       }
       setXsedWindowEnforcementEnabled(data.xsedWindowEnforcementEnabled);
@@ -210,6 +220,10 @@ export function AdminFeaturesPageClient() {
         onToggle={(next) => void handleXsedWindowToggle(next)}
         saving={savingXsedWindow}
         savedNote={xsedWindowSavedNote}
+      />
+      <XsedCampaignSettingsCard
+        copy={copy.xsedCampaign}
+        initialStartDate={campaignStartDate}
       />
     </div>
   );

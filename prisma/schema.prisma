@@ -806,6 +806,8 @@ model SiteSetting {
   /// When false, XSED purchases bypass the Sunday 16-20hs local-time window
   /// check (src/lib/xsed/window.ts) entirely — anyone can book anytime.
   xsedWindowEnforcementEnabled Boolean  @default(true)
+  /// Campaign numbering only; does not change the country-local booking window.
+  xsedCampaignStartDate DateTime @default(dbgenerated("'2026-09-27'::date")) @db.Date
   updatedAt   DateTime @updatedAt
 
   @@map("site_settings")

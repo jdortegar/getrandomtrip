@@ -1764,6 +1764,16 @@ export interface AdminPagesDict {
     };
   };
   features: {
+    xsedCampaign: {
+      dateLabel: string;
+      description: string;
+      errorSave: string;
+      invalidDate: string;
+      save: string;
+      savedNote: string;
+      saving: string;
+      title: string;
+    };
     siteAccessGate: {
       errorLoad: string;
       errorSave: string;
