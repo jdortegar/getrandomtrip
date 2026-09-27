@@ -10,7 +10,7 @@
 
 **GetRandomtrip** is a mystery travel platform. Clients configure a trip budget
 and preferences, then receive a surprise destination curated by a *Tripper*
-(travel expert). Deployed on Netlify: <https://getrandomtrip.netlify.app/>.
+(travel expert). Deployed on Netlify: <https://getrandomtrip.com>.
 
 Existing docs to read before making significant changes — do **not** duplicate
 their content here:
