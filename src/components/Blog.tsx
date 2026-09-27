@@ -30,10 +30,12 @@ export default function Blog({
   posts,
   viewAll,
 }: BlogProps) {
+  const slideCount = posts.length + (viewAll ? 1 : 0);
+
   if (posts.length === 0) return null;
 
   return (
-    <Section id={id} fullWidth className={cn("pt-24!", className)} data-component="Blog">
+    <Section id={id} fullWidth className={cn("overflow-x-clip pt-24!", className)} data-component="Blog">
       <div className="relative flex flex-col gap-12 lg:flex-row lg:rt-container">
         {/* Left Column */}
         <aside
@@ -78,10 +80,16 @@ export default function Blog({
         {/* Right Column - Carousel */}
         <div className="relative z-0 flex-1 lg:min-w-2/3">
           <EmblaCarousel
-            slidesPerView={2}
-            overflow="right"
             arrowsClassName="lg:pr-0!"
-            slideClassName="md:flex-[0_0_50%] lg:flex-[0_0_50%]"
+            bleedRight
+            overflow="right"
+            slideClassName={
+              // Reserve two gaps and a 20% preview within the content width; bleeding reveals more.
+              slideCount > 2
+                ? "sm:flex-[0_0_calc((100%_-_1.5rem)/2.2)]"
+                : "sm:flex-[0_0_calc(50%_-_0.375rem)]"
+            }
+            slidesPerView={2}
           >
             {posts.map((post, index) => (
               <BlogCard key={post.title || index} post={post} />

@@ -14,6 +14,8 @@ type OverflowSide = "left" | "right" | "both";
 
 type EmblaCarouselProps = {
   accentColor?: string;
+  /** Keep the left edge clipped; a full-width ancestor must clip rightward overflow. */
+  bleedRight?: boolean;
   children: React.ReactNode;
   options?: EmblaOptionsType;
   overflow?: OverflowSide;
@@ -30,6 +32,7 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
 
 const EmblaCarousel = ({
   accentColor,
+  bleedRight = false,
   children,
   options,
   overflow,
@@ -115,7 +118,15 @@ const EmblaCarousel = ({
   );
 
   return (
-    <div className="@container mx-auto w-full overflow-x-clip" data-component="EmblaCarousel">
+    <div
+      className={cn(
+        "@container mx-auto w-full",
+        bleedRight
+          ? "overflow-visible [clip-path:inset(-100vh_-100vw_-100vh_0)]"
+          : "overflow-x-clip",
+      )}
+      data-component="EmblaCarousel"
+    >
       {arrows && (
         <div className={cn("rt-container mb-6", arrowsClassName)}>{arrows}</div>
       )}
