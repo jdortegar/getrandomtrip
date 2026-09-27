@@ -608,8 +608,11 @@ export interface DashboardDict {
     action: string;
     bookingRefLabel: string;
     deleteAction: string;
+    deleteCancel: string;
     deleteConfirm: string;
     deleteFailed: string;
+    deleteTitle: string;
+    deleting: string;
     editAction: string;
     estimatedTripTotal: string;
     experienceSection: string;
