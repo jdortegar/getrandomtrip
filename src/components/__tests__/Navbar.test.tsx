@@ -2,6 +2,7 @@ import { act } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import Navbar from "../Navbar";
 import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import {
@@ -39,6 +40,26 @@ function localeOption(label: string) {
     (option) => option.textContent === label,
   )!;
 }
+
+it.each([
+  { locale: "en", copy: en, prefix: "/en" },
+  { locale: "es", copy: es, prefix: "" },
+] as const)("omits About Us from desktop and mobile navigation in $locale", ({ locale, copy, prefix }) => {
+  const localizedDict = copy as unknown as Dictionary;
+  harness.render(<Navbar backgroundPrimary dict={localizedDict} locale={locale} />);
+  const expectedLinks = ["/trippers", "/experiences", "/xsed", "/blog", "/contact"].map(
+    (path) => `${prefix}${path}`,
+  );
+  const desktopLinks = harness.container.querySelectorAll('header a[href^="/"]');
+  expect([...desktopLinks].slice(1).map((link) => link.getAttribute("href"))).toEqual(expectedLinks);
+
+  harness.click(
+    harness.container.querySelector(`button[aria-label="${localizedDict.nav.openMenu}"]`)!,
+  );
+  const mobileLinks = harness.container.querySelectorAll('[role="dialog"] a[href^="/"]');
+  expect([...mobileLinks].map((link) => link.getAttribute("href"))).toEqual(expectedLinks);
+  expect(harness.container.querySelector('a[href$="/about-us"]')).toBeNull();
+});
 
 it.each(["XSED", "TGIS"])("keeps %s as plain navigation text on desktop and mobile", (label) => {
   harness.render(

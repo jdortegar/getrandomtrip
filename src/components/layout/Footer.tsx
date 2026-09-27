@@ -40,14 +40,15 @@ export default function Footer({ dict, locale }: FooterProps) {
                 {f.quickLinksTitle}
               </h4>
               <ul className="space-y-3">
-                <li>
+                {/* TODO(2026-09-29): Restore the About Us footer link. */}
+                {/* <li>
                   <Link
                     className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
                     href={pathForLocale(locale, "/about-us")}
                   >
                     {f.about}
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link
                     className="text-sm text-neutral-600 transition-colors hover:text-primary hover:underline hover:underline-offset-2"
