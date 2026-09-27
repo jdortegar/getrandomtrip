@@ -349,8 +349,8 @@ function TripDetailsContent() {
                       </span>
                     </div>
                     <p className="font-medium text-ink text-sm">
-                      {new Date(trip.startDate).toLocaleDateString()} →{" "}
-                      {new Date(trip.endDate).toLocaleDateString()}
+                      {new Date(trip.startDate).toLocaleDateString(locale, { timeZone: "UTC" })} →{" "}
+                      {new Date(trip.endDate).toLocaleDateString(locale, { timeZone: "UTC" })}
                     </p>
                   </div>
 

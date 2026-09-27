@@ -8,7 +8,8 @@ const db = vi.hoisted(() => ({
     updateMany: vi.fn(),
     update: vi.fn(),
   },
-  tripRequest: { update: vi.fn() },
+  tripRequest: { update: vi.fn(), updateMany: vi.fn() },
+  $transaction: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 vi.mock("@/lib/email", () => ({
@@ -21,12 +22,14 @@ import {
   sendBookingConfirmed,
   sendPaymentFailed,
 } from "@/lib/email";
-import { updatePaymentFromStripeWebhook } from "../payment";
+import { updatePaymentFromStripeWebhook, upsertPaymentForTripCheckout } from "../payment";
 
 describe("Stripe webhook payment identity", () => {
   let row: Record<string, unknown>;
+  let trip: { status: string };
   beforeEach(() => {
     vi.resetAllMocks();
+    trip = { status: "PENDING_PAYMENT" };
     row = {
       id: "payment",
       tripRequestId: "trip",
@@ -37,7 +40,23 @@ describe("Stripe webhook payment identity", () => {
       providerResponse: {},
       updatedAt: new Date(1),
     };
-    db.payment.findUnique.mockImplementation(async () => ({ ...row }));
+    db.payment.findUnique.mockImplementation(async () => ({ ...row, tripRequest: { ...trip } }));
+    db.tripRequest.updateMany.mockImplementation(async ({ where, data }) => {
+      if (!where.status.in.includes(trip.status)) return { count: 0 };
+      Object.assign(trip, data);
+      return { count: 1 };
+    });
+    let transactionTail = Promise.resolve();
+    db.$transaction.mockImplementation((run) => {
+      const next = transactionTail.then(async () => {
+        const beforePayment = { ...row };
+        const beforeTrip = { ...trip };
+        try { return await run(db); }
+        catch (error) { row = beforePayment; trip = beforeTrip; throw error; }
+      });
+      transactionTail = next.catch(() => {});
+      return next;
+    });
     db.payment.update.mockImplementation(async ({ data }) =>
       Object.assign(row, data),
     );
@@ -57,6 +76,72 @@ describe("Stripe webhook payment identity", () => {
       Object.assign(row, data);
       return { count: 1 };
     });
+  });
+
+  it("locks the trip before the payment, matching concurrent checkout refresh", async () => {
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(db.tripRequest.updateMany.mock.invocationCallOrder[0]).toBeLessThan(db.payment.updateMany.mock.invocationCallOrder[0]);
+  });
+
+  it("serializes same-trip refresh behind settlement using the trip row, not whole transactions", async () => {
+    let unlockSettlement!: () => void;
+    let enteredSettlement!: () => void;
+    const hold = new Promise<void>((resolve) => { unlockSettlement = resolve; });
+    const entered = new Promise<void>((resolve) => { enteredSettlement = resolve; });
+    let tripTail = Promise.resolve();
+    let first = true;
+    db.$transaction.mockImplementation(async (run) => {
+      let unlockTrip: (() => void) | undefined;
+      const tx = {
+        payment: db.payment,
+        tripRequest: { updateMany: async (args: unknown) => {
+          const previous = tripTail;
+          tripTail = new Promise<void>((resolve) => { unlockTrip = resolve; });
+          await previous;
+          const result = await db.tripRequest.updateMany(args);
+          if (first) { first = false; enteredSettlement(); await hold; }
+          return result;
+        } },
+      };
+      try { return await run(tx); }
+      finally { unlockTrip?.(); }
+    });
+    const settlement = updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    await entered;
+    const refresh = upsertPaymentForTripCheckout({
+      userId: "buyer", tripRequestId: "trip", provider: "stripe", amount: 700,
+      stripePaymentIntentId: "pi_old", expectedTripUpdatedAt: new Date(1),
+      level: "essenza", paxDetails: { adults: 2, minors: 0, rooms: 1 },
+      previousPayment: { id: "payment", stripePaymentIntentId: "pi_old" },
+    });
+    const refreshRejected = expect(refresh).rejects.toMatchObject({ status: 409 });
+    try { expect(db.payment.updateMany).not.toHaveBeenCalled(); }
+    finally { unlockSettlement(); }
+    await Promise.all([settlement, refreshRejected]);
+    expect(row.status).toBe("APPROVED");
+    expect(trip.status).toBe("CONFIRMED");
+    expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
+  });
+
+  it("rolls back trip promotion when the later payment write fails, then retries", async () => {
+    db.payment.updateMany.mockRejectedValueOnce(new Error("Payment write failed"));
+    await expect(updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" })).rejects.toThrow("Payment write failed");
+    expect(row.status).toBe("PENDING");
+    expect(trip.status).toBe("PENDING_PAYMENT");
+    expect(sendBookingConfirmed).not.toHaveBeenCalled();
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(row.status).toBe("APPROVED");
+    expect(trip.status).toBe("CONFIRMED");
+    expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
+  });
+
+  it("rolls back provisional trip promotion after a lost payment claim", async () => {
+    db.payment.updateMany.mockResolvedValueOnce({ count: 0 });
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(db.tripRequest.updateMany).toHaveBeenCalledTimes(1);
+    expect(trip.status).toBe("PENDING_PAYMENT");
+    expect(row.status).toBe("PENDING");
+    expect(sendBookingConfirmed).not.toHaveBeenCalled();
   });
 
   it.each(["CANCELLED", "FAILED", "APPROVED"])(
@@ -115,7 +200,7 @@ describe("Stripe webhook payment identity", () => {
       await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
       expect(row.status).toBe("APPROVED");
       expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
-      expect(db.tripRequest.update).toHaveBeenCalledTimes(1);
+      expect(db.tripRequest.updateMany).toHaveBeenCalledTimes(1);
     },
   );
 
@@ -150,6 +235,48 @@ describe("Stripe webhook payment identity", () => {
       expect(db.payment.updateMany).not.toHaveBeenCalled();
     },
   );
+
+  it("rolls back payment approval when trip promotion fails, then retries once", async () => {
+    db.tripRequest.updateMany.mockRejectedValueOnce(new Error("Trip write failed"));
+    await expect(updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" })).rejects.toThrow("Trip write failed");
+    expect(row.status).toBe("PENDING");
+    expect(trip.status).toBe("PENDING_PAYMENT");
+    expect(sendBookingConfirmed).not.toHaveBeenCalled();
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(row.status).toBe("APPROVED");
+    expect(trip.status).toBe("CONFIRMED");
+    expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
+    expect(sendAdminNewBooking).toHaveBeenCalledTimes(1);
+  });
+
+  it("repairs a legacy approved/unconfirmed booking only once", async () => {
+    row.status = "APPROVED";
+    await Promise.all([
+      updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" }),
+      updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" }),
+    ]);
+    expect(trip.status).toBe("CONFIRMED");
+    expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
+    expect(sendAdminNewBooking).toHaveBeenCalledTimes(1);
+  });
+
+  it("notifies once when fallback and webhook settle concurrently", async () => {
+    await Promise.all([
+      updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" }),
+      updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" }),
+    ]);
+    expect(row.status).toBe("APPROVED");
+    expect(trip.status).toBe("CONFIRMED");
+    expect(sendBookingConfirmed).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["CANCELLED", "REVEALED", "COMPLETED"])("does not regress a %s trip on settlement", async (status) => {
+    trip.status = status;
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(row.status).toBe("APPROVED");
+    expect(trip.status).toBe(status);
+    expect(sendBookingConfirmed).not.toHaveBeenCalled();
+  });
 
   it("supports the legacy provider-id fallback only while no replacement Stripe identity exists", async () => {
     Object.assign(row, {

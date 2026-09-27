@@ -43,6 +43,18 @@ describe("useCheckoutQuote", () => {
     await act(async () => root.render(<Harness />));
   };
 
+  it("preserves an invalid-date error code without treating it as a promo, then clears it on retry", async () => {
+    fetchMock.mockResolvedValueOnce(Response.json({ error: "Raw date error", errorCode: "INVALID_TRIP_DATES" }, { status: 400 }));
+    await mount();
+    expect(current.errorCode).toBe("INVALID_TRIP_DATES");
+    expect(current.promoCode).toBeNull();
+    expect(current.isReady()).toBe(false);
+    await act(async () => { await current.retry(); });
+    expect(current.errorCode).toBeNull();
+    expect(current.error).toBeNull();
+    expect(current.isReady()).toBe(true);
+  });
+
   it("serializes save→quote operations and never unlocks on an older response", async () => {
     await mount();
     const first = deferred<Response>();

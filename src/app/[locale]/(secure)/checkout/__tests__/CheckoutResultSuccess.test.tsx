@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(navigation.query),
 }));
 // Canvas decoration is not part of the checkout request/control contract.
-vi.mock("@/components/feedback/Confetti", () => ({ default: () => null }));
+vi.mock("@/components/feedback/Confetti", () => ({ default: () => <div data-testid="confetti" /> }));
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 const http = vi.fn<typeof fetch>();
 const labels = en.confirmation.page;
@@ -35,6 +35,7 @@ function summary() {
   return {
     trip: {
       id: "trip-1",
+      status: "CONFIRMED",
       type: "solo",
       level: "Explorer",
       nights: 2,
@@ -53,6 +54,7 @@ function summary() {
       },
     },
     payment: {
+      status: "APPROVED",
       amount: 250,
       currency: "usd",
       receiptUrl: "https://receipt.example/1",
@@ -105,6 +107,7 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount());
   container.remove();
+  vi.useRealTimers();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
@@ -124,7 +127,7 @@ describe("Checkout confirmation approval", () => {
     expect(container.textContent).toContain(labels.xsedExperienceLabel);
   });
 
-  it("renders success immediately and waits for confirmation before requesting the summary", async () => {
+  it("shows verification, never success, until the server returns an approved booking", async () => {
     const confirm = deferred();
     http
       .mockReturnValueOnce(confirm.promise)
@@ -132,9 +135,8 @@ describe("Checkout confirmation approval", () => {
     await render({
       stripeReturn: { paymentIntent: "pi_server", redirectStatus: "succeeded" },
     });
-    expect(container.querySelector("h1")?.textContent).toBe(
-      en.confirmation.hero.title,
-    );
+    expect(container.querySelector("h1")?.textContent).not.toBe(en.confirmation.hero.title);
+    expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
     expect(
       container.querySelector(`a[href="/en/dashboard"]`)?.textContent,
     ).toBe(labels.ctaMyTrips);
@@ -145,6 +147,7 @@ describe("Checkout confirmation approval", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ paymentIntentId: "pi_server" }),
+          signal: expect.any(AbortSignal),
         },
       ],
     ]);
@@ -152,6 +155,7 @@ describe("Checkout confirmation approval", () => {
     await act(async () => confirm.resolve(Response.json({ ok: true })));
     expect(http.mock.calls[1]).toEqual([
       "/api/stripe/trip-summary?paymentIntentId=pi_server",
+      { signal: expect.any(AbortSignal) },
     ]);
     expect(container.textContent).toContain("trip-1");
     expect(container.textContent).toContain("USD 250");
@@ -167,27 +171,23 @@ describe("Checkout confirmation approval", () => {
     ).toBe(labels.receiptLink);
   });
 
-  it("shows retry without requests for a failed payment", async () => {
-    navigation.query =
-      "payment_intent=pi_failed&redirect_status=requires_payment_method";
-    const back = vi.spyOn(window.history, "back").mockImplementation(() => {});
+  it("does not trust a failed redirect parameter when the server verifies approval", async () => {
+    navigation.query = "payment_intent=pi_failed&redirect_status=requires_payment_method";
+    http.mockResolvedValueOnce(Response.json({ status: "succeeded" })).mockResolvedValueOnce(Response.json(summary()));
     await render();
-    expect(container.querySelector("h1")?.textContent).toBe(labels.errorTitle);
-    act(() => button(labels.retry).click());
-    expect(back).toHaveBeenCalledOnce();
-    expect(http).not.toHaveBeenCalled();
-    expect(container.querySelector(`a[href="/en/dashboard"]`)).toBeNull();
+    expect(container.querySelector("h1")?.textContent).toBe(en.confirmation.hero.title);
+    expect(container.querySelector('[data-testid="confetti"]')).not.toBeNull();
+    expect(http).toHaveBeenCalledTimes(2);
   });
 
-  it("keeps success and the default-locale dashboard link without a payment intent", async () => {
+  it("does not claim success without a payment intent", async () => {
     navigation.query = "";
     await render({ locale: "invalid" });
-    expect(container.querySelector("h1")?.textContent).toBe(
-      en.confirmation.hero.title,
-    );
-    expect(
-      container.querySelector(`a[href="/es/dashboard"]`)?.textContent,
-    ).toBe(labels.ctaMyTrips);
+    expect(container.querySelector("h1")?.textContent).not.toBe(en.confirmation.hero.title);
+    expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
+    expect(container.querySelector('a[href="/es/dashboard"]')?.textContent).toBe(labels.ctaMyTrips);
+    expect(container.textContent).toContain(labels.resultTitle);
+    expect(container.textContent).not.toContain("PUNTO DE PARTIDA");
     expect(http).not.toHaveBeenCalled();
     expect(button(labels.saveTravelersAction)).toBeUndefined();
   });
@@ -272,7 +272,7 @@ describe("Checkout confirmation approval", () => {
       expect(container.textContent).not.toContain(en.inviteTravelers.heading);
   });
 
-  it("retains the success screen when summary retrieval fails", async () => {
+  it("shows recovery without success when summary retrieval fails", async () => {
     http
       .mockResolvedValueOnce(Response.json({ ok: true }))
       .mockRejectedValueOnce(new Error("Summary unavailable"));
@@ -281,9 +281,8 @@ describe("Checkout confirmation approval", () => {
       "/api/stripe/confirm-payment",
       "/api/stripe/trip-summary?paymentIntentId=pi_query",
     ]);
-    expect(container.querySelector("h1")?.textContent).toBe(
-      en.confirmation.hero.title,
-    );
+    expect(container.querySelector("h1")?.textContent).not.toBe(en.confirmation.hero.title);
+    expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
     expect(
       container.querySelector(`a[href="/en/dashboard"]`)?.textContent,
     ).toBe(labels.ctaMyTrips);
@@ -293,11 +292,11 @@ describe("Checkout confirmation approval", () => {
 
 it.each([
   [200, "succeeded", "APPROVED", true],
-  [500, "succeeded", "APPROVED", false],
-  [200, "processing", "APPROVED", false],
+  [500, "succeeded", "APPROVED", true],
+  [200, "processing", "APPROVED", true],
   [200, "succeeded", "PENDING", false],
 ])(
-  "purchase requires confirmed server success: %s %s %s",
+  "purchase requires an approved server booking: %s %s %s",
   async (httpStatus, confirmation, status, expected) => {
     http
       .mockResolvedValueOnce(
@@ -319,3 +318,53 @@ it.each([
       });
   },
 );
+
+
+it.each(["PENDING", "FAILED", "CANCELLED"])("never shows paid summary or confetti for %s payment", async (status) => {
+  const data = summary();
+  data.payment.status = status;
+  http.mockResolvedValueOnce(Response.json({ status: "succeeded" })).mockResolvedValueOnce(Response.json(data));
+  await render();
+  expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
+  expect(container.textContent).not.toContain(labels.totalPaidLabel);
+  expect(container.textContent).not.toContain(en.inviteTravelers.heading);
+});
+
+it("does not confirm an approved payment with an unpaid booking", async () => {
+  const data = summary();
+  data.trip.status = "PENDING_PAYMENT";
+  http.mockResolvedValueOnce(Response.json({ status: "succeeded" })).mockResolvedValueOnce(Response.json(data));
+  await render();
+  expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
+  expect(container.textContent).not.toContain(labels.totalPaidLabel);
+});
+
+
+it("bounds pending polling and lets the user retry verification without paying again", async () => {
+  vi.useFakeTimers();
+  const data = summary();
+  data.payment.status = "PENDING";
+  http.mockImplementation(async (url) => Response.json(String(url).includes("trip-summary") ? data : { status: "processing" }));
+  await render();
+  for (let i = 0; i < 3; i++) await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
+  expect(http).toHaveBeenCalledTimes(8);
+  await act(async () => { await vi.advanceTimersByTimeAsync(30000); });
+  expect(http).toHaveBeenCalledTimes(8);
+  expect(button(labels.checkPaymentStatus).disabled).toBe(false);
+  expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
+  data.payment.status = "APPROVED";
+  await act(async () => button(labels.checkPaymentStatus).click());
+  expect(container.querySelector('[data-testid="confetti"]')).not.toBeNull();
+  expect(http.mock.calls.every(([url]) => String(url).includes("confirm-payment") || String(url).includes("trip-summary"))).toBe(true);
+});
+
+it("ignores stale verification results after the intent changes", async () => {
+  const old = deferred();
+  http.mockReturnValueOnce(old.promise);
+  await render();
+  navigation.query = "";
+  await render();
+  await act(async () => old.resolve(Response.json({ status: "succeeded" })));
+  expect(http).toHaveBeenCalledTimes(1);
+  expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
+});

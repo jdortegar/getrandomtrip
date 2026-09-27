@@ -22,8 +22,6 @@ export interface CheckoutIconDetailRow {
 interface CheckoutTravelTypeInfo {
   image?: string;
   label?: string;
-  rating: number;
-  reviews: number;
 }
 
 interface CheckoutTravelDetailsCardProps {
@@ -49,7 +47,6 @@ interface CheckoutTravelDetailsCardProps {
   promoError: string | null;
   promoLoading: boolean;
   promocode: string;
-  ratingFormatted: string | null;
   selectedExperienceLabel?: string;
   selectedTravelTypeInfo: CheckoutTravelTypeInfo | null;
   showPromocodeInput: boolean;
@@ -82,7 +79,6 @@ export function CheckoutTravelDetailsCard({
   promoError,
   promoLoading,
   promocode,
-  ratingFormatted,
   selectedExperienceLabel,
   selectedTravelTypeInfo,
   showPromocodeInput,
@@ -139,14 +135,6 @@ export function CheckoutTravelDetailsCard({
               {usd(pricePerPerson)}
             </p>
           </div>
-          {ratingFormatted != null ? (
-            <p className="text-base font-normal text-gray-500">
-              {summary?.favoriteAmongTravelers}
-              {ratingFormatted}
-              {selectedTravelTypeInfo?.reviews != null &&
-                ` (${selectedTravelTypeInfo.reviews})`}
-            </p>
-          ) : null}
         </div>
       </div>
 

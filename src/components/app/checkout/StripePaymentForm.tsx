@@ -6,6 +6,7 @@ import {
   useElements,
   PaymentElement,
 } from "@stripe/react-stripe-js";
+import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { hasLocale } from "@/lib/i18n/config";
@@ -14,6 +15,10 @@ interface StripePaymentFormCopy {
   paymentBack: string;
   paymentSubmit: string;
   paymentProcessing: string;
+  paymentLoading: string;
+  paymentLoadError: string;
+  paymentRetry: string;
+  paymentFailed: string;
 }
 
 interface StripePaymentFormProps {
@@ -31,6 +36,7 @@ interface StripePaymentFormProps {
   /** Called when user clicks Back. */
   onCancel: () => void;
   onProcessingChange: (processing: boolean) => void;
+  onRetry: () => void;
 }
 
 export function StripePaymentForm({
@@ -46,6 +52,7 @@ export function StripePaymentForm({
   onBeforeConfirm,
   onCancel,
   onProcessingChange,
+  onRetry,
 }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -54,6 +61,9 @@ export function StripePaymentForm({
     ? (params?.locale as string)
     : "es";
 
+  const [elementReady, setElementReady] = useState(false);
+  const [elementLoadError, setElementLoadError] = useState(false);
+  const ready = useRef(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const mounted = useRef(false);
@@ -62,7 +72,11 @@ export function StripePaymentForm({
   useEffect(() => { processingCallback.current = onProcessingChange; }, [onProcessingChange]);
   useEffect(() => {
     mounted.current = true;
+    const loadingTimeout = window.setTimeout(() => {
+      if (!ready.current) setElementLoadError(true);
+    }, 20000);
     return () => {
+      window.clearTimeout(loadingTimeout);
       mounted.current = false;
       inFlight.current = false;
       processingCallback.current(false);
@@ -72,7 +86,7 @@ export function StripePaymentForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!stripe || !elements || inFlight.current) return;
+    if (!stripe || !elements || !ready.current || inFlight.current) return;
     inFlight.current = true;
 
     setIsProcessing(true);
@@ -109,7 +123,7 @@ export function StripePaymentForm({
 
       if (!mounted.current) return;
       if (error) {
-        setErrorMessage(error.message ?? "Payment failed. Please try again.");
+        setErrorMessage(error.message ?? copy.paymentFailed);
         setIsProcessing(false);
         onProcessingChange(false);
         return;
@@ -131,7 +145,7 @@ export function StripePaymentForm({
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Payment failed. Please try again.",
+            : copy.paymentFailed,
         );
     } finally {
       inFlight.current = false;
@@ -143,8 +157,32 @@ export function StripePaymentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" data-component="StripePaymentForm">
+    <form className="space-y-6" data-component="StripePaymentForm" onSubmit={handleSubmit}>
+      {!elementReady && !elementLoadError && (
+        <p aria-busy="true" className="flex items-center gap-2 text-sm" role="status">
+          <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+          {copy.paymentLoading}
+        </p>
+      )}
+      {elementLoadError && (
+        <div role="alert">
+          <p className="text-sm text-red-600">{copy.paymentLoadError}</p>
+          <Button disabled={isProcessing} onClick={onRetry} type="button" variant="secondary">
+            {copy.paymentRetry}
+          </Button>
+        </div>
+      )}
       <PaymentElement
+        onLoadError={() => {
+          ready.current = false;
+          setElementReady(false);
+          setElementLoadError(true);
+        }}
+        onReady={() => {
+          ready.current = true;
+          setElementReady(true);
+          setElementLoadError(false);
+        }}
         options={{
           layout: "tabs",
           fields: {
@@ -173,11 +211,13 @@ export function StripePaymentForm({
           {copy.paymentBack}
         </Button>
         <Button
+          aria-busy={isProcessing}
           className="flex-1"
-          disabled={!stripe || isProcessing}
+          disabled={!stripe || !elements || !elementReady || isProcessing}
           type="submit"
           size="lg"
         >
+          {isProcessing && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
           {isProcessing ? copy.paymentProcessing : copy.paymentSubmit}
         </Button>
       </div>

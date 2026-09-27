@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import Stripe from "stripe";
+import { isTripStartDateEligible, validateTripDates } from "@/lib/helpers/tripCalendarDate";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
@@ -14,8 +15,8 @@ import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 
-const fail = (error: string, status: number) =>
-  NextResponse.json({ error }, { status });
+const fail = (error: string, status: number, errorCode?: string) =>
+  NextResponse.json({ error, ...(errorCode ? { errorCode } : {}) }, { status });
 
 /** One quote path for initial checkout, traveler changes, and promo apply/remove. */
 export async function checkoutQuoteResponse(
@@ -46,6 +47,10 @@ export async function checkoutQuoteResponse(
     });
     if (!trip) return fail("Trip not found", 404);
     if (trip.userId !== session.user.id) return fail("Forbidden", 403);
+    const dateError = validateTripDates(trip);
+    if (dateError || !isTripStartDateEligible(trip.startDate, trip.type)) {
+      return fail(dateError ?? "Departure date is required", 400, "INVALID_TRIP_DATES");
+    }
     const status = await revertExpiredPendingPayment(trip);
     if (!["SAVED", "PENDING_PAYMENT"].includes(status))
       return fail("Trip is not in a payable state", 409);
@@ -57,6 +62,10 @@ export async function checkoutQuoteResponse(
         include: { payment: true },
       });
       if (!trip) return fail("Trip not found", 404);
+      const refreshedDateError = validateTripDates(trip);
+      if (refreshedDateError || !isTripStartDateEligible(trip.startDate, trip.type)) {
+        return fail(refreshedDateError ?? "Departure date is required", 400, "INVALID_TRIP_DATES");
+      }
     }
     if (
       !["SAVED", "PENDING_PAYMENT"].includes(trip.status) ||

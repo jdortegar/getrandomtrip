@@ -1,6 +1,7 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import es from "@/dictionaries/es.json";
 import en from "@/dictionaries/en.json";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutTripFromApi } from "@/types/Checkout";
@@ -21,7 +22,9 @@ interface Details {
   onPromocodeChange: (code: string) => void;
   onApplyPromocode: () => Promise<void>;
 }
+const navigation = vi.hoisted(() => ({ locale: "en" }));
 interface Contact {
+  paymentRecoveryHref?: string;
   clientSecret: string | null;
   paymentError: string | null;
   onRetryPayment: () => void;
@@ -35,7 +38,7 @@ const session = vi.hoisted(() => ({
   status: "authenticated",
 }));
 vi.mock("next/navigation", () => ({
-  useParams: () => ({ locale: "en" }),
+  useParams: () => ({ locale: navigation.locale }),
   useRouter: () => ({ replace: vi.fn(), back: vi.fn() }),
   useSearchParams: () => new URLSearchParams("tripId=trip"),
 }));
@@ -43,7 +46,7 @@ vi.mock("next-auth/react", () => ({ useSession: () => session }));
 vi.mock("@/store/slices/userStore", () => ({
   useUserStore: () => ({ isAuthed: true }),
 }));
-vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: async () => en }));
+vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: async (locale: string) => locale === "en" ? en : es }));
 vi.mock("@/components/journey/HeaderHero", () => ({ default: () => null }));
 vi.mock("@/components/chrome/ChatFab", () => ({ default: () => null }));
 vi.mock("@/components/app/checkout/CheckoutTravelDetailsCard", () => ({
@@ -67,6 +70,7 @@ describe("checkout traveler handoff and quote synchronization", () => {
   let promo: string | null;
   const fetchMock = vi.fn();
   beforeEach(() => {
+    navigation.locale = "en";
     promo = null;
     trip = {
       id: "trip",
@@ -140,6 +144,27 @@ describe("checkout traveler handoff and quote synchronization", () => {
   const mount = async () => {
     await act(async () => root.render(<CheckoutPage />));
   };
+
+  it.each(["en", "es"])("localizes invalid dates and offers dashboard recovery in %s", async (locale) => {
+    navigation.locale = locale;
+    const copy = locale === "en" ? en : es;
+    fetchMock.mockImplementation(async (url: string) => url === "/api/trips"
+      ? Response.json({ trips: [trip] })
+      : Response.json({ error: "Departure must be at least 7 calendar days from today", errorCode: "INVALID_TRIP_DATES" }, { status: 400 }));
+    await mount();
+    expect(view.contact?.paymentError).toBe(copy.journey.checkout.errors.invalidDates);
+    expect(view.contact?.paymentRecoveryHref).toBe(`/${locale}/dashboard/traveler`);
+    expect(view.contact?.clientSecret).toBeNull();
+    expect(fetchMock.mock.calls.every(([, init]) => !init || JSON.parse(init.body).tripId === "trip")).toBe(true);
+  });
+
+  it("does not pass fabricated ratings into checkout details", async () => {
+    await act(async () => root.render(<CheckoutPage />));
+    expect(view.details).not.toHaveProperty("ratingFormatted");
+    expect(view.details).not.toHaveProperty("selectedTravelTypeInfo.rating");
+    expect(view.details).not.toHaveProperty("selectedTravelTypeInfo.reviews");
+    expect(view.details?.pricePerPerson).toBe(250);
+  });
 
   it("renders trip details before contact and payment in document order", async () => {
     await mount();

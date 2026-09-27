@@ -69,6 +69,19 @@ describe("GET /api/trips", () => {
     expect(revertOrder).toBeLessThan(findManyOrder);
   });
 
+  it.each(["user-1", "other-buyer"])("hides CONFIRMED destination from owner=%s but retains revealed content", async (userId) => {
+    vi.mocked(prisma.tripRequest.findMany).mockResolvedValue([
+      { id: "hidden", userId, type: "couple", level: "essenza", status: "CONFIRMED", actualDestination: "Secret city" },
+      { id: "visible", userId, type: "couple", level: "essenza", status: "REVEALED", actualDestination: "Visible city" },
+    ] as never);
+    const { GET } = await import("../route");
+    const res = await GET(makeRequest());
+    expect(res.status).toBe(200);
+    const { trips } = await res.json();
+    expect(trips[0].actualDestination).toBeNull();
+    expect(trips[1].actualDestination).toBe("Visible city");
+  });
+
   it("returns 401 when session is missing", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const { GET } = await import("../route");

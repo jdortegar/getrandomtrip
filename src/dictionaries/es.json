@@ -1577,6 +1577,20 @@
     "travelTypeTitle": "Por tipo de viajero"
   },
   "trippers": {
+    "planner": {
+      "title": "Planificá tu Randomtrip con {{name}}",
+      "description": "{{name}} se especializa en crear experiencias inolvidables. Sigue estos pasos para empezar a construir tu próximo gran viaje.",
+      "fallbackName": "este tripper",
+      "visitedCountries": "Países visitados",
+      "expertise": "Áreas de expertise",
+      "originTitle": "¿Desde dónde viajas?",
+      "originDescription": "{{name}} diseñará tu experiencia desde tu ciudad de origen",
+      "countryLabel": "País de salida",
+      "cityLabel": "Ciudad de salida",
+      "countryPlaceholder": "Selecciona tu país",
+      "cityPlaceholder": "Selecciona una ciudad",
+      "continueLabel": "Continuar →"
+    },
     "hero": {
       "description": "Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables.",
       "subtitle": "CONOCÉ AL EQUIPO",
@@ -1656,6 +1670,14 @@
     }
   },
   "journey": {
+    "travelerTypeSubtitles": {
+      "solo": "Descubre el mundo a tu ritmo",
+      "couple": "Creen recuerdos juntos",
+      "group": "Experiencias compartidas",
+      "family": "Aventuras para todos",
+      "honeymoon": "El comienzo perfecto",
+      "paws": "Con tu mascota de viaje"
+    },
     "completionLabels": {
       "completed": "Completado",
       "incomplete": "Incompleto"
@@ -3001,6 +3023,11 @@
       "paymentBack": "Volver",
       "paymentSubmit": "Pagar ahora",
       "paymentProcessing": "Procesando...",
+      "paymentLoading": "Cargando el formulario de pago seguro…",
+      "paymentLoadError": "No se pudo cargar el formulario de pago seguro. Intenta de nuevo o revisa tu conexión.",
+      "reviewTripDates": "Revisar fechas del viaje",
+      "paymentRetry": "Recargar formulario de pago",
+      "paymentFailed": "El pago falló. Intenta de nuevo.",
       "contactCityLabel": "Ciudad",
       "contactCountryLabel": "País",
       "contactEmailHelper": "Este es el email asociado a tu cuenta",
@@ -3013,6 +3040,7 @@
       "contactTitle": "Información de contacto",
       "contactZipCodeLabel": "Código postal",
       "errors": {
+        "invalidDates": "Las fechas del viaje faltan, no son válidas o ya no están disponibles. Ve a tus viajes para revisar las fechas antes de pagar.",
         "connectionTryAgain": "Error de conexión. Intenta de nuevo.",
         "idDocumentRequired": "Ingresa tu DNI o número de pasaporte.",
         "loadTripFailed": "Error al cargar el viaje",
@@ -3093,6 +3121,15 @@
       "subtitle": "CONFIRMACIÓN <span style=\"color: #E5A51C\">DE PAGO</span>"
     },
     "page": {
+      "resultTitle": "Estado del pago",
+      "resultDescription": "Consulta el estado de tu pago y reserva de Randomtrip.",
+      "verifyingTitle": "Verificando tu pago",
+      "pendingTitle": "Pago aún no confirmado",
+      "pendingDescription": "Estamos verificando tu pago. No vuelvas a pagar mientras revisamos su estado.",
+      "verificationError": "No pudimos verificar tu pago. Revisa su estado de nuevo o contacta a soporte antes de volver a pagar.",
+      "missingPayment": "No se recibió una referencia de pago. Revisa tus viajes o contacta a soporte.",
+      "checkPaymentStatus": "Revisar estado del pago",
+      "paymentNotCompleted": "El pago o la reserva no se completó. Revisa tus viajes antes de intentarlo de nuevo.",
       "title": "¡Gracias por tu compra!",
       "body": "Tu aventura sorpresa Randomtrip está confirmada.",
       "messageApproved": "Pago aprobado. Tu viaje sorpresa está confirmado.",

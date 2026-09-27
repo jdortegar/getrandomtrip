@@ -1,3 +1,4 @@
+import { isTripStartDateEligible, parseTripCalendarDate } from "@/lib/helpers/tripCalendarDate";
 import {
   getDefaultPaxDetailsForTravelType,
   getPaxSubstepFields,
@@ -77,11 +78,11 @@ export function buildTripRequestPayloadFromSearchParams(
   );
   let startDate: string | null = null;
   let endDate: string | null = null;
-  if (startDateRaw) {
-    const start = new Date(startDateRaw);
+  const start = parseTripCalendarDate(startDateRaw);
+  if (start) {
     startDate = start.toISOString();
     const end = new Date(start);
-    end.setDate(end.getDate() + nightsNum);
+    end.setUTCDate(end.getUTCDate() + nightsNum);
     endDate = end.toISOString();
   }
   const legacyPax = Math.max(
@@ -402,7 +403,7 @@ export function isStepComplete(
       return Boolean(
         v.effectiveOriginCountry &&
         v.effectiveOriginCity &&
-        v.effectiveStartDate &&
+        isTripStartDateEligible(v.effectiveStartDate, v.travelType) &&
         v.effectiveNights,
       );
     case "preferences":
@@ -484,7 +485,7 @@ export function isSubstepValueComplete(
     case "details:origin":
       return Boolean(ctx.originCountry && ctx.originCity);
     case "details:dates":
-      return Boolean(ctx.startDate && ctx.nights);
+      return isTripStartDateEligible(ctx.startDate, ctx.travelType) && ctx.nights > 0;
     case "details:transport":
       return isCompleteTransportOrderParam(ctx.transportOrder.join(","));
     default:

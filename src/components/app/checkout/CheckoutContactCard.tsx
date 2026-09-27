@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
 import { Elements } from "@stripe/react-stripe-js";
 import type { Appearance, StripeElementLocale } from "@stripe/stripe-js";
 import { Sparkle } from "lucide-react";
@@ -11,7 +13,7 @@ import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import type { CheckoutFormFields } from "@/types/Checkout";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
-import { stripePromise } from "@/lib/stripe-client";
+import { getStripePromise } from "@/lib/stripe-client";
 import { cn } from "@/lib/utils";
 import { StripePaymentForm } from "./StripePaymentForm";
 
@@ -84,10 +86,6 @@ const stripeAppearance: Appearance = {
       outline: "2px solid #dc2626",
       outlineOffset: "-2px",
       color: "#111827",
-    },
-    ".Input:disabled": {
-      opacity: "0.6",
-      cursor: "not-allowed",
     },
     // ─── Labels ────────────────────────────────────────────────────────────
     ".Label": {
@@ -173,9 +171,6 @@ const stripeAppearance: Appearance = {
       outline: "2px solid #0f5c60",
       outlineOffset: "2px",
     },
-    ".Button:disabled": {
-      opacity: "0.5",
-    },
   },
 };
 
@@ -191,6 +186,7 @@ interface CheckoutContactCardProps {
   onPaymentProcessingChange: (processing: boolean) => void;
   onRetryPayment: () => void;
   paymentError: string | null;
+  paymentRecoveryHref?: string;
   retryLabel: string;
   sessionEmail: string;
   summary: Dictionary["journey"]["summary"];
@@ -208,11 +204,16 @@ export function CheckoutContactCard({
   onPaymentProcessingChange,
   onRetryPayment,
   paymentError,
+  paymentRecoveryHref,
   retryLabel,
   sessionEmail,
   summary,
 }: CheckoutContactCardProps) {
   const params = useParams();
+  const [paymentElement, setPaymentElement] = useState(() => ({
+    attempt: 0,
+    stripe: getStripePromise(),
+  }));
   const rawLocale = params?.locale as string | undefined;
   const stripeLocale: StripeElementLocale = hasLocale(rawLocale)
     ? (rawLocale as StripeElementLocale)
@@ -344,11 +345,17 @@ export function CheckoutContactCard({
         {paymentError ? (
           <div role="alert">
             <p className="text-red-700 text-sm">{paymentError}</p>
-            <Button onClick={onRetryPayment} type="button" variant="secondary">{retryLabel}</Button>
+            {paymentRecoveryHref ? (
+              <Button asChild variant="secondary">
+                <Link href={paymentRecoveryHref}>{checkoutCopy.reviewTripDates}</Link>
+              </Button>
+            ) : (
+              <Button onClick={onRetryPayment} type="button" variant="secondary">{retryLabel}</Button>
+            )}
           </div>
         ) : clientSecret ? (
           <Elements
-            key={clientSecret}
+            key={`${clientSecret}:${paymentElement.attempt}`}
             options={{
               appearance: stripeAppearance,
               clientSecret,
@@ -360,7 +367,7 @@ export function CheckoutContactCard({
                 },
               ],
             }}
-            stripe={stripePromise}
+            stripe={paymentElement.stripe}
           >
             <StripePaymentForm
               billingCity={formData.city}
@@ -374,11 +381,19 @@ export function CheckoutContactCard({
               copy={{
                 paymentBack: checkoutCopy.paymentBack,
                 paymentProcessing: checkoutCopy.paymentProcessing,
+                paymentLoading: checkoutCopy.paymentLoading,
+                paymentLoadError: checkoutCopy.paymentLoadError,
+                paymentRetry: checkoutCopy.paymentRetry,
+                paymentFailed: checkoutCopy.paymentFailed,
                 paymentSubmit: checkoutCopy.paymentSubmit,
               }}
               onBeforeConfirm={onBeforeConfirm}
               onCancel={onBack}
               onProcessingChange={onPaymentProcessingChange}
+              onRetry={() => {
+                const stripe = getStripePromise();
+                setPaymentElement((previous) => ({ attempt: previous.attempt + 1, stripe }));
+              }}
             />
           </Elements>
         ) : (

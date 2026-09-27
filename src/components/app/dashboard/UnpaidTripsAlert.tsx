@@ -114,6 +114,7 @@ export function UnpaidTripsAlert({
                       day: "numeric",
                       month: "short",
                       year: "numeric",
+                      timeZone: "UTC",
                     })
                   : "—";
                 const ref = formatTripReferenceTail(trip.id);

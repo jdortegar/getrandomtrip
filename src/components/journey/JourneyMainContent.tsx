@@ -1,5 +1,6 @@
 "use client";
 
+import { isTripStartDateEligible } from "@/lib/helpers/tripCalendarDate";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
@@ -48,6 +49,7 @@ import {
 } from "@/hooks/useJourneyDetailsProgress";
 import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
 import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
+import { useDictionary } from "@/hooks/useDictionary";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { useStore } from "@/store/store";
 import { useUserStore } from "@/store/slices/userStore";
@@ -181,6 +183,7 @@ export default function JourneyMainContent({
   tripperSlug,
 }: JourneyMainContentProps) {
   const labels = mainContentLabels;
+  const invalidDatesCopy = useDictionary((dict) => dict.journey.checkout.errors.invalidDates);
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -283,7 +286,7 @@ export default function JourneyMainContent({
         draftDetails.effectiveOriginCountry && draftDetails.effectiveOriginCity,
       ),
       dates: Boolean(
-        draftDetails.effectiveStartDate && draftDetails.effectiveNights,
+        isTripStartDateEligible(draftDetails.effectiveStartDate, url.travelType) && draftDetails.effectiveNights,
       ),
       transport: draftDetails.effectiveTransportOrder.length === 4,
       complete: isStepComplete("details", stepValues),
@@ -338,7 +341,9 @@ export default function JourneyMainContent({
           toast.info("Iniciá sesión para continuar al checkout.");
         } else {
           toast.error(
-            data.error ?? "No se pudo guardar el viaje. Intentá de nuevo.",
+            data.errorCode === "INVALID_TRIP_DATES"
+              ? invalidDatesCopy
+              : data.error ?? "No se pudo guardar el viaje. Intentá de nuevo.",
           );
         }
         setIsSavingAndRedirecting(false);
@@ -354,6 +359,7 @@ export default function JourneyMainContent({
       setIsSavingAndRedirecting(false);
     }
   }, [
+    invalidDatesCopy,
     locale,
     router,
     searchParams,

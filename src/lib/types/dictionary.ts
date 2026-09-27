@@ -2742,6 +2742,20 @@ export interface MarketingDictionary {
     travelTypeTitle: string;
   };
   trippers: {
+    planner: {
+      title: string;
+      description: string;
+      fallbackName: string;
+      visitedCountries: string;
+      expertise: string;
+      originTitle: string;
+      originDescription: string;
+      countryLabel: string;
+      cityLabel: string;
+      countryPlaceholder: string;
+      cityPlaceholder: string;
+      continueLabel: string;
+    };
     hero: {
       description: string;
       subtitle: string;
@@ -2823,6 +2837,14 @@ export interface MarketingDictionary {
     };
   };
   journey: {
+    travelerTypeSubtitles: {
+      solo: string;
+      couple: string;
+      group: string;
+      family: string;
+      honeymoon: string;
+      paws: string;
+    };
     completionLabels: {
       completed: string;
       incomplete: string;
@@ -3087,6 +3109,11 @@ export interface MarketingDictionary {
       paymentBack: string;
       paymentSubmit: string;
       paymentProcessing: string;
+      paymentLoading: string;
+      paymentLoadError: string;
+      reviewTripDates: string;
+      paymentRetry: string;
+      paymentFailed: string;
       contactCityLabel: string;
       contactCountryLabel: string;
       contactCountryPlaceholder: string;
@@ -3100,6 +3127,7 @@ export interface MarketingDictionary {
       contactTitle: string;
       contactZipCodeLabel: string;
       errors: {
+        invalidDates: string;
         connectionTryAgain: string;
         idDocumentRequired: string;
         loadTripFailed: string;
@@ -3188,6 +3216,16 @@ export interface MarketingDictionary {
       title: string;
     };
     page: {
+      resultTitle: string;
+      resultDescription: string;
+      verifyingTitle: string;
+      pendingTitle: string;
+      pendingDescription: string;
+      verificationError: string;
+      missingPayment: string;
+      checkPaymentStatus: string;
+      paymentNotCompleted: string;
+
       body: string;
       ctaBackToJourney: string;
       ctaHome: string;

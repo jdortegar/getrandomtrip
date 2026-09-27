@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import type { TripRequestStatus } from "@prisma/client";
+import { toTravelerTripResponse } from "@/lib/trips/travelerTripResponse";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
@@ -8,6 +9,8 @@ import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { revertExpiredPendingPaymentsForUser } from "@/lib/db/tripRequest";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverridesBatch } from "@/lib/pricing/tripper-price-overrides.server";
+
+export const dynamic = "force-dynamic";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
@@ -95,7 +98,7 @@ export async function GET(request: NextRequest) {
     );
     const hydratedTrips = attachPaymentsToTrips(trips, paymentsByTripRequestId).map(
       (trip) => ({
-        ...trip,
+        ...toTravelerTripResponse(trip),
         basePriceUsd: resolveBasePricePerPerson({
           levelId: trip.level,
           overrides: trip.tripperId

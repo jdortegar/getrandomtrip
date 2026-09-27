@@ -4,10 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { Loader2, MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/app/checkout/AddToCalendarButton";
 import { Button } from "@/components/ui/Button";
-import { Skeleton } from "@/components/ui/Skeleton";
 import Confetti from "@/components/feedback/Confetti";
 import HeaderHero from "@/components/journey/HeaderHero";
 import Section from "@/components/layout/Section";
@@ -20,28 +19,7 @@ import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
 import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
-import type { TravelerRoster } from "@/types/traveler";
-
-interface TripSummaryData {
-  trip: {
-    id: string;
-    endDate: string | null;
-    level: string;
-    nights: number;
-    originCity: string;
-    originCountry: string;
-    pax: number;
-    startDate: string | null;
-    type: string;
-    roster: TravelerRoster;
-  };
-  payment: {
-    amount: number;
-    currency: string;
-    status: string;
-    receiptUrl: string | null;
-  };
-}
+import { useVerifiedCheckoutResult } from "@/lib/hooks/useVerifiedCheckoutResult";
 
 interface CheckoutResultSuccessProps {
   hero: Dictionary["confirmation"]["hero"];
@@ -69,11 +47,15 @@ export default function CheckoutResultSuccess({
   const searchParams = useSearchParams();
   const safeLocale: Locale = hasLocale(locale) ? locale : DEFAULT_LOCALE;
 
-  const redirectStatus =
-    stripeReturn?.redirectStatus ?? searchParams.get("redirect_status");
-  const hasFailed = redirectStatus === "requires_payment_method";
-
-  const [tripData, setTripData] = useState<TripSummaryData | null>(null);
+  const paymentIntentId = stripeReturn?.paymentIntent ?? searchParams.get("payment_intent");
+  const verification = useVerifiedCheckoutResult(paymentIntentId);
+  const tripData = verification.data;
+  const tracked = useRef<string | null>(null);
+  useEffect(() => {
+    if (!tripData || !paymentIntentId || tracked.current === paymentIntentId) return;
+    tracked.current = paymentIntentId;
+    trackPurchase({ transaction_id: paymentIntentId, value: tripData.payment.amount, currency: tripData.payment.currency.toUpperCase() });
+  }, [paymentIntentId, tripData]);
   const rosterRef = useRef<TravelerRosterSectionHandle>(null);
   const [savingTravelers, setSavingTravelers] = useState(false);
 
@@ -90,77 +72,32 @@ export default function CheckoutResultSuccess({
     }
   }
 
-  const paymentIntentId =
-    stripeReturn?.paymentIntent ?? searchParams.get("payment_intent");
-
-  useEffect(() => {
-    if (!paymentIntentId || hasFailed) return;
-    // confirm-payment must resolve first — it's what flips Payment.status to
-    // APPROVED when the Stripe webhook hasn't landed yet, and trip-summary's
-    // roster lookup only materializes traveler rows for an APPROVED payment.
-    // Firing both in parallel raced the two and could leave the roster
-    // permanently empty if trip-summary won.
-    let confirmed = false;
-    fetch("/api/stripe/confirm-payment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ paymentIntentId }),
-    })
-      .then(async (response) => {
-        if (response.ok)
-          confirmed = (await response.json()).status === "succeeded";
-      })
-      .catch(() => {})
-      .then(() =>
-        fetch(
-          `/api/stripe/trip-summary?paymentIntentId=${encodeURIComponent(paymentIntentId)}`,
-        ),
-      )
-      .then((response) => {
-        if (!response.ok) throw new Error("Payment summary unavailable");
-        return response.json();
-      })
-      .then((data: TripSummaryData | undefined) => {
-        if (!data) return;
-        setTripData(data);
-        if (confirmed && data.payment.status === "APPROVED") {
-          trackPurchase({
-            transaction_id: paymentIntentId,
-            value: data.payment.amount,
-            currency: data.payment.currency.toUpperCase(),
-          });
-        }
-      })
-      .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentIntentId]);
-
-  if (hasFailed) {
+  if (!tripData) {
+    const status = verification.status;
+    const title = status === "checking" ? labels.verifyingTitle : status === "pending" ? labels.pendingTitle : labels.errorTitle;
+    const description = status === "missing" ? labels.missingPayment : status === "failed" ? labels.paymentNotCompleted : status === "error" ? labels.verificationError : labels.pendingDescription;
     return (
       <div className="flex min-h-screen flex-col bg-gray-50">
         <HeaderHero
-          description={hero.description}
+          description={description}
           fallbackImage="/images/hero-image-1.jpeg"
-          subtitle={hero.subtitle}
-          title={labels.errorTitle}
+          subtitle={labels.resultTitle}
+          title={title}
           videoSrc="/videos/hero-video-1.mp4"
         />
-        <main className="grow">
-          <section className="container mx-auto flex flex-col items-center justify-center px-4 py-12 md:px-20">
-            <div className="flex w-full max-w-3xl flex-col items-center space-y-4 rounded-lg bg-white px-6 py-10 text-center shadow-lg sm:px-8 sm:py-14">
-              <p className="max-w-[80%] font-barlow text-base leading-relaxed text-gray-700 md:text-lg">
-                {labels.errorTitle}
-              </p>
-              <Button
-                className="mt-4"
-                onClick={() => window.history.back()}
-                size="lg"
-                variant="default"
-              >
-                {labels.retry}
+        <main className="container mx-auto grow px-4 py-12 text-center">
+          <p aria-live="polite" role={status === "error" || status === "failed" ? "alert" : "status"}>{description}</p>
+          <div className="mt-6 flex justify-center gap-3">
+            {paymentIntentId && (
+              <Button aria-busy={verification.isChecking} disabled={verification.isChecking} onClick={verification.retry} type="button">
+                {verification.isChecking && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
+                {verification.isChecking ? labels.verifyingTitle : labels.checkPaymentStatus}
               </Button>
-            </div>
-          </section>
+            )}
+            <Button asChild variant="secondary">
+              <Link href={`/${safeLocale}/dashboard`}>{labels.ctaMyTrips}</Link>
+            </Button>
+          </div>
         </main>
       </div>
     );
@@ -197,21 +134,6 @@ export default function CheckoutResultSuccess({
           title={xsedTrip ? labels.xsedTitle : undefined}
         >
           <div className="flex flex-col items-center">
-            {/* Trip card — skeleton while data is loading, real card once it arrives */}
-            {!tripData && (
-              <div className="flex w-full max-w-3xl items-start gap-5 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
-                <Skeleton className="h-40 w-40 shrink-0 rounded-2xl sm:h-64 sm:w-48" />
-                <div className="flex flex-1 flex-col gap-2.5 pt-1">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-3 w-28" />
-                  <Skeleton className="mt-1 h-8 w-28" />
-                  <Skeleton className="h-3 w-56" />
-                  <Skeleton className="h-3 w-44" />
-                  <Skeleton className="h-3 w-36" />
-                </div>
-              </div>
-            )}
-
             {tripData && (
               <div className="flex w-full max-w-3xl items-start gap-5 rounded-2xl bg-white p-5 shadow-md ring-1 ring-gray-100">
                 {typeCard?.img ? (
@@ -348,12 +270,14 @@ export default function CheckoutResultSuccess({
                   tripData.trip.roster.cap > 0 &&
                   !tripData.trip.roster.locked && (
                     <Button
+                      aria-busy={savingTravelers}
                       className="min-w-[280px]"
                       disabled={savingTravelers}
                       onClick={() => void handleSaveTravelers()}
                       size="lg"
                       variant="default"
                     >
+                      {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
                       {savingTravelers
                         ? labels.savingTravelersAction
                         : labels.saveTravelersAction}

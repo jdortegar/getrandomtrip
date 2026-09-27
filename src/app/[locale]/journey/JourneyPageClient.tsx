@@ -18,6 +18,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { getHasExcuseStep } from "@/lib/helpers/excuse-helper";
 import { filterContentTabsForUI, getAccordionForStep } from "@/lib/helpers/journey";
+import { isTripStartDateEligible } from "@/lib/helpers/tripCalendarDate";
 import { isCompleteTransportOrderParam } from "@/lib/helpers/transport";
 import type { TripperContextState } from "@/types/tripper";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
@@ -49,7 +50,7 @@ function getTabForSection(sectionId: string): string {
   }
 }
 
-function getInitialStepFromParams(params: URLSearchParams): {
+export function getInitialStepFromParams(params: URLSearchParams): {
   sectionId: string;
   tabId: string;
 } {
@@ -69,7 +70,7 @@ function getInitialStepFromParams(params: URLSearchParams): {
   if (hasExcuseStep && excuse) return { tabId: "excuse", sectionId: "reason" };
   if (!originCountry || !originCity)
     return { tabId: "details", sectionId: "origin" };
-  if (!startDate || !nights) return { tabId: "details", sectionId: "dates" };
+  if (!isTripStartDateEligible(startDate, travelType) || !(Number(nights) > 0)) return { tabId: "details", sectionId: "dates" };
   if (!isCompleteTransportOrderParam(transportOrder))
     return { tabId: "details", sectionId: "transport" };
   return { tabId: "preferences", sectionId: "filters" };

@@ -93,8 +93,8 @@ function baseTrip(overrides: Record<string, unknown> = {}) {
     arrivePref: "any",
     avoidDestinations: [],
     nights: 3,
-    startDate: null,
-    endDate: null,
+    startDate: new Date("2099-01-01"),
+    endDate: new Date("2099-01-04"),
     originCountry: "Argentina",
     originCity: "Buenos Aires",
     ...overrides,
@@ -131,6 +131,17 @@ describe("POST /api/stripe/payment-intent — expiry revert", () => {
 
     const mod = await import("../route");
     POST = mod.POST;
+  });
+
+  it.each([null, new Date("2020-01-01"), new Date(Date.now() + 6 * 86400000)])("blocks missing/past/too-soon stored departure before any expiry or Stripe mutation", async (startDate) => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip({ startDate }) as never);
+    const res = await POST(makeRequest("trip-1"));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ errorCode: "INVALID_TRIP_DATES" });
+    expect(revertExpiredPendingPayment).not.toHaveBeenCalled();
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    expect(stripeMock.paymentIntents.cancel).not.toHaveBeenCalled();
+    expect(upsertPaymentForTripCheckout).not.toHaveBeenCalled();
   });
 
   it("repairs legacy one-person XSED Group to Solo before pricing and persists the normalized level", async () => {

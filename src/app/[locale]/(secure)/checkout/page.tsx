@@ -191,7 +191,10 @@ function CheckoutContent() {
   const appliedPromocode = payment.promoCode;
   const promoDiscount = payment.quote?.discountAmount ?? 0;
   const promoLoading = payment.pending || isConfirming;
-  const promoError = payment.error;
+  const paymentError = payment.errorCode === "INVALID_TRIP_DATES"
+    ? dict?.journey.checkout.errors.invalidDates ?? null
+    : payment.error;
+  const promoError = paymentError;
   const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
   const contactFormRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
@@ -421,8 +424,6 @@ function CheckoutContent() {
       image: card?.img,
       label: card?.title,
       price: selectedLevel ? formatUSD(pricePerPerson) : undefined,
-      rating: 7.0,
-      reviews: 10,
     };
   })();
   const selectedExperienceInfo = (() => {
@@ -527,7 +528,9 @@ function CheckoutContent() {
       });
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed);
+        throw Object.assign(new Error(data.errorCode === "INVALID_TRIP_DATES"
+          ? dict?.journey.checkout.errors.invalidDates
+          : data.error ?? dict?.journey?.checkout?.errors?.updateTripFailed), { code: data.errorCode });
       }
       const data = await response.json();
       setTrip((previous) => previous?.id === trip.id ? { ...previous,
@@ -660,12 +663,6 @@ function CheckoutContent() {
     "ring-1 ring-gray-100",
   );
   const checkoutItemTileLabelClass = "font-normal text-gray-500 text-base";
-  const ratingFormatted =
-    selectedTravelTypeInfo?.rating != null
-      ? resolvedLocale === "es"
-        ? selectedTravelTypeInfo.rating.toFixed(1).replace(".", ",")
-        : selectedTravelTypeInfo.rating.toFixed(1)
-      : null;
 
   const datesValue =
     startDateParam && nightsNum > 0
@@ -850,7 +847,6 @@ function CheckoutContent() {
             paxDetails={paxDetails}
             pricePerPerson={pricePerPerson}
             promocode={promocode}
-            ratingFormatted={ratingFormatted}
             selectedExperienceLabel={selectedExperienceInfo?.label}
             selectedTravelTypeInfo={selectedTravelTypeInfo}
             showPromocodeInput={showPromocodeInput}
@@ -871,7 +867,8 @@ function CheckoutContent() {
             onFieldChange={handleChange}
             onPaymentProcessingChange={handlePaymentProcessingChange}
             onRetryPayment={() => { void payment.retry().catch(() => {}); }}
-            paymentError={payment.error}
+            paymentError={paymentError}
+            paymentRecoveryHref={payment.errorCode === "INVALID_TRIP_DATES" ? `/${resolvedLocale}/dashboard/traveler` : undefined}
             retryLabel={dict.errorFallback.retry}
             sessionEmail={session?.user?.email || ""}
             summary={summary}

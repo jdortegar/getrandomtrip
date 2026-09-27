@@ -188,6 +188,12 @@ describe("TravelerRosterSection — saveAll() completeness", () => {
 });
 
 describe("TravelerRosterSection — locked banner days", () => {
+  it("formats the seven-calendar-day deadline in UTC rather than the preceding local day", () => {
+    render(roster([traveler()], { startDate: "2026-10-09T00:00:00.000Z", deadline: "2026-10-02T00:00:00.000Z" }));
+    expect(container.textContent).toContain("Antes del 2 oct");
+    expect(container.textContent).not.toContain("Antes del 1 oct");
+  });
+
   it("shows real days-until-departure, not days since the roster deadline", () => {
     const t1 = traveler({ id: "t1" });
     // Deadline (roster cutoff) is already 4 days in the past — the old code

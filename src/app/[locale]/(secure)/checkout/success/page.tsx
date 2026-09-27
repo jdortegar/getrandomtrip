@@ -14,8 +14,8 @@ export async function generateMetadata(props: {
   }
   const dict = await getDictionary(params.locale);
   return {
-    description: dict.confirmation.page.metaDescription,
-    title: dict.confirmation.page.title,
+    description: dict.confirmation.page.resultDescription,
+    title: dict.confirmation.page.resultTitle,
   };
 }
 
