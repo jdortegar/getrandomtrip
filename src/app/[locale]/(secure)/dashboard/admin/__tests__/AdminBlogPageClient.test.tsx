@@ -2,13 +2,17 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AdminBlogPageClient } from "@/app/[locale]/(secure)/dashboard/admin/AdminBlogPageClient";
+import enCopy from "@/dictionaries/en.json";
+import esCopy from "@/dictionaries/es.json";
 import type { AdminBlog } from "@/lib/admin/types";
 
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
+const navigation = vi.hoisted(() => ({ locale: "es" }));
+
 vi.mock("next/navigation", () => ({
-  useParams: () => ({ locale: "es" }),
+  useParams: () => ({ locale: navigation.locale }),
   useRouter: () => ({ push: vi.fn() }),
 }));
 
@@ -51,6 +55,7 @@ function blog(overrides: Partial<AdminBlog> = {}): AdminBlog {
 }
 
 beforeEach(() => {
+  navigation.locale = "es";
   vi.stubGlobal(
     "fetch",
     vi.fn().mockResolvedValue({
@@ -67,6 +72,33 @@ afterEach(() => {
   container?.remove();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+});
+
+describe("AdminBlogPageClient — post title cell", () => {
+  it.each([
+    { locale: "es", copy: esCopy },
+    { locale: "en", copy: enCopy },
+  ])(
+    "shows only the title without subtitle or original-language metadata in $locale",
+    async ({ locale, copy }) => {
+      navigation.locale = locale;
+      const post = blog({ subtitle: "A surprise destination awaits" });
+      fetchMock().mockResolvedValue({
+        ok: true,
+        json: async () => ({ blogs: [post], pendingCount: 1, total: 1 }),
+      });
+
+      render(<AdminBlogPageClient />);
+      await flush();
+
+      const titleCell = container.querySelector("tbody tr td:nth-child(2)");
+      expect(titleCell?.textContent).toBe(post.title);
+      expect(container.textContent).not.toContain(post.subtitle);
+      expect(container.textContent).not.toContain(
+        copy.tripperBlogs.form.contentLanguage.canonicalLabel,
+      );
+    },
+  );
 });
 
 describe("AdminBlogPageClient — refetch keeps chrome mounted and dims the panel", () => {
