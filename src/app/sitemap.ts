@@ -1,3 +1,4 @@
+import { resolveBlogContent } from "@/lib/blog/content-locale";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { DEFAULT_LOCALE, LOCALES } from "@/lib/i18n/config";
@@ -87,7 +88,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [blogPosts, trippers, tripperTimestamps] = await Promise.all([
     prisma.blogPost.findMany({
       where: { isActive: true, isReviewCopy: false, status: "PUBLISHED" },
-      select: { slug: true, id: true, updatedAt: true },
+      select: { slug: true, id: true, updatedAt: true, translations: true },
     }),
     getAllTrippers(),
     prisma.user.findMany({
@@ -104,13 +105,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const post of blogPosts) {
     const slug = post.slug ?? post.id;
-    entries.push(
-      toSitemapEntry(
-        `blog/${slug}`,
-        { changeFrequency: "monthly", priority: 0.7 },
-        post.updatedAt,
-      ),
+    const entry = toSitemapEntry(
+      `blog/${slug}`,
+      { changeFrequency: "monthly", priority: 0.7 },
+      post.updatedAt,
     );
+    if (!resolveBlogContent(post, "en")) entry.alternates = undefined;
+    entries.push(entry);
   }
 
   // Dynamic: active tripper profiles + their experience pages

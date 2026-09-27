@@ -1,3 +1,4 @@
+import { blogLocaleWhere, resolveBlogContent } from "@/lib/blog/content-locale";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
@@ -17,9 +18,10 @@ function isCuid(param: string): boolean {
   );
 }
 
-async function getBlogPost(slugOrId: string): Promise<BlogPost | null> {
-  const blog = await prisma.blogPost.findFirst({
+async function getBlogPost(slugOrId: string, locale: string): Promise<BlogPost | null> {
+  const rawBlog = await prisma.blogPost.findFirst({
     where: {
+      ...blogLocaleWhere(locale),
       isActive: true,
       isReviewCopy: false,
       status: "PUBLISHED",
@@ -29,6 +31,7 @@ async function getBlogPost(slugOrId: string): Promise<BlogPost | null> {
       id: true,
       slug: true,
       title: true,
+      translations: true,
       subtitle: true,
       tagline: true,
       coverUrl: true,
@@ -57,6 +60,7 @@ async function getBlogPost(slugOrId: string): Promise<BlogPost | null> {
     },
   });
 
+  const blog = rawBlog && resolveBlogContent(rawBlog, locale);
   if (!blog) return null;
 
   return {
@@ -93,8 +97,8 @@ export async function generateMetadata(props: {
   params: Promise<{ locale?: string; slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const blog = await getBlogPost(params.slug);
-  if (!blog) return { title: "Randomtrip" };
+  const blog = await getBlogPost(params.slug, params.locale ?? "es");
+  if (!blog) notFound();
 
   const seoTitle = blog.seo?.title ?? `${blog.title} | Randomtrip`;
   const seoDescription = blog.seo?.description ?? blog.subtitle ?? undefined;
@@ -116,12 +120,13 @@ export default async function BlogDetailPage(props: {
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale! : "es";
-  const blog = await getBlogPost(params.slug);
+  const blog = await getBlogPost(params.slug, params.locale ?? "es");
 
   if (!blog) notFound();
 
   const jsonLdSchema = buildBlogPostingSchema({
     authorName: blog.author.name,
+    locale,
     createdAt: blog.createdAt,
     description: blog.seo?.description ?? blog.subtitle ?? undefined,
     heroImage: blog.coverUrl ?? undefined,

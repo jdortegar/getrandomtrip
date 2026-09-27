@@ -478,6 +478,7 @@ export function BlogPageClient({ dict: copy, locale, isAdmin }: BlogPageClientPr
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-ink">
                           {post.title}
+                          <span className="block font-normal text-neutral-500 text-xs">{copy.form.contentLanguage.canonicalLabel}</span>
                         </p>
                         {post.subtitle && (
                           <p className="mt-0.5 text-xs text-ink">

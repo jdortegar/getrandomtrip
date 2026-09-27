@@ -1,4 +1,4 @@
-import type { BlogFormDraft, BlogPost, BlogStatus } from "@/types/blog";
+import type { BlogContentDraft, BlogFormDraft, BlogPost, BlogStatus } from "@/types/blog";
 
 type BlogBlock = BlogPost["blocks"][number];
 
@@ -87,7 +87,7 @@ function escapeHtml(value: string): string {
  * feature quote + sections to keep posts visible there without changing
  * that render pipeline.
  */
-export function buildBlogSubmitPayload(draft: BlogFormDraft) {
+function buildCanonicalBlogPayload(draft: BlogFormDraft) {
   const contentParts: string[] = [];
 
   const featureText = draft.featureText.trim();
@@ -112,7 +112,7 @@ export function buildBlogSubmitPayload(draft: BlogFormDraft) {
     }
   }
 
-  const blocks = [
+  let blocks = [
     ...(featureText
       ? [{ type: "quote" as const, text: featureText, cite: featureAttribution || undefined }]
       : []),
@@ -124,17 +124,37 @@ export function buildBlogSubmitPayload(draft: BlogFormDraft) {
     ...draft.gallery.map((url) => ({ type: "image" as const, url })),
   ];
 
+  // A translation-only edit must not rewrite legacy Spanish HTML/blocks or
+  // discard image captions that this editor cannot edit.
+  const original = draft.originalPost;
+  const baseline = original ? mapBlogPostToDraft(original) : null;
+  const bodyUnchanged = baseline && ["featureText", "featureAttribution", "sections"].every(
+    (key) => JSON.stringify(draft[key as keyof BlogFormDraft]) === JSON.stringify(baseline[key as keyof BlogFormDraft]),
+  );
+  if (bodyUnchanged && original?.blocks) {
+    blocks = JSON.stringify(draft.gallery) === JSON.stringify(baseline.gallery)
+      ? original.blocks as typeof blocks
+      : [
+      ...original.blocks.filter((block) => block.type !== "image"),
+      ...draft.gallery.map((url) => original.blocks?.find((block) => block.type === "image" && block.url === url) ?? { type: "image" as const, url }),
+    ] as typeof blocks;
+  }
+
   const nonEmptyFaq = draft.faq.filter(
     (f) => f.question.trim() || f.answer.trim(),
   );
 
   return {
     title: draft.title,
-    subtitle: draft.subtitle.trim() ? draft.subtitle.trim() : null,
+    ...(draft.tagline !== undefined && { tagline: draft.tagline }),
+    ...(draft.seo !== undefined && { seo: draft.seo }),
+    subtitle: baseline && draft.subtitle === baseline.subtitle
+      ? original?.subtitle ?? null : draft.subtitle.trim() ? draft.subtitle.trim() : null,
     coverUrl: draft.coverUrl || null,
-    content: contentParts.length > 0 ? contentParts.join("\n") : null,
+    content: bodyUnchanged ? original?.content ?? null : contentParts.length > 0 ? contentParts.join("\n") : null,
     blocks,
-    faq: nonEmptyFaq.length > 0 ? { items: nonEmptyFaq } : null,
+    faq: baseline && JSON.stringify(draft.faq) === JSON.stringify(baseline.faq)
+      ? original?.faq ?? null : nonEmptyFaq.length > 0 ? { items: nonEmptyFaq } : null,
     status: draft.status,
     travelType: draft.travelType,
     excuseKey: draft.excuseKey,
@@ -188,8 +208,14 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
   return {
     // Server pages pass raw Prisma rows (uppercase enum, e.g. "PUBLISHED");
     // the API lowercases it. Normalize so every caller maps to BlogStatus.
+    originalPost: { title: post.title, subtitle: post.subtitle, tagline: post.tagline, content: post.content, blocks: post.blocks, faq: post.faq, seo: post.seo },
     status: (post.status?.toLowerCase() ?? "draft") as BlogStatus,
     title: post.title ?? "",
+    tagline: post.tagline,
+    seo: post.seo,
+    ...(post.translations !== undefined && { english: post.translations?.en
+      ? pickBlogContentDraft(mapBlogPostToDraft(post.translations.en as Partial<BlogPost>))
+      : null }),
     subtitle: post.subtitle ?? "",
     coverUrl: post.coverUrl ?? "",
     featureText: quoteBlock?.text ?? "",
@@ -203,4 +229,34 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
     label: post.label ?? "",
     tripperNote: post.tripperNote ?? null,
   };
+}
+
+/** Text-only editor state; media, taxonomy and workflow fields stay shared. */
+export function pickBlogContentDraft(draft: BlogFormDraft): BlogContentDraft {
+  return {
+    title: draft.title, subtitle: draft.subtitle, featureText: draft.featureText,
+    featureAttribution: draft.featureAttribution, sections: draft.sections,
+    faq: draft.faq, tagline: draft.tagline, seo: draft.seo, originalPost: draft.originalPost,
+  };
+}
+
+export const BLOG_LOCALIZED_DRAFT_FIELDS = new Set<keyof BlogFormDraft>([
+  "title", "subtitle", "featureText", "featureAttribution", "sections", "faq", "tagline", "seo",
+]);
+
+export function getBlogLocaleDraft(draft: BlogFormDraft, locale: string): BlogFormDraft {
+  if (locale !== "en") return draft;
+  const emptyCopy = pickBlogContentDraft(mapBlogPostToDraft({}));
+  return { ...draft, ...(draft.english ?? emptyCopy) };
+}
+
+export function buildBlogSubmitPayload(draft: BlogFormDraft) {
+  const canonical = buildCanonicalBlogPayload(draft);
+  if (draft.english === undefined) return canonical;
+  if (draft.english === null) return { ...canonical, translations: null };
+  const english = buildCanonicalBlogPayload({ ...draft, ...draft.english, gallery: [] });
+  return { ...canonical, translations: { en: {
+    title: english.title, subtitle: english.subtitle, tagline: english.tagline,
+    content: english.content, blocks: english.blocks, faq: english.faq, seo: english.seo,
+  } } };
 }

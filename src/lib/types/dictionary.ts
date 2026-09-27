@@ -186,6 +186,10 @@ export interface TripperBlogComposerDict {
 }
 
 export interface TripperBlogFormDict {
+  contentLanguage: {
+    label: string; es: string; en: string; hint: string; canonicalLabel: string;
+    unavailable: string;
+  };
   nav: {
     progress: string;
   };
@@ -2775,6 +2779,11 @@ export interface MarketingDictionary {
     };
   };
   blogPage: {
+    detail: {
+      travel: string; breadcrumb: string; emptyBody: string; moreEyebrow: string;
+      moreTitle: string; moreSubtitle: string; viewAll: string; exploreMore: string;
+      testimonials: string; notFound: string; back: string;
+    };
     backToProfile: string;
     emptySubtitle: string;
     emptyTitle: string;

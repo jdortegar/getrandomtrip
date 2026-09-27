@@ -1,3 +1,6 @@
+import { ZodError } from "zod";
+import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
+import { Prisma } from "@prisma/client";
 // ============================================================================
 // PATCH /api/admin/blogs/[id]/edit-copy
 // Saves content edits to a review copy. Admin-only — no ownership check.
@@ -63,6 +66,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
+    const translations = normalizeBlogTranslations(body.translations);
     const {
       title,
       subtitle,
@@ -97,6 +101,7 @@ export async function PATCH(
         ...(coverUrl !== undefined && { coverUrl: coverUrl || null }),
         ...(content !== undefined && { content: content ?? null }),
         ...(blocks !== undefined && { blocks }),
+        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
         ...(faq !== undefined && { faq: faq ?? null }),
         ...(tags !== undefined && { tags }),
         ...(travelType !== undefined && { travelType: normalizeStringArray(travelType) }),
@@ -111,6 +116,9 @@ export async function PATCH(
 
     return NextResponse.json({ blog: updated });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("[admin/blogs/edit-copy] PATCH", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

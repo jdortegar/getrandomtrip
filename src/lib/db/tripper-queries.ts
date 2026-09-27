@@ -1,3 +1,4 @@
+import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
 // ============================================================================
 // Tripper Database Queries
 // ============================================================================
@@ -1110,6 +1111,7 @@ async function queryPublishedBlogs({
   try {
     const blogs = await prisma.blogPost.findMany({
       where: {
+        ...blogLocaleWhere(locale),
         ...(authorId ? { authorId } : {}),
         status: "PUBLISHED",
         // Review copies (isReviewCopy: true) share authorId with the
@@ -1126,6 +1128,7 @@ async function queryPublishedBlogs({
         id: true,
         slug: true,
         title: true,
+        translations: true,
         subtitle: true,
         coverUrl: true,
         tags: true,
@@ -1137,7 +1140,7 @@ async function queryPublishedBlogs({
 
     const fallbackCategory = BLOG_CATEGORY_FALLBACK[locale];
 
-    return blogs.map((blog) => ({
+    return resolveBlogList(blogs, locale).map((blog) => ({
       category: blog.tags[0] ?? fallbackCategory,
       href: `/blog/${blog.slug ?? blog.id}`,
       image: blog.coverUrl!,
@@ -1176,10 +1179,12 @@ export async function getRecentPublishedBlogs(
  */
 export async function getBlogTeaserPosts(
   limit: number = 3,
+  locale: "es" | "en" = "es",
 ): Promise<BlogTeaserPost[]> {
   try {
     const blogs = await prisma.blogPost.findMany({
       where: {
+        ...blogLocaleWhere(locale),
         status: "PUBLISHED",
         isReviewCopy: false,
         isActive: true,
@@ -1189,6 +1194,7 @@ export async function getBlogTeaserPosts(
         id: true,
         slug: true,
         title: true,
+        translations: true,
         subtitle: true,
         coverUrl: true,
         author: {
@@ -1208,7 +1214,7 @@ export async function getBlogTeaserPosts(
     });
 
     const interleaved = interleavePostsByAuthor(
-      blogs,
+      resolveBlogList(blogs, locale),
       (blog) => blog.author.id,
     ).slice(0, limit);
 

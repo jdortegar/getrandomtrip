@@ -31,7 +31,7 @@ export default async function TrippersPage(props: {
   const hero = dict.trippers.hero;
   const [trippers, blogTeaserPosts] = await Promise.all([
     getAllTrippers(),
-    getBlogTeaserPosts(3),
+    getBlogTeaserPosts(3, locale),
   ]);
 
   return (

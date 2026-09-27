@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Book } from "lucide-react";
@@ -56,6 +56,8 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
   const tripperId = searchParams.get("tripperId");
   const tripperName = searchParams.get("tripper");
 
+  const requestGeneration = useRef(0);
+  const [resultLocale, setResultLocale] = useState(locale);
   const [blogs, setBlogs] = useState<BlogIndexPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -78,6 +80,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
 
   const fetchBlogs = useCallback(
     async (pageNum: number, append: boolean = false) => {
+      const generation = ++requestGeneration.current;
       try {
         if (pageNum === 1) {
           setLoading(true);
@@ -87,6 +90,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
 
         const query = new URLSearchParams({
           limit: PAGE_SIZE.toString(),
+          locale,
           page: pageNum.toString(),
         });
 
@@ -99,7 +103,9 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         const response = await fetch(`/api/blogs?${query.toString()}`);
         const data: BlogIndexResponse = await response.json();
 
+        if (generation !== requestGeneration.current) return;
         if (response.ok && data.blogs) {
+          setResultLocale(locale);
           setBlogs((prev) => (append ? [...prev, ...data.blogs] : data.blogs));
           setHasMore(data.pagination.hasMore);
         } else {
@@ -108,11 +114,14 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
       } catch (error) {
         console.error("Error fetching blogs:", error);
       } finally {
-        setLoading(false);
-        setLoadingMore(false);
+        if (generation === requestGeneration.current) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
     },
     [
+      locale,
       filter.excuseKey,
       filter.levelKey,
       filter.tripperId,
@@ -121,6 +130,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
       setLoadingMore,
       setBlogs,
       setHasMore,
+      setResultLocale,
     ],
   );
 
@@ -155,6 +165,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     setBlogs([]);
     setHasMore(true);
     fetchBlogs(1, false);
+    return () => { requestGeneration.current += 1; };
   }, [fetchBlogs]);
 
   const handleLoadMore = useCallback(() => {
@@ -162,6 +173,8 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     setPage(nextPage);
     fetchBlogs(nextPage, true);
   }, [page, fetchBlogs, setPage]);
+
+  const visibleBlogs = resultLocale === locale ? blogs : [];
 
   return (
     <>
@@ -182,7 +195,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
             value={filter}
           />
 
-          {loading && blogs.length === 0 ? (
+          {loading && visibleBlogs.length === 0 ? (
             <LoadingSpinner />
           ) : (
             <>
@@ -197,7 +210,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                 </div>
               )}
 
-              {blogs.length === 0 ? (
+              {visibleBlogs.length === 0 ? (
                 <GlassCard>
                   <div className="p-12 text-center">
                     <Book className="mx-auto mb-4 h-16 w-16 text-neutral-400" />
@@ -212,7 +225,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
               ) : (
                 <>
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-6 lg:gap-6">
-                    {blogs.map((post, index) => (
+                    {visibleBlogs.map((post, index) => (
                       <BlogIndexCard
                         colSpan={getColSpan(index)}
                         isLarge={isLargeCard(index)}
@@ -235,7 +248,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                     </div>
                   )}
 
-                  {!hasMore && blogs.length > 0 && (
+                  {!hasMore && visibleBlogs.length > 0 && (
                     <div className="py-8 text-center text-ink">
                       <p>{copy.seenAll}</p>
                     </div>

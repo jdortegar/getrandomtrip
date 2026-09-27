@@ -1,3 +1,5 @@
+import { ZodError } from "zod";
+import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
 // ============================================================================
 // GET /api/tripper/blogs - Get all blogs for tripper
 // POST /api/tripper/blogs - Create a new blog post (tripper only)
@@ -5,7 +7,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
@@ -98,6 +100,7 @@ export async function GET(request: NextRequest) {
           coverUrl: true,
           content: true,
           blocks: true,
+          translations: true,
           faq: true,
           tags: true,
           travelType: true,
@@ -128,6 +131,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ blogs: transformedBlogs, total, page, limit });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("Error fetching tripper blogs:", error);
     return NextResponse.json(
       { error: "Internal server error" },
@@ -158,6 +164,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    const translations = normalizeBlogTranslations(body.translations);
     const {
       title,
       subtitle,
@@ -237,6 +244,7 @@ export async function POST(request: NextRequest) {
         tagline: tagline || null,
         content: content ?? null,
         blocks: blocks || [],
+        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
         faq: faq ?? null,
         tags: tags || [],
         excuseKey: excuseKeyValue,
@@ -257,6 +265,7 @@ export async function POST(request: NextRequest) {
         coverUrl: true,
         content: true,
         blocks: true,
+        translations: true,
         faq: true,
         tags: true,
         travelType: true,
@@ -285,6 +294,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ blog: transformedBlog }, { status: 201 });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
+    }
     console.error("Error creating blog:", error);
     return NextResponse.json(
       { error: "Internal server error" },

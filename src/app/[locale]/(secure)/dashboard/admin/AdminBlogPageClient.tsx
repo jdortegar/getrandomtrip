@@ -27,6 +27,7 @@ const SEARCH_DEBOUNCE_MS = 350;
 
 export function AdminBlogPageClient() {
   const copy = useDictionary((d) => d.adminPages.blog);
+  const contentLanguageCopy = useDictionary((d) => d.tripperBlogs.form.contentLanguage);
   const paginationCopy = useDictionary((d) => d.common.pagination);
   const locale = useLocale();
   const dateLocale = locale.startsWith("en") ? "en-US" : "es-ES";
@@ -415,6 +416,7 @@ export function AdminBlogPageClient() {
                       <td className="px-5 py-4">
                         <p className="text-sm font-semibold text-ink">
                           {item.title}
+                          <span className="block font-normal text-neutral-500 text-xs">{contentLanguageCopy.canonicalLabel}</span>
                         </p>
                         {item.subtitle && (
                           <p className="mt-0.5 text-xs text-ink">
