@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
   };
 
   try {
-    await updatePaymentFromStripeWebhook(intent.id, updateData);
+    await updatePaymentFromStripeWebhook(intent.id, updateData, undefined, intent.livemode === true);
   } catch (err) {
     const isNotFound =
       err instanceof Error && err.message.includes("Payment not found");

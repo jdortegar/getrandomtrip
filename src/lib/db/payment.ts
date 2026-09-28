@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import type { PaymentStatus, Prisma } from "@prisma/client";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
+import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
 
 export interface CreatePaymentData {
   userId: string;
@@ -184,6 +185,7 @@ export async function updatePaymentFromStripeWebhook(
   stripePaymentIntentId: string,
   updateData: UpdatePaymentData,
   webhookPayload?: unknown,
+  liveMode = false,
 ) {
   // Try fast lookup via unique index first, then fall back to providerPaymentId
   const payment =
@@ -264,9 +266,22 @@ export async function updatePaymentFromStripeWebhook(
       data: { ...finalData, updatedAt: new Date() },
     });
     if (count === 0) throw lostClaim;
-    return { changed: true, confirmed: promoted.count === 1 };
+    // Mode comes from the verified provider intent, never the browser request.
+    // Test/unknown mode still settles normally but cannot reach the sales outbox.
+    const saleQueued = liveMode && finalData.status === "APPROVED" && !repairsApprovedBooking;
+    if (saleQueued) {
+      const settled = await tx.payment.findUniqueOrThrow({
+        where: { id: payment.id },
+        select: { amount: true, currency: true },
+      });
+      await tx.saleNotificationDelivery.create({
+        data: { paymentId: payment.id, stripePaymentIntentId,
+          tripRequestId: payment.tripRequestId, ...settled },
+      });
+    }
+    return { changed: true, confirmed: promoted.count === 1, saleQueued };
   }).catch((error: unknown) => {
-    if (error === lostClaim) return { changed: false, confirmed: false };
+    if (error === lostClaim) return { changed: false, confirmed: false, saleQueued: false };
     throw error;
   });
   if (!outcome.changed) return payment;
@@ -278,6 +293,13 @@ export async function updatePaymentFromStripeWebhook(
   }
   if (finalData.status === "FAILED") {
     sendPaymentFailed(payment.tripRequestId, payment.userId);
+  }
+  if (outcome.saleQueued) {
+    // The durable event is already committed: Slack/worker failures must never
+    // undo a paid booking. A scheduled worker recovers interrupted delivery.
+    await runSaleNotificationBatch(payment.id).catch(() => {
+      console.error("[sales] immediate delivery unavailable; queued for retry");
+    });
   }
 
   return { ...payment, ...finalData };

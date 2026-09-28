@@ -30,6 +30,7 @@ beforeEach(() => {
     id: "pi_test",
     status: "succeeded",
     created: 1,
+    livemode: true,
   });
 });
 it("does not retrieve or settle another buyer's intent", async () => {
@@ -49,6 +50,8 @@ it("settles the current buyer's provider-verified intent", async () => {
   expect(mocks.update).toHaveBeenCalledWith(
     "pi_test",
     expect.objectContaining({ status: "APPROVED" }),
+    undefined,
+    true,
   );
 });
 
@@ -56,5 +59,15 @@ it("authorizes an owned legacy provider-ID row before repairing settlement", asy
   mocks.find.mockResolvedValue(null);
   mocks.findLegacy.mockResolvedValue({ userId: "buyer" });
   expect((await POST(request())).status).toBe(200);
-  expect(mocks.update).toHaveBeenCalledWith("pi_test", expect.objectContaining({ status: "APPROVED" }));
+  expect(mocks.update).toHaveBeenCalledWith("pi_test", expect.objectContaining({ status: "APPROVED" }), undefined, true);
+});
+
+it("takes live mode only from Stripe, not the browser request", async () => {
+  mocks.find.mockResolvedValue({ userId: "buyer" });
+  mocks.retrieve.mockResolvedValue({ id: "pi_test", status: "succeeded", created: 1, livemode: false });
+  const forged = new NextRequest("http://localhost/api/stripe/confirm-payment", {
+    method: "POST", body: JSON.stringify({ paymentIntentId: "pi_test", livemode: true }),
+  });
+  expect((await POST(forged)).status).toBe(200);
+  expect(mocks.update).toHaveBeenCalledWith("pi_test", expect.objectContaining({ status: "APPROVED" }), undefined, false);
 });

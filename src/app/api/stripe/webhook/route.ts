@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
               ? new Date(intent.created * 1000)
               : undefined,
         };
-        await updatePaymentFromStripeWebhook(intent.id, updateData, event);
+        await updatePaymentFromStripeWebhook(intent.id, updateData, event, intent.livemode === true);
         break;
       }
       default:

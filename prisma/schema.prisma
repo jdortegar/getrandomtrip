@@ -496,6 +496,24 @@ model Payment {
   @@map("payments")
 }
 
+/// Durable first-payment notification snapshot; intentionally survives source deletion.
+model SaleNotificationDelivery {
+  paymentId             String @id
+  stripePaymentIntentId String @unique
+  tripRequestId         String
+  amount                Float
+  currency              String
+  createdAt             DateTime @default(now())
+  nextAttemptAt         DateTime @default(now())
+  attempts              Int @default(0)
+  leaseToken            String?
+  sentAt                DateTime?
+  lastError             String?
+
+  @@index([sentAt, nextAttemptAt])
+  @@map("sale_notification_deliveries")
+}
+
 enum TravelerKind {
   ADULT
   MINOR
