@@ -12,6 +12,7 @@ vi.mock("@/lib/prisma", () => ({
 import { prisma } from "@/lib/prisma";
 import {
   getSiteSettings,
+  getXsedCampaignCounter,
   isGateEnabled,
   isXsedWindowEnforcementEnabled,
   updateSiteSettings,
@@ -24,6 +25,22 @@ describe("siteSettings", () => {
     vi.clearAllMocks();
   });
 
+  it("reads the persisted date and calculates the campaign week independently", async () => {
+    vi.mocked(prisma.siteSetting.findUnique).mockResolvedValue({
+      id: GLOBAL_ID,
+      gateEnabled: false,
+      xsedWindowEnforcementEnabled: true,
+      xsedCampaignStartDate: new Date("2026-09-27T00:00:00Z"),
+      updatedAt: new Date(),
+    });
+    expect(
+      await getXsedCampaignCounter(new Date("2026-10-04T03:00:00Z")),
+    ).toEqual({
+      startDate: "2026-09-27",
+      weekNumber: 2,
+    });
+  });
+
   it("getSiteSettings returns the existing row without upserting when one exists", async () => {
     const existing = {
       id: GLOBAL_ID,
@@ -31,9 +48,9 @@ describe("siteSettings", () => {
       xsedWindowEnforcementEnabled: true,
       updatedAt: new Date(),
     };
-    (prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      existing,
-    );
+    (
+      prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(existing);
 
     const result = await getSiteSettings();
 
@@ -42,9 +59,9 @@ describe("siteSettings", () => {
   });
 
   it("getSiteSettings lazily creates the row with defaults when none exists", async () => {
-    (prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
-      null,
-    );
+    (
+      prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(null);
     const created = {
       id: GLOBAL_ID,
       gateEnabled: true,
@@ -66,7 +83,9 @@ describe("siteSettings", () => {
   });
 
   it("isGateEnabled reflects the persisted gateEnabled column", async () => {
-    (prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       id: GLOBAL_ID,
       gateEnabled: false,
       xsedWindowEnforcementEnabled: true,
@@ -77,7 +96,9 @@ describe("siteSettings", () => {
   });
 
   it("isXsedWindowEnforcementEnabled reflects the persisted column", async () => {
-    (prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      prisma.siteSetting.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       id: GLOBAL_ID,
       gateEnabled: true,
       xsedWindowEnforcementEnabled: false,

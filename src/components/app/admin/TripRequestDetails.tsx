@@ -1,5 +1,6 @@
-import { formatAdminDate, formatAdminAmount } from "@/lib/admin/format";
+import { formatAdminAmount } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
+import { formatTripCalendarDate } from "@/lib/helpers/formatTripCalendarDate";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import styles from "./trip-fulfillment/fulfillment.module.css";
 
@@ -25,10 +26,15 @@ function DetailRow({ label, value, variant }: DetailRowProps) {
 
 interface TripRequestDetailsProps {
   labels: DetailLabels;
+  locale: string;
   trip: AdminTripRequest;
 }
 
-export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
+export function TripRequestDetails({
+  labels,
+  locale,
+  trip,
+}: TripRequestDetailsProps) {
   return (
     <div className={styles.factList} data-component="TripRequestDetails">
       <DetailRow
@@ -37,7 +43,7 @@ export function TripRequestDetails({ labels, trip }: TripRequestDetailsProps) {
       />
       <DetailRow
         label={labels.dates}
-        value={`${formatAdminDate(trip.startDate)} — ${formatAdminDate(trip.endDate)}`}
+        value={`${formatTripCalendarDate(trip.startDate, locale)} — ${formatTripCalendarDate(trip.endDate, locale)}`}
         variant="mono"
       />
       <DetailRow

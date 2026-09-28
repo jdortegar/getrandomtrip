@@ -1,6 +1,10 @@
+import { getXsedCampaignCounter } from "@/lib/siteSettings";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
-import { getPublicXsedBlogDropEntries, getCurrentXsedDrop } from "@/lib/data/xsed";
+import {
+  getPublicXsedBlogDropEntries,
+  getCurrentXsedDrop,
+} from "@/lib/data/xsed";
 import { AllDropsGrid } from "@/components/app/xsed/AllDropsGrid";
 import { XsedInternalHero } from "@/components/app/xsed/XsedInternalHero";
 import { CountDown } from "@/components/app/xsed/CountDown";
@@ -16,7 +20,10 @@ export default async function XsedDropsPage(props: LocaleParams) {
   const normalizedLocale = hasLocale(locale) ? locale : "es";
   const dict = await getDictionary(normalizedLocale);
 
-  const currentDrop = await getCurrentXsedDrop();
+  const [currentDrop, campaign] = await Promise.all([
+    getCurrentXsedDrop(),
+    getXsedCampaignCounter(),
+  ]);
   const { drops, hasMore } = await getPublicXsedBlogDropEntries(
     normalizedLocale,
     0,
@@ -34,9 +41,10 @@ export default async function XsedDropsPage(props: LocaleParams) {
       <AllDropsGrid initialDrops={drops} initialHasMore={hasMore} />
       {currentDrop ? (
         <CountDown
+          campaignStartDate={campaign.startDate}
           dropSlug={currentDrop.slug}
+          initialWeekNumber={campaign.weekNumber}
           locale={normalizedLocale}
-          number={currentDrop.number}
           soldCount={currentDrop.soldCount}
           totalSlots={currentDrop.totalSlots}
           useForm={true}

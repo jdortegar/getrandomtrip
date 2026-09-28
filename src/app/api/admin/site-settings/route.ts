@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getSiteSettings, updateSiteSettings } from "@/lib/siteSettings";
+import type { SiteSettingsPatch } from "@/lib/siteSettings";
+import { isCampaignDate } from "@/lib/xsed/campaign";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -26,12 +28,18 @@ export async function GET() {
   try {
     const guard = await requireAdmin();
     if (!guard.ok) {
-      return NextResponse.json({ error: guard.error }, { status: guard.status });
+      return NextResponse.json(
+        { error: guard.error },
+        { status: guard.status },
+      );
     }
 
     const settings = await getSiteSettings();
     return NextResponse.json({
       gateEnabled: settings.gateEnabled,
+      xsedCampaignStartDate: settings.xsedCampaignStartDate
+        .toISOString()
+        .slice(0, 10),
       xsedWindowEnforcementEnabled: settings.xsedWindowEnforcementEnabled,
     });
   } catch (error) {
@@ -47,11 +55,25 @@ export async function PATCH(request: NextRequest) {
   try {
     const guard = await requireAdmin();
     if (!guard.ok) {
-      return NextResponse.json({ error: guard.error }, { status: guard.status });
+      return NextResponse.json(
+        { error: guard.error },
+        { status: guard.status },
+      );
     }
 
     const body = await request.json();
-    const patch: { gateEnabled?: boolean; xsedWindowEnforcementEnabled?: boolean } = {};
+    const patch: SiteSettingsPatch = {};
+    if (body?.xsedCampaignStartDate !== undefined) {
+      if (!isCampaignDate(body.xsedCampaignStartDate)) {
+        return NextResponse.json(
+          { error: "invalid_campaign_date" },
+          { status: 400 },
+        );
+      }
+      patch.xsedCampaignStartDate = new Date(
+        `${body.xsedCampaignStartDate}T00:00:00.000Z`,
+      );
+    }
     if (typeof body?.gateEnabled === "boolean") {
       patch.gateEnabled = body.gateEnabled;
     }
@@ -67,6 +89,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({
       gateEnabled: settings.gateEnabled,
+      xsedCampaignStartDate: settings.xsedCampaignStartDate
+        .toISOString()
+        .slice(0, 10),
       xsedWindowEnforcementEnabled: settings.xsedWindowEnforcementEnabled,
     });
   } catch (error) {

@@ -106,7 +106,7 @@ let root: Root;
 function render(
   trips: AdminTripRequest[],
   onSort = vi.fn(),
-  overrides: { error?: string | null; isLoading?: boolean } = {},
+  overrides: { error?: string | null; isLoading?: boolean; locale?: string } = {},
 ) {
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -117,7 +117,7 @@ function render(
         copy={copy}
         error={overrides.error ?? null}
         isLoading={overrides.isLoading ?? false}
-        locale="en"
+        locale={overrides.locale ?? "en"}
         onSort={onSort}
         paymentStatusLabels={{}}
         sortBy="purchaseDate"
@@ -137,6 +137,12 @@ afterEach(() => {
 });
 
 describe("TripRequestsTable — purchase date column", () => {
+  it.each([0, 23])("keeps purchases at local hour %i on their local date", (hour) => {
+    const paidAt = new Date(2026, 9, 2, hour, 30).toISOString();
+    render([baseTrip({ payment: { amount: 500, currency: "USD", paidAt, status: "APPROVED" } })]);
+    expect(container.querySelectorAll("tbody td")[1].textContent).toBe("Oct 2, 2026");
+  });
+
   it("shows recorded paidAt before trip date, not request creation or departure", () => {
     const paidAt = "2026-09-27T12:00:00.000Z";
     render([baseTrip({ payment: { amount: 500, currency: "USD", paidAt, status: "APPROVED" } })]);
@@ -175,17 +181,21 @@ describe("TripRequestsTable — trip date column", () => {
     expect(headers).toContain("Trip date");
   });
 
-  it("renders the formatted startDate for a row", () => {
-    const startDate = "2026-08-22T00:00:00.000Z";
-    render([baseTrip({ startDate })]);
-    const text = container.textContent ?? "";
-    expect(text).toContain(formatAdminDate(startDate));
+  it.each([
+    ["en", "Oct 3, 2026"],
+    ["es", "3 oct 2026"],
+  ])("preserves the booked calendar date in %s", (locale, expected) => {
+    render(
+      [baseTrip({ startDate: "2026-10-03T00:00:00.000Z" })],
+      vi.fn(),
+      { locale },
+    );
+    expect(container.querySelectorAll("tbody td")[2].textContent).toBe(expected);
   });
 
   it("renders a placeholder when startDate is null", () => {
     render([baseTrip({ startDate: null })]);
-    const text = container.textContent ?? "";
-    expect(text).toContain("—");
+    expect(container.querySelectorAll("tbody td")[2].textContent).toBe("—");
   });
 });
 

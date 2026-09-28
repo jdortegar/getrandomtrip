@@ -6,6 +6,12 @@ import { motion } from "framer-motion";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
 import { useDictionary } from "@/hooks/useDictionary";
+import { getXsedCampaignWeek } from "@/lib/xsed/campaign";
+import {
+  computeTimeLeft,
+  formatTargetDate,
+  formatTargetTime,
+} from "@/lib/xsed/countdownTime";
 import { XsedNotifyForm } from "./XsedNotifyForm";
 import {
   detectSupportedTimezone,
@@ -37,60 +43,22 @@ interface CountDownProps {
   /** When true, always renders the notify form regardless of phase. */
   useForm?: boolean;
   locale: string;
-  number: number;
+  campaignStartDate: string;
+  initialWeekNumber: number;
   soldCount: number;
   totalSlots: number;
   /** Slug of the current drop — enables server-side sold count polling during open window. */
   dropSlug?: string;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-interface TimeLeft {
-  days: number;
-  hours: number;
-  min: number;
-  sec: number;
-}
-
-function computeTimeLeft(target: Date): TimeLeft {
-  const diff = Math.max(0, Math.floor((target.getTime() - Date.now()) / 1000));
-  const days = Math.floor(diff / 86400);
-  const hours = Math.floor((diff % 86400) / 3600);
-  const min = Math.floor((diff % 3600) / 60);
-  const sec = diff % 60;
-  return { days, hours, min, sec };
-}
-
-function formatTargetTime(target: Date): string {
-  const hh = String(target.getHours()).padStart(2, "0");
-  const mm = String(target.getMinutes()).padStart(2, "0");
-  return `${hh}:${mm}HS.`;
-}
-
-function formatTargetDate(target: Date, locale: string): string {
-  const tag = locale === "en" ? "en-US" : "es-ES";
-  const dayName = target
-    .toLocaleDateString(tag, { weekday: "long" })
-    .toUpperCase();
-  const day = target.getDate();
-  const month = target.getMonth() + 1;
-  const hh = String(target.getHours()).padStart(2, "0");
-  const mm = String(target.getMinutes()).padStart(2, "0");
-  return `${dayName} ${day}/${month} ${hh}:${mm}HS.`;
-}
-
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const ORANGE = "#D97E4A";
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export function CountDown({
   copy: copyProp,
   useForm = false,
   locale,
-  number,
+  campaignStartDate,
+  initialWeekNumber,
   soldCount: soldCountProp,
   totalSlots: totalSlotsProp,
   dropSlug,
@@ -100,32 +68,37 @@ export function CountDown({
   const notifyCopy = useDictionary((d) => d.xsedPage.hero);
 
   // tz starts null (SSR-safe); detected and set on client mount via useEffect.
+  const [weekNumber, setWeekNumber] = useState(initialWeekNumber);
   const [tz, setTz] = useState<string | null>(null);
   const [phase, setPhase] = useState<"open" | "waiting">("waiting");
   const [target, setTarget] = useState<Date>(() => getCountdownTarget(null));
-  const [time, setTime] = useState<TimeLeft>(() =>
+  const [time, setTime] = useState(() =>
     computeTimeLeft(getCountdownTarget(null)),
   );
   const [soldCount, setSoldCount] = useState(soldCountProp);
   const [totalSlots, setTotalSlots] = useState(totalSlotsProp);
 
-  // Detect timezone on client mount and sync phase/target immediately.
+  // Synchronize the browser timezone after hydration, before the first tick.
   useEffect(() => {
-    const detected = detectSupportedTimezone();
-    const resolvedTz = detected ?? "America/Argentina/Buenos_Aires";
-    const now = new Date();
-    const newPhase = isLocalWindowOpen(resolvedTz, now) ? "open" : "waiting";
-    const newTarget = getCountdownTarget(resolvedTz, now);
-    setTz(detected);
-    setPhase(newPhase);
-    setTarget(newTarget);
-    setTime(computeTimeLeft(newTarget));
-
-  }, []);
+    const initialSync = setTimeout(() => {
+      const detected = detectSupportedTimezone();
+      const resolvedTz = detected ?? "America/Argentina/Buenos_Aires";
+      const now = new Date();
+      const newPhase = isLocalWindowOpen(resolvedTz, now) ? "open" : "waiting";
+      const newTarget = getCountdownTarget(resolvedTz, now);
+      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now));
+      setTz(detected);
+      setPhase(newPhase);
+      setTarget(newTarget);
+      setTime(computeTimeLeft(newTarget));
+    }, 0);
+    return () => clearTimeout(initialSync);
+  }, [campaignStartDate]);
 
   useEffect(() => {
     const id = setInterval(() => {
       const now = new Date();
+      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now));
       const resolvedTz = tz ?? "America/Argentina/Buenos_Aires";
 
       // Re-evaluate phase on every tick — detects transitions without page reload
@@ -144,7 +117,7 @@ export function CountDown({
     }, 1000);
 
     return () => clearInterval(id);
-  }, [target, phase, tz]);
+  }, [campaignStartDate, target, phase, tz]);
 
   // Poll sold count from server every 30s while window is open
   useEffect(() => {
@@ -198,7 +171,7 @@ export function CountDown({
 
   const titleHighlight = copy.titleHighlight.replace(
     "{number}",
-    String(number),
+    String(weekNumber),
   );
 
   // Show notify form when: useForm override OR window is not open
@@ -209,7 +182,8 @@ export function CountDown({
       fullWidth={true}
       id="xsed"
       title={`${copy.title} <span class="text-xsed">${titleHighlight}</span>`}
-      subtitle={phase === "open" ? copy.openSubtitle : copy.subtitle} data-component="CountDown"
+      subtitle={phase === "open" ? copy.openSubtitle : copy.subtitle}
+      data-component="CountDown"
     >
       {/* Drop status row */}
       <motion.div

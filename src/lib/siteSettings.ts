@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { getXsedCampaignWeek } from "@/lib/xsed/campaign";
 
 const SITE_SETTINGS_ID = "global";
 
@@ -29,11 +30,20 @@ export async function isXsedWindowEnforcementEnabled(): Promise<boolean> {
   return settings.xsedWindowEnforcementEnabled;
 }
 
-/** Partial update of the singleton settings row — only the provided keys change. */
-export async function updateSiteSettings(patch: {
+export async function getXsedCampaignCounter(now = new Date()) {
+  const settings = await getSiteSettings();
+  const startDate = settings.xsedCampaignStartDate.toISOString().slice(0, 10);
+  return { startDate, weekNumber: getXsedCampaignWeek(startDate, now) };
+}
+
+export interface SiteSettingsPatch {
   gateEnabled?: boolean;
+  xsedCampaignStartDate?: Date;
   xsedWindowEnforcementEnabled?: boolean;
-}) {
+}
+
+/** Partial update of the singleton settings row — only the provided keys change. */
+export async function updateSiteSettings(patch: SiteSettingsPatch) {
   return prisma.siteSetting.upsert({
     where: { id: SITE_SETTINGS_ID },
     update: patch,

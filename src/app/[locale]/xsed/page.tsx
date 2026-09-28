@@ -1,3 +1,4 @@
+import { getXsedCampaignCounter } from "@/lib/siteSettings";
 import type { Metadata } from "next";
 
 import { SecondaryHero } from "@/components/app/xsed/SecondaryHero";
@@ -42,7 +43,10 @@ export default async function XsedPage(props: LocaleParams) {
   const locale = typeof raw === "string" ? raw : raw?.[0];
   const normalizedLocale = hasLocale(locale) ? locale : "es";
   const dict = await getDictionary(normalizedLocale);
-  const currentDrop = await getCurrentXsedDrop();
+  const [currentDrop, campaign] = await Promise.all([
+    getCurrentXsedDrop(),
+    getXsedCampaignCounter(),
+  ]);
   const allGridDrops = await getXsedBlogDropsForGrid(normalizedLocale);
   const gridDrops = allGridDrops.slice(0, 5);
   const xsedTestimonials = await getAllXsedTestimonials();
@@ -58,10 +62,11 @@ export default async function XsedPage(props: LocaleParams) {
       />
       {currentDrop ? (
         <CountDown
+          campaignStartDate={campaign.startDate}
           copy={dict.xsedPage.countdown}
           dropSlug={currentDrop.slug}
+          initialWeekNumber={campaign.weekNumber}
           locale={normalizedLocale}
-          number={currentDrop.number}
           soldCount={currentDrop.soldCount}
           totalSlots={currentDrop.totalSlots}
         />
