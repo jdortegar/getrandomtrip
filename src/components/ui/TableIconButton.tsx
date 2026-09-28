@@ -12,6 +12,7 @@ const ARROW =
   "absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-primary";
 
 interface TableIconButtonProps {
+  "aria-busy"?: boolean;
   children: React.ReactNode;
   danger?: boolean;
   disabled?: boolean;
@@ -20,6 +21,7 @@ interface TableIconButtonProps {
 }
 
 export function TableIconButton({
+  "aria-busy": busy,
   children,
   danger,
   disabled,
@@ -29,6 +31,8 @@ export function TableIconButton({
   return (
     <div className="group relative" data-component="TableIconButton">
       <button
+        aria-busy={busy}
+        aria-label={title}
         className={`${BASE} disabled:opacity-40 ${
           danger
             ? "hover:border-red-300 hover:bg-red-50 hover:text-red-600"

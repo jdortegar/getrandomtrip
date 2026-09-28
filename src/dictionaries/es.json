@@ -5544,9 +5544,9 @@
     "heading": "Invita a tus compañeros de viaje",
     "subtitle": "Reservaste para {count} viajeros. Carga los datos de cada acompañante ahora, o enviales una invitación para que los completen ellos mismos — de cualquier forma, los necesitamos antes de poder confirmar el itinerario.",
     "notifTitle": "Un acompañante completó sus datos de viaje",
-    "deadlineLabel": "Completar antes del {date} — {days} días antes de la salida",
+    "deadlineLabel": "Completá antes del {date}, {hours} horas antes de la salida. Después, los datos guardados quedan protegidos; los campos vacíos siguen disponibles.",
     "progressLabel": "{submitted} de {cap} viajeros completados",
-    "lockedBanner": "Los datos de los viajeros están bloqueados. La salida es en {days} días — ¿necesitas un cambio? {supportLink}",
+    "lockedBanner": "Los datos guardados están protegidos. Podés completar campos vacíos e invitar acompañantes con datos pendientes. Faltan {days} días para la salida. ¿Necesitás cambiar datos guardados? {supportLink}",
     "supportLinkLabel": "Contacta a soporte",
     "footnote": "La cantidad de viajeros queda fija al pagar — ¿necesitas agregar o quitar a alguien? {supportLink}",
     "travelerLabel": "Viajero {number}",
@@ -5593,7 +5593,7 @@
     "landingReasonInvalid": "Este enlace de invitación no es válido.",
     "landingReasonExpired": "Esta invitación venció. Pedile a quien te invitó que te reenvíe una nueva.",
     "landingReasonUsed": "Ya completaste tus datos con este enlace.",
-    "landingReasonLocked": "El plazo para completar los datos de este viaje ya cerró. Contacta a soporte si necesitas hacer un cambio.",
+    "landingReasonLocked": "Estos datos de viaje ya están completos y protegidos. Contactanos si necesitás cambiarlos.",
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"
@@ -5650,5 +5650,13 @@
       "provider": "Proveedor y ubicación",
       "route": "Ruta y fechas del viaje",
       "content": "Detalles e instrucciones"
+  },
+  "travelerDetailsReminder": {
+    "subject": "Tu viaje XSED: completá los datos de tus acompañantes",
+    "preview": "Tu viaje XSED sale en 72 horas o menos. Faltan datos de tus acompañantes.",
+    "heading": "Completá los datos de tus acompañantes",
+    "body": "Tu viaje XSED sale en 72 horas o menos y todavía faltan datos de tus acompañantes. Abrí tu viaje para completarlos o enviar una invitación.",
+    "fillEmpty": "Los campos vacíos siguen disponibles. Los datos guardados están protegidos; contactanos si necesitás corregirlos.",
+    "cta": "ABRIR MI VIAJE"
   }
 }

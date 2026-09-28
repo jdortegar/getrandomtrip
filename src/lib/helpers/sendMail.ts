@@ -15,6 +15,7 @@ interface SendMailParams {
     | { html: string; react?: never; text?: string }
     | { text: string; react?: never; html?: never };
   from?: string;
+  idempotencyKey?: string;
   replyTo?: string;
   subject: string;
   to: string | string[];
@@ -30,7 +31,10 @@ export async function sendMail(params: SendMailParams) {
   const resend = getResendClient();
   const from = params.from || process.env.EMAIL_FROM || "onboarding@resend.dev";
 
-  let content: { react: React.ReactElement } | { html: string; text?: string } | { text: string };
+  let content:
+    | { react: React.ReactElement }
+    | { html: string; text?: string }
+    | { text: string };
 
   if ("react" in params.content && params.content.react) {
     content = { react: params.content.react };
@@ -42,14 +46,19 @@ export async function sendMail(params: SendMailParams) {
     throw new Error("Email content is required");
   }
 
-  const { data, error } = await resend.emails.send({
-    ...content,
-    attachments: params.attachments,
-    from,
-    replyTo: params.replyTo,
-    subject: params.subject,
-    to: params.to,
-  });
+  const { data, error } = await resend.emails.send(
+    {
+      ...content,
+      attachments: params.attachments,
+      from,
+      replyTo: params.replyTo,
+      subject: params.subject,
+      to: params.to,
+    },
+    params.idempotencyKey
+      ? { idempotencyKey: params.idempotencyKey }
+      : undefined,
+  );
 
   if (error) throw new Error(error.message || "Failed to send email");
   return data;

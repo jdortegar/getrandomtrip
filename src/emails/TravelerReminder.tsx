@@ -15,7 +15,7 @@ const copy = {
     preview: "Recordatorio: completá tus datos de viaje.",
     heading: "Todavía te esperan en este randomtrip",
     body: (buyerFirstName: string) =>
-      `Recordatorio para completar tus datos de viaje para el randomtrip de ${buyerFirstName} antes de la fecha límite.`,
+      `Recordatorio para completar tus datos de viaje para el randomtrip de ${buyerFirstName} lo antes posible. Los campos vacíos siguen disponibles.`,
     subtext: "Este enlace vence en 7 días.",
     cta: "COMPLETAR MIS DATOS",
   },
@@ -23,7 +23,7 @@ const copy = {
     preview: "Reminder: complete your travel details.",
     heading: "You're still invited to this randomtrip",
     body: (buyerFirstName: string) =>
-      `Friendly reminder to add your travel details for ${buyerFirstName}'s randomtrip before the deadline.`,
+      `Friendly reminder to add your travel details for ${buyerFirstName}'s randomtrip as soon as possible. Empty fields remain editable.`,
     subtext: "This link expires in 7 days.",
     cta: "ADD MY DETAILS",
   },

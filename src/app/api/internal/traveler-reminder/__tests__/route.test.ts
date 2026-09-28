@@ -8,6 +8,7 @@ vi.mock("@/lib/prisma", () => ({
       update: vi.fn(),
     },
     tripRequest: {
+      findMany: vi.fn(),
       updateMany: vi.fn(),
     },
   },
@@ -43,6 +44,7 @@ function makeRequest(secret?: string): Request {
 beforeEach(() => {
   vi.resetAllMocks();
   process.env.CRON_SECRET = VALID_SECRET;
+  vi.mocked(prisma.tripRequest.findMany).mockResolvedValue([]);
   (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
   (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockResolvedValue({});
   (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -203,4 +205,19 @@ describe("POST /api/internal/traveler-reminder — response contract", () => {
       errors: expect.any(Array),
     });
   });
+});
+
+it("uses separate XSED 72h and standard 7d cutoff predicates in both scheduled passes", async () => {
+  const mod = await import("../passes");
+  const now = new Date("2026-09-30T00:00:00Z");
+  await mod.runPass1(now);
+  await mod.runPass2(now);
+  expect(prisma.tripTraveler.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ tripRequest: expect.objectContaining({ OR: [
+    { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-10-03T00:00:00Z") } },
+    { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-10-07T00:00:00Z") } },
+  ] }) }) }));
+  expect(prisma.tripRequest.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ OR: [
+    { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-03T00:00:00Z") } },
+    { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-07T00:00:00Z") } },
+  ] }) }));
 });

@@ -176,8 +176,10 @@ model TripRequest {
   // Destination reveal pipeline
   destinationAssignmentNotifiedAt DateTime? // T-72h admin reminder idempotency stamp
 
-  // Companion travelers roster — locked server-side at startDate - 7 days
+  // Companion travelers: populated fields protected at T-72h (XSED), otherwise T-7d
   travelersLockedAt DateTime? // Pass-2 cutoff-lock idempotency stamp
+  travelerDetailsReminderSentAt DateTime? // Buyer reminder: provider accepted
+  travelerDetailsReminderClaimedAt DateTime? // Recoverable delivery lease
 
   // Trip-start voucher email — attaches all TripDocument rows, sent once startDate has passed
   voucherEmailSentAt DateTime? // Trip-start voucher email idempotency stamp

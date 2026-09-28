@@ -5544,9 +5544,9 @@
     "heading": "Invite your travel friends",
     "subtitle": "You booked for {count} travelers. Add each companion's details now, or send them an invite so they fill it in themselves — either way, we need this before we can confirm your itinerary.",
     "notifTitle": "A companion completed their travel details",
-    "deadlineLabel": "Complete by {date} — {days} days before departure",
+    "deadlineLabel": "Complete by {date} — {hours} hours before departure. After that, saved details are protected; empty fields remain editable.",
     "progressLabel": "{submitted} of {cap} travelers submitted",
-    "lockedBanner": "Traveler details are locked. Departure is in {days} days — need a change? {supportLink}",
+    "lockedBanner": "Saved traveler details are protected. You can still fill empty fields and invite companions with missing details. Departure is in {days} days — need to change saved details? {supportLink}",
     "supportLinkLabel": "Contact support",
     "footnote": "Party size is fixed at checkout — need to add or remove a traveler? {supportLink}",
     "travelerLabel": "Traveler {number}",
@@ -5593,7 +5593,7 @@
     "landingReasonInvalid": "This invite link isn't valid.",
     "landingReasonExpired": "This invite expired. Ask whoever invited you to send a new one.",
     "landingReasonUsed": "You've already submitted your details with this link.",
-    "landingReasonLocked": "The deadline to complete details for this trip has passed. Contact support if you need to make a change.",
+    "landingReasonLocked": "These traveler details are already filled and protected. Contact us if you need to change them.",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"
@@ -5650,5 +5650,13 @@
       "provider": "Provider and location",
       "route": "Route and travel dates",
       "content": "Details and instructions"
+  },
+  "travelerDetailsReminder": {
+    "subject": "Your XSED trip: complete your companion details",
+    "preview": "Your XSED trip is within 72 hours. Some companion details are still missing.",
+    "heading": "Complete your companion details",
+    "body": "Your XSED trip departs within 72 hours, and some companion details are still missing. Open your trip to complete them or send an invitation.",
+    "fillEmpty": "Empty fields remain editable. Details already saved are protected; contact us if they need a correction.",
+    "cta": "OPEN MY TRIP"
   }
 }

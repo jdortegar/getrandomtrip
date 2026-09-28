@@ -1,5 +1,3 @@
-import type { TravelerStatus } from "@/types/traveler";
-
 /**
  * Client-side pre-check for a minor row's direct-save action. Mirrors the
  * server-side rule in `PATCH /api/travelers/[id]` (all three fields required
@@ -16,16 +14,4 @@ export function isMinorRowFilled(fields: {
     fields.dateOfBirth.trim() !== "" &&
     fields.idDocument.trim() !== ""
   );
-}
-
-/**
- * The adult row's ID/passport field is disabled while `INVITED` — the
- * companion is expected to supply it themselves via the invite link, and a
- * resend would overwrite any value the buyer typed in the meantime. It is
- * editable while `PENDING` (buyer fills the whole row directly, no invite
- * sent) and editable again once `COMPLETE` (pre-cutoff edits remain allowed
- * per spec, e.g. fixing a typo).
- */
-export function isAdultIdDocumentEditable(status: TravelerStatus): boolean {
-  return status !== "INVITED";
 }

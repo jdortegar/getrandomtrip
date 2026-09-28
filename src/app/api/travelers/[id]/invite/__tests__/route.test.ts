@@ -130,7 +130,7 @@ describe("POST /api/travelers/[id]/invite", () => {
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip }));
+    ).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip, fullName: "Saved Name", idDocument: "SAVED" }));
 
     const res = await POST(makeRequest(), makeProps("trav-1"));
     expect(res.status).toBe(403);
@@ -176,7 +176,7 @@ describe("POST /api/travelers/[id]/invite", () => {
     const res = await POST(makeRequest(), makeProps("trav-1"));
 
     expect(res.status).toBe(200);
-    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1");
+    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "PENDING");
     expect(sendTravelerInviteEmail).toHaveBeenCalledWith(
       "trav-1",
       "plaintext-token",
@@ -185,4 +185,15 @@ describe("POST /api/travelers/[id]/invite", () => {
     const body = await res.json();
     expect(body.traveler.status).toBe("INVITED");
   });
+});
+
+it("can invite an incomplete adult after cutoff", async () => {
+  vi.resetAllMocks();
+  vi.mocked(getServerSession).mockResolvedValue({ user: { id: "buyer-1" } });
+  vi.mocked(prisma.tripRequest.count).mockResolvedValue(1);
+  vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip }) as never);
+  vi.mocked(issueTravelerInvite).mockResolvedValue("late-token");
+  const { POST } = await import("../route");
+  expect((await POST(makeRequest(), makeProps("trav-1"))).status).toBe(200);
+  expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "late-token");
 });

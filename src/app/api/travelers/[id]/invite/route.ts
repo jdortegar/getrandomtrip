@@ -2,16 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { isRosterLocked, serializeTraveler } from "@/lib/travelers/travelerRoster";
+import {
+  isRosterLocked,
+  serializeTraveler,
+} from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerInviteEmail } from "@/lib/email";
+
+import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
+
+export const dynamic = "force-dynamic";
 
 /**
  * POST /api/travelers/[id]/invite — buyer sends or resends an invite email
  * for an ADULT row. Rotates the invite token in place (invalidating any
  * prior link) and flips the row to `INVITED`. Not applicable to MINOR rows
- * (no email field, no invite action) and rejected once the roster is locked.
+ * (no email field, no invite action). After cutoff, only incomplete rows
+ * can be invited; saved identity remains protected.
  */
 export async function POST(
   request: NextRequest,
@@ -40,7 +48,10 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    if (isRosterLocked(traveler.tripRequest)) {
+    if (
+      isRosterLocked(traveler.tripRequest) &&
+      !hasMissingTravelerDetails(traveler)
+    ) {
       return NextResponse.json({ error: "locked" }, { status: 403 });
     }
 
@@ -48,11 +59,11 @@ export async function POST(
       return NextResponse.json({ error: "not_adult" }, { status: 400 });
     }
 
-    if (!traveler.email) {
+    if (!traveler.email?.trim()) {
       return NextResponse.json({ error: "missing_email" }, { status: 400 });
     }
 
-    const plaintext = await issueTravelerInvite(traveler.id);
+    const plaintext = await issueTravelerInvite(traveler.id, traveler.status);
     sendTravelerInviteEmail(traveler.id, plaintext);
 
     const updated = await prisma.tripTraveler.findUnique({
@@ -61,6 +72,14 @@ export async function POST(
 
     return NextResponse.json({ traveler: serializeTraveler(updated!) });
   } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2025"
+    ) {
+      return NextResponse.json({ error: "conflict" }, { status: 409 });
+    }
     console.error("[travelers/[id]/invite] POST error:", error);
     return NextResponse.json(
       { error: "Internal server error" },

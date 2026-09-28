@@ -19,6 +19,7 @@ import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
 import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { useVerifiedCheckoutResult } from "@/lib/hooks/useVerifiedCheckoutResult";
 
 interface CheckoutResultSuccessProps {
@@ -55,6 +56,7 @@ export default function CheckoutResultSuccess({
   const [savingTravelers, setSavingTravelers] = useState(false);
 
   async function handleSaveTravelers() {
+    if (savingTravelers) return;
     setSavingTravelers(true);
     try {
       const allComplete = await rosterRef.current?.saveAll();
@@ -263,7 +265,7 @@ export default function CheckoutResultSuccess({
                 </Button>
                 {tripData?.trip.roster &&
                   tripData.trip.roster.cap > 0 &&
-                  !tripData.trip.roster.locked && (
+                  (!tripData.trip.roster.locked || tripData.trip.roster.travelers.some(hasMissingTravelerDetails)) && (
                     <Button
                       aria-busy={savingTravelers}
                       className="min-w-[280px]"

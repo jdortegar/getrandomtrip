@@ -2318,6 +2318,15 @@ export interface TripDetailDict {
   revealedHint: string;
 }
 
+export interface TravelerDetailsReminderDict {
+  subject: string;
+  preview: string;
+  heading: string;
+  body: string;
+  fillEmpty: string;
+  cta: string;
+}
+
 export interface InviteTravelersDict {
   eyebrow: string;
   heading: string;
@@ -3820,6 +3829,7 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  travelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
   tripperAttribution: TripperAttributionDict;
 }

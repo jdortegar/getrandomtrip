@@ -389,3 +389,23 @@ it("ignores stale verification results after the intent changes", async () => {
   expect(http).toHaveBeenCalledTimes(1);
   expect(container.querySelector('[data-testid="confetti"]')).toBeNull();
 });
+
+it("keeps Save and missing fields available after cutoff on paid XSED success", async () => {
+  const data = summary();
+  data.trip.type = "xsed";
+  data.trip.roster.locked = true;
+  data.trip.roster.travelers[0].idDocument = null;
+  http.mockResolvedValueOnce(Response.json({ ok: true })).mockResolvedValueOnce(Response.json(data));
+  await render();
+  const input = container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!;
+  expect(input.disabled).toBe(false);
+  expect(button(labels.saveTravelersAction)).toBeDefined();
+  act(() => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "PASSPORT");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  http.mockResolvedValueOnce(Response.json({ traveler: { ...traveler, status: "COMPLETE", idDocument: "PASSPORT" } }));
+  await act(async () => button(labels.saveTravelersAction).click());
+  expect(http).toHaveBeenLastCalledWith("/api/travelers/trav-1", expect.objectContaining({ method: "PATCH", body: JSON.stringify({ fullName: traveler.fullName, email: traveler.email, idDocument: "PASSPORT" }) }));
+  expect(input.disabled).toBe(true);
+});
