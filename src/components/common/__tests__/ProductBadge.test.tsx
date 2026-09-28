@@ -9,7 +9,8 @@ describe("ProductBadge", () => {
       const html = renderToStaticMarkup(<ProductBadge value={value} />);
       expect(html).toContain(">XSED</span>");
       expect(html).toContain("bg-xsed");
-      expect(html).toContain("text-neutral-900");
+      expect(html).toContain("text-white");
+      expect(html).not.toContain("text-neutral-900");
     },
   );
 
