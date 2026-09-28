@@ -31,3 +31,33 @@ export function hasMissingTravelerDetails(traveler: TravelerIdentity): boolean {
     traveler.kind === "MINOR" ? traveler.dateOfBirth : traveler.email,
   ].some((value) => !isTravelerFieldFilled(value));
 }
+
+/**
+ * Defensive read of `TripRequest.paxDetails` — missing or non-numeric
+ * `adults`/`minors` are treated as `0` rather than erroring. Row counts are
+ * fixed at payment success: one row per companion, i.e. `adults - 1` adult
+ * rows (the buyer themselves is not a row) and `minors` minor rows.
+ */
+export function computeTravelerCap(paxDetails: unknown): {
+  adultRows: number;
+  minorRows: number;
+} {
+  const raw =
+    paxDetails && typeof paxDetails === "object"
+      ? (paxDetails as Record<string, unknown>)
+      : {};
+
+  const adults =
+    typeof raw.adults === "number" && Number.isFinite(raw.adults)
+      ? raw.adults
+      : 0;
+  const minors =
+    typeof raw.minors === "number" && Number.isFinite(raw.minors)
+      ? raw.minors
+      : 0;
+
+  return {
+    adultRows: Math.max(0, adults - 1),
+    minorRows: Math.max(0, minors),
+  };
+}

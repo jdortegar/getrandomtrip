@@ -6,13 +6,19 @@ import es from "@/dictionaries/es.json";
 interface TravelerDetailsReminderProps {
   dashboardUrl: string;
   locale: "en" | "es";
+  variant?: "AUTOMATIC" | "MANUAL";
 }
 
 export default function TravelerDetailsReminder({
   dashboardUrl,
   locale,
+  variant = "AUTOMATIC",
 }: TravelerDetailsReminderProps) {
-  const copy = (locale === "en" ? en : es).travelerDetailsReminder;
+  const dictionary = locale === "en" ? en : es;
+  const copy =
+    variant === "MANUAL"
+      ? dictionary.manualTravelerDetailsReminder
+      : dictionary.travelerDetailsReminder;
   return (
     <EmailLayout locale={locale} preview={copy.preview}>
       <Heading>{copy.heading}</Heading>

@@ -7,6 +7,8 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { TripRequestDetails } from "@/components/app/admin/TripRequestDetails";
 import { TripFulfillmentHeader } from "@/components/app/admin/trip-fulfillment/TripFulfillmentHeader";
 import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripManagePanel";
+import { TripTravelersPanel } from "@/components/app/admin/trip-fulfillment/TripTravelersPanel";
+import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { useTripDocumentSource } from "@/components/app/admin/trip-fulfillment/useTripDocumentSource";
 import { DocumentSourceFeedback } from "@/components/app/admin/trip-fulfillment/DocumentSourceFeedback";
@@ -57,6 +59,9 @@ export function AdminTripFulfillmentPageClient({
 }: AdminTripFulfillmentPageClientProps) {
   const router = useRouter();
   const [trip, setTrip] = useState<AdminTripRequest | null>(null);
+  const [bookingTravelers, setBookingTravelers] = useState<AdminBookingTraveler[]>(
+    [],
+  );
   const attached = useAttachedDocuments(tripId);
   const { documents, replace: setDocuments } = attached;
   const dictionary = locale === "en" ? en : es;
@@ -99,8 +104,10 @@ export function AdminTripFulfillmentPageClient({
       const data = (await res.json()) as {
         tripRequest: AdminTripRequest;
         documents: TripDocumentDTO[];
+        bookingTravelers: AdminBookingTraveler[];
       };
       setTrip(data.tripRequest);
+      setBookingTravelers(data.bookingTravelers);
       setDocuments(data.documents);
       setDraft({
         experienceId: data.tripRequest.experienceId ?? "",
@@ -125,6 +132,13 @@ export function AdminTripFulfillmentPageClient({
       })
       .catch(() => setAssignableExperiences([]));
   }, [trip]);
+
+  async function refreshBookingTravelers() {
+    const response = await fetch(`/api/admin/trip-requests/${tripId}`);
+    if (!response.ok) throw new Error("travelers_refresh_failed");
+    const data = (await response.json()) as { bookingTravelers: AdminBookingTraveler[] };
+    setBookingTravelers(data.bookingTravelers);
+  }
 
   function statusLabel(status: TripRequestStatus): string {
     return dict.tripStatus[status];
@@ -194,6 +208,15 @@ export function AdminTripFulfillmentPageClient({
           paymentStatusLabels={paymentStatusLabels}
           statusLabel={statusLabel}
           trip={trip}
+        />
+
+        <TripTravelersPanel
+          copy={fulfillmentDict.travelers}
+          onRefresh={refreshBookingTravelers}
+          pax={trip.pax}
+          paxDetails={trip.paxDetails}
+          travelers={bookingTravelers}
+          tripId={trip.id}
         />
 
         {/* Section 1 — Trip & Booking: assignment/status controls (left)

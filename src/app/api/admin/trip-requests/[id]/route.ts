@@ -7,11 +7,18 @@ import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
+import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 import {
   sendDestinationRevealed,
   sendTripCancelled,
   sendTripCompleted,
 } from "@/lib/email";
+
+export const dynamic = "force-dynamic";
+
+function bookingText(value: unknown): string | null {
+  return typeof value === "string" ? value.trim() || null : null;
+}
 
 /**
  * Single fetch for the whole admin fulfillment page. Never status-gated —
@@ -44,7 +51,7 @@ export async function GET(
       return NextResponse.json({ error: "trip_not_found" }, { status: 404 });
     }
 
-    const [exp, payment, tripUser, documents] = await Promise.all([
+    const [exp, payment, tripUser, documents, travelers] = await Promise.all([
       trip.experienceId
         ? prisma.experience.findUnique({
             select: {
@@ -71,18 +78,81 @@ export async function GET(
         where: { tripRequestId: trip.id },
       }),
       prisma.user.findUnique({
-        select: { email: true, id: true, locale: true, name: true },
+        select: {
+          email: true,
+          id: true,
+          locale: true,
+          name: true,
+          phone: true,
+          address: true,
+        },
         where: { id: trip.userId },
       }),
       prisma.tripDocument.findMany({
         where: { tripRequestId: trip.id },
         orderBy: { createdAt: "desc" },
       }),
+      prisma.tripTraveler.findMany({
+        where: { tripRequestId: trip.id },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          kind: true,
+          fullName: true,
+          email: true,
+          idDocument: true,
+          dateOfBirth: true,
+        },
+      }),
     ]);
+
+    // Keep the shared relation serializer's user shape unchanged: address and
+    // phone belong only in this detail-only, explicitly projected DTO.
+    const user = tripUser && {
+      email: tripUser.email,
+      id: tripUser.id,
+      locale: tripUser.locale,
+      name: tripUser.name,
+    };
+    const address = tripUser?.address;
+    const bookingTravelers: AdminBookingTraveler[] = [
+      ...(tripUser
+        ? [
+            {
+              id: tripUser.id,
+              kind: "BOOKING_HOLDER" as const,
+              name: bookingText(tripUser.name),
+              email: bookingText(tripUser.email),
+              phone: bookingText(tripUser.phone),
+              dateOfBirth: null,
+              idDocument: bookingText(
+                address &&
+                  typeof address === "object" &&
+                  !Array.isArray(address)
+                  ? address.idDocument
+                  : null,
+              ),
+            },
+          ]
+        : []),
+      ...travelers.map((traveler) => ({
+        id: traveler.id,
+        kind: traveler.kind,
+        name: bookingText(traveler.fullName),
+        email: bookingText(traveler.email),
+        idDocument: bookingText(traveler.idDocument),
+        dateOfBirth:
+          traveler.kind === "MINOR"
+            ? (traveler.dateOfBirth?.toISOString().slice(0, 10) ?? null)
+            : null,
+        // The saved companion identity has no phone field or reliable account fallback.
+        phone: null,
+      })),
+    ];
 
     const [hydratedTripRequest] = attachAdminTripRequestRelations(
       [trip],
-      tripUser ? { [tripUser.id]: tripUser } : {},
+      user ? { [user.id]: user } : {},
       exp ? { [exp.id]: exp } : {},
       payment
         ? {
@@ -105,11 +175,15 @@ export async function GET(
         }
       : null;
 
-    return NextResponse.json({
-      tripRequest: hydratedTripRequest,
-      experienceItinerary,
-      documents: documents.map(toTripDocumentDTO),
-    });
+    return NextResponse.json(
+      {
+        tripRequest: hydratedTripRequest,
+        experienceItinerary,
+        documents: documents.map(toTripDocumentDTO),
+        bookingTravelers,
+      },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
   } catch (error) {
     console.error("Error fetching admin trip request:", error);
     return NextResponse.json(

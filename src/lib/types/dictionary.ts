@@ -2069,6 +2069,37 @@ export interface AdminUserEditPageDict {
 }
 
 export interface AdminTripFulfillmentDict {
+  travelers: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    /** Interpolated with {{count}} (expected travelers) and {{complete}}. */
+    count: string;
+    incomplete: string;
+    missingRecords: string;
+    extraRecords: string;
+    dateOfBirth: string;
+    reminder: {
+      send: string;
+      sending: string;
+      dailyNote: string;
+      sent: string;
+      alreadyComplete: string;
+      notEligible: string;
+      rosterNeedsReview: string;
+      failed: string;
+      refreshFailed: string;
+    };
+    bookingHolder: string;
+    adult: string;
+    minor: string;
+    name: string;
+    idDocument: string;
+    phone: string;
+    email: string;
+    notProvided: string;
+    phoneNotCollected: string;
+  };
   eyebrow: string;
   /** Interpolated with {{userName}}. */
   title: string;
@@ -3830,6 +3861,7 @@ export interface MarketingDictionary {
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;
+  manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
   tripperAttribution: TripperAttributionDict;
 }
