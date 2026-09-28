@@ -18,6 +18,7 @@ vi.mock("@/lib/prisma", () => ({
     experience: { findUnique: vi.fn(), findFirst: vi.fn() },
     payment: { findUnique: vi.fn() },
     tripDocument: { findMany: vi.fn() },
+    tripTraveler: { findMany: vi.fn() },
   },
 }));
 
@@ -63,6 +64,7 @@ function makeGetRequest(id: string): NextRequest {
 describe("GET /api/admin/trip-requests/[id]", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.mocked(prisma.tripTraveler.findMany).mockResolvedValue([]);
   });
 
   it("returns 401 with no session", async () => {

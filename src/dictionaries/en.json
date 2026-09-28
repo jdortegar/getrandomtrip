@@ -964,7 +964,7 @@
     "features": {
       "xsedCampaign": {
         "dateLabel": "Campaign start date",
-        "description": "Week 1 starts on this date and the number increases every 7 days, using Buenos Aires time. Before this date, week 1 is shown. Changes affect only the displayed number, not drops or booking windows.",
+        "description": "Edition 1 is the first Sunday on or after this date. The number follows the active or upcoming drop in the countdown and advances when the local Sunday purchase window closes. Before launch, edition 1 is shown. Changes affect only the displayed number, not drops or booking windows.",
         "errorSave": "Couldn't save the start date. Please try again.",
         "invalidDate": "Enter a valid start date.",
         "save": "Save date",
@@ -3959,6 +3959,36 @@
     }
   },
   "adminTripFulfillment": {
+    "travelers": {
+      "eyebrow": "Reservation details",
+      "title": "Travelers",
+      "description": "Required details: name and ID/passport, plus email for adults or date of birth for minors. Companion phone numbers are not collected.",
+      "count": "Complete details: {{complete}} of {{count}}",
+      "bookingHolder": "Booking holder",
+      "adult": "Adult companion",
+      "minor": "Minor companion",
+      "name": "Name",
+      "idDocument": "ID / passport",
+      "phone": "Phone",
+      "email": "Email",
+      "notProvided": "Not provided",
+      "phoneNotCollected": "Not collected",
+      "incomplete": "Travelers with incomplete details: {{count}}",
+      "missingRecords": "Companion records not yet created: {{count}}. These details still need to be provided.",
+      "extraRecords": "Extra companion records: {{count}}. Check the booking before making reservations.",
+      "dateOfBirth": "Date of birth",
+      "reminder": {
+        "send": "Request missing companion details",
+        "sending": "Sending reminder…",
+        "dailyNote": "Emails the booking holder to complete or invite companions. At most once per UTC calendar day; the next day starts at 00:00 UTC.",
+        "sent": "Reminder sent or already sent today.",
+        "alreadyComplete": "Companion details are already complete. No email was sent.",
+        "rosterNeedsReview": "No email was sent. Review the booking's adult/minor breakdown: the booking holder cannot complete all companions from their dashboard.",
+        "notEligible": "A reminder requires an approved payment and a future departure, and is unavailable for cancelled or completed trips.",
+        "failed": "Could not send the reminder. Please try again.",
+        "refreshFailed": "No email was sent: companion details are already complete, but the page could not refresh. Reload the page."
+      }
+    },
     "eyebrow": "Trip fulfillment",
     "title": "{{userName}}'s trip",
     "back": "Back to trips",
@@ -5650,6 +5680,14 @@
       "provider": "Provider and location",
       "route": "Route and travel dates",
       "content": "Details and instructions"
+  },
+  "manualTravelerDetailsReminder": {
+    "subject": "Complete your companion details",
+    "preview": "Help us prepare the reservations for your trip.",
+    "heading": "We need your companion details",
+    "body": "Some companion details are still missing from your trip. Please complete them so we can prepare your reservations.",
+    "fillEmpty": "Open your trip dashboard to fill in the missing details or invite your companions to complete their information.",
+    "cta": "Complete companion details"
   },
   "travelerDetailsReminder": {
     "subject": "Your XSED trip: complete your companion details",

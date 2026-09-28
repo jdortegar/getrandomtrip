@@ -2,8 +2,8 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { handleI18n } from "@/lib/i18n/middleware";
-import { pathWithoutLocale } from "@/lib/i18n/pathForLocale";
-import { LOCALES } from "@/lib/i18n/config";
+import { pathForLocale, pathWithoutLocale } from "@/lib/i18n/pathForLocale";
+import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
 import {
   COOKIE_MAX_AGE,
   GRT_TRIPPER_COOKIE,
@@ -21,10 +21,10 @@ import {
 } from "@/lib/tripper/attribution";
 
 // Variantes -> canónico (solo para path sin locale o con locale)
-const CANON_MAP: Record<string, string> = {
-  families: "family",
-  familia: "family",
-};
+const CANON_MAP = new Map([
+  ["families", "family"],
+  ["familia", "family"],
+]);
 
 function applyCanonRedirect(req: NextRequest): NextResponse | null {
   const pathname = pathWithoutLocale(req.nextUrl.pathname);
@@ -38,15 +38,17 @@ function applyCanonRedirect(req: NextRequest): NextResponse | null {
   const type = parts[typeIndex];
   if (!type) return null;
 
-  const target = CANON_MAP[type];
+  const target = CANON_MAP.get(type);
   if (!target || target === type) return null;
 
   parts[typeIndex] = target;
   const newPath = "/" + parts.join("/");
-  // If request had locale prefix, preserve it
+  // Keep English prefixed and send Spanish directly to its unprefixed URL.
   const first = req.nextUrl.pathname.split("/").filter(Boolean)[0];
-  const hasLocale = first && LOCALES.includes(first as "es" | "en");
-  url.pathname = hasLocale ? `/${first}${newPath}` : newPath;
+  url.pathname = pathForLocale(
+    hasLocale(first) ? first : DEFAULT_LOCALE,
+    newPath,
+  );
   url.search = search;
   url.hash = hash;
   return NextResponse.redirect(url, 308);
@@ -140,9 +142,8 @@ export async function applyAttribution(
 }
 
 export async function proxy(req: NextRequest) {
-  const i18nResponse = handleI18n(req);
-  const canonResponse = i18nResponse ? null : applyCanonRedirect(req);
-  const res = i18nResponse ?? canonResponse ?? NextResponse.next();
+  // Locale continuations/rewrites also return a response, so aliases go first.
+  const res = applyCanonRedirect(req) ?? handleI18n(req) ?? NextResponse.next();
 
   await applyAttribution(req, res);
 

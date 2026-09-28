@@ -104,7 +104,7 @@ describe("TripFulfillmentHeader — type/level chip dedup", () => {
     );
     expect(chips).toHaveLength(1);
     expect(chips[0].classList.contains("bg-xsed")).toBe(true);
-    expect(chips[0].classList.contains("text-neutral-900")).toBe(true);
+    expect(chips[0].classList.contains("text-white")).toBe(true);
   });
 
   it("deduplicates mixed-case XSED markers and brands a distinct XSED level", () => {

@@ -13,7 +13,7 @@ export function ProductBadge({ value }: ProductBadgeProps) {
       className={cn(
         "border font-medium inline-flex items-center px-2 py-0.5 rounded-[6px] text-[11px] whitespace-nowrap",
         isXsed
-          ? "bg-xsed border-xsed text-neutral-900"
+          ? "bg-xsed border-xsed text-white"
           : "bg-sky-50 border-sky-200 text-sky-700",
       )}
     >

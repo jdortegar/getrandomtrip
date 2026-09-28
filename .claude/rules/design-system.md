@@ -262,7 +262,7 @@ Manual chip style when needed outside the component:
 
 Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip treatment.
 
-Existing XSED category badges/chips use `<ProductBadge value={label} />`. It uppercases only the exact product marker and uses `bg-xsed` with `text-neutral-900` for readable small text; orange with white or Ink text fails AA. This is a **badge-only** treatment: never wrap navigation, headings, tabs, prose, or plain summary/level text. Keep translated TGIS labels and free-form content unchanged. Do not use the legacy red `xsed-50`–`xsed-800` scale for orange branding.
+Existing XSED category badges/chips use `<ProductBadge value={label} />`. It uppercases only the exact product marker and uses `bg-xsed` with `text-white`, as explicitly requested. White text on the existing orange does not meet WCAG AA for small text. This is a **badge-only** treatment: never wrap navigation, headings, tabs, prose, or plain summary/level text. Keep translated TGIS labels and free-form content unchanged. Do not use the legacy red `xsed-50`–`xsed-800` scale for orange branding.
 
 ### Toggleable filter chip (viewer clicks to select/deselect)
 

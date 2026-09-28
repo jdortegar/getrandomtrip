@@ -404,7 +404,7 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
     if (!owner) return {};
 
 
-    const packages = (await (prisma.experience.findMany as any)({
+    const packages = await prisma.experience.findMany({
       where: {
         ownerId: tripperId,
         isActive: true,
@@ -425,23 +425,13 @@ export async function getTripperExperiencesByTypeAndLevel(tripperId: string) {
         pricingByType: true,
       },
       orderBy: [{ type: "asc" }, { level: "asc" }, { title: "asc" }],
-    })) as Array<{
-      id: string;
-      type: string[];
-      level: string | null;
-      title: string;
-      teaser: string;
-      heroImage: string;
-      tags: string[];
-      activities: unknown;
-      excuseKey: string | null;
-      destinationCountry: string;
-      destinationCity: string;
-      pricingByType: Record<string, number> | null;
-    }>;
+    });
 
     // Group packages by type and level
-    const packagesByType: Record<string, Record<string, any[]>> = {};
+    const packagesByType: Record<
+      string,
+      Record<string, (typeof packages)[number][]>
+    > = {};
 
     packages.forEach((pkg) => {
       const { type, level } = pkg;

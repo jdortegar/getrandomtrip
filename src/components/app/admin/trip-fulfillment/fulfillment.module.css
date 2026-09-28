@@ -778,3 +778,13 @@
     width: 100%;
   }
 }
+
+/* Localized reminder labels must wrap inside narrow traveler panels. */
+.travelerReminderButton {
+  height: auto;
+  max-width: 100%;
+  min-height: 40px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  white-space: normal;
+}

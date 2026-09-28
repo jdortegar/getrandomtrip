@@ -25,7 +25,7 @@ describe("siteSettings", () => {
     vi.clearAllMocks();
   });
 
-  it("reads the persisted date and calculates the campaign week independently", async () => {
+  it("reads the persisted date and seeds the upcoming edition after Sunday's window", async () => {
     vi.mocked(prisma.siteSetting.findUnique).mockResolvedValue({
       id: GLOBAL_ID,
       gateEnabled: false,
@@ -34,7 +34,7 @@ describe("siteSettings", () => {
       updatedAt: new Date(),
     });
     expect(
-      await getXsedCampaignCounter(new Date("2026-10-04T03:00:00Z")),
+      await getXsedCampaignCounter(new Date("2026-09-28T15:00:00Z")),
     ).toEqual({
       startDate: "2026-09-27",
       weekNumber: 2,

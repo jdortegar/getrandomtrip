@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
 import { AdminTripFulfillmentPageClient } from "../AdminTripFulfillmentPageClient";
+import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 import type { TripDocumentSourceSelection } from "@/lib/types/TripDocumentSource";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/components/app/admin/TripRequestDetails", () => ({
@@ -52,6 +53,7 @@ const trip = {
   experienceId: "A" as string | null,
   status: "PENDING_PAYMENT",
   type: "couple",
+  pax: 1,
   tripperId: null,
   actualDestination: "Saved city",
 };
@@ -77,6 +79,16 @@ const fetchMock = vi.fn();
 let root: Root;
 let host: HTMLDivElement;
 let savedTrip = trip;
+const buyer: AdminBookingTraveler = {
+  id: "buyer",
+  kind: "BOOKING_HOLDER",
+  name: "Test Buyer",
+  idDocument: "BOOKING-ID",
+  phone: null,
+  email: "buyer@example.test",
+  dateOfBirth: null,
+};
+let bookingTravelers: AdminBookingTraveler[];
 function page(tripId = "trip", locale = "en") {
   return (
     <AdminTripFulfillmentPageClient
@@ -91,6 +103,7 @@ function page(tripId = "trip", locale = "en") {
 }
 beforeEach(async () => {
   savedTrip = trip;
+  bookingTravelers = [buyer];
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -118,6 +131,7 @@ beforeEach(async () => {
     if (init?.method === "PATCH") return response({});
     return response({
       tripRequest: savedTrip,
+      bookingTravelers,
       experienceItinerary: itinerary("A"),
       documents: [],
     });
@@ -183,6 +197,7 @@ it("keeps PDF editor mounted through explicit trip Save", async () => {
   await select("fulfillment-trip-status", "CONFIRMED");
   await act(async () => button(en.adminTripFulfillment.save).click());
   expect(host.textContent).toContain("Manual PDF edit");
+  expect(host.textContent).toContain("BOOKING-ID");
 });
 it.each([null, "A"])(
   "does not rewrite unchanged assignment %s on status-only Save",
@@ -257,4 +272,53 @@ it("shows Save progress, prevents duplicate writes, and preserves local edits af
   expect(host.textContent).toContain("B day");
   expect(button(en.adminTripFulfillment.save).disabled).toBe(false);
   expect(host.textContent).toContain(en.adminTripFulfillment.errors.generic);
+});
+
+it("renders traveler details before the summary and the itinerary", () => {
+  const travelers = host.querySelector(
+    '[data-component="TripTravelersPanel"]',
+  )!;
+  expect(travelers).not.toBeNull();
+  expect(travelers.textContent).toContain("BOOKING-ID");
+  expect(
+    travelers.compareDocumentPosition(
+      host.querySelector("[data-details-locale]")!,
+    ) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(
+    travelers.compareDocumentPosition(
+      host.querySelector('[data-component="TripItineraryReference"]')!,
+    ) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+});
+
+it("refreshes completed companion details without discarding unsaved status or experience", async () => {
+  savedTrip = { ...trip, pax: 2 };
+  bookingTravelers = [
+    buyer,
+    { ...buyer, id: "companion", kind: "ADULT", name: null },
+  ];
+  await act(async () => root.render(page("with-companion")));
+  await select("fulfillment-trip-status", "CONFIRMED");
+  await select("fulfillment-trip-experience", "B");
+  bookingTravelers = [
+    buyer,
+    { ...buyer, id: "companion", kind: "ADULT", name: "Now Complete" },
+  ];
+  fetchMock.mockResolvedValueOnce(response({ status: "already_complete" }));
+  await act(async () =>
+    button(en.adminTripFulfillment.travelers.reminder.send).click(),
+  );
+  expect(host.textContent).toContain("Now Complete");
+  expect(
+    host.querySelector<HTMLSelectElement>("#fulfillment-trip-status")?.value,
+  ).toBe("CONFIRMED");
+  expect(
+    host.querySelector<HTMLSelectElement>("#fulfillment-trip-experience")
+      ?.value,
+  ).toBe("B");
+  expect(host.textContent).toContain("B day");
+  expect(
+    fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH"),
+  ).toBe(false);
 });

@@ -2,31 +2,12 @@ import { prisma } from "@/lib/prisma";
 import type { TravelerKind } from "@prisma/client";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 
-import { hasMissingTravelerDetails, rosterCutoffMs } from "./travelerPolicy";
-export { ROSTER_CUTOFF_MS } from "./travelerPolicy";
-
-/**
- * Defensive read of `TripRequest.paxDetails` — missing or non-numeric
- * `adults`/`minors` are treated as `0` rather than erroring. Row counts are
- * fixed at payment success: one row per companion, i.e. `adults - 1` adult
- * rows (the buyer themselves is not a row) and `minors` minor rows.
- */
-export function computeTravelerCap(
-  paxDetails: unknown,
-): { adultRows: number; minorRows: number } {
-  const raw =
-    paxDetails && typeof paxDetails === "object"
-      ? (paxDetails as Record<string, unknown>)
-      : {};
-
-  const adults = typeof raw.adults === "number" && Number.isFinite(raw.adults) ? raw.adults : 0;
-  const minors = typeof raw.minors === "number" && Number.isFinite(raw.minors) ? raw.minors : 0;
-
-  return {
-    adultRows: Math.max(0, adults - 1),
-    minorRows: Math.max(0, minors),
-  };
-}
+import {
+  computeTravelerCap,
+  hasMissingTravelerDetails,
+  rosterCutoffMs,
+} from "./travelerPolicy";
+export { computeTravelerCap, ROSTER_CUTOFF_MS } from "./travelerPolicy";
 
 /**
  * The cutoff protects populated fields only. For XSED, legacy T-7d stamps
