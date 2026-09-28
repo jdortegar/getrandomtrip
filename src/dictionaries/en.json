@@ -964,7 +964,7 @@
     "features": {
       "xsedCampaign": {
         "dateLabel": "Campaign start date",
-        "description": "Week 1 starts on this date and the number increases every 7 days, using Buenos Aires time. Before this date, week 1 is shown. Changes affect only the displayed number, not drops or booking windows.",
+        "description": "Edition 1 is the first Sunday on or after this date. The number follows the active or upcoming drop in the countdown and advances when the local Sunday purchase window closes. Before launch, edition 1 is shown. Changes affect only the displayed number, not drops or booking windows.",
         "errorSave": "Couldn't save the start date. Please try again.",
         "invalidDate": "Enter a valid start date.",
         "save": "Save date",

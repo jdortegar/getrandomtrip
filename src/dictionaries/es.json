@@ -964,7 +964,7 @@
     "features": {
       "xsedCampaign": {
         "dateLabel": "Fecha de inicio de la campaña",
-        "description": "La semana 1 comienza en esta fecha y el número aumenta cada 7 días, según la hora de Buenos Aires. Antes de esa fecha se muestra la semana 1. El cambio solo afecta al número visible, no a los drops ni a los horarios de compra.",
+        "description": "La edición 1 corresponde al primer domingo a partir de esta fecha. El número sigue el drop activo o próximo de la cuenta regresiva y avanza cuando cierra la ventana de compra del domingo en la hora local. Antes del lanzamiento se muestra la edición 1. El cambio solo afecta al número visible, no a los drops ni a los horarios de compra.",
         "errorSave": "No se pudo guardar la fecha de inicio. Inténtalo de nuevo.",
         "invalidDate": "Introduce una fecha de inicio válida.",
         "save": "Guardar fecha",

@@ -108,18 +108,23 @@ export type SupportedTimezone = (typeof SUPPORTED_TIMEZONES)[number];
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
-/** Returns what weekday (0=Sun) and hour it currently is in `tz`. */
+/** Returns the calendar date, weekday (0=Sun) and hour in `tz`. */
 function getLocalInfo(
   tz: string,
   date: Date,
-): { weekday: number; hour: number } {
+): { calendarDate: string; weekday: number; hour: number } {
   const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
     timeZone: tz,
     weekday: "short",
+    year: "numeric",
     hour: "numeric",
-    hour12: false,
+    hourCycle: "h23",
   }).formatToParts(date);
   const wd = parts.find((p) => p.type === "weekday")?.value ?? "Mon";
+  const part = (type: "year" | "month" | "day") =>
+    parts.find((entry) => entry.type === type)!.value;
   const weekdayMap: Record<string, number> = {
     Sun: 0,
     Mon: 1,
@@ -130,6 +135,7 @@ function getLocalInfo(
     Sat: 6,
   };
   return {
+    calendarDate: `${part("year").padStart(4, "0")}-${part("month")}-${part("day")}`,
     weekday: weekdayMap[wd] ?? 1,
     hour: Number(parts.find((p) => p.type === "hour")?.value ?? 0),
   };
@@ -167,22 +173,21 @@ function getNextDropDayLocalHour(
   targetHour: number,
   now = new Date(),
 ): Date {
-  // Anchor to noon UTC first so the local weekday check and the date arithmetic
-  // operate on the same calendar day — fixes the off-by-one when local and UTC
-  // dates differ (e.g. late Friday night locally = Saturday UTC).
-  const noonUTC = new Date(now);
-  noonUTC.setUTCHours(12, 0, 0, 0);
+  // Anchor arithmetic to the local date, even when UTC is already Monday.
+  const { calendarDate, weekday, hour } = getLocalInfo(tz, now);
+  const noonUTC = new Date(`${calendarDate}T12:00:00Z`);
 
   // Hours >= 24 mean the target rolls into the next calendar day (e.g. 24 = midnight).
   const overflowDays = Math.floor(targetHour / 24);
   const actualHour = targetHour % 24;
   const targetDay = (DROP_DAY_OF_WEEK + overflowDays) % 7;
 
-  const { weekday } = getLocalInfo(tz, noonUTC);
-  const daysUntilDrop = (targetDay - weekday + 7) % 7;
+  let daysUntilDrop = (targetDay - weekday + 7) % 7;
+  if (daysUntilDrop === 0 && hour >= actualHour) daysUntilDrop = 7;
 
   noonUTC.setUTCDate(noonUTC.getUTCDate() + daysUntilDrop);
 
+  // Resolve the offset after selecting the week, since DST may change by then.
   const offsetHours = getUtcOffsetHours(tz, noonUTC);
   // actualHour local  =  actualHour - offsetHours  UTC
   let utcHour = actualHour - offsetHours;
@@ -196,11 +201,6 @@ function getNextDropDayLocalHour(
     utcHour += 24;
   }
   target.setUTCHours(utcHour, 0, 0, 0);
-
-  // If the result is in the past, jump to the following drop day
-  if (target <= now) {
-    target.setUTCDate(target.getUTCDate() + 7);
-  }
 
   return target;
 }
@@ -286,8 +286,7 @@ export function isWithinServerOuterBoundary(date = new Date()): boolean {
 export function getNotifyTargetUtcOffset(date = new Date()): number | null {
   const day = date.getUTCDay();
   const nextDay = (DROP_DAY_OF_WEEK + 1) % 7;
-  const dayOffset =
-    day === DROP_DAY_OF_WEEK ? 0 : day === nextDay ? 24 : null;
+  const dayOffset = day === DROP_DAY_OF_WEEK ? 0 : day === nextDay ? 24 : null;
   if (dayOffset === null) return null;
   const target = LOCAL_WINDOW_START_HOUR - 1 - (date.getUTCHours() + dayOffset);
   return target < 0 && target >= -12 ? target : null;

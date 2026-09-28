@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
 import { useDictionary } from "@/hooks/useDictionary";
+import { useXsedSoldCount } from "@/lib/hooks/useXsedSoldCount";
 import { getXsedCampaignWeek } from "@/lib/xsed/campaign";
+import { timezoneToCountry } from "@/lib/xsed/country-tz";
 import {
   computeTimeLeft,
   formatTargetDate,
@@ -59,7 +61,6 @@ export function CountDown({
   locale,
   campaignStartDate,
   initialWeekNumber,
-  soldCount: soldCountProp,
   totalSlots: totalSlotsProp,
   dropSlug,
 }: CountDownProps) {
@@ -75,8 +76,14 @@ export function CountDown({
   const [time, setTime] = useState(() =>
     computeTimeLeft(getCountdownTarget(null)),
   );
-  const [soldCount, setSoldCount] = useState(soldCountProp);
-  const [totalSlots, setTotalSlots] = useState(totalSlotsProp);
+  const countryCount = useXsedSoldCount(
+    dropSlug,
+    timezoneToCountry(tz),
+    phase === "open" ? target.toISOString() : null,
+  );
+  // The SSR count is global, so never render it as a country's inventory.
+  const soldCount = countryCount?.displayedSold ?? 0;
+  const totalSlots = countryCount?.totalSlots ?? totalSlotsProp;
 
   // Synchronize the browser timezone after hydration, before the first tick.
   useEffect(() => {
@@ -86,7 +93,7 @@ export function CountDown({
       const now = new Date();
       const newPhase = isLocalWindowOpen(resolvedTz, now) ? "open" : "waiting";
       const newTarget = getCountdownTarget(resolvedTz, now);
-      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now));
+      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now, resolvedTz));
       setTz(detected);
       setPhase(newPhase);
       setTarget(newTarget);
@@ -98,14 +105,14 @@ export function CountDown({
   useEffect(() => {
     const id = setInterval(() => {
       const now = new Date();
-      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now));
       const resolvedTz = tz ?? "America/Argentina/Buenos_Aires";
+      setWeekNumber(getXsedCampaignWeek(campaignStartDate, now, resolvedTz));
 
       // Re-evaluate phase on every tick — detects transitions without page reload
       const currentPhase = isLocalWindowOpen(resolvedTz, now)
         ? "open"
         : "waiting";
-      if (currentPhase !== phase) {
+      if (currentPhase !== phase || target <= now) {
         const newTarget = getCountdownTarget(resolvedTz, now);
         setPhase(currentPhase);
         setTarget(newTarget);
@@ -118,39 +125,6 @@ export function CountDown({
 
     return () => clearInterval(id);
   }, [campaignStartDate, target, phase, tz]);
-
-  // Poll sold count from server every 30s while window is open
-  useEffect(() => {
-    if (phase !== "open" || !dropSlug) return;
-
-    let stopped = false;
-
-    async function poll() {
-      try {
-        const res = await fetch(`/api/xsed/drops/${dropSlug}/sold-count`);
-        if (!res.ok || stopped) return;
-        const data = (await res.json()) as {
-          displayedSold: number;
-          totalSlots: number;
-          isSoldOut: boolean;
-        };
-        setSoldCount(data.displayedSold);
-        setTotalSlots(data.totalSlots);
-        if (data.isSoldOut) stopped = true;
-      } catch {
-        // network error — skip this tick
-      }
-    }
-
-    poll();
-    const id = setInterval(() => {
-      if (!stopped) poll();
-    }, 30_000);
-    return () => {
-      stopped = true;
-      clearInterval(id);
-    };
-  }, [phase, dropSlug]);
 
   const pct =
     totalSlots > 0 ? Math.min(100, (soldCount / totalSlots) * 100) : 0;
@@ -244,7 +218,7 @@ export function CountDown({
       </motion.div>
 
       {/* Progress bar */}
-      {phase === "open" && (
+      {phase === "open" && countryCount && (
         <motion.div
           className="mx-auto mt-8 max-w-xs"
           initial={{ opacity: 0 }}

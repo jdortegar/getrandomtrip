@@ -1,13 +1,9 @@
+import { getCountdownTarget } from "@/lib/xsed/window";
+
 export const DEFAULT_XSED_CAMPAIGN_START_DATE = "2026-09-27";
 export const XSED_CAMPAIGN_TIME_ZONE = "America/Argentina/Buenos_Aires";
 
 const DAY_MS = 86_400_000;
-const campaignDateFormatter = new Intl.DateTimeFormat("en-US", {
-  day: "2-digit",
-  month: "2-digit",
-  timeZone: XSED_CAMPAIGN_TIME_ZONE,
-  year: "numeric",
-});
 
 /** A real Gregorian date, with no time or timezone component. */
 export function isCampaignDate(value: unknown): value is string {
@@ -24,20 +20,27 @@ export function isCampaignDate(value: unknown): value is string {
   );
 }
 
-/** Campaign numbering is independent of each country's purchase window. */
+/** Number the active/upcoming Sunday shown by the countdown, not elapsed weeks. */
 export function getXsedCampaignWeek(
   startDate: string,
   now = new Date(),
+  timeZone = XSED_CAMPAIGN_TIME_ZONE,
 ): number {
   if (!isCampaignDate(startDate))
     throw new RangeError("Invalid campaign start date");
 
-  const parts = campaignDateFormatter.formatToParts(now);
+  const target = getCountdownTarget(timeZone, now);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  }).formatToParts(target);
   const part = (type: "year" | "month" | "day") =>
     parts.find((entry) => entry.type === type)!.value;
   const localDate = `${part("year").padStart(4, "0")}-${part("month")}-${part("day")}`;
-  // UTC here represents calendar-day ordinals, not the campaign's midnight.
-  // This avoids DST, browser timezone and elapsed-hour rounding differences.
+  // Calendar-day ordinals avoid DST rounding; the first Sunday on or after
+  // the configured date is edition 1. Pre-launch editions stay clamped to 1.
   const days =
     (Date.parse(`${localDate}T00:00:00Z`) -
       Date.parse(`${startDate}T00:00:00Z`)) /

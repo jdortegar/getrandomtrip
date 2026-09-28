@@ -26,20 +26,41 @@ describe("XSED drop window (Sunday 18:00–22:00 local)", () => {
       getCountdownTarget(BUENOS_AIRES, new Date("2026-09-27T22:00:00Z")),
     ).toEqual(new Date("2026-09-28T01:00:00Z"));
   });
+
+  it.each([
+    [BUENOS_AIRES, "2026-09-27T03:00:00Z", "2026-09-27T21:00:00Z"],
+    [BUENOS_AIRES, "2026-09-28T00:59:59Z", "2026-09-28T01:00:00Z"],
+    [BUENOS_AIRES, "2026-09-28T01:00:00Z", "2026-10-04T21:00:00Z"],
+    ["America/Mexico_City", "2026-09-28T03:59:59Z", "2026-09-28T04:00:00Z"],
+    ["America/Mexico_City", "2026-09-28T04:00:00Z", "2026-10-05T00:00:00Z"],
+    ["America/Santiago", "2026-08-31T02:00:00Z", "2026-09-06T21:00:00Z"],
+    ["America/Tijuana", "2026-10-26T05:00:00Z", "2026-11-02T02:00:00Z"],
+    [BUENOS_AIRES, "2026-12-28T01:00:00Z", "2027-01-03T21:00:00Z"],
+  ])("keeps the local Sunday target in %s at %s", (tz, instant, target) => {
+    expect(getCountdownTarget(tz, new Date(instant))).toEqual(new Date(target));
+  });
 });
 
 describe("isWithinServerOuterBoundary covers every supported timezone", () => {
   it("opens by 18:00 in the easternmost zone (Noronha, UTC-2)", () => {
-    expect(isLocalWindowOpen("America/Noronha", new Date("2026-09-27T20:00:00Z"))).toBe(true);
-    expect(isWithinServerOuterBoundary(new Date("2026-09-27T20:00:00Z"))).toBe(true);
-    expect(isWithinServerOuterBoundary(new Date("2026-09-27T19:59:00Z"))).toBe(false);
+    expect(
+      isLocalWindowOpen("America/Noronha", new Date("2026-09-27T20:00:00Z")),
+    ).toBe(true);
+    expect(isWithinServerOuterBoundary(new Date("2026-09-27T20:00:00Z"))).toBe(
+      true,
+    );
+    expect(isWithinServerOuterBoundary(new Date("2026-09-27T19:59:00Z"))).toBe(
+      false,
+    );
   });
 
   it("stays open until 22:00 in the westernmost zone (Tijuana, UTC-8 in winter)", () => {
     const lastMinute = new Date("2026-12-07T05:59:00Z"); // Sun 21:59 in Tijuana
     expect(isLocalWindowOpen("America/Tijuana", lastMinute)).toBe(true);
     expect(isWithinServerOuterBoundary(lastMinute)).toBe(true);
-    expect(isWithinServerOuterBoundary(new Date("2026-12-07T06:00:00Z"))).toBe(false);
+    expect(isWithinServerOuterBoundary(new Date("2026-12-07T06:00:00Z"))).toBe(
+      false,
+    );
   });
 });
 
