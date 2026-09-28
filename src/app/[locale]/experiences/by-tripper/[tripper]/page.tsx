@@ -17,8 +17,8 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 // Helper function to get duration and activity ranges based on level
-function getLevelInfo(level: string) {
-  const levelData = getLevelById(undefined, level);
+function getLevelInfo(level: string | null) {
+  const levelData = level ? getLevelById(undefined, level) : undefined;
   if (!levelData) {
     return { duration: "2-3 días", activities: "1-2 actividades" };
   }
@@ -212,6 +212,9 @@ export default async function Page(props: {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {experiences.map((pkg) => {
                       const levelInfo = getLevelInfo(pkg.level);
+                      const excuseKey = pkg.excuseKey
+                        .find((key) => key.trim())
+                        ?.trim();
                       return (
                         <div
                           key={pkg.id}
@@ -223,8 +226,8 @@ export default async function Page(props: {
                           <div className="relative h-56 w-full">
                             <Image
                               src={
-                                pkg.excuseKey
-                                  ? getExcuseImage(pkg.excuseKey)
+                                excuseKey
+                                  ? getExcuseImage(excuseKey)
                                   : pkg.heroImage ||
                                     "/images/fallback-package.jpg"
                               }
@@ -247,8 +250,8 @@ export default async function Page(props: {
 
                             {/* Excuse as title */}
                             <h3 className="text-xl font-bold text-ink mb-2">
-                              {pkg.excuseKey
-                                ? getExcuseTitle(pkg.excuseKey)
+                              {excuseKey
+                                ? getExcuseTitle(excuseKey)
                                 : "Paquete Sorpresa"}
                             </h3>
 
