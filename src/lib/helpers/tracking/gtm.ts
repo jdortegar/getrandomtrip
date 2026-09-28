@@ -2,13 +2,8 @@
 
 import { sanitizeEvent } from "./privacy";
 import { currentAnalyticsPage } from "./runtime";
+import type { CommerceValue } from "./commerce";
 
-export interface PurchaseItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-}
 export type GTMEvents = { event: string; [key: string]: unknown };
 const sentPurchases = new Set<string>();
 
@@ -19,10 +14,18 @@ export function trackCustomEvent(data: GTMEvents): boolean {
     !page ||
     !safe ||
     (page.purchaseOnly && safe.event !== "purchase") ||
-    (!page.purchaseOnly && safe.event === "purchase")
+    (!page.purchaseOnly && safe.event === "purchase") ||
+    (page.commerceOnly &&
+      !["begin_checkout", "add_payment_info"].includes(String(safe.event))) ||
+    (!page.commerceOnly &&
+      ["begin_checkout", "add_payment_info"].includes(String(safe.event)))
   )
     return false;
-  const { purchaseOnly: _purchaseOnly, ...fields } = page;
+  const {
+    purchaseOnly: _purchaseOnly,
+    commerceOnly: _commerceOnly,
+    ...fields
+  } = page;
   window.dataLayer = window.dataLayer ?? [];
   // Clear event-specific values so GTM does not reuse a previous event's fields.
   window.dataLayer.push({
@@ -35,6 +38,8 @@ export function trackCustomEvent(data: GTMEvents): boolean {
     transaction_id: null,
     value: null,
     currency: null,
+    items: null,
+    payment_type: null,
     ...fields,
     ...safe,
   });
@@ -54,12 +59,11 @@ export function trackButtonClick(_label: string): void {
   /* Free-text click labels are intentionally not collected. */
 }
 
-export function trackPurchase(params: {
-  transaction_id: string;
-  value: number;
-  currency?: string;
-  items?: PurchaseItem[];
-}): boolean {
+export function trackPurchase(
+  params: CommerceValue & {
+    transaction_id: string;
+  },
+): boolean {
   const key = `rt-purchase-${params.transaction_id}`;
   try {
     if (window.localStorage.getItem(key) === "1") return false;

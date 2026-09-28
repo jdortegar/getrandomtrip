@@ -53,13 +53,29 @@ describe("analytics privacy boundary", () => {
         transaction_id: "pi_Abc123",
         value: 123.45,
         currency: "USD",
-        items: [{ name: "private" }],
+        items: [
+          {
+            item_id: "trip-solo",
+            item_name: "private",
+            quantity: 1,
+            price: 123.45,
+          },
+        ],
       }),
     ).toEqual({
       event: "purchase",
       transaction_id: "pi_Abc123",
       value: 123.45,
       currency: "USD",
+      items: [
+        {
+          item_id: "trip-solo",
+          item_name: "Solo trip",
+          item_category: "solo",
+          quantity: 1,
+          price: 123.45,
+        },
+      ],
     });
     expect(
       sanitizeEvent({

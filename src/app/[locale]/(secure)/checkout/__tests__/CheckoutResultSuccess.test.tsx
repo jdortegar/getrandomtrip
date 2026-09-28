@@ -2,6 +2,7 @@ vi.mock("@/lib/helpers/tracking/gtm", () => ({
   trackPurchase: vi.fn(),
   trackButtonClick: vi.fn(),
 }));
+import { saveAnalyticsConsent } from "@/lib/helpers/tracking/consent";
 import { trackPurchase } from "@/lib/helpers/tracking/gtm";
 import { act, type ComponentProps } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -94,6 +95,12 @@ function button(name: string) {
 }
 beforeEach(() => {
   vi.mocked(trackPurchase).mockClear();
+  const storage = new Map<string, string>();
+  Object.defineProperty(window, "localStorage", { configurable: true, value: {
+    getItem: (key: string) => storage.get(key) ?? null,
+    setItem: (key: string, value: string) => storage.set(key, value),
+  } });
+  saveAnalyticsConsent("granted");
   navigation.query = "payment_intent=pi_query&redirect_status=succeeded";
   navigation.push.mockReset();
   http.mockReset().mockImplementation(async (url) => {
@@ -313,11 +320,25 @@ it.each([
     if (expected)
       expect(trackPurchase).toHaveBeenCalledWith({
         transaction_id: "pi_query",
+        items: [{ item_id: "trip-solo", item_name: "Solo trip", item_category: "solo", quantity: 1, price: 250 }],
         value: 250,
         currency: "USD",
       });
   },
 );
+
+it("emits verified purchase when consent is granted later on the same success page", async () => {
+  saveAnalyticsConsent("denied");
+  http.mockResolvedValueOnce(Response.json({ status: "succeeded" }))
+    .mockResolvedValueOnce(Response.json(summary()));
+  await render();
+  expect(trackPurchase).not.toHaveBeenCalled();
+  act(() => saveAnalyticsConsent("granted"));
+  expect(trackPurchase).toHaveBeenCalledTimes(1);
+  expect(trackPurchase).toHaveBeenCalledWith(expect.objectContaining({
+    transaction_id: "pi_query", value: 250, items: [expect.objectContaining({ item_id: "trip-solo" })],
+  }));
+});
 
 
 it.each(["PENDING", "FAILED", "CANCELLED"])("never shows paid summary or confetti for %s payment", async (status) => {

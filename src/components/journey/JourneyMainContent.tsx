@@ -4,6 +4,7 @@ import { isTripStartDateEligible } from "@/lib/helpers/tripCalendarDate";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
+import { trackProductSelection, useProductView } from "@/lib/hooks/useCommerceTracking";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -202,6 +203,7 @@ export default function JourneyMainContent({
   const { filters, setPartial } = useStore();
 
   const url = useJourneySearchParams(searchParams);
+  useProductView(url.travelType);
   const draftDetails = useJourneyDraftDetails(
     activeTab,
     {
@@ -370,6 +372,7 @@ export default function JourneyMainContent({
   ]);
 
   const handleTravelTypeSelect = (slug: string) => {
+    if (slug !== url.travelType) trackProductSelection(slug);
     // For group/family/paws we also seed paxAdults/paxMinors/paxPets to that
     // type's sensible defaults, so switching travel types never carries over
     // stale numbers from a previous type.

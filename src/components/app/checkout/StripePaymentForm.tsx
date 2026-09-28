@@ -35,6 +35,7 @@ interface StripePaymentFormProps {
   onBeforeConfirm: () => Promise<boolean>;
   /** Called when user clicks Back. */
   onCancel: () => void;
+  onPaymentInfoSubmitted?: () => void;
   onProcessingChange: (processing: boolean) => void;
   onRetry: () => void;
 }
@@ -51,6 +52,7 @@ export function StripePaymentForm({
   copy,
   onBeforeConfirm,
   onCancel,
+  onPaymentInfoSubmitted,
   onProcessingChange,
   onRetry,
 }: StripePaymentFormProps) {
@@ -64,6 +66,7 @@ export function StripePaymentForm({
   const [elementReady, setElementReady] = useState(false);
   const [elementLoadError, setElementLoadError] = useState(false);
   const ready = useRef(false);
+  const complete = useRef(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const mounted = useRef(false);
@@ -97,6 +100,13 @@ export function StripePaymentForm({
       const ok = await onBeforeConfirm();
       if (!ok || !mounted.current) {
         return;
+      }
+
+      // Observe validation without changing Stripe confirmation or redirect behavior.
+      try {
+        if (complete.current) onPaymentInfoSubmitted?.();
+      } catch {
+        // Analytics must never interrupt a real payment.
       }
 
       const { error, paymentIntent } = await stripe.confirmPayment({
@@ -173,8 +183,10 @@ export function StripePaymentForm({
         </div>
       )}
       <PaymentElement
+        onChange={(event) => { complete.current = event.complete; }}
         onLoadError={() => {
           ready.current = false;
+          complete.current = false;
           setElementReady(false);
           setElementLoadError(true);
         }}

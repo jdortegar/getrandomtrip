@@ -1,5 +1,6 @@
 import { pathWithoutLocale } from "@/lib/i18n/pathForLocale";
 import { canonicalUrl, isIndexablePath } from "@/lib/seo/urls";
+import { sanitizeCommerce } from "./commerce";
 
 export interface AnalyticsPage {
   language: "es" | "en";
@@ -8,6 +9,7 @@ export interface AnalyticsPage {
   page_referrer: string;
   page_title: string;
   purchaseOnly: boolean;
+  commerceOnly?: boolean;
 }
 
 const TITLES: Record<string, string> = {
@@ -27,6 +29,7 @@ const TITLES: Record<string, string> = {
   "/journey": "Journey",
   "/xsed/book": "XSED booking",
   "/checkout/success": "Purchase confirmation",
+  "/checkout": "Checkout",
 };
 
 export function analyticsPage(pathname: string): AnalyticsPage | null {
@@ -34,10 +37,12 @@ export function analyticsPage(pathname: string): AnalyticsPage | null {
   const language = /^\/en(?:\/|$)/.test(clean) ? "en" : "es";
   let path = pathWithoutLocale(clean).replace(/\/+$/, "") || "/";
   const purchaseOnly = path === "/checkout/success";
+  const commerceOnly = path === "/checkout";
   if (
     !isIndexablePath(path) &&
     !["/journey", "/xsed/book"].includes(path) &&
-    !purchaseOnly
+    !purchaseOnly &&
+    !commerceOnly
   )
     return null;
   let title = TITLES[path];
@@ -63,6 +68,7 @@ export function analyticsPage(pathname: string): AnalyticsPage | null {
     page_referrer: "",
     page_title: title,
     purchaseOnly,
+    ...(commerceOnly ? { commerceOnly: true } : {}),
   };
 }
 
@@ -99,20 +105,5 @@ export function sanitizeEvent(
     return { event, percent: Number(data.percent) };
   if (event === "generate_lead" && TRIP_TYPES.includes(String(data.trip_type)))
     return { event, trip_type: data.trip_type };
-  if (
-    event === "purchase" &&
-    /^pi_[a-zA-Z0-9]+$/.test(String(data.transaction_id)) &&
-    typeof data.value === "number" &&
-    Number.isFinite(data.value) &&
-    data.value >= 0 &&
-    /^[A-Z]{3}$/.test(String(data.currency))
-  ) {
-    return {
-      event,
-      transaction_id: data.transaction_id,
-      value: data.value,
-      currency: data.currency,
-    };
-  }
-  return null;
+  return sanitizeCommerce(data);
 }

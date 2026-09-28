@@ -10,6 +10,8 @@ import {
   getCheckoutPaxDetails,
 } from "@/lib/helpers/checkout-party";
 import CheckoutPage from "../page";
+import * as tracking from "@/lib/helpers/tracking/gtm";
+import { saveAnalyticsConsent } from "@/lib/helpers/tracking/consent";
 
 interface Details {
   paxDetails: PaxDetails;
@@ -24,6 +26,7 @@ interface Details {
 }
 const navigation = vi.hoisted(() => ({ locale: "en" }));
 interface Contact {
+  onPaymentInfoSubmitted: () => void;
   paymentRecoveryHref?: string;
   clientSecret: string | null;
   paymentError: string | null;
@@ -140,10 +143,29 @@ describe("checkout traveler handoff and quote synchronization", () => {
   afterEach(() => {
     act(() => root.unmount());
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
   const mount = async () => {
     await act(async () => root.render(<CheckoutPage />));
   };
+
+  it("wires one checkout initiation and payment-info callback to the actual server quote", async () => {
+    const storage = new Map<string, string>();
+    Object.defineProperty(window, "localStorage", { configurable: true, value: {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+    } });
+    saveAnalyticsConsent("granted");
+    const event = vi.spyOn(tracking, "trackCustomEvent").mockReturnValue(true);
+    await mount();
+    expect(event).toHaveBeenCalledWith(expect.objectContaining({
+      event: "begin_checkout", value: view.details!.totalTrip, currency: "USD",
+      items: [expect.objectContaining({ item_id: "trip-xsed", quantity: 1 })],
+    }));
+    view.contact!.onPaymentInfoSubmitted();
+    view.contact!.onPaymentInfoSubmitted();
+    expect(event.mock.calls.filter(([payload]) => payload.event === "add_payment_info")).toHaveLength(1);
+  });
 
   it.each(["en", "es"])("localizes invalid dates and offers dashboard recovery in %s", async (locale) => {
     navigation.locale = locale;

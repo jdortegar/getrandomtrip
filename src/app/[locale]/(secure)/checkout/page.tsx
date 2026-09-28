@@ -57,7 +57,7 @@ import {
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
-import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
+import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
 
 const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
 
@@ -196,6 +196,7 @@ function CheckoutContent() {
     : payment.error;
   const promoError = paymentError;
   const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
+  const onPaymentInfoSubmitted = useCheckoutTracking(trip?.id, trip?.type, clientSecret ? payment.quote : null);
   const contactFormRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
     city: "",
@@ -311,7 +312,6 @@ function CheckoutContent() {
           return;
         }
         setTrip(picked);
-        trackCustomEvent({ event: "begin_checkout", trip_type: picked.type });
       })
       .catch(() => {
         if (!cancelled)
@@ -865,6 +865,7 @@ function CheckoutContent() {
             onBack={() => router.back()}
             onBeforeConfirm={onBeforeConfirm}
             onFieldChange={handleChange}
+            onPaymentInfoSubmitted={onPaymentInfoSubmitted}
             onPaymentProcessingChange={handlePaymentProcessingChange}
             onRetryPayment={() => { void payment.retry().catch(() => {}); }}
             paymentError={paymentError}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,7 +14,7 @@ import {
   TravelerRosterSection,
   type TravelerRosterSectionHandle,
 } from "@/components/app/travelers/TravelerRosterSection";
-import { trackPurchase } from "@/lib/helpers/tracking/gtm";
+import { usePurchaseTracking } from "@/lib/hooks/useCommerceTracking";
 import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
 import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
@@ -50,12 +50,7 @@ export default function CheckoutResultSuccess({
   const paymentIntentId = stripeReturn?.paymentIntent ?? searchParams.get("payment_intent");
   const verification = useVerifiedCheckoutResult(paymentIntentId);
   const tripData = verification.data;
-  const tracked = useRef<string | null>(null);
-  useEffect(() => {
-    if (!tripData || !paymentIntentId || tracked.current === paymentIntentId) return;
-    tracked.current = paymentIntentId;
-    trackPurchase({ transaction_id: paymentIntentId, value: tripData.payment.amount, currency: tripData.payment.currency.toUpperCase() });
-  }, [paymentIntentId, tripData]);
+  usePurchaseTracking(paymentIntentId, tripData);
   const rosterRef = useRef<TravelerRosterSectionHandle>(null);
   const [savingTravelers, setSavingTravelers] = useState(false);
 

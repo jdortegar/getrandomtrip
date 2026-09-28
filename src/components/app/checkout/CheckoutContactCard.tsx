@@ -183,6 +183,7 @@ interface CheckoutContactCardProps {
   onBack: () => void;
   onBeforeConfirm: () => Promise<boolean>;
   onFieldChange: (field: keyof CheckoutFormFields, value: string) => void;
+  onPaymentInfoSubmitted?: () => void;
   onPaymentProcessingChange: (processing: boolean) => void;
   onRetryPayment: () => void;
   paymentError: string | null;
@@ -201,6 +202,7 @@ export function CheckoutContactCard({
   onBack,
   onBeforeConfirm,
   onFieldChange,
+  onPaymentInfoSubmitted,
   onPaymentProcessingChange,
   onRetryPayment,
   paymentError,
@@ -389,6 +391,7 @@ export function CheckoutContactCard({
               }}
               onBeforeConfirm={onBeforeConfirm}
               onCancel={onBack}
+              onPaymentInfoSubmitted={onPaymentInfoSubmitted}
               onProcessingChange={onPaymentProcessingChange}
               onRetry={() => {
                 const stripe = getStripePromise();

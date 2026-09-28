@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
+import { trackProductSelection, useProductView } from "@/lib/hooks/useCommerceTracking";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { getNextWeekend, toISODate } from "@/lib/helpers/xsed-dates";
@@ -45,6 +46,7 @@ export function XsedBookClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session, status: sessionStatus } = useSession();
+  useProductView("xsed");
 
   const [originCountry, setOriginCountry] = useState(
     searchParams.get("originCountry") ?? "",
@@ -125,6 +127,7 @@ export function XsedBookClient({
   // Solo is one traveler by definition.
   const handleTravelTypeChange = (value: XsedTravelType) => {
     if (pax === 1 && value !== "solo") return;
+    if (value !== travelType) trackProductSelection("xsed");
     setTravelType(value);
     if (value === "solo") setPax(1);
   };

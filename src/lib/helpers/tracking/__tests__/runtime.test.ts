@@ -39,6 +39,75 @@ const gaDisabled = () =>
   (window as unknown as Record<string, unknown>)["ga-disable-G-TEST123"];
 const payloads = () => window.dataLayer as Record<string, unknown>[];
 
+it("does not mark rejected purchase emits as sent", () => {
+  const payment = {
+    transaction_id: "pi_retry",
+    value: 250,
+    currency: "USD",
+    items: [
+      {
+        item_id: "trip-solo",
+        item_name: "Solo trip",
+        item_category: "solo",
+        quantity: 1,
+        price: 250,
+      },
+    ],
+  };
+  window.location.href = "https://getrandomtrip.com/checkout/success";
+  expect(events.trackPurchase(payment)).toBe(false);
+  consent.saveAnalyticsConsent("granted");
+  // Consent alone cannot bypass route initialization.
+  expect(events.trackPurchase(payment)).toBe(false);
+  runtime.configureAnalytics(window.location.pathname);
+  expect(events.trackPurchase(payment)).toBe(true);
+  expect(events.trackPurchase(payment)).toBe(false);
+});
+
+it("permits only checkout commerce and publishes a safe flag before container initialization", () => {
+  window.location.href = "https://getrandomtrip.com/en/checkout?tripId=private";
+  consent.saveAnalyticsConsent("granted");
+  runtime.configureAnalytics(window.location.pathname);
+  runtime.loadAnalyticsContainer();
+  const commerce = {
+    value: 250,
+    currency: "USD",
+    items: [{ item_id: "trip-solo", quantity: 1, price: 250 }],
+  };
+  expect(events.trackPageview()).toBe(false);
+  expect(events.trackScrollDepth(90)).toBe(false);
+  expect(events.trackCustomEvent({ event: "login", method: "email" })).toBe(
+    false,
+  );
+  expect(
+    events.trackCustomEvent({ event: "begin_checkout", ...commerce }),
+  ).toBe(true);
+  expect(
+    events.trackCustomEvent({
+      event: "add_payment_info",
+      ...commerce,
+      payment_type: "stripe",
+    }),
+  ).toBe(true);
+  expect(payloads()[1]).toMatchObject({
+    rt_analytics_allowed: true,
+    page_path: "/en/checkout",
+  });
+  expect(payloads()[3]).toMatchObject({ event: "gtm.js" });
+  expect(JSON.stringify(payloads())).not.toContain("private");
+  window.location.href = "https://getrandomtrip.com/blog";
+  runtime.configureAnalytics(window.location.pathname);
+  expect(
+    events.trackCustomEvent({ event: "begin_checkout", ...commerce }),
+  ).toBe(false);
+  events.trackPageview();
+  expect(payloads().at(-1)).toMatchObject({
+    items: null,
+    payment_type: null,
+    value: null,
+  });
+});
+
 describe("consent and collection runtime", () => {
   it("never loads GTM or queues analytics before opt-in", () => {
     expect(runtime.configureAnalytics(window.location.pathname)).toBeNull();
@@ -116,7 +185,20 @@ describe("consent and collection runtime", () => {
     runtime.configureAnalytics(window.location.pathname);
     expect(events.trackPageview()).toBe(false);
     expect(events.trackScrollDepth(90)).toBe(false);
-    const payment = { transaction_id: "pi_123", value: 250.5, currency: "USD" };
+    const payment = {
+      transaction_id: "pi_123",
+      value: 250.5,
+      currency: "USD",
+      items: [
+        {
+          item_id: "trip-solo",
+          item_name: "Solo trip",
+          item_category: "solo",
+          quantity: 1,
+          price: 250.5,
+        },
+      ],
+    };
     expect(events.trackPurchase(payment)).toBe(true);
     expect(events.trackPurchase(payment)).toBe(false);
     expect(payloads().filter((row) => row.event === "purchase")).toHaveLength(
@@ -152,6 +234,15 @@ it("clears persisted GA event parameters before a later pageview", () => {
   runtime.configureAnalytics(window.location.pathname);
   events.trackPurchase({
     transaction_id: "pi_clear",
+    items: [
+      {
+        item_id: "trip-solo",
+        item_name: "Solo trip",
+        item_category: "solo",
+        quantity: 1,
+        price: 250,
+      },
+    ],
     value: 250,
     currency: "USD",
   });
@@ -160,6 +251,8 @@ it("clears persisted GA event parameters before a later pageview", () => {
   events.trackPageview();
   expect(payloads().at(-1)).toMatchObject({
     event: "page_view",
+    items: null,
+    payment_type: null,
     method: null,
     percent: null,
     trip_type: null,
@@ -193,6 +286,15 @@ it("preserves locale for visible marketing waitlists and never maps checkout to 
   expect(
     events.trackPurchase({
       transaction_id: "pi_gate",
+      items: [
+        {
+          item_id: "trip-solo",
+          item_name: "Solo trip",
+          item_category: "solo",
+          quantity: 1,
+          price: 100,
+        },
+      ],
       value: 100,
       currency: "USD",
     }),

@@ -70,13 +70,25 @@ export function configureAnalytics(
         }
       : page
     : null;
-  const { purchaseOnly: _purchaseOnly, ...fields } = activePage ?? {
+  const {
+    purchaseOnly: _purchaseOnly,
+    commerceOnly: _commerceOnly,
+    ...fields
+  } = activePage ?? {
     ...analyticsPage("/")!,
   };
   window.dataLayer.push({
     user_id: null,
     user_type: null,
     user_properties: null,
+    method: null,
+    percent: null,
+    trip_type: null,
+    transaction_id: null,
+    value: null,
+    currency: null,
+    items: null,
+    payment_type: null,
     ...fields,
     rt_analytics_allowed: allowed,
   });

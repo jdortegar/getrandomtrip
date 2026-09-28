@@ -3,13 +3,14 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StripePaymentForm } from "../StripePaymentForm";
 const confirmPayment = vi.hoisted(() => vi.fn());
-const element = vi.hoisted(() => ({ ready: () => {}, error: () => {} }));
+const element = vi.hoisted(() => ({ ready: () => {}, error: () => {}, change: (_complete: boolean) => {} }));
 vi.mock("@stripe/react-stripe-js", () => ({
   useStripe: () => ({ confirmPayment }),
   useElements: () => ({}),
-  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void }) => {
+  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void; onChange?: (event: { complete: boolean }) => void }) => {
     element.ready = props.onReady ?? (() => {});
     element.error = props.onLoadError ?? (() => {});
+    element.change = (complete) => props.onChange?.({ complete });
     return null;
   },
 }));
@@ -21,6 +22,7 @@ describe("Stripe confirmation lifecycle", () => {
   let container: HTMLDivElement;
   const onBeforeConfirm = vi.fn();
   const onProcessingChange = vi.fn();
+  const onPaymentInfoSubmitted = vi.fn();
   function form(key: string) {
     return (
       <StripePaymentForm
@@ -44,6 +46,7 @@ describe("Stripe confirmation lifecycle", () => {
         key={key}
         onBeforeConfirm={onBeforeConfirm}
         onCancel={vi.fn()}
+        onPaymentInfoSubmitted={onPaymentInfoSubmitted}
         onProcessingChange={onProcessingChange}
         onRetry={vi.fn()}
       />
@@ -61,6 +64,33 @@ describe("Stripe confirmation lifecycle", () => {
       .querySelector("form")!
       .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
   }
+
+  it.each([false, true])("only observes validated payment info when Stripe is complete: %s", async (complete) => {
+    onBeforeConfirm.mockResolvedValue(true);
+    confirmPayment.mockResolvedValue({ error: { message: "Declined" } });
+    act(() => { element.ready(); element.change(complete); });
+    await act(async () => submit());
+    expect(onPaymentInfoSubmitted).toHaveBeenCalledTimes(complete ? 1 : 0);
+    expect(confirmPayment).toHaveBeenCalledTimes(1);
+    expect(container.textContent).toContain("Declined");
+  });
+
+  it("does not emit payment info on failed contact preflight", async () => {
+    onBeforeConfirm.mockResolvedValue(false);
+    act(() => { element.ready(); element.change(true); });
+    await act(async () => submit());
+    expect(onPaymentInfoSubmitted).not.toHaveBeenCalled();
+    expect(confirmPayment).not.toHaveBeenCalled();
+  });
+
+  it("never lets an analytics exception block provider confirmation", async () => {
+    onBeforeConfirm.mockResolvedValue(true);
+    onPaymentInfoSubmitted.mockImplementation(() => { throw new Error("Analytics unavailable"); });
+    confirmPayment.mockResolvedValue({ error: { message: "Declined" } });
+    act(() => { element.ready(); element.change(true); });
+    await act(async () => submit());
+    expect(confirmPayment).toHaveBeenCalledTimes(1);
+  });
 
   it("blocks profile writes and confirmation before the element is ready", async () => {
     expect(container.textContent).toContain("Loading secure payment form");

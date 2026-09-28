@@ -53,10 +53,10 @@ export default function AppTracking({
     }
     loadAnalyticsContainer();
     const pageKey = `${pathname}:${waitlistVisible}`;
-    if (lastPage.current !== pageKey && !page.purchaseOnly && trackPageview())
+    if (lastPage.current !== pageKey && !page.purchaseOnly && !page.commerceOnly && trackPageview())
       lastPage.current = pageKey;
     const reached = new Set<number>();
-    if (page.purchaseOnly) return;
+    if (page.purchaseOnly || page.commerceOnly) return;
     const handleScroll = () => {
       const { scrollHeight } = document.documentElement;
       const percent = Math.round(
