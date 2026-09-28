@@ -2,6 +2,10 @@ import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import type { TravelerKind, TravelerStatus } from "@prisma/client";
 import { isRosterLocked } from "./travelerRoster";
+import {
+  hasMissingTravelerDetails,
+  isTravelerFieldFilled,
+} from "./travelerPolicy";
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -17,13 +21,19 @@ function hashToken(plaintext: string): string {
  * token (only ever exposed here, for the email link) — only the SHA-256
  * hash is persisted.
  */
-export async function issueTravelerInvite(travelerId: string): Promise<string> {
+export async function issueTravelerInvite(
+  travelerId: string,
+  expectedStatus?: TravelerStatus,
+): Promise<string> {
   const plaintext = randomBytes(32).toString("hex"); // 64 hex chars, 256-bit
   const tokenHash = hashToken(plaintext);
   const now = new Date();
 
   await prisma.tripTraveler.update({
-    where: { id: travelerId },
+    where: {
+      id: travelerId,
+      ...(expectedStatus && { status: expectedStatus }),
+    },
     data: {
       inviteTokenHash: tokenHash,
       inviteTokenExpiresAt: new Date(now.getTime() + TTL_MS),
@@ -43,6 +53,7 @@ export type TravelerPeek =
       tripRequestId: string;
       kind: TravelerKind;
       buyerFirstName: string;
+      idDocumentRequired: boolean;
     }
   | { ok: false; reason: "invalid" | "expired" | "used" | "locked" };
 
@@ -51,9 +62,15 @@ type TravelerInviteRow = {
   tripRequestId: string;
   kind: TravelerKind;
   status: TravelerStatus;
+  fullName: string | null;
+  email: string | null;
+  idDocument: string | null;
+  dateOfBirth: Date | null;
+  userId: string | null;
   inviteTokenHash: string | null;
   inviteTokenExpiresAt: Date | null;
   tripRequest: {
+    type?: string;
     startDate: Date | null;
     travelersLockedAt: Date | null;
     user: { name: string };
@@ -64,7 +81,7 @@ type TravelerInviteRow = {
  * Shared lookup + branch logic for `peekTravelerInvite` and
  * `consumeTravelerInvite` — the single place a plaintext token is resolved
  * to a row, checked for validity (unknown / already-consumed / expired /
- * past-cutoff), never duplicated between the two callers.
+ * fully populated after cutoff), never duplicated between the two callers.
  *
  * IMPORTANT: `inviteTokenHash` is NEVER nulled on consume (see
  * `consumeTravelerInvite`) — it stays persisted so the row remains
@@ -75,7 +92,9 @@ type TravelerInviteRow = {
  * BEFORE expiry/cutoff so a used-but-now-also-expired/locked token still
  * reads as "used".
  */
-async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
+async function resolveTravelerInvite(
+  plaintext: string,
+): Promise<TravelerPeek & { row?: TravelerInviteRow }> {
   const tokenHash = hashToken(plaintext);
   const row = (await prisma.tripTraveler.findUnique({
     where: { inviteTokenHash: tokenHash },
@@ -84,9 +103,13 @@ async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
 
   if (!row) return { ok: false, reason: "invalid" };
   if (row.status === "COMPLETE") return { ok: false, reason: "used" };
-  if (row.inviteTokenExpiresAt && row.inviteTokenExpiresAt.getTime() < Date.now())
+  if (
+    row.inviteTokenExpiresAt &&
+    row.inviteTokenExpiresAt.getTime() < Date.now()
+  )
     return { ok: false, reason: "expired" };
-  if (isRosterLocked(row.tripRequest)) return { ok: false, reason: "locked" };
+  if (isRosterLocked(row.tripRequest) && !hasMissingTravelerDetails(row))
+    return { ok: false, reason: "locked" };
 
   return {
     ok: true,
@@ -94,6 +117,23 @@ async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
     tripRequestId: row.tripRequestId,
     kind: row.kind,
     buyerFirstName: row.tripRequest.user.name.split(" ")[0],
+    idDocumentRequired:
+      !isRosterLocked(row.tripRequest) ||
+      !isTravelerFieldFilled(row.idDocument),
+    row,
+  };
+}
+
+function publicPeek(
+  resolved: Extract<TravelerPeek, { ok: true }>,
+): TravelerPeek {
+  return {
+    ok: true,
+    travelerId: resolved.travelerId,
+    tripRequestId: resolved.tripRequestId,
+    kind: resolved.kind,
+    buyerFirstName: resolved.buyerFirstName,
+    idDocumentRequired: resolved.idDocumentRequired,
   };
 }
 
@@ -101,8 +141,12 @@ async function resolveTravelerInvite(plaintext: string): Promise<TravelerPeek> {
  * Validate a token WITHOUT consuming it — used for the `/invite/[token]`
  * landing page render. Never mutates the row.
  */
-export async function peekTravelerInvite(plaintext: string): Promise<TravelerPeek> {
-  return resolveTravelerInvite(plaintext);
+export async function peekTravelerInvite(
+  plaintext: string,
+): Promise<TravelerPeek> {
+  const resolved = await resolveTravelerInvite(plaintext);
+  if (!resolved.ok) return resolved;
+  return publicPeek(resolved);
 }
 
 /**
@@ -112,32 +156,78 @@ export async function peekTravelerInvite(plaintext: string): Promise<TravelerPee
  * `inviteTokenHash` — the row must stay findable by that hash so a re-visit
  * of the same link resolves to "used" (via `resolveTravelerInvite`'s
  * `status === "COMPLETE"` check) rather than "invalid". Single-use is
- * enforced by `resolveTravelerInvite` refusing (early return, no write) any
- * row that is already `COMPLETE` — including on this exact call, so a
- * second `consumeTravelerInvite` with the same plaintext never re-writes.
+ * enforced by the COMPLETE check and an atomic status/token/identity
+ * compare-and-swap, so concurrent submissions cannot rewrite the row.
  */
 export async function consumeTravelerInvite(
   plaintext: string,
-  data: { fullName: string; idDocument: string; email?: string; userId?: string },
+  data: {
+    fullName: string;
+    idDocument?: string;
+    email?: string;
+    userId?: string;
+  },
 ): Promise<TravelerPeek> {
   const resolved = await resolveTravelerInvite(plaintext);
   if (!resolved.ok) return resolved;
 
+  const row = resolved.row!;
+  const locked = isRosterLocked(row.tripRequest);
+  if (locked && row.userId && row.userId !== data.userId) {
+    return { ok: false, reason: "invalid" };
+  }
+  // Auth-derived name/email may differ from the buyer's saved values. After
+  // cutoff retain populated identity, filling only the gaps from the claim.
+  const fullName =
+    locked && isTravelerFieldFilled(row.fullName)
+      ? row.fullName
+      : data.fullName.trim();
+  const email =
+    locked && isTravelerFieldFilled(row.email)
+      ? row.email
+      : (data.email?.trim() ?? row.email);
+  const idDocument =
+    locked && isTravelerFieldFilled(row.idDocument)
+      ? row.idDocument
+      : (data.idDocument?.trim() ?? row.idDocument);
+  if (hasMissingTravelerDetails({ ...row, fullName, email, idDocument })) {
+    return { ok: false, reason: "invalid" };
+  }
   const now = new Date();
-  await prisma.tripTraveler.update({
-    where: { id: resolved.travelerId },
-    data: {
-      fullName: data.fullName,
-      idDocument: data.idDocument,
-      ...(data.email !== undefined && { email: data.email }),
-      ...(data.userId !== undefined && { userId: data.userId }),
-      submittedAt: now,
-      consentAt: now,
-      status: "COMPLETE",
-    },
-  });
-
-  return resolved;
+  try {
+    await prisma.tripTraveler.update({
+      where: {
+        id: row.id,
+        inviteTokenHash: hashToken(plaintext),
+        status: row.status,
+        userId: row.userId,
+        fullName: row.fullName,
+        email: row.email,
+        idDocument: row.idDocument,
+        inviteTokenExpiresAt: row.inviteTokenExpiresAt,
+      },
+      data: {
+        fullName,
+        idDocument,
+        email,
+        ...(data.userId !== undefined && { userId: data.userId }),
+        submittedAt: now,
+        consentAt: now,
+        status: "COMPLETE",
+      },
+    });
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2025"
+    ) {
+      return { ok: false, reason: "invalid" };
+    }
+    throw error;
+  }
+  return publicPeek(resolved);
 }
 
 /**

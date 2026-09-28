@@ -14,7 +14,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 (Previously: "No-Login Submission" — anonymous submit allowed; account creation was an optional link. Now: authentication via `AuthModal` is mandatory before any identity data can be entered.)
 
-`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
+`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; a populated, protected ID after cutoff is not asked again. `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
 
 #### Scenario: No-session visitor sees wall only
 - GIVEN an unauthenticated visitor opens a valid, unconsumed `/invite/[token]`
@@ -77,7 +77,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 ### Requirement: Session-Gated Submission Endpoint
 
-`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry, cutoff-lock, and single-use consumption are UNCHANGED from the archived flow.
+`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry and single-use consumption are unchanged. Cutoff protection follows the field-level policy below; populated identity and account ownership must not be overwritten after cutoff.
 
 #### Scenario: No session rejected
 - GIVEN a request with no active session
@@ -87,7 +87,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 #### Scenario: Client-supplied identity ignored
 - GIVEN an authenticated session for Alex and a payload with a spoofed `fullName`/`email`
 - WHEN submission succeeds
-- THEN the persisted row uses `session.user.name`/`session.user.email` and `userId = session.user.id`
+- THEN new identity values come from `session.user.name`/`session.user.email` and `userId = session.user.id`; at/after cutoff, already populated identity and an existing account link are preserved
 
 #### Scenario: Token semantics unaffected by auth requirement
 - GIVEN a token already consumed or past `inviteTokenExpiresAt`
@@ -147,22 +147,33 @@ On success, the page MUST show the existing success copy (`landingSuccessTitle`/
 
 ### Requirement: Edit Rules and Cutoff Enforcement
 
-The cutoff is `TripRequest.startDate − 7 days`. Before cutoff, the buyer MAY edit any row's data on the success page or dashboard but MUST NOT add or remove rows (count is fixed by paid pax). At/after cutoff, every row MUST lock: all traveler write endpoints MUST reject edits server-side regardless of client state, and the UI MUST render disabled inputs, no icon actions, and a lock banner + support link. **The dashboard trip-detail page (`dashboard/trips/[id]/page.tsx`) MUST wire the same `rosterRef`/Save-button pattern used on `CheckoutResultSuccess.tsx` so edits on that surface actually persist.**
+The cutoff is `TripRequest.startDate − 72 elapsed hours` for XSED and `startDate − 7 days` for other trips. Before cutoff, authorized travelers MAY edit any row's data on either surface, but MUST NOT add/remove rows. XSED's legacy T-7d `travelersLockedAt` stamps MUST NOT override the new cutoff.
 
-#### Scenario: Pre-cutoff edit allowed (unchanged)
-- GIVEN today is more than 7 days before `startDate`
-- WHEN the buyer edits a traveler row's fields
-- THEN the update is accepted and persisted
+At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Incomplete adult rows MAY be invited or re-invited; valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
 
-#### Scenario: Post-cutoff write rejected server-side (unchanged)
-- GIVEN today is on or after `startDate − 7 days`
-- WHEN a write hits the traveler update endpoint
-- THEN the API rejects it regardless of client-side disabled state
+#### Scenario: XSED purchase precedes the new cutoff
+- GIVEN an XSED trip bought Sunday for the following Saturday with an old lock stamp
+- WHEN the buyer opens either roster surface before T-72h
+- THEN the fields are editable and the displayed deadline is T-72h
+
+#### Scenario: Late completion preserves saved details
+- GIVEN the cutoff has passed and a row has a saved name/email but no ID
+- WHEN the buyer saves the ID or the invited companion submits a live token
+- THEN only missing details are filled and the saved identity remains unchanged
+- AND attempts to change populated fields or a previously linked account are rejected
 
 #### Scenario: Dashboard Save now persists adult and minor edits
 - GIVEN the buyer edits an adult row's idPassport and a minor row's dateOfBirth on `dashboard/trips/[id]/page.tsx`
 - WHEN the buyer clicks the page's Save button (now wired to `rosterRef.current.saveAll()`)
 - THEN both rows persist identically to editing the same fields on the checkout success page
+
+### Requirement: Automatic XSED Buyer Reminder
+
+The hourly traveler-reminder job MUST email the buyer on its first run at/after T-72h and before departure when a paid, non-cancelled, non-completed XSED trip has missing required companion details, including uninvited or not-yet-materialized roster rows. The localized email MUST link to the buyer's trip detail page and explain that empty fields remain editable while saved details are protected. A completed roster, solo trip, other product, unpaid trip, departed trip, or already-reminded booking MUST NOT receive this email.
+
+Delivery MUST be awaited. A guarded, recoverable claim prevents overlapping workers; `travelerDetailsReminderSentAt` is persisted only after provider acceptance. Failed attempts remain retryable with a stable provider idempotency key. Provider acceptance followed by a prolonged database outage still has the provider's finite deduplication-window limitation; this is not an exactly-once delivery guarantee.
+
+**Rollout:** apply `prisma/migrations/20260928120000_traveler_details_reminder/migration.sql` through the database deployment workflow before deploying this code, then generate Prisma Client. This repository's `npm run db:migrate` uses `prisma db push`, not a migration runner. No customer record repair is required for legacy XSED locks.
 
 ### Requirement: Companion Permission Parity Is Not Narrowed (v1 Accepted Gap)
 

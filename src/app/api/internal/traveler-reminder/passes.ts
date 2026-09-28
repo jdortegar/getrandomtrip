@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerReminderEmail } from "@/lib/email";
-import { ROSTER_CUTOFF_MS } from "@/lib/travelers/travelerRoster";
+import {
+  ROSTER_CUTOFF_MS,
+  XSED_ROSTER_CUTOFF_MS,
+} from "@/lib/travelers/travelerPolicy";
 
 // ─── Pass 1: single reminder per INVITED row before cutoff ────────────────────
 
@@ -11,7 +14,7 @@ export interface Pass1Result {
 
 /**
  * Finds `TripTraveler` rows still `INVITED` (not yet completed) whose
- * parent trip has not reached the roster cutoff (`startDate - 7 days`) and
+ * parent trip has not reached the roster cutoff (T-72h for XSED, otherwise T-7d) and
  * that have never been reminded (`reminderSentAt: null`), sends one
  * reminder each, and stamps `reminderSentAt` for idempotency.
  *
@@ -28,7 +31,20 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
     where: {
       status: "INVITED",
       reminderSentAt: null,
-      tripRequest: { startDate: { gt: notYetCutoff } },
+      tripRequest: {
+        status: { notIn: ["CANCELLED", "COMPLETED"] },
+        payment: { is: { status: "APPROVED" } },
+        OR: [
+          {
+            type: { equals: "xsed", mode: "insensitive" },
+            startDate: { gt: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS) },
+          },
+          {
+            type: { not: "xsed", mode: "insensitive" },
+            startDate: { gt: notYetCutoff },
+          },
+        ],
+      },
     },
     select: { id: true },
   });
@@ -64,18 +80,30 @@ export interface Pass2Result {
 }
 
 /**
- * Stamps `TripRequest.travelersLockedAt` once `startDate - 7 days` has
+ * Stamps `TripRequest.travelersLockedAt` once the type-specific cutoff has
  * passed for a paid trip. Guarded `updateMany` on `travelersLockedAt: null`
  * makes this idempotent — matches `destinationAssignmentNotifiedAt`'s
- * pattern in `destination-reveal`. This stamp is what `isRosterLocked`
- * (`src/lib/travelers/travelerRoster.ts`) checks first.
+ * pattern in `destination-reveal`. Empty identity fields remain fillable.
  */
 export async function runPass2(now: Date): Promise<Pass2Result> {
   const cutoffThreshold = new Date(now.getTime() + ROSTER_CUTOFF_MS);
 
   const result = await prisma.tripRequest.updateMany({
     where: {
-      startDate: { lte: cutoffThreshold },
+      status: { notIn: ["CANCELLED", "COMPLETED"] },
+      OR: [
+        {
+          type: { equals: "xsed", mode: "insensitive" },
+          startDate: {
+            gt: now,
+            lte: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS),
+          },
+        },
+        {
+          type: { not: "xsed", mode: "insensitive" },
+          startDate: { gt: now, lte: cutoffThreshold },
+        },
+      ],
       travelersLockedAt: null,
       payment: { is: { status: "APPROVED" } },
     },

@@ -2,8 +2,8 @@ import { prisma } from "@/lib/prisma";
 import type { TravelerKind } from "@prisma/client";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 
-/** Cutoff = trip start date minus 7 days (confirmed decision). */
-export const ROSTER_CUTOFF_MS = 7 * 24 * 60 * 60 * 1000;
+import { hasMissingTravelerDetails, rosterCutoffMs } from "./travelerPolicy";
+export { ROSTER_CUTOFF_MS } from "./travelerPolicy";
 
 /**
  * Defensive read of `TripRequest.paxDetails` — missing or non-numeric
@@ -29,16 +29,17 @@ export function computeTravelerCap(
 }
 
 /**
- * Locked when either the cutoff pass has already stamped
- * `travelersLockedAt`, or `now >= startDate - 7d` (inclusive boundary).
+ * The cutoff protects populated fields only. For XSED, legacy T-7d stamps
+ * must not override the new T-72h policy; no customer-data repair is needed.
  */
 export function isRosterLocked(trip: {
+  type?: string;
   startDate: Date | null;
   travelersLockedAt: Date | null;
 }): boolean {
-  if (trip.travelersLockedAt != null) return true;
+  if (trip.type?.trim().toLowerCase() !== "xsed" && trip.travelersLockedAt != null) return true;
   if (!trip.startDate) return false;
-  return Date.now() >= trip.startDate.getTime() - ROSTER_CUTOFF_MS;
+  return Date.now() >= trip.startDate.getTime() - rosterCutoffMs(trip.type);
 }
 
 /**
@@ -133,12 +134,12 @@ export async function getRosterForTrip(tripId: string): Promise<TravelerRoster> 
   }
 
   const deadline = trip.startDate
-    ? new Date(trip.startDate.getTime() - ROSTER_CUTOFF_MS).toISOString()
+    ? new Date(trip.startDate.getTime() - rosterCutoffMs(trip.type)).toISOString()
     : null;
   const startDate = trip.startDate ? trip.startDate.toISOString() : null;
   const locked = isRosterLocked(trip);
   const travelers = trip.travelers.map(serializeTraveler);
-  const submitted = travelers.filter((t) => t.status === "COMPLETE").length;
+  const submitted = travelers.filter((t) => t.status === "COMPLETE" && !hasMissingTravelerDetails(t)).length;
 
   return { deadline, startDate, locked, cap: travelers.length, submitted, travelers };
 }

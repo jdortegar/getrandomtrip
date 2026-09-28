@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
   isMinorRowFilled,
-  isAdultIdDocumentEditable,
 } from "../travelerRowValidation";
 
 describe("isMinorRowFilled", () => {
@@ -31,19 +30,5 @@ describe("isMinorRowFilled", () => {
     expect(
       isMinorRowFilled({ fullName: "   ", dateOfBirth: "2016-04-02", idDocument: "XPB998212" }),
     ).toBe(false);
-  });
-});
-
-describe("isAdultIdDocumentEditable", () => {
-  it("is editable while PENDING (buyer can fill directly)", () => {
-    expect(isAdultIdDocumentEditable("PENDING")).toBe(true);
-  });
-
-  it("is disabled while INVITED (waiting on the companion's own submission)", () => {
-    expect(isAdultIdDocumentEditable("INVITED")).toBe(false);
-  });
-
-  it("is editable again once COMPLETE (pre-cutoff edits are still allowed)", () => {
-    expect(isAdultIdDocumentEditable("COMPLETE")).toBe(true);
   });
 });

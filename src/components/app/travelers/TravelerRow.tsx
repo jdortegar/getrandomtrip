@@ -1,14 +1,14 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import { TravelerStatusBadge } from "@/components/common/TravelerStatusBadge";
 import {
-  isAdultIdDocumentEditable,
   isMinorRowFilled,
 } from "@/lib/travelers/travelerRowValidation";
+import { hasMissingTravelerDetails, isTravelerFieldFilled } from "@/lib/travelers/travelerPolicy";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import type { TravelerDTO } from "@/types/traveler";
 
@@ -56,10 +56,11 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
 
+    const pending = useRef(false);
     const isAdult = traveler.kind === "ADULT";
-    const idEditable = isAdult
-      ? isAdultIdDocumentEditable(traveler.status)
-      : true;
+    const canEdit = !locked || hasMissingTravelerDetails(traveler);
+    const fieldLocked = (field: "fullName" | "email" | "dateOfBirth" | "idDocument") =>
+      saving || (locked && isTravelerFieldFilled(traveler[field]));
 
     async function persistFields(body: Record<string, string>) {
       const res = await fetch(`/api/travelers/${traveler.id}`, {
@@ -72,7 +73,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     }
 
     async function saveRow(): Promise<TravelerDTO> {
-      if (locked || saving) return traveler;
+      if (!canEdit || pending.current) return traveler;
       if (
         !isAdult &&
         !isMinorRowFilled({ fullName, dateOfBirth, idDocument })
@@ -80,6 +81,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         setError(copy.incompleteError);
         return traveler;
       }
+      pending.current = true;
       setSaving(true);
       setError(null);
       try {
@@ -104,6 +106,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         setError(copy.saveErrorGeneric);
         return traveler;
       } finally {
+        pending.current = false;
         setSaving(false);
       }
     }
@@ -111,7 +114,8 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     useImperativeHandle(ref, () => ({ save: saveRow }));
 
     async function handleSendInvite() {
-      if (locked || saving) return;
+      if (!canEdit || pending.current) return;
+      pending.current = true;
       setSaving(true);
       setError(null);
       try {
@@ -122,6 +126,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           setError(copy.saveErrorGeneric);
           return;
         }
+        onUpdated(saveResult.data.traveler as TravelerDTO);
         const res = await fetch(`/api/travelers/${traveler.id}/invite`, {
           method: "POST",
         });
@@ -139,6 +144,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
       } catch {
         setError(copy.sendInviteErrorGeneric);
       } finally {
+        pending.current = false;
         setSaving(false);
       }
     }
@@ -185,7 +191,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           }`}
         >
           <FormField
-            disabled={locked}
+            disabled={fieldLocked("fullName")}
             id={`traveler-${traveler.id}-fullName`}
             label={copy.fullNameLabel}
             onChange={(e) => setFullName(e.target.value)}
@@ -196,7 +202,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
           {isAdult ? (
             <FormField
-              disabled={locked}
+              disabled={fieldLocked("email")}
               id={`traveler-${traveler.id}-email`}
               label={copy.emailLabel}
               onChange={(e) => setEmail(e.target.value)}
@@ -206,7 +212,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             />
           ) : (
             <FormField
-              disabled={locked}
+              disabled={fieldLocked("dateOfBirth")}
               id={`traveler-${traveler.id}-dob`}
               label={copy.dateOfBirthLabel}
               onChange={(e) => setDateOfBirth(e.target.value)}
@@ -216,23 +222,20 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           )}
 
           <FormField
-            disabled={locked || !idEditable}
+            disabled={fieldLocked("idDocument")}
             id={`traveler-${traveler.id}-idDocument`}
             label={copy.idDocumentLabel}
             onChange={(e) => setIdDocument(e.target.value)}
-            placeholder={
-              isAdult && !idEditable
-                ? copy.idDocumentPendingPlaceholder
-                : copy.idDocumentPlaceholder
-            }
+            placeholder={copy.idDocumentPlaceholder}
             type="text"
             value={idDocument}
           />
 
-          {!locked && isAdult && (
+          {canEdit && isAdult && (
             <TableIconButton
+              aria-busy={saving}
               danger={false}
-              disabled={!email || saving}
+              disabled={!email.trim() || saving}
               onClick={() => void handleSendInvite()}
               title={
                 traveler.status === "INVITED"
@@ -241,7 +244,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
               }
             >
               {saving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />
               )}
@@ -249,6 +252,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           )}
         </div>
 
+        {saving && <p className="mt-2.5 text-xs text-ink" role="status">{copy.savingAction}</p>}
         {rowFoot && (
           <p
             className={`mt-2.5 text-xs ${error ? "text-red-600" : "text-ink"}`}

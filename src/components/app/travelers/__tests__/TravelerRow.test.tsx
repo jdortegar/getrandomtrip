@@ -87,7 +87,7 @@ let container: HTMLDivElement;
 let root: Root;
 let handleRef: { current: TravelerRowHandle | null };
 
-function render(traveler: TravelerDTO, onUpdated = vi.fn()) {
+function render(traveler: TravelerDTO, onUpdated = vi.fn(), locked = false) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -96,7 +96,7 @@ function render(traveler: TravelerDTO, onUpdated = vi.fn()) {
     root.render(
       <TravelerRow
         copy={copy}
-        locked={false}
+        locked={locked}
         onUpdated={onUpdated}
         ref={(el) => {
           handleRef.current = el;
@@ -176,4 +176,28 @@ describe("TravelerRow — save() return value", () => {
     expect(fetch).not.toHaveBeenCalled();
     expect(onUpdated).not.toHaveBeenCalled();
   });
+});
+
+it.each(["PENDING", "INVITED", "COMPLETE"] as const)("keeps empty persisted fields editable after cutoff, including %s rows", (status) => {
+  render(baseTraveler({ status, idDocument: " " }), vi.fn(), true);
+  expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-fullName")!.disabled).toBe(true);
+  expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!.disabled).toBe(false);
+  expect(container.querySelector("button")).not.toBeNull();
+});
+
+it("does not lock a formerly empty field as the user types, only after it is saved", async () => {
+  const traveler = baseTraveler({ idDocument: null });
+  const updated = { ...traveler, idDocument: "PASSPORT", status: "COMPLETE" as const };
+  vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: updated }));
+  render(traveler, vi.fn(), true);
+  const input = container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!;
+  act(() => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "PASSPORT");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  expect(input.disabled).toBe(false);
+  await act(async () => { await handleRef.current?.save(); });
+  expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ body: JSON.stringify({ fullName: traveler.fullName, email: traveler.email, idDocument: "PASSPORT" }) }));
+  act(() => root.render(<TravelerRow copy={copy} locked onUpdated={vi.fn()} traveler={updated} travelerNumber={2} />));
+  expect(input.disabled).toBe(true);
 });

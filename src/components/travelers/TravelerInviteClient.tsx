@@ -14,13 +14,11 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 
 type Reason = "invalid" | "expired" | "used" | "locked";
-
 export type TravelerInviteResolution =
-  | { ok: true; buyerFirstName: string }
+  | { ok: true; buyerFirstName: string; idDocumentRequired?: boolean }
   | { ok: false; reason: Reason };
 
 type FormState = "form" | "submitting" | "success";
-
 interface TravelerInviteClientProps {
   authCopy: Pick<Dictionary, "auth">;
   copy: InviteTravelersDict;
@@ -45,6 +43,7 @@ export default function TravelerInviteClient({
       authCopy={authCopy}
       buyerFirstName={resolution.buyerFirstName}
       copy={copy}
+      idDocumentRequired={resolution.idDocumentRequired ?? true}
       locale={locale}
       token={token} data-component="TravelerInviteClient"
     />
@@ -90,11 +89,13 @@ function InviteForm({
   authCopy,
   buyerFirstName,
   copy,
+  idDocumentRequired,
   locale,
   token,
 }: {
   authCopy: Pick<Dictionary, "auth">;
   buyerFirstName: string;
+  idDocumentRequired: boolean;
   copy: InviteTravelersDict;
   locale: Locale;
   token: string | null;
@@ -102,7 +103,6 @@ function InviteForm({
   const router = useRouter();
   const { status } = useSession();
   const authenticated = status === "authenticated";
-
   const [authOpen, setAuthOpen] = useState(false);
   const [state, setState] = useState<FormState>("form");
   const [idDocument, setIdDocument] = useState("");
@@ -111,7 +111,6 @@ function InviteForm({
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const privacyHref = pathForLocale(locale, "/privacy");
-
   // Closes the modal on both the credentials-login path and the Google
   // full-page-return remount. Deliberately keyed off `status`, never off
   // `AuthModal`'s `onClose` — `onClose` also fires on Escape/backdrop/X, so
@@ -148,12 +147,11 @@ function InviteForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!consent) {
       setError(copy.landingConsentRequiredError);
       return;
     }
-    if (!idDocument.trim() || !token) {
+    if ((idDocumentRequired && !idDocument.trim()) || !token) {
       setError(copy.landingGenericError);
       return;
     }
@@ -173,7 +171,6 @@ function InviteForm({
       }
 
       const data = await res.json();
-
       if (!res.ok || !data.ok) {
         setState("form");
         setError(copy.landingGenericError);
@@ -251,7 +248,7 @@ function InviteForm({
             <h2 className="font-barlow-condensed text-xl font-extrabold uppercase text-ink">
               {copy.landingStep2Heading}
             </h2>
-            <FormField
+            {idDocumentRequired && <FormField
               id="traveler-invite-idDocument"
               label={copy.idDocumentLabel}
               onChange={(e) => setIdDocument(e.target.value)}
@@ -259,7 +256,7 @@ function InviteForm({
               required
               type="text"
               value={idDocument}
-            />
+            />}
 
             <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
               <input

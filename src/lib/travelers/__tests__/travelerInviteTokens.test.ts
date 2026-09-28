@@ -61,7 +61,7 @@ describe("issueTravelerInvite", () => {
     expect(prisma.tripTraveler.update).toHaveBeenCalledTimes(1);
     const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(args.where).toEqual({ id: "trav-1" });
+    expect(args.where).toMatchObject({ id: "trav-1" });
     expect(typeof args.data.inviteTokenHash).toBe("string");
     expect(args.data.inviteTokenHash).not.toBe(plaintext);
     expect(args.data.reminderSentAt).toBeNull();
@@ -136,6 +136,10 @@ describe("peekTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() - 1000),
       tripRequest: futureTrip,
@@ -154,9 +158,13 @@ describe("peekTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: "SAVED",
     });
 
     const result = await peekTravelerInvite("tok");
@@ -175,6 +183,9 @@ describe("peekTravelerInvite", () => {
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: "SAVED",
     });
 
     const result = await peekTravelerInvite("tok");
@@ -190,6 +201,10 @@ describe("peekTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -203,6 +218,7 @@ describe("peekTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       buyerFirstName: "Alice",
+      idDocumentRequired: true,
     });
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
@@ -296,6 +312,10 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() - 1000),
       tripRequest: futureTrip,
@@ -318,9 +338,13 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: "SAVED",
     });
 
     const result = await consumeTravelerInvite("tok", {
@@ -340,6 +364,10 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -357,12 +385,13 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       buyerFirstName: "Alice",
+      idDocumentRequired: true,
     });
 
     expect(prisma.tripTraveler.update).toHaveBeenCalledTimes(1);
     const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(args.where).toEqual({ id: "trav-1" });
+    expect(args.where).toMatchObject({ id: "trav-1" });
     expect(args.data.fullName).toBe("Bob Companion");
     expect(args.data.idDocument).toBe("ID999");
     expect(args.data.email).toBe("bob@example.com");
@@ -384,6 +413,10 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -408,6 +441,10 @@ describe("consumeTravelerInvite", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -458,6 +495,10 @@ describe("hasLiveTravelerInviteGrant", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() - 1000),
       tripRequest: futureTrip,
@@ -492,9 +533,13 @@ describe("hasLiveTravelerInviteGrant", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: "SAVED",
     });
 
     const result = await hasLiveTravelerInviteGrant("locked-tok");
@@ -509,6 +554,10 @@ describe("hasLiveTravelerInviteGrant", () => {
       tripRequestId: "trip-1",
       kind: "ADULT",
       status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: futureTrip,
@@ -517,4 +566,57 @@ describe("hasLiveTravelerInviteGrant", () => {
     const result = await hasLiveTravelerInviteGrant("live-tok");
     expect(result).toBe(true);
   });
+});
+
+describe("late companion completion", () => {
+  const row = {
+    id: "trav-1", tripRequestId: "trip-1", kind: "ADULT", status: "INVITED",
+    fullName: "Buyer-saved Name", email: "invited@example.com", idDocument: null,
+    dateOfBirth: null, inviteTokenHash: hashPlaintext("late-token"),
+    inviteTokenExpiresAt: new Date(Date.now() + DAY_MS),
+    tripRequest: { ...lockedTrip, type: "xsed" },
+  };
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    vi.mocked(prisma.tripTraveler.update).mockResolvedValue({} as never);
+  });
+  it("allows a live grant after cutoff while details are missing", async () => {
+    expect(await peekTravelerInvite("late-token")).toMatchObject({ ok: true, idDocumentRequired: true });
+    expect(await hasLiveTravelerInviteGrant("late-token")).toBe(true);
+  });
+  it("fills the gap but preserves populated identity even if the authenticated account differs", async () => {
+    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name", email: "account@example.com", idDocument: "PASSPORT", userId: "user" })).ok).toBe(true);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ inviteTokenHash: hashPlaintext("late-token"), idDocument: null, status: "INVITED" }),
+      data: expect.objectContaining({ fullName: row.fullName, email: row.email, idDocument: "PASSPORT", userId: "user" }),
+    }));
+  });
+  it("does not ask for or overwrite a saved ID when a different required field is missing", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ ...row, fullName: " ", idDocument: "SAVED" } as never);
+    expect(await peekTravelerInvite("late-token")).toMatchObject({ ok: true, idDocumentRequired: false });
+    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name" })).ok).toBe(true);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ idDocument: "SAVED", fullName: "Account Name" }) }));
+  });
+  it("a concurrent completion or token rotation rejects stale submission", async () => {
+    vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
+    expect(await consumeTravelerInvite("late-token", { fullName: "Name", idDocument: "ID" })).toEqual({ ok: false, reason: "invalid" });
+  });
+});
+
+it("does not transfer an already-linked account after cutoff when identity is incomplete", async () => {
+  vi.resetAllMocks();
+  vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ id: "trav", tripRequestId: "trip", kind: "ADULT", status: "INVITED", fullName: "Name", email: "saved@example.com", idDocument: null, dateOfBirth: null, userId: "original-account", inviteTokenHash: hashPlaintext("token"), inviteTokenExpiresAt: new Date(Date.now() + DAY_MS), tripRequest: lockedTrip } as never);
+  expect(await consumeTravelerInvite("token", { fullName: "New Account", email: "new@example.com", idDocument: "ID", userId: "different-account" })).toEqual({ ok: false, reason: "invalid" });
+  expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+});
+
+it("allows the existing owner to fill a gap with an account-link compare-and-swap guard", async () => {
+  vi.resetAllMocks();
+  vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ id: "trav", tripRequestId: "trip", kind: "ADULT", status: "INVITED", fullName: "Name", email: "saved@example.com", idDocument: null, dateOfBirth: null, userId: "original-account", inviteTokenHash: hashPlaintext("token"), inviteTokenExpiresAt: new Date(Date.now() + DAY_MS), tripRequest: lockedTrip } as never);
+  vi.mocked(prisma.tripTraveler.update).mockResolvedValue({} as never);
+  expect((await consumeTravelerInvite("token", { fullName: "Account Name", idDocument: "ID", userId: "original-account" })).ok).toBe(true);
+  expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ userId: "original-account" }), data: expect.objectContaining({ userId: "original-account", idDocument: "ID", fullName: "Name" }) }));
+  vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
+  expect(await consumeTravelerInvite("token", { fullName: "Account Name", idDocument: "ID", userId: "original-account" })).toEqual({ ok: false, reason: "invalid" });
 });

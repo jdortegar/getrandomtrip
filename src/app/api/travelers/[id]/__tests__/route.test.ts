@@ -161,7 +161,7 @@ describe("PATCH /api/travelers/[id]", () => {
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip }));
+    ).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip, fullName: "Saved Name" }));
 
     const res = await PATCH(
       makeRequest({ fullName: "Bob" }),
@@ -303,5 +303,45 @@ describe("PATCH /api/travelers/[id]", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.traveler.status).toBe("COMPLETE");
+  });
+});
+
+describe("PATCH late completion", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "buyer-1" } });
+    vi.mocked(prisma.tripRequest.count).mockResolvedValue(1);
+  });
+  it.each(["xsed", "family"])("fills missing %s fields without overwriting protected values", async (type) => {
+    const row = makeAdultRow({ fullName: "Saved Name", email: "saved@example.com", idDocument: "   ", tripRequest: { ...lockedTrip, type } });
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({ ...row, ...data }) as never);
+    const { PATCH } = await import("../route");
+    const res = await PATCH(makeRequest({ fullName: "Saved Name", idDocument: "ABC" }), makeProps("trav-1"));
+    expect(res.status).toBe(200);
+    expect((await res.json()).traveler.status).toBe("COMPLETE");
+    expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ fullName: "Saved Name", idDocument: "   ", status: "PENDING" }),
+      data: expect.objectContaining({ idDocument: "ABC" }),
+    }));
+  });
+  it("allows a minor to fill the missing date without unlocking saved name/document", async () => {
+    const row = makeMinorRow({ fullName: "Child", idDocument: "123", tripRequest: lockedTrip });
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockImplementation(async ({ data }: { data: Record<string, unknown> }) => ({ ...row, ...data }) as never);
+    const { PATCH } = await import("../route");
+    expect((await PATCH(makeRequest({ dateOfBirth: "2016-01-01" }), makeProps("trav-2"))).status).toBe(200);
+  });
+  it("rejects a concurrent fill instead of overwriting it", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip }) as never);
+    vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
+    const { PATCH } = await import("../route");
+    expect((await PATCH(makeRequest({ fullName: "Late fill" }), makeProps("trav-1"))).status).toBe(409);
+  });
+  it.each([{ fullName: 42 }, { dateOfBirth: "not-a-date" }])("rejects invalid fields", async (body) => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip }) as never);
+    const { PATCH } = await import("../route");
+    expect((await PATCH(makeRequest(body), makeProps("trav-1"))).status).toBe(400);
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 });

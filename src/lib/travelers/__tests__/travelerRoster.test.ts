@@ -277,3 +277,27 @@ describe("getRosterForTrip", () => {
     });
   });
 });
+
+describe("XSED cutoff regression", () => {
+  it("reopens a paid Sunday-to-Saturday trip despite a legacy T-7d stamp", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
+    try {
+      const trip = { type: "xsed", startDate: new Date("2026-10-03T00:00:00Z"), travelersLockedAt: new Date("2026-09-27T15:00:00Z"), payment: { status: "APPROVED" }, paxDetails: { adults: 2 }, travelers: [] };
+      vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(trip as never);
+      const roster = await getRosterForTrip("trip");
+      expect(roster.locked).toBe(false);
+      expect(roster.deadline).toBe("2026-09-30T00:00:00.000Z");
+    } finally { vi.useRealTimers(); }
+  });
+  it("protects populated fields at exactly 72 hours, not one millisecond earlier", () => {
+    vi.useFakeTimers();
+    const trip = { type: "XSED", startDate: new Date("2026-10-03T00:00:00Z"), travelersLockedAt: null };
+    try {
+      vi.setSystemTime(new Date("2026-09-29T23:59:59.999Z"));
+      expect(isRosterLocked(trip)).toBe(false);
+      vi.setSystemTime(new Date("2026-09-30T00:00:00Z"));
+      expect(isRosterLocked(trip)).toBe(true);
+    } finally { vi.useRealTimers(); }
+  });
+});

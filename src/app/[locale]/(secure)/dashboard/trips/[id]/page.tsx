@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/Button";
 import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
 import {
+  Loader2,
   ArrowLeft,
   Calendar,
   MapPin,
@@ -38,6 +39,7 @@ import type { TravelerRoster } from "@/types/traveler";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
+import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
 
 interface TripDetails {
@@ -115,6 +117,7 @@ function TripDetailsContent() {
   const locale = (params.locale as string) ?? "es";
 
   async function handleSaveTravelers() {
+    if (savingTravelers) return;
     setSavingTravelers(true);
     try {
       await rosterRef.current?.saveAll();
@@ -377,14 +380,16 @@ function TripDetailsContent() {
                     ref={rosterRef}
                     roster={trip.roster}
                   />
-                  {!trip.roster.locked && (
+                  {(!trip.roster.locked || trip.roster.travelers.some(hasMissingTravelerDetails)) && (
                     <div className="mt-6">
                       <Button
+                        aria-busy={savingTravelers}
                         disabled={savingTravelers}
                         onClick={() => void handleSaveTravelers()}
                         size="lg"
                         variant="default"
                       >
+                        {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
                         {savingTravelers
                           ? dict.inviteTravelers.savingAction
                           : dict.inviteTravelers.saveAction}

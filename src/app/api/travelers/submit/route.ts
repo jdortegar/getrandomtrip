@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!token || typeof token !== "string" || !idDocument || typeof idDocument !== "string") {
+    if (!token || typeof token !== "string" || (idDocument !== undefined && typeof idDocument !== "string")) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
 
