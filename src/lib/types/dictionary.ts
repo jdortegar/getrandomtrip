@@ -1,3 +1,197 @@
+export interface DesignSystemDict {
+  skip: string;
+  navigation: string;
+  usage: string;
+  backToTop: string;
+  footer: string;
+  hero: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    explore: string;
+    localOnly: string;
+    overview: string;
+    facts: {
+      label: string;
+      value: string;
+    }[];
+  };
+  sections: {
+    foundations: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+    buttons: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+    controls: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+    badges: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+    layout: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+    tables: {
+      nav: string;
+      title: string;
+      description: string;
+    };
+  };
+  foundations: {
+    clipboard: {
+      action: string;
+      pending: string;
+      success: string;
+      failure: string;
+    };
+    colors: {
+      primary: {
+        name: string;
+        usage: string;
+      };
+      secondary: {
+        name: string;
+        usage: string;
+      };
+      feature: {
+        name: string;
+        usage: string;
+      };
+      ground: {
+        name: string;
+        usage: string;
+      };
+      surface: {
+        name: string;
+        usage: string;
+      };
+      ink: {
+        name: string;
+        usage: string;
+      };
+    };
+    paletteNote: string;
+    typography: string;
+    typeNote: string;
+    displayLabel: string;
+    displaySample: string;
+    headingLabel: string;
+    headingSample: string;
+    bodyLabel: string;
+    bodySample: string;
+    captionLabel: string;
+    captionSample: string;
+  };
+  buttons: {
+    variants: string;
+    sizes: string;
+    labels: {
+      default: string;
+      secondary: string;
+      pill: string;
+      ghost: string;
+      link: string;
+      destructive: string;
+    };
+    sizeLabels: {
+      sm: string;
+      md: string;
+      lg: string;
+    };
+    disabled: string;
+    navigation: string;
+    feedback: string;
+    hint: string;
+  };
+  controls: {
+    formTitle: string;
+    hint: string;
+    email: string;
+    emailPlaceholder: string;
+    notes: string;
+    notesPlaceholder: string;
+    validate: string;
+    error: string;
+    success: string;
+    localOnly: string;
+    states: string;
+    readOnly: string;
+    readOnlyValue: string;
+    disabled: string;
+    disabledValue: string;
+    pace: string;
+    flexible: string;
+    slow: string;
+    active: string;
+    updates: string;
+    travelers: string;
+    decrease: string;
+    increase: string;
+  };
+  badges: {
+    statusTitle: string;
+    statusHint: string;
+    chipTitle: string;
+    chips: string[];
+    selected: string;
+    statuses: {
+      ACTIVE: string;
+      DRAFT: string;
+      PENDING_REVIEW: string;
+      PENDING_TRIPPER_REVIEW: string;
+      INACTIVE: string;
+      ARCHIVED: string;
+    };
+  };
+  layout: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    cards: {
+      title: string;
+      description: string;
+    }[];
+    spacing: string;
+    spacingHint: string;
+  };
+  tables: {
+    all: string;
+    caption: string;
+    empty: string;
+    name: string;
+    nights: string;
+    status: string;
+    search: string;
+    searchPlaceholder: string;
+    sort: string;
+    next: string;
+    previous: string;
+    pageOf: string;
+    toolbar: {
+      clearFilters: string;
+      count: string;
+      loading: string;
+      of: string;
+    };
+    rows: {
+      name: string;
+      nights: number;
+      status: keyof DesignSystemDict["badges"]["statuses"];
+    }[];
+  };
+}
+
 export interface PdfLayoutCopy {
   refShort: string;
   holderShort: string;
@@ -2561,6 +2755,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  designSystem: DesignSystemDict;
   pdfLayout: PdfLayoutCopy;
   analyticsConsent: {
     title: string;
