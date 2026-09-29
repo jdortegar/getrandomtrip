@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { Calendar, Clock, Eye, MapPin, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Img from "@/components/common/Img";
@@ -17,21 +18,6 @@ interface UpcomingTripsListProps {
   locale: string;
   trips: Trip[];
 }
-
-const STATUS_STYLES: Record<string, { dot: string; badge: string }> = {
-  CONFIRMED: {
-    dot: "bg-blue-500",
-    badge: "border-blue-200 bg-blue-50 text-blue-800",
-  },
-  REVEALED: {
-    dot: "bg-purple-500",
-    badge: "border-purple-200 bg-purple-50 text-purple-800",
-  },
-};
-const DEFAULT_STATUS_STYLE = {
-  dot: "bg-gray-400",
-  badge: "border-gray-200 bg-gray-50 text-gray-700",
-};
 
 export function UpcomingTripsList({
   copy,
@@ -89,7 +75,6 @@ export function UpcomingTripsList({
               const statusLabel =
                 copy.tripStatus[trip.status as keyof typeof copy.tripStatus] ??
                 trip.status;
-              const s = STATUS_STYLES[trip.status] ?? DEFAULT_STATUS_STYLE;
 
               return (
                 <div className="px-5 py-4" key={trip.id}>
@@ -112,12 +97,7 @@ export function UpcomingTripsList({
                         {travelerTypeTitle} · {levelName}
                       </p>
                     </div>
-                    <span
-                      className={`hidden shrink-0 items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] sm:inline-flex ${s.badge}`}
-                    >
-                      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
-                      {statusLabel}
-                    </span>
+                    <span className="hidden shrink-0 sm:inline-flex"><StatusIndicatorBadge family="traveler-trip" label={statusLabel} status={trip.status} /></span>
                     <div className="flex shrink-0 items-center gap-1.5">
                       {trip.status === "CONFIRMED" && (
                         <TableIconLink
@@ -161,12 +141,7 @@ export function UpcomingTripsList({
                       <Calendar className="h-3 w-3 shrink-0" />
                       {startDate}
                     </span>
-                    <span
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] sm:hidden ${s.badge}`}
-                    >
-                      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
-                      {statusLabel}
-                    </span>
+                    <span className="inline-flex shrink-0 sm:hidden"><StatusIndicatorBadge family="traveler-trip-summary" label={statusLabel} status={trip.status} /></span>
                   </div>
                 </div>
               );

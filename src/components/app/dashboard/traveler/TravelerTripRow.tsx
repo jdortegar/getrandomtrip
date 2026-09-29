@@ -8,17 +8,6 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
-const STATUS_STYLES: Record<string, string> = {
-  CANCELLED:
-    "border-red-200 bg-red-50 text-red-800 [--dot:theme(colors.red.500)]",
-  COMPLETED:
-    "border-green-200 bg-green-50 text-green-800 [--dot:theme(colors.green.500)]",
-  CONFIRMED:
-    "border-blue-200 bg-blue-50 text-blue-800 [--dot:theme(colors.blue.500)]",
-  REVEALED:
-    "border-purple-200 bg-purple-50 text-purple-800 [--dot:theme(colors.purple.500)]",
-};
-
 interface TravelerTripRowProps {
   copy: DashboardCopy;
   locale: string;
@@ -35,9 +24,6 @@ export function TravelerTripRow({ copy, locale, trip }: TravelerTripRowProps) {
     { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" },
   );
   const statusLabel = copy.tripStatus[trip.status] ?? trip.status;
-  const statusClass =
-    STATUS_STYLES[trip.status] ??
-    "border-gray-200 bg-gray-50 text-gray-700 [--dot:theme(colors.gray.400)]";
 
   return (
     <tr className="transition-colors hover:bg-gray-50">
@@ -68,8 +54,9 @@ export function TravelerTripRow({ copy, locale, trip }: TravelerTripRowProps) {
       {/* Status */}
       <td className="px-5 py-4">
         <StatusIndicatorBadge
+          family="traveler-trip"
           label={statusLabel}
-          styles={{ badge: statusClass, dot: "bg-(--dot)" }}
+          status={trip.status}
         />
       </td>
 

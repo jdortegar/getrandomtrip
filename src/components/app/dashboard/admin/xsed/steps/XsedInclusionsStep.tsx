@@ -31,7 +31,7 @@ export function XsedInclusionsStep({ form, onChange, copy }: Props) {
         onRemove={(i) =>
           onChange({ inclusions: form.inclusions.filter((_, idx) => idx !== i) })
         }
-        chipColor="bg-green-50 text-green-800 border border-green-100"
+        kind="inclusion"
       />
 
       <ChipListInput
@@ -43,7 +43,7 @@ export function XsedInclusionsStep({ form, onChange, copy }: Props) {
         onRemove={(i) =>
           onChange({ exclusions: form.exclusions.filter((_, idx) => idx !== i) })
         }
-        chipColor="bg-red-50 text-red-800 border border-red-100"
+        kind="exclusion"
       />
     </div>
   );

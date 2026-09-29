@@ -44,6 +44,7 @@ export function DocumentDraftList({
               {item.document.label || titles[item.document.template]}
             </DocumentActionButton>
             <StatusIndicatorBadge
+              family="document"
               label={
                 !item.documentId
                   ? copy.draft
@@ -51,12 +52,7 @@ export function DocumentDraftList({
                     ? copy.attached
                     : copy.unpublished
               }
-              styles={{
-                badge: published
-                  ? "border-green-200 bg-green-50 text-green-800"
-                  : "border-amber-200 bg-amber-50 text-amber-800",
-                dot: published ? "bg-green-500" : "bg-amber-400",
-              }}
+              status={published ? "published" : "draft"}
             />
           </li>
         );

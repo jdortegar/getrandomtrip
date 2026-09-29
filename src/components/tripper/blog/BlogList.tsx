@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 import Image from "next/image";
 import { BlogStatusBadge } from "@/components/common/BlogStatusBadge";
@@ -57,12 +58,11 @@ export default function BlogList({ posts }: BlogListProps) {
                   />
                 )}
                 {post.tags?.map((tag) => (
-                  <span
+                  <Badge
                     key={tag}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 uppercase"
-                  >
-                    {tag}
-                  </span>
+                    kind="article-tag"
+                    label={tag}
+                  />
                 ))}
               </div>
               <div className="flex space-x-3">

@@ -142,53 +142,6 @@
   margin-top: 6px;
 }
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 6px;
-  border: 1px solid var(--gray-200);
-  background: var(--gray-50);
-  padding: 3px 9px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--neutral-600);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.chipType {
-  border-color: var(--sky-200);
-  background: var(--sky-50);
-  color: var(--sky-700);
-}
-.chipCountry {
-  border-color: var(--gray-200);
-  background: var(--gray-50);
-  color: var(--neutral-600);
-}
-
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 6px;
-  border: 1px solid var(--green-200);
-  background: var(--green-50);
-  color: var(--green-800);
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.statusDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--green-500);
-  flex: none;
-}
-
 /* Header actions */
 .headerActions {
   display: flex;

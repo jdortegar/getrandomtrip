@@ -132,11 +132,19 @@ it("updates switch, select, bounded quantity, and chip states", () => {
   )!;
   for (let count = 0; count < 6; count++) act(() => increase.click());
   expect(increase.disabled).toBe(true);
+  expect(
+    container.querySelectorAll('[data-component="Badge"]').length,
+  ).toBeGreaterThan(0);
   act(() => button(copy.badges.chips[0]).click());
-  expect(button(copy.badges.chips[0]).classList.contains("uppercase")).toBe(true);
+  expect(button(copy.badges.chips[0]).classList.contains("uppercase")).toBe(
+    true,
+  );
   expect(button(copy.badges.chips[0]).getAttribute("aria-pressed")).toBe(
     "true",
   );
+  expect(
+    container.querySelectorAll('[data-component="Badge"]').length,
+  ).toBeGreaterThan(0);
   act(() => button(copy.badges.chips[0]).click());
   expect(button(copy.badges.chips[0]).getAttribute("aria-pressed")).toBe(
     "false",
