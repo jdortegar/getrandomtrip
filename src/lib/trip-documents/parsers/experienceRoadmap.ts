@@ -21,6 +21,9 @@ const DATA_FIELDS = [
   "duration",
   "heading",
   "mapUrl",
+  "reservationReference",
+  "travelerLabel",
+  "experienceLabel",
 ];
 
 export function parseExperienceRoadmap(
@@ -70,7 +73,17 @@ export function parseExperienceRoadmap(
   const data = record(raw.data, [...DATA_FIELDS, "activities"], "data");
   if (!data) return { ok: false, errors };
   for (const key of DATA_FIELDS)
-    text(data, key, `data.${key}`, key === "mapUrl");
+    text(
+      data,
+      key,
+      `data.${key}`,
+      [
+        "mapUrl",
+        "reservationReference",
+        "travelerLabel",
+        "experienceLabel",
+      ].includes(key),
+    );
   if (
     mode === "generation" &&
     isIsoCalendarDate(data.startDate) &&

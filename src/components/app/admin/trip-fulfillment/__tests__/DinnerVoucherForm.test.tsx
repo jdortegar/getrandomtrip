@@ -311,3 +311,31 @@ it("associates menu item errors with their current parser paths", () => {
       ?.hasAttribute("aria-invalid"),
   ).toBe(false);
 });
+
+it.each([en, es])(
+  "authors optional reference-fidelity fields without losing legacy values",
+  (dictionary) => {
+    act(() => root.render(<Harness dictionary={dictionary} />));
+    edit("dinner-supplierConfirmationUrl", "https://example.com/confirmation");
+    edit("dinner-restaurant-locality", "Example town");
+    edit("dinner-restaurant-region", "Example region");
+    edit("dinner-restaurant-email", "example@example.com");
+
+    act(() =>
+      container
+        .querySelector("form")!
+        .dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        ),
+    );
+    expect(submit.mock.calls[0][0].data).toMatchObject({
+      supplierConfirmationUrl: "https://example.com/confirmation",
+      restaurant: {
+        name: initial.data.restaurant.name,
+        locality: "Example town",
+        region: "Example region",
+        email: "example@example.com",
+      },
+    });
+  },
+);

@@ -1,6 +1,9 @@
 export interface VoucherProvider {
   name: string;
   address: string;
+  locality?: string;
+  region?: string;
+  email?: string;
   contact?: string;
   locationUrl?: string;
   providerUrl?: string;
@@ -18,4 +21,5 @@ export interface VoucherDetails {
   reservationReference?: string;
   paymentWording?: string;
   supplierConfirmation?: string;
+  supplierConfirmationUrl?: string;
 }

@@ -7,6 +7,8 @@ import type {
 
 export interface ActivityVoucherData extends VoucherDetails {
   participants: string;
+  service?: string;
+  endTime?: string;
   provider: VoucherProvider;
   date: string;
   time: string;

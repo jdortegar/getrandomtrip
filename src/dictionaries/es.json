@@ -95,7 +95,9 @@
     "activities": "Actividades sugeridas",
     "date": "Fecha sugerida",
     "time": "Horario sugerido",
-    "map": "Abrir mapa interactivo"
+    "map": "Abrir mapa interactivo",
+    "travelerLabel": "Tipo de viaje (opcional)",
+    "experienceLabel": "Nivel de experiencia (opcional)"
   },
   "dinnerVoucherPreview": {
     "open": "Crear vista previa de cena",
@@ -130,7 +132,9 @@
     "date": "Fecha de la actividad",
     "time": "Horario de la actividad",
     "program": "Programa",
-    "recommendations": "Recomendaciones"
+    "recommendations": "Recomendaciones",
+    "service": "Nombre del programa",
+    "endTime": "Horario de finalización"
   },
   "hotelVoucherPreview": {
     "open": "Crear vista previa de hotel",
@@ -147,7 +151,13 @@
     "unavailable": "La vista previa no está disponible. Inténtalo de nuevo."
   },
   "hotelVoucherForm": {
-    "groups": {"metadata": "Datos del documento", "booking": "Reserva y horarios", "provider": "Proveedor y ubicación", "route": "Ruta y fechas del viaje", "content": "Detalles e instrucciones"},
+    "groups": {
+      "metadata": "Datos del documento",
+      "booking": "Reserva y horarios",
+      "provider": "Proveedor y ubicación",
+      "route": "Ruta y fechas del viaje",
+      "content": "Detalles e instrucciones"
+    },
     "errors": {
       "invalid": "Revisa este valor.",
       "required": "Completa este campo.",
@@ -194,7 +204,12 @@
     "instructions": "Información importante",
     "location": "Ver ubicación",
     "provider": "Sitio del alojamiento",
-    "preview": "Documento de viaje"
+    "preview": "Documento de viaje",
+    "localActivities": "Entorno y actividades locales",
+    "locality": "Localidad",
+    "region": "Provincia / región",
+    "email": "Email",
+    "confirmationUrl": "Enlace de confirmación del proveedor"
   },
   "sentryExample": {
     "title": "Prueba de Sentry",
@@ -470,7 +485,11 @@
           "id": "main",
           "label": "General",
           "substeps": [
-            { "id": "identity", "title": "Experiencia", "description": "" }
+            {
+              "id": "identity",
+              "title": "Experiencia",
+              "description": ""
+            }
           ]
         },
         {
@@ -482,9 +501,21 @@
               "title": "Alojamiento",
               "description": ""
             },
-            { "id": "dinner", "title": "Cena", "description": "" },
-            { "id": "activity", "title": "Actividad", "description": "" },
-            { "id": "itinerary", "title": "Itinerario", "description": "" },
+            {
+              "id": "dinner",
+              "title": "Cena",
+              "description": ""
+            },
+            {
+              "id": "activity",
+              "title": "Actividad",
+              "description": ""
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerario",
+              "description": ""
+            },
             {
               "id": "inclusions",
               "title": "Incluye / No incluye",
@@ -547,9 +578,18 @@
           "activityNamePlaceholder": "Ej: City tour...",
           "duration": "Duración",
           "durationUnits": {
-            "min": { "label": "min", "hint": "minutos" },
-            "hr": { "label": "hr", "hint": "horas" },
-            "day": { "label": "día", "hint": "días" }
+            "min": {
+              "label": "min",
+              "hint": "minutos"
+            },
+            "hr": {
+              "label": "hr",
+              "hint": "horas"
+            },
+            "day": {
+              "label": "día",
+              "hint": "días"
+            }
           },
           "description": "Descripción",
           "descriptionPlaceholder": "Ej: en la actividad podrás montar a caballo...",
@@ -1118,7 +1158,10 @@
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
     "ctaLabel": "DESCUBRE XSED",
     "features": [
-      { "description": "1 noche — de sábado a domingo", "title": "Duración" },
+      {
+        "description": "1 noche — de sábado a domingo",
+        "title": "Duración"
+      },
       {
         "description": "Un destino sorpresa a menos de 300 km",
         "title": "Destino"
@@ -1127,7 +1170,10 @@
         "description": "Tu propio auto; transporte no incluido",
         "title": "Transporte"
       },
-      { "description": "Una noche de alojamiento", "title": "Alojamiento" },
+      {
+        "description": "Una noche de alojamiento",
+        "title": "Alojamiento"
+      },
       {
         "description": "Cena del sábado, desayuno del domingo y una experiencia local curada",
         "title": "Beneficios"
@@ -3671,7 +3717,11 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos destinos. Diseñamos una forma distinta de viajar. Randomtrip nace para liberar a los viajeros de la fatiga de planificar: demasiadas pestañas abiertas, demasiadas decisiones antes de empezar.",
       "p2": "A eso respondemos con Serendipia Diseñada: experiencias que se sienten espontáneas, pero nacen de una estructura rigurosa. Tú defines fechas, presupuesto, estilo, ritmo y límites. Nosotros diseñamos el asombro dentro de ese marco. Vivir lo inesperado, sin improvisar.",
-      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
+      "pills": [
+        "Brief emocional",
+        "Diseño invisible",
+        "Sorpresa con red"
+      ],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {
@@ -5661,25 +5711,25 @@
     "sourceError": "No se pudo cargar la experiencia seleccionada. Vuelve a intentar antes de crear un documento.",
     "sourceNote": "La selección actualiza este itinerario y los datos iniciales de documentos nuevos sin guardar el viaje. Los borradores existentes no se modifican.",
     "linkedDrafts": "Copias editables de documentos adjuntos",
-      "newDocument": "Nuevo documento",
-      "privateDrafts": "Borradores privados",
-      "draftsNote": "Solo los documentos adjuntos están disponibles para los viajeros. Los borradores son privados.",
-      "attachedDocuments": "Documentos adjuntos",
-      "uploadExisting": "Subir un PDF existente",
-      "chooseTemplate": "Elige una plantilla de documento",
-      "editDocument": "Editar documento",
-      "reviewDocument": "Revisar PDF",
-      "savePreview": "Guardar y previsualizar",
-      "backToEditing": "Volver a editar",
-      "moreActions": "Más acciones",
-      "emptyDrafts": "Todavía no hay borradores privados.",
-      "refreshError": "No se pudieron actualizar los documentos. Tus cambios están guardados. Reintenta para ver los últimos adjuntos.",
-      "retry": "Actualizar documentos",
-      "metadata": "Datos del documento",
-      "booking": "Reserva y horarios",
-      "provider": "Proveedor y ubicación",
-      "route": "Ruta y fechas del viaje",
-      "content": "Detalles e instrucciones"
+    "newDocument": "Nuevo documento",
+    "privateDrafts": "Borradores privados",
+    "draftsNote": "Solo los documentos adjuntos están disponibles para los viajeros. Los borradores son privados.",
+    "attachedDocuments": "Documentos adjuntos",
+    "uploadExisting": "Subir un PDF existente",
+    "chooseTemplate": "Elige una plantilla de documento",
+    "editDocument": "Editar documento",
+    "reviewDocument": "Revisar PDF",
+    "savePreview": "Guardar y previsualizar",
+    "backToEditing": "Volver a editar",
+    "moreActions": "Más acciones",
+    "emptyDrafts": "Todavía no hay borradores privados.",
+    "refreshError": "No se pudieron actualizar los documentos. Tus cambios están guardados. Reintenta para ver los últimos adjuntos.",
+    "retry": "Actualizar documentos",
+    "metadata": "Datos del documento",
+    "booking": "Reserva y horarios",
+    "provider": "Proveedor y ubicación",
+    "route": "Ruta y fechas del viaje",
+    "content": "Detalles e instrucciones"
   },
   "manualTravelerDetailsReminder": {
     "subject": "Completar los datos de acompañantes",
@@ -5696,5 +5746,81 @@
     "body": "Tu viaje XSED sale en 72 horas o menos y todavía faltan datos de tus acompañantes. Abrí tu viaje para completarlos o enviar una invitación.",
     "fillEmpty": "Los campos vacíos siguen disponibles. Los datos guardados están protegidos; contactanos si necesitás corregirlos.",
     "cta": "ABRIR MI VIAJE"
+  },
+  "pdfLayout": {
+    "reservationDetails": "DETALLES DE LA RESERVA",
+    "locationContact": "UBICACIÓN Y CONTACTO",
+    "services": "SERVICIOS E INSTALACIONES INCLUIDAS",
+    "presentation": "PRESENTACIÓN DEL VOUCHER",
+    "dinnerPresentation": "REQUISITO OBLIGATORIO DE PRESENTACIÓN",
+    "information": "INFORMACIÓN Y RECOMENDACIONES",
+    "hotelInformation": "INFORMACIÓN IMPORTANTE PARA EL CHECK-IN",
+    "terms": "TÉRMINOS Y RECOMENDACIONES",
+    "localActivities": "ENTORNO Y ACTIVIDADES LOCALES",
+    "itinerary": "EL ITINERARIO PASO A PASO",
+    "mapTitle": "MAPA DEL RECORRIDO EN TIEMPO REAL",
+    "mapDescription": "Accedé a la ruta interactiva y a las paradas en el mapa digital.",
+    "mapButton": "VER MAPA INTERACTIVO",
+    "farewell": "Buen viaje",
+    "qr": "Código QR",
+    "qrHint": "Escaneá para abrir el enlace.",
+    "voucher": "COMPROBANTE DE RESERVA",
+    "roadmap": "HOJA DE RUTA",
+    "xsedTagline": "X SUERTE\nES DOMINGO",
+    "getLost": "Get lost en",
+    "experience": "Experiencia",
+    "hotelTitle": "COMPROBANTE DE RESERVA",
+    "dinnerTitle": "VOUCHER DE GASTRONOMÍA",
+    "activityTitle": "VOUCHER DE EXPERIENCIA",
+    "itineraryEyebrow": "ITINERARIO",
+    "xsedTitle": "ROADTRIP ESCAPADA",
+    "checkIn": "ENTRADA · CHECK-IN",
+    "checkOut": "SALIDA · CHECK-OUT",
+    "fromTime": "A partir de las {time} hs",
+    "untilTime": "Hasta las {time} hs",
+    "scheduledDate": "FECHA PROGRAMADA",
+    "dinnerDate": "FECHA DE LA RESERVA",
+    "dinnerTime": "HORARIO DE LA CENA",
+    "activityDate": "FECHA DE LA RESERVA",
+    "activityTime": "HORARIO DE EXPERIENCIA",
+    "suggestedTimes": "Horarios sugeridos",
+    "duration": "DURACIÓN",
+    "nights": "{count} noche(s)",
+    "hotelGuidance": "Presente este comprobante digital o impreso junto con un documento de identidad válido al momento de ingresar.",
+    "hotelArrival": "Si planea arribar fuera del horario habitual de recepción, notifique al alojamiento con anticipación.",
+    "hotelRules": "Respete las normas de descanso y tranquilidad de la propiedad.",
+    "dinnerGuidance": "Presente este voucher / PDF (digital o impreso) al llegar al restaurante para la validación de la reserva y los servicios indicados.",
+    "dinnerTerms": "Se solicita puntualidad. Para modificar el horario o informar alergias alimentarias, comuníquese con anticipación con el restaurante.\nConsulte al establecimiento por consumos adicionales no contemplados en el menú indicado.",
+    "activityGuidance": "Presente este voucher en formato digital o impreso al ingresar al establecimiento para validar el servicio.",
+    "activityTerms": "Revise el horario y las indicaciones del proveedor antes de asistir.\nPara reprogramaciones o consultas sobre accesibilidad y requisitos de la actividad, comuníquese con el proveedor con anticipación.",
+    "dinnerFarewell": "¡Que disfruten de su cena!",
+    "activityFarewell": "¡Que disfruten de la experiencia!",
+    "hotelQrHint": "Mostrar en check-in",
+    "dinnerQrHint": "Mostrar en la recepción del restaurante",
+    "activityQrHint": "Mostrar en la recepción",
+    "linkHint": "Abrí el enlace para ver los detalles.",
+    "mapUnavailable": "El enlace al mapa aún no está disponible.",
+    "refShort": "Ref:",
+    "holderShort": "Titular",
+    "issuedShort": "Emisión",
+    "contactShort": "Atención",
+    "regionShort": "Provincia",
+    "destinationShort": "Destino",
+    "restaurantShort": "Restaurante",
+    "establishment": "Establecimiento",
+    "locationShort": "Ubicación",
+    "phoneShort": "Teléfono",
+    "accessShort": "Acceso",
+    "programShort": "Programa",
+    "menuTitle": "MENÚ INCLUIDO POR PERSONA",
+    "routeSubtitle": "DE {origin} A {destination}",
+    "departureDay": "Día de salida",
+    "arrivalDay": "Llegada al destino",
+    "departureFrom": "Salida desde {origin}",
+    "drivingTotal": "MANEJO TOTAL NETO HASTA EL DESTINO",
+    "travelTotal": "TOTAL DE HORAS DE VIAJE",
+    "suggestedActivities": "ITINERARIO CON ACTIVIDADES SUGERIDAS",
+    "singleNight": "1 Noche",
+    "manyNights": "{count} Noches"
   }
 }

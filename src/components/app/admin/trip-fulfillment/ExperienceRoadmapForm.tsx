@@ -41,6 +41,9 @@ export function ExperienceRoadmapForm({
     ["duration", roadmapCopy.duration, "text", true],
     ["heading", roadmapCopy.heading, "text", true],
     ["mapUrl", roadmapCopy.mapUrl, "url", false],
+    ["reservationReference", pdfCopy.reference, "text", false],
+    ["travelerLabel", roadmapCopy.travelerLabel, "text", false],
+    ["experienceLabel", roadmapCopy.experienceLabel, "text", false],
   ] as const;
   return (
     <DocumentValidationForm

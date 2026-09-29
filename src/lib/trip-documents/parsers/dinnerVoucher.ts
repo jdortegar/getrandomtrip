@@ -12,11 +12,15 @@ const OPTIONAL = [
   "reservationReference",
   "paymentWording",
   "supplierConfirmation",
+  "supplierConfirmationUrl",
   "conditions",
 ];
 const RESTAURANT_FIELDS = [
   "name",
   "address",
+  "locality",
+  "region",
+  "email",
   "contact",
   "locationUrl",
   "providerUrl",
