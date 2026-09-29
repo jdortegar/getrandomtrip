@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
 
@@ -109,7 +110,7 @@ export function TravelerReviewsPageClient({
                 >
                   <div>
                     <p className="text-sm font-semibold text-ink">
-                      {trip.type} · {trip.level}
+                      {formatProductLabel(trip.type)} · {formatProductLabel(trip.level)}
                     </p>
                     <p className="mt-0.5 text-xs text-ink">
                       {new Date(trip.endDate).toLocaleDateString(dateLocale)}

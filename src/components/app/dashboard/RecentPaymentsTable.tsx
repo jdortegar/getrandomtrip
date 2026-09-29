@@ -1,5 +1,6 @@
 import { CreditCard } from "lucide-react";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import type { Payment } from "@/lib/utils/trips";
 import type { DashboardCopy } from "./types";
 
@@ -64,7 +65,9 @@ export function RecentPaymentsTable({
                       <td className="py-4 px-4">
                         <div className="text-sm">
                           <div className="font-medium text-ink">
-                            {trip ? `${trip.type} • ${trip.level}` : "—"}
+                            {trip
+                              ? `${formatProductLabel(trip.type)} • ${formatProductLabel(trip.level)}`
+                              : "—"}
                           </div>
                           {trip && (
                             <div className="text-xs text-ink">

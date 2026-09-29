@@ -106,3 +106,10 @@ it.each([{ reviewSubmittedAt: "2027-01-04" }, { reviewToken: null }])(
     ).not.toBeNull();
   },
 );
+
+it.each(["en", "es"] as const)("capitalizes the raw XSED level fallback in %s", (locale) => {
+  render("CONFIRMED", locale, { level: "Xsed" });
+  const level = container.querySelector("tbody td p:nth-child(2)");
+  expect(level?.textContent).toBe("XSED");
+  expect(level?.querySelector("span")).toBeNull();
+});

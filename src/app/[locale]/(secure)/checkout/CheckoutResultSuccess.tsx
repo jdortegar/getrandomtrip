@@ -16,6 +16,7 @@ import {
 } from "@/components/app/travelers/TravelerRosterSection";
 import { usePurchaseTracking } from "@/lib/hooks/useCommerceTracking";
 import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import { getCardForType } from "@/lib/utils/traveler-card";
 import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -173,7 +174,7 @@ export default function CheckoutResultSuccess({
                       <span className="font-bold">
                         {xsedTrip
                           ? labels.xsedExperienceLabel
-                          : tripData.trip.level}
+                          : formatProductLabel(tripData.trip.level)}
                       </span>
                     </p>
                   </div>

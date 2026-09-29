@@ -1,3 +1,4 @@
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { getFixedPaxDetailsForTravelType } from "@/lib/helpers/pax-details";
 import { getLevelById } from "@/lib/utils/experiencesData";
@@ -53,8 +54,8 @@ export function getTripExperienceDisplay(
   const card = getCardForType(travelerType, locale);
   const level = getLevelById(travelerType, trip.level, locale);
   return {
-    levelName: level?.name ?? trip.level,
-    travelerTypeTitle: card?.title ?? travelerType,
+    levelName: formatProductLabel(level?.name ?? trip.level),
+    travelerTypeTitle: formatProductLabel(card?.title ?? travelerType),
     typeImageSrc: card?.img ?? null,
   };
 }

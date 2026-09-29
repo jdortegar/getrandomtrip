@@ -120,6 +120,18 @@ afterEach(() => {
 });
 
 describe("Checkout confirmation approval", () => {
+  it.each(["xsed", "Xsed"])("capitalizes raw XSED level %s for ordinary trip types", async (level) => {
+    const data = summary();
+    data.trip.level = level;
+    http
+      .mockResolvedValueOnce(Response.json({ ok: true }))
+      .mockResolvedValueOnce(Response.json(data));
+    await render();
+    expect(container.textContent).toContain(`${labels.experienceCaptionLabel} XSED`);
+    expect(container.querySelector(".bg-xsed")).toBeNull();
+    expect(data.trip).toMatchObject({ type: "solo", level });
+  });
+
   it("keeps the product marker as plain text without a badge", async () => {
     const data = summary();
     data.trip.type = "xsed";

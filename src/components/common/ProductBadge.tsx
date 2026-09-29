@@ -1,3 +1,4 @@
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import { cn } from "@/lib/utils";
 
 interface ProductBadgeProps {
@@ -17,7 +18,7 @@ export function ProductBadge({ value }: ProductBadgeProps) {
           : "bg-sky-50 border-sky-200 text-sky-700",
       )}
     >
-      {isXsed ? value.toUpperCase() : value}
+      {formatProductLabel(value)}
     </span>
   );
 }
