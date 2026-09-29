@@ -43,7 +43,7 @@ export function DropCard({
         />
         {drop.label && (
           <div
-            className="absolute bg-xsed flex font-barlow font-semibold gap-1 items-center left-6 px-2 py-1 rounded-[6px] text-base text-neutral-900 top-3"
+            className="absolute bg-xsed flex font-barlow font-semibold gap-1 items-center left-6 px-2 py-1 rounded-[6px] text-base text-neutral-900 top-3 uppercase"
             data-drop-badge
           >
             <span aria-hidden>|</span>
@@ -51,7 +51,7 @@ export function DropCard({
           </div>
         )}
         {drop.soldOut && (
-          <div className="absolute right-3 top-3 rounded-[6px] bg-xsed px-3 py-1 text-xs text-white">
+          <div className="absolute right-3 top-3 rounded-[6px] bg-xsed px-3 py-1 text-xs text-white uppercase">
             <span className="font-bold">SOLD OUT</span>
             {drop.soldOutDetail && (
               <span className="ml-1 font-normal">{drop.soldOutDetail}</span>

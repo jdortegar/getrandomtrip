@@ -333,7 +333,7 @@ export function AdminWaitlistPageClient() {
                       {entry.alreadyMember ? (
                         <span
                           className={cn(
-                            "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+                            "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium uppercase",
                             inviteChipClass.alreadyMember,
                           )}
                         >
@@ -343,7 +343,7 @@ export function AdminWaitlistPageClient() {
                         entry.inviteStatus && (
                           <span
                             className={cn(
-                              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+                              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium uppercase",
                               inviteChipClass[entry.inviteStatus],
                             )}
                           >

@@ -73,11 +73,11 @@ export default function TripperInspirationGallery({
 
                   {/* Badges */}
                   <div className="absolute left-6 top-6 flex flex-wrap gap-3">
-                    <span className="rounded-sm border border-white/40 bg-black/60 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md shadow-lg">
+                    <span className="rounded-sm border border-white/40 bg-black/60 px-4 py-2 text-sm font-semibold text-white uppercase backdrop-blur-md shadow-lg">
                       {typeLabel}
                     </span>
                     <span
-                      className={`rounded-sm px-4 py-2 text-sm font-semibold text-white shadow-lg ${tierBadge.color}`}
+                      className={`rounded-sm px-4 py-2 text-sm font-semibold text-white uppercase shadow-lg ${tierBadge.color}`}
                     >
                       {tierBadge.label}
                     </span>
@@ -125,7 +125,7 @@ export default function TripperInspirationGallery({
                       {trip.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-sm bg-white/15 px-3 py-1 text-xs text-white/80 backdrop-blur-sm"
+                          className="rounded-sm bg-white/15 px-3 py-1 text-xs text-white/80 uppercase backdrop-blur-sm"
                         >
                           #{tag}
                         </span>

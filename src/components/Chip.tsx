@@ -22,7 +22,7 @@ export default function Chip({
   disabled = false,
 }: ChipProps) {
   const baseClasses =
-    "inline-flex items-center gap-1 rounded-full text-sm border transition ring-0 focus-visible:ring-0";
+    "inline-flex items-center gap-1 rounded-full text-sm border transition ring-0 uppercase focus-visible:ring-0";
 
   const sizeClasses = {
     sm: "px-2 py-1 text-xs",

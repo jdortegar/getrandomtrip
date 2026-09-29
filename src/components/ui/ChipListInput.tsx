@@ -59,7 +59,7 @@ export function ChipListInput({
               key={i}
               className={`flex items-center justify-between rounded-lg px-4 py-2.5 text-sm ${chipColor}`}
             >
-              <span>{v}</span>
+              <span className="uppercase">{v}</span>
               <button
                 type="button"
                 onClick={() => onRemove(i)}

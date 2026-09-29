@@ -556,7 +556,7 @@ export function BlogPageClient({
                         )}
                       </td>
                       <td className="px-5 py-4">
-                        <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                        <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700 uppercase">
                           {formatLabel(post.format)}
                         </span>
                       </td>

@@ -59,7 +59,7 @@ export default function BlogList({ posts }: BlogListProps) {
                 {post.tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 uppercase"
                   >
                     {tag}
                   </span>

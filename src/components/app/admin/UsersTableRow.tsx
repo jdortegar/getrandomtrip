@@ -100,7 +100,7 @@ export function UsersTableRow({
         {user.inviteStatus && (
           <span
             className={cn(
-              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
+              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium uppercase",
               inviteChipClass[user.inviteStatus],
             )}
           >

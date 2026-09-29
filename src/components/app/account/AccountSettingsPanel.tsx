@@ -461,17 +461,17 @@ export function AccountSettingsPanel({
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {isTraveler && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700 uppercase">
                     {p.header.badgeActiveTraveler}
                   </span>
                 )}
                 {isTripper && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700 uppercase">
                     {p.header.badgeTripper}
                   </span>
                 )}
                 {isAdmin && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700 uppercase">
                     {p.header.badgeAdmin}
                   </span>
                 )}

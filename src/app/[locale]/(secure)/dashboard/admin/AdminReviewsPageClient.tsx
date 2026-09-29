@@ -347,7 +347,7 @@ export function AdminReviewsPageClient() {
                       </td>
                       <td className="px-5 py-4">
                         <span
-                          className={`rounded-[6px] border px-2 py-0.5 text-[11px] font-medium ${
+                          className={`rounded-[6px] border px-2 py-0.5 text-[11px] font-medium uppercase ${
                             review.isApproved
                               ? "border-green-200 bg-green-50 text-green-700"
                               : "border-amber-200 bg-amber-50 text-amber-700"

@@ -405,7 +405,7 @@ export default function JourneyProgressSidebar({
                                 >
                                   {substep.title}
                                   {isAddonsComingSoon ? (
-                                    <span className="inline-flex items-center gap-1.5 rounded-[6px] border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-[11px] font-semibold normal-case tracking-wide text-neutral-600">
+                                    <span className="inline-flex items-center gap-1.5 rounded-[6px] border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-neutral-600">
                                       <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-neutral-400" />
                                       {addonsComingSoonLabel}
                                     </span>

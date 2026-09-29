@@ -7,9 +7,9 @@ export default function PreferencePills({
 }) {
   return (
     <div className="flex flex-wrap gap-2" data-component="PreferencePills">
-      {lodging && <span className="rt-badge">{lodging}</span>}
+      {lodging && <span className="rt-badge uppercase">{lodging}</span>}
       {style?.map((s) => (
-        <span key={s} className="rt-badge">
+        <span key={s} className="rt-badge uppercase">
           {s}
         </span>
       ))}

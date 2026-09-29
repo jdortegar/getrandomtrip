@@ -88,6 +88,18 @@ afterEach(() => {
 });
 
 describe("TripFulfillmentHeader — type/level chip dedup", () => {
+  it("displays the family category in uppercase without changing its stored value", () => {
+    const trip = baseTrip({ type: "xsed", level: "family" });
+    render(trip);
+
+    const family = Array.from(container.querySelectorAll("span")).find(
+      (element) => element.textContent === "family",
+    );
+    expect(family?.classList.contains("uppercase")).toBe(true);
+    expect(trip.level).toBe("family");
+    expect(container.querySelector(".bg-xsed")?.textContent).toBe("XSED");
+  });
+
   it("renders two distinct chips when type and level differ", () => {
     render(baseTrip({ type: "couple", level: "explorer" }));
 

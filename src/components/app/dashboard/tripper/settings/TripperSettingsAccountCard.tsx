@@ -23,7 +23,7 @@ interface TripperSettingsAccountCardProps {
 
 function AdminSetBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-[6px] border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-ink">
+    <span className="inline-flex items-center gap-1 rounded-[6px] border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-ink uppercase">
       <Lock className="h-3 w-3" />
       {label}
     </span>
