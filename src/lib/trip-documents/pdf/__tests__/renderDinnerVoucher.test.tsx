@@ -1,5 +1,5 @@
 // @vitest-environment node
-import * as fonts from "../pdfFonts";
+import * as fonts from "../html/htmlAssets";
 import { isValidElement, type ReactNode } from "react";
 import { expect, it, vi } from "vitest";
 import type { DinnerVoucherDocument } from "@/lib/types/DinnerVoucher";
@@ -35,8 +35,11 @@ const document: DinnerVoucherDocument = {
 };
 function text(node: ReactNode): string {
   if (Array.isArray(node)) return node.map(text).join(" ");
-  if (isValidElement<{ children?: ReactNode }>(node))
+  if (isValidElement<{ children?: ReactNode }>(node)) {
+    if (typeof node.type === "function")
+      return text((node.type as (props: object) => ReactNode)(node.props));
     return text(node.props.children);
+  }
   return typeof node === "string" || typeof node === "number"
     ? String(node)
     : "";
@@ -156,13 +159,14 @@ it.each([
 it("passes locally generated QR bytes for the supplied optional URL to the template", async () => {
   const render = vi.fn().mockResolvedValue(Buffer.from("%PDF-test"));
   await renderDinnerVoucher(document, render);
-  const images = render.mock.calls[0][0].props.qrImages;
+  const html = render.mock.calls[0][0].html;
   const url = document.data.restaurant.locationUrl;
-  expect(images[url!].subarray(0, 8).toString("hex")).toBe("89504e470d0a1a0a");
+  expect(html).toContain(`href="${url}"`);
+  expect(html).toContain("data:image/png;base64,iVBORw0KGgo");
 });
 
 it("prepares local fonts only after generation validation", async () => {
-  const prepare = vi.spyOn(fonts, "registerPdfFonts");
+  const prepare = vi.spyOn(fonts, "loadHtmlAssets");
   const render = vi.fn().mockResolvedValue(Buffer.from("%PDF-test"));
   try {
     await renderDinnerVoucher({}, render);
@@ -185,12 +189,16 @@ it.each(["en", "es"] as const)(
           render?: (props: {
             pageNumber: number;
             totalPages: number;
-          }) => string;
+          }) => ReactNode;
         }>(node)
       )
         return "";
+      if (typeof node.type === "function")
+        return rendered(
+          (node.type as (props: object) => ReactNode)(node.props),
+        );
       return (
-        (node.props.render?.({ pageNumber: 1, totalPages: 2 }) ?? "") +
+        text(node.props.render?.({ pageNumber: 1, totalPages: 2 }) ?? "") +
         rendered(node.props.children)
       );
     }
@@ -205,9 +213,9 @@ it.each(["en", "es"] as const)(
   },
 );
 
-it("embeds Barlow regular and bold in actual PDF bytes", async () => {
+it("embeds licensed reference-compatible fonts in actual PDF bytes", async () => {
   const result = await renderDinnerVoucher(document);
   if (!result.ok) throw new Error("invalid fixture");
-  expect(result.buffer.toString("latin1")).toContain("Barlow-Regular");
-  expect(result.buffer.toString("latin1")).toContain("Barlow-Bold");
+  expect(result.buffer.toString("latin1")).toContain("Arimo-Regular");
+  expect(result.buffer.toString("latin1")).toContain("Arimo-Bold");
 });

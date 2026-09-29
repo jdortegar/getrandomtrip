@@ -1,3 +1,80 @@
+export interface PdfLayoutCopy {
+  refShort: string;
+  holderShort: string;
+  issuedShort: string;
+  contactShort: string;
+  regionShort: string;
+  destinationShort: string;
+  restaurantShort: string;
+  establishment: string;
+  locationShort: string;
+  phoneShort: string;
+  accessShort: string;
+  programShort: string;
+  menuTitle: string;
+  routeSubtitle: string;
+  departureDay: string;
+  arrivalDay: string;
+  departureFrom: string;
+  drivingTotal: string;
+  travelTotal: string;
+  suggestedActivities: string;
+  singleNight: string;
+  manyNights: string;
+  hotelQrHint: string;
+  dinnerQrHint: string;
+  activityQrHint: string;
+  linkHint: string;
+  mapUnavailable: string;
+  reservationDetails: string;
+  locationContact: string;
+  services: string;
+  presentation: string;
+  dinnerPresentation: string;
+  information: string;
+  hotelInformation: string;
+  terms: string;
+  localActivities: string;
+  itinerary: string;
+  mapTitle: string;
+  mapDescription: string;
+  mapButton: string;
+  farewell: string;
+  qr: string;
+  qrHint: string;
+  voucher: string;
+  roadmap: string;
+  xsedTagline: string;
+  getLost: string;
+  experience: string;
+  hotelTitle: string;
+  dinnerTitle: string;
+  activityTitle: string;
+  itineraryEyebrow: string;
+  xsedTitle: string;
+  checkIn: string;
+  checkOut: string;
+  fromTime: string;
+  untilTime: string;
+  scheduledDate: string;
+  dinnerDate: string;
+  dinnerTime: string;
+  activityDate: string;
+  activityTime: string;
+  suggestedTimes: string;
+  duration: string;
+  nights: string;
+  hotelGuidance: string;
+  hotelArrival: string;
+  hotelRules: string;
+  dinnerGuidance: string;
+  dinnerTerms: string;
+  activityGuidance: string;
+  activityTerms: string;
+  dinnerFarewell: string;
+  activityFarewell: string;
+}
+
 export interface XsedRoadmapPdfCopy {
   directions: string;
   addStop: string;
@@ -23,6 +100,8 @@ export interface ExperienceRoadmapPreviewCopy {
 }
 
 export interface ExperienceRoadmapPdfCopy {
+  travelerLabel: string;
+  experienceLabel: string;
   addActivity: string;
   heading: string;
   mapUrl: string;
@@ -67,6 +146,8 @@ export interface ActivityVoucherPreviewCopy {
 }
 
 export interface ActivityVoucherPdfCopy {
+  service: string;
+  endTime: string;
   addItem: string;
   providerName: string;
   provider: string;
@@ -94,7 +175,13 @@ export interface HotelVoucherPreviewCopy {
 }
 
 export interface HotelVoucherFormCopy {
-  groups: {metadata:string;booking:string;provider:string;route:string;content:string};
+  groups: {
+    metadata: string;
+    booking: string;
+    provider: string;
+    route: string;
+    content: string;
+  };
   errors: Record<string, string> & { invalid: string };
   add: string;
   remove: string;
@@ -114,6 +201,11 @@ export interface HotelVoucherFormCopy {
 }
 
 export interface HotelVoucherPdfCopy {
+  localActivities: string;
+  locality: string;
+  region: string;
+  email: string;
+  confirmationUrl: string;
   title: string;
   checkIn: string;
   checkOut: string;
@@ -187,7 +279,11 @@ export interface TripperBlogComposerDict {
 
 export interface TripperBlogFormDict {
   contentLanguage: {
-    label: string; es: string; en: string; hint: string; canonicalLabel: string;
+    label: string;
+    es: string;
+    en: string;
+    hint: string;
+    canonicalLabel: string;
     unavailable: string;
   };
   nav: {
@@ -795,7 +891,11 @@ export interface TripperExperiencesDict {
     tripperNoteHint: string;
     submitConfirmTitle: string;
     submitConfirmBody: string;
-    xsedSetup: { submitLabel: string; confirmTitle: string; confirmBody: string };
+    xsedSetup: {
+      submitLabel: string;
+      confirmTitle: string;
+      confirmBody: string;
+    };
     actionBar: {
       back: string;
       previousStep: string;
@@ -2461,15 +2561,109 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
-  analyticsConsent: { title: string; description: string; accept: string; reject: string; preferences: string; close: string };
+  pdfLayout: PdfLayoutCopy;
+  analyticsConsent: {
+    title: string;
+    description: string;
+    accept: string;
+    reject: string;
+    preferences: string;
+    close: string;
+  };
   experienceRoadmapPreview: ExperienceRoadmapPreviewCopy;
   xsedRoadmapPreview: ExperienceRoadmapPreviewCopy;
-  documentPreview: { loading: string; loadingPage: string; error: string; retry: string; previous: string; next: string; page: string };
-  documentActions: { creating: string; loading: string; opening: string; reloading: string; saving: string; savePreview: string; attaching: string; replacing: string; deleting: string; refreshing: string };
-  documentDraftDelivery: { memoryNotice: string; storage_authorization: string; preview: string; saveFirst: string; attach: string; replace: string; confirmReplace: string; view: string; draft: string; attached: string; unpublished: string; reset: string; resetConfirm: string; attach_in_progress: string; attach_request_expired: string; attach_request_mismatch: string; replacement_required: string; replacement_mismatch: string; preview_conflict: string; attachment_missing: string; unavailable: string };
-  documentDraftPanel: { generate: string; sourceNote: string; delete: string; deleteConfirm: string; title: string; load: string; template: string; provider: string; none: string; create: string; pending: string; conflict: string; reload: string; error: string; saved: string };
-  documentWorkflow: { sourceLoading: string; sourceError: string; sourceNote: string; linkedDrafts:string; newDocument: string; privateDrafts: string; draftsNote: string; attachedDocuments: string; uploadExisting: string; chooseTemplate: string; editDocument: string; reviewDocument: string; savePreview: string; backToEditing: string; moreActions: string; emptyDrafts: string; refreshError: string; retry: string; metadata: string; booking: string; provider: string; route: string; content: string };
-  documentDraftEditor: { save: string; close: string; discard: string; note: string };
+  documentPreview: {
+    loading: string;
+    loadingPage: string;
+    error: string;
+    retry: string;
+    previous: string;
+    next: string;
+    page: string;
+  };
+  documentActions: {
+    creating: string;
+    loading: string;
+    opening: string;
+    reloading: string;
+    saving: string;
+    savePreview: string;
+    attaching: string;
+    replacing: string;
+    deleting: string;
+    refreshing: string;
+  };
+  documentDraftDelivery: {
+    memoryNotice: string;
+    storage_authorization: string;
+    preview: string;
+    saveFirst: string;
+    attach: string;
+    replace: string;
+    confirmReplace: string;
+    view: string;
+    draft: string;
+    attached: string;
+    unpublished: string;
+    reset: string;
+    resetConfirm: string;
+    attach_in_progress: string;
+    attach_request_expired: string;
+    attach_request_mismatch: string;
+    replacement_required: string;
+    replacement_mismatch: string;
+    preview_conflict: string;
+    attachment_missing: string;
+    unavailable: string;
+  };
+  documentDraftPanel: {
+    generate: string;
+    sourceNote: string;
+    delete: string;
+    deleteConfirm: string;
+    title: string;
+    load: string;
+    template: string;
+    provider: string;
+    none: string;
+    create: string;
+    pending: string;
+    conflict: string;
+    reload: string;
+    error: string;
+    saved: string;
+  };
+  documentWorkflow: {
+    sourceLoading: string;
+    sourceError: string;
+    sourceNote: string;
+    linkedDrafts: string;
+    newDocument: string;
+    privateDrafts: string;
+    draftsNote: string;
+    attachedDocuments: string;
+    uploadExisting: string;
+    chooseTemplate: string;
+    editDocument: string;
+    reviewDocument: string;
+    savePreview: string;
+    backToEditing: string;
+    moreActions: string;
+    emptyDrafts: string;
+    refreshError: string;
+    retry: string;
+    metadata: string;
+    booking: string;
+    provider: string;
+    route: string;
+    content: string;
+  };
+  documentDraftEditor: {
+    save: string;
+    close: string;
+    discard: string;
+    note: string;
+  };
   dinnerVoucherPreview: DinnerVoucherPreviewCopy;
   activityVoucherPreview: ActivityVoucherPreviewCopy;
   hotelVoucherPreview: HotelVoucherPreviewCopy;
@@ -2882,9 +3076,17 @@ export interface MarketingDictionary {
   };
   blogPage: {
     detail: {
-      travel: string; breadcrumb: string; emptyBody: string; moreEyebrow: string;
-      moreTitle: string; moreSubtitle: string; viewAll: string; exploreMore: string;
-      testimonials: string; notFound: string; back: string;
+      travel: string;
+      breadcrumb: string;
+      emptyBody: string;
+      moreEyebrow: string;
+      moreTitle: string;
+      moreSubtitle: string;
+      viewAll: string;
+      exploreMore: string;
+      testimonials: string;
+      notFound: string;
+      back: string;
     };
     backToProfile: string;
     emptySubtitle: string;

@@ -16,6 +16,7 @@ export interface XsedRoadmapData {
   drivingDuration: string;
   stops: XsedRoadmapStop[];
   mapUrl?: string;
+  reservationReference?: string;
 }
 
 export interface XsedRoadmapDocument extends DocumentMetadata {

@@ -12,11 +12,17 @@ const OPTIONAL = [
   "reservationReference",
   "paymentWording",
   "supplierConfirmation",
+  "supplierConfirmationUrl",
   "recommendations",
+  "service",
+  "endTime",
 ];
 const PROVIDER_FIELDS = [
   "name",
   "address",
+  "locality",
+  "region",
+  "email",
   "contact",
   "locationUrl",
   "providerUrl",

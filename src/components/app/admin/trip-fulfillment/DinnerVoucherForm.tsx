@@ -46,10 +46,14 @@ export function DinnerVoucherForm({
     ["reservationReference", pdfCopy.reference, "text", false],
     ["paymentWording", pdfCopy.payment, "text", false],
     ["supplierConfirmation", pdfCopy.confirmation, "text", false],
+    ["supplierConfirmationUrl", pdfCopy.confirmationUrl, "url", false],
   ] as const;
   const restaurantFields = [
     ["name", dinnerCopy.restaurantName, "text", true],
     ["address", pdfCopy.address, "text", true],
+    ["locality", pdfCopy.locality, "text", false],
+    ["region", pdfCopy.region, "text", false],
+    ["email", pdfCopy.email, "text", false],
     ["contact", pdfCopy.contact, "text", false],
     ["locationUrl", pdfCopy.location, "url", false],
     ["providerUrl", dinnerCopy.provider, "url", false],

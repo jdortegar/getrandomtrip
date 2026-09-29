@@ -274,3 +274,37 @@ it.each(["program", "inclusions"])(
     expect(new Set(rows(name).map((row) => row.id)).size).toBe(50);
   },
 );
+
+it.each([en, es])(
+  "authors optional reference-fidelity fields without losing legacy values",
+  (dictionary) => {
+    act(() => root.render(<Harness dictionary={dictionary} />));
+    edit(
+      "activity-supplierConfirmationUrl",
+      "https://example.com/confirmation",
+    );
+    edit("activity-provider-locality", "Example town");
+    edit("activity-provider-region", "Example region");
+    edit("activity-provider-email", "example@example.com");
+    edit("activity-service", "Cultural visit");
+    edit("activity-endTime", "18:00");
+    act(() =>
+      container
+        .querySelector("form")!
+        .dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        ),
+    );
+    expect(submit.mock.calls[0][0].data).toMatchObject({
+      supplierConfirmationUrl: "https://example.com/confirmation",
+      provider: {
+        name: initial.data.provider.name,
+        locality: "Example town",
+        region: "Example region",
+        email: "example@example.com",
+      },
+      service: "Cultural visit",
+      endTime: "18:00",
+    });
+  },
+);

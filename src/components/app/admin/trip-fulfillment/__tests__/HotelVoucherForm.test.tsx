@@ -264,3 +264,32 @@ it("requires inclusion titles and preserves edited descriptions in submission", 
     description: "Coffee included",
   });
 });
+
+it.each([en, es])(
+  "authors optional reference-fidelity fields without losing legacy values",
+  (dictionary) => {
+    act(() => root.render(<Harness dictionary={dictionary} />));
+    edit("hotel-supplierConfirmationUrl", "https://example.com/confirmation");
+    edit("hotel-property-locality", "Example town");
+    edit("hotel-property-region", "Example region");
+    edit("hotel-property-email", "example@example.com");
+    edit("hotel-local-activities", "Walk in the park");
+    act(() =>
+      container
+        .querySelector("form")!
+        .dispatchEvent(
+          new Event("submit", { bubbles: true, cancelable: true }),
+        ),
+    );
+    expect(submit.mock.calls[0][0].data).toMatchObject({
+      supplierConfirmationUrl: "https://example.com/confirmation",
+      property: {
+        name: initial.data.property.name,
+        locality: "Example town",
+        region: "Example region",
+        email: "example@example.com",
+      },
+      localActivities: "Walk in the park",
+    });
+  },
+);

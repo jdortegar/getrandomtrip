@@ -1,182 +1,135 @@
-import { PdfQrLink } from "./PdfQrLink";
-import {
-  Document,
-  Image as PdfImage,
-  Page,
-  StyleSheet,
-  Text,
-  View,
-} from "@react-pdf/renderer";
+import { Document, Page, View } from "@react-pdf/renderer";
 import type { ActivityVoucherDocument } from "@/lib/types/ActivityVoucher";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
-
-const styles = StyleSheet.create({
-  page: {
-    color: "#17333d",
-    fontFamily: "Barlow",
-    fontSize: 10,
-    padding: 28,
-    paddingBottom: 45,
-  },
-  header: {
-    backgroundColor: "#17333d",
-    color: "white",
-    margin: -28,
-    marginBottom: 18,
-    padding: 24,
-  },
-  brand: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 18,
-  },
-  title: {
-    fontFamily: "Barlow",
-    fontWeight: 700,
-    fontSize: 22,
-    lineHeight: 1.25,
-    marginBottom: 8,
-  },
-  label: { color: "#237f9e", fontSize: 9, marginBottom: 4 },
-  row: {
-    borderBottom: "1 solid #d4e6ec",
-    marginBottom: 8,
-    paddingBottom: 8,
-    width: "47%",
-  },
-  item: { borderLeft: "2 solid #2999bc", marginBottom: 9, paddingLeft: 10 },
-  footer: {
-    bottom: 22,
-    color: "#237f9e",
-    fontSize: 8,
-    height: 18,
-    left: 32,
-    position: "absolute",
-    right: 32,
-  },
-});
-interface ActivityVoucherPdfProps {
+import { PdfHeader } from "./PdfHeader";
+import { PdfSummaryCards } from "./PdfSummaryCards";
+import { PdfDetailsCard } from "./PdfDetailsCard";
+import { PdfItemGrid } from "./PdfItemGrid";
+import { PdfPolicyPanel } from "./PdfPolicyPanel";
+import { PdfVoucherLinks } from "./PdfVoucherLinks";
+import { PdfFooter } from "./PdfFooter";
+import { pdfDate, pdfStyles as s } from "./pdfStyles";
+import { providerRows, reservationRows } from "./pdfVoucherRows";
+import { compactPdfPolicy } from "./pdfTextLayout";
+interface Props {
   document: ActivityVoucherDocument;
   logo?: Buffer;
   qrImages?: Record<string, Buffer>;
 }
-export function ActivityVoucherPdf({
-  document,
-  logo,
-  qrImages,
-}: ActivityVoucherPdfProps) {
+export function ActivityVoucherPdf({ document, logo, qrImages }: Props) {
   const { data, locale } = document;
   const dictionary = locale === "en" ? en : es;
   const copy = dictionary.activityVoucherPdf;
   const common = dictionary.hotelVoucherPdf;
-  const date = (value: string) =>
-    new Intl.DateTimeFormat(locale, {
-      dateStyle: "long",
-      timeZone: "UTC",
-    }).format(new Date(`${value}T00:00:00Z`));
-  const details = [
-    [copy.date, date(data.date)],
-    [copy.time, data.time],
-    [copy.participants, data.participants],
-    [common.holder, data.holder],
-    [common.country, document.country],
-    [common.address, data.provider.address],
-    [common.contact, data.provider.contact],
-    [common.reference, data.reservationReference],
-    [common.issued, data.issueDate && date(data.issueDate)],
-    [common.payment, data.paymentWording],
-    [common.confirmation, data.supplierConfirmation],
-  ];
+  const layout = dictionary.pdfLayout;
+  const details = reservationRows(data, common, locale);
+  details.splice(
+    1,
+    0,
+    { label: copy.participants, value: data.participants },
+    { label: copy.program, value: data.service },
+  );
+  const compactRecommendations = compactPdfPolicy(
+    data.recommendations || layout.activityTerms,
+  );
+  const hasLinks = Boolean(
+    data.supplierConfirmationUrl ||
+    data.provider.providerUrl ||
+    data.provider.locationUrl,
+  );
   return (
     <Document language={locale} title={document.label}>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <View style={styles.brand}>
-            {logo && (
-              <PdfImage
-                src={{ data: logo, format: "png" }}
-                style={{ height: 27, width: 27 }}
-              />
-            )}
-            <Text
-              style={{ fontFamily: "Barlow", fontWeight: 700, fontSize: 16 }}
-            >
-              RANDOMTRIP
-            </Text>
-          </View>
-          <Text style={{ color: "#2999bc", fontSize: 9, marginBottom: 6 }}>
-            {copy.title}
-          </Text>
-          <Text style={styles.title}>{data.provider.name}</Text>
-          <Text>{document.label}</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            gap: 6,
-            marginBottom: 12,
-          }}
-        >
-          {details
-            .filter(([, value]) => value)
-            .map(([label, value]) => (
-              <View key={label} style={styles.row}>
-                <Text style={styles.label}>{label}</Text>
-                <Text>{value}</Text>
-              </View>
-            ))}
-          {data.provider.locationUrl && (
-            <PdfQrLink images={qrImages} src={data.provider.locationUrl}>
-              {common.location}
-            </PdfQrLink>
-          )}
-          {data.provider.providerUrl && (
-            <PdfQrLink images={qrImages} src={data.provider.providerUrl}>
-              {copy.provider}
-            </PdfQrLink>
-          )}
-        </View>
-        {[
-          { label: copy.program, items: data.program },
-          { label: common.inclusions, items: data.inclusions ?? [] },
-        ]
-          .filter((section) => section.items.length)
-          .map((section) => (
-            <View key={section.label} style={{ marginBottom: 10 }}>
-              <Text minPresenceAhead={30} style={styles.label}>
-                {section.label}
-              </Text>
-              {section.items.map((item) => (
-                <View key={item.id} style={styles.item}>
-                  <Text
-                    minPresenceAhead={20}
-                    style={{ fontFamily: "Barlow", fontWeight: 700 }}
-                  >
-                    {item.title}
-                  </Text>
-                  {item.description && <Text>{item.description}</Text>}
-                </View>
-              ))}
-            </View>
-          ))}
-        {data.recommendations && (
-          <View>
-            <Text minPresenceAhead={30} style={styles.label}>
-              {copy.recommendations}
-            </Text>
-            <Text>{data.recommendations}</Text>
-          </View>
-        )}
-        <View fixed style={styles.footer}>
-          <Text
-            render={({ pageNumber, totalPages }) =>
-              `${common.preview} | ${pageNumber} / ${totalPages}`
-            }
+      <Page size="A4" style={s.page}>
+        <PdfHeader
+          eyebrow={layout.activityTitle}
+          icon="puzzle"
+          logo={logo}
+          reference={data.reservationReference}
+          referenceLabel={common.reference}
+          status={data.supplierConfirmation || layout.voucher}
+          subtitle={[data.provider.locality, document.label]
+            .filter(Boolean)
+            .join(" · ")}
+          title={data.provider.name}
+        />
+        <PdfSummaryCards
+          cards={[
+            {
+              label: layout.activityDate,
+              value: pdfDate(data.date, locale, true),
+            },
+            {
+              label: layout.activityTime,
+              value: [data.time, data.endTime].filter(Boolean).join(" - "),
+              detail: data.service,
+            },
+          ]}
+        />
+        <View style={s.row}>
+          <PdfDetailsCard rows={details} title={layout.reservationDetails} />
+          <PdfDetailsCard
+            icon="pin"
+            rows={providerRows(data.provider, document.country, common)}
+            title={layout.locationContact}
           />
         </View>
+        <PdfItemGrid
+          items={data.program}
+          title={data.inclusions?.length ? copy.program : layout.services}
+        />
+        <PdfItemGrid items={data.inclusions ?? []} title={layout.services} />
+        <PdfPolicyPanel
+          emphasize
+          paragraphs={[layout.activityGuidance]}
+          title={layout.presentation}
+          tone="outline"
+        />
+        <View
+          style={[
+            s.row,
+            { flexDirection: compactRecommendations ? "row" : "column" },
+          ]}
+          wrap={!compactRecommendations}
+        >
+          <View
+            style={compactRecommendations ? { flex: 2.5 } : { width: "100%" }}
+          >
+            <PdfPolicyPanel
+              dividers
+              fill={compactRecommendations}
+              paragraphs={[data.recommendations || layout.activityTerms]}
+              title={layout.information}
+              tone="dark"
+            />
+          </View>
+          {hasLinks && (
+            <View
+              style={[
+                s.card,
+                compactRecommendations
+                  ? { flex: 1, justifyContent: "center" }
+                  : { alignSelf: "flex-end", width: 175 },
+              ]}
+              wrap={false}
+            >
+              <PdfVoucherLinks
+                confirmationHint={layout.activityQrHint}
+                copy={common}
+                data={data}
+                images={qrImages}
+                layout={layout}
+                provider={data.provider}
+                providerLabel={copy.provider}
+              />
+            </View>
+          )}
+        </View>
+        <PdfFooter
+          farewell={layout.activityFarewell}
+          label={`${data.provider.name} · ${data.provider.locality || document.label}`}
+          pagination={common.preview}
+        />
       </Page>
     </Document>
   );

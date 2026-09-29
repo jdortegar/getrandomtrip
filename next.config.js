@@ -2,14 +2,19 @@ const { withSentryConfig } = require("@sentry/nextjs/config");
 
 // Explicit local PDF assets for serverless file tracing (no remote font fetch).
 const pdfAssets = [
+  "./public/assets/pdf/**",
+  "./public/assets/fonts/arimo/**",
+  "./public/assets/fonts/inter/**",
+  "./node_modules/@sparticuz/chromium/bin/**",
   "./public/assets/fonts/barlow/Barlow-Regular.ttf",
   "./public/assets/fonts/barlow/Barlow-Bold.ttf",
   "./public/assets/fonts/barlow/OFL.txt",
-  "./public/assets/icons/isologo.png",
+  "./public/assets/logos/logo_pdf.png",
 ];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   outputFileTracingIncludes: {
     "/api/admin/trip-requests/*/hotel-voucher-preview": pdfAssets,
     "/api/admin/trip-requests/*/activity-voucher-preview": pdfAssets,

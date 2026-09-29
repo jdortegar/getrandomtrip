@@ -19,6 +19,7 @@ const DATA_FIELDS = [
   "departureTime",
   "drivingDuration",
   "mapUrl",
+  "reservationReference",
 ];
 
 export function parseXsedRoadmap(
@@ -66,7 +67,17 @@ export function parseXsedRoadmap(
   const data = record(raw.data, [...DATA_FIELDS, "stops"], "data");
   if (!data) return { ok: false, errors };
   for (const key of DATA_FIELDS)
-    text(data, key, `data.${key}`, key === "mapUrl");
+    text(
+      data,
+      key,
+      `data.${key}`,
+      [
+        "mapUrl",
+        "reservationReference",
+        "travelerLabel",
+        "experienceLabel",
+      ].includes(key),
+    );
   if (!isBoundedDocumentArray(data.stops)) add("data.stops", "invalid_array");
   else {
     if (mode === "generation" && !data.stops.length)

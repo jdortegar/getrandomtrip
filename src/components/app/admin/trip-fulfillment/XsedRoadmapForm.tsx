@@ -40,6 +40,7 @@ export function XsedRoadmapForm({
     ["departureTime", roadmapCopy.departureTime, "time", true],
     ["drivingDuration", roadmapCopy.drivingDuration, "text", true],
     ["mapUrl", roadmapCopy.mapUrl, "url", false],
+    ["reservationReference", pdfCopy.reference, "text", false],
   ] as const;
   return (
     <DocumentValidationForm

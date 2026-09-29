@@ -15,6 +15,7 @@ export interface HotelVoucherData extends VoucherDetails {
   property: VoucherProvider;
   inclusions: VoucherItem[];
   instructions?: string;
+  localActivities?: string;
 }
 
 export interface HotelVoucherDocument extends DocumentMetadata {

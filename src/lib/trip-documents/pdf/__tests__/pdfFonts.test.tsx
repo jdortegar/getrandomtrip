@@ -81,13 +81,20 @@ it("explicitly traces local fonts/license/logo for five preview routes and persi
   expect(Object.keys(traces)).toHaveLength(6);
   for (const route of routes) {
     expect(traces[`/api/admin/trip-requests/*/${route}`]).toEqual([
+      "./public/assets/pdf/**",
+      "./public/assets/fonts/arimo/**",
+      "./public/assets/fonts/inter/**",
+      "./node_modules/@sparticuz/chromium/bin/**",
       "./public/assets/fonts/barlow/Barlow-Regular.ttf",
       "./public/assets/fonts/barlow/Barlow-Bold.ttf",
       "./public/assets/fonts/barlow/OFL.txt",
-      "./public/assets/icons/isologo.png",
+      "./public/assets/logos/logo_pdf.png",
     ]);
     for (const path of traces[`/api/admin/trip-requests/*/${route}`])
-      expect((await readFile(path)).length).toBeGreaterThan(0);
+      if (!path.includes("*"))
+        expect((await readFile(path)).length).toBeGreaterThan(0);
   }
-  expect(configModule.exports.transpilePackages).toEqual(["@tinymce/tinymce-react"]);
+  expect(configModule.exports.transpilePackages).toEqual([
+    "@tinymce/tinymce-react",
+  ]);
 });

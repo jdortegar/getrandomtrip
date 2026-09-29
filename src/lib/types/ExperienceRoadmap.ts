@@ -17,6 +17,9 @@ export interface ExperienceRoadmapData {
   heading: string;
   activities: SuggestedActivity[];
   mapUrl?: string;
+  reservationReference?: string;
+  travelerLabel?: string;
+  experienceLabel?: string;
 }
 
 export interface ExperienceRoadmapDocument extends DocumentMetadata {

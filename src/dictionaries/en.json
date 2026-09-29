@@ -95,7 +95,9 @@
     "activities": "Suggested activities",
     "date": "Suggested date",
     "time": "Suggested time",
-    "map": "Open interactive map"
+    "map": "Open interactive map",
+    "travelerLabel": "Traveler type (optional)",
+    "experienceLabel": "Experience level (optional)"
   },
   "dinnerVoucherPreview": {
     "open": "Create dinner preview",
@@ -130,7 +132,9 @@
     "date": "Activity date",
     "time": "Activity time",
     "program": "Program",
-    "recommendations": "Recommendations"
+    "recommendations": "Recommendations",
+    "service": "Program name",
+    "endTime": "End time"
   },
   "hotelVoucherPreview": {
     "open": "Create hotel preview",
@@ -147,7 +151,13 @@
     "unavailable": "Preview is unavailable. Please try again."
   },
   "hotelVoucherForm": {
-    "groups": {"metadata": "Document details", "booking": "Booking and schedule", "provider": "Provider and location", "route": "Route and travel dates", "content": "Details and instructions"},
+    "groups": {
+      "metadata": "Document details",
+      "booking": "Booking and schedule",
+      "provider": "Provider and location",
+      "route": "Route and travel dates",
+      "content": "Details and instructions"
+    },
     "errors": {
       "invalid": "Check this value.",
       "required": "Complete this field.",
@@ -194,7 +204,12 @@
     "instructions": "Important information",
     "location": "View location",
     "provider": "Property website",
-    "preview": "Travel document"
+    "preview": "Travel document",
+    "localActivities": "Local area and activities",
+    "locality": "Locality",
+    "region": "Province / region",
+    "email": "Email",
+    "confirmationUrl": "Supplier confirmation link"
   },
   "sentryExample": {
     "title": "Sentry smoke test",
@@ -470,7 +485,11 @@
           "id": "main",
           "label": "General",
           "substeps": [
-            { "id": "identity", "title": "Experience", "description": "" }
+            {
+              "id": "identity",
+              "title": "Experience",
+              "description": ""
+            }
           ]
         },
         {
@@ -482,9 +501,21 @@
               "title": "Accommodation",
               "description": ""
             },
-            { "id": "dinner", "title": "Dinner", "description": "" },
-            { "id": "activity", "title": "Activity", "description": "" },
-            { "id": "itinerary", "title": "Itinerary", "description": "" },
+            {
+              "id": "dinner",
+              "title": "Dinner",
+              "description": ""
+            },
+            {
+              "id": "activity",
+              "title": "Activity",
+              "description": ""
+            },
+            {
+              "id": "itinerary",
+              "title": "Itinerary",
+              "description": ""
+            },
             {
               "id": "inclusions",
               "title": "Inclusions / Exclusions",
@@ -547,9 +578,18 @@
           "activityNamePlaceholder": "E.g. City tour...",
           "duration": "Duration",
           "durationUnits": {
-            "min": { "label": "min", "hint": "minutes" },
-            "hr": { "label": "hr", "hint": "hours" },
-            "day": { "label": "day", "hint": "days" }
+            "min": {
+              "label": "min",
+              "hint": "minutes"
+            },
+            "hr": {
+              "label": "hr",
+              "hint": "hours"
+            },
+            "day": {
+              "label": "day",
+              "hint": "days"
+            }
           },
           "description": "Description",
           "descriptionPlaceholder": "E.g. you'll get to ride a horse during this activity...",
@@ -1118,7 +1158,10 @@
     "closingLine": "One night, one dinner, and one surprise local experience close to home.",
     "ctaLabel": "DISCOVER TGIS",
     "features": [
-      { "description": "1 night — Saturday to Sunday", "title": "Duration" },
+      {
+        "description": "1 night — Saturday to Sunday",
+        "title": "Duration"
+      },
       {
         "description": "A surprise destination within 300 km",
         "title": "Destination"
@@ -1127,7 +1170,10 @@
         "description": "Your own car; transportation not included",
         "title": "Transport"
       },
-      { "description": "One night of accommodation", "title": "Accommodation" },
+      {
+        "description": "One night of accommodation",
+        "title": "Accommodation"
+      },
       {
         "description": "Saturday dinner, Sunday breakfast, and a curated local experience",
         "title": "Benefits"
@@ -3671,7 +3717,11 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell destinations. We design a different way of traveling. Randomtrip was born to free travelers from the fatigue of planning: too many open tabs, too many decisions before you even start.",
       "p2": "Our answer is Designed Serendipity: experiences that feel spontaneous but are born from a rigorous structure. You define dates, budget, style, pace, and limits. We design the wonder within that framework. Living the unexpected, without improvising.",
-      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
+      "pills": [
+        "Emotional brief",
+        "Invisible design",
+        "Surprise with a net"
+      ],
       "sectionTitle": "Our philosophy"
     },
     "steps": {
@@ -5661,25 +5711,25 @@
     "sourceError": "The selected experience could not be loaded. Retry before creating a new document.",
     "sourceNote": "Your selection updates this itinerary and new document defaults without saving the trip. Existing document drafts are unchanged.",
     "linkedDrafts": "Editable copies of attached documents",
-      "newDocument": "New document",
-      "privateDrafts": "Private drafts",
-      "draftsNote": "Only attached documents are available to travelers. Drafts stay private.",
-      "attachedDocuments": "Attached documents",
-      "uploadExisting": "Upload an existing PDF",
-      "chooseTemplate": "Choose a document template",
-      "editDocument": "Edit document",
-      "reviewDocument": "Review PDF",
-      "savePreview": "Save & preview",
-      "backToEditing": "Back to editing",
-      "moreActions": "More actions",
-      "emptyDrafts": "No private drafts yet.",
-      "refreshError": "Documents could not be refreshed. Your edits are safe. Retry to see the latest attachments.",
-      "retry": "Refresh documents",
-      "metadata": "Document details",
-      "booking": "Booking and schedule",
-      "provider": "Provider and location",
-      "route": "Route and travel dates",
-      "content": "Details and instructions"
+    "newDocument": "New document",
+    "privateDrafts": "Private drafts",
+    "draftsNote": "Only attached documents are available to travelers. Drafts stay private.",
+    "attachedDocuments": "Attached documents",
+    "uploadExisting": "Upload an existing PDF",
+    "chooseTemplate": "Choose a document template",
+    "editDocument": "Edit document",
+    "reviewDocument": "Review PDF",
+    "savePreview": "Save & preview",
+    "backToEditing": "Back to editing",
+    "moreActions": "More actions",
+    "emptyDrafts": "No private drafts yet.",
+    "refreshError": "Documents could not be refreshed. Your edits are safe. Retry to see the latest attachments.",
+    "retry": "Refresh documents",
+    "metadata": "Document details",
+    "booking": "Booking and schedule",
+    "provider": "Provider and location",
+    "route": "Route and travel dates",
+    "content": "Details and instructions"
   },
   "manualTravelerDetailsReminder": {
     "subject": "Complete your companion details",
@@ -5696,5 +5746,81 @@
     "body": "Your XSED trip departs within 72 hours, and some companion details are still missing. Open your trip to complete them or send an invitation.",
     "fillEmpty": "Empty fields remain editable. Details already saved are protected; contact us if they need a correction.",
     "cta": "OPEN MY TRIP"
+  },
+  "pdfLayout": {
+    "reservationDetails": "RESERVATION DETAILS",
+    "locationContact": "LOCATION AND CONTACT",
+    "services": "INCLUDED SERVICES AND FACILITIES",
+    "presentation": "VOUCHER PRESENTATION",
+    "dinnerPresentation": "VOUCHER PRESENTATION REQUIREMENT",
+    "information": "INFORMATION AND RECOMMENDATIONS",
+    "hotelInformation": "IMPORTANT CHECK-IN INFORMATION",
+    "terms": "TERMS AND RECOMMENDATIONS",
+    "localActivities": "LOCAL AREA AND ACTIVITIES",
+    "itinerary": "THE ITINERARY STEP BY STEP",
+    "mapTitle": "REAL-TIME ROUTE MAP",
+    "mapDescription": "Access the interactive route and its stops on the digital map.",
+    "mapButton": "VIEW INTERACTIVE MAP",
+    "farewell": "Have a great trip",
+    "qr": "QR code",
+    "qrHint": "Scan to open the link.",
+    "voucher": "RESERVATION VOUCHER",
+    "roadmap": "ROADMAP",
+    "xsedTagline": "X SUERTE\nES DOMINGO",
+    "getLost": "Get lost with",
+    "experience": "Experience",
+    "hotelTitle": "RESERVATION VOUCHER",
+    "dinnerTitle": "DINING VOUCHER",
+    "activityTitle": "EXPERIENCE VOUCHER",
+    "itineraryEyebrow": "ITINERARY",
+    "xsedTitle": "ROADTRIP GETAWAY",
+    "checkIn": "ARRIVAL · CHECK-IN",
+    "checkOut": "DEPARTURE · CHECK-OUT",
+    "fromTime": "From {time}",
+    "untilTime": "Until {time}",
+    "scheduledDate": "SCHEDULED DATE",
+    "dinnerDate": "RESERVATION DATE",
+    "dinnerTime": "DINNER TIME",
+    "activityDate": "RESERVATION DATE",
+    "activityTime": "EXPERIENCE TIME",
+    "suggestedTimes": "Suggested times",
+    "duration": "DURATION",
+    "nights": "{count} night(s)",
+    "hotelGuidance": "Present this voucher, digitally or printed, together with a valid identity document when checking in.",
+    "hotelArrival": "Notify the property in advance if you plan to arrive outside its regular reception hours.",
+    "hotelRules": "Respect the property’s rules for rest and quiet.",
+    "dinnerGuidance": "Present this voucher / PDF (digitally or printed) on arrival at the restaurant to validate the reservation and listed services.",
+    "dinnerTerms": "Please arrive on time. Contact the restaurant in advance for schedule changes or to report food allergies.\nAsk the venue about extras not covered by the listed menu.",
+    "activityGuidance": "Present this voucher digitally or printed on arrival at the venue to validate the service.",
+    "activityTerms": "Review the schedule and provider instructions before attending.\nContact the provider in advance about rescheduling, accessibility or activity requirements.",
+    "dinnerFarewell": "Enjoy your dinner!",
+    "activityFarewell": "Enjoy your experience!",
+    "hotelQrHint": "Show at check-in",
+    "dinnerQrHint": "Show at restaurant reception",
+    "activityQrHint": "Show at reception",
+    "linkHint": "Open the link to view details.",
+    "mapUnavailable": "The map link is not available yet.",
+    "refShort": "Ref:",
+    "holderShort": "Holder",
+    "issuedShort": "Issued",
+    "contactShort": "Contact",
+    "regionShort": "Region",
+    "destinationShort": "Destination",
+    "restaurantShort": "Restaurant",
+    "establishment": "Establishment",
+    "locationShort": "Location",
+    "phoneShort": "Phone",
+    "accessShort": "Admission",
+    "programShort": "Program",
+    "menuTitle": "MENU INCLUDED PER PERSON",
+    "routeSubtitle": "FROM {origin} TO {destination}",
+    "departureDay": "Departure day",
+    "arrivalDay": "Arrival at destination",
+    "departureFrom": "Departure from {origin}",
+    "drivingTotal": "TOTAL DRIVING TIME TO DESTINATION",
+    "travelTotal": "TOTAL TRAVEL TIME",
+    "suggestedActivities": "ITINERARY WITH SUGGESTED ACTIVITIES",
+    "singleNight": "1 Night",
+    "manyNights": "{count} Nights"
   }
 }

@@ -45,10 +45,14 @@ export function HotelVoucherForm({
     ["reservationReference", pdfCopy.reference, "text", false],
     ["paymentWording", pdfCopy.payment, "text", false],
     ["supplierConfirmation", pdfCopy.confirmation, "text", false],
+    ["supplierConfirmationUrl", pdfCopy.confirmationUrl, "url", false],
   ] as const;
   const propertyFields = [
     ["name", copy.property, "text", true],
     ["address", pdfCopy.address, "text", true],
+    ["locality", pdfCopy.locality, "text", false],
+    ["region", pdfCopy.region, "text", false],
+    ["email", pdfCopy.email, "text", false],
     ["contact", pdfCopy.contact, "text", false],
     ["locationUrl", pdfCopy.location, "url", false],
     ["providerUrl", pdfCopy.provider, "url", false],
@@ -139,6 +143,14 @@ export function HotelVoucherForm({
           ))}
         </DocumentFieldGroup>
         <DocumentFieldGroup label={copy.groups.content}>
+          <TextAreaInput
+            id="hotel-local-activities"
+            label={pdfCopy.localActivities}
+            maxLength={4000}
+            name="data.localActivities"
+            onChange={(e) => updateData({ localActivities: e.target.value })}
+            value={data.localActivities ?? ""}
+          />
           <TextAreaInput
             id="hotel-instructions"
             name="data.instructions"
