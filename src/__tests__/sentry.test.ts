@@ -141,7 +141,10 @@ it.each([0, 1, 2, 3, 4, 5, 6, 7])(
           SENTRY_PROJECT: mask & 4 ? "project" : "",
         },
       },
-      require: () => ({ withSentryConfig }),
+      require: (id: string) =>
+        id === "./config/deployment.cjs"
+          ? { deploymentBuildEnvironment: () => ({}) }
+          : { withSentryConfig },
     });
     expect(withSentryConfig).toHaveBeenCalledTimes(1);
     expect(withSentryConfig).toHaveBeenCalledWith(

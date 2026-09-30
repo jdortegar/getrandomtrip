@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import {
+  getNonproductionOrigin,
+  isProductionDeployment,
+} from "@/lib/deployment";
+import {
   COOKIE_MAX_AGE,
   GRT_TRIPPER_COOKIE,
   GRT_TRIPPER_LAST_SEEN_COOKIE,
@@ -18,6 +22,7 @@ type ModeRequestBody = {
 };
 
 function resolveExpectedOrigin(): string | null {
+  if (!isProductionDeployment()) return getNonproductionOrigin();
   const configured = process.env.NEXTAUTH_URL;
   if (!configured) return null;
   try {
@@ -99,6 +104,9 @@ export async function POST(request: Request) {
   }
 
   const secret = getAttributionSecret();
+  if (!isProductionDeployment() && !secret) {
+    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
   const signed = await signAttribution(slug, secret, COOKIE_MAX_AGE);
   const lastSeenSigned = await signAttribution(
     slug,

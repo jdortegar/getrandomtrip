@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "../../src/lib/deployment";
 import type { Config } from "@netlify/functions";
 
 // Fires every hour at the top of the hour, UTC.
@@ -6,6 +7,7 @@ export const config: Config = {
 };
 
 export default async function handler(): Promise<Response> {
+  if (!isProductionDeployment()) return new Response(null, { status: 204 });
   const siteUrl = process.env.URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   const secret = process.env.CRON_SECRET;
 

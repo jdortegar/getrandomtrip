@@ -1,3 +1,4 @@
+import { getBlobStoreName } from "@/lib/deployment";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { getStore } from "@netlify/blobs";
@@ -31,7 +32,7 @@ function getBlobStore(feature?: string) {
   const storeName =
     (feature && FEATURE_STORE[resolveStoreFeature(feature) ?? feature]) ??
     DEFAULT_STORE;
-  return getStore(storeName, {
+  return getStore(getBlobStoreName(storeName), {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
       ? {

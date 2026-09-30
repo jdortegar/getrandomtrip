@@ -1,3 +1,4 @@
+import { getDatabaseConnectionString } from "@/lib/databaseEnvironment";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
@@ -6,7 +7,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = getDatabaseConnectionString();
 const pool = connectionString
   ? new Pool({
       connectionString,

@@ -1,9 +1,11 @@
+import { isProductionDeployment } from "../../src/lib/deployment";
 import type { Config } from "@netlify/functions";
 
 // Scheduled functions cannot be invoked publicly through their function URL.
 export const config: Config = { schedule: "*/5 * * * *" };
 
 export default async function handler(): Promise<Response> {
+  if (!isProductionDeployment()) return new Response(null, { status: 204 });
   const secret = process.env.CRON_SECRET;
   const site = process.env.URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   let endpoint: URL;
