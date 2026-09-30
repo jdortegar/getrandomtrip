@@ -39,6 +39,34 @@ npm run build
 npm start
 ```
 
+## Borrador de inicio de Codex (inactivo)
+
+`.codex/config.toml.example` **no activa nada**. Las pruebas del hook son offline:
+`node --test .codex/hooks/start-dev.test.cjs` (mocks; no app, red ni base de datos).
+
+Después de una aprobación separada, integrar el ejemplo en `.codex/config.toml`
+sin reemplazar otros hooks y aprobar la definición mediante la confianza normal
+de Codex. Requiere `RT_CODEX_DEV_AUTOSTART=1` heredado por el proceso de Codex
+(no desde `.env`), Node 20.9+, dependencias ya instaladas y un worktree con rama
+`codex/`, `feat/`, `feature/` o `fix/`; nunca el checkout original.
+
+El hook carga la precedencia/expansión de entorno de Next en modo desarrollo y
+exige `NODE_ENV=development`, `RT_DEPLOY_ENV=nonproduction`, un secreto dedicado
+`RT_NONPRODUCTION_AUTH_SECRET` no vacío y PostgreSQL en
+`ep-weathered-glitter-a4ydytjg-pooler.us-east-1.aws.neon.tech`, igual a
+`RT_NONPRODUCTION_DATABASE_HOST`. Rechaza metadatos de hosting y parámetros de
+conexión que redirijan el host. No instala, copia entornos, migra ni carga datos.
+
+Solicita Next en `127.0.0.1:3010`, con origen `http://localhost:3010`. Si el puerto
+está ocupado, omite el inicio; no reutiliza servidores, cambia de puerto ni mata
+procesos. El aviso confirma solo la solicitud, **no disponibilidad**. No hay logs
+ni archivos PID; se descarta la salida del servidor para no exponer secretos.
+Para diagnosticar, pedir aprobación para un inicio manual con el mismo entorno
+validado (`node node_modules/next/dist/bin/next dev -p 3010 -H 127.0.0.1`).
+Una futura ejecución autorizada de la app **no es un sandbox de red**: Sentry u
+otras integraciones configuradas podrían conectarse. Quitar el opt-in impide
+nuevos inicios, pero no detiene procesos existentes.
+
 ## Variables de entorno
 
 - `.env.local` — (placeholder para futuras integraciones: auth real, PSP, analytics).
