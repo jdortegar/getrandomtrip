@@ -2759,6 +2759,9 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  tripTransport: {
+    ownCar: string;
+  };
   designSystem: DesignSystemDict;
   pdfLayout: PdfLayoutCopy;
   analyticsConsent: {

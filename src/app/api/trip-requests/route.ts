@@ -18,6 +18,7 @@ import {
   normalizeJourneyFilterValue,
   normalizeMaxTravelTimeKey,
   normalizeTransportId,
+  resolveTripTransport,
 } from "@/lib/helpers/transport";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import {
@@ -226,7 +227,7 @@ async function buildTripRequestCreateFields(
     endDate: resolvedEndDate,
     nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
     pax: xsedParty ? xsedParty.adults + xsedParty.minors : Number(pax) || 1,
-    transport: normalizeTransportId(String(transport ?? "")) || "plane",
+    transport: resolveTripTransport(String(type), String(transport ?? "")),
     accommodationType:
       normalizeJourneyFilterValue(String(accommodationType ?? "")) || "any",
     climate: normalizeJourneyFilterValue(String(climate ?? "")) || "any",
@@ -394,6 +395,19 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: "Checkout manages pending payment status" }, { status: 403 });
         }
         const updateData = buildTripRequestPartialUpdate(body, paxDetailsValue);
+        // Canonicalize only editable requests, never opportunistically repair paid
+        // or terminal records during administrative metadata/status updates.
+        const nextType = String(updateData.type ?? owned.type);
+        const changesFamily = tripFamilyOf(nextType) !== tripFamilyOf(owned.type);
+        if (
+          Object.keys(updateData).length > 0 && (tripFamilyOf(nextType) === "xsed" || changesFamily) &&
+          NON_TERMINAL_TRIP_STATUSES.some((status) => status === owned.status) &&
+          (!owned.payment || (RETRYABLE_PAYMENT_STATUSES as readonly string[]).includes(owned.payment.status))
+        ) {
+          updateData.transport = resolveTripTransport(
+            nextType, String(updateData.transport ?? (changesFamily ? "" : owned.transport) ?? ""),
+          );
+        }
         const dateError = validateTripDates({ ...owned, ...updateData });
         if (dateError) return NextResponse.json({ error: dateError, errorCode: "INVALID_TRIP_DATES" }, { status: 400 });
         const updatesDates = hasBodyKey(body, "startDate") || hasBodyKey(body, "endDate");
@@ -421,7 +435,7 @@ export async function POST(request: NextRequest) {
         // Even an apparent no-op can overwrite a newer quote's inputs after our
         // read. Version every supplied pricing/party field without needlessly
         // restricting unchanged fields on legitimate nonpayable transitions.
-        const guardsVersion = updatesDates || (!isAdmin && writesStatus) || updatesParty || Object.keys(CHECKOUT_PRICE_SELECT).some((key) => hasBodyKey(body, key));
+        const guardsVersion = updatesDates || (!isAdmin && writesStatus) || updatesParty || Object.keys(CHECKOUT_PRICE_SELECT).some((key) => hasBodyKey(body, key) || hasBodyKey(updateData, key));
         if (guardsCheckout) {
           if (!["DRAFT", "SAVED", "PENDING_PAYMENT"].includes(owned.status)) {
             return NextResponse.json({ error: "Trip is no longer editable" }, { status: 409 });

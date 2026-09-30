@@ -1,10 +1,12 @@
-import { act } from "react";
+import { act, isValidElement } from "react";
+import { Car } from "lucide-react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import es from "@/dictionaries/es.json";
 import en from "@/dictionaries/en.json";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutTripFromApi } from "@/types/Checkout";
+import type { CheckoutIconDetailRow } from "@/components/app/checkout/CheckoutTravelDetailsCard";
 import {
   getCheckoutLevel,
   getCheckoutPaxDetails,
@@ -14,6 +16,7 @@ import * as tracking from "@/lib/helpers/tracking/gtm";
 import { saveAnalyticsConsent } from "@/lib/helpers/tracking/consent";
 
 interface Details {
+  checkoutIconDetailRows: CheckoutIconDetailRow[];
   paxDetails: PaxDetails;
   totalTrip: number;
   promoDiscount: number;
@@ -148,6 +151,32 @@ describe("checkout traveler handoff and quote synchronization", () => {
   const mount = async () => {
     await act(async () => root.render(<CheckoutPage />));
   };
+
+  it.each([
+    ["en", "plane", "Own car"],
+    ["en", "own-car", "Own car"],
+    ["es", "plane", "Auto propio"],
+    ["es", "own-car", "Auto propio"],
+  ])("shows XSED %s/%s as localized own-car transport", async (locale, transport, expected) => {
+    navigation.locale = locale;
+    trip.transport = transport;
+    await mount();
+    const row = view.details!.checkoutIconDetailRows.find((item) => item.id === "transport")!;
+    expect(row.value).toBe(expected);
+    expect(isValidElement(row.icon) && row.icon.type).toBe(Car);
+    expect(view.details!.totalTrip).toBe(500);
+    expect(fetchMock.mock.calls.some(([url]) => url === "/api/trip-requests")).toBe(false);
+  });
+
+  it("retains the regular journey transport label", async () => {
+    trip.type = "couple";
+    trip.level = "essenza";
+    trip.transport = "train";
+    await mount();
+    const row = view.details!.checkoutIconDetailRows.find((item) => item.id === "transport")!;
+    expect(row.value).toBe("Train");
+    expect(isValidElement(row.icon) && row.icon.type).not.toBe(Car);
+  });
 
   it("wires one checkout initiation and payment-info callback to the actual server quote", async () => {
     const storage = new Map<string, string>();

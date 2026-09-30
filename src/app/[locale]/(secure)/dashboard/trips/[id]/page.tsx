@@ -41,6 +41,7 @@ import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
+import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 
 interface TripDetails {
   basePriceUsd?: number;
@@ -209,7 +210,12 @@ function TripDetailsContent() {
     const optionDef = filterOptions?.[f.key];
     const categoryLabel = optionDef?.label ?? f.key;
     const selectedOption = optionDef?.options?.find((o) => o.key === f.value);
-    const valueLabel = selectedOption?.label ?? f.value;
+    const regularLabel = selectedOption?.label ?? f.value;
+    const valueLabel = f.key === "transport"
+      ? resolveTripTransportLabel(
+          trip.type, trip.transport, dict.tripTransport.ownCar, regularLabel,
+        ) ?? regularLabel
+      : regularLabel;
     return {
       category: categoryLabel,
       value: valueLabel,

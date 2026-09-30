@@ -2,12 +2,14 @@ import { act, lazy, Suspense, type ComponentType, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
+const navigation = vi.hoisted(() => ({ locale: "en" }));
 vi.mock("next/dynamic", () => ({
   default: (load: () => Promise<ComponentType>) =>
     lazy(async () => ({ default: await load() })),
 }));
 vi.mock("next/navigation", () => ({
-  useParams: () => ({ id: "trip", locale: "en" }),
+  useParams: () => ({ id: "trip", locale: navigation.locale }),
 }));
 vi.mock("next-auth/react", () => ({
   useSession: () => ({ data: { user: { id: "buyer" } } }),
@@ -15,7 +17,7 @@ vi.mock("next-auth/react", () => ({
 vi.mock("@/components/auth/SecureRoute", () => ({
   default: ({ children }: { children: ReactNode }) => children,
 }));
-vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: async () => en }));
+vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: async (locale: string) => locale === "es" ? es : en }));
 import Page from "../page";
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 it.each([false, true])("shows dates and allows missing traveler details to save (locked=%s)", async (locked) => {
@@ -83,5 +85,36 @@ it.each([false, true])("shows dates and allows missing traveler details to save 
   } finally {
     act(() => root.unmount());
     vi.unstubAllGlobals();
+  }
+});
+
+it.each([
+  ["en", "plane", "Own car"],
+  ["en", "own-car", "Own car"],
+  ["es", "plane", "Auto propio"],
+  ["es", "own-car", "Auto propio"],
+])("shows XSED transport %s/%s without repairing the paid trip", async (locale, transport, expected) => {
+  navigation.locale = locale;
+  const fetchMock = vi.fn().mockResolvedValue(Response.json({ trip: {
+    id: "trip", type: "xsed", level: "family", status: "CONFIRMED",
+    originCity: "Buenos Aires", originCountry: "Argentina", pax: 2,
+    startDate: "2026-10-03T00:00:00.000Z", endDate: "2026-10-04T00:00:00.000Z",
+    createdAt: "2026-09-27T15:00:00.000Z", nights: 1, transport,
+    climate: "any", maxTravelTime: "no-limit", departPref: "any", arrivePref: "any",
+    avoidDestinations: [], addons: [], basePriceUsd: 250,
+  } }));
+  vi.stubGlobal("fetch", fetchMock);
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  try {
+    await act(async () => root.render(<Suspense fallback="Loading"><Page /></Suspense>));
+    expect(container.textContent).toContain(expected);
+    expect(container.textContent).not.toContain("own-car");
+    expect(container.textContent).not.toContain("Avión");
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith("/api/trips/trip");
+  } finally {
+    act(() => root.unmount());
+    vi.unstubAllGlobals();
+    navigation.locale = "en";
   }
 });

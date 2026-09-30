@@ -247,6 +247,7 @@ export function AdminTripFulfillmentPageClient({
               <TripRequestDetails
                 labels={dict.details}
                 locale={locale}
+                ownCarLabel={dictionary.tripTransport.ownCar}
                 trip={trip}
               />
             </div>

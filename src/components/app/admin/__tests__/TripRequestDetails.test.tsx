@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import { TripRequestDetails } from "../TripRequestDetails";
 
@@ -49,6 +50,7 @@ describe("TripRequestDetails calendar dates", () => {
       <TripRequestDetails
         labels={en.adminTripEditModal.details}
         locale={locale}
+        ownCarLabel="Own car"
         trip={trip}
       />,
     );
@@ -60,9 +62,40 @@ describe("TripRequestDetails calendar dates", () => {
       <TripRequestDetails
         labels={en.adminTripEditModal.details}
         locale="es"
+        ownCarLabel="Auto propio"
         trip={{ ...trip, startDate: null, endDate: null }}
       />,
     );
     expect(html).toContain("— — —");
+  });
+});
+
+describe("TripRequestDetails transport", () => {
+  it.each([
+    ["en", en, "Own car"],
+    ["es", es, "Auto propio"],
+  ] as const)("shows own-car transport for stale and canonical XSED in %s", (locale, dictionary, expected) => {
+    for (const transport of ["plane", "own-car"]) {
+      const html = renderToStaticMarkup(<TripRequestDetails
+        labels={dictionary.adminTripEditModal.details}
+        locale={locale}
+        ownCarLabel={dictionary.tripTransport.ownCar}
+        trip={{ ...trip, level: "family", transport }}
+      />);
+      expect(html).toContain(expected);
+      expect(html).not.toContain(">plane<");
+      expect(html).not.toContain(">own-car<");
+    }
+  });
+
+  it("preserves regular journey transport", () => {
+    const html = renderToStaticMarkup(<TripRequestDetails
+      labels={en.adminTripEditModal.details}
+      locale="en"
+      ownCarLabel="Own car"
+      trip={{ ...trip, type: "couple", level: "essenza", transport: "train" }}
+    />);
+    expect(html).toContain(">train<");
+    expect(html).not.toContain("Own car");
   });
 });
