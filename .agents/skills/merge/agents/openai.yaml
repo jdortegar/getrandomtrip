@@ -1,0 +1,4 @@
+interface:
+  display_name: "Merge"
+  short_description: "Merge, close resolved issues, and announce as you"
+  default_prompt: "Use $merge to merge the current PR, close only its fully resolved linked issues, and announce as me in Randomtrip's #github-updates."
