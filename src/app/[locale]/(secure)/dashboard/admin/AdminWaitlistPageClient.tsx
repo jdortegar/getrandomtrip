@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/Badge";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, UserPlus } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Button } from "@/components/ui/Button";
@@ -40,29 +40,24 @@ export function AdminWaitlistPageClient() {
   );
   const selectAllRef = useRef<HTMLInputElement>(null);
 
-  async function fetchEntries() {
+  const fetchEntries = useCallback(() => {
+    return fetch(`/api/admin/waitlist?page=${page}&limit=${PAGE_SIZE}`)
+      .then(async (res) => ({ res, data: (await res.json()) as { entries?: AdminWaitlistEntry[]; error?: string; total?: number } }))
+      .then(({ res, data }) => {
+        if (!res.ok || !data.entries) { setError(data.error ?? copy.errorLoad); return; }
+        setError(null);
+        setEntries(data.entries);
+        setTotal(data.total ?? 0);
+      })
+      .catch(() => setError(copy.errorLoad))
+      .finally(() => setLoading(false));
+  }, [page, copy.errorLoad]);
+  const [previousPage, setPreviousPage] = useState(page);
+  if (previousPage !== page) {
+    setPreviousPage(page);
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch(
-        `/api/admin/waitlist?page=${page}&limit=${PAGE_SIZE}`,
-      );
-      const data = (await res.json()) as {
-        entries?: AdminWaitlistEntry[];
-        error?: string;
-        total?: number;
-      };
-      if (!res.ok || !data.entries) {
-        setError(data.error ?? copy.errorLoad);
-        return;
-      }
-      setEntries(data.entries);
-      setTotal(data.total ?? 0);
-    } catch {
-      setError(copy.errorLoad);
-    } finally {
-      setLoading(false);
-    }
+    setSelectedIds(new Set());
   }
 
   async function removeEntry(id: string) {
@@ -96,9 +91,7 @@ export function AdminWaitlistPageClient() {
 
   useEffect(() => {
     void fetchEntries();
-    setSelectedIds(new Set());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [fetchEntries]);
 
   const allChecked =
     entries.length > 0 && entries.every((e) => selectedIds.has(e.id));
@@ -161,6 +154,8 @@ export function AdminWaitlistPageClient() {
         );
         setSelectedIds(new Set());
         setBulkInviteConfirmOpen(false);
+        setLoading(true);
+        setError(null);
         await fetchEntries();
       } finally {
         setIsBulkInviting(false);
@@ -196,6 +191,8 @@ export function AdminWaitlistPageClient() {
         );
         setSelectedIds(new Set());
         setBulkDeleteConfirmOpen(false);
+        setLoading(true);
+        setError(null);
         await fetchEntries();
       } finally {
         setIsBulkDeleting(false);

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useUserStore } from "@/store/slices/userStore";
@@ -14,7 +14,6 @@ export default function TripperGuard({
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
-  const [hasChecked, setHasChecked] = useState(false);
 
   const sessionUser = session?.user as
     | { role?: string; roles?: Array<"admin" | "traveler" | "tripper"> }
@@ -39,10 +38,7 @@ export default function TripperGuard({
 
     if (status === "loading") return;
 
-    if (isTripper) {
-      setHasChecked(true);
-      return;
-    }
+    if (isTripper) return;
 
     // If session is present but roles haven't hydrated yet, wait
     if (
@@ -70,11 +66,6 @@ export default function TripperGuard({
   ]);
 
   if (status === "loading" || !isAuthed) {
-    return null;
-  }
-
-  // Show nothing while checking
-  if (!hasChecked) {
     return null;
   }
 

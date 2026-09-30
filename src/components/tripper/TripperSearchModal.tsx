@@ -82,12 +82,14 @@ export default function TripperSearchModal({
     return () => clearTimeout(id);
   }, [query, open]);
 
-  useEffect(() => {
+  const [previousOpen, setPreviousOpen] = useState(open);
+  if (previousOpen !== open) {
+    setPreviousOpen(open);
     if (!open) {
       setQuery("");
       setDebouncedQuery("");
     }
-  }, [open]);
+  }
 
   useEffect(() => {
     if (!open) return;

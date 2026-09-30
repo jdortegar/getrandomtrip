@@ -124,16 +124,14 @@ export default function TripperSettingsPageClient({
     | ((SessionUser | User) & TripperSessionExtras)
     | undefined;
 
-  // Sync formData's name/email once the client-side session resolves — the
-  // server-fetched initialExtras has no session, so these start blank.
-  useEffect(() => {
-    if (!currentUser) return;
-    setFormData((prev) => ({
-      ...prev,
-      name: currentUser.name || prev.name,
-      email: currentUser.email || prev.email,
-    }));
-  }, [currentUser]);
+  const userKey = JSON.stringify([currentUser?.id, currentUser?.name, currentUser?.email]);
+  const [previousUserKey, setPreviousUserKey] = useState<string | null>(null);
+  if (previousUserKey !== userKey) {
+    setPreviousUserKey(userKey);
+    if (currentUser && !isEditing) {
+      setFormData((prev) => ({ ...prev, name: currentUser.name || prev.name, email: currentUser.email || prev.email }));
+    }
+  }
 
   useEffect(() => {
     if (!currentUser?.id) return;

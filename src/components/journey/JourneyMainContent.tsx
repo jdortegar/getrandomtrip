@@ -94,6 +94,7 @@ interface JourneyMainContentLabels {
 
 interface JourneyMainContentProps {
   activeTab: string;
+  mobileActionBarSlot?: HTMLElement | null;
   /** Localized addon copy keyed by addon id (journey.addons). */
   addonLabels?: Record<
     string,
@@ -175,6 +176,7 @@ export default function JourneyMainContent({
   localizedRefineOptions,
   localizedTravelerTypes,
   mainContentLabels,
+  mobileActionBarSlot,
   onDetailsProgressChange,
   onOpenSection,
   onTabChange,
@@ -194,11 +196,6 @@ export default function JourneyMainContent({
   // Mobile puts the action bar after JourneySummary (a DOM sibling this
   // component can't reach by nesting), so it's portaled into a target slot
   // JourneyPageClient renders there; the in-flow copy below stays desktop-only.
-  const [mobileActionBarSlot, setMobileActionBarSlot] =
-    useState<HTMLElement | null>(null);
-  useEffect(() => {
-    setMobileActionBarSlot(document.getElementById("mobile-action-bar-slot"));
-  }, []);
   const updateQuery = useQuerySync();
   const { filters, setPartial } = useStore();
 

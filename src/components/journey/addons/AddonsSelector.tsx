@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import Chip from "@/components/Chip";
 import { Button } from "@/components/ui/Button";
@@ -102,9 +102,11 @@ export function AddonsSelector({
   const [localValue, setLocalValue] = useState<string | undefined>(
     () => value ?? undefined,
   );
-  useEffect(() => {
+  const [previousValue, setPreviousValue] = useState(value);
+  if (previousValue !== value) {
+    setPreviousValue(value);
     setLocalValue(value ?? undefined);
-  }, [value]);
+  }
 
   const displayValue = localValue;
   const handleToggle = (addonId: string) => {

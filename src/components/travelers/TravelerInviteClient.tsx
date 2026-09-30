@@ -115,9 +115,11 @@ function InviteForm({
   // full-page-return remount. Deliberately keyed off `status`, never off
   // `AuthModal`'s `onClose` — `onClose` also fires on Escape/backdrop/X, so
   // it does not imply success.
-  useEffect(() => {
+  const [previousAuthenticated, setPreviousAuthenticated] = useState(authenticated);
+  if (previousAuthenticated !== authenticated) {
+    setPreviousAuthenticated(authenticated);
     if (authenticated) setAuthOpen(false);
-  }, [authenticated]);
+  }
 
   useEffect(() => {
     return () => {

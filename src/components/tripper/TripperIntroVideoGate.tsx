@@ -1,7 +1,7 @@
 // frontend/src/components/tripper/TripperIntroVideoGate.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 type Props = {
   /** ID de YouTube (no la URL completa). Ej: "1d4OiltwQYs" */
@@ -21,7 +21,7 @@ export default function TripperIntroVideoGate({
   forceShow = false,
   storageKey = "rt_tripper_intro_seen",
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [closed, setClosed] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
 
   // Clave por página (evita que ver el video en un tripper bloquee otros)
@@ -47,29 +47,24 @@ export default function TripperIntroVideoGate({
     return `${base}?${params.toString()}`;
   }, [youtubeId]);
 
-  useEffect(() => {
-    if (forceShow) {
-      setOpen(true);
-      return;
-    }
-    if (typeof window === "undefined") return;
-
-    // ya lo vio
-    if (sessionStorage.getItem(derivedKey) === "1") return;
-
-    // si viene de la misma web (home u otra interna) => no mostrar
-    const ref = document.referrer;
-    const sameOrigin =
-      !!ref &&
-      !!window.location.origin &&
-      ref.startsWith(window.location.origin);
-
-    // permite desactivar con ?novideo=1
-    const url = new URL(window.location.href);
-    const noVideo = url.searchParams.get("novideo") === "1";
-
-    if (!sameOrigin && !noVideo) setOpen(true);
-  }, [forceShow, derivedKey]);
+  const shouldShow = useSyncExternalStore(
+    () => () => {},
+    () => {
+      if (forceShow) return true;
+      try { if (window.sessionStorage.getItem(derivedKey) === "1") return false; }
+      catch { /* Storage is optional. */ }
+      const sameOrigin = !!document.referrer && document.referrer.startsWith(window.location.origin);
+      return !sameOrigin && new URL(window.location.href).searchParams.get("novideo") !== "1";
+    },
+    () => false,
+  );
+  const showKey = `${forceShow}:${derivedKey}`;
+  const [previousShowKey, setPreviousShowKey] = useState(showKey);
+  if (previousShowKey !== showKey) {
+    setPreviousShowKey(showKey);
+    setClosed(false);
+  }
+  const open = shouldShow && !closed;
 
   // Bloquea scroll del body y ESC para cerrar
   useEffect(() => {
@@ -77,7 +72,7 @@ export default function TripperIntroVideoGate({
 
     function onKey(e: KeyboardEvent) {
       if (!open) return;
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") setClosed(true);
     }
 
     if (open) {
@@ -92,7 +87,7 @@ export default function TripperIntroVideoGate({
   }, [open]);
 
   function closeModal() {
-    setOpen(false);
+    setClosed(true);
     if (dontShowAgain) {
       try {
         sessionStorage.setItem(derivedKey, "1");

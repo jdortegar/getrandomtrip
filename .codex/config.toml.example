@@ -1,0 +1,10 @@
+# INACTIVE DRAFT: review and separate approval are required before activation.
+# Merge into project config; preserve existing hooks and normal Codex trust checks.
+[[hooks.SessionStart]]
+matcher = "^(startup|resume)$"
+
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = 'node "$(git rev-parse --show-toplevel)/.codex/hooks/start-dev.cjs"'
+timeout = 15
+statusMessage = "Checking opt-in Randomtrip worktree startup"

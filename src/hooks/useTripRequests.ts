@@ -64,12 +64,29 @@ export function useTripRequests({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const requestId = useRef(0);
-
-  const load = useCallback(async () => {
-    const currentRequest = ++requestId.current;
+  const queryKey = JSON.stringify([
+    errorLoad,
+    page,
+    limit,
+    status,
+    type,
+    level,
+    paymentStatus,
+    search,
+    sortBy,
+    sortOrder,
+  ]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
     setLoading(true);
     setError(null);
+  }
+
+  const requestId = useRef(0);
+
+  const load = useCallback(() => {
+    const currentRequest = ++requestId.current;
     const params = new URLSearchParams({
       page: String(page),
       limit: String(limit),
@@ -83,27 +100,32 @@ export function useTripRequests({
     if (search) params.set("search", search);
     if (sortBy) params.set("sortBy", sortBy);
     if (sortOrder) params.set("sortOrder", sortOrder);
-    try {
-      const res = await fetch(`/api/admin/trip-requests?${params.toString()}`);
-      const data = (await res.json()) as {
-        error?: string;
-        tripRequests?: AdminTripRequest[];
-        total?: number;
-        statusCounts?: Record<TripRequestStatus, number>;
-      };
-      if (currentRequest !== requestId.current) return;
-      if (!res.ok) {
-        setError(data.error ?? errorLoad);
-        return;
-      }
-      setTrips(data.tripRequests ?? []);
-      setTotal(data.total ?? 0);
-      setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
-    } catch {
-      if (currentRequest === requestId.current) setError(errorLoad);
-    } finally {
-      if (currentRequest === requestId.current) setLoading(false);
-    }
+    return fetch(`/api/admin/trip-requests?${params.toString()}`)
+      .then(async (res) => ({
+        res,
+        data: (await res.json()) as {
+          error?: string;
+          tripRequests?: AdminTripRequest[];
+          total?: number;
+          statusCounts?: Record<TripRequestStatus, number>;
+        },
+      }))
+      .then(({ res, data }) => {
+        if (currentRequest !== requestId.current) return;
+        if (!res.ok) {
+          setError(data.error ?? errorLoad);
+          return;
+        }
+        setTrips(data.tripRequests ?? []);
+        setTotal(data.total ?? 0);
+        setStatusCounts(data.statusCounts ?? EMPTY_COUNTS);
+      })
+      .catch(() => {
+        if (currentRequest === requestId.current) setError(errorLoad);
+      })
+      .finally(() => {
+        if (currentRequest === requestId.current) setLoading(false);
+      });
   }, [
     errorLoad,
     page,
@@ -124,5 +146,11 @@ export function useTripRequests({
     };
   }, [load]);
 
-  return { error, loading, refresh: load, statusCounts, total, trips };
+  const refresh = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    void load();
+  }, [load]);
+
+  return { error, loading, refresh, statusCounts, total, trips };
 }

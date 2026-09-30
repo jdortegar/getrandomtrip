@@ -12,9 +12,7 @@
  *
  * Run: npm run db:backfill-tripper-since
  */
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { withPrisma } from "./lib/withPrisma";
 
 type BackfillClient = {
   user: {
@@ -25,16 +23,8 @@ type BackfillClient = {
   };
 };
 
-const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString
-  ? new PrismaPg({ connectionString })
-  : undefined;
-const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
-);
-
 export async function backfillTripperSince(
-  client: BackfillClient = prisma as unknown as BackfillClient,
+  client: BackfillClient,
 ): Promise<{ count: number }> {
   const result = await client.user.updateMany({
     where: { roles: { has: "TRIPPER" }, tripperSince: null },
@@ -52,12 +42,10 @@ const isMainModule =
   process.argv[1]?.endsWith("backfill-tripper-since.ts") ?? false;
 
 if (isMainModule) {
-  backfillTripperSince()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(() => {
-      void prisma.$disconnect();
-    });
+  withPrisma((client) =>
+    backfillTripperSince(client as unknown as BackfillClient),
+  ).catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface DraftPreferencesUrlValues {
   departPref: string | undefined;
@@ -47,8 +47,10 @@ export function useJourneyDraftPreferences(
   const [draftAccommodationType, setDraftAccommodationType] =
     useState<string>("any");
 
-  // Sync URL -> draft when entering preferences step
-  useEffect(() => {
+  const inputKey = JSON.stringify([activeTab, urlValues]);
+  const [previousInputKey, setPreviousInputKey] = useState<string | null>(null);
+  if (previousInputKey !== inputKey) {
+    setPreviousInputKey(inputKey);
     if (activeTab === "preferences") {
       setDraftDepartPref(urlValues.departPref ?? "any");
       setDraftArrivePref(urlValues.arrivePref ?? "any");
@@ -56,15 +58,7 @@ export function useJourneyDraftPreferences(
       setDraftMaxTravelTime(urlValues.maxTravelTime ?? "no-limit");
       setDraftAccommodationType(urlValues.accommodationType ?? "any");
     }
-  }, [
-    activeTab,
-    urlValues.accommodationType,
-    urlValues.arrivePref,
-    urlValues.climate,
-    urlValues.departPref,
-    urlValues.maxTravelTime,
-  ]);
-
+  }
   const effectiveDepartPref =
     activeTab === "preferences"
       ? draftDepartPref

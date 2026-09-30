@@ -150,3 +150,28 @@ describe("TripScratchReveal — persistence gate", () => {
     getContextSpy.mockRestore();
   });
 });
+
+it("keeps an already bypassed trip revealed when reduced motion is disabled", () => {
+  const media = Object.assign(new EventTarget(), {
+    matches: true,
+    media: "(prefers-reduced-motion: reduce)",
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+  });
+  const matchMedia = vi.spyOn(window, "matchMedia").mockReturnValue(media);
+  const onComplete = vi.fn();
+  try {
+    render(onComplete);
+    expect(onComplete).toHaveBeenCalledWith({ instant: true });
+    act(() => {
+      media.matches = false;
+      media.dispatchEvent(new Event("change"));
+    });
+    expect(container.querySelector("canvas")).toBeNull();
+    expect(container.querySelector('[data-testid="hero-content"]')?.parentElement?.getAttribute("aria-hidden")).toBe("false");
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  } finally {
+    matchMedia.mockRestore();
+  }
+});

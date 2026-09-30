@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/slices/userStore";
@@ -23,7 +23,6 @@ export default function SecureRoute({
   const { data: session, status } = useSession();
   const { isAuthed, user } = useUserStore();
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
 
   const sessionUser = session?.user as
     | { role?: string; roles?: Array<"admin" | "traveler" | "tripper"> }
@@ -43,63 +42,20 @@ export default function SecureRoute({
     ? requiredRole.toLowerCase()
     : null;
 
-  // Stable keys for effect deps (object literals above change identity every render and would retrigger the effect)
-  const storeRoleKey = user?.role ?? "";
-  const storeRolesKey = user?.roles?.length ? user.roles.join(",") : "";
-  const sessionRoleKey = sessionUser?.role ?? "";
-  const sessionRolesKey = sessionUser?.roles?.length
-    ? sessionUser.roles.join(",")
-    : "";
+  const allowed = !normalizedRequiredRole ||
+    hasRoleAccess(subjectFromStore, requiredRole!) ||
+    hasRoleAccess(subjectFromSession, requiredRole!);
 
   useEffect(() => {
     if (status === "loading") return;
-
-    const storeSubject =
-      user?.roles && user.roles.length > 0
-        ? { role: user.role, roles: user.roles }
-        : { role: user?.role };
-    const sessionSubject =
-      sessionUser?.roles && sessionUser.roles.length > 0
-        ? { role: sessionUser.role, roles: sessionUser.roles }
-        : { role: sessionUser?.role };
-
-    // When not authenticated: open auth modal on the same page (no redirect)
     if (!session && !isAuthed) {
       useUserStore.getState().openAuth("signin");
-      setIsChecking(false);
-      return;
-    }
-
-    // Check role if required (compare normalized roles)
-    if (
-      normalizedRequiredRole &&
-      !hasRoleAccess(
-        storeSubject,
-        normalizedRequiredRole as "traveler" | "tripper" | "admin",
-      ) &&
-      !hasRoleAccess(
-        sessionSubject,
-        normalizedRequiredRole as "traveler" | "tripper" | "admin",
-      )
-    ) {
+    } else if (!allowed) {
       router.push("/unauthorized");
-      return;
     }
+  }, [allowed, isAuthed, router, session, status]);
 
-    setIsChecking(false);
-  }, [
-    isAuthed,
-    normalizedRequiredRole,
-    router,
-    session,
-    sessionRoleKey,
-    sessionRolesKey,
-    status,
-    storeRoleKey,
-    storeRolesKey,
-  ]);
-
-  if (status === "loading" || isChecking) {
+  if (status === "loading") {
     return <LoadingSpinner data-component="SecureRoute" />;
   }
 

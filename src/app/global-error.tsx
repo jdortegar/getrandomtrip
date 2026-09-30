@@ -1,7 +1,7 @@
 "use client";
 
 import * as Sentry from "@sentry/nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/Button";
 import { errorFallback as en } from "@/dictionaries/en.json";
 import { errorFallback as es } from "@/dictionaries/es.json";
@@ -13,11 +13,15 @@ interface GlobalErrorProps {
 }
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
-  const [locale, setLocale] = useState<Locale>(DEFAULT_LOCALE);
+  const locale = useSyncExternalStore(
+    () => () => {},
+    (): Locale =>
+      window.location.pathname.split("/")[1] === "en" ? "en" : "es",
+    (): Locale => DEFAULT_LOCALE,
+  );
   const copy = locale === "en" ? en : es;
 
   useEffect(() => {
-    setLocale(window.location.pathname.split("/")[1] === "en" ? "en" : "es");
     Sentry.captureException(error);
   }, [error]);
 

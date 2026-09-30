@@ -65,7 +65,6 @@ export async function POST(
     // Check whether a non-INACTIVE review copy exists for this experience.
     // If yes → perform the atomic copy→original overwrite, then set ACTIVE.
     // If no  → follow the existing direct-approve path.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const existingCopy = await (prisma.experience.findFirst as any)({
       where: {
         parentId: params.id,

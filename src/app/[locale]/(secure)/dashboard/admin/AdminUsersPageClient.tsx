@@ -51,10 +51,14 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
   );
   const selectAllRef = useRef<HTMLInputElement>(null);
 
+  const queryKey = JSON.stringify([page, searchQuery, debouncedSearch]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
+    setLoading(true);
+  }
   const queryPending = loading || searchQuery !== debouncedSearch;
-  const beginRequest = useTableRequestGuard(
-    JSON.stringify([page, searchQuery, debouncedSearch]),
-  );
+  const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -64,39 +68,47 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(() => {
     if (searchQuery !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(PAGE_SIZE),
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    });
+    if (debouncedSearch) params.set("search", debouncedSearch);
 
-      const res = await fetch(`/api/admin/users?${params.toString()}`);
-      const data = (await res.json()) as {
-        users?: AdminUser[];
-        error?: string;
-        total?: number;
-      };
-      if (!isCurrent()) return;
-      if (res.ok && data.users) {
-        setError(null);
-        setUsers(data.users);
-        setTotal(data.total ?? 0);
-      } else {
-        setError(data.error ?? copy.errorFallback);
-      }
-    } catch {
-      if (isCurrent()) setError(copy.errorFallback);
-    } finally {
-      if (isCurrent()) setLoading(false);
-    }
+    return fetch(`/api/admin/users?${params.toString()}`)
+      .then(async (res) => ({
+        res,
+        data: (await res.json()) as {
+          users?: AdminUser[];
+          error?: string;
+          total?: number;
+        },
+      }))
+      .then(({ res, data }) => {
+        if (!isCurrent()) return;
+        if (res.ok && data.users) {
+          setError(null);
+          setUsers(data.users);
+          setTotal(data.total ?? 0);
+        } else {
+          setError(data.error ?? copy.errorFallback);
+        }
+      })
+      .catch(() => {
+        if (isCurrent()) setError(copy.errorFallback);
+      })
+      .finally(() => {
+        if (isCurrent()) setLoading(false);
+      });
   }, [beginRequest, searchQuery, page, debouncedSearch, copy.errorFallback]);
-  const refreshCurrentQuery = useCurrentTableRefresh(fetchUsers);
+  const refreshCurrentQuery = useCurrentTableRefresh(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    setLoading(true);
+    await fetchUsers();
+  });
 
   useEffect(() => {
     void fetchUsers();
@@ -257,7 +269,7 @@ export function AdminUsersPageClient({ copy }: AdminUsersPageClientProps) {
         error={error}
         isLoading={queryPending}
         onRetry={() => {
-          if (!queryPending) void fetchUsers();
+          if (!queryPending) void refreshCurrentQuery();
         }}
       >
         <UsersTable
