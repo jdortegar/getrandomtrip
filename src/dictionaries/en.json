@@ -6066,5 +6066,17 @@
     "suggestedActivities": "ITINERARY WITH SUGGESTED ACTIVITIES",
     "singleNight": "1 Night",
     "manyNights": "{count} Nights"
+  },
+  "destinationAssignmentReminder": {
+    "subject": "Assign destination: reveal within {hours} hours",
+    "preview": "Assign an experience before the destination reveal.",
+    "heading": "Destination assignment pending",
+    "body": "Hi {admin}, please assign an experience for this trip before the destination reveal.",
+    "clientLabel": "Traveler:",
+    "tripIdLabel": "Booking ID:",
+    "deadlineLabel": "Scheduled reveal deadline (UTC):",
+    "urgency": "The destination reveal is scheduled within {hours} hours. Please assign an experience before {deadline}.",
+    "notificationBody": "The destination reveal for {client} is scheduled within {hours} hours ({deadline}). Assign an experience before the reveal.",
+    "cta": "GO TO ADMIN PANEL"
   }
 }

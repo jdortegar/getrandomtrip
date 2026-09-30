@@ -2647,6 +2647,19 @@ export interface TripDetailDict {
   revealedHint: string;
 }
 
+export interface DestinationAssignmentReminderDict {
+  subject: string;
+  preview: string;
+  heading: string;
+  body: string;
+  clientLabel: string;
+  tripIdLabel: string;
+  deadlineLabel: string;
+  urgency: string;
+  notificationBody: string;
+  cta: string;
+}
+
 export interface TravelerDetailsReminderDict {
   subject: string;
   preview: string;
@@ -4261,6 +4274,7 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  destinationAssignmentReminder: DestinationAssignmentReminderDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;
   manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
