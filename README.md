@@ -42,7 +42,9 @@ npm start
 ## Borrador de inicio de Codex (inactivo)
 
 `.codex/config.toml.example` **no activa nada**. Las pruebas del hook son offline:
-`node --test .codex/hooks/start-dev.test.cjs` (mocks; no app, red ni base de datos).
+`node --test .codex/hooks/start-dev.node-test.cjs` (mocks; no app, red ni base de datos).
+El sufijo `.node-test.cjs` mantiene estas pruebas de Node fuera del descubrimiento
+de Vitest; `npm run test` conserva todas las pruebas de la aplicación.
 
 Después de una aprobación separada, integrar el ejemplo en `.codex/config.toml`
 sin reemplazar otros hooks y aprobar la definición mediante la confianza normal
