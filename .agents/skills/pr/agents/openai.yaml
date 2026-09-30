@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR"
+  short_description: "Create PRs with exact prompts and commit-linked summaries"
+  default_prompt: "Use $pr to create a pull request with the exact prompts behind this work and brief, commit-linked summaries in blockquotes."
