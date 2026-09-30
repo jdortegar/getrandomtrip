@@ -134,9 +134,11 @@ export function TripperSettingsSocialLinks({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
+  const [previousEditing, setPreviousEditing] = useState(isEditing);
+  if (previousEditing !== isEditing) {
+    setPreviousEditing(isEditing);
     if (!isEditing) setActiveNetwork(null);
-  }, [isEditing]);
+  }
 
   const usedNetworks = new Set(links.map((l) => l.network));
   const availableNetworks = ALL_NETWORKS.filter((n) => !usedNetworks.has(n));

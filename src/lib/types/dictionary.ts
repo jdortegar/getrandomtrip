@@ -3863,11 +3863,12 @@ export interface MarketingDictionary {
       items: Array<{
         bio: string;
         img: string;
-        linkedin: string;
+        linkedin?: string;
         name: string;
         role: string;
         tagline?: string;
       }>;
+      linkedinAriaLabel: string;
       sectionTitle: string;
       subtitle: string;
     };

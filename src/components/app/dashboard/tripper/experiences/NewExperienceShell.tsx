@@ -149,7 +149,7 @@ export function NewExperienceShell({
   const router = useRouter();
   const searchParams = useSearchParams();
   const tabs = dict.contentTabs;
-  const effectiveTabs = adminReviewSlot ? [...tabs, ADMIN_TAB] : tabs;
+  const effectiveTabs = useMemo(() => adminReviewSlot ? [...tabs, ADMIN_TAB] : tabs, [adminReviewSlot, tabs]);
 
   // Resolve initial tab+section from URL, validating existence and guard
   const rawTab = searchParams.get("tab");
@@ -345,7 +345,7 @@ export function NewExperienceShell({
         setSaveStatus("error");
       }
     },
-    [flushPendingBlobs, mode, adminCopyId],
+    [flushPendingBlobs, mode, adminCopyId, isReadOnly],
   );
 
   useEffect(() => {

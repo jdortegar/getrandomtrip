@@ -21,9 +21,7 @@
  *
  * Run: npm run db:backfill-tripper-hero-crop [-- --commit] [-- --revert]
  */
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { withPrisma } from "./lib/withPrisma";
 import { getStore } from "@netlify/blobs";
 import {
   coverCropFromFocalPoint,
@@ -182,7 +180,11 @@ export interface PhaseBDeps {
     buffer: Buffer,
   ) => Promise<{ width: number; height: number }>;
   readBlob: (key: string) => Promise<Buffer | null>;
-  writeBlob: (key: string, buffer: Buffer, contentType: string) => Promise<void>;
+  writeBlob: (
+    key: string,
+    buffer: Buffer,
+    contentType: string,
+  ) => Promise<void>;
 }
 
 export interface PhaseBRow {
@@ -286,23 +288,19 @@ type RevertClient = {
   $executeRawUnsafe: (query: string) => Promise<number>;
 };
 
-export async function runRevert(client: RevertClient): Promise<{ count: number }> {
+export async function runRevert(
+  client: RevertClient,
+): Promise<{ count: number }> {
   const count = await client.$executeRawUnsafe(
     `UPDATE "users" SET "heroImage" = "heroImageOriginal" WHERE "heroImageOriginal" IS NOT NULL`,
   );
-  console.log(`[backfill-tripper-hero-crop] revert: restored heroImage for ${count} tripper(s)`);
+  console.log(
+    `[backfill-tripper-hero-crop] revert: restored heroImage for ${count} tripper(s)`,
+  );
   return { count };
 }
 
 // ── CLI entrypoint ───────────────────────────────────────────────────────
-
-const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString
-  ? new PrismaPg({ connectionString })
-  : undefined;
-const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
-);
 
 const isMainModule =
   process.argv[1]?.endsWith("backfill-tripper-hero-crop.ts") ?? false;
@@ -312,19 +310,15 @@ if (isMainModule) {
   const commit = args.includes("--commit");
   const revert = args.includes("--revert");
 
-  (async () => {
+  withPrisma(async (client) => {
     if (revert) {
-      await runRevert(prisma as unknown as RevertClient);
+      await runRevert(client as unknown as RevertClient);
       return;
     }
-    await runPhaseA(prisma as unknown as PhaseAClient);
-    await runPhaseB(prisma as unknown as PhaseBClient, { commit });
-  })()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(() => {
-      void prisma.$disconnect();
-    });
+    await runPhaseA(client as unknown as PhaseAClient);
+    await runPhaseB(client as unknown as PhaseBClient, { commit });
+  }).catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
 }

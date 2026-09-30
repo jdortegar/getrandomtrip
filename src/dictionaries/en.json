@@ -3880,7 +3880,7 @@
       "items": [
         {
           "bio": "Luxury hospitality operator with 17+ years across resort openings, operations and guest experience.",
-          "img": "/images/about-us-santiago.png",
+          "img": "/images/about-us-santiago.png?v=998dc83e27fd",
           "linkedin": "https://www.linkedin.com/in/santiagosng/",
           "name": "Santiago Senega",
           "role": "Founder & CEO",
@@ -3888,21 +3888,30 @@
         },
         {
           "bio": "Senior full-stack engineer with deep React, Node, GraphQL, DevOps and AI product experience.",
-          "img": "/images/about-us-david.png",
+          "img": "/images/about-us-david.png?v=26fa32b1dec3",
           "linkedin": "https://www.linkedin.com/in/jdortegar/",
           "name": "David Ortega",
           "role": "Co-Founder & CTO",
           "tagline": "Bridges frontend performance, backend logic and AI-driven workflows."
         },
         {
+          "bio": "More than 20 years of experience building brands, identifying emerging trends, and defining strategies that set them apart.",
+          "img": "/images/about-us-fabrizio.png?v=896b160a2091",
+          "linkedin": "https://www.linkedin.com/in/fabrizio-cavallo-b62a662/",
+          "name": "Fabrizio Cavallo",
+          "role": "CMO",
+          "tagline": "Brings a strategic perspective to developing a relevant, distinctive brand and creating lasting value for its customers."
+        },
+        {
           "bio": "With 10+ years across creative systems, digital products, campaigns and brand execution. Ensuring that every interaction feels clear and memorable.",
-          "img": "/images/about-us-carla.png",
+          "img": "/images/about-us-carla.png?v=d018fa1c4bfb",
           "linkedin": "https://www.linkedin.com/in/carlacvazquez/",
           "name": "Carla C. J Vázquez",
           "role": "Head UX / UI",
           "tagline": "Owns visual consistency, UX decisions and product usability."
         }
       ],
+      "linkedinAriaLabel": "View {name} on LinkedIn",
       "sectionTitle": "Who we are",
       "subtitle": "We are a team that blends creativity, logistics and an obsession with detail to create trips you didn't know you needed."
     },
@@ -3935,8 +3944,8 @@
     },
     "founder": {
       "imageAlt": "Randomtrip founder",
-      "p1": "Randomtrip was born from a personal obsession of Santi Senega: to give travel back that mix of curiosity, wonder, and trust that is often lost among endless options, reviews, and logistical decisions.",
-      "p2": "As Founder & CEO, Santi designed Randomtrip from a simple idea: the surprise can be deeply exciting if it's well contained. The destination can remain hidden; the price, quality, operation, and support cannot. That tension between mystery and structure became the heart of Randomtrip: Designed Serendipity, or living the unexpected without improvising.",
+      "p1": "We were born to combat the analysis paralysis that holds great trips back. We turn ‘what if…?’ into ‘let’s go!’ with a system that protects your time and energy.",
+      "p2": "This is more than a travel agency: it’s a manifesto against routine and for thoughtfully designed wonder.",
       "sectionTitle": "Founder story"
     },
     "hero": {
@@ -3960,11 +3969,7 @@
       "imageAlt": "Serendipity moments on a trip",
       "p1": "We don't sell destinations. We design a different way of traveling. Randomtrip was born to free travelers from the fatigue of planning: too many open tabs, too many decisions before you even start.",
       "p2": "Our answer is Designed Serendipity: experiences that feel spontaneous but are born from a rigorous structure. You define dates, budget, style, pace, and limits. We design the wonder within that framework. Living the unexpected, without improvising.",
-      "pills": [
-        "Emotional brief",
-        "Invisible design",
-        "Surprise with a net"
-      ],
+      "pills": ["Emotional brief", "Invisible design", "Surprise with a net"],
       "sectionTitle": "Our philosophy"
     },
     "steps": {

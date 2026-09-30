@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import {
@@ -18,31 +18,18 @@ interface NightsCalendarProps {
 export default function NightsCalendar({ level }: NightsCalendarProps) {
   const { logistics, setPartial } = useStore();
 
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(
-    logistics.startDate ? new Date(logistics.startDate) : undefined,
-  );
-  const [selectedNights, setSelectedNights] = useState<number>(
-    logistics.nights || 1,
-  );
+  const selectedDay = logistics.startDate
+    ? new Date(logistics.startDate)
+    : undefined;
+  const selectedNights = logistics.nights || 1;
   const [error, setError] = useState<string | null>(null);
 
   // Get max nights for the level
   const maxNights = level.maxNights;
   const options = Array.from({ length: maxNights }, (_, i) => i + 1);
 
-  // Update local state when store changes
-  useEffect(() => {
-    if (logistics.startDate) {
-      setSelectedDay(new Date(logistics.startDate));
-    }
-    if (logistics.nights) {
-      setSelectedNights(logistics.nights);
-    }
-  }, [logistics.startDate, logistics.nights]);
-
   const handleNightChange = (numNights: number) => {
     setError(null);
-    setSelectedNights(numNights);
 
     // Calculate end date if we have a selected day
     let endDate: Date | undefined;
@@ -66,7 +53,6 @@ export default function NightsCalendar({ level }: NightsCalendarProps) {
     if (day < today) return;
 
     // Create a local date to avoid timezone issues
-    setSelectedDay(day);
 
     // Calculate end date if we have selected nights
     let endDate: Date | undefined;

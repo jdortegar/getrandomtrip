@@ -46,20 +46,23 @@ export function TripperBlogPreviewClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const requestKey = JSON.stringify([postId, session?.user?.id, sessionStatus, locale]);
+  const [previousRequestKey, setPreviousRequestKey] = useState<string | null>(null);
+  if (previousRequestKey !== requestKey) {
+    setPreviousRequestKey(requestKey);
+    const eligible = !!postId && !!session?.user?.id;
+    setLoading(sessionStatus === "loading" || eligible);
+    setError(sessionStatus !== "loading" && !eligible ? tripperBlogs.previewPage.loadError : null);
+  }
+
   useEffect(() => {
     if (sessionStatus === "loading") return;
 
-    if (!postId || !session?.user?.id) {
-      setLoading(false);
-      setError(tripperBlogs.previewPage.loadError);
-      return;
-    }
+    if (!postId || !session?.user?.id) return;
 
     let cancelled = false;
 
     async function fetchPost() {
-      setLoading(true);
-      setError(null);
       try {
         const response = await fetch(`/api/tripper/blogs/${postId}`);
         const data = (await response.json()) as {

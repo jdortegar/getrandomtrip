@@ -5,6 +5,7 @@ import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import Hero from "@/components/Hero";
 import { AboutUsValues } from "@/components/app/about-us/AboutUsValues";
 import { AboutUsPhilosophy } from "@/components/app/about-us/AboutUsPhilosophy";
+import { AboutUsFounder } from "@/components/app/about-us/AboutUsFounder";
 import { TeamSection } from "@/components/app/about-us/TeamSection";
 import { AboutUsSteps } from "@/components/app/about-us/AboutUsSteps";
 import { TrustHero } from "@/components/app/about-us/TrustHero";
@@ -60,22 +61,20 @@ export default async function AboutUsPage(props: LocaleParams) {
     }));
 
   return (
-    <div className="bg-white font-barlow text-ink">
+    <div className="bg-white font-barlow rt-content-layout text-ink">
       <JsonLd schema={buildFAQPageSchema(aboutUs.faq.items)} />
       <Hero content={aboutUs.hero} scrollIndicator />
       <AboutUsValues items={aboutUs.valueProps.items} />
       <AboutUsPhilosophy content={aboutUs.philosophy} id="philosophy" />
-      <AboutUsPhilosophy
-        content={aboutUs.founder}
-        imageSrc="/images/about-us-santiago.png"
-        inverted
-        imageClassName="object-top"
-      />
+      <AboutUsFounder content={aboutUs.founder} />
       <TeamSection content={aboutUs.curators} />
       <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
       <TrustHero content={aboutUs.trust} locale={locale} />
       <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
-      <FaqBlock copy={aboutUs.faq} />
+      <FaqBlock
+        className={trippers.length > 0 ? "pt-0!" : ""}
+        copy={aboutUs.faq}
+      />
     </div>
   );
 }

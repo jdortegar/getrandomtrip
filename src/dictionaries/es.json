@@ -3880,7 +3880,7 @@
       "items": [
         {
           "bio": "Operador de hospitalidad de lujo con más de 17 años en apertura de resorts, operaciones y experiencia del huésped.",
-          "img": "/images/about-us-santiago.png",
+          "img": "/images/about-us-santiago.png?v=998dc83e27fd",
           "linkedin": "https://www.linkedin.com/in/santiagosng/",
           "name": "Santiago Senega",
           "role": "Founder & CEO",
@@ -3888,21 +3888,30 @@
         },
         {
           "bio": "Ingeniero full-stack senior con amplia experiencia en React, Node, GraphQL, DevOps y productos de IA.",
-          "img": "/images/about-us-david.png",
+          "img": "/images/about-us-david.png?v=26fa32b1dec3",
           "linkedin": "https://www.linkedin.com/in/jdortegar/",
           "name": "David Ortega",
           "role": "Co-Founder & CTO",
           "tagline": "Conecta el rendimiento del frontend, la lógica del backend y flujos impulsados por IA."
         },
         {
+          "bio": "Más de 20 años de experiencia construyendo marcas, identificando tendencias emergentes y definiendo estrategias que las diferencian.",
+          "img": "/images/about-us-fabrizio.png?v=896b160a2091",
+          "linkedin": "https://www.linkedin.com/in/fabrizio-cavallo-b62a662/",
+          "name": "Fabrizio Cavallo",
+          "role": "CMO",
+          "tagline": "Aporta una mirada estratégica para desarrollar una marca relevante y diferenciada, y generar valor duradero para sus clientes."
+        },
+        {
           "bio": "Con más de 10 años en sistemas creativos, productos digitales, campañas y ejecución de marca. Se asegura de que cada interacción se sienta clara y memorable.",
-          "img": "/images/about-us-carla.png",
+          "img": "/images/about-us-carla.png?v=d018fa1c4bfb",
           "linkedin": "https://www.linkedin.com/in/carlacvazquez/",
           "name": "Carla C. J Vázquez",
           "role": "Head UX / UI",
           "tagline": "Vela por la consistencia visual, las decisiones de UX y la usabilidad del producto."
         }
       ],
+      "linkedinAriaLabel": "Ver a {name} en LinkedIn",
       "sectionTitle": "Quiénes somos",
       "subtitle": "Somos un equipo que mezcla creatividad, logística y obsesión por el detalle para crear viajes que no sabías que necesitabas."
     },
@@ -3935,8 +3944,8 @@
     },
     "founder": {
       "imageAlt": "Fundador de Randomtrip",
-      "p1": "Randomtrip nace de una obsesión personal de Santi Senega: devolverle al viaje esa mezcla de curiosidad, asombro y confianza que muchas veces se pierde entre infinitas opciones, reseñas y decisiones logísticas.",
-      "p2": "Como Founder & CEO, Santi diseñó Randomtrip desde una idea simple: la sorpresa puede ser profundamente emocionante si está bien contenida. El destino puede permanecer oculto; el precio, la calidad, la operación y el soporte no. Esa tensión entre misterio y estructura se convirtió en el corazón de Randomtrip: Serendipia Diseñada, o vivir lo inesperado sin improvisar.",
+      "p1": "Nacimos para combatir la parálisis por análisis que frena los grandes viajes. Convertimos el ¿y si…? en ¡vamos! con un sistema que protege tu tiempo y tu energía.",
+      "p2": "Esto no es solo una agencia: es un manifiesto contra la rutina y a favor del asombro bien diseñado.",
       "sectionTitle": "Historia del fundador"
     },
     "hero": {
@@ -3960,11 +3969,7 @@
       "imageAlt": "Momentos de serendipia en viaje",
       "p1": "No vendemos destinos. Diseñamos una forma distinta de viajar. Randomtrip nace para liberar a los viajeros de la fatiga de planificar: demasiadas pestañas abiertas, demasiadas decisiones antes de empezar.",
       "p2": "A eso respondemos con Serendipia Diseñada: experiencias que se sienten espontáneas, pero nacen de una estructura rigurosa. Tú defines fechas, presupuesto, estilo, ritmo y límites. Nosotros diseñamos el asombro dentro de ese marco. Vivir lo inesperado, sin improvisar.",
-      "pills": [
-        "Brief emocional",
-        "Diseño invisible",
-        "Sorpresa con red"
-      ],
+      "pills": ["Brief emocional", "Diseño invisible", "Sorpresa con red"],
       "sectionTitle": "Nuestra filosofía"
     },
     "steps": {

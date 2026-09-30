@@ -45,15 +45,18 @@ export function NavMobileDrawer({
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const previouslyFocused = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   const [shouldRender, setShouldRender] = useState(isOpen);
 
+  const [previousOpen, setPreviousOpen] = useState(isOpen);
+  if (previousOpen !== isOpen) {
+    setPreviousOpen(isOpen);
+    if (isOpen) setShouldRender(true);
+  }
+
   useEffect(() => {
-    if (isOpen) {
-      setShouldRender(true);
-      return;
-    }
+    if (isOpen) return;
     const timeout = setTimeout(() => setShouldRender(false), EXIT_ANIMATION_MS);
     return () => clearTimeout(timeout);
   }, [isOpen]);

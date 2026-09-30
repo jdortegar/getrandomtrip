@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Img from "@/components/common/Img";
 import { getTopicImage } from "@/lib/api/unsplash";
 import { cn } from "@/lib/utils";
@@ -30,9 +30,11 @@ export default function ExcuseCard({
 }: ExcuseCardProps) {
   const [src, setSrc] = useState(imageUrl);
 
-  useEffect(() => {
+  const [previousImageUrl, setPreviousImageUrl] = useState(imageUrl);
+  if (previousImageUrl !== imageUrl) {
+    setPreviousImageUrl(imageUrl);
     setSrc(imageUrl);
-  }, [imageUrl]);
+  }
 
   const handleImageError = () => {
     void getTopicImage(title).then((found) => {

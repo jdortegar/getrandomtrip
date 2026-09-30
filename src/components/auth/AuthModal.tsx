@@ -1,5 +1,7 @@
 "use client";
 
+import { useStorageValue, writeStorageValue } from "@/hooks/useStorageValue";
+
 import { useState, useEffect, useCallback } from "react";
 import { signIn } from "next-auth/react";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
@@ -129,13 +131,18 @@ export default function AuthModal({
     }
   }, [isOpen, handleClose]);
 
-  useEffect(() => {
-    if (!isOpen || initialEmail) return;
-    const rememberedEmail = localStorage.getItem("auth-remember-email");
-    if (!rememberedEmail) return;
-    setEmail(rememberedEmail);
-    setKeepMeLoggedIn(true);
-  }, [isOpen, initialEmail]);
+  const rememberedEmail = useStorageValue("auth-remember-email");
+  const rememberKey = JSON.stringify([isOpen, initialEmail, rememberedEmail]);
+  const [previousRememberKey, setPreviousRememberKey] = useState<string | null>(
+    null,
+  );
+  if (previousRememberKey !== rememberKey) {
+    setPreviousRememberKey(rememberKey);
+    if (isOpen && !initialEmail && rememberedEmail) {
+      setEmail(rememberedEmail);
+      setKeepMeLoggedIn(true);
+    }
+  }
 
   // Fetch the active-trippers list once, the first time register mode is
   // reached — `current` (derived server-side from the httpOnly grt_tripper
@@ -302,9 +309,9 @@ export default function AuthModal({
 
         // Handle successful authentication
         if (keepMeLoggedIn) {
-          localStorage.setItem("auth-remember-email", email);
+          writeStorageValue("auth-remember-email", email);
         } else {
-          localStorage.removeItem("auth-remember-email");
+          writeStorageValue("auth-remember-email", null);
         }
         if (result?.ok) {
           trackCustomEvent({ event: "login", method: "email" });

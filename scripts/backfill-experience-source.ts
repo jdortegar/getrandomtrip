@@ -10,15 +10,11 @@
  *
  * Run: npm run db:backfill-source
  */
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { withPrisma } from "./lib/withPrisma";
 
 type BackfillClient = {
   experience: {
-    count: (args: {
-      where: Record<string, unknown>;
-    }) => Promise<number>;
+    count: (args: { where: Record<string, unknown> }) => Promise<number>;
     updateMany: (args: {
       where: Record<string, unknown>;
       data: Record<string, unknown>;
@@ -26,22 +22,11 @@ type BackfillClient = {
   };
 };
 
-const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString
-  ? new PrismaPg({ connectionString })
-  : undefined;
-const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
-);
-
 /**
- * Runs the XSED → RANDOMTRIP backfill against the given Prisma client
- * (defaults to a real connected client). Exported so it can be unit-tested
- * with a mock client without touching a real database.
+ * Runs the XSED → RANDOMTRIP backfill against the supplied Prisma client.
+ * Exported so it can be unit-tested without touching a real database.
  */
-export async function backfillExperienceSource(
-  client: BackfillClient = prisma as unknown as BackfillClient,
-) {
+export async function backfillExperienceSource(client: BackfillClient) {
   const beforeCount = await client.experience.count({
     where: { type: { has: "XSED" }, source: "RANDOMTRIP" },
   });
@@ -66,12 +51,10 @@ const isMainModule =
   process.argv[1]?.endsWith("backfill-experience-source.ts") ?? false;
 
 if (isMainModule) {
-  backfillExperienceSource()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(() => {
-      void prisma.$disconnect();
-    });
+  withPrisma((client) =>
+    backfillExperienceSource(client as unknown as BackfillClient),
+  ).catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
 }

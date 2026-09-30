@@ -1,5 +1,7 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useHydrated } from "@/hooks/useHydrated";
+
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "next/navigation";
 import { useQuerySync } from "@/hooks/useQuerySync";
@@ -34,13 +36,9 @@ export default function AvoidSearchModal({
 }: AvoidSearchModalProps) {
   const searchParams = useSearchParams();
   const updateQuery = useQuerySync();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHydrated();
   const [query, setQuery] = useState("");
   const [local, setLocal] = useState<string[]>([]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const current = useMemo(() => {
     const raw = searchParams.get("avoidDestinations");
@@ -53,12 +51,14 @@ export default function AvoidSearchModal({
   }, [searchParams]);
 
   // Reset al abrir
-  useEffect(() => {
+  const [previousOpen, setPreviousOpen] = useState(open);
+  if (previousOpen !== open) {
+    setPreviousOpen(open);
     if (open) {
       setQuery("");
       setLocal([]);
     }
-  }, [open]);
+  }
 
   if (!open) return null;
 

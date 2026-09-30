@@ -168,6 +168,7 @@ export function ReviewsPageClient({
     sortBy,
     sortOrder,
     retryAttempt,
+    copy.errorLoad,
   ]);
 
   function updateStatusFilter(value: StatusFilter) {

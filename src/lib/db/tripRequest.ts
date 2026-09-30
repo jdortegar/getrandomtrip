@@ -1,37 +1,21 @@
 import { Prisma, TripRequestStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { CHECKOUT_PRICE_SELECT } from "@/lib/helpers/checkout-price-inputs";
+import {
+  NON_TERMINAL_TRIP_STATUSES,
+  type TripFamily,
+} from "./tripRequestFamily";
 
-/**
- * Every non-terminal status a `TripRequest` can be in. A row in one of these
- * statuses counts as the user's "active" trip for its family. `CONFIRMED`,
- * `REVEALED`, `COMPLETED`, and `CANCELLED` are terminal and never block a new
- * active slot.
- */
-export const NON_TERMINAL_TRIP_STATUSES = [
-  TripRequestStatus.DRAFT,
-  TripRequestStatus.SAVED,
-  TripRequestStatus.PENDING_PAYMENT,
-] as const;
-
-/**
- * `TripRequest.type` already has the literal value `"family"` (a journey
- * sub-type). The product-family concept is therefore named `TripFamily` —
- * never bare `family` — to avoid colliding with that field value.
- */
-export type TripFamily = "journey" | "xsed";
-
-/**
- * Single source of the family boundary. `xsed` is its own family; every
- * other `type` value (`couple`, `family`, `group`, `solo`, `honeymoon`,
- * `paws`, etc.) is `journey`. Never re-implement `type === "xsed"` inline.
- */
-export function tripFamilyOf(type: string | null | undefined): TripFamily {
-  return type === "xsed" ? "xsed" : "journey";
-}
+export {
+  NON_TERMINAL_TRIP_STATUSES,
+  tripFamilyOf,
+  type TripFamily,
+} from "./tripRequestFamily";
 
 /** Prisma `where.type` clause for a family. */
-export function tripFamilyWhere(family: TripFamily): Prisma.StringFilter | string {
+export function tripFamilyWhere(
+  family: TripFamily,
+): Prisma.StringFilter | string {
   return family === "xsed" ? "xsed" : { not: "xsed" };
 }
 
@@ -97,7 +81,11 @@ export async function revertExpiredPendingPaymentsForUser(
 ): Promise<number> {
   const candidates = await prisma.tripRequest.findMany({
     where: { userId, status: TripRequestStatus.PENDING_PAYMENT },
-    select: { id: true, status: true, payment: { select: { expiresAt: true } } },
+    select: {
+      id: true,
+      status: true,
+      payment: { select: { expiresAt: true } },
+    },
   });
 
   const expiredIds = candidates
@@ -124,7 +112,12 @@ export async function findActiveTripRequest(
       status: { in: [...NON_TERMINAL_TRIP_STATUSES] },
     },
     orderBy: { updatedAt: "desc" },
-    select: { ...CHECKOUT_PRICE_SELECT, id: true, status: true, updatedAt: true,
-      payment: { select: { status: true, stripePaymentIntentId: true } } },
+    select: {
+      ...CHECKOUT_PRICE_SELECT,
+      id: true,
+      status: true,
+      updatedAt: true,
+      payment: { select: { status: true, stripePaymentIntentId: true } },
+    },
   });
 }

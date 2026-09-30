@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Img from "@/components/common/Img";
 import Section from "@/components/layout/Section";
+import { cn } from "@/lib/utils";
 
 function LinkedInIcon({ className }: { className?: string }) {
   return (
@@ -19,7 +22,7 @@ function LinkedInIcon({ className }: { className?: string }) {
 interface TeamMember {
   bio: string;
   img: string;
-  linkedin: string;
+  linkedin?: string;
   name: string;
   role: string;
   tagline?: string;
@@ -28,6 +31,7 @@ interface TeamMember {
 interface TeamSectionContent {
   eyebrow: string;
   items: TeamMember[];
+  linkedinAriaLabel: string;
   sectionTitle: string;
   subtitle: string;
 }
@@ -41,11 +45,7 @@ interface TeamSectionProps {
 export function TeamSection({ content }: TeamSectionProps) {
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
   const [mobileFlippedCard, setMobileFlippedCard] = useState<string | null>(null);
-  const [supportsHover, setSupportsHover] = useState(false);
-
-  useEffect(() => {
-    setSupportsHover(window.matchMedia("(hover: hover)").matches);
-  }, []);
+  const supportsHover = useMediaQuery("(hover: hover)");
 
   const handleDesktopHover = (name: string | null) => setFlippedCard(name);
   const handleMobileFlip = (name: string) =>
@@ -83,7 +83,7 @@ export function TeamSection({ content }: TeamSectionProps) {
             >
               {/* Flip card wrapper */}
               <div
-                className="relative aspect-3/4 rounded-xl cursor-pointer select-none"
+                className="@container/team-card aspect-3/4 cursor-pointer relative rounded-xl select-none"
                 style={{ perspective: "1000px" }}
                 onMouseEnter={supportsHover ? () => handleDesktopHover(member.name) : undefined}
                 onMouseLeave={supportsHover ? () => handleDesktopHover(null) : undefined}
@@ -103,31 +103,38 @@ export function TeamSection({ content }: TeamSectionProps) {
                     <Img
                       alt={member.name}
                       className="absolute inset-0 h-full w-full object-cover object-top"
-                      height={600}
+                      height={1448}
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       src={member.img}
-                      width={450}
+                      width={1086}
                     />
                   </div>
 
                   {/* Back face */}
                   <div
-                    className="absolute inset-0 rounded-xl overflow-hidden bg-primary flex flex-col p-6 sm:p-7 lg:p-8 text-left"
+                    aria-label={member.name}
+                    className={cn(
+                      "absolute bg-primary flex flex-col inset-0 overflow-x-hidden overflow-y-auto rounded-xl rt-team-details text-left",
+                      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                    )}
+                    role="region"
                     style={{
                       backfaceVisibility: "hidden",
                       transform: "rotateY(180deg)",
                     }}
+                    tabIndex={isFlipped ? 0 : -1}
                   >
                     {/* Block 1: Role */}
-                    <p className="text-[11px] font-medium text-white/60 uppercase tracking-widest">
+                    <p className="font-medium shrink-0 text-[11px] text-white/80 tracking-widest uppercase">
                       {roleFormatted}
                     </p>
                     {/* Block 2: Bio */}
-                    <p className="text-sm text-white/90 leading-relaxed mt-6">
+                    <p className="shrink-0 text-team-bio text-white">
                       {member.bio}
                     </p>
                     {/* Block 3: Tagline */}
                     {member.tagline && (
-                      <p className="font-barlow font-bold text-xl lg:text-2xl text-secondary leading-snug mt-6">
+                      <p className="font-barlow shrink-0 text-team-tagline text-white">
                         {member.tagline}
                       </p>
                     )}
@@ -145,15 +152,17 @@ export function TeamSection({ content }: TeamSectionProps) {
                     {member.role}
                   </p>
                 </div>
-                <Link
-                  aria-label={`LinkedIn de ${member.name}`}
-                  className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors mt-0.5"
-                  href={member.linkedin}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <LinkedInIcon className="h-4 w-4" />
-                </Link>
+                {member.linkedin && (
+                  <Link
+                    aria-label={content.linkedinAriaLabel.replace("{name}", member.name)}
+                    className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors mt-0.5"
+                    href={member.linkedin}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <LinkedInIcon className="h-4 w-4" />
+                  </Link>
+                )}
               </div>
             </div>
           );

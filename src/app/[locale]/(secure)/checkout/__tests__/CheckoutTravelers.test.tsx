@@ -27,7 +27,11 @@ interface Details {
   onPromocodeChange: (code: string) => void;
   onApplyPromocode: () => Promise<void>;
 }
-const navigation = vi.hoisted(() => ({ locale: "en" }));
+const navigation = vi.hoisted(() => ({
+  locale: "en",
+  // Next's AppRouterContext provides one stable publicAppRouterInstance.
+  router: { replace: vi.fn(), back: vi.fn() },
+}));
 interface Contact {
   onPaymentInfoSubmitted: () => void;
   paymentRecoveryHref?: string;
@@ -45,7 +49,7 @@ const session = vi.hoisted(() => ({
 }));
 vi.mock("next/navigation", () => ({
   useParams: () => ({ locale: navigation.locale }),
-  useRouter: () => ({ replace: vi.fn(), back: vi.fn() }),
+  useRouter: () => navigation.router,
   useSearchParams: () => new URLSearchParams("tripId=trip"),
 }));
 vi.mock("next-auth/react", () => ({ useSession: () => session }));
@@ -77,6 +81,8 @@ describe("checkout traveler handoff and quote synchronization", () => {
   const fetchMock = vi.fn();
   beforeEach(() => {
     navigation.locale = "en";
+    navigation.router.replace.mockReset();
+    navigation.router.back.mockReset();
     promo = null;
     trip = {
       id: "trip",
@@ -166,6 +172,16 @@ describe("checkout traveler handoff and quote synchronization", () => {
     expect(isValidElement(row.icon) && row.icon.type).toBe(Car);
     expect(view.details!.totalTrip).toBe(500);
     expect(fetchMock.mock.calls.some(([url]) => url === "/api/trip-requests")).toBe(false);
+  });
+
+  it("keeps the initial trip request count bounded on an unchanged rerender", async () => {
+    await mount();
+    const initialTripRequests = fetchMock.mock.calls.filter(([url]) => url === "/api/trips").length;
+    // Loading the dictionary can replace the initial request once; unrelated renders cannot.
+    expect(initialTripRequests).toBeGreaterThan(0);
+    expect(initialTripRequests).toBeLessThanOrEqual(2);
+    await mount();
+    expect(fetchMock.mock.calls.filter(([url]) => url === "/api/trips")).toHaveLength(initialTripRequests);
   });
 
   it("retains the regular journey transport label", async () => {

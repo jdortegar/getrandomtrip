@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Pencil, Trash2 } from "lucide-react";
 import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
@@ -86,17 +86,21 @@ export function AdminBlogPageClient() {
     selectedTravelType !== "all" ||
     searchQuery !== "";
 
+  const queryKey = JSON.stringify([
+    page,
+    tab,
+    selectedLevel,
+    selectedTravelType,
+    searchQuery,
+    debouncedSearch,
+  ]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
+    setLoading(true);
+  }
   const queryPending = loading || searchQuery !== debouncedSearch;
-  const beginRequest = useTableRequestGuard(
-    JSON.stringify([
-      page,
-      tab,
-      selectedLevel,
-      selectedTravelType,
-      searchQuery,
-      debouncedSearch,
-    ]),
-  );
+  const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -106,57 +110,67 @@ export function AdminBlogPageClient() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  async function fetchBlogs() {
+  const fetchBlogs = useCallback(() => {
     if (searchQuery !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(PAGE_SIZE),
-      });
-      if (tab === "pending") {
-        params.set("status", Array.from(PENDING_STATUSES).join(","));
-      }
-      if (selectedLevel !== "all") params.set("level", selectedLevel);
-      if (selectedTravelType !== "all")
-        params.set("travelType", selectedTravelType);
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      const res = await fetch(`/api/admin/blogs?${params.toString()}`);
-      const data = (await res.json()) as {
-        error?: string;
-        blogs?: AdminBlog[];
-        total?: number;
-        pendingCount?: number;
-      };
-      if (!isCurrent()) return;
-      if (!res.ok || !data.blogs) {
-        setError(data.error ?? copy.errorLoad);
-        return;
-      }
-      setError(null);
-      setBlogs(data.blogs);
-      setTotal(data.total ?? 0);
-      setPendingCount(data.pendingCount ?? 0);
-    } catch {
-      if (isCurrent()) setError(copy.errorLoad);
-    } finally {
-      if (isCurrent()) setLoading(false);
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    });
+    if (tab === "pending") {
+      params.set("status", Array.from(PENDING_STATUSES).join(","));
     }
-  }
-
-  const refreshCurrentQuery = useCurrentTableRefresh(fetchBlogs);
-  useEffect(() => {
-    void fetchBlogs();
+    if (selectedLevel !== "all") params.set("level", selectedLevel);
+    if (selectedTravelType !== "all")
+      params.set("travelType", selectedTravelType);
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    return fetch(`/api/admin/blogs?${params.toString()}`)
+      .then(async (res) => ({
+        res,
+        data: (await res.json()) as {
+          error?: string;
+          blogs?: AdminBlog[];
+          total?: number;
+          pendingCount?: number;
+        },
+      }))
+      .then(({ res, data }) => {
+        if (!isCurrent()) return;
+        if (!res.ok || !data.blogs) {
+          setError(data.error ?? copy.errorLoad);
+          return;
+        }
+        setError(null);
+        setBlogs(data.blogs);
+        setTotal(data.total ?? 0);
+        setPendingCount(data.pendingCount ?? 0);
+      })
+      .catch(() => {
+        if (isCurrent()) setError(copy.errorLoad);
+      })
+      .finally(() => {
+        if (isCurrent()) setLoading(false);
+      });
   }, [
+    beginRequest,
+    searchQuery,
+    debouncedSearch,
     page,
     tab,
     selectedLevel,
     selectedTravelType,
-    debouncedSearch,
-    searchQuery,
+    copy.errorLoad,
   ]);
+
+  const refreshCurrentQuery = useCurrentTableRefresh(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    setLoading(true);
+    await fetchBlogs();
+  });
+  useEffect(() => {
+    void fetchBlogs();
+  }, [fetchBlogs]);
 
   // All hooks must run before the early returns below (Rules of Hooks) —
   // this derives from `blogs`/`selectedIds`, which are already up to date
@@ -382,7 +396,7 @@ export function AdminBlogPageClient() {
         error={error}
         isLoading={queryPending}
         onRetry={() => {
-          if (!queryPending) void fetchBlogs();
+          if (!queryPending) void refreshCurrentQuery();
         }}
       >
         {blogs.length === 0 ? (

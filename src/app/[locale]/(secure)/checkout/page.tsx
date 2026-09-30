@@ -223,23 +223,28 @@ function CheckoutContent() {
     router.replace(pathForLocale(resolvedLocale, "/dashboard"));
   }, [hasTripId, resolvedLocale, router]);
 
-  useEffect(() => {
+  const [touchedFields, setTouchedFields] = useState<Partial<Record<keyof CheckoutFormFields, boolean>>>({});
+  const sessionKey = JSON.stringify([status, session?.user?.id, session?.user?.name, session?.user?.phone, session?.user?.address]);
+  const [previousSessionKey, setPreviousSessionKey] = useState<string | null>(null);
+  if (previousSessionKey !== sessionKey) {
+    setPreviousSessionKey(sessionKey);
     if (session?.user && status === "authenticated") {
       const addr = session.user.address ?? {};
       setFormData((prev) => ({
-        city: addr.city || prev.city,
-        country: normalizeCountryToCode(addr.country) || prev.country,
-        idDocument: addr.idDocument || prev.idDocument,
-        name: session.user?.name || prev.name,
-        phone: session.user?.phone || prev.phone,
-        state: addr.state || prev.state,
-        street: addr.street || prev.street,
-        zipCode: addr.zipCode || prev.zipCode,
+        city: touchedFields.city ? prev.city : addr.city || prev.city,
+        country: touchedFields.country ? prev.country : normalizeCountryToCode(addr.country) || prev.country,
+        idDocument: touchedFields.idDocument ? prev.idDocument : addr.idDocument || prev.idDocument,
+        name: touchedFields.name ? prev.name : session.user?.name || prev.name,
+        phone: touchedFields.phone ? prev.phone : session.user?.phone || prev.phone,
+        state: touchedFields.state ? prev.state : addr.state || prev.state,
+        street: touchedFields.street ? prev.street : addr.street || prev.street,
+        zipCode: touchedFields.zipCode ? prev.zipCode : addr.zipCode || prev.zipCode,
       }));
     }
-  }, [session, status]);
+  }
 
   function handleChange(field: keyof CheckoutFormFields, value: string) {
+    setTouchedFields((prev) => ({ ...prev, [field]: true }));
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -259,23 +264,20 @@ function CheckoutContent() {
     catch { /* Keep confirmation blocked until the quote can be refreshed. */ }
   }
 
-  useEffect(() => {
-    if (!hasTripId) {
-      setTripLoading(false);
-      setTrip(null);
-      setTripError(null);
-      return;
-    }
-    if (status === "loading") return;
-    if (!session?.user?.email) {
-      setTripLoading(false);
-      setTrip(null);
-      setTripError(null);
-      return;
-    }
-    let cancelled = false;
-    setTripLoading(true);
+  const tripRequestKey = JSON.stringify([hasTripId, status, session?.user?.email, tripIdParam, resolvedLocale]);
+  const [previousTripRequestKey, setPreviousTripRequestKey] = useState<string | null>(null);
+  const [previousDictionary, setPreviousDictionary] = useState(dict);
+  if (previousTripRequestKey !== tripRequestKey || previousDictionary !== dict) {
+    setPreviousDictionary(dict);
+    setPreviousTripRequestKey(tripRequestKey);
+    setTripLoading(hasTripId && (status === "loading" || !!session?.user?.email));
     setTripError(null);
+    if (!hasTripId || !session?.user?.email) setTrip(null);
+  }
+
+  useEffect(() => {
+    if (!hasTripId || status === "loading" || !session?.user?.email) return;
+    let cancelled = false;
     fetch("/api/trips")
       .then((res) => res.json())
       .then((data) => {
@@ -328,7 +330,7 @@ function CheckoutContent() {
     return () => {
       cancelled = true;
     };
-  }, [dict, hasTripId, session?.user?.email, status, tripIdParam]);
+  }, [dict, hasTripId, session?.user?.email, status, tripIdParam, resolvedLocale, router]);
 
   const checkoutPax = trip
     ? Math.max(1, paxDetails.adults + paxDetails.minors)

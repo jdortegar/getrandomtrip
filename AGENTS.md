@@ -291,6 +291,12 @@ npm run db:seed         # Seed database
 
 ## Project Skills
 
+- **Done:** For `$done` or “It's done” clearly requesting full delivery, read
+  [`.agents/skills/done/SKILL.md`](.agents/skills/done/SKILL.md). It coordinates
+  PR → Merge → browser-visible Recap for the same change; honor narrower
+  restrictions and clarify ambiguous acknowledgments before taking action.
+  Authoring or reviewing the skill never runs the workflow.
+
 - **PR:** For PR creation, updates, or prompt history, read
   [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md). Use its description
   format and respect the explicitly requested head/base branches.

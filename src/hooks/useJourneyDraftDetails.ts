@@ -66,25 +66,18 @@ export function useJourneyDraftDetails(
 
   const prevActiveTabRef = useRef(activeTab);
 
-  // Sync URL -> draft when entering details step
-  useEffect(() => {
+  const inputKey = JSON.stringify([activeTab, urlValues]);
+  const [previousInputKey, setPreviousInputKey] = useState<string | null>(null);
+  if (previousInputKey !== inputKey) {
+    setPreviousInputKey(inputKey);
     if (activeTab === "details") {
       setDraftOriginCountry(urlValues.originCountry);
       setDraftOriginCity(urlValues.originCity);
       setDraftStartDate(urlValues.startDate);
       setDraftNights(urlValues.nights);
       setDraftTransportOrder(urlValues.transportOrder);
-      prevActiveTabRef.current = activeTab;
     }
-  }, [
-    activeTab,
-    urlValues.originCity,
-    urlValues.originCountry,
-    urlValues.nights,
-    urlValues.startDate,
-    urlValues.transportOrder,
-  ]);
-
+  }
   // Flush draft -> URL when leaving details step
   useEffect(() => {
     if (prevActiveTabRef.current === "details" && activeTab !== "details") {

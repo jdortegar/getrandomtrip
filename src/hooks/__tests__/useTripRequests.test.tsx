@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useTripRequests } from "@/hooks/useTripRequests";
@@ -16,12 +16,15 @@ function Harness({
 }: {
   params?: Partial<Parameters<typeof useTripRequests>[0]>;
 }) {
-  latest = useTripRequests({
+  const result = useTripRequests({
     page: 1,
     limit: 20,
     status: "ALL",
     errorLoad: ERROR_LOAD,
     ...params,
+  });
+  useEffect(() => {
+    latest = result;
   });
   return null;
 }

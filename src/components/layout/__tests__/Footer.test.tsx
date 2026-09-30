@@ -21,12 +21,12 @@ afterEach(() => {
 it.each([
   { locale: "en", copy: en, prefix: "/en" },
   { locale: "es", copy: es, prefix: "" },
-] as const)("omits About Us while retaining other footer links in $locale", ({ locale, copy, prefix }) => {
+] as const)("includes About Us alongside other footer links in $locale", ({ locale, copy, prefix }) => {
   const dict = copy as unknown as Dictionary;
   harness.render(<Footer dict={dict} locale={locale} />);
 
-  expect(harness.container.querySelector('a[href$="/about-us"]')).toBeNull();
   for (const [path, label] of [
+    ["/about-us", dict.footer.about],
     ["/blog", dict.footer.inspiration],
     ["/faq", dict.footer.faq],
     ["/contact", dict.footer.contact],

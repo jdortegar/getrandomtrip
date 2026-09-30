@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/Badge";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
 import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
@@ -53,17 +53,21 @@ export function AdminReviewsPageClient() {
   );
   const hasActiveFilters = statusFilter !== "all" || searchQuery !== "";
 
+  const queryKey = JSON.stringify([
+    page,
+    statusFilter,
+    searchQuery,
+    debouncedSearch,
+    sortBy,
+    sortOrder,
+  ]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
+    setLoading(true);
+  }
   const queryPending = loading || searchQuery !== debouncedSearch;
-  const beginRequest = useTableRequestGuard(
-    JSON.stringify([
-      page,
-      statusFilter,
-      searchQuery,
-      debouncedSearch,
-      sortBy,
-      sortOrder,
-    ]),
-  );
+  const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -73,43 +77,60 @@ export function AdminReviewsPageClient() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  async function fetchReviews() {
+  const fetchReviews = useCallback(() => {
     if (searchQuery !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(PAGE_SIZE),
-        sortBy,
-        sortOrder,
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(PAGE_SIZE),
+      sortBy,
+      sortOrder,
+    });
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (debouncedSearch) params.set("search", debouncedSearch);
+
+    return fetch(`/api/admin/reviews?${params.toString()}`)
+      .then(async (res) => ({
+        res,
+        data: (await res.json()) as {
+          error?: string;
+          reviews?: AdminReview[];
+          total?: number;
+        },
+      }))
+      .then(({ res, data }) => {
+        if (!isCurrent()) return;
+        if (!res.ok || !data.reviews) {
+          setError(data.error ?? copy.errorLoad);
+          return;
+        }
+        setError(null);
+        setReviews(data.reviews);
+        setTotal(data.total ?? 0);
+      })
+      .catch(() => {
+        if (isCurrent()) setError(copy.errorLoad);
+      })
+      .finally(() => {
+        if (isCurrent()) setLoading(false);
       });
-      if (statusFilter !== "all") params.set("status", statusFilter);
-      if (debouncedSearch) params.set("search", debouncedSearch);
+  }, [
+    beginRequest,
+    searchQuery,
+    debouncedSearch,
+    page,
+    statusFilter,
+    sortBy,
+    sortOrder,
+    copy.errorLoad,
+  ]);
 
-      const res = await fetch(`/api/admin/reviews?${params.toString()}`);
-      const data = (await res.json()) as {
-        error?: string;
-        reviews?: AdminReview[];
-        total?: number;
-      };
-      if (!isCurrent()) return;
-      if (!res.ok || !data.reviews) {
-        setError(data.error ?? copy.errorLoad);
-        return;
-      }
-      setError(null);
-      setReviews(data.reviews);
-      setTotal(data.total ?? 0);
-    } catch {
-      if (isCurrent()) setError(copy.errorLoad);
-    } finally {
-      if (isCurrent()) setLoading(false);
-    }
-  }
-
-  const refreshCurrentQuery = useCurrentTableRefresh(fetchReviews);
+  const refreshCurrentQuery = useCurrentTableRefresh(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    setLoading(true);
+    await fetchReviews();
+  });
   function updateStatusFilter(value: StatusFilter) {
     setStatusFilter(value);
     setPage(1);
@@ -152,7 +173,7 @@ export function AdminReviewsPageClient() {
 
   useEffect(() => {
     void fetchReviews();
-  }, [page, statusFilter, debouncedSearch, searchQuery, sortBy, sortOrder]);
+  }, [fetchReviews]);
 
   if (loading && !hasLoadedOnce) return <LoadingSpinner />;
   if (error && !hasLoadedOnce)
@@ -225,7 +246,7 @@ export function AdminReviewsPageClient() {
         error={error}
         isLoading={queryPending}
         onRetry={() => {
-          if (!queryPending) void fetchReviews();
+          if (!queryPending) void refreshCurrentQuery();
         }}
       >
         {reviews.length === 0 ? (
