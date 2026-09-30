@@ -67,6 +67,117 @@ describe("checkout-sensitive trip edits", () => {
     });
   });
 
+  describe.each(["create", "family", "id"])("XSED transport on %s", (path) => {
+    it.each([undefined, "plane", "bus", "own-car"])(
+      "persists own-car instead of client transport %s",
+      async (transport) => {
+        const xsed = { ...trip, type: "xsed", level: "family" };
+        db.tripRequest.findFirst.mockResolvedValue(path === "create" ? null : xsed);
+        db.tripRequest.create.mockImplementation(async ({ data }) => ({ id: "new", ...data }));
+        const body = path === "id"
+          ? { id: trip.id, pax: 2, ...(transport !== undefined ? { transport } : {}) }
+          : { ...xsed, id: undefined, status: "SAVED", transport };
+
+        const response = await POST(request(body));
+
+        expect(response.status).toBe(path === "create" ? 201 : 200);
+        const write = path === "create" ? db.tripRequest.create : db.tripRequest.update;
+        expect(write).toHaveBeenCalledWith(expect.objectContaining({
+          data: expect.objectContaining({ transport: "own-car" }),
+        }));
+        if (path !== "create") {
+          expect(stripe.paymentIntents.cancel).toHaveBeenCalledWith("pi_old");
+          expect(write).toHaveBeenCalledWith(expect.objectContaining({
+            where: expect.objectContaining({ updatedAt: trip.updatedAt }),
+          }));
+        }
+      },
+    );
+  });
+
+  it("uses the merged type when an editable journey becomes XSED", async () => {
+    const response = await POST(request({ id: trip.id, type: "xsed", level: "family" }));
+    expect(response.status).toBe(200);
+    expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ transport: "own-car" }),
+    }));
+  });
+
+  it.each([
+    [undefined, "plane"],
+    ["train", "train"],
+    ["bus", "bus"],
+  ])("uses ordinary transport %s when an editable XSED becomes a journey", async (transport, expected) => {
+    db.tripRequest.findFirst.mockResolvedValue({
+      ...trip, type: "xsed", level: "family", transport: "own-car",
+    });
+    const response = await POST(request({
+      id: trip.id, type: "couple", level: "essenza",
+      ...(transport === undefined ? {} : { transport }),
+    }));
+    expect(response.status).toBe(200);
+    expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ type: "couple", transport: expected }),
+      where: expect.objectContaining({ updatedAt: trip.updatedAt }),
+    }));
+    expect(stripe.paymentIntents.cancel).toHaveBeenCalledWith("pi_old");
+  });
+
+  it("version-guards a derived own-car repair on an origin-only editable save", async () => {
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family" });
+    const response = await POST(request({ id: trip.id, originCity: "Rosario" }));
+    expect(response.status).toBe(200);
+    expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ transport: "own-car", originCity: "Rosario" }),
+      where: expect.objectContaining({ updatedAt: trip.updatedAt }),
+    }));
+  });
+
+  it("does not invalidate an already canonical XSED transport on an unchanged save", async () => {
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family", transport: "own-car" });
+    const response = await POST(request({ id: trip.id, transport: "plane" }));
+    expect(response.status).toBe(200);
+    expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ transport: "own-car" }),
+    }));
+    expect(stripe.paymentIntents.cancel).not.toHaveBeenCalled();
+  });
+
+  it.each(["CONFIRMED", "SAVED"])("does not repair a paid %s trip's administrative metadata update", async (status) => {
+    db.user.findUnique.mockResolvedValue({ id: "buyer", roles: ["ADMIN"] });
+    db.tripRequest.findFirst.mockResolvedValue({
+      ...trip, type: "xsed", level: "family", status,
+      payment: { status: "COMPLETED", stripePaymentIntentId: "pi_paid" },
+    });
+    const response = await POST(request({ id: trip.id, originCity: "Rosario" }));
+    expect(response.status).toBe(200);
+    expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: { originCity: "Rosario" },
+    }));
+    expect(stripe.paymentIntents.cancel).not.toHaveBeenCalled();
+  });
+
+  it("does not turn an empty XSED update into a repair", async () => {
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family" });
+    const response = await POST(request({ id: trip.id }));
+    expect(response.status).toBe(400);
+    expect(db.tripRequest.update).not.toHaveBeenCalled();
+    expect(stripe.paymentIntents.cancel).not.toHaveBeenCalled();
+  });
+
+  it.each(["create", "family", "id"])("preserves selected journey transport on %s", async (path) => {
+    db.tripRequest.findFirst.mockResolvedValue(path === "create" ? null : trip);
+    db.tripRequest.create.mockImplementation(async ({ data }) => ({ id: "new", ...data }));
+    const body = path === "id" ? { id: trip.id, transport: "train" }
+      : { ...trip, id: undefined, status: "SAVED", transport: "train" };
+    const response = await POST(request(body));
+    expect(response.status).toBe(path === "create" ? 201 : 200);
+    const write = path === "create" ? db.tripRequest.create : db.tripRequest.update;
+    expect(write).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({ transport: "train" }),
+    }));
+  });
+
   describe.each(["id", "family"])("%s path", (path) => {
     const body = (change: object) =>
       path === "id"

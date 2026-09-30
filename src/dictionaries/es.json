@@ -1,4 +1,7 @@
 {
+  "tripTransport": {
+    "ownCar": "Auto propio"
+  },
   "designSystem": {
     "skip": "Saltar a la galería",
     "navigation": "Secciones de componentes",

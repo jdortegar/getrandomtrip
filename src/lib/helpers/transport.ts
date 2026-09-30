@@ -5,6 +5,30 @@ export function normalizeTransportId(
   return raw;
 }
 
+export const OWN_CAR_TRANSPORT = "own-car";
+
+/** XSED includes no transport; journey preferences retain their existing default. */
+export function resolveTripTransport(
+  type: string | null | undefined,
+  transport: string | null | undefined,
+): string {
+  return type === "xsed"
+    ? OWN_CAR_TRANSPORT
+    : normalizeTransportId(transport) || "plane";
+}
+
+/** Apply the same product policy to legacy rows without changing stored data. */
+export function resolveTripTransportLabel(
+  type: string | null | undefined,
+  transport: string | null | undefined,
+  ownCarLabel: string,
+  regularLabel: string | undefined,
+): string | undefined {
+  return resolveTripTransport(type, transport) === OWN_CAR_TRANSPORT
+    ? ownCarLabel
+    : regularLabel;
+}
+
 export function normalizeMaxTravelTimeKey(
   raw: string | null | undefined,
 ): string | undefined {

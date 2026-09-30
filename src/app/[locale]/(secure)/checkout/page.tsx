@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Calendar, Loader2, MapPin } from "lucide-react";
+import { Calendar, Car, Loader2, MapPin } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
 import {
@@ -57,6 +57,11 @@ import {
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
+import {
+  OWN_CAR_TRANSPORT,
+  resolveTripTransport,
+  resolveTripTransportLabel,
+} from "@/lib/helpers/transport";
 import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
 
 const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
@@ -445,7 +450,7 @@ function CheckoutContent() {
       label: options.find((o) => o.key === key)?.label ?? key,
     }));
   })();
-  const transportLabel = (() => {
+  const regularTransportLabel = (() => {
     if (!transport) return undefined;
     const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
     return (
@@ -453,7 +458,12 @@ function CheckoutContent() {
       getFilterLabel("transport", transport, filterOpts)
     );
   })();
-  const TransportIcon = TRANSPORT_ICONS[transport ?? "plane"];
+  const transportLabel = resolveTripTransportLabel(
+    trip?.type, transport, dict?.tripTransport.ownCar ?? "", regularTransportLabel,
+  );
+  const TransportIcon = resolveTripTransport(trip?.type, transport) === OWN_CAR_TRANSPORT
+    ? Car
+    : TRANSPORT_ICONS[transport ?? "plane"];
 
   type FilterKind =
     | "arrivePref"
