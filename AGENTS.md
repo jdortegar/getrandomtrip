@@ -299,3 +299,8 @@ npm run db:seed         # Seed database
   [`.agents/skills/merge/SKILL.md`](.agents/skills/merge/SKILL.md). Respect its
   authorization boundaries for verified linked-issue cleanup and Randomtrip Slack
   announcements; authoring or reviewing the skill never executes it.
+
+- **Recap:** For feature recap videos or local browser walkthroughs, read
+  [`.agents/skills/recap/SKILL.md`](.agents/skills/recap/SKILL.md). Respect its
+  recording-capability and publishing-authorization gates; preview requests stay
+  local, and authoring or reviewing the skill never records or posts.
