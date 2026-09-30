@@ -1,105 +1,61 @@
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
+import {
+  assignmentReminderCopy,
+  formatAssignmentReminderText,
+} from "@/lib/email/assignmentReminderCopy";
 import EmailLayout from "./components/EmailLayout";
 
 interface DestinationAssignmentReminderProps {
   adminName: string;
   clientName: string;
   tripId: string;
-  startDate: string;
+  revealAt: string;
+  milestoneHours: 24 | 48 | 72;
   locale: "es" | "en";
-  escalated?: boolean;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
-
-const copy = {
-  es: {
-    preview: (clientName: string) =>
-      `Acción requerida: asignar destino para el viaje de ${clientName}`,
-    escalatedPreview: (clientName: string) =>
-      `URGENTE: asignar destino para el viaje de ${clientName} — sale en menos de 48 horas`,
-    heading: "Asignación de destino pendiente",
-    escalatedHeading: "URGENTE: destino sin asignar",
-    body: (adminName: string) =>
-      `Hola ${adminName}, hay un viaje que requiere asignación de experiencia antes de la fecha de salida.`,
-    tripIdLabel: "ID de reserva:",
-    clientLabel: "Cliente:",
-    startDateLabel: "Fecha de salida:",
-    urgency:
-      "Este viaje parte en menos de 72 horas. Por favor, asigná una experiencia lo antes posible.",
-    escalatedUrgency:
-      "Este viaje parte en menos de 48 horas y AÚN no tiene experiencia asignada. Asigná una experiencia ahora.",
-    cta: "IR AL PANEL ADMIN",
-  },
-  en: {
-    preview: (clientName: string) =>
-      `Action required: assign destination for ${clientName}'s trip`,
-    escalatedPreview: (clientName: string) =>
-      `URGENT: assign destination for ${clientName}'s trip — departs in less than 48 hours`,
-    heading: "Destination assignment pending",
-    escalatedHeading: "URGENT: destination not assigned",
-    body: (adminName: string) =>
-      `Hi ${adminName}, there is a trip that requires an experience assignment before the departure date.`,
-    tripIdLabel: "Booking ID:",
-    clientLabel: "Client:",
-    startDateLabel: "Departure date:",
-    urgency:
-      "This trip departs in less than 72 hours. Please assign an experience as soon as possible.",
-    escalatedUrgency:
-      "This trip departs in less than 48 hours and STILL has no experience assigned. Assign an experience now.",
-    cta: "GO TO ADMIN PANEL",
-  },
-};
-
-export const subjects = {
-  es: "Acción requerida: asignar destino antes de la salida",
-  en: "Action required: assign destination before departure",
-};
-
-export const escalatedSubjects = {
-  es: "URGENTE: asignar destino — sale en menos de 48 horas",
-  en: "URGENT: assign destination — departs in less than 48 hours",
-};
 
 export default function DestinationAssignmentReminder({
   adminName,
   clientName,
   tripId,
-  startDate,
+  revealAt,
+  milestoneHours,
   locale,
-  escalated = false,
 }: DestinationAssignmentReminderProps) {
-  const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/admin/trip-requests/${tripId}`;
-  const preview = escalated ? c.escalatedPreview(clientName) : c.preview(clientName);
-  const heading = escalated ? c.escalatedHeading : c.heading;
-  const urgency = escalated ? c.escalatedUrgency : c.urgency;
-
+  const copy = assignmentReminderCopy(locale);
+  const urgency = formatAssignmentReminderText(copy.urgency, {
+    hours: milestoneHours,
+    deadline: revealAt,
+  });
   return (
-    <EmailLayout locale={locale} preview={preview}>
-      <Heading style={heading_style}>{heading}</Heading>
-      <Text style={bodyText}>{c.body(adminName)}</Text>
-
+    <EmailLayout locale={locale} preview={copy.preview}>
+      <Heading style={heading_style}>{copy.heading}</Heading>
+      <Text style={bodyText}>
+        {formatAssignmentReminderText(copy.body, { admin: adminName })}
+      </Text>
       <Section style={summaryPanel}>
         <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.tripIdLabel}</span>{" "}
+          <span style={summaryLabel}>{copy.tripIdLabel}</span>{" "}
           <span style={summaryValue}>{tripId}</span>
         </Text>
         <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.clientLabel}</span>{" "}
+          <span style={summaryLabel}>{copy.clientLabel}</span>{" "}
           <span style={summaryValue}>{clientName}</span>
         </Text>
         <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.startDateLabel}</span>{" "}
-          <span style={summaryValue}>{startDate}</span>
+          <span style={summaryLabel}>{copy.deadlineLabel}</span>{" "}
+          <span style={summaryValue}>{revealAt}</span>
         </Text>
       </Section>
-
-      <Text style={escalated ? urgencyTextEscalated : urgencyText}>{urgency}</Text>
-
-      <Button href={ctaHref} style={ctaButton}>
-        {c.cta}
+      <Text style={milestoneHours === 24 ? urgencyTextEscalated : urgencyText}>
+        {urgency}
+      </Text>
+      <Button
+        href={`https://getrandomtrip.com/${locale}/dashboard/admin/trip-requests/${encodeURIComponent(tripId)}`}
+        style={ctaButton}
+      >
+        {copy.cta}
       </Button>
     </EmailLayout>
   );
