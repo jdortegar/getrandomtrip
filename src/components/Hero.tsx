@@ -65,7 +65,7 @@ const Hero: React.FC<HeroProps> = ({
         className={cn(
           "flex flex-col justify-center relative rt-container z-10",
           isHome ? "flex-1 pb-24 pt-36" : "h-full",
-          "md:px-20!",
+          "md:px-[var(--rt-content-gutter,5rem)]!",
         )}
       >
         {/* Top Left Branding */}

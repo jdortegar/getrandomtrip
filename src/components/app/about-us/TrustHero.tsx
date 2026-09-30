@@ -42,7 +42,7 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
         src={content.backgroundImage}
       />
 
-      <div className="relative z-10 flex h-full min-h-[60vh] flex-col justify-between px-6 py-12 sm:px-12 md:px-16 md:py-20">
+      <div className="relative z-10 flex h-full min-h-[60vh] flex-col justify-between rt-container py-12 md:py-20">
         <div className="max-w-3xl">
           <h2 className="text-center md:text-left font-barlow-condensed text-[56px] font-bold uppercase leading-none tracking-tight text-white sm:text-[64px]">
             {content.headline}
@@ -57,9 +57,9 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
             <Button
               asChild
               aria-label={content.ctaAriaLabel}
-              className="mt-6 text-ink"
+              className="mt-6"
               size="lg"
-              variant="white"
+              variant="feature"
             >
               <Link
                 href={pathForLocale(locale, "/#exploration-section")}
@@ -70,7 +70,7 @@ export function TrustHero({ content, locale }: TrustHeroProps) {
             </Button>
           </div>
 
-          <div className="rounded-2xl bg-black/35 backdrop-blur-md md:ml-auto md:w-2/3 max-h-56">
+          <div className="rounded-2xl bg-black/35 backdrop-blur-md md:ml-auto md:w-2/3">
             <div className="flex flex-col md:flex-row">
               {content.items.map((item, i) => (
                 <div

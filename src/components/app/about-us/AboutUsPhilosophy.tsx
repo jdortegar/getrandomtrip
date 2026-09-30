@@ -32,7 +32,7 @@ export function AboutUsPhilosophy({
 }: AboutUsPhilosophyProps) {
   return (
     <Section className="py-0" id={id} data-component="AboutUsPhilosophy">
-      <div className="rt-container grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-h-[540px]">
         {/* Image */}
         <div
           className={`relative min-h-72 md:min-h-full rounded-xl overflow-hidden order-last ${inverted ? "md:order-first" : "md:order-last"}`}
@@ -60,7 +60,7 @@ export function AboutUsPhilosophy({
 
         {/* Text */}
         <div className="text-left flex flex-col justify-center gap-6 md:px-10 py-16 lg:px-16 order-first md:order-0">
-          <h2 className="font-barlow-condensed font-bold text-[70px] uppercase leading-tight text-ink">
+          <h2 className="font-barlow-condensed font-bold text-editorial-title-stacked uppercase leading-tight text-ink">
             {content.sectionTitle}
           </h2>
 

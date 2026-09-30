@@ -25,35 +25,33 @@ interface AboutUsValuesProps {
 export function AboutUsValues({ items }: AboutUsValuesProps) {
   return (
     <Section data-component="AboutUsValues">
-      <div className="rt-container">
-        <div className="grid grid-cols-1 gap-2 md:gap-12 md:grid-cols-3">
-          {items.map((item, i) => {
-            const icon = ICONS[i];
-            return (
-              <article key={item.title} className="flex flex-col gap-4 p-10">
-                <div className="flex items-end gap-2">
-                  <h3 className="w-auto text-left font-barlow-condensed font-bold text-2xl uppercase leading-tight text-primary">
-                    {item.title}
-                  </h3>
-                  {icon && (
-                    <Img
-                      alt=""
-                      aria-hidden="true"
-                      className="h-14 w-auto shrink-0"
-                      height={icon.height}
-                      src={icon.src}
-                      width={icon.width}
-                    />
-                  )}
-                </div>
+      <div className="grid grid-cols-1 gap-2 md:gap-12 md:grid-cols-3">
+        {items.map((item, i) => {
+          const icon = ICONS[i];
+          return (
+            <article key={item.title} className="flex flex-col gap-4 py-10">
+              <div className="flex items-end gap-2">
+                <h3 className="w-auto text-left font-barlow-condensed font-bold text-2xl uppercase leading-tight text-primary">
+                  {item.title}
+                </h3>
+                {icon && (
+                  <Img
+                    alt=""
+                    aria-hidden="true"
+                    className="h-14 w-auto shrink-0"
+                    height={icon.height}
+                    src={icon.src}
+                    width={icon.width}
+                  />
+                )}
+              </div>
 
-                <p className="text-left font-barlow text-lg text-ink leading-relaxed">
-                  {item.copy}
-                </p>
-              </article>
-            );
-          })}
-        </div>
+              <p className="text-left font-barlow text-lg text-ink leading-relaxed">
+                {item.copy}
+              </p>
+            </article>
+          );
+        })}
       </div>
     </Section>
   );
