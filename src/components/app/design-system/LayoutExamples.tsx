@@ -12,14 +12,16 @@ export function LayoutExamples({ copy }: LayoutExamplesProps) {
   const labels = copy.layout;
   return (
     <>
-      <div className="bg-secondary p-6 rounded-xl">
-        <p className="font-semibold text-primary text-xs tracking-widest uppercase">
-          {labels.eyebrow}
-        </p>
-        <h3 className="font-barlow-condensed font-extrabold leading-none mt-3 text-3xl uppercase">
-          {labels.title}
-        </h3>
-        <p className="max-w-2xl mt-4 text-sm">{labels.description}</p>
+      <div className="bg-secondary rounded-xl rt-content-layout">
+        <div className="py-6 rt-container">
+          <p className="font-semibold text-primary text-xs tracking-widest uppercase">
+            {labels.eyebrow}
+          </p>
+          <h3 className="font-barlow-condensed font-extrabold leading-none mt-3 text-3xl uppercase">
+            {labels.title}
+          </h3>
+          <p className="max-w-2xl mt-4 text-sm">{labels.description}</p>
+        </div>
       </div>
       <div className={cn("gap-6 grid mt-6", "md:grid-cols-3")}>
         {labels.cards.map((card, index) => {
@@ -62,10 +64,10 @@ export function LayoutExamples({ copy }: LayoutExamplesProps) {
         <p className="mt-5 text-neutral-600 text-sm">{labels.spacingHint}</p>
       </div>
       <UsageExample
-        code={`<div className="rt-container">
-  <div className="grid gap-6 md:grid-cols-3">
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">…</div>
-  </div>
+        code={`<div className="rt-content-layout">
+  <section className="bg-secondary">
+    <div className="rt-container py-6">…</div>
+  </section>
 </div>`}
         label={copy.usage}
       />

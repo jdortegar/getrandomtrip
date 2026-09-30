@@ -129,6 +129,35 @@ html.lenis {
   --font-barlow-condensed: var(--font-barlow-condensed), sans-serif;
   --font-nothing-you-could-do: var(--font-nothing-you-could-do), cursive;
 
+  /* Opt-in content layouts keep one consistent inline gutter at every width. */
+  --spacing-content-gutter: 2rem;
+
+  /* Editorial image-and-story sections share responsive type and spacing. */
+  --text-editorial-title: clamp(2.75rem, 4.861vw, 4.375rem);
+  --text-editorial-title-stacked: 4.375rem;
+  --text-editorial-body: 1.25rem;
+  --text-editorial-body--line-height: 1.2;
+  --spacing-editorial-section: clamp(3.5rem, 7.55vw, 7rem);
+  --spacing-editorial-column: clamp(2rem, 4.722vw, 4.25rem);
+  --spacing-editorial-copy: 2rem;
+  --container-editorial-image: 41.375rem;
+  --container-editorial-title: 26.7087rem;
+  --container-editorial-body: 22.6977rem;
+
+  /* Team-card copy keeps its full content readable in compact portrait cards. */
+  --text-team-bio: 0.75rem;
+  --text-team-bio--line-height: 1.3125rem;
+  --text-team-tagline: 1.0625rem;
+  --text-team-tagline--font-weight: 600;
+  --text-team-tagline--line-height: 1.375rem;
+  --leading-team-bio-compact: 1.125rem;
+  --text-team-tagline-compact: 0.9375rem;
+  --text-team-tagline-compact--line-height: 1.25rem;
+  --spacing-team-copy: 1rem;
+  --spacing-team-copy-compact: 0.75rem;
+  --spacing-team-card: 1.25rem;
+  --spacing-team-card-roomy: 1.5rem;
+
   /* Ink — text / near-black */
   --color-ink: #383838;
 
@@ -397,7 +426,105 @@ html.lenis {
 }
 
 @utility rt-container {
-  @apply w-full container mx-auto px-4 sm:px-6 lg:px-8;
+  @apply w-full container mx-auto;
+  padding-inline: var(--rt-content-gutter, calc(var(--spacing) * 4));
+
+  @media (width >= 40rem) {
+    padding-inline: var(--rt-content-gutter, calc(var(--spacing) * 6));
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: var(--rt-content-gutter, calc(var(--spacing) * 8));
+  }
+}
+
+@utility rt-content-layout {
+  --rt-content-gutter: var(--spacing-content-gutter);
+}
+
+@utility rt-team-details {
+  gap: var(--spacing-team-copy);
+  padding: var(--spacing-team-card);
+
+  @media (width >= 40rem) {
+    padding: var(--spacing-team-card-roomy);
+  }
+
+  @container team-card (width < 16rem) {
+    --text-team-bio--line-height: var(--leading-team-bio-compact);
+    --text-team-tagline: var(--text-team-tagline-compact);
+    --text-team-tagline--line-height: var(--text-team-tagline-compact--line-height);
+    gap: var(--spacing-team-copy-compact);
+    padding: var(--spacing-team-card);
+    padding-bottom: var(--spacing-team-card-roomy);
+  }
+}
+
+@utility rt-editorial-section {
+  padding-block: var(--spacing-editorial-section);
+}
+
+@utility rt-editorial-split {
+  align-items: center;
+  display: grid;
+  gap: var(--spacing-editorial-copy);
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: center;
+
+  @media (width >= 64rem) {
+    gap: var(--spacing-editorial-column);
+    grid-template-columns:
+      minmax(0, var(--container-editorial-image))
+      minmax(0, var(--container-editorial-title));
+  }
+}
+
+@utility rt-editorial-image {
+  justify-self: center;
+  max-width: min(100%, var(--container-editorial-image));
+
+  @media (width >= 64rem) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+@utility rt-editorial-copy {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacing) * 6);
+  min-width: 0;
+
+  @media (width >= 64rem) {
+    gap: var(--spacing-editorial-copy);
+    grid-column: 2;
+    grid-row: 1;
+  }
+}
+
+@utility rt-editorial-title {
+  @apply font-barlow-condensed font-bold uppercase;
+  font-size: var(--text-editorial-title-stacked);
+  line-height: var(--leading-tight);
+
+  @media (width >= 64rem) {
+    font-size: var(--text-editorial-title);
+    line-height: 1;
+  }
+}
+
+@utility rt-editorial-body {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-base);
+  gap: 1rem;
+  line-height: var(--leading-relaxed);
+
+  @media (width >= 64rem) {
+    font-size: var(--text-editorial-body);
+    line-height: var(--text-editorial-body--line-height);
+    max-width: var(--container-editorial-body);
+  }
 }
 
 @utility justify-safe-center {
