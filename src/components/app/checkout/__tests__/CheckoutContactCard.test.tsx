@@ -1,6 +1,6 @@
 import { act, createRef, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
 import type { Stripe } from "@stripe/stripe-js";
 const mock = vi.hoisted(() => ({
@@ -28,7 +28,9 @@ vi.mock("../StripePaymentForm", () => ({
   ),
 }));
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+afterEach(() => vi.unstubAllEnvs());
 it("reloads a rejected Stripe script and keeps a successful instance stable", async () => {
+  vi.stubEnv("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", "pk_test_fixture");
   let reject!: (error: Error) => void;
   const failed = new Promise<Stripe | null>((_, no) => {
     reject = no;

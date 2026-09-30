@@ -1,4 +1,5 @@
 const { withSentryConfig } = require("@sentry/nextjs/config");
+const { deploymentBuildEnvironment } = require("./config/deployment.cjs");
 
 // Explicit local PDF assets for serverless file tracing (no remote font fetch).
 const pdfAssets = [
@@ -14,6 +15,7 @@ const pdfAssets = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: deploymentBuildEnvironment(process.env),
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
   outputFileTracingIncludes: {
     "/api/admin/trip-requests/*/hotel-voucher-preview": pdfAssets,

@@ -43,6 +43,7 @@ npm start
 
 - `.env.local` — (placeholder para futuras integraciones: auth real, PSP, analytics).
 - Monitoreo de errores: [configuración de Sentry](docs/Sentry.md).
+- Develop/PR previews: [deployment isolation and required configuration](docs/DeploymentEnvironments.md).
 
 ## Rutas principales
 

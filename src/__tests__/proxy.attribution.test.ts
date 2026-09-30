@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import {
@@ -152,4 +152,41 @@ describe("applyAttribution", () => {
       expect(res.cookies.get(GRT_TRIPPER_LAST_SEEN_COOKIE)).toBeUndefined();
     });
   });
+});
+
+
+afterEach(() => vi.unstubAllEnvs());
+it.each([
+  ["http://localhost:3010", "", false],
+  ["https://develop--site.netlify.app", "site", true],
+] as const)(
+  "uses isolated secret and matching session cookie for %s",
+  async (origin, site, secureCookie) => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    vi.stubEnv("ATTRIBUTION_ENABLED", "true");
+    vi.stubEnv("RT_NONPRODUCTION_AUTH_SECRET", "isolated-secret");
+    vi.stubEnv("NEXTAUTH_SECRET", "inherited-production-secret");
+    vi.stubEnv("NEXTAUTH_URL", "https://getrandomtrip.com");
+    vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", origin);
+    vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", site);
+    getTokenMock.mockClear();
+    getTokenMock.mockResolvedValue({});
+    const { applyAttribution } = await import("../proxy");
+    await applyAttribution(new NextRequest(origin), NextResponse.next());
+    expect(getTokenMock).toHaveBeenCalledWith(
+      expect.objectContaining({ secret: "isolated-secret", secureCookie }),
+    );
+  },
+);
+it("keeps browsing working without an isolated attribution secret", async () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  vi.stubEnv("ATTRIBUTION_ENABLED", "true");
+  vi.stubEnv("RT_NONPRODUCTION_AUTH_SECRET", "");
+  getTokenMock.mockClear();
+  const { applyAttribution } = await import("../proxy");
+  await applyAttribution(
+    new NextRequest("https://develop--site.netlify.app"),
+    NextResponse.next(),
+  );
+  expect(getTokenMock).not.toHaveBeenCalled();
 });
