@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 export const SALE_SEND_TIMEOUT_MS = 3_000;
 
 export interface SaleNotification {
@@ -17,6 +18,8 @@ export interface SaleDeliveryResult {
 export async function sendSaleNotification(
   sale: SaleNotification,
 ): Promise<SaleDeliveryResult> {
+  if (!isProductionDeployment())
+    return { sent: false, error: "not_configured" };
   let webhook: URL;
   try {
     webhook = new URL(process.env.SLACK_SALES_WEBHOOK_URL ?? "");

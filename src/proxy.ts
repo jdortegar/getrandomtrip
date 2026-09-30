@@ -1,3 +1,7 @@
+import {
+  getNonproductionOrigin,
+  isProductionDeployment,
+} from "@/lib/deployment";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
@@ -95,7 +99,13 @@ export async function applyAttribution(
   if (!isAttributionEnabled()) return;
 
   const secret = getAttributionSecret();
-  const token = await getToken({ req, secret });
+  const token = await getToken({
+    req,
+    secret,
+    ...(!isProductionDeployment()
+      ? { secureCookie: getNonproductionOrigin()?.startsWith("https://") ?? true }
+      : {}),
+  });
   // No `?? undefined` here: optional chaining already yields `undefined`
   // when `token` itself is absent, and preserves an explicit `null` when
   // the token exists with no referrer — `resolveAttribution()` requires

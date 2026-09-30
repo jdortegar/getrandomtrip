@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 import { NextResponse } from "next/server";
 import * as React from "react";
 
@@ -49,6 +50,9 @@ function buildEmail(locale: string | null): {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
+  if (!isProductionDeployment()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

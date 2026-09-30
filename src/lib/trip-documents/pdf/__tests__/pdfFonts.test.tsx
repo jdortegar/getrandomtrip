@@ -67,7 +67,10 @@ it("explicitly traces local fonts/license/logo for five preview routes and persi
   runInNewContext(await readFile("next.config.js", "utf8"), {
     module: configModule,
     process: { env: {} },
-    require: () => ({ withSentryConfig: (config: unknown) => config }),
+    require: (id: string) =>
+      id === "./config/deployment.cjs"
+        ? { deploymentBuildEnvironment: () => ({}) }
+        : { withSentryConfig: (config: unknown) => config },
   });
   const traces = configModule.exports.outputFileTracingIncludes;
   const routes = [

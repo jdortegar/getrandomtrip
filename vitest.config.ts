@@ -9,6 +9,12 @@ export default defineConfig({
     },
   },
   test: {
+    // Existing behavior suites exercise production; isolation suites explicitly
+    // cover nonproduction, unknown and absent deployment identity.
+    env: {
+      RT_DEPLOY_ENV: "production",
+      NEXT_PUBLIC_RT_DEPLOY_ENV: "production",
+    },
     environment: "happy-dom",
     globals: true,
   },

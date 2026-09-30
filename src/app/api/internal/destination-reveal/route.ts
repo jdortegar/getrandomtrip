@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 import { NextResponse } from "next/server";
 import { runPass1, runPass2, type Pass1Result, type Pass2Result } from "./passes";
 
@@ -13,6 +14,9 @@ function isAuthorized(request: Request): boolean {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
+  if (!isProductionDeployment()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

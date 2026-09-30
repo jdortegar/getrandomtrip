@@ -7,6 +7,8 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
+import { configureAuthEnvironment } from "@/lib/auth/environment";
+import { getAuthSecret, isProductionDeployment } from "@/lib/deployment";
 import {
   primaryRoleFromMembership,
   prismaUserRoleToAppRole,
@@ -61,17 +63,25 @@ async function getReferralClaim(userId: string): Promise<string | null> {
   return referrer.tripperSlug;
 }
 
+configureAuthEnvironment();
+
 export const authOptions: NextAuthOptions = {
+  // An empty explicit secret fails closed; never inherit production credentials.
+  ...(!isProductionDeployment() ? { secret: getAuthSecret() } : {}),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
-      authorization: {
-        params: {
-          prompt: "select_account",
-        },
-      },
-    }),
+    ...(isProductionDeployment()
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            authorization: {
+              params: {
+                prompt: "select_account",
+              },
+            },
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: "Credentials",
       credentials: {

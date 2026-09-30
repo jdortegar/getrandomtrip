@@ -1,8 +1,10 @@
+import { isProductionDeployment } from "../../src/lib/deployment";
 import type { Config } from "@netlify/functions";
 // Scheduled functions are platform-only in production (no public URL invocation).
 export const config: Config = { schedule: "0 * * * *" };
 
 export default async function handler(): Promise<Response> {
+  if (!isProductionDeployment()) return new Response(null, { status: 204 });
   const secret = process.env.CRON_SECRET;
   const site = process.env.URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   let endpoint: URL;
