@@ -2,16 +2,17 @@
 
 import { useStorageValue, writeStorageValue } from "@/hooks/useStorageValue";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { Button } from "@/components/ui/Button";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { isValidPassword } from "@/lib/validation/password";
 import { isValidEmail } from "@/lib/validation/email";
 import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
+import { useGoogleProvider } from "@/lib/hooks/useGoogleProvider";
 
 interface ActiveTripperOption {
   slug: string;
@@ -45,6 +46,9 @@ export default function AuthModal({
     allowRegister ? defaultMode : "login",
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const googlePending = useRef(false);
+  const hasGoogleProvider = useGoogleProvider(isOpen);
   const [error, setError] = useState("");
   const [errorKind, setErrorKind] = useState<"generic" | "notVerified" | null>(
     null,
@@ -344,6 +348,7 @@ export default function AuthModal({
   const googleReferralRequired = t?.referredByRequired;
   const googleLoginFailed = t?.loginFailed;
   const handleGoogleSignIn = useCallback(async () => {
+    if (!hasGoogleProvider || isLoading || googlePending.current) return;
     // Register mode requires the referring-tripper choice up front, same as
     // the credentials path (validateForm) — Google's OAuth redirect can't
     // carry this component's state through the round-trip, so an explicit
@@ -351,14 +356,16 @@ export default function AuthModal({
     // the same reviewed/CSRF-guarded endpoint the mode-toggle banner uses
     // (`/api/attribution/mode`) right before handing off to Google. The
     // signIn callback (`auth.ts`) then reads that cookie for the new account.
-    if (mode === "register") {
-      if (referredByTripperSlug === NOT_DECIDED_VALUE) {
-        setError(googleReferralRequired ?? "");
-        return;
-      }
-      setIsLoading(true);
-      setError("");
-      try {
+    if (mode === "register" && referredByTripperSlug === NOT_DECIDED_VALUE) {
+      setError(googleReferralRequired ?? "");
+      return;
+    }
+    googlePending.current = true;
+    setIsGoogleLoading(true);
+    setIsLoading(true);
+    setError("");
+    try {
+      if (mode === "register") {
         const syncResponse = await fetch("/api/attribution/mode", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -369,20 +376,29 @@ export default function AuthModal({
           ),
         });
         if (!syncResponse.ok) {
-          setError(googleLoginFailed ?? "");
-          setIsLoading(false);
-          return;
+          throw new Error("Referral initialization failed");
         }
-      } catch {
-        setError(googleLoginFailed ?? "");
-        setIsLoading(false);
-        return;
       }
+      // Use current page as callback - let the page handle what happens next.
+      const result = await signIn("google", {
+        callbackUrl: window.location.href,
+      });
+      if (result?.error) throw new Error("Google sign-in failed");
+    } catch {
+      setError(googleLoginFailed ?? "");
+    } finally {
+      googlePending.current = false;
+      setIsGoogleLoading(false);
       setIsLoading(false);
     }
-    // Use current page as callback - let the page handle what happens next
-    await signIn("google", { callbackUrl: window.location.href });
-  }, [mode, referredByTripperSlug, googleReferralRequired, googleLoginFailed]);
+  }, [
+    hasGoogleProvider,
+    isLoading,
+    mode,
+    referredByTripperSlug,
+    googleReferralRequired,
+    googleLoginFailed,
+  ]);
 
   const toggleMode = useCallback(() => {
     setMode(mode === "login" ? "register" : "login");
@@ -456,9 +472,10 @@ export default function AuthModal({
               checks `emailVerified` at all — clicking it here would fully
               authenticate the unverified account, silently bypassing the
               verification gate this panel exists to enforce. */}
-          {errorKind !== "notVerified" && (
+          {hasGoogleProvider && errorKind !== "notVerified" && (
             <>
               <Button
+                aria-busy={isGoogleLoading}
                 className="h-14 w-full bg-[#f2f3f8] text-base text-neutral-800 hover:bg-[#e9ebf3] border-neutral-200"
                 disabled={isLoading}
                 onClick={handleGoogleSignIn}
@@ -466,6 +483,9 @@ export default function AuthModal({
                 type="button"
                 variant="secondary"
               >
+                {isGoogleLoading && (
+                  <Loader2 aria-hidden className="animate-spin h-4 w-4" />
+                )}
                 <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -484,7 +504,7 @@ export default function AuthModal({
                     fill="#EA4335"
                   />
                 </svg>
-                {t?.continueWithGoogle}
+                {isGoogleLoading ? t?.loading : t?.continueWithGoogle}
               </Button>
 
               {/* Divider */}

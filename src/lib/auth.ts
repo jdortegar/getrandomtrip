@@ -65,15 +65,28 @@ async function getReferralClaim(userId: string): Promise<string | null> {
 
 configureAuthEnvironment();
 
+const googleCredentials = isProductionDeployment()
+  ? {
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }
+  : {
+      clientId: process.env.RT_NONPRODUCTION_GOOGLE_CLIENT_ID?.trim() || "",
+      clientSecret:
+        process.env.RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET?.trim() || "",
+    };
+const googleEnabled =
+  isProductionDeployment() ||
+  Boolean(googleCredentials.clientId && googleCredentials.clientSecret);
+
 export const authOptions: NextAuthOptions = {
   // An empty explicit secret fails closed; never inherit production credentials.
   ...(!isProductionDeployment() ? { secret: getAuthSecret() } : {}),
   providers: [
-    ...(isProductionDeployment()
+    ...(googleEnabled
       ? [
           GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            ...googleCredentials,
             authorization: {
               params: {
                 prompt: "select_account",
