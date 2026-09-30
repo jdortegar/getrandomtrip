@@ -7,10 +7,7 @@ const names = [
   "xsed-lockup",
   "experience-get-lost-en",
   "experience-pareja-wordmark",
-  "experience-descriptor",
-  "experience-divider",
   "voucher-hotel-bed",
-  "voucher-location-pin",
   "voucher-breakfast",
   "voucher-internet",
   "voucher-facilities",
@@ -47,7 +44,7 @@ export function loadHtmlAssets() {
 async function readAssets(): Promise<HtmlAssets> {
   const root = join(process.cwd(), "public/assets");
   const [logo, arimo, barlow, inter, interBold, icons] = await Promise.all([
-    readFile(join(root, "pdf/logo.png")),
+    readFile(join(root, "logos/logo_pdf.png")),
     readFile(join(root, "fonts/arimo/Arimo.ttf")),
     readFile(join(root, "fonts/barlow/Barlow-Bold.ttf")),
     readFile(join(root, "fonts/inter/Inter-Regular.woff2")),
