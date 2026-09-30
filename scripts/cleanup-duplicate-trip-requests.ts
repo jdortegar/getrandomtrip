@@ -20,10 +20,12 @@
  * Run: npm run db:cleanup-duplicate-trips           (dry run)
  *      npm run db:cleanup-duplicate-trips -- --apply (writes)
  */
-import "dotenv/config";
-import { PrismaClient, TripRequestStatus } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { NON_TERMINAL_TRIP_STATUSES, tripFamilyOf } from "@/lib/db/tripRequest";
+import { TripRequestStatus } from "@prisma/client";
+import { withPrisma } from "./lib/withPrisma";
+import {
+  NON_TERMINAL_TRIP_STATUSES,
+  tripFamilyOf,
+} from "@/lib/db/tripRequestFamily";
 
 type TripRow = {
   id: string;
@@ -56,16 +58,8 @@ type CleanupClient = {
   };
 };
 
-const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString
-  ? new PrismaPg({ connectionString })
-  : undefined;
-const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
-);
-
 export async function cleanupDuplicateTripRequests(
-  client: CleanupClient = prisma as unknown as CleanupClient,
+  client: CleanupClient,
   dryRun: boolean = !process.argv.includes("--apply"),
 ): Promise<{
   dryRun: boolean;
@@ -75,7 +69,13 @@ export async function cleanupDuplicateTripRequests(
 }> {
   const rows = await client.tripRequest.findMany({
     where: { status: { in: NON_TERMINAL_TRIP_STATUSES } },
-    select: { id: true, userId: true, type: true, status: true, updatedAt: true },
+    select: {
+      id: true,
+      userId: true,
+      type: true,
+      status: true,
+      updatedAt: true,
+    },
     orderBy: { updatedAt: "desc" },
   });
 
@@ -130,7 +130,10 @@ export async function cleanupDuplicateTripRequests(
     // Status re-check guards against a row that reached CONFIRMED between
     // the read above and this write (e.g. a concurrent webhook).
     await client.tripRequest.updateMany({
-      where: { id: { in: cancelled }, status: { in: NON_TERMINAL_TRIP_STATUSES } },
+      where: {
+        id: { in: cancelled },
+        status: { in: NON_TERMINAL_TRIP_STATUSES },
+      },
       data: { status: TripRequestStatus.CANCELLED },
     });
   }
@@ -142,12 +145,10 @@ const isMainModule =
   process.argv[1]?.endsWith("cleanup-duplicate-trip-requests.ts") ?? false;
 
 if (isMainModule) {
-  cleanupDuplicateTripRequests()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(() => {
-      void prisma.$disconnect();
-    });
+  withPrisma((client) =>
+    cleanupDuplicateTripRequests(client as unknown as CleanupClient),
+  ).catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
 }

@@ -17,9 +17,7 @@
  *
  * Sends no email. Run: npm run db:backfill-email-verified
  */
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { withPrisma } from "./lib/withPrisma";
 
 type BackfillClient = {
   user: {
@@ -31,21 +29,12 @@ type BackfillClient = {
   };
 };
 
-const connectionString = process.env.DATABASE_URL;
-const adapter = connectionString
-  ? new PrismaPg({ connectionString })
-  : undefined;
-const prisma = new PrismaClient(
-  (adapter ? { adapter, log: ["error"] } : { log: ["error"] }) as object,
-);
-
 /**
- * Runs the emailVerified backfill against the given Prisma client (defaults
- * to a real connected client). Exported so it can be unit-tested with a mock
- * client without touching a real database.
+ * Runs the emailVerified backfill against the supplied Prisma client.
+ * Exported so it can be unit-tested without touching a real database.
  */
 export async function backfillEmailVerified(
-  client: BackfillClient = prisma as unknown as BackfillClient,
+  client: BackfillClient,
   force: boolean = process.argv.includes("--force"),
 ): Promise<
   | { aborted: true }
@@ -102,12 +91,10 @@ const isMainModule =
   process.argv[1]?.endsWith("backfill-email-verified.ts") ?? false;
 
 if (isMainModule) {
-  backfillEmailVerified()
-    .catch((e) => {
-      console.error(e);
-      process.exit(1);
-    })
-    .finally(() => {
-      void prisma.$disconnect();
-    });
+  withPrisma((client) =>
+    backfillEmailVerified(client as unknown as BackfillClient),
+  ).catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
 }
