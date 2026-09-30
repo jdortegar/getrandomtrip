@@ -39,8 +39,42 @@ function safeEnvironment(env) {
   }
 }
 
-// Reserve both localhost families briefly; never connect to the app or database.
-async function portAvailable(createServer = net.createServer) {
+// Darwin can permit loopback binds beside an existing wildcard listener.
+function noExistingListener(
+  platform = process.platform,
+  spawnSync = cp.spawnSync,
+) {
+  if (platform !== "darwin") return true;
+  try {
+    const result = spawnSync(
+      "/usr/sbin/lsof",
+      ["-nP", "-iTCP:3010", "-sTCP:LISTEN", "-Fp", "+w"],
+      {
+        encoding: "utf8",
+        timeout: 2000,
+        maxBuffer: 65536,
+        shell: false,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    );
+    return (
+      !result.error &&
+      result.signal == null &&
+      result.status === 1 &&
+      result.stdout === "" &&
+      result.stderr === ""
+    );
+  } catch {
+    return false;
+  }
+}
+
+// Inspect listeners and reserve both families; never connect to the app or DB.
+async function portAvailable(
+  createServer = net.createServer,
+  listenerCheck = noExistingListener,
+) {
+  if (!listenerCheck()) return false;
   const servers = [];
   try {
     for (const host of ["127.0.0.1", "::1"]) {
@@ -226,6 +260,7 @@ module.exports = {
   DEV_HOST,
   ORIGIN,
   launch,
+  noExistingListener,
   portAvailable,
   readInput,
   run,

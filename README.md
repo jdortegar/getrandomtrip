@@ -39,16 +39,21 @@ npm run build
 npm start
 ```
 
-## Borrador de inicio de Codex (inactivo)
+## Inicio local de Codex (opt-in)
 
-`.codex/config.toml.example` **no activa nada**. Las pruebas del hook son offline:
+`.codex/config.toml` registra el hook de `SessionStart` para `startup` y `resume`.
+**Registrado no significa confiable ni confirma que la app esté iniciada.**
+`.codex/config.toml.example` queda como referencia y no se carga por separado.
+Se requiere confiar en el proyecto y revisar/aprobar la definición exacta del
+hook mediante `/hooks` en la CLI, según la
+[documentación de Codex](https://learn.chatgpt.com/docs/hooks#review-and-trust-hooks).
+
+Las pruebas del hook son offline:
 `node --test .codex/hooks/start-dev.node-test.cjs` (mocks; no app, red ni base de datos).
 El sufijo `.node-test.cjs` mantiene estas pruebas de Node fuera del descubrimiento
 de Vitest; `npm run test` conserva todas las pruebas de la aplicación.
 
-Después de una aprobación separada, integrar el ejemplo en `.codex/config.toml`
-sin reemplazar otros hooks y aprobar la definición mediante la confianza normal
-de Codex. Requiere `RT_CODEX_DEV_AUTOSTART=1` heredado por el proceso de Codex
+Requiere `RT_CODEX_DEV_AUTOSTART=1` heredado por el proceso de Codex
 (no desde `.env`), Node 20.9+, dependencias ya instaladas y un worktree con rama
 `codex/`, `feat/`, `feature/` o `fix/`; nunca el checkout original.
 
@@ -61,7 +66,10 @@ conexión que redirijan el host. No instala, copia entornos, migra ni carga dato
 
 Solicita Next en `127.0.0.1:3010`, con origen `http://localhost:3010`. Si el puerto
 está ocupado, omite el inicio; no reutiliza servidores, cambia de puerto ni mata
-procesos. El aviso confirma solo la solicitud, **no disponibilidad**. No hay logs
+procesos. En macOS requiere `/usr/sbin/lsof` para detectar listeners existentes
+antes de comprobar ambas familias de loopback; cualquier salida, advertencia o
+fallo de inspección impide el inicio. En otras plataformas conserva las pruebas
+de bind. El aviso confirma solo la solicitud, **no disponibilidad**. No hay logs
 ni archivos PID; se descarta la salida del servidor para no exponer secretos.
 Para diagnosticar, pedir aprobación para un inicio manual con el mismo entorno
 validado (`node node_modules/next/dist/bin/next dev -p 3010 -H 127.0.0.1`).
