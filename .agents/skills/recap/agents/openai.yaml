@@ -1,0 +1,4 @@
+interface:
+  display_name: "Recap"
+  short_description: "Record a local feature recap; publish when authorized"
+  default_prompt: "Use $recap to record a natural-speed walkthrough of the complete local feature in at most 15 seconds and post the verified MP4 with a short title to Randomtrip #github-updates, respecting any record-only or review-first restriction."
