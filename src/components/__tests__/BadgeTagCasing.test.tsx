@@ -85,6 +85,22 @@ describe("badge and tag casing", () => {
     },
   );
 
+  it("keeps disabled chips as non-interactive buttons and owns touch sizing", () => {
+    const onClick = vi.fn();
+    act(() =>
+      root.render(
+        <Chip disabled onClick={onClick} size="touch">
+          Family
+        </Chip>,
+      ),
+    );
+    const chip = container.querySelector("button")!;
+    expect(chip.classList.contains("min-h-11")).toBe(true);
+    expect(chip.disabled).toBe(true);
+    act(() => chip.click());
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
   it.each([false, true])(
     "uppercases tags while preserving original content and removal semantics (locked: %s)",
     (locked) => {
@@ -123,47 +139,56 @@ describe("badge and tag casing", () => {
     expect(container.querySelector("button")).toBeNull();
   });
 
-  it("limits chip-list uppercase to displayed tags, not the input or saved values", () => {
-    const onAdd = vi.fn();
-    const onRemove = vi.fn();
-    const values = ["Family walk"];
-    act(() =>
-      root.render(
-        <ChipListInput
-          chipColor="bg-gray-100"
-          id="activities"
-          label="Activities"
-          onAdd={onAdd}
-          onRemove={onRemove}
-          placeholder="Add an activity"
-          values={values}
-        />,
-      ),
-    );
-
-    const tag = container.querySelector("span")!;
-    expect(tag.classList.contains("uppercase")).toBe(true);
-    expect(tag.textContent).toBe("Family walk");
-    const input = container.querySelector("input")!;
-    expect(input.closest(".uppercase")).toBeNull();
-    act(() => {
-      input.value = "Río Negro";
-      input.dispatchEvent(
-        new KeyboardEvent("keydown", { bubbles: true, key: "Enter" }),
+  it.each(["inclusion", "exclusion"] as const)(
+    "keeps %s list tag styles local and original values unchanged",
+    (kind) => {
+      const onAdd = vi.fn();
+      const onRemove = vi.fn();
+      const values = ["Family walk"];
+      act(() =>
+        root.render(
+          <ChipListInput
+            kind={kind}
+            id="activities"
+            label="Activities"
+            onAdd={onAdd}
+            onRemove={onRemove}
+            placeholder="Add an activity"
+            values={values}
+          />,
+        ),
       );
-    });
-    expect(onAdd).toHaveBeenCalledWith("Río Negro");
-    expect(values).toEqual(["Family walk"]);
-    act(() => container.querySelector("button")!.click());
-    expect(onRemove).toHaveBeenCalledWith(0);
-  });
+
+      const tag = container.querySelector("span")!;
+      expect(
+        tag.parentElement?.classList.contains(
+          kind === "inclusion" ? "bg-green-50" : "bg-red-50",
+        ),
+      ).toBe(true);
+      expect(tag.classList.contains("uppercase")).toBe(true);
+      expect(tag.textContent).toBe("Family walk");
+      const input = container.querySelector("input")!;
+      expect(input.closest(".uppercase")).toBeNull();
+      act(() => {
+        input.value = "Río Negro";
+        input.dispatchEvent(
+          new KeyboardEvent("keydown", { bubbles: true, key: "Enter" }),
+        );
+      });
+      expect(onAdd).toHaveBeenCalledWith("Río Negro");
+      expect(values).toEqual(["Family walk"]);
+      act(() => container.querySelector("button")!.click());
+      expect(onRemove).toHaveBeenCalledWith(0);
+    },
+  );
 
   it("retains uppercase status presentation and localized source copy", () => {
     act(() =>
       root.render(
         <StatusIndicatorBadge
           label="Confirmado"
-          styles={{ badge: "bg-green-50", dot: "bg-green-500" }}
+          family="trip"
+          status="CONFIRMED"
         />,
       ),
     );

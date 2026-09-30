@@ -34,7 +34,7 @@ export function InclusionsStep({ copy, form, onChange }: Props) {
             form.inclusions.filter((_, idx) => idx !== i),
           )
         }
-        chipColor="bg-green-50 text-green-800 border border-green-100"
+        kind="inclusion"
       />
 
       <ChipListInput
@@ -49,7 +49,7 @@ export function InclusionsStep({ copy, form, onChange }: Props) {
             form.exclusions.filter((_, idx) => idx !== i),
           )
         }
-        chipColor="bg-red-50 text-red-800 border border-red-100"
+        kind="exclusion"
       />
     </div>
   );

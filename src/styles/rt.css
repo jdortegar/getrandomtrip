@@ -76,19 +76,6 @@
   @apply text-sm text-ink;
 }
 
-/* Badges */
-.rt-badge {
-  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border;
-}
-
-.rt-badge--ok {
-  @apply bg-green-50 text-green-700 border-green-200;
-}
-
-.rt-badge--warn {
-  @apply bg-yellow-50 text-yellow-800 border-yellow-200;
-}
-
 /* Página con offset bajo el header del sitio */
 .rt-page {
   @apply w-full max-w-7xl mx-auto px-6 py-6;

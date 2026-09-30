@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/Badge";
 import {
   Eye,
   Download,
@@ -74,9 +75,10 @@ export function TripDocumentsTable({
                 </div>
               </td>
               <td>
-                <span className={`${styles.chip} ${styles.chipCountry}`}>
-                  {countryLabels[doc.country] ?? doc.country}
-                </span>
+                <Badge
+                  kind="country"
+                  label={countryLabels[doc.country] ?? doc.country}
+                />
               </td>
               <td>{formatUploaded(doc.createdAt)}</td>
               <td>

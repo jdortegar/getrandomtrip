@@ -1,5 +1,6 @@
 "use client";
 
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
@@ -427,10 +428,7 @@ export function RoleNotificationsPageClient({
         </div>
 
         {unreadTotal > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-[6px] border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-sky-700">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
-            {copy.unreadCount.replace("{count}", String(unreadTotal))}
-          </span>
+          <StatusIndicatorBadge family="notification" label={copy.unreadCount.replace("{count}", String(unreadTotal))} status="unread" />
         )}
 
         <TableFilterToolbar

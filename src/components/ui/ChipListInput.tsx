@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const inputClass =
   "bg-gray-100 outline-none placeholder:text-gray-400 px-6 py-4 rounded-xl text-ink w-full text-base";
@@ -12,15 +13,14 @@ export interface ChipListInputProps {
   values: string[];
   onAdd: (value: string) => void;
   onRemove: (index: number) => void;
-  chipColor: string;
+  kind: "inclusion" | "exclusion";
 }
 
 /**
  * Promoted from the tripper `InclusionsStep`'s private `ChipList`
  * (component-patterns.md, design.md ADR-7) so both the tripper experience
  * form and the XSED admin steps consume the same primitive instead of
- * maintaining two copies. Markup is unchanged from the original —
- * promotion is zero visual delta.
+ * maintaining two copies. Inclusion/exclusion intent selects local tag styles.
  */
 export function ChipListInput({
   id,
@@ -29,7 +29,7 @@ export function ChipListInput({
   values,
   onAdd,
   onRemove,
-  chipColor,
+  kind,
 }: ChipListInputProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
@@ -43,7 +43,10 @@ export function ChipListInput({
   }
   return (
     <div className="flex flex-col gap-2" data-component="ChipListInput">
-      <label className="block font-semibold text-gray-800 text-base" htmlFor={id}>
+      <label
+        className="block font-semibold text-gray-800 text-base"
+        htmlFor={id}
+      >
         {label}
       </label>
       <input
@@ -57,10 +60,16 @@ export function ChipListInput({
           {values.map((v, i) => (
             <div
               key={i}
-              className={`flex items-center justify-between rounded-lg px-4 py-2.5 text-sm ${chipColor}`}
+              className={cn(
+                "border flex items-center justify-between px-4 py-2.5 rounded-lg text-sm",
+                kind === "inclusion"
+                  ? "bg-green-50 border-green-100 text-green-800"
+                  : "bg-red-50 border-red-100 text-red-800",
+              )}
             >
               <span className="uppercase">{v}</span>
               <button
+                aria-label={v}
                 type="button"
                 onClick={() => onRemove(i)}
                 className="ml-3 text-current opacity-50 hover:opacity-100 transition-opacity"

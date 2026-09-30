@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 import {
@@ -19,15 +19,6 @@ interface TripperSettingsAccountCardProps {
   tierLevel: string;
   /** Fraction 0–1 (e.g. 0.15 means 15%). */
   commission: number;
-}
-
-function AdminSetBadge({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center gap-1 rounded-[6px] border border-gray-200 bg-gray-50 px-2 py-0.5 text-[11px] font-medium text-ink uppercase">
-      <Lock className="h-3 w-3" />
-      {label}
-    </span>
-  );
 }
 
 export function TripperSettingsAccountCard({
@@ -69,7 +60,10 @@ export function TripperSettingsAccountCard({
           <p className="text-sm font-medium text-ink">
             {copy.tierLabel}
           </p>
-          <AdminSetBadge label={copy.adminSet} />
+          <Badge
+            kind="admin-set"
+            label={copy.adminSet}
+          />
         </div>
         <p className="text-sm font-semibold text-ink">
           {tierLabels[tierKey]}
@@ -95,7 +89,10 @@ export function TripperSettingsAccountCard({
           <p className="text-sm font-medium text-ink">
             {copy.commissionLabel}
           </p>
-          <AdminSetBadge label={copy.adminSet} />
+          <Badge
+            kind="admin-set"
+            label={copy.adminSet}
+          />
         </div>
         <p className="font-barlow-condensed text-4xl font-extrabold leading-none text-ink">
           {commissionPct}%
