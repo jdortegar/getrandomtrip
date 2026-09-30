@@ -2399,6 +2399,10 @@ export interface AdminTripFulfillmentDict {
   title: string;
   back: string;
   contactTraveler: string;
+  tripStatusLabel: string;
+  tripTypeLabel: string;
+  levelLabel: string;
+  paymentLabel: string;
   revealsInLabel: string;
   /** Interpolated with {{days}}. */
   revealsInDays: string;
