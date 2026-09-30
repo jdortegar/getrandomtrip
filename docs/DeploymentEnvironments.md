@@ -29,6 +29,8 @@ Values in `netlify.toml` and most Netlify build variables are not runtime variab
 | `DATABASE_URL`                       | Existing production connection | Approved isolated database                         |
 | `RT_NONPRODUCTION_DATABASE_HOST`     | Not used                       | Exact hostname of that approved database           |
 | `RT_NONPRODUCTION_AUTH_SECRET`       | Not used                       | Separate private random secret                     |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Existing OAuth client    | Ignored                                            |
+| `RT_NONPRODUCTION_GOOGLE_CLIENT_ID` / `RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET` | Not used | Separate nonproduction OAuth client pair |
 | `STRIPE_SECRET_KEY`                  | Existing key                   | Optional `sk_test_` / `rk_test_` key only          |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Existing key                   | Optional `pk_test_` key only                       |
 | `STRIPE_WEBHOOK_SECRET`              | Existing signing secret        | Separate test endpoint secret, if testing webhooks |
@@ -56,8 +58,47 @@ changing configuration, and do not promote a preview artifact to production.
 
 NextAuth is initialized with that validated origin at runtime, including its
 internal URL. Nonproduction ignores inherited production auth secrets and
-forwarded-host trust. Google OAuth is intentionally unavailable there. Existing
-production auth settings are not rewritten.
+forwarded-host trust. Existing production auth settings are not rewritten.
+
+## Google sign-in in each environment
+
+Create or select a **development Google Cloud project separate from production**,
+then create a Google OAuth **Web application** client inside it. Local, develop,
+and PR previews share this nonproduction tier.
+
+[Google's production policy](https://developers.google.com/identity/protocols/oauth2/production-readiness/policy-compliance)
+requires separate testing and production projects. Keep test-only origins and
+callbacks out of production OAuth clients.
+
+Set both `RT_NONPRODUCTION_GOOGLE_CLIENT_ID` and
+`RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET` in local ignored environment files and
+the intended Netlify contexts. Missing or partial pairs disable Google without
+falling back to production keys; credentials login remains available. The login
+and invite forms display Google only after `/api/auth/providers` advertises it.
+The isolated auth secret, database, and validated-origin requirements still apply.
+
+Register these **authorized redirect URIs** in the appropriate Google client:
+
+| Environment | Exact callback URI |
+| --- | --- |
+| Local (nonproduction client) | `http://localhost:3010/api/auth/callback/google` |
+| Develop (nonproduction client) | `https://develop--<site-name>.netlify.app/api/auth/callback/google` |
+| Each active PR preview (nonproduction client) | `https://deploy-preview-<number>--<site-name>.netlify.app/api/auth/callback/google` |
+| Production (existing client) | Existing production origin + `/api/auth/callback/google` |
+
+Google requires an [exact redirect URI match and forbids wildcards](https://developers.google.com/identity/protocols/oauth2/web-server#uri-validation).
+Register each active preview URL before testing it; new previews are not
+automatically authorized. If testing an immutable deploy-ID URL, register that
+exact callback as well. Do not redirect preview callbacks through develop or
+production. Check Google's audience/testing restrictions allow the intended test
+account.
+Restart local development or rebuild the hosted context after changing keys.
+
+Verify provider discovery, then complete Google sign-in in a supported browser
+and confirm the callback/session stays on the starting environment. Ordinary
+Google login does not itself grant site access or privileged roles; existing
+invite grants remain unchanged. Nonproduction email delivery stays disabled.
+Provider discovery alone is not an end-to-end OAuth success check.
 
 ## First deployment limits
 
@@ -67,8 +108,8 @@ production auth settings are not rewritten.
   simulate provider acceptance. Email verification, password reset, invites, and
   manual messages therefore cannot complete. Slack and all six scheduled jobs
   are disabled, including direct calls to their internal API routes.
-- Login requires the private nonproduction auth secret and an **approved, verified
-  test account**. The empty database's site gate defaults to enabled; keep it
+- Credentials login requires the private nonproduction auth secret and an
+  **approved, verified test account**. The empty database's site gate defaults to enabled; keep it
   enabled through the first deployment and account bootstrap below. Never copy
   production users or weaken verification.
 - No schema changes or automatic seed are included. `npm run db:seed` is currently

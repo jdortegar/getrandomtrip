@@ -1,5 +1,5 @@
-# Reference copy of config.toml's hook; this example file is not loaded by Codex.
-# Preserve existing hooks and normal Codex trust checks when reusing it.
+# Project-local registration; review and trust this exact hook in Codex before use.
+# Default-off unless Codex inherits RT_CODEX_DEV_AUTOSTART=1.
 [[hooks.SessionStart]]
 matcher = "^(startup|resume)$"
 

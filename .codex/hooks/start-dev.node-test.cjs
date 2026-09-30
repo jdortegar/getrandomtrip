@@ -9,6 +9,7 @@ const {
   DEV_HOST,
   ORIGIN,
   launch,
+  noExistingListener,
   portAvailable,
   readInput,
   run,
@@ -237,6 +238,91 @@ test("busy port and spawn failures never report success", async () => {
   assert.match(await f.run(), /launch failed/);
 });
 
+test("Darwin listener preflight accepts only normal no-match exit with empty streams", () => {
+  const empty = { status: 1, signal: null, stdout: "", stderr: "" };
+  const calls = [];
+  assert.equal(
+    noExistingListener("darwin", (...args) => {
+      calls.push(args);
+      return empty;
+    }),
+    true,
+  );
+  assert.deepEqual(calls, [
+    [
+      "/usr/sbin/lsof",
+      ["-nP", "-iTCP:3010", "-sTCP:LISTEN", "-Fp", "+w"],
+      {
+        encoding: "utf8",
+        timeout: 2000,
+        maxBuffer: 65536,
+        shell: false,
+        stdio: ["ignore", "pipe", "pipe"],
+      },
+    ],
+  ]);
+  for (const override of [
+    { status: 0, stdout: "p8845\n" },
+    { stdout: "p8845\n" },
+    { stderr: "lsof: warning\n" },
+    { stdout: " " },
+    { stderr: "\n" },
+    { status: 0 },
+    { status: 2 },
+    { status: null, signal: "SIGTERM" },
+    { signal: "SIGTERM" },
+    { error: Object.assign(new Error("timeout"), { code: "ETIMEDOUT" }) },
+    { error: Object.assign(new Error("missing"), { code: "ENOENT" }) },
+    { stdout: null },
+    { stderr: null },
+  ]) {
+    assert.equal(
+      noExistingListener("darwin", () => ({ ...empty, ...override })),
+      false,
+    );
+  }
+  assert.equal(
+    noExistingListener("darwin", () => {
+      throw new Error("inspection failed");
+    }),
+    false,
+  );
+});
+
+test("Darwin busy listener rejects before binds or application launch", async () => {
+  const f = fixture();
+  let binds = 0;
+  f.d.portAvailable = () =>
+    portAvailable(
+      () => {
+        binds++;
+        throw new Error("unexpected bind");
+      },
+      () =>
+        noExistingListener("darwin", () => ({
+          status: 0,
+          signal: null,
+          stdout: "p8845\n",
+          stderr: "",
+        })),
+    );
+  assert.equal(
+    await f.run(),
+    "Randomtrip dev: skipped (port 3010 unavailable).",
+  );
+  assert.equal(binds, 0);
+  assert.ok(!f.calls.some(([kind]) => kind === "launch"));
+});
+
+test("non-Darwin platforms do not require lsof", () => {
+  for (const platform of ["linux", "win32", "freebsd"]) {
+    assert.equal(
+      noExistingListener(platform, () => assert.fail("must not inspect")),
+      true,
+    );
+  }
+});
+
 test("port probe reserves/closes both families; any error is unavailable (no real sockets)", async () => {
   for (const failing of [null, "127.0.0.1", "::1"]) {
     const opened = [];
@@ -258,7 +344,17 @@ test("port probe reserves/closes both families; any error is unavailable (no rea
       };
       return server;
     };
-    assert.equal(await portAvailable(createServer), !failing);
+    assert.equal(
+      await portAvailable(createServer, () =>
+        noExistingListener("darwin", () => ({
+          status: 1,
+          signal: null,
+          stdout: "",
+          stderr: "",
+        })),
+      ),
+      !failing,
+    );
     assert.deepEqual(
       closed,
       opened.map(({ host }) => host),

@@ -36,6 +36,8 @@ beforeEach(() => {
   vi.stubEnv("NEXTAUTH_URL_INTERNAL", "https://getrandomtrip.com");
   vi.stubEnv("NEXTAUTH_SECRET", "production-secret");
   vi.stubEnv("RT_NONPRODUCTION_AUTH_SECRET", "");
+  vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_ID", undefined);
+  vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET", undefined);
   vi.stubEnv("AUTH_TRUST_HOST", "true");
   vi.stubEnv("VERCEL", undefined);
 });
@@ -139,4 +141,69 @@ it("preserves production verification in both actual server cookie readers", asy
   cookieStore.set("grt_tripper_last_seen", { value: token });
   await expect(readAttributionSlug()).resolves.toBe("test-tripper");
   await expect(readLastSeenTripperSlug()).resolves.toBe("test-tripper");
+});
+
+it.each([
+  [undefined, "http://localhost:3010", undefined],
+  [
+    "nonproduction",
+    "https://develop--getrandomtrip-1.netlify.app",
+    "getrandomtrip-1",
+  ],
+  ["nonproduction", origin, "getrandomtrip-1"],
+  ["unknown", origin, "getrandomtrip-1"],
+])(
+  "uses only dedicated Google credentials for %s at %s",
+  async (identity, publicOrigin, site) => {
+    vi.stubEnv("RT_DEPLOY_ENV", identity);
+    vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", publicOrigin);
+    vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", site);
+    vi.stubEnv("GOOGLE_CLIENT_ID", "production-client");
+    vi.stubEnv("GOOGLE_CLIENT_SECRET", "production-google-secret");
+    vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_ID", "test-client");
+    vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET", "test-google-secret");
+    const { authOptions } = await import("../auth");
+    expect(
+      authOptions.providers.find((provider) => provider.id === "google"),
+    ).toMatchObject({
+      options: { clientId: "test-client", clientSecret: "test-google-secret" },
+    });
+    expect(detectOrigin("attacker.example", "http")).toBe(publicOrigin);
+  },
+);
+
+it.each([
+  [undefined, undefined],
+  ["test-client", undefined],
+  [undefined, "test-secret"],
+  [" ", "test-secret"],
+])(
+  "does not inherit production Google keys for incomplete nonproduction pair %s / %s",
+  async (clientId, clientSecret) => {
+    vi.stubEnv("GOOGLE_CLIENT_ID", "production-client");
+    vi.stubEnv("GOOGLE_CLIENT_SECRET", "production-google-secret");
+    vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_ID", clientId);
+    vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET", clientSecret);
+    const { authOptions } = await import("../auth");
+    expect(authOptions.providers.map((provider) => provider.id)).toEqual([
+      "credentials",
+    ]);
+  },
+);
+
+it("never uses the nonproduction Google pair in production", async () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "production");
+  vi.stubEnv("GOOGLE_CLIENT_ID", "production-client");
+  vi.stubEnv("GOOGLE_CLIENT_SECRET", "production-google-secret");
+  vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_ID", "test-client");
+  vi.stubEnv("RT_NONPRODUCTION_GOOGLE_CLIENT_SECRET", "test-google-secret");
+  const { authOptions } = await import("../auth");
+  expect(
+    authOptions.providers.find((provider) => provider.id === "google"),
+  ).toMatchObject({
+    options: {
+      clientId: "production-client",
+      clientSecret: "production-google-secret",
+    },
+  });
 });

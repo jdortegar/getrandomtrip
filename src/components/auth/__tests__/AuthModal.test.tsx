@@ -15,6 +15,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 vi.mock("next-auth/react", () => ({
   signIn: vi.fn(),
 }));
+vi.mock("@/lib/hooks/useGoogleProvider", () => ({
+  useGoogleProvider: () => true,
+}));
 
 import { signIn } from "next-auth/react";
 import AuthModal from "../AuthModal";
