@@ -1,0 +1,4 @@
+interface:
+  display_name: "Done"
+  short_description: "Deliver the PR, merge, announcement, and eligible recap"
+  default_prompt: "Use $done to publish the intended PR, merge it, close only its fully resolved linked issues, announce as me, and record and post a recap only for browser-visible results to Randomtrip #github-updates, honoring any narrower restrictions."
