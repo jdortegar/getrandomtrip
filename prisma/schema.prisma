@@ -174,7 +174,7 @@ model TripRequest {
   reviewSubmittedAt DateTime?
 
   // Destination reveal pipeline
-  destinationAssignmentNotifiedAt DateTime? // T-72h admin reminder idempotency stamp
+  destinationAssignmentNotifiedAt DateTime? // Legacy departure-relative stamp; no longer used
 
   // Companion travelers: populated fields protected at T-72h (XSED), otherwise T-7d
   travelersLockedAt DateTime? // Pass-2 cutoff-lock idempotency stamp
@@ -198,8 +198,49 @@ model TripRequest {
   tripDocuments   TripDocument[]
   documentDrafts  TripDocumentDraft[]
   contactMessages TripContactMessage[]
+  destinationAssignmentDeliveries DestinationAssignmentDelivery[]
+  destinationAssignmentNotices DestinationAssignmentNotice[]
 
   @@map("trip_requests")
+}
+
+/// One immutable email snapshot per recipient, reveal schedule and reminder milestone.
+model DestinationAssignmentDelivery {
+  id                String @id
+  tripRequestId     String
+  revealAt          DateTime
+  milestoneHours    Int
+  expiresAt         DateTime
+  recipientEmail    String
+  fromAddress       String
+  subject           String
+  html              String
+  createdAt         DateTime @default(now())
+  nextAttemptAt     DateTime @default(now()) // Also the recoverable lease deadline
+  leaseToken        String?
+  acceptedAt        DateTime? // Provider acceptance, not inbox delivery
+  providerMessageId String?
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([tripRequestId, revealAt, milestoneHours, recipientEmail], map: "destination_assignment_delivery_identity")
+  @@index([acceptedAt, nextAttemptAt])
+  @@map("destination_assignment_deliveries")
+}
+
+/// Durable dismissal marker: deleting an inbox Notification must not recreate it.
+model DestinationAssignmentNotice {
+  id             String @id
+  tripRequestId  String
+  revealAt       DateTime
+  milestoneHours Int
+  adminUserId    String
+  createdAt      DateTime @default(now())
+
+  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([tripRequestId, revealAt, milestoneHours, adminUserId], map: "destination_assignment_notice_identity")
+  @@map("destination_assignment_notices")
 }
 
 model TripDocument {

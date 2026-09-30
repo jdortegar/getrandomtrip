@@ -52,11 +52,10 @@ export function getRevealAt(startDate: Date): Date {
 }
 
 /**
- * Returns the Date at which the T-72h admin assignment reminder should fire
- * (startDate minus 72 hours, in UTC).
+ * Returns the first admin assignment reminder instant, 72h before reveal.
  */
 export function getNotifyAt(startDate: Date): Date {
-  return new Date(startDate.getTime() - 3 * 60 * 60 * 1000 * 24);
+  return new Date(getRevealAt(startDate).getTime() - 72 * 60 * 60 * 1000);
 }
 
 /**
@@ -69,12 +68,11 @@ export function isInRevealWindow(startDate: Date, now: Date): boolean {
 }
 
 /**
- * Returns true when `now` is inside the 72h notification window
- * (i.e. startDate - 72h <= now < startDate).
+ * Returns true during the 72h assignment-reminder window before reveal.
  */
 export function isInNotifyWindow(startDate: Date, now: Date): boolean {
   const notifyAt = getNotifyAt(startDate);
-  return now >= notifyAt && now < startDate;
+  return now >= notifyAt && now < getRevealAt(startDate);
 }
 
 /**

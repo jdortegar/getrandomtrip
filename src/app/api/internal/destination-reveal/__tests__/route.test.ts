@@ -1,102 +1,73 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
-    tripRequest: {
-      findMany: vi.fn(),
-      update: vi.fn(),
-    },
-    user: {
-      findMany: vi.fn(),
-    },
-    notification: {
-      create: vi.fn(),
-    },
-  },
-}));
-
-vi.mock("@/lib/email", () => ({
-  sendDestinationAssignmentReminder: vi.fn(),
-  sendDestinationRevealed: vi.fn(),
-}));
-
-import { prisma } from "@/lib/prisma";
-import { runPass1 } from "../passes";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+vi.mock("../passes", () => ({ runPass2: vi.fn() }));
+vi.mock("../assignmentReminders", () => ({ runAssignmentReminders: vi.fn() }));
+import { runPass2 } from "../passes";
+import { runAssignmentReminders } from "../assignmentReminders";
 import { POST } from "../route";
-
-const now = new Date("2026-08-15T10:00:00Z");
-
-function makeTrip(id: string, name: string | null) {
-  return { id, startDate: now, experienceId: null, user: { name } };
-}
-
-function createdBodies(): string[] {
-  return vi
-    .mocked(prisma.notification.create)
-    .mock.calls.map(([args]) => (args as { data: { body: string } }).data.body);
-}
-
-describe("runPass1 admin notifications", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.mocked(prisma.user.findMany).mockResolvedValue([{ id: "admin-1" }] as never);
+import { NextRequest } from "next/server";
+const request = (secret?: string) =>
+  new NextRequest("http://localhost/api/internal/destination-reveal", {
+    method: "POST",
+    headers: secret ? { authorization: `Bearer ${secret}` } : {},
   });
-
-  it("names the traveler instead of the trip id in the first reminder", async () => {
-    vi.mocked(prisma.tripRequest.findMany)
-      .mockResolvedValueOnce([makeTrip("trip-1", "Ana Pérez")] as never)
-      .mockResolvedValueOnce([] as never);
-
-    await runPass1(now);
-
-    const [body] = createdBodies();
-    expect(body).toContain("Ana Pérez");
-    expect(body).not.toContain("trip-1");
+const empty = { queued: 0, accepted: 0, failed: 0, skipped: 0 };
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.stubEnv("CRON_SECRET", "test");
+  vi.stubEnv("RT_DEPLOY_ENV", "production");
+  vi.mocked(runPass2).mockResolvedValue({ revealed: 1 });
+  vi.mocked(runAssignmentReminders).mockResolvedValue(empty);
+});
+afterEach(() => vi.unstubAllEnvs());
+it.each([undefined, "wrong"])(
+  "rejects unauthorized requests before side effects: %s",
+  async (secret) => {
+    expect((await POST(request(secret))).status).toBe(401);
+    expect(runPass2).not.toHaveBeenCalled();
+    expect(runAssignmentReminders).not.toHaveBeenCalled();
+  },
+);
+it("finishes automatic reveal before awaiting admin mail and returns acceptance counts", async () => {
+  vi.mocked(runAssignmentReminders).mockImplementation(async () => {
+    expect(runPass2).toHaveBeenCalledOnce();
+    return { ...empty, queued: 3, accepted: 2, failed: 1 };
   });
-
-  it("names the traveler instead of the trip id in the urgent re-escalation", async () => {
-    vi.mocked(prisma.tripRequest.findMany)
-      .mockResolvedValueOnce([] as never)
-      .mockResolvedValueOnce([makeTrip("trip-2", "Luis Gómez")] as never);
-
-    await runPass1(now);
-
-    const [body] = createdBodies();
-    expect(body).toContain("Luis Gómez");
-    expect(body).not.toContain("trip-2");
+  const response = await POST(request("test"));
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({
+    pass1: { ...empty, queued: 3, accepted: 2, failed: 1 },
+    pass2: { revealed: 1 },
+    errors: [],
   });
-
-  it("falls back to the trip id when the traveler has no name", async () => {
-    vi.mocked(prisma.tripRequest.findMany)
-      .mockResolvedValueOnce([makeTrip("trip-3", null)] as never)
-      .mockResolvedValueOnce([] as never);
-
-    await runPass1(now);
-
-    const [body] = createdBodies();
-    expect(body).toContain("trip-3");
+});
+it("keeps independent passes when the reveal query fails", async () => {
+  vi.mocked(runPass2).mockRejectedValue(new Error("reveal query failed"));
+  const response = await POST(request("test"));
+  expect(runAssignmentReminders).toHaveBeenCalledOnce();
+  expect(await response.json()).toMatchObject({
+    errors: ["Pass 2 failed: reveal query failed"],
+  });
+});
+it("reports reminder failure after automatic reveal has already completed", async () => {
+  vi.mocked(runAssignmentReminders).mockRejectedValue(
+    new Error("reminder table unavailable"),
+  );
+  const response = await POST(request("test"));
+  expect(runPass2).toHaveBeenCalledOnce();
+  expect(await response.json()).toMatchObject({
+    pass2: { revealed: 1 },
+    errors: ["Pass 1 failed: reminder table unavailable"],
   });
 });
 
-
-describe("destination reveal HTTP boundary", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.stubEnv("CRON_SECRET", "cron-test");
-    vi.mocked(prisma.tripRequest.findMany).mockResolvedValue([]);
-    vi.mocked(prisma.user.findMany).mockResolvedValue([]);
-  });
-  afterEach(() => vi.unstubAllEnvs());
-  it.each([undefined, "wrong"])("rejects unauthorized requests before running passes: %s", async (secret) => {
-    const response = await POST(new Request("http://localhost/api/internal/destination-reveal", { method: "POST", headers: secret ? { authorization: `Bearer ${secret}` } : {} }));
-    expect(response.status).toBe(401);
-    expect(prisma.tripRequest.findMany).not.toHaveBeenCalled();
-    expect(prisma.notification.create).not.toHaveBeenCalled();
-  });
-  it("runs both passes for an authorized request with the same result contract", async () => {
-    const response = await POST(new Request("http://localhost/api/internal/destination-reveal", { method: "POST", headers: { authorization: "Bearer cron-test" } }));
-    expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ pass1: { reminded: 0, escalated: 0 }, pass2: { revealed: 0 }, errors: [] });
-    expect(prisma.tripRequest.findMany).toHaveBeenCalledTimes(3);
-  });
-});
+it.each([undefined, "nonproduction", "unknown"])(
+  "preserves production isolation before either pass: %s",
+  async (environment) => {
+    vi.stubEnv("RT_DEPLOY_ENV", environment);
+    const response = await POST(request("test"));
+    expect(response.status).toBe(404);
+    expect(await response.json()).toEqual({ error: "Not found" });
+    expect(runPass2).not.toHaveBeenCalled();
+    expect(runAssignmentReminders).not.toHaveBeenCalled();
+  },
+);

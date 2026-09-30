@@ -6066,5 +6066,17 @@
     "suggestedActivities": "ITINERARIO CON ACTIVIDADES SUGERIDAS",
     "singleNight": "1 Noche",
     "manyNights": "{count} Noches"
+  },
+  "destinationAssignmentReminder": {
+    "subject": "Asignar destino: revelación en las próximas {hours} horas",
+    "preview": "Asignar una experiencia antes de la revelación del destino.",
+    "heading": "Asignación de destino pendiente",
+    "body": "Hola {admin}, por favor asigna una experiencia para este viaje antes de la revelación del destino.",
+    "clientLabel": "Viajero:",
+    "tripIdLabel": "ID de reserva:",
+    "deadlineLabel": "Fecha límite de revelación programada (UTC):",
+    "urgency": "La revelación del destino está programada en las próximas {hours} horas. Asigna una experiencia antes de {deadline}.",
+    "notificationBody": "La revelación del destino para {client} está programada en las próximas {hours} horas ({deadline}). Asigna una experiencia antes de la revelación.",
+    "cta": "IR AL PANEL ADMIN"
   }
 }

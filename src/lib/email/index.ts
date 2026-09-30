@@ -7,10 +7,6 @@ import ContactFormSubmission from "@/emails/ContactFormSubmission";
 import ReviewApprovedForTripper, {
   subjects as reviewApprovedSubjects,
 } from "@/emails/ReviewApprovedForTripper";
-import DestinationAssignmentReminder, {
-  subjects as destinationAssignmentReminderSubjects,
-  escalatedSubjects as destinationAssignmentReminderEscalatedSubjects,
-} from "@/emails/DestinationAssignmentReminder";
 import ExperiencePendingTripperReview, {
   subjects as pendingTripperReviewSubjects,
 } from "@/emails/ExperiencePendingTripperReview";
@@ -73,7 +69,7 @@ import TripStartVouchers, {
 } from "@/emails/TripStartVouchers";
 import { getLevelContent } from "@/lib/data/experience-levels";
 import { getXsedLevel } from "@/lib/data/xsed-catalog";
-import { getAdminEmails, getAdminRecipients } from "@/lib/email/getAdminRecipients";
+import { getAdminEmails } from "@/lib/email/getAdminRecipients";
 import type { MailAttachment } from "@/lib/helpers/sendMail";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { prisma } from "@/lib/prisma";
@@ -690,64 +686,6 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
       });
     } catch (err) {
       console.error("[email] sendBlogCopyRejected:", err);
-    }
-  })();
-}
-
-export function sendDestinationAssignmentReminder(
-  tripRequestId: string,
-  escalated = false,
-): void {
-  void (async () => {
-    try {
-      const [tripRequest, admins] = await Promise.all([
-        prisma.tripRequest.findUnique({
-          where: { id: tripRequestId },
-          select: {
-            startDate: true,
-            user: { select: { name: true } },
-          },
-        }),
-        getAdminRecipients(),
-      ]);
-
-      if (!tripRequest) return;
-
-      for (const admin of admins) {
-        try {
-          const locale = resolveLocale(admin.locale);
-          const startDate = tripRequest.startDate
-            ? tripRequest.startDate.toLocaleDateString(
-                locale === "en" ? "en-US" : "es-AR",
-                { year: "numeric", month: "long", day: "numeric" },
-              )
-            : "—";
-
-          await sendMail({
-            to: admin.email,
-            subject: escalated
-              ? destinationAssignmentReminderEscalatedSubjects[locale]
-              : destinationAssignmentReminderSubjects[locale],
-            content: {
-              react: React.createElement(DestinationAssignmentReminder, {
-                adminName: admin.name ?? "",
-                clientName: tripRequest.user?.name ?? "",
-                tripId: tripRequestId,
-                startDate,
-                locale,
-                escalated,
-              }),
-            },
-          });
-        } catch (err) {
-          console.error(
-            `[email] sendDestinationAssignmentReminder admin=${admin.email}:`,
-            err,
-          );
-        }
-      }
-    } catch (err) {
-      console.error("[email] sendDestinationAssignmentReminder:", err);
     }
   })();
 }

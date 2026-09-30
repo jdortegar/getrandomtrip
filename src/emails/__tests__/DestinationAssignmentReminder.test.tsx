@@ -1,23 +1,44 @@
-import { describe, it, expect } from "vitest";
-import { subjects, escalatedSubjects } from "../DestinationAssignmentReminder";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
+import DestinationAssignmentReminder from "../DestinationAssignmentReminder";
 
-describe("subjects", () => {
-  it("has distinct, non-empty es and en subjects", () => {
-    expect(subjects.es).toBeTruthy();
-    expect(subjects.en).toBeTruthy();
-    expect(subjects.es).not.toBe(subjects.en);
-  });
-});
+const revealAt = "2026-10-08 12:00 UTC";
 
-describe("escalatedSubjects", () => {
-  it("has distinct, non-empty es and en escalated subjects", () => {
-    expect(escalatedSubjects.es).toBeTruthy();
-    expect(escalatedSubjects.en).toBeTruthy();
-    expect(escalatedSubjects.es).not.toBe(escalatedSubjects.en);
-  });
-
-  it("differs from the standard subject in each locale", () => {
-    expect(escalatedSubjects.es).not.toBe(subjects.es);
-    expect(escalatedSubjects.en).not.toBe(subjects.en);
-  });
+describe("reveal-relative assignment reminder copy", () => {
+  it.each([72, 48, 24] as const)(
+    "uses the %i-hour reveal milestone in both languages",
+    (milestoneHours) => {
+      const english = renderToStaticMarkup(
+        <DestinationAssignmentReminder
+          adminName="Alex"
+          clientName="Ana"
+          locale="en"
+          milestoneHours={milestoneHours}
+          revealAt={revealAt}
+          tripId="trip"
+        />,
+      );
+      const spanish = renderToStaticMarkup(
+        <DestinationAssignmentReminder
+          adminName="Alex"
+          clientName="Ana"
+          locale="es"
+          milestoneHours={milestoneHours}
+          revealAt={revealAt}
+          tripId="trip"
+        />,
+      );
+      expect(english).toContain(`within ${milestoneHours} hours`);
+      expect(english).toContain("destination reveal");
+      expect(spanish).toContain(`en las próximas ${milestoneHours} horas`);
+      expect(spanish).toContain("revelación del destino");
+      for (const html of [english, spanish]) {
+        expect(html).toContain(revealAt);
+        expect(html).toContain("Ana");
+        expect(html).toContain("/dashboard/admin/trip-requests/trip");
+        expect(html).not.toContain("departs in");
+        expect(html).not.toContain("sale en menos");
+      }
+    },
+  );
 });
