@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import { useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, UserPlus } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -8,18 +9,11 @@ import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { Pagination } from "@/components/ui/Pagination";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
-import { cn } from "@/lib/utils";
 import type { AdminWaitlistEntry } from "@/lib/admin/types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 
 const PAGE_SIZE = 20;
-
-const inviteChipClass: Record<"invited" | "expired" | "alreadyMember", string> = {
-  invited: "border-sky-200 bg-sky-50 text-sky-700",
-  expired: "border-amber-200 bg-amber-50 text-amber-700",
-  alreadyMember: "border-neutral-200 bg-neutral-50 text-neutral-600",
-};
 
 export function AdminWaitlistPageClient() {
   const copy = useDictionary((d) => d.adminPages.waitlist);
@@ -331,24 +325,18 @@ export function AdminWaitlistPageClient() {
                     </td>
                     <td className="px-5 py-4">
                       {entry.alreadyMember ? (
-                        <span
-                          className={cn(
-                            "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
-                            inviteChipClass.alreadyMember,
-                          )}
-                        >
-                          {copy.alreadyMemberBadge}
-                        </span>
+                        <Badge
+                          kind="invitation"
+                          label={copy.alreadyMemberBadge}
+                          value="alreadyMember"
+                        />
                       ) : (
                         entry.inviteStatus && (
-                          <span
-                            className={cn(
-                              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
-                              inviteChipClass[entry.inviteStatus],
-                            )}
-                          >
-                            {copy.inviteStatus[entry.inviteStatus]}
-                          </span>
+                          <Badge
+                            kind="invitation"
+                            label={copy.inviteStatus[entry.inviteStatus]}
+                            value={entry.inviteStatus}
+                          />
                         )
                       )}
                     </td>

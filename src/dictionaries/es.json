@@ -1,4 +1,244 @@
 {
+  "designSystem": {
+    "skip": "Saltar a la galería",
+    "navigation": "Secciones de componentes",
+    "usage": "Ejemplo de uso",
+    "backToTop": "Volver arriba ↑",
+    "footer": "Randomtrip / Un lenguaje visual compartido",
+    "hero": {
+      "eyebrow": "Randomtrip / La biblioteca de componentes",
+      "title": "Diseñado para lo inesperado.",
+      "description": "Un lenguaje visual para cada viaje. Explora las bases y los componentes reales e interactivos de Randomtrip.",
+      "explore": "Explorar el sistema",
+      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
+      "overview": "Las bases",
+      "facts": [
+        {
+          "label": "Tipografías",
+          "value": "Barlow + Barlow Condensed"
+        },
+        {
+          "label": "Apariencia",
+          "value": "Clara, naturalmente"
+        },
+        {
+          "label": "Enfoque",
+          "value": "Adaptable por diseño"
+        }
+      ]
+    },
+    "sections": {
+      "foundations": {
+        "nav": "Fundamentos",
+        "title": "Color y tipografía",
+        "description": "Un lienzo cálido y una tipografía con carácter. Ground y Mineral Sage dan espacio al viaje; Deep Teal y Ochre guían la mirada."
+      },
+      "buttons": {
+        "nav": "Botones y enlaces",
+        "title": "Un próximo paso claro",
+        "description": "Botones reales y una jerarquía familiar. Haz clic, pasa el cursor o usa Tab para explorar las variantes compartidas y sus estados."
+      },
+      "controls": {
+        "nav": "Campos y controles",
+        "title": "Para personas reales",
+        "description": "Etiquetas visibles, interacciones nativas y respuestas útiles. Prueba el formulario y explora los estados de los controles."
+      },
+      "badges": {
+        "nav": "Estados y chips",
+        "title": "Pequeñas señales, ideas claras",
+        "description": "Las insignias comunican estados. Los chips redondeados invitan a elegir. Funciones distintas, tratamientos distintos."
+      },
+      "layout": {
+        "nav": "Diseño y ritmo",
+        "title": "Espacio para descubrir",
+        "description": "Espaciado compartido, márgenes generosos y paneles sutiles para que cada experiencia se sienta parte de Randomtrip."
+      },
+      "tables": {
+        "nav": "Tablas",
+        "title": "Claridad en los detalles",
+        "description": "Busca, filtra, ordena y recorre experiencias ficticias. Todas las interacciones se quedan en esta página."
+      }
+    },
+    "foundations": {
+      "clipboard": {
+        "action": "Copiar color",
+        "pending": "Copiando…",
+        "success": "Color copiado",
+        "failure": "No se pudo copiar. Selecciona el valor visible y cópialo manualmente."
+      },
+      "colors": {
+        "primary": {
+          "name": "Deep Teal",
+          "usage": "Acciones, texto, foco · 5–10%"
+        },
+        "secondary": {
+          "name": "Mineral Sage",
+          "usage": "Superficies de apoyo · 30%"
+        },
+        "feature": {
+          "name": "Ochre",
+          "usage": "Pequeños puntos de énfasis · 0–5%"
+        },
+        "ground": {
+          "name": "Ground",
+          "usage": "El lienzo principal · 60%"
+        },
+        "surface": {
+          "name": "Superficie",
+          "usage": "Tarjetas y paneles"
+        },
+        "ink": {
+          "name": "Ink",
+          "usage": "Títulos y texto"
+        }
+      },
+      "paletteNote": "Selecciona un color para copiar su valor CSS actual. Las proporciones orientan la vista completa. XSED Orange se reserva para la submarca XSED, no para la interfaz general.",
+      "typography": "Dos tipografías. Una voz.",
+      "typeNote": "Barlow para leer. Barlow Condensed para títulos y números.",
+      "displayLabel": "Destacado / Barlow Condensed · 36–60 px",
+      "displaySample": "Más allá de lo conocido.",
+      "headingLabel": "Sección / Barlow Condensed · 30 px",
+      "headingSample": "Cada viaje empieza en algún lugar.",
+      "bodyLabel": "Texto / Barlow · 16 px",
+      "bodySample": "Deja espacio para lo inesperado. Los detalles cuidados y un poco de curiosidad convierten un viaje en algo que vale la pena recordar.",
+      "captionLabel": "Detalle / Barlow · 12 px",
+      "captionSample": "Un pequeño detalle. Una experiencia más clara."
+    },
+    "buttons": {
+      "variants": "Una jerarquía, muchas acciones",
+      "sizes": "Tamaños en contexto",
+      "labels": {
+        "default": "Principal",
+        "secondary": "Secundario",
+        "pill": "Destacado",
+        "ghost": "Sutil",
+        "link": "Acción de texto",
+        "destructive": "Destructivo"
+      },
+      "sizeLabels": {
+        "sm": "Pequeño",
+        "md": "Mediano",
+        "lg": "Grande"
+      },
+      "disabled": "No disponible",
+      "navigation": "Explorar controles",
+      "feedback": "“{action}” activado. Solo una demostración.",
+      "hint": "Prueba una acción para ver la respuesta aquí."
+    },
+    "controls": {
+      "formTitle": "Un formulario pequeño, respuestas reales",
+      "hint": "Usa un correo de ejemplo. Prueba un valor vacío o inválido para ver el estado de error.",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "viajero@example.com",
+      "notes": "Notas de viaje",
+      "notesPlaceholder": "¿Qué haría especial este viaje?",
+      "validate": "Validar ejemplo",
+      "error": "Introduce un correo electrónico válido.",
+      "success": "Todo listo. Este ejemplo no envió ni guardó nada.",
+      "localOnly": "Solo una prueba local. No se enviarán mensajes.",
+      "states": "Estados y opciones",
+      "readOnly": "Campo de solo lectura",
+      "readOnlyValue": "Un poco de misterio incluido",
+      "disabled": "Campo deshabilitado",
+      "disabledValue": "No disponible en este ejemplo",
+      "pace": "Ritmo del viaje",
+      "flexible": "Un poco de todo",
+      "slow": "Sin prisa",
+      "active": "Seguir explorando",
+      "updates": "Incluir un poco de inspiración",
+      "travelers": "Viajeros",
+      "decrease": "Quitar un viajero",
+      "increase": "Añadir un viajero"
+    },
+    "badges": {
+      "statusTitle": "Un estado, no una acción",
+      "statusHint": "Las insignias compartidas mantienen coherentes los estados del sistema.",
+      "chipTitle": "Elige tu tipo de escapada",
+      "chips": ["Naturaleza", "Cultura", "Descanso"],
+      "selected": "{count} seleccionados · haz clic de nuevo para quitar",
+      "statuses": {
+        "ACTIVE": "Activo",
+        "DRAFT": "Borrador",
+        "PENDING_REVIEW": "Pendiente de revisión",
+        "PENDING_TRIPPER_REVIEW": "Pendiente de revisión del tripper",
+        "INACTIVE": "Inactivo",
+        "ARCHIVED": "Archivado"
+      }
+    },
+    "layout": {
+      "eyebrow": "La composición",
+      "title": "Lugar para lo inesperado",
+      "description": "Una superficie Sage de apoyo, una jerarquía clara y una cuadrícula adaptable. Las mismas bases funcionan desde una pantalla pequeña hasta un lienzo amplio.",
+      "cards": [
+        {
+          "title": "Empezar con curiosidad",
+          "description": "Un título claro, un icono sutil y el detalle justo."
+        },
+        {
+          "title": "Mantener el ritmo",
+          "description": "El espaciado coherente da lugar a cada idea."
+        },
+        {
+          "title": "Cuidar los detalles",
+          "description": "Usa los acentos con moderación, donde más importan."
+        }
+      ],
+      "spacing": "Una escala de espaciado compartida",
+      "spacingHint": "Base de 4 px. La cuadrícula se apila en pantallas pequeñas; el rt-container existente define los márgenes adaptables."
+    },
+    "tables": {
+      "all": "Todos los estados",
+      "caption": "Experiencias ficticias · demostración local",
+      "empty": "No hay coincidencias. Prueba otra búsqueda o limpia los filtros.",
+      "name": "Experiencia",
+      "nights": "Noches",
+      "status": "Estado",
+      "search": "Buscar experiencias",
+      "searchPlaceholder": "Buscar por nombre de experiencia",
+      "sort": "Ordenar por {column}",
+      "next": "Siguiente",
+      "previous": "Anterior",
+      "pageOf": "Página {page} de {totalPages}",
+      "toolbar": {
+        "clearFilters": "Limpiar filtros",
+        "count": "experiencias",
+        "loading": "Cargando…",
+        "of": "de"
+      },
+      "rows": [
+        {
+          "name": "Pausa costera",
+          "nights": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "name": "Refugio en el bosque",
+          "nights": 2,
+          "status": "DRAFT"
+        },
+        {
+          "name": "Aire de montaña",
+          "nights": 5,
+          "status": "ACTIVE"
+        },
+        {
+          "name": "Un fin de semana sin prisa",
+          "nights": 2,
+          "status": "ARCHIVED"
+        },
+        {
+          "name": "Escapada bajo las estrellas",
+          "nights": 4,
+          "status": "PENDING_REVIEW"
+        },
+        {
+          "name": "Ruta de viñedos",
+          "nights": 3,
+          "status": "INACTIVE"
+        }
+      ]
+    }
+  },
   "analyticsConsent": {
     "title": "Preferencias de Analytics",
     "description": "Con tu permiso, usamos cookies de Analytics para entender cómo se usan nuestras páginas públicas. La publicidad permanece desactivada. Puedes cambiar tu elección en cualquier momento.",

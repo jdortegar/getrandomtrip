@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import { useEffect, useState } from "react";
 import { Check, Eye, EyeOff, X } from "lucide-react";
 import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
@@ -346,15 +347,11 @@ export function AdminReviewsPageClient() {
                         {review.rating}/5
                       </td>
                       <td className="px-5 py-4">
-                        <span
-                          className={`rounded-[6px] border px-2 py-0.5 text-[11px] font-medium ${
-                            review.isApproved
-                              ? "border-green-200 bg-green-50 text-green-700"
-                              : "border-amber-200 bg-amber-50 text-amber-700"
-                          }`}
-                        >
-                          {review.isApproved ? st.approved : st.pending}
-                        </span>
+                        <Badge
+                          kind="approval"
+                          label={review.isApproved ? st.approved : st.pending}
+                          value={review.isApproved ? "approved" : "pending"}
+                        />
                         {review.isApproved && (
                           <span className="ml-1.5 text-xs text-neutral-400">
                             {review.isPublic ? st.public : st.private}

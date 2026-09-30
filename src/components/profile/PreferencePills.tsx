@@ -1,3 +1,5 @@
+import { Badge } from "@/components/ui/Badge";
+
 export default function PreferencePills({
   lodging,
   style,
@@ -7,11 +9,13 @@ export default function PreferencePills({
 }) {
   return (
     <div className="flex flex-wrap gap-2" data-component="PreferencePills">
-      {lodging && <span className="rt-badge">{lodging}</span>}
+      {lodging && <Badge kind="preference" label={lodging} />}
       {style?.map((s) => (
-        <span key={s} className="rt-badge">
-          {s}
-        </span>
+        <Badge
+          key={s}
+          kind="preference"
+          label={s}
+        />
       ))}
     </div>
   );

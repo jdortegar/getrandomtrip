@@ -1,6 +1,7 @@
 "use client";
+import { Badge } from "@/components/ui/Badge";
 import Image from "next/image";
-import { ShieldCheck, MapPin, Link as LinkIcon } from "lucide-react";
+import { MapPin, Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 
 type Props = {
@@ -53,9 +54,10 @@ export default function ProfileHeader({
               {name}
             </h1>
             {verified && (
-              <span className="inline-flex items-center gap-1 rounded-[6px] bg-emerald-500/90 px-2 py-0.5 text-xs font-semibold text-white">
-                <ShieldCheck size={14} /> Verificado
-              </span>
+              <Badge
+                kind="verified"
+                label="Verificado"
+              />
             )}
           </div>
           <div className="mt-1 text-sm text-white/90">

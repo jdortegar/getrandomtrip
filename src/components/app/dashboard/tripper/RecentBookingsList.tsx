@@ -1,3 +1,4 @@
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { Calendar } from "lucide-react";
 import Link from "next/link";
 import type { RecentBooking } from "@/types/tripper";
@@ -9,16 +10,6 @@ interface RecentBookingsListProps {
   bookings: RecentBooking[];
   copy: TripperDashboardDict["recentBookings"] & TripperDashboardDict["status"];
   locale?: string;
-}
-
-function getStatusStyle(status: string) {
-  if (status === "confirmed" || status === "completed") {
-    return { dot: "bg-green-500", badge: "bg-green-50 text-green-800 border-green-200" };
-  }
-  if (status === "revealed") {
-    return { dot: "bg-purple-500", badge: "bg-purple-50 text-purple-800 border-purple-200" };
-  }
-  return { dot: "bg-amber-400", badge: "bg-amber-50 text-amber-800 border-amber-200" };
 }
 
 function formatDate(dateString: string): string {
@@ -60,7 +51,7 @@ export function RecentBookingsList({
           <p className="py-12 text-center text-ink">{copy.empty}</p>
         ) : (
           bookings.map((booking) => {
-            const s = getStatusStyle(booking.status);
+            const label = copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status;
             return (
               <div key={booking.id} className="px-6 py-[18px]">
                 {/* Mobile layout */}
@@ -72,12 +63,7 @@ export function RecentBookingsList({
                     <p className="truncate font-semibold text-ink">{booking.clientName}</p>
                     <p className="truncate text-sm text-ink">{booking.experienceName}</p>
                   </div>
-                  <span
-                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${s.badge}`}
-                  >
-                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
-                    {copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status}
-                  </span>
+                  <StatusIndicatorBadge family="tripper-booking-summary" label={label} status={booking.status} />
                 </div>
                 <div className="mt-2 flex items-center gap-3 pl-14 md:hidden">
                   <p className="flex items-center gap-1 text-[12px] text-neutral-400">
@@ -110,12 +96,7 @@ export function RecentBookingsList({
                   <p className="font-barlow-condensed text-[22px] font-bold leading-none text-ink">
                     ${booking.amount.toLocaleString("es-AR")}
                   </p>
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-[6px] border px-3 py-[5px] text-[11px] font-semibold uppercase tracking-[0.08em] ${s.badge}`}
-                  >
-                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
-                    {copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status}
-                  </span>
+                  <StatusIndicatorBadge family="tripper-booking" label={label} status={booking.status} />
                 </div>
               </div>
             );

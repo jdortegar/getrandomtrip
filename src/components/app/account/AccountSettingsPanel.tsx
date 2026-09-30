@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -461,19 +462,19 @@ export function AccountSettingsPanel({
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {isTraveler && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
-                    {p.header.badgeActiveTraveler}
-                  </span>
+                  <Badge
+                    label={p.header.badgeActiveTraveler}
+                  />
                 )}
                 {isTripper && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
-                    {p.header.badgeTripper}
-                  </span>
+                  <Badge
+                    label={p.header.badgeTripper}
+                  />
                 )}
                 {isAdmin && (
-                  <span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
-                    {p.header.badgeAdmin}
-                  </span>
+                  <Badge
+                    label={p.header.badgeAdmin}
+                  />
                 )}
               </div>
             </div>

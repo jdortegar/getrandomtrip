@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import Image from "next/image";
 import { ArrowRight, Calendar, Heart, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -8,16 +9,16 @@ import { getTypeLabel } from "@/lib/data/traveler-types";
 import type { FeaturedTripCard } from "@/types/tripper";
 
 /** Badge config for trip level chip (tripper gallery only). */
-const TIER_BADGES: Record<string, { color: string; label: string }> = {
-  atelier: { color: "bg-rose-500", label: "Atelier Getaway" },
-  bivouac: { color: "bg-green-500", label: "Bivouac" },
-  essenza: { color: "bg-amber-500", label: "Essenza" },
-  "explora-plus": { color: "bg-purple-500", label: "Explora+" },
-  "modo-explora": { color: "bg-blue-500", label: "Modo Explora" },
+const TIER_BADGES: Record<string, string> = {
+  atelier: "Atelier Getaway",
+  bivouac: "Bivouac",
+  essenza: "Essenza",
+  "explora-plus": "Explora+",
+  "modo-explora": "Modo Explora",
 };
 
 function getTierBadge(level: string) {
-  return TIER_BADGES[level] ?? { color: "bg-gray-500", label: level };
+  return TIER_BADGES[level] ?? level;
 }
 
 interface TripperInspirationGalleryProps {
@@ -73,14 +74,15 @@ export default function TripperInspirationGallery({
 
                   {/* Badges */}
                   <div className="absolute left-6 top-6 flex flex-wrap gap-3">
-                    <span className="rounded-sm border border-white/40 bg-black/60 px-4 py-2 text-sm font-semibold text-white backdrop-blur-md shadow-lg">
-                      {typeLabel}
-                    </span>
-                    <span
-                      className={`rounded-sm px-4 py-2 text-sm font-semibold text-white shadow-lg ${tierBadge.color}`}
-                    >
-                      {tierBadge.label}
-                    </span>
+                    <Badge
+                      kind="inspiration-type"
+                      label={typeLabel}
+                    />
+                    <Badge
+                      kind="inspiration-level"
+                      label={tierBadge}
+                      value={trip.level}
+                    />
                   </div>
 
                   {/* Likes */}
@@ -123,12 +125,11 @@ export default function TripperInspirationGallery({
                   {trip.tags.length > 0 && (
                     <div className="mb-4 flex flex-wrap gap-2">
                       {trip.tags.slice(0, 3).map((tag) => (
-                        <span
+                        <Badge
                           key={tag}
-                          className="rounded-sm bg-white/15 px-3 py-1 text-xs text-white/80 backdrop-blur-sm"
-                        >
-                          #{tag}
-                        </span>
+                          kind="inspiration-tag"
+                          label={`#${tag}`}
+                        />
                       ))}
                     </div>
                   )}

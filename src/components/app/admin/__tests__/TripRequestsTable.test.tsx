@@ -136,6 +136,33 @@ afterEach(() => {
   container?.remove();
 });
 
+describe("TripRequestsTable — product capitalization", () => {
+  it.each(["en", "es"])("renders XSED as plain uppercase text in %s", (locale) => {
+    const trip = baseTrip({ type: "xsed", level: "Xsed" });
+    render([trip], vi.fn(), { locale });
+    const cell = container.querySelectorAll("tbody td")[4];
+    expect(Array.from(cell.querySelectorAll("p"), (p) => p.textContent)).toEqual([
+      "XSED",
+      "XSED",
+    ]);
+    expect(cell.querySelector("span")).toBeNull();
+    expect(cell.querySelector(".bg-xsed")).toBeNull();
+    expect(trip).toMatchObject({ type: "xsed", level: "Xsed" });
+    expect(container.querySelector("a")?.getAttribute("href")).toBe(
+      `/${locale}/dashboard/admin/trip-requests/trip-1`,
+    );
+  });
+
+  it("preserves ordinary type and level labels", () => {
+    render([baseTrip()]);
+    const cell = container.querySelectorAll("tbody td")[4];
+    expect(Array.from(cell.querySelectorAll("p"), (p) => p.textContent)).toEqual([
+      "couple",
+      "essenza",
+    ]);
+  });
+});
+
 describe("TripRequestsTable — purchase date column", () => {
   it.each([0, 23])("keeps purchases at local hour %i on their local date", (hour) => {
     const paidAt = new Date(2026, 9, 2, hour, 30).toISOString();

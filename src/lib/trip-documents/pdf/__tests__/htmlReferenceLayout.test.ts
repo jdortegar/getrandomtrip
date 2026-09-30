@@ -66,9 +66,26 @@ for (const input of referenceFixtures) {
           y: element.offsetTop,
           height: element.offsetHeight,
         }));
-        return { pages: document.querySelectorAll(".sheet").length, boxes };
+        const logo = document.querySelector<SVGSVGElement>("svg.logo")!;
+        const logoImage = logo.querySelector("image")!;
+        return {
+          pages: document.querySelectorAll(".sheet").length,
+          boxes,
+          logo: {
+            width: logo.width.baseVal.value,
+            height: logo.height.baseVal.value,
+            preserveAspectRatio: logoImage.preserveAspectRatio.baseVal.align,
+            meetOrSlice: logoImage.preserveAspectRatio.baseVal.meetOrSlice,
+          },
+        };
       });
       expect(result.pages).toBe(1);
+      expect(result.logo.width).toBeCloseTo(203.2, 3);
+      expect(result.logo).toMatchObject({
+        height: 51,
+        preserveAspectRatio: 6, // SVG xMidYMid: centered, never stretched.
+        meetOrSlice: 1, // SVG meet: contain the complete approved mark.
+      });
       const roadmap = input.template.endsWith("roadmap");
       expect(result.boxes[0].height).toBe(roadmap ? 220 : 213);
       if (roadmap) {

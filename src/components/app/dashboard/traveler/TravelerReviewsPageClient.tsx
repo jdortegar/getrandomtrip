@@ -1,8 +1,10 @@
 "use client";
 
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import type { TravelerDashboardDict } from "@/lib/types/dictionary";
 import { getTrips, type Trip } from "@/lib/utils/trips";
 
@@ -109,7 +111,7 @@ export function TravelerReviewsPageClient({
                 >
                   <div>
                     <p className="text-sm font-semibold text-ink">
-                      {trip.type} · {trip.level}
+                      {formatProductLabel(trip.type)} · {formatProductLabel(trip.level)}
                     </p>
                     <p className="mt-0.5 text-xs text-ink">
                       {new Date(trip.endDate).toLocaleDateString(dateLocale)}
@@ -117,10 +119,7 @@ export function TravelerReviewsPageClient({
                   </div>
 
                   {submitted ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-[6px] border border-green-200 bg-green-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-green-800">
-                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
-                      Enviada
-                    </span>
+                    <StatusIndicatorBadge family="review" label="Enviada" status="submitted" />
                   ) : (
                     <a
                       className="inline-flex items-center gap-1.5 rounded-full bg-feature px-3 py-1 text-xs font-semibold text-ink transition-colors hover:bg-feature"

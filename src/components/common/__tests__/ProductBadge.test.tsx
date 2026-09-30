@@ -9,6 +9,7 @@ describe("ProductBadge", () => {
       const html = renderToStaticMarkup(<ProductBadge value={value} />);
       expect(html).toContain(">XSED</span>");
       expect(html).toContain("bg-xsed");
+      expect(html).toContain("uppercase");
       expect(html).toContain("text-white");
       expect(html).not.toContain("text-neutral-900");
     },
@@ -24,10 +25,11 @@ describe("ProductBadge", () => {
   });
 
   it.each(["couple", "Essenza", "TGIS", "My xsed trip", "/xsed"])(
-    "preserves non-XSED badge copy and color: %s",
+    "uppercases non-XSED badges visually without changing source copy or color: %s",
     (value) => {
       const html = renderToStaticMarkup(<ProductBadge value={value} />);
       expect(html).toContain(`>${value}</span>`);
+      expect(html).toContain("uppercase");
       expect(html).toContain("bg-sky-50");
       expect(html).not.toContain("bg-xsed");
     },

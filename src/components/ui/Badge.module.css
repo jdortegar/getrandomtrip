@@ -1,0 +1,12 @@
+/* Preserve the existing legacy badge palette without page-scoped variables. */
+.country {
+  background-color: #f9fafb;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.level {
+  background-color: #f0f9ff;
+  border-color: #bae6fd;
+  color: #0369a1;
+}

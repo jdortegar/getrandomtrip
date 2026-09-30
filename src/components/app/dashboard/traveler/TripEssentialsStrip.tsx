@@ -2,6 +2,7 @@
 
 import { Heart, MapPin, Moon, Users } from "lucide-react";
 import type { ReactNode } from "react";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import styles from "./traveler-trip-details.module.css";
@@ -19,7 +20,9 @@ function resolveTravelTypeLabel(
   travelType: string,
   values: TripItineraryDict["essentials"]["travelTypeValues"],
 ): string {
-  return (values as Record<string, string>)[travelType] ?? travelType;
+  return formatProductLabel(
+    (values as Record<string, string>)[travelType] ?? travelType,
+  );
 }
 
 interface EssentialItemProps {

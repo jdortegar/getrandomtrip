@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import { MessageSquare, Star, ThumbsUp, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
@@ -460,18 +461,9 @@ export function ReviewsPageClient({
                               />
                             ))}
                           </div>
-                          <span
-                            className={cn(
-                              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
-                              review.isApproved
-                                ? "border-green-200 bg-green-50 text-green-700"
-                                : "border-amber-200 bg-amber-50 text-amber-700",
-                            )}
-                          >
-                            {review.isApproved
+                          <Badge kind="approval" label={review.isApproved
                               ? copy.status.approved
-                              : copy.status.pending}
-                          </span>
+                              : copy.status.pending} value={review.isApproved ? "approved" : "pending"} />
                         </div>
                       </div>
                       {review.title && (

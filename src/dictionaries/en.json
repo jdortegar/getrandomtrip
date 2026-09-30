@@ -1,4 +1,244 @@
 {
+  "designSystem": {
+    "skip": "Skip to the gallery",
+    "navigation": "Component sections",
+    "usage": "Usage example",
+    "backToTop": "Back to top ↑",
+    "footer": "Randomtrip / A shared visual language",
+    "hero": {
+      "eyebrow": "Randomtrip / The component library",
+      "title": "Designed for the unexpected.",
+      "description": "One visual language for every journey. Explore the foundations and real, interactive components behind Randomtrip.",
+      "explore": "Explore the system",
+      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved.",
+      "overview": "The foundation",
+      "facts": [
+        {
+          "label": "Typefaces",
+          "value": "Barlow + Barlow Condensed"
+        },
+        {
+          "label": "Appearance",
+          "value": "Light, naturally"
+        },
+        {
+          "label": "Approach",
+          "value": "Responsive by design"
+        }
+      ]
+    },
+    "sections": {
+      "foundations": {
+        "nav": "Foundations",
+        "title": "Color & typography",
+        "description": "A warm canvas. Confident type. Ground and Mineral Sage make room for the journey; Deep Teal and Ochre guide the eye."
+      },
+      "buttons": {
+        "nav": "Buttons & links",
+        "title": "A clear next step",
+        "description": "Real buttons, familiar hierarchy. Click, hover, or use Tab to explore the shared variants and their states."
+      },
+      "controls": {
+        "nav": "Inputs & controls",
+        "title": "Made for real people",
+        "description": "Visible labels, native interactions, and useful feedback. Try the form and explore the control states."
+      },
+      "badges": {
+        "nav": "Badges & chips",
+        "title": "Small signals, clear meaning",
+        "description": "Status badges report a state. Rounded chips invite a choice. Different roles, different treatments."
+      },
+      "layout": {
+        "nav": "Layout & rhythm",
+        "title": "Space to discover",
+        "description": "Shared spacing, generous margins, and quiet panels keep every experience feeling like Randomtrip."
+      },
+      "tables": {
+        "nav": "Tables",
+        "title": "Clarity in the details",
+        "description": "Search, filter, sort, and paginate a small set of fictional experiences. All interactions stay on this page."
+      }
+    },
+    "foundations": {
+      "clipboard": {
+        "action": "Copy color",
+        "pending": "Copying…",
+        "success": "Color copied",
+        "failure": "Could not copy. Select the displayed value and copy it manually."
+      },
+      "colors": {
+        "primary": {
+          "name": "Deep Teal",
+          "usage": "Actions, text, focus · 5–10%"
+        },
+        "secondary": {
+          "name": "Mineral Sage",
+          "usage": "Supporting surfaces · 30%"
+        },
+        "feature": {
+          "name": "Ochre",
+          "usage": "Small moments of emphasis · 0–5%"
+        },
+        "ground": {
+          "name": "Ground",
+          "usage": "The main canvas · 60%"
+        },
+        "surface": {
+          "name": "Surface",
+          "usage": "Cards and panels"
+        },
+        "ink": {
+          "name": "Ink",
+          "usage": "Headings and body text"
+        }
+      },
+      "paletteNote": "Select a swatch to copy its current CSS value. Color shares are guidelines for the whole view. XSED Orange is reserved for the XSED sub-brand, not general UI.",
+      "typography": "Two typefaces. One voice.",
+      "typeNote": "Barlow for reading. Barlow Condensed for headings and numbers.",
+      "displayLabel": "Display / Barlow Condensed · 36–60 px",
+      "displaySample": "Go beyond the familiar.",
+      "headingLabel": "Section / Barlow Condensed · 30 px",
+      "headingSample": "Every journey starts somewhere.",
+      "bodyLabel": "Body / Barlow · 16 px",
+      "bodySample": "Leave room for the unexpected. Thoughtful details and a little curiosity turn a trip into something worth remembering.",
+      "captionLabel": "Caption / Barlow · 12 px",
+      "captionSample": "A little detail. A clearer experience."
+    },
+    "buttons": {
+      "variants": "One hierarchy, many actions",
+      "sizes": "Sizes in context",
+      "labels": {
+        "default": "Primary",
+        "secondary": "Secondary",
+        "pill": "Highlight",
+        "ghost": "Ghost",
+        "link": "Text action",
+        "destructive": "Destructive"
+      },
+      "sizeLabels": {
+        "sm": "Small",
+        "md": "Medium",
+        "lg": "Large"
+      },
+      "disabled": "Unavailable",
+      "navigation": "Explore controls",
+      "feedback": "“{action}” activated. Demo only.",
+      "hint": "Try an action to see feedback here."
+    },
+    "controls": {
+      "formTitle": "A small form, real feedback",
+      "hint": "Use any sample email. Try an empty or invalid value to see the error state.",
+      "email": "Email address",
+      "emailPlaceholder": "traveler@example.com",
+      "notes": "Travel notes",
+      "notesPlaceholder": "What would make this journey special?",
+      "validate": "Validate demo",
+      "error": "Enter a valid email address.",
+      "success": "Looks good. This demo did not send or save anything.",
+      "localOnly": "Local demo only. No messages will be sent.",
+      "states": "States & choices",
+      "readOnly": "Read-only field",
+      "readOnlyValue": "A little mystery included",
+      "disabled": "Disabled field",
+      "disabledValue": "Not available in this demo",
+      "pace": "Travel pace",
+      "flexible": "A little of everything",
+      "slow": "Take it slow",
+      "active": "Keep exploring",
+      "updates": "Include a little inspiration",
+      "travelers": "Travelers",
+      "decrease": "Remove a traveler",
+      "increase": "Add a traveler"
+    },
+    "badges": {
+      "statusTitle": "A state, not an action",
+      "statusHint": "Shared experience badges keep system-owned states consistent.",
+      "chipTitle": "Choose your kind of escape",
+      "chips": ["Nature", "Culture", "Relaxation"],
+      "selected": "{count} selected · click again to remove",
+      "statuses": {
+        "ACTIVE": "Active",
+        "DRAFT": "Draft",
+        "PENDING_REVIEW": "Pending review",
+        "PENDING_TRIPPER_REVIEW": "Pending tripper review",
+        "INACTIVE": "Inactive",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "layout": {
+      "eyebrow": "The composition",
+      "title": "Room for the unexpected",
+      "description": "A supporting Sage surface, clear hierarchy, and a responsive grid. The same foundations work from a small screen to a wide canvas.",
+      "cards": [
+        {
+          "title": "Start with curiosity",
+          "description": "A clear title, a quiet icon, and just enough detail."
+        },
+        {
+          "title": "Keep a steady rhythm",
+          "description": "Consistent padding gives each idea room to breathe."
+        },
+        {
+          "title": "Make the details count",
+          "description": "Use accent colors sparingly, where they matter most."
+        }
+      ],
+      "spacing": "A shared spacing scale",
+      "spacingHint": "4 px base spacing. The grid stacks on small screens; the existing rt-container supplies responsive page margins."
+    },
+    "tables": {
+      "all": "All statuses",
+      "caption": "Fictional experiences · local demonstration",
+      "empty": "No experiences match. Try another search or clear the filters.",
+      "name": "Experience",
+      "nights": "Nights",
+      "status": "Status",
+      "search": "Search experiences",
+      "searchPlaceholder": "Search by experience name",
+      "sort": "Sort by {column}",
+      "next": "Next",
+      "previous": "Previous",
+      "pageOf": "Page {page} of {totalPages}",
+      "toolbar": {
+        "clearFilters": "Clear filters",
+        "count": "experiences",
+        "loading": "Loading…",
+        "of": "of"
+      },
+      "rows": [
+        {
+          "name": "Coastal pause",
+          "nights": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "name": "Forest hideaway",
+          "nights": 2,
+          "status": "DRAFT"
+        },
+        {
+          "name": "Mountain air",
+          "nights": 5,
+          "status": "ACTIVE"
+        },
+        {
+          "name": "Slow city weekend",
+          "nights": 2,
+          "status": "ARCHIVED"
+        },
+        {
+          "name": "Starlit escape",
+          "nights": 4,
+          "status": "PENDING_REVIEW"
+        },
+        {
+          "name": "Vineyard trail",
+          "nights": 3,
+          "status": "INACTIVE"
+        }
+      ]
+    }
+  },
   "analyticsConsent": {
     "title": "Analytics preferences",
     "description": "With your permission, we use analytics cookies to understand how our public pages are used. Advertising remains disabled. You can change your choice at any time.",

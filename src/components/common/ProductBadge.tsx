@@ -1,4 +1,5 @@
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/Badge";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 
 interface ProductBadgeProps {
   value: string;
@@ -6,18 +7,7 @@ interface ProductBadgeProps {
 
 /** For existing category badges only, never navigation or plain product text. */
 export function ProductBadge({ value }: ProductBadgeProps) {
-  const isXsed = value.toLowerCase() === "xsed";
-
   return (
-    <span
-      className={cn(
-        "border font-medium inline-flex items-center px-2 py-0.5 rounded-[6px] text-[11px] whitespace-nowrap",
-        isXsed
-          ? "bg-xsed border-xsed text-white"
-          : "bg-sky-50 border-sky-200 text-sky-700",
-      )}
-    >
-      {isXsed ? value.toUpperCase() : value}
-    </span>
+    <Badge kind="product" label={formatProductLabel(value)} value={value} />
   );
 }

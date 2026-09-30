@@ -90,7 +90,7 @@ export default function RemovableTag({
       : String(item.value);
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full ${sizeClasses} ${base}`} data-component="RemovableTag"
+      className={`inline-flex items-center gap-1 rounded-full uppercase ${sizeClasses} ${base}`} data-component="RemovableTag"
     >
       {displayText}
       {item.locked ? (

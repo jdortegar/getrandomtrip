@@ -310,18 +310,6 @@
   display: flex;
   align-items: center;
 }
-.levelChip {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 6px;
-  border: 1px solid var(--sky-200);
-  background: var(--sky-50);
-  color: var(--sky-700);
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
-}
 .priceCellInput {
   width: 100%;
   min-width: 92px;

@@ -6,9 +6,8 @@ interface ChipProps {
   active?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
-  className?: string;
   variant?: "default" | "outline" | "primary";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "touch";
   disabled?: boolean;
 }
 
@@ -16,16 +15,16 @@ export default function Chip({
   active = false,
   onClick,
   children,
-  className = "",
   variant = "default",
   size = "md",
   disabled = false,
 }: ChipProps) {
   const baseClasses =
-    "inline-flex items-center gap-1 rounded-full text-sm border transition ring-0 focus-visible:ring-0";
+    "inline-flex items-center gap-1 rounded-full text-sm border transition ring-0 uppercase focus-visible:ring-0";
 
   const sizeClasses = {
     sm: "px-2 py-1 text-xs",
+    touch: "min-h-11 px-3 py-1.5 text-sm",
     md: "px-3 py-1.5 text-sm",
     lg: "px-4 py-2 text-base",
   };
@@ -58,8 +57,8 @@ export default function Chip({
         sizeClasses[size],
         variantClasses[variant],
         disabledClasses,
-        className,
-      )} data-component="Chip"
+      )}
+      data-component="Chip"
     >
       {children}
     </button>

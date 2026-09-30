@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import React, { useState } from "react";
 import type { Tripper } from "@/content/trippers";
 import SafeImage from "@/components/common/SafeImage";
@@ -41,14 +42,16 @@ export default function TripperProfile({ t }: { t: Tripper }) {
 
             <div className="mt-4 flex flex-wrap gap-2">
               {t.ambassadorId && (
-                <span className="inline-flex items-center rounded-[6px] bg-white/10 text-white text-xs md:text-sm px-3 py-1">
-                  Tripper Ambassador: ID {t.ambassadorId}
-                </span>
+                <Badge
+                  kind="credential"
+                  label={`Tripper Ambassador: ID ${t.ambassadorId}`}
+                />
               )}
               {t.tierLevel && (
-                <span className="inline-flex items-center rounded-[6px] bg-white/10 text-white text-xs md:text-sm px-3 py-1">
-                  Tripper Tier: {t.tierLevel}
-                </span>
+                <Badge
+                  kind="credential"
+                  label={`Tripper Tier: ${t.tierLevel}`}
+                />
               )}
             </div>
 

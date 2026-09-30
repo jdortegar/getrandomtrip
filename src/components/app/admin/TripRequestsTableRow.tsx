@@ -2,6 +2,7 @@ import { Pencil } from "lucide-react";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
+import { formatProductLabel } from "@/lib/helpers/formatProductLabel";
 import { formatTripCalendarDate } from "@/lib/helpers/formatTripCalendarDate";
 import { StatusBadge } from "./StatusBadge";
 
@@ -40,8 +41,8 @@ export function TripRequestsTableRow({
         {trip.originCity}, {trip.originCountry}
       </td>
       <td className="px-5 py-4">
-        <p className="text-sm text-neutral-700">{trip.type}</p>
-        <p className="mt-0.5 text-xs text-ink">{trip.level}</p>
+        <p className="text-sm text-neutral-700">{formatProductLabel(trip.type)}</p>
+        <p className="mt-0.5 text-xs text-ink">{formatProductLabel(trip.level)}</p>
       </td>
       <td className="px-5 py-4">
         <StatusBadge

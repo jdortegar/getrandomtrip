@@ -1,7 +1,7 @@
+import { Badge } from "@/components/ui/Badge";
 import { Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
 import { TableIconButton, TableIconLink } from "@/components/ui/TableIconButton";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
-import { cn } from "@/lib/utils";
 import { toCommissionPercent } from "@/lib/tripper/commission";
 import { StatusBadge } from "./StatusBadge";
 
@@ -30,11 +30,6 @@ interface UsersTableRowProps {
   rowLockedForBulk: boolean;
   user: AdminUser;
 }
-
-const inviteChipClass: Record<"invited" | "expired", string> = {
-  invited: "border-sky-200 bg-sky-50 text-sky-700",
-  expired: "border-amber-200 bg-amber-50 text-amber-700",
-};
 
 export function UsersTableRow({
   copy,
@@ -98,14 +93,11 @@ export function UsersTableRow({
       </td>
       <td className="px-5 py-4">
         {user.inviteStatus && (
-          <span
-            className={cn(
-              "rounded-[6px] border px-2 py-0.5 text-[11px] font-medium",
-              inviteChipClass[user.inviteStatus],
-            )}
-          >
-            {copy.inviteStatus[user.inviteStatus]}
-          </span>
+          <Badge
+            kind="invitation"
+            label={copy.inviteStatus[user.inviteStatus]}
+            value={user.inviteStatus}
+          />
         )}
       </td>
       <td className="px-5 py-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/Badge";
 import {
   getTypeLabel,
   type PriceLevelId,
@@ -85,9 +86,10 @@ export function PriceOverrideGrid({
                 <tr key={level}>
                   <td>
                     <span className={styles.levelCell}>
-                      <span className={styles.levelChip}>
-                        {levelsCopy[level]}
-                      </span>
+                      <Badge
+                        kind="level"
+                        label={levelsCopy[level]}
+                      />
                     </span>
                   </td>
                   {DISPLAY_TYPE_ORDER.map((type) => {
