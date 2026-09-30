@@ -7,7 +7,10 @@ import { ProductBadge } from "@/components/common/ProductBadge";
 import { formatAdminDate } from "@/lib/admin/format";
 import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
-import { getRevealAt, getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
+import {
+  getRevealAt,
+  getRevealCountdown,
+} from "@/lib/helpers/getRevealCountdown";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import styles from "./fulfillment.module.css";
 
@@ -32,13 +35,17 @@ function revealCallout(
   if (!trip.startDate) return null;
   const countdown = getRevealCountdown(new Date(trip.startDate), new Date());
   if (countdown.revealed) {
-    const revealedAt = trip.destinationRevealedAt ?? getRevealAt(new Date(trip.startDate)).toISOString();
+    const revealedAt =
+      trip.destinationRevealedAt ??
+      getRevealAt(new Date(trip.startDate)).toISOString();
     return { label: copy.revealedOnLabel, value: formatAdminDate(revealedAt) };
   }
   if (countdown.days > 0) {
     return {
       label: copy.revealsInLabel,
-      value: interpolateTemplate(copy.revealsInDays, { days: String(countdown.days) }),
+      value: interpolateTemplate(copy.revealsInDays, {
+        days: String(countdown.days),
+      }),
     };
   }
   if (countdown.hours > 0 || countdown.minutes > 0) {
@@ -67,8 +74,14 @@ export function TripFulfillmentHeader({
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }} data-component="TripFulfillmentHeader">
-        <Link className={styles.backLink} href={`/${locale}/dashboard/admin/trip-requests`}>
+      <div
+        className={styles.headerNavigation}
+        data-component="TripFulfillmentHeader"
+      >
+        <Link
+          className={styles.backLink}
+          href={`/${locale}/dashboard/admin/trip-requests`}
+        >
           <ArrowLeft />
           {copy.back}
         </Link>
@@ -87,20 +100,47 @@ export function TripFulfillmentHeader({
           <p className={styles.eyebrow}>{copy.eyebrow}</p>
           <h1 className={`${styles.pageTitle} ${styles.cond}`}>{title}</h1>
           <p className={styles.pageSubtitle}>{trip.user.email}</p>
-          <div className={styles.chipRow}>
-            <StatusBadge label={statusLabel(trip.status)} status={trip.status} variant="trip" />
-            <ProductBadge value={trip.type} />
+          <dl className={styles.summaryFields}>
+            <div className={styles.summaryField}>
+              <dt>{copy.tripStatusLabel}</dt>
+              <dd>
+                <StatusBadge
+                  label={statusLabel(trip.status)}
+                  status={trip.status}
+                  variant="trip"
+                />
+              </dd>
+            </div>
+            <div className={styles.summaryField}>
+              <dt>{copy.tripTypeLabel}</dt>
+              <dd>
+                <ProductBadge value={trip.type} />
+              </dd>
+            </div>
             {showLevelChip ? (
-              <ProductBadge value={trip.level} />
+              <div className={styles.summaryField}>
+                <dt>{copy.levelLabel}</dt>
+                <dd>
+                  <ProductBadge value={trip.level} />
+                </dd>
+              </div>
             ) : null}
             {trip.payment ? (
-              <StatusBadge
-                label={paymentStatusLabels[trip.payment.status] ?? trip.payment.status}
-                status={trip.payment.status}
-                variant="payment"
-              />
+              <div className={styles.summaryField}>
+                <dt>{copy.paymentLabel}</dt>
+                <dd>
+                  <StatusBadge
+                    label={
+                      paymentStatusLabels[trip.payment.status] ??
+                      trip.payment.status
+                    }
+                    status={trip.payment.status}
+                    variant="payment"
+                  />
+                </dd>
+              </div>
             ) : null}
-          </div>
+          </dl>
         </div>
 
         {callout ? (
@@ -108,7 +148,9 @@ export function TripFulfillmentHeader({
             <div className={styles.calloutBar} />
             <div className={styles.calloutText}>
               <span className={styles.calloutLabel}>{callout.label}</span>
-              <span className={`${styles.calloutValue} ${styles.cond}`}>{callout.value}</span>
+              <span className={`${styles.calloutValue} ${styles.cond}`}>
+                {callout.value}
+              </span>
             </div>
           </div>
         ) : null}
