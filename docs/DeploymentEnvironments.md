@@ -5,6 +5,19 @@ application database or Blob stores. Develop and all PR previews currently share
 **one nonproduction database and Blob namespace**: they are not isolated from one
 another. Production keeps its existing store names and integrations.
 
+## Release preview policy
+
+Netlify skips Deploy Previews whose source branch is `develop`: this workflow
+uses `develop` PRs only for releases to `main`. Feature PR previews, the `develop`
+branch deployment, and `main` production deployments still build normally.
+
+The `netlify.toml` ignore command is scoped to `[context.deploy-preview]` and
+requires both `CONTEXT=deploy-preview` and `HEAD=develop`. Other contexts retain
+their existing change-detection behavior. `HEAD` identifies the source branch;
+`BRANCH` is not treated as the PR target. Missing or unknown metadata continues
+the build. Netlify's ignore exit codes are `0` to skip and `1` to build. Revisit
+this source-only rule if `develop` PRs start targeting other branches.
+
 ## Required configuration
 
 Set these in Netlify's environment-variable UI with **build and function scopes**.
