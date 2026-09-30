@@ -1,3 +1,4 @@
+import { getBlobStoreName } from "@/lib/deployment";
 import { randomUUID } from "crypto";
 import { getStore } from "@netlify/blobs";
 
@@ -10,7 +11,7 @@ const TRIP_DOCUMENTS_STORE = "trip-documents";
  * and extracting a shared helper would mean editing it.
  */
 export function getTripDocumentStore() {
-  return getStore(TRIP_DOCUMENTS_STORE, {
+  return getStore(getBlobStoreName(TRIP_DOCUMENTS_STORE), {
     consistency: "strong",
     ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
       ? {

@@ -1,5 +1,12 @@
-import { NextResponse } from "next/server";
-import { runPass1, runPass2, type Pass1Result, type Pass2Result } from "./passes";
+import { isProductionDeployment } from "@/lib/deployment";
+import { type NextRequest, NextResponse } from "next/server";
+import { runPass2, type Pass2Result } from "./passes";
+import {
+  runAssignmentReminders,
+  type AssignmentReminderResult,
+} from "./assignmentReminders";
+
+export const dynamic = "force-dynamic";
 
 // ─── Auth guard ───────────────────────────────────────────────────────────────
 
@@ -12,7 +19,10 @@ function isAuthorized(request: Request): boolean {
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  if (!isProductionDeployment()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,21 +31,27 @@ export async function POST(request: Request) {
     const now = new Date();
     const errors: string[] = [];
 
-    let pass1Result: Pass1Result = { reminded: 0, escalated: 0 };
+    let pass1Result: AssignmentReminderResult = {
+      queued: 0,
+      accepted: 0,
+      failed: 0,
+      skipped: 0,
+    };
     let pass2Result: Pass2Result = { revealed: 0 };
 
+    // Reveal is independent of the email provider and runs before awaited mail work.
     try {
-      pass1Result = await runPass1(now);
+      pass2Result = await runPass2(now);
     } catch (err) {
-      const msg = `Pass 1 failed: ${err instanceof Error ? err.message : String(err)}`;
+      const msg = `Pass 2 failed: ${err instanceof Error ? err.message : String(err)}`;
       console.error(`[destination-reveal] ${msg}`);
       errors.push(msg);
     }
 
     try {
-      pass2Result = await runPass2(now);
+      pass1Result = await runAssignmentReminders();
     } catch (err) {
-      const msg = `Pass 2 failed: ${err instanceof Error ? err.message : String(err)}`;
+      const msg = `Pass 1 failed: ${err instanceof Error ? err.message : String(err)}`;
       console.error(`[destination-reveal] ${msg}`);
       errors.push(msg);
     }

@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 export const runtime = "nodejs";
 
 import { NextRequest, NextResponse } from "next/server";
@@ -39,6 +40,16 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     console.error("Stripe webhook signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  if (
+    !isProductionDeployment() &&
+    (event.livemode || (event.data.object as { livemode?: boolean }).livemode)
+  ) {
+    return NextResponse.json(
+      { error: "Live Stripe events are disabled" },
+      { status: 400 },
+    );
   }
 
   try {

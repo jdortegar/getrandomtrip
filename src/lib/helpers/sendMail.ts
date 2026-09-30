@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 import React from "react";
 import { Resend } from "resend";
 
@@ -28,6 +29,9 @@ function getResendClient() {
 }
 
 export async function sendMail(params: SendMailParams) {
+  if (!isProductionDeployment()) {
+    throw new Error("Email delivery is disabled outside production");
+  }
   const resend = getResendClient();
   const from = params.from || process.env.EMAIL_FROM || "onboarding@resend.dev";
 

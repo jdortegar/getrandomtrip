@@ -1,3 +1,4 @@
+import { isProductionDeployment } from "@/lib/deployment";
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
@@ -8,6 +9,9 @@ export const maxDuration = 25;
 const headers = { "Cache-Control": "private, no-store" };
 
 export async function POST(request: Request) {
+  if (!isProductionDeployment()) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
   const secret = process.env.CRON_SECRET;
   const supplied = Buffer.from(request.headers.get("authorization") ?? "");
   const expected = Buffer.from(`Bearer ${secret ?? ""}`);

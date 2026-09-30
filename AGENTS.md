@@ -96,6 +96,9 @@ src/
 
 ### React / Next.js
 
+Before changing Next.js code, read the relevant installed-version documentation in
+`node_modules/next/dist/docs/`. Follow its API guidance and deprecation notices.
+
 - **Server Components by default.** Add `"use client"` only for:
   - Interactive UI (buttons, modals, toggles, forms)
   - Web API access (`window`, `navigator`, `localStorage`)
@@ -185,18 +188,48 @@ if (!hasRoleAccess(session.user.role, ['ADMIN'])) return forbidden();
 
 ---
 
-## Design System (quick reference)
+## Design System
 
-Full spec: `.claude/rules/design-system.md`
+Brand values and component treatments: `.claude/rules/design-system.md`.
+Keep Randomtrip's branding, dictionary-based copy, and light-only appearance.
 
-| Token | Tailwind | Use |
-|-------|---------|-----|
-| Ink | `gray-900` | Headings, primary text |
-| Cyan | `text-light-blue` | Eyebrows, icons, links |
-| Sun | `yellow-400` | KPI accent bar only |
-| Surface | `white` | Card backgrounds |
-| Ground | `gray-50` | Page background |
-| Border | `gray-200` | Card borders, dividers |
+### Layers
+
+- **Foundations:** `src/app/globals.css` owns shared semantic tokens for color,
+  typography, spacing, and responsive values. Extend the shared foundation when a
+  new treatment is needed; do not scatter one-off design values or breakpoint
+  overrides across components.
+- **UI primitives:** `src/components/ui` contains reusable low-level controls.
+- **Composed components:** `src/components/composed` combines primitives into
+  reusable UI without coupling it to a route or content source.
+- **Content blocks:** `src/components/content-blocks` contains editor-configurable
+  page sections assembled from shared components.
+- **Pages and feature containers:** `src/app` and existing feature containers
+  handle routing, data loading, localization, and composition.
+- **Gallery:** `src/components/app/design-system` demonstrates the actual shared
+  components, not separately styled copies.
+
+These are the boundaries for new design-system work. Create new layer directories
+only when needed. Leave existing components in their current locations until a
+scoped migration is approved; reuse them instead of creating parallel versions.
+
+### Composition and verification
+
+- Keep reusable components independent of routes, databases, CMS integrations,
+  and other content sources. Pass localized content, state, and callbacks through
+  props; load data in pages or feature containers. Keep gallery fixtures local
+  and separate from production data sources.
+- Reuse existing components, typography, brand assets, and semantic tokens. Treat
+  `src/app/globals.css` and the full design-system spec as the sources of truth for
+  current values and usage; do not duplicate palette values in agent guidance.
+- Keep `/design-system` (Spanish) and `/en/design-system` (English) useful as
+  interactive component galleries. Update their demos when shared components or
+  behavior change.
+- Preserve native semantics, keyboard interaction, visible focus, readable
+  contrast, usable touch targets, and reduced-motion support.
+- Verify visual changes at mobile and desktop sizes. Encode important layout and
+  interaction requirements in implementation and focused checks, not only agent
+  guidance.
 
 - `GlassCard` is marketing-only — never use in dashboard pages.
 - Status badges always render through `<StatusIndicatorBadge>`.
@@ -253,3 +286,16 @@ npm run db:seed         # Seed database
 - [ ] All new user-visible strings added to both `en.json` and `es.json`
 - [ ] Accessibility: contrast AA compliant
 - [ ] Empty and error states handled with microcopy
+
+---
+
+## Project Skills
+
+- **PR:** For PR creation, updates, or prompt history, read
+  [`.agents/skills/pr/SKILL.md`](.agents/skills/pr/SKILL.md). Use its description
+  format and respect the explicitly requested head/base branches.
+
+- **Merge:** For an explicit `$merge` workflow or an ordinary merge request, read
+  [`.agents/skills/merge/SKILL.md`](.agents/skills/merge/SKILL.md). Respect its
+  authorization boundaries for verified linked-issue cleanup and Randomtrip Slack
+  announcements; authoring or reviewing the skill never executes it.

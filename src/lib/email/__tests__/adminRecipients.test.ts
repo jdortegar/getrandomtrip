@@ -24,7 +24,6 @@ import {
   sendBlogSubmitted,
   sendBookingConfirmed,
   sendContactFormSubmission,
-  sendDestinationAssignmentReminder,
   sendExperienceCopyApproved,
   sendExperienceCopyRejected,
   sendExperiencePendingTripperReview,
@@ -33,6 +32,31 @@ import {
   sendTravelerInviteEmail,
   sendVerificationEmail,
 } from "../index";
+
+import { getAdminRecipients } from "../getAdminRecipients";
+import {
+  buildAssignmentReminderEmail,
+  sendDestinationAssignmentReminder,
+} from "../sendDestinationAssignmentReminder";
+
+async function sendReminder(milestoneHours: 24 | 48 | 72 = 72) {
+  for (const recipient of await getAdminRecipients()) {
+    const payload = await buildAssignmentReminderEmail({
+      tripId: "trip",
+      clientName: "Customer",
+      recipient,
+      window: {
+        milestoneHours,
+        revealAt: new Date("2026-10-08T12:00:00Z"),
+        expiresAt: new Date("2026-10-07T12:00:00Z"),
+      },
+    });
+    await sendDestinationAssignmentReminder({
+      id: recipient.email,
+      ...payload,
+    });
+  }
+}
 
 const MAIN_EMAIL = "hola@getrandomtrip.com";
 const ADMIN = { email: "admin@example.com", name: "Alex", locale: "en" };
@@ -170,27 +194,29 @@ describe("admin email recipients", () => {
     );
   });
 
-  it.each([false, true])(
-    "sends one personalized reminder per recipient (escalated: %s)",
-    async (escalated) => {
+  it.each([72, 48, 24] as const)(
+    "sends one personalized reminder per recipient (milestone: %s)",
+    async (milestone) => {
       vi.stubEnv("ADMIN_EMAIL", " ADMIN@EXAMPLE.COM ");
       db.user.findMany.mockResolvedValue([
         ADMIN,
         { email: " HOLA@GetRandomTrip.com ", name: "Team", locale: "es" },
       ]);
 
-      sendDestinationAssignmentReminder("trip", escalated);
+      await sendReminder(milestone);
 
       await vi.waitFor(() => expect(sendMailMock).toHaveBeenCalledTimes(2));
       expect(sendMailMock.mock.calls.map(([mail]) => mail.to).sort()).toEqual(
         [MAIN_EMAIL, ADMIN.email].sort(),
       );
       for (const [mail] of sendMailMock.mock.calls) {
-        expect(mail.content.react.props).toMatchObject({
-          adminName: mail.to === ADMIN.email ? "Alex" : "Team",
-          locale: mail.to === ADMIN.email ? "en" : "es",
-          escalated,
-        });
+        expect(mail.content.html).toContain(
+          mail.to === ADMIN.email ? "Alex" : "Team",
+        );
+        expect(mail.subject).toContain(String(milestone));
+        expect(mail.subject).toContain(
+          mail.to === ADMIN.email ? "reveal" : "revelación",
+        );
       }
     },
   );
@@ -198,7 +224,7 @@ describe("admin email recipients", () => {
   it("sends reminders to hola and configured email even with no DB admins", async () => {
     db.user.findMany.mockResolvedValue([]);
 
-    sendDestinationAssignmentReminder("trip");
+    await sendReminder();
 
     await vi.waitFor(() => expect(sendMailMock).toHaveBeenCalledTimes(2));
     expect(sendMailMock.mock.calls.map(([mail]) => mail.to)).toEqual([

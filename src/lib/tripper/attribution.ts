@@ -15,6 +15,8 @@
  * value indefinitely.
  */
 
+import { getAuthSecret, isProductionDeployment } from "@/lib/deployment";
+
 /** Cookie name — `grt_*` namespace, matching `grt_tripper_invite` / `grt_traveler_invite` (ADR-2). */
 export const GRT_TRIPPER_COOKIE = "grt_tripper";
 
@@ -88,18 +90,20 @@ export function lastSeenCookieOptions(): {
 
 /** Reads the `ATTRIBUTION_ENABLED` feature flag. Off = never write/trust the cookie (base Randomtrip catalog only, never a wrong price). */
 export function isAttributionEnabled(): boolean {
-  return process.env.ATTRIBUTION_ENABLED === "true";
+  return (
+    process.env.ATTRIBUTION_ENABLED === "true" &&
+    (isProductionDeployment() || Boolean(getAuthSecret()))
+  );
 }
 
 /**
- * Reads `NEXTAUTH_SECRET` from the environment (falls back to `""` so a
- * missing secret degrades to "every signature fails" rather than throwing).
+ * Reads the deployment-specific auth secret (empty when unconfigured).
  * Single shared implementation — do NOT reimplement `process.env.NEXTAUTH_SECRET
  * ?? ""` at call sites (`proxy.ts`, `attribution-server.ts`,
  * `attribution/mode/route.ts` all import this one).
  */
 export function getAttributionSecret(): string {
-  return process.env.NEXTAUTH_SECRET ?? "";
+  return getAuthSecret();
 }
 
 /**
@@ -222,7 +226,7 @@ export async function verifyAttribution(
   raw: string | undefined,
   secret: string,
 ): Promise<string | null> {
-  if (!raw) return null;
+  if (!raw || !secret) return null;
 
   const firstDot = raw.indexOf(".");
   if (firstDot === -1) return null;

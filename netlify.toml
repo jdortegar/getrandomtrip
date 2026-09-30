@@ -1,6 +1,10 @@
 # Netlify Configuration for Next.js 14
 # Minimal configuration - Netlify handles most defaults automatically
 
+[context.deploy-preview]
+  # Exit 0 skips release previews; exit 1 continues all other builds.
+  ignore = '[ "$CONTEXT" = "deploy-preview" ] && [ "$HEAD" = "develop" ]'
+
 [build.environment]
   # Node.js version
   NODE_VERSION = "20"

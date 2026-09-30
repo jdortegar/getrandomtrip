@@ -12,7 +12,7 @@ import {
 // Fixed reference: startDate is 2025-07-01T12:00:00.000Z
 const START_DATE = new Date("2025-07-01T12:00:00.000Z");
 // revealAt = 2025-06-29T12:00:00.000Z  (startDate - 48h)
-// notifyAt = 2025-06-28T12:00:00.000Z  (startDate - 72h)
+// notifyAt = 2025-06-26T12:00:00.000Z  (revealAt - 72h)
 
 describe("getRevealAt", () => {
   it("returns startDate minus 48 hours", () => {
@@ -30,9 +30,9 @@ describe("getRevealAt", () => {
 });
 
 describe("getNotifyAt", () => {
-  it("returns startDate minus 72 hours", () => {
+  it("returns revealAt minus 72 hours", () => {
     const result = getNotifyAt(START_DATE);
-    const expected = new Date("2025-06-28T12:00:00.000Z");
+    const expected = new Date("2025-06-26T12:00:00.000Z");
     expect(result.getTime()).toBe(expected.getTime());
   });
 });
@@ -61,17 +61,17 @@ describe("isInRevealWindow", () => {
 
 describe("isInNotifyWindow", () => {
   it("returns true when now is exactly at notifyAt boundary", () => {
-    const notifyAt = new Date("2025-06-28T12:00:00.000Z");
+    const notifyAt = new Date("2025-06-26T12:00:00.000Z");
     expect(isInNotifyWindow(START_DATE, notifyAt)).toBe(true);
   });
 
-  it("returns true when now is between notifyAt and startDate", () => {
-    const now = new Date("2025-06-30T00:00:00.000Z");
+  it("returns true when now is between notifyAt and revealAt", () => {
+    const now = new Date("2025-06-28T00:00:00.000Z");
     expect(isInNotifyWindow(START_DATE, now)).toBe(true);
   });
 
   it("returns false when now is before notifyAt", () => {
-    const now = new Date("2025-06-28T11:59:59.000Z");
+    const now = new Date("2025-06-26T11:59:59.000Z");
     expect(isInNotifyWindow(START_DATE, now)).toBe(false);
   });
 });
