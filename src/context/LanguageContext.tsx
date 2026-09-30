@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
   useCallback,
+  useSyncExternalStore,
 } from "react";
 
 export type Language = "es" | "en";
@@ -67,6 +68,10 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 
 const detectInitialLang = (): Language => {
   if (typeof window !== "undefined") {
+    const queryLanguage = new URL(window.location.href).searchParams.get(
+      "lang",
+    );
+    if (queryLanguage === "es" || queryLanguage === "en") return queryLanguage;
     const saved = window.localStorage.getItem("lang") as Language | null;
     if (saved === "es" || saved === "en") return saved;
     const nav = navigator.language?.toLowerCase() || "";
@@ -80,7 +85,13 @@ export const LanguageProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [lang, setLangState] = useState<Language>(detectInitialLang());
+  const initialLang = useSyncExternalStore(
+    () => () => {},
+    detectInitialLang,
+    (): Language => "es",
+  );
+  const [selectedLang, setLangState] = useState<Language | null>(null);
+  const lang = selectedLang ?? initialLang;
 
   const setLang = (l: Language) => {
     setLangState(l);
@@ -118,7 +129,7 @@ export const LanguageProvider = ({
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
     const q = url.searchParams.get("lang");
-    if (q === "es" || q === "en") setLang(q);
+    if (q === "es" || q === "en") localStorage.setItem("lang", q);
   }, []);
 
   return (

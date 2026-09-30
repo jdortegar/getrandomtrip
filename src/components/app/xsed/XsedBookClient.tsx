@@ -197,7 +197,7 @@ export function XsedBookClient({
     } finally {
       setIsSaving(false);
     }
-  }, [originCity, originCountry, pax, travelType, locale, router, session, sessionStatus]);
+  }, [originCity, originCountry, pax, travelType, locale, router, session, sessionStatus, experienceId, saturday, sunday]);
 
   return (
     <div className="min-h-screen bg-ground" data-component="XsedBookClient">

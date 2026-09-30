@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useObjectUrl } from "@/hooks/useObjectUrl";
+
+import { useRef, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { ImageUp, RotateCcw } from "lucide-react";
 
@@ -72,7 +74,6 @@ export function ImageEditorModal({
 }: ImageEditorModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pickedFile, setPickedFile] = useState<File | null>(null);
-  const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -80,32 +81,19 @@ export function ImageEditorModal({
 
   const activeFile = source.file ?? pickedFile;
 
-  // Object-URL lifecycle: create in an effect keyed on the active file,
-  // revoke on cleanup — omitting this leaks a blob URL per file pick.
-  useEffect(() => {
-    if (!activeFile) {
-      setObjectUrl(null);
-      return;
-    }
-    const url = URL.createObjectURL(activeFile);
-    setObjectUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [activeFile]);
-
-  // Reset crop/zoom whenever a new image loads or the modal reopens fresh.
-  useEffect(() => {
-    if (!open) return;
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setCroppedArea(null);
-  }, [open, activeFile, source.originalUrl]);
-
-  useEffect(() => {
-    if (!open) {
+  const objectUrl = useObjectUrl(activeFile ?? null);
+  const [previousSource, setPreviousSource] = useState({ open, activeFile, originalUrl: source.originalUrl });
+  if (previousSource.open !== open || previousSource.activeFile !== activeFile || previousSource.originalUrl !== source.originalUrl) {
+    setPreviousSource({ open, activeFile, originalUrl: source.originalUrl });
+    if (open) {
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setCroppedArea(null);
+    } else {
       setPickedFile(null);
       setIsDraggingOver(false);
     }
-  }, [open]);
+  }
 
   const imageSrc = objectUrl ?? source.originalUrl ?? null;
 

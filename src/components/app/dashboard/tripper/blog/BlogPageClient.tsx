@@ -105,17 +105,21 @@ export function BlogPageClient({
 
   // Debounce the search input — it now drives a server query, not an
   // in-memory filter, so we don't want a request per keystroke.
-  const queryPending = loading || searchQuery !== debouncedSearch;
-  const beginRequest = useTableRequestGuard(
-    JSON.stringify([
+  const queryKey = JSON.stringify([
       page,
       selectedStatus,
       selectedLevel,
       selectedTravelType,
       searchQuery,
       debouncedSearch,
-    ]),
-  );
+    ]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
+    setLoading(true);
+  }
+  const queryPending = loading || searchQuery !== debouncedSearch;
+  const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -125,12 +129,10 @@ export function BlogPageClient({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const fetchBlogs = useCallback(async () => {
+  const fetchBlogs = useCallback(() => {
     if (searchQuery !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
-    setLoading(true);
-    try {
       const params = new URLSearchParams({
         page: String(page),
         limit: String(PAGE_SIZE),
@@ -141,11 +143,12 @@ export function BlogPageClient({
         params.set("travelType", selectedTravelType);
       if (debouncedSearch) params.set("search", debouncedSearch);
 
-      const res = await fetch(`/api/tripper/blogs?${params.toString()}`);
-      const data = (await res.json()) as {
+    return fetch(`/api/tripper/blogs?${params.toString()}`)
+      .then(async (res) => ({ res, data: (await res.json()) as {
         blogs?: BlogPost[];
         total?: number;
-      };
+      } }))
+      .then(({ res, data }) => {
       if (!isCurrent()) return;
       if (!res.ok || !data.blogs) {
         setError(filterCopy.errorLoad);
@@ -154,11 +157,13 @@ export function BlogPageClient({
       setError(null);
       setPosts(data.blogs ?? []);
       setTotal(data.total ?? 0);
-    } catch {
+      })
+      .catch(() => {
       if (isCurrent()) setError(filterCopy.errorLoad);
-    } finally {
+      })
+      .finally(() => {
       if (isCurrent()) setLoading(false);
-    }
+      });
   }, [
     beginRequest,
     searchQuery,
@@ -169,7 +174,11 @@ export function BlogPageClient({
     selectedTravelType,
     debouncedSearch,
   ]);
-  const refreshCurrentQuery = useCurrentTableRefresh(fetchBlogs);
+  const refreshCurrentQuery = useCurrentTableRefresh(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    setLoading(true);
+    await fetchBlogs();
+  });
 
   useEffect(() => {
     void fetchBlogs();
@@ -458,7 +467,7 @@ export function BlogPageClient({
         error={error}
         isLoading={queryPending}
         onRetry={() => {
-          if (!queryPending) void fetchBlogs();
+          if (!queryPending) void refreshCurrentQuery();
         }}
       >
         {posts.length === 0 ? (

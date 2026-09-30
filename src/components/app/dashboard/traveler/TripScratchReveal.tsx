@@ -1,5 +1,9 @@
 "use client";
 
+import { useHydrated } from "@/hooks/useHydrated";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useStorageValue } from "@/hooks/useStorageValue";
+
 import { useEffect, useRef, useState } from "react";
 import { Sparkles } from "lucide-react";
 import styles from "./traveler-trip-details.module.css";
@@ -28,15 +32,6 @@ function scratchStorageKey(tripId: string): string {
   return `rt:scratch:${tripId}`;
 }
 
-function hasScratched(tripId: string): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.localStorage.getItem(scratchStorageKey(tripId)) === "1";
-  } catch {
-    return false;
-  }
-}
-
 function markScratched(tripId: string): void {
   if (typeof window === "undefined") return;
   try {
@@ -56,30 +51,39 @@ export function TripScratchReveal({ tripId, children, copy, onComplete }: TripSc
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const onCompleteRef = useRef(onComplete);
-  const [revealed, setRevealed] = useState(false);
+  const hydrated = useHydrated();
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const storedScratch = useStorageValue(scratchStorageKey(tripId));
+  const [completed, setRevealed] = useState(false);
   const [dimHint, setDimHint] = useState(false);
   const [fadingOut, setFadingOut] = useState(false);
   const [progressPct, setProgressPct] = useState(0);
-  const [renderCanvas, setRenderCanvas] = useState(false);
+  const [bypassedTrip, setBypassedTrip] = useState<string | null>(null);
+  const [previousTrip, setPreviousTrip] = useState(tripId);
+  if (previousTrip !== tripId) {
+    setPreviousTrip(tripId);
+    setRevealed(false);
+    setDimHint(false);
+    setFadingOut(false);
+    setProgressPct(0);
+    setBypassedTrip(null);
+  }
+  const browserBypass = hydrated && !fadingOut && !completed && (reducedMotion || storedScratch === "1");
+  if (browserBypass && bypassedTrip !== tripId) setBypassedTrip(tripId);
+  const bypass = bypassedTrip === tripId || browserBypass;
+  const revealed = completed || bypass;
+  const renderCanvas = hydrated && !bypass;
 
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion || hasScratched(tripId)) {
-      setRevealed(true);
-      onCompleteRef.current?.({ instant: true });
-      return;
-    }
-    setRenderCanvas(true);
-  }, [tripId]);
+    if (bypass) onCompleteRef.current?.({ instant: true });
+  }, [bypass, tripId]);
 
-  // Separate from the bypass-check effect above: the canvas only exists in
-  // the DOM once `renderCanvas` flips true and React commits that render, so
-  // paint/listener setup has to run in its own effect keyed on `renderCanvas`
-  // rather than reading `canvasRef.current` in the same pass that sets it.
+  // The canvas is committed only after hydration and the persisted/reduced-motion
+  // bypass check. Attach browser resources after that DOM commit.
   useEffect(() => {
     if (!renderCanvas) return;
 
@@ -166,13 +170,15 @@ export function TripScratchReveal({ tripId, children, copy, onComplete }: TripSc
       if (checkTick % CHECK_EVERY_N_MOVES === 0) measure();
     }
 
+    let fadeTimer: ReturnType<typeof setTimeout> | undefined;
+
     function finish() {
       if (done) return;
       done = true;
       setProgressPct(100);
       setFadingOut(true);
       markScratched(tripId);
-      window.setTimeout(() => {
+      fadeTimer = setTimeout(() => {
         setRevealed(true);
         onCompleteRef.current?.({ instant: false });
       }, FADE_MS);
@@ -203,6 +209,7 @@ export function TripScratchReveal({ tripId, children, copy, onComplete }: TripSc
     window.addEventListener("resize", handleResize);
 
     return () => {
+      if (fadeTimer) clearTimeout(fadeTimer);
       container.removeEventListener("pointerdown", handlePointerDown);
       container.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);

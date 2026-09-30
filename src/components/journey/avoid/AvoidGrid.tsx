@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DestinationCard from "./DestinationCard";
 import { getAvoidCities } from "@/lib/helpers/avoid-cities";
 import { getCityImage } from "@/lib/api/unsplash";
@@ -73,7 +73,7 @@ export default function AvoidGrid({
   // Tracks whether getAvoidCities/image-loading has resolved at least once,
   // so an empty result can be told apart from "still loading" — without this,
   // a genuinely empty suggestions list renders the loading message forever.
-  const [hasLoaded, setHasLoaded] = useState(false);
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
 
   const originCountry = originCountryProp ?? "";
   const originCity = originCityProp ?? "";
@@ -81,17 +81,23 @@ export default function AvoidGrid({
 
   // Level controls scope: essenza = national; modo-explora = national + neighbors;
   // explora-plus = region; bivouac/atelier-getaway = all Americas (see getAvoidCities)
-  const avoidCities = getAvoidCities(originCountry, originCity, level, 12);
+  const avoidCities = useMemo(
+    () => getAvoidCities(originCountry, originCity, level, 12),
+    [originCountry, originCity, level],
+  );
+  const queryKey = JSON.stringify([
+    originCountry,
+    originCity,
+    level,
+    tripperExperienceDestinations,
+  ]);
+  const hasLoaded = avoidCities.length === 0 || loadedKey === queryKey;
+  const visibleSuggestions =
+    avoidCities.length === 0 || loadedKey !== queryKey ? [] : suggestions;
 
   useEffect(() => {
     let cancelled = false;
-    setHasLoaded(false);
-
-    if (avoidCities.length === 0) {
-      setSuggestions([]);
-      setHasLoaded(true);
-      return;
-    }
+    if (avoidCities.length === 0) return;
 
     async function loadCityImages() {
       const citiesWithImages = await Promise.all(
@@ -114,7 +120,7 @@ export default function AvoidGrid({
           tripperExperienceDestinations,
         ),
       );
-      setHasLoaded(true);
+      setLoadedKey(queryKey);
     }
 
     void loadCityImages();
@@ -122,7 +128,7 @@ export default function AvoidGrid({
     return () => {
       cancelled = true;
     };
-  }, [originCountry, originCity, level, tripperExperienceDestinations]);
+  }, [avoidCities, queryKey, tripperExperienceDestinations]);
 
   return (
     <div className="space-y-4" data-component="AvoidGrid">
@@ -131,12 +137,12 @@ export default function AvoidGrid({
         <div
           className={`grid w-full grid-cols-3 md:grid-cols-4 ${showImages ? "gap-4" : "gap-2"}`}
         >
-          {suggestions.length === 0 ? (
+          {visibleSuggestions.length === 0 ? (
             <div className="col-span-3 py-8 text-center text-ink md:col-span-4">
               {hasLoaded ? labels.empty : labels.loading}
             </div>
           ) : (
-            suggestions.map((d) => (
+            visibleSuggestions.map((d) => (
               <DestinationCard
                 key={d.slug}
                 suggestion={d}

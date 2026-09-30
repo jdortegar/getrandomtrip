@@ -89,17 +89,21 @@ export default function ExperiencesPageClient({
     selectedLevel !== "all" ||
     searchQuery !== "";
 
+  const queryKey = JSON.stringify([
+    page,
+    selectedStatus,
+    selectedLevel,
+    selectedTravelType,
+    searchQuery,
+    debouncedSearch,
+  ]);
+  const [previousQuery, setPreviousQuery] = useState(queryKey);
+  if (previousQuery !== queryKey) {
+    setPreviousQuery(queryKey);
+    setLoading(true);
+  }
   const queryPending = loading || searchQuery !== debouncedSearch;
-  const beginRequest = useTableRequestGuard(
-    JSON.stringify([
-      page,
-      selectedStatus,
-      selectedLevel,
-      selectedTravelType,
-      searchQuery,
-      debouncedSearch,
-    ]),
-  );
+  const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -109,39 +113,43 @@ export default function ExperiencesPageClient({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const fetchExperiences = useCallback(async () => {
+  const fetchExperiences = useCallback(() => {
     if (searchQuery !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
-    setLoading(true);
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: String(PAGE_SIZE),
-      });
-      if (selectedStatus !== "all") params.set("status", selectedStatus);
-      if (selectedTravelType !== "all") params.set("type", selectedTravelType);
-      if (selectedLevel !== "all") params.set("level", selectedLevel);
-      if (debouncedSearch) params.set("search", debouncedSearch);
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    });
+    if (selectedStatus !== "all") params.set("status", selectedStatus);
+    if (selectedTravelType !== "all") params.set("type", selectedTravelType);
+    if (selectedLevel !== "all") params.set("level", selectedLevel);
+    if (debouncedSearch) params.set("search", debouncedSearch);
 
-      const res = await fetch(`/api/tripper/experiences?${params.toString()}`);
-      const data = (await res.json()) as {
-        experiences?: ExperienceListItem[];
-        total?: number;
-      };
-      if (!isCurrent()) return;
-      if (!res.ok || !data.experiences) {
-        setError(filterCopy.errorLoad);
-        return;
-      }
-      setError(null);
-      setExperiences(data.experiences ?? []);
-      setTotal(data.total ?? 0);
-    } catch {
-      if (isCurrent()) setError(filterCopy.errorLoad);
-    } finally {
-      if (isCurrent()) setLoading(false);
-    }
+    return fetch(`/api/tripper/experiences?${params.toString()}`)
+      .then(async (res) => ({
+        res,
+        data: (await res.json()) as {
+          experiences?: ExperienceListItem[];
+          total?: number;
+        },
+      }))
+      .then(({ res, data }) => {
+        if (!isCurrent()) return;
+        if (!res.ok || !data.experiences) {
+          setError(filterCopy.errorLoad);
+          return;
+        }
+        setError(null);
+        setExperiences(data.experiences ?? []);
+        setTotal(data.total ?? 0);
+      })
+      .catch(() => {
+        if (isCurrent()) setError(filterCopy.errorLoad);
+      })
+      .finally(() => {
+        if (isCurrent()) setLoading(false);
+      });
   }, [
     beginRequest,
     searchQuery,
@@ -152,7 +160,11 @@ export default function ExperiencesPageClient({
     selectedLevel,
     debouncedSearch,
   ]);
-  const refreshCurrentQuery = useCurrentTableRefresh(fetchExperiences);
+  const refreshCurrentQuery = useCurrentTableRefresh(async () => {
+    if (searchQuery !== debouncedSearch) return;
+    setLoading(true);
+    await fetchExperiences();
+  });
 
   useEffect(() => {
     void fetchExperiences();
@@ -428,7 +440,7 @@ export default function ExperiencesPageClient({
         error={error}
         isLoading={queryPending}
         onRetry={() => {
-          if (!queryPending) void fetchExperiences();
+          if (!queryPending) void refreshCurrentQuery();
         }}
       >
         {experiences.length === 0 ? (

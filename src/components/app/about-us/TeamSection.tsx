@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Img from "@/components/common/Img";
@@ -41,11 +43,7 @@ interface TeamSectionProps {
 export function TeamSection({ content }: TeamSectionProps) {
   const [flippedCard, setFlippedCard] = useState<string | null>(null);
   const [mobileFlippedCard, setMobileFlippedCard] = useState<string | null>(null);
-  const [supportsHover, setSupportsHover] = useState(false);
-
-  useEffect(() => {
-    setSupportsHover(window.matchMedia("(hover: hover)").matches);
-  }, []);
+  const supportsHover = useMediaQuery("(hover: hover)");
 
   const handleDesktopHover = (name: string | null) => setFlippedCard(name);
   const handleMobileFlip = (name: string) =>

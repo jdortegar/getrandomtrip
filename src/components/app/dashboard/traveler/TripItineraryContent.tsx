@@ -34,7 +34,6 @@ export function TripItineraryContent() {
   const [copy, setCopy] = useState<TripItineraryDict | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(false);
-  const [mainVisible, setMainVisible] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
   const tripId = params.id as string;
@@ -76,7 +75,7 @@ export function TripItineraryContent() {
     if (!heroRevealed) return;
     const el = mainRef.current;
     if (el) void el.offsetHeight;
-    setMainVisible(true);
+    el?.classList.add(styles.mainRevealed);
   }, [heroRevealed]);
 
   const handleScratchComplete = useCallback(({ instant }: { instant: boolean }) => {
@@ -139,7 +138,7 @@ export function TripItineraryContent() {
 
       {heroRevealed && (
         <main
-          className={`${styles.wrap} ${mainVisible ? styles.mainRevealed : ""}`}
+          className={styles.wrap}
           ref={mainRef}
         >
           <div className={styles.mainBlock}>

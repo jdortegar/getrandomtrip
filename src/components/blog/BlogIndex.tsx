@@ -79,15 +79,8 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     : "";
 
   const fetchBlogs = useCallback(
-    async (pageNum: number, append: boolean = false) => {
+    (pageNum: number, append: boolean = false) => {
       const generation = ++requestGeneration.current;
-      try {
-        if (pageNum === 1) {
-          setLoading(true);
-        } else {
-          setLoadingMore(true);
-        }
-
         const query = new URLSearchParams({
           limit: PAGE_SIZE.toString(),
           locale,
@@ -100,9 +93,9 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
           query.append("travelType", filter.travelTypeKey);
         if (filter.excuseKey) query.append("excuseKey", filter.excuseKey);
 
-        const response = await fetch(`/api/blogs?${query.toString()}`);
-        const data: BlogIndexResponse = await response.json();
-
+        return fetch(`/api/blogs?${query.toString()}`)
+          .then(async (response) => ({ response, data: await response.json() as BlogIndexResponse }))
+          .then(({ response, data }) => {
         if (generation !== requestGeneration.current) return;
         if (response.ok && data.blogs) {
           setResultLocale(locale);
@@ -111,14 +104,14 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         } else {
           console.error("Error fetching blogs:", data);
         }
-      } catch (error) {
+      }).catch((error: unknown) => {
         console.error("Error fetching blogs:", error);
-      } finally {
+      }).finally(() => {
         if (generation === requestGeneration.current) {
           setLoading(false);
           setLoadingMore(false);
         }
-      }
+      });
     },
     [
       locale,
@@ -134,9 +127,11 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     ],
   );
 
-  useEffect(() => {
+  const [previousTripperId, setPreviousTripperId] = useState(tripperId);
+  if (previousTripperId !== tripperId) {
+    setPreviousTripperId(tripperId);
     setFilter((prev) => ({ ...prev, tripperId: tripperId ?? null }));
-  }, [tripperId]);
+  }
 
   useEffect(() => {
     async function loadTrippers() {
@@ -160,19 +155,28 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
     loadTrippers();
   }, []);
 
-  useEffect(() => {
+  const queryKey = JSON.stringify([locale, filter]);
+  const [previousQueryKey, setPreviousQueryKey] = useState(queryKey);
+  if (previousQueryKey !== queryKey) {
+    setPreviousQueryKey(queryKey);
     setPage(1);
     setBlogs([]);
     setHasMore(true);
-    fetchBlogs(1, false);
+    setLoading(true);
+    setLoadingMore(false);
+  }
+
+  useEffect(() => {
+    void fetchBlogs(1, false);
     return () => { requestGeneration.current += 1; };
   }, [fetchBlogs]);
 
   const handleLoadMore = useCallback(() => {
     const nextPage = page + 1;
     setPage(nextPage);
-    fetchBlogs(nextPage, true);
-  }, [page, fetchBlogs, setPage]);
+    setLoadingMore(true);
+    void fetchBlogs(nextPage, true);
+  }, [page, fetchBlogs, setPage, setLoadingMore]);
 
   const visibleBlogs = resultLocale === locale ? blogs : [];
 

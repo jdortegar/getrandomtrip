@@ -121,10 +121,10 @@ export function AccountSettingsPanel({
   const [profileMe, setProfileMe] = useState<UserProfileMe | null>(
     initialProfile,
   );
-  const [profileLoading, setProfileLoading] = useState(!initialProfile);
+  const [profilePending, setProfileLoading] = useState(!initialProfile);
   const [activeTab, setActiveTab] = useState<TabId>("overview");
   const [isDetailsEditing, setIsDetailsEditing] = useState(false);
-  const [detailsForm, setDetailsForm] = useState<DetailsFormState>({
+  const [detailsDraft, setDetailsForm] = useState<DetailsFormState>({
     city: "",
     country: "",
     dislikes: [],
@@ -157,23 +157,25 @@ export function AccountSettingsPanel({
   }, []);
 
   const currentUser = session?.user || user;
+  const profileLoading = !!currentUser?.email && profilePending;
+  const detailsForm = !isDetailsEditing && profileMe
+    ? profileToDetailsForm(profileMe)
+    : detailsDraft;
 
-  const loadProfile = useCallback(async () => {
-    if (!currentUser?.email) {
-      setProfileLoading(false);
-      return;
-    }
-    setProfileLoading(true);
-    try {
-      const res = await fetch("/api/user/me");
-      const data = await res.json();
-      if (data.user) setProfileMe(data.user as UserProfileMe);
-    } catch (e) {
-      console.error("Error loading profile:", e);
-    } finally {
-      setProfileLoading(false);
-    }
-  }, [currentUser?.email]);
+  const profileEmail = currentUser?.email;
+  const [previousProfileEmail, setPreviousProfileEmail] = useState(profileEmail);
+  if (previousProfileEmail !== profileEmail) {
+    setPreviousProfileEmail(profileEmail);
+    setProfileLoading(!!profileEmail);
+  }
+  const loadProfile = useCallback(() => {
+    if (!profileEmail) return;
+    return fetch("/api/user/me")
+      .then((res) => res.json())
+      .then((data) => { if (data.user) setProfileMe(data.user as UserProfileMe); })
+      .catch((error: unknown) => { console.error("Error loading profile:", error); })
+      .finally(() => setProfileLoading(false));
+  }, [profileEmail]);
 
   useEffect(() => {
     loadProfile();
@@ -181,11 +183,6 @@ export function AccountSettingsPanel({
   useEffect(() => {
     getDictionary(resolvedLocale).then(setDict);
   }, [resolvedLocale]);
-
-  useEffect(() => {
-    if (!profileMe || isDetailsEditing) return;
-    setDetailsForm(profileToDetailsForm(profileMe));
-  }, [profileMe, isDetailsEditing]);
 
   useEffect(() => {
     async function fetchStats() {
@@ -286,6 +283,7 @@ export function AccountSettingsPanel({
           travelerType: prefsData.user?.travelerType,
         },
       });
+      setProfileLoading(true);
       await loadProfile();
       setIsDetailsEditing(false);
       toast.success(t.profileUpdated);

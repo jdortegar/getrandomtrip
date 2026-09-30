@@ -1,5 +1,8 @@
 "use client";
 
+import { useHydrated } from "@/hooks/useHydrated";
+import { useStorageValue, writeStorageValue } from "@/hooks/useStorageValue";
+
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -9,10 +12,7 @@ import Navbar from "@/components/Navbar";
 import { NavbarChromeContext } from "@/context/NavbarChromeContext";
 import AuthModal from "@/components/auth/AuthModal";
 import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
-import {
-  getGateUnlocked,
-  GATE_STORAGE_KEY,
-} from "@/lib/constants/marketing-gate";
+import { GATE_STORAGE_KEY } from "@/lib/constants/marketing-gate";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
@@ -63,7 +63,8 @@ export function GateAwareChrome({
 }: GateAwareChromeProps) {
   const { data: session, status } = useSession();
   const pathname = usePathname();
-  const [gateUnlocked, setGateUnlocked] = useState<boolean | null>(null);
+  const hydrated = useHydrated();
+  const storedGate = useStorageValue(GATE_STORAGE_KEY);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [navbarBackgroundPrimary, setNavbarBackgroundPrimary] = useState(false);
 
@@ -71,21 +72,22 @@ export function GateAwareChrome({
   const sessionGrantsAccess =
     (!!role && GATE_ALLOWED_ROLES.has(role)) || !!session?.user?.hasSiteAccess;
 
-  useEffect(() => {
-    setGateUnlocked(getGateUnlocked());
-  }, []);
+  const gateUnlocked = !hydrated
+    ? null
+    : status === "authenticated"
+      ? sessionGrantsAccess
+      : storedGate === "1";
+  const accessKey = `${status}:${sessionGrantsAccess}`;
+  const [previousAccessKey, setPreviousAccessKey] = useState(accessKey);
+  if (previousAccessKey !== accessKey) {
+    setPreviousAccessKey(accessKey);
+    if (status === "authenticated" && sessionGrantsAccess)
+      setLoginModalOpen(false);
+  }
 
   useEffect(() => {
-    if (status === "loading") return;
     if (status !== "authenticated") return;
-    if (sessionGrantsAccess) {
-      window.localStorage.setItem(GATE_STORAGE_KEY, "1");
-      setLoginModalOpen(false);
-      setGateUnlocked(true);
-    } else {
-      window.localStorage.removeItem(GATE_STORAGE_KEY);
-      setGateUnlocked(false);
-    }
+    writeStorageValue(GATE_STORAGE_KEY, sessionGrantsAccess ? "1" : null);
   }, [status, sessionGrantsAccess]);
 
   const normalChrome = (

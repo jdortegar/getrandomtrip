@@ -91,30 +91,35 @@ export function AdminTripFulfillmentPageClient({
     !!trip && !!draft,
   );
 
+  const [previousTripId, setPreviousTripId] = useState(tripId);
+  if (previousTripId !== tripId) {
+    setPreviousTripId(tripId);
+    setLoading(true);
+    setNotFound(false);
+  }
   const loadTrip = useCallback(
-    async (initial = true) => {
-      if (initial) setLoading(true);
-      const res = await fetch(`/api/admin/trip-requests/${tripId}`);
-      if (!res.ok) {
-        if (!initial) throw new Error("trip_refresh_failed");
+    (initial = true) => fetch(`/api/admin/trip-requests/${tripId}`)
+      .then(async (res) => {
+        if (!res.ok) {
+          if (!initial) throw new Error("trip_refresh_failed");
+          setNotFound(true);
+          return;
+        }
+        const data = (await res.json()) as {
+          tripRequest: AdminTripRequest;
+          documents: TripDocumentDTO[];
+          bookingTravelers: AdminBookingTraveler[];
+        };
+        setTrip(data.tripRequest);
+        setBookingTravelers(data.bookingTravelers);
+        setDocuments(data.documents);
+        setDraft({ experienceId: data.tripRequest.experienceId ?? "", status: data.tripRequest.status });
+      })
+      .catch((error: unknown) => {
+        if (!initial) throw error;
         setNotFound(true);
-        setLoading(false);
-        return;
-      }
-      const data = (await res.json()) as {
-        tripRequest: AdminTripRequest;
-        documents: TripDocumentDTO[];
-        bookingTravelers: AdminBookingTraveler[];
-      };
-      setTrip(data.tripRequest);
-      setBookingTravelers(data.bookingTravelers);
-      setDocuments(data.documents);
-      setDraft({
-        experienceId: data.tripRequest.experienceId ?? "",
-        status: data.tripRequest.status,
-      });
-      setLoading(false);
-    },
+      })
+      .finally(() => setLoading(false)),
     [tripId, setDocuments],
   );
 

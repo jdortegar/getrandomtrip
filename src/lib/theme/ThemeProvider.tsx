@@ -5,6 +5,9 @@
 
 "use client";
 
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useStorageValue, writeStorageValue } from "@/hooks/useStorageValue";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -57,16 +60,22 @@ export function ThemeProvider({
   enableSystem = true,
   disableTransitionOnChange = false,
 }: ThemeProviderProps) {
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(defaultTheme);
-  const [isDark, setIsDark] = useState(false);
-
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const stored = localStorage.getItem(storageKey) as ColorScheme;
-    if (stored) {
-      setColorScheme(stored);
-    }
-  }, [storageKey]);
+  const stored = useStorageValue(storageKey);
+  const [selectedScheme, setColorScheme] = useState<ColorScheme | null>(null);
+  const [previousStorageKey, setPreviousStorageKey] = useState(storageKey);
+  if (previousStorageKey !== storageKey) {
+    setPreviousStorageKey(storageKey);
+    setColorScheme(null);
+  }
+  const storedScheme =
+    stored === "light" || stored === "dark" || stored === "system"
+      ? stored
+      : null;
+  const colorScheme = selectedScheme ?? storedScheme ?? defaultTheme;
+  const systemDark = useMediaQuery("(prefers-color-scheme: dark)");
+  const isDark =
+    colorScheme === "dark" ||
+    (colorScheme === "system" && enableSystem && systemDark);
 
   // Apply theme to document
   useEffect(() => {
@@ -75,18 +84,13 @@ export function ThemeProvider({
     // Remove previous theme classes
     root.classList.remove("light", "dark");
 
-    if (colorScheme === "system" && enableSystem) {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      root.classList.add(systemTheme);
-      setIsDark(systemTheme === "dark");
-    } else {
-      root.classList.add(colorScheme);
-      setIsDark(colorScheme === "dark");
-    }
+    root.classList.add(
+      colorScheme === "system" && enableSystem
+        ? isDark
+          ? "dark"
+          : "light"
+        : colorScheme,
+    );
 
     // Disable transitions during theme change if requested
     if (disableTransitionOnChange) {
@@ -106,34 +110,17 @@ export function ThemeProvider({
         document.head.removeChild(css);
       }, 1);
     }
-  }, [colorScheme, enableSystem, disableTransitionOnChange]);
-
-  // Listen for system theme changes
-  useEffect(() => {
-    if (colorScheme === "system" && enableSystem) {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-      const handleChange = (e: MediaQueryListEvent) => {
-        const root = window.document.documentElement;
-        root.classList.remove("light", "dark");
-        root.classList.add(e.matches ? "dark" : "light");
-        setIsDark(e.matches);
-      };
-
-      mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
-    }
-  }, [colorScheme, enableSystem]);
+  }, [colorScheme, enableSystem, disableTransitionOnChange, isDark]);
 
   const setTheme = (newTheme: ThemeConfig) => {
     setColorScheme(newTheme.colorScheme);
-    localStorage.setItem(storageKey, newTheme.colorScheme);
+    writeStorageValue(storageKey, newTheme.colorScheme);
   };
 
   const toggleColorScheme = () => {
     const newScheme: ColorScheme = isDark ? "light" : "dark";
     setColorScheme(newScheme);
-    localStorage.setItem(storageKey, newScheme);
+    writeStorageValue(storageKey, newScheme);
   };
 
   const value: ThemeContextValue = {
@@ -142,7 +129,7 @@ export function ThemeProvider({
     colorScheme,
     setColorScheme: (scheme) => {
       setColorScheme(scheme);
-      localStorage.setItem(storageKey, scheme);
+      writeStorageValue(storageKey, scheme);
     },
     isDark,
     toggleColorScheme,

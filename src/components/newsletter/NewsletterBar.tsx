@@ -1,31 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useHydrated } from "@/hooks/useHydrated";
+import { useStorageValue, writeStorageValue } from "@/hooks/useStorageValue";
+
+import { useState } from "react";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 
 export default function NewsletterBar() {
   const LS_KEY = "rt_newsletter_dismissed_v1";
-  const [open, setOpen] = useState(false);
+  const hydrated = useHydrated();
+  const storedDismissed = useStorageValue(LS_KEY);
+  const [dismissed, setDismissed] = useState(false);
+  const open = hydrated && !dismissed && storedDismissed !== "true";
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      const dismissed =
-        typeof window !== "undefined" &&
-        localStorage.getItem(LS_KEY) === "true";
-      setOpen(!dismissed);
-    } catch {
-      setOpen(true);
-    }
-  }, []);
-
   const dismiss = () => {
     try {
-      localStorage.setItem(LS_KEY, "true");
+      writeStorageValue(LS_KEY, "true");
     } catch {}
-    setOpen(false);
+    setDismissed(true);
   };
 
   const onSubmit = async (e: React.FormEvent) => {

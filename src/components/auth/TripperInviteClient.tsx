@@ -121,15 +121,13 @@ function ExistingUserBranch({
   token: string | null;
 }) {
   const c = kind === "SITE_ACCESS" ? { ...copy, ...copy.siteAccess } : copy;
-  const [state, setState] = useState<ExistingUserState>("granting");
-  const [reason, setReason] = useState<Reason>("invalid");
+  const [requestState, setState] = useState<ExistingUserState>("granting");
+  const state = token ? requestState : "error";
+  const [requestReason, setReason] = useState<Reason>("invalid");
+  const reason = token ? requestReason : "missing";
 
   useEffect(() => {
-    if (!token) {
-      setState("error");
-      setReason("missing");
-      return;
-    }
+    if (!token) return;
 
     let cancelled = false;
 

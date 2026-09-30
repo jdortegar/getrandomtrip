@@ -87,6 +87,7 @@ function JourneyPageContent({
   tripperSlug?: string;
   tripperState: TripperContextState;
 }) {
+  const [mobileActionBarSlot, setMobileActionBarSlot] = useState<HTMLDivElement | null>(null);
   const router = useRouter();
   const pricingReady = useJourneyPricingReady(pricing.binding);
   const searchParams = useSearchParams();
@@ -259,6 +260,7 @@ function JourneyPageContent({
 
           <div className="lg:sticky lg:top-8 lg:self-start min-w-0 flex-1">
             <JourneyMainContent
+              mobileActionBarSlot={mobileActionBarSlot}
               bookingPriceOverrides={pricing.bookingBound ? pricing.overrides : undefined}
               activeTab={activeTab}
               addonLabels={journey.addons}
@@ -315,7 +317,7 @@ function JourneyPageContent({
               keeps Clear all/Back/Checkout below the trip summary there,
               while desktop keeps its own copy right under the step content
               (see JourneyMainContent's mobileActionBarSlot effect). */}
-          <div className="w-full lg:hidden" id="mobile-action-bar-slot" />
+          <div className="w-full lg:hidden" id="mobile-action-bar-slot" ref={setMobileActionBarSlot} />
         </div>
       </div>
     </div>
