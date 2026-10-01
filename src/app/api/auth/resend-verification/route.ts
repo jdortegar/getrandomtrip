@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
 import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
-import { sendVerificationEmail } from "@/lib/email";
+import { deliverVerificationEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +20,9 @@ const COOLDOWN_MS = 60 * 1000;
  *
  * Codes: 401 unauthenticated, 409 `already_verified`, 429 `cooldown` (one
  * email per 60s, measured from the newest EMAIL_VERIFY token's `createdAt`, so
- * it also spaces out against register/login sends), 500 `internal_error`.
+ * it also spaces out against register/login sends), 502 `send_failed` (the
+ * send is awaited; on failure the freshly issued token is deleted so the
+ * cooldown does not block an immediate retry), 500 `internal_error`.
  */
 export async function POST(request: Request) {
   try {
@@ -61,7 +63,15 @@ export async function POST(request: Request) {
     const returnPath = safeInviteReturnPath(body?.returnPath) ?? undefined;
 
     const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
-    sendVerificationEmail(user.id, token, returnPath); // fire-and-forget
+    try {
+      await deliverVerificationEmail(user.id, token, returnPath);
+    } catch (sendError) {
+      console.error("Resend verification send failed:", sendError);
+      await prisma.verificationToken.deleteMany({
+        where: { userId: user.id, type: "EMAIL_VERIFY", consumedAt: null },
+      });
+      return NextResponse.json({ error: "send_failed" }, { status: 502 });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {

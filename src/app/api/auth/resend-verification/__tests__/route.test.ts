@@ -5,18 +5,20 @@ vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     user: { findUnique: vi.fn() },
-    verificationToken: { findFirst: vi.fn() },
+    verificationToken: { findFirst: vi.fn(), deleteMany: vi.fn() },
   },
 }));
 vi.mock("@/lib/auth/verificationTokens", () => ({
   issueVerificationToken: vi.fn().mockResolvedValue("plaintext-token"),
 }));
-vi.mock("@/lib/email", () => ({ sendVerificationEmail: vi.fn() }));
+vi.mock("@/lib/email", () => ({
+  deliverVerificationEmail: vi.fn().mockResolvedValue(undefined),
+}));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { issueVerificationToken } from "@/lib/auth/verificationTokens";
-import { sendVerificationEmail } from "@/lib/email";
+import { deliverVerificationEmail } from "@/lib/email";
 
 type RouteModule = typeof import("../route");
 
@@ -44,6 +46,8 @@ describe("POST /api/auth/resend-verification", () => {
       emailVerified: null,
     });
     mocked(prisma.verificationToken.findFirst).mockResolvedValue(null);
+    mocked(prisma.verificationToken.deleteMany).mockResolvedValue({ count: 1 });
+    mocked(deliverVerificationEmail).mockResolvedValue(undefined);
   });
   afterEach(() => vi.useRealTimers());
 
@@ -53,14 +57,14 @@ describe("POST /api/auth/resend-verification", () => {
     const res = await POST(makeRequest({}));
     expect(res.status).toBe(401);
     expect(issueVerificationToken).not.toHaveBeenCalled();
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(deliverVerificationEmail).not.toHaveBeenCalled();
   });
 
   it("401s when the session user no longer exists", async () => {
     mocked(prisma.user.findUnique).mockResolvedValue(null);
     const { POST } = (await import("../route")) as RouteModule;
     expect((await POST(makeRequest({}))).status).toBe(401);
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(deliverVerificationEmail).not.toHaveBeenCalled();
   });
 
   it("409s already_verified for a verified account and sends nothing", async () => {
@@ -73,7 +77,7 @@ describe("POST /api/auth/resend-verification", () => {
     expect(res.status).toBe(409);
     expect(await res.json()).toEqual({ error: "already_verified" });
     expect(issueVerificationToken).not.toHaveBeenCalled();
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(deliverVerificationEmail).not.toHaveBeenCalled();
   });
 
   it("issues a fresh token and emails the session user (no return path)", async () => {
@@ -82,7 +86,7 @@ describe("POST /api/auth/resend-verification", () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
     expect(issueVerificationToken).toHaveBeenCalledWith("u1", "EMAIL_VERIFY");
-    expect(sendVerificationEmail).toHaveBeenCalledWith(
+    expect(deliverVerificationEmail).toHaveBeenCalledWith(
       "u1",
       "plaintext-token",
       undefined,
@@ -93,7 +97,7 @@ describe("POST /api/auth/resend-verification", () => {
     const { POST } = (await import("../route")) as RouteModule;
     const res = await POST(makeRequest());
     expect(res.status).toBe(200);
-    expect(sendVerificationEmail).toHaveBeenCalledWith(
+    expect(deliverVerificationEmail).toHaveBeenCalledWith(
       "u1",
       "plaintext-token",
       undefined,
@@ -103,7 +107,7 @@ describe("POST /api/auth/resend-verification", () => {
   it("forwards a valid invite return path", async () => {
     const { POST } = (await import("../route")) as RouteModule;
     await POST(makeRequest({ returnPath: "/en/invite/abc_123-XYZ" }));
-    expect(sendVerificationEmail).toHaveBeenCalledWith(
+    expect(deliverVerificationEmail).toHaveBeenCalledWith(
       "u1",
       "plaintext-token",
       "/en/invite/abc_123-XYZ",
@@ -121,7 +125,7 @@ describe("POST /api/auth/resend-verification", () => {
     const { POST } = (await import("../route")) as RouteModule;
     const res = await POST(makeRequest({ returnPath: bad }));
     expect(res.status).toBe(200);
-    expect(sendVerificationEmail).toHaveBeenCalledWith(
+    expect(deliverVerificationEmail).toHaveBeenCalledWith(
       "u1",
       "plaintext-token",
       undefined,
@@ -141,7 +145,7 @@ describe("POST /api/auth/resend-verification", () => {
     });
     expect(res.headers.get("Retry-After")).toBe("15");
     expect(issueVerificationToken).not.toHaveBeenCalled();
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(deliverVerificationEmail).not.toHaveBeenCalled();
   });
 
   it("allows a resend once the cooldown has elapsed", async () => {
@@ -150,7 +154,7 @@ describe("POST /api/auth/resend-verification", () => {
     });
     const { POST } = (await import("../route")) as RouteModule;
     expect((await POST(makeRequest({}))).status).toBe(200);
-    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+    expect(deliverVerificationEmail).toHaveBeenCalledTimes(1);
   });
 
   it("looks up the cooldown on the latest EMAIL_VERIFY token of the session user only", async () => {
@@ -170,6 +174,42 @@ describe("POST /api/auth/resend-verification", () => {
     const res = await POST(makeRequest({}));
     expect(res.status).toBe(500);
     expect(await res.json()).toEqual({ error: "internal_error" });
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(deliverVerificationEmail).not.toHaveBeenCalled();
+  });
+
+  it("502s send_failed, deletes the just-issued token and logs when delivery rejects", async () => {
+    mocked(deliverVerificationEmail).mockRejectedValueOnce(new Error("smtp"));
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { POST } = (await import("../route")) as RouteModule;
+    const res = await POST(makeRequest({}));
+    expect(res.status).toBe(502);
+    expect(await res.json()).toEqual({ error: "send_failed" });
+    expect(prisma.verificationToken.deleteMany).toHaveBeenCalledWith({
+      where: { userId: "u1", type: "EMAIL_VERIFY", consumedAt: null },
+    });
+    expect(errSpy).toHaveBeenCalled();
+  });
+
+  it("does not delete the token when delivery succeeds", async () => {
+    const { POST } = (await import("../route")) as RouteModule;
+    expect((await POST(makeRequest({}))).status).toBe(200);
+    expect(prisma.verificationToken.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it("awaits delivery before responding", async () => {
+    let release!: () => void;
+    mocked(deliverVerificationEmail).mockReturnValueOnce(
+      new Promise<void>((r) => (release = r)),
+    );
+    const { POST } = (await import("../route")) as RouteModule;
+    let done = false;
+    const pending = POST(makeRequest({})).then((r) => {
+      done = true;
+      return r;
+    });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(done).toBe(false);
+    release();
+    expect((await pending).status).toBe(200);
   });
 });

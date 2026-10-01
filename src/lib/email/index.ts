@@ -739,46 +739,58 @@ export function sendReviewApprovedForTripper(
 }
 
 /**
+ * Awaitable verification-email send: provider failures THROW so callers that
+ * must report delivery (the resend route) can react. A user without an email
+ * resolves silently — there is nothing to send.
+ *
  * `returnPath` (optional) is a validated `/{locale}/invite/{token}` path: the
  * verify page sends the companion back there instead of to login. Anything
  * else is dropped.
+ */
+export async function deliverVerificationEmail(
+  userId: string,
+  token: string,
+  returnPath?: string,
+): Promise<void> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true, name: true, locale: true },
+  });
+
+  if (!user?.email) return;
+
+  const locale = resolveLocale(user.locale);
+  const BASE_URL = "https://getrandomtrip.com";
+  const next = safeInviteReturnPath(returnPath);
+  const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}${
+    next ? `&next=${encodeURIComponent(next)}` : ""
+  }`;
+
+  await sendMail({
+    to: user.email,
+    subject: verifyEmailSubjects[locale],
+    content: {
+      react: React.createElement(VerifyEmail, {
+        name: user.name ?? "",
+        verifyUrl,
+        locale,
+      }),
+    },
+  });
+}
+
+/**
+ * Fire-and-forget wrapper around `deliverVerificationEmail`: failures are
+ * logged, never thrown.
  */
 export function sendVerificationEmail(
   userId: string,
   token: string,
   returnPath?: string,
 ): void {
-  void (async () => {
-    try {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { email: true, name: true, locale: true },
-      });
-
-      if (!user?.email) return;
-
-      const locale = resolveLocale(user.locale);
-      const BASE_URL = "https://getrandomtrip.com";
-      const next = safeInviteReturnPath(returnPath);
-      const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}${
-        next ? `&next=${encodeURIComponent(next)}` : ""
-      }`;
-
-      await sendMail({
-        to: user.email,
-        subject: verifyEmailSubjects[locale],
-        content: {
-          react: React.createElement(VerifyEmail, {
-            name: user.name ?? "",
-            verifyUrl,
-            locale,
-          }),
-        },
-      });
-    } catch (err) {
-      console.error("[email] sendVerificationEmail:", err);
-    }
-  })();
+  void deliverVerificationEmail(userId, token, returnPath).catch((err) => {
+    console.error("[email] sendVerificationEmail:", err);
+  });
 }
 
 export function sendPasswordResetEmail(userId: string, token: string): void {

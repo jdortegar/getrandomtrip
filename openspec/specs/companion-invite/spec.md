@@ -44,7 +44,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 #### Scenario: Resend verification from the invite page
 - GIVEN a signed-in, unverified companion on the check-your-inbox state
 - WHEN they press "Resend verification email"
-- THEN `POST /api/auth/resend-verification` replaces any outstanding `EMAIL_VERIFY` token and emails the session account only; the body's optional `returnPath` is honoured only when it passes `safeInviteReturnPath`, so the new link also returns to the invite
+- THEN `POST /api/auth/resend-verification` replaces any outstanding `EMAIL_VERIFY` token and emails the session account only; the body's optional `returnPath` is honoured only when it passes `safeInviteReturnPath`, so the new link also returns to the invite. The send is awaited (`deliverVerificationEmail`) before responding: on provider failure the freshly issued token is deleted (so the 60s cooldown does not block an immediate retry) and the route answers `502 { error: "send_failed" }`, which the client shows as the retryable error state
 - AND the endpoint answers 401 without a session, 409 `already_verified` for a verified account, and 429 `cooldown` (with `Retry-After`) when the newest `EMAIL_VERIFY` token is under 60 seconds old, sending nothing in those cases; it never accepts a target address, so it cannot reveal whether other emails exist
 
 #### Scenario: Verification link returns to the invite
