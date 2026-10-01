@@ -148,11 +148,18 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         }
         const updated = data.traveler as TravelerDTO;
         // The server emails the companion when a new/changed email is saved.
-        setNote(
-          data.invited
-            ? formatInvitedNote(copy.invitedNote, updated.invitedAt)
-            : copy.savedNote,
-        );
+        // The details were saved either way; if no invite could be issued the
+        // buyer is told so and can retry with "Resend invite".
+        if (data.inviteFailed) {
+          setNote(null);
+          setError(copy.sendInviteErrorGeneric);
+        } else {
+          setNote(
+            data.invited
+              ? formatInvitedNote(copy.invitedNote, updated.invitedAt)
+              : copy.savedNote,
+          );
+        }
         onUpdated(updated);
         return updated;
       } catch {

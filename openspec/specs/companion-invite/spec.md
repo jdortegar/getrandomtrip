@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view, invited-but-not-linked reminder, buyer roster badge).
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view, invited-but-not-linked reminder, buyer roster badge, deploy-origin links).
 
 ---
 
@@ -194,7 +194,7 @@ At/after cutoff, populated fields MUST be protected server-side and in the UI. E
 
 ### Requirement: Auto-Sent Companion Invite
 
-`PATCH /api/travelers/[id]` MUST, after a successful save of an ADULT row with `userId` null on a trip that has not ended, issue a fresh invite token and send the invite email when the saved email is valid and is new (previous email empty) or different (normalized) from the previous one. Re-saving the same email MUST send nothing; changing the email rotates the token so the old link dies. Issue/send failures MUST NOT fail the save. The response carries `invited: true` when an invite went out. The buyer roster action is labeled "Resend invite" and, when a save already auto-sent, the UI MUST NOT POST a second invite.
+`PATCH /api/travelers/[id]` MUST, after a successful save of an ADULT row with `userId` null on a trip that has not ended, issue a fresh invite token and send the invite email when the saved email is valid and is new (previous email empty) or different (normalized) from the previous one. Re-saving the same email MUST send nothing; changing the email rotates the token so the old link dies. Issue/send failures MUST NOT fail the save. The response carries `invited: true` only when a token was actually issued; the row only becomes `INVITED` when issuance succeeded. When issuance throws, the save still succeeds, the row is not marked `INVITED`, and the response carries `inviteFailed: true` (the client shows the send error and keeps "Resend invite" available). The buyer roster action is labeled "Resend invite" and, when a save already auto-sent, the UI MUST NOT POST a second invite.
 
 Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row is never flipped to `COMPLETE` by a buyer save — `COMPLETE` means the companion accepted (it makes the token read as `used`). Roster completeness (`submitted` count, page Save result) is `status in (COMPLETE, INVITED)` with every required detail present (`isTravelerRosterComplete`).
 
@@ -215,7 +215,7 @@ Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row i
 
 ### Requirement: Companion Invite Email
 
-The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buyer} added you to their randomtrip" (en), in the buyer's locale. The body MUST include the localized trip dates and trip type label, MUST mention creating an account to see the trip in the dashboard and confirm details, MUST keep the 7-day expiry line, and MUST NEVER include the destination. The CTA is "VER MI VIAJE" / "SEE MY TRIP".
+The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buyer} added you to their randomtrip" (en), in the buyer's locale; with an empty buyer first name the subject and body fall back to "Te sumaron a un randomtrip" / "You've been added to a randomtrip". The body MUST include the localized trip dates and trip type label, MUST mention creating an account to see the trip in the dashboard and confirm details, MUST keep the 7-day expiry line, and MUST NEVER include the destination. The CTA is "VER MI VIAJE" / "SEE MY TRIP". Invite and reminder links are built from the deploy origin (`getInviteOrigin`): `https://getrandomtrip.com` in production, `getNonproductionOrigin()` otherwise, falling back to the production site only when a nonproduction deploy has no valid public origin.
 
 ### Requirement: Companion Invite Backfill Script
 

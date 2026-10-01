@@ -177,9 +177,11 @@ export async function PATCH(
       !emailsMatch(traveler.email, email) &&
       !isTripEnded(traveler.tripRequest);
 
-    const nextStatus = shouldInvite
-      ? "INVITED"
-      : traveler.status === "COMPLETE" || traveler.status === "INVITED"
+    // A row only becomes INVITED once its token is actually issued (below):
+    // `issueTravelerInvite` sets the status itself, so a failed issuance never
+    // leaves an INVITED row without a token.
+    const nextStatus =
+      traveler.status === "COMPLETE" || traveler.status === "INVITED"
         ? traveler.status
         : isComplete
           ? "COMPLETE"
@@ -212,13 +214,23 @@ export async function PATCH(
       try {
         const plaintext = await issueTravelerInvite(updated.id, updated.status);
         sendTravelerInviteEmail(updated.id, plaintext);
+        // Token issued: mirror what `issueTravelerInvite` wrote on the row.
         return NextResponse.json({
-          traveler: serializeTraveler({ ...updated, invitedAt: new Date() }),
+          traveler: serializeTraveler({
+            ...updated,
+            status: "INVITED",
+            invitedAt: new Date(),
+          }),
           invited: true,
         });
       } catch (error) {
-        // The save already succeeded; the buyer can still use "Resend invite".
+        // The save already succeeded and the row was not marked INVITED; tell
+        // the client so it can offer "Resend invite" instead of claiming a send.
         console.error("[travelers/[id]] auto-invite failed:", error);
+        return NextResponse.json({
+          traveler: serializeTraveler(updated),
+          inviteFailed: true,
+        });
       }
     }
 

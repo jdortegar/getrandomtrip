@@ -352,6 +352,18 @@ describe("TravelerRow — buyer invite badge (T8)", () => {
     renderBadge(baseTraveler({ kind: "MINOR", email: null, dateOfBirth: "2016-01-01T00:00:00.000Z" }));
     expect(container.textContent).not.toContain("Sin email");
   });
+
+  it("shows the send error and keeps the row usable when a save could not issue the invite (T14a)", async () => {
+    const updated = baseTraveler({ status: "COMPLETE" });
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: updated, inviteFailed: true }));
+    renderBadge(baseTraveler({ email: null }));
+
+    await act(async () => { await handleRef.current?.save(); });
+
+    expect(container.textContent).toContain("Invite failed");
+    expect(container.textContent).not.toContain("Guardado");
+    expect(resend()).not.toBeNull();
+  });
 });
 
 describe("TravelerRow — a companion's own row (T6)", () => {

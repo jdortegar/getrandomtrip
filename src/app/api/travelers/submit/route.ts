@@ -14,9 +14,12 @@ export const dynamic = "force-dynamic";
  * answers WHICH row; the session now answers WHO claims it. Payload
  * narrows to `{ token, idDocument, consent }` — `fullName`/`email` are
  * ALWAYS derived server-side from the authenticated user, never trusted
- * from the client. Re-validates the token (expiry + cutoff) independently
- * before writing. Rejects 403 `email_mismatch` unless the session email
- * matches the invited address (case-insensitive). On success, sets `TripTraveler.userId` and fires one
+ * from the client. Re-validates the token independently before writing: it
+ * is accepted until the trip ends (after the details cutoff it only links the
+ * account and fills gaps; populated fields stay frozen) and rejects as
+ * `expired`, `used`, `ended` or `invalid` otherwise. Rejects 403
+ * `email_mismatch` unless the session email matches the invited address
+ * (case-insensitive). On success, sets `TripTraveler.userId` and fires one
  * in-app `TRAVELER_SUBMITTED` notification for the buyer — idempotent by
  * construction, since a re-submitted (already-consumed) token resolves to
  * `used` and never reaches the notification step.

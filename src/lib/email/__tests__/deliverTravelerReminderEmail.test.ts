@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const { db, sendMailMock } = vi.hoisted(() => ({
@@ -22,6 +22,8 @@ const traveler = {
   },
 };
 
+afterEach(() => vi.unstubAllEnvs());
+
 beforeEach(() => {
   vi.resetAllMocks();
   db.tripTraveler.findUnique.mockResolvedValue(traveler);
@@ -39,6 +41,17 @@ describe("deliverTravelerReminderEmail", () => {
     expect(html).toContain("XSED");
     expect(html).toContain("/es/invite/tok");
     expect(html).not.toContain("Lisbon");
+  });
+
+  it("builds the link from the deploy origin outside production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", "getrandomtrip-1");
+    vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", "https://develop--getrandomtrip-1.netlify.app");
+
+    await deliverTravelerReminderEmail("trav-1", "tok");
+
+    const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react);
+    expect(html).toContain("https://develop--getrandomtrip-1.netlify.app/es/invite/tok");
   });
 
   it("propagates provider failures so the cron does not stamp the reminder", async () => {

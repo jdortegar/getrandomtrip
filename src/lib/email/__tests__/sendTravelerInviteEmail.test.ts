@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const { db, sendMailMock } = vi.hoisted(() => ({
@@ -22,6 +22,8 @@ const traveler = {
     user: { name: "Ana Ortega", locale: "es" },
   },
 };
+
+afterEach(() => vi.unstubAllEnvs());
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -52,6 +54,38 @@ describe("deliverTravelerInviteEmail", () => {
     await deliverTravelerInviteEmail("trav-1", "tok");
 
     expect(sendMailMock.mock.calls[0][0].subject).toBe("Ana added you to their randomtrip");
+  });
+
+  it("builds the link from the deploy origin outside production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", "getrandomtrip-1");
+    vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", "https://develop--getrandomtrip-1.netlify.app");
+
+    await deliverTravelerInviteEmail("trav-1", "tok");
+
+    const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react);
+    expect(html).toContain("https://develop--getrandomtrip-1.netlify.app/es/invite/tok");
+    expect(html).not.toContain("https://getrandomtrip.com/es/invite/");
+  });
+
+  it("keeps the production link in production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+
+    await deliverTravelerInviteEmail("trav-1", "tok");
+
+    const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react);
+    expect(html).toContain("https://getrandomtrip.com/es/invite/tok");
+  });
+
+  it("uses a neutral subject when the buyer has no name", async () => {
+    db.tripTraveler.findUnique.mockResolvedValue({
+      ...traveler,
+      tripRequest: { ...traveler.tripRequest, user: { name: "", locale: "es" } },
+    });
+
+    await deliverTravelerInviteEmail("trav-1", "tok");
+
+    expect(sendMailMock.mock.calls[0][0].subject).toBe("Te sumaron a un randomtrip");
   });
 
   it("propagates provider failures (callers that need a result, e.g. the backfill)", async () => {

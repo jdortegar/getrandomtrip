@@ -64,6 +64,7 @@ import TravelerInvite, {
 import TravelerReminder, {
   getSubject as getTravelerReminderSubject,
 } from "@/emails/TravelerReminder";
+import { buildTravelerInviteUrl } from "@/lib/travelers/travelerInviteUrl";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
 } from "@/emails/TripStartVouchers";
@@ -855,8 +856,7 @@ export async function deliverTravelerInviteEmail(
   const { tripRequest } = traveler;
   const locale = resolveLocale(tripRequest.user.locale);
   const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
-  const BASE_URL = "https://getrandomtrip.com";
-  const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
+  const inviteUrl = buildTravelerInviteUrl(locale, plaintextToken);
 
   await sendMail({
     to: traveler.email,
@@ -910,15 +910,13 @@ export async function deliverTravelerReminderEmail(
   const { tripRequest } = traveler;
   const locale = resolveLocale(tripRequest.user.locale);
   const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
-  const BASE_URL = "https://getrandomtrip.com";
-  const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
 
   await sendMail({
     to: traveler.email,
     subject: getTravelerReminderSubject(locale),
     content: {
       react: React.createElement(TravelerReminder, {
-        inviteUrl,
+        inviteUrl: buildTravelerInviteUrl(locale, plaintextToken),
         buyerFirstName,
         locale,
         startDate: tripRequest.startDate,

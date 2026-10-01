@@ -17,6 +17,20 @@ describe("TravelerInvite subject", () => {
   });
 });
 
+describe("TravelerInvite with an empty buyer name", () => {
+  it("falls back to neutral subjects instead of a leading blank", () => {
+    expect(getSubject("es", "")).toBe("Te sumaron a un randomtrip");
+    expect(getSubject("en", "")).toBe("You've been added to a randomtrip");
+    expect(getSubject("es", "   ")).toBe("Te sumaron a un randomtrip");
+  });
+
+  it("renders a neutral body", async () => {
+    const html = await render(<TravelerInvite {...props} buyerFirstName="" locale="es" />);
+    expect(html).toContain("Te sumaron a un randomtrip.");
+    expect(html).not.toContain("  te sumó");
+  });
+});
+
 describe("TravelerInvite body", () => {
   it("renders es copy with dates, trip type, account hint, CTA and expiry", async () => {
     const html = await render(<TravelerInvite {...props} locale="es" />);

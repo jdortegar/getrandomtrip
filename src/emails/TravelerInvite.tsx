@@ -15,11 +15,15 @@ interface TravelerInviteProps {
 
 // Copy is gender-neutral by design (no "her"/"su" pronoun) — the buyer's
 // gender is unknown at send time. ES leans on "te sumó a su randomtrip"
-// (possessive "su", not a gendered pronoun); EN uses "their".
+// (possessive "su", not a gendered pronoun); EN uses "their". An empty buyer
+// name falls back to a name-less sentence so no subject/body starts blank.
 const copy = {
   es: {
     heading: "Te sumaron a un randomtrip",
-    body: (buyerFirstName: string) => `${buyerFirstName} te sumó a su randomtrip.`,
+    body: (buyerFirstName: string) =>
+      buyerFirstName.trim()
+        ? `${buyerFirstName.trim()} te sumó a su randomtrip.`
+        : "Te sumaron a un randomtrip.",
     datesLabel: "Fechas",
     typeLabel: "Tipo de viaje",
     account:
@@ -29,7 +33,10 @@ const copy = {
   },
   en: {
     heading: "You've been added to a randomtrip",
-    body: (buyerFirstName: string) => `${buyerFirstName} added you to their randomtrip.`,
+    body: (buyerFirstName: string) =>
+      buyerFirstName.trim()
+        ? `${buyerFirstName.trim()} added you to their randomtrip.`
+        : "You've been added to a randomtrip.",
     datesLabel: "Dates",
     typeLabel: "Trip type",
     account:

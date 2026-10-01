@@ -468,11 +468,15 @@ describe("PATCH auto-send invite (T3)", () => {
 
     expect(res.status).toBe(200);
     expect(issueTravelerInvite).toHaveBeenCalledTimes(1);
-    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "INVITED");
+    // The row only becomes INVITED once the token is actually issued, so the
+    // CAS expects the status the row has when the save lands.
+    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "PENDING");
     expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "plain-token");
     const body = await res.json();
     expect(body.invited).toBe(true);
     expect(body.traveler.status).toBe("INVITED");
+    expect(body.traveler.invitedAt).toEqual(expect.any(String));
+    expect(body.inviteFailed).toBeUndefined();
   });
 
   it("sends nothing when the same email is re-saved (case/whitespace-insensitive)", async () => {
@@ -563,6 +567,23 @@ describe("PATCH auto-send invite (T3)", () => {
     expect(res.status).toBe(200);
     expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
     expect((await res.json()).invited).toBeUndefined();
+    spy.mockRestore();
+  });
+
+  it("reports the failure and never claims INVITED when no token was issued (T14a)", async () => {
+    vi.mocked(issueTravelerInvite).mockRejectedValue(new Error("db down"));
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await patch(makeAdultRow(), { email: "bob@example.com" });
+    const body = await res.json();
+
+    const args = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
+    expect(args.data.status).not.toBe("INVITED");
+    expect(body.invited).toBeUndefined();
+    expect(body.inviteFailed).toBe(true);
+    expect(body.traveler.status).not.toBe("INVITED");
+    expect(body.traveler.invitedAt).toBeNull();
+    expect(body.traveler.email).toBe("bob@example.com");
     spy.mockRestore();
   });
 });
