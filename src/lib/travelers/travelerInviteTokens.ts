@@ -56,17 +56,29 @@ export type TravelerPeek =
       kind: TravelerKind;
       buyerFirstName: string;
       idDocumentRequired: boolean;
-      /** Address the invite was sent to; prefills the sign-up form. */
+      /**
+       * Full invited address. Non-null ONLY when the viewer passed to
+       * `peekTravelerInvite` is signed in with that address — never for an
+       * anonymous or mismatched viewer (the page payload is server-rendered).
+       */
       invitedEmail: string | null;
-      /** `j***@gmail.com` form, safe to show next to a mismatched account. */
+      /** `j***@gmail.com` form, safe to show to any viewer. */
       maskedEmail: string | null;
+      /**
+       * Whether the viewer's session email equals the invited address; `null`
+       * when no viewer email was supplied (anonymous).
+       */
+      viewerEmailMatches: boolean | null;
     }
   | { ok: false; reason: "invalid" | "expired" | "used" | "ended" };
 
-/** `consume` additionally refuses a session whose email differs from the invite. */
+/**
+ * `consume` additionally refuses a session whose email differs from the invite
+ * and an account whose own email is not verified.
+ */
 export type TravelerConsumeResult =
   | TravelerPeek
-  | { ok: false; reason: "email_mismatch" };
+  | { ok: false; reason: "email_mismatch" | "email_unverified" };
 
 type TravelerInviteRow = {
   id: string;
@@ -133,8 +145,9 @@ async function resolveTravelerInvite(
     idDocumentRequired:
       !isRosterLocked(row.tripRequest) ||
       !isTravelerFieldFilled(row.idDocument),
-    invitedEmail: row.email?.trim() || null,
+    invitedEmail: null,
     maskedEmail: maskEmail(row.email),
+    viewerEmailMatches: null,
     row,
   };
 }
@@ -149,21 +162,33 @@ function publicPeek(
     kind: resolved.kind,
     buyerFirstName: resolved.buyerFirstName,
     idDocumentRequired: resolved.idDocumentRequired,
-    invitedEmail: resolved.invitedEmail,
+    invitedEmail: null,
     maskedEmail: resolved.maskedEmail,
+    viewerEmailMatches: null,
   };
 }
 
 /**
  * Validate a token WITHOUT consuming it — used for the `/invite/[token]`
- * landing page render. Never mutates the row.
+ * landing page render. Never mutates the row. Pass the viewer's session email
+ * (when signed in) to learn whether it matches the invite; the full invited
+ * address is returned only on a match, so the server-rendered page never
+ * carries it for anyone else.
  */
 export async function peekTravelerInvite(
   plaintext: string,
+  viewerEmail?: string | null,
 ): Promise<TravelerPeek> {
   const resolved = await resolveTravelerInvite(plaintext);
   if (!resolved.ok) return resolved;
-  return publicPeek(resolved);
+  const peek = publicPeek(resolved);
+  if (!peek.ok || !viewerEmail?.trim()) return peek;
+  const matches = emailsMatch(resolved.row?.email, viewerEmail);
+  return {
+    ...peek,
+    invitedEmail: matches ? (resolved.row?.email?.trim() ?? null) : null,
+    viewerEmailMatches: matches,
+  };
 }
 
 /**
@@ -183,6 +208,12 @@ export async function consumeTravelerInvite(
     idDocument?: string;
     email?: string;
     userId?: string;
+    /**
+     * `User.emailVerified` of the claiming account, read from the DB by the
+     * caller (never from the client or a JWT). Required for a claim to link an
+     * account: a null/missing value is rejected as `email_unverified`.
+     */
+    emailVerified?: Date | null;
   },
 ): Promise<TravelerConsumeResult> {
   const resolved = await resolveTravelerInvite(plaintext);
@@ -193,6 +224,11 @@ export async function consumeTravelerInvite(
   // the invite was sent to, so a forwarded link cannot be claimed.
   if (!emailsMatch(row.email, data.email)) {
     return { ok: false, reason: "email_mismatch" };
+  }
+  // A matching address is not proof of ownership until the account verified
+  // it (credentials sign-ups are unverified; Google accounts are verified).
+  if (data.userId !== undefined && !data.emailVerified) {
+    return { ok: false, reason: "email_unverified" };
   }
   const locked = isRosterLocked(row.tripRequest);
   if (locked && row.userId && row.userId !== data.userId) {

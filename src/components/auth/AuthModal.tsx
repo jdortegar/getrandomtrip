@@ -29,6 +29,11 @@ interface AuthModalProps {
    * to satisfy unrelated sections' stricter literal-union types. */
   dict?: Pick<Dictionary, "auth">;
   /** Pre-fills the email field, e.g. after landing here from a verify-email redirect. */
+  /**
+   * Invite page only: a validated `/{locale}/invite/{token}` path sent with
+   * registration so the verification email brings the companion back.
+   */
+  inviteReturnPath?: string;
   initialEmail?: string;
   /** Makes the email field read-only (e.g. an invite bound to one address). Requires `initialEmail`. */
   lockEmail?: boolean;
@@ -41,6 +46,7 @@ export default function AuthModal({
   defaultMode = "login",
   dict,
   initialEmail,
+  inviteReturnPath,
   lockEmail = false,
   isOpen,
   onClose,
@@ -262,6 +268,7 @@ export default function AuthModal({
             email,
             password,
             referredByTripperSlug: referredByTripperSlugForSubmit,
+            ...(inviteReturnPath ? { inviteReturnPath } : {}),
           }),
         });
 

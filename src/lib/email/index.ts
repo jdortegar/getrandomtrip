@@ -64,6 +64,7 @@ import TravelerInvite, {
 import TravelerReminder, {
   getSubject as getTravelerReminderSubject,
 } from "@/emails/TravelerReminder";
+import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import { buildTravelerInviteUrl } from "@/lib/travelers/travelerInviteUrl";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
@@ -737,7 +738,16 @@ export function sendReviewApprovedForTripper(
   })();
 }
 
-export function sendVerificationEmail(userId: string, token: string): void {
+/**
+ * `returnPath` (optional) is a validated `/{locale}/invite/{token}` path: the
+ * verify page sends the companion back there instead of to login. Anything
+ * else is dropped.
+ */
+export function sendVerificationEmail(
+  userId: string,
+  token: string,
+  returnPath?: string,
+): void {
   void (async () => {
     try {
       const user = await prisma.user.findUnique({
@@ -749,7 +759,10 @@ export function sendVerificationEmail(userId: string, token: string): void {
 
       const locale = resolveLocale(user.locale);
       const BASE_URL = "https://getrandomtrip.com";
-      const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}`;
+      const next = safeInviteReturnPath(returnPath);
+      const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}${
+        next ? `&next=${encodeURIComponent(next)}` : ""
+      }`;
 
       await sendMail({
         to: user.email,

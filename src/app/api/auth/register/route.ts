@@ -9,6 +9,7 @@ import {
   consumeAccessInvite,
 } from "@/lib/auth/accessInviteTokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import {
   readAttributionSlug,
   resolveReferrerId,
@@ -19,8 +20,14 @@ import type { UserRole } from "@prisma/client";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password, inviteToken, referredByTripperSlug } =
-      body;
+    const {
+      name,
+      email,
+      password,
+      inviteToken,
+      referredByTripperSlug,
+      inviteReturnPath,
+    } = body;
 
     // Validate input. These are stable codes, not display text — clients
     // map them to localized copy (see registerErrorMessage).
@@ -126,7 +133,11 @@ export async function POST(request: NextRequest) {
     await stampReferral(user.id, referrerId);
 
     const token = await issueVerificationToken(user.id, "EMAIL_VERIFY");
-    sendVerificationEmail(user.id, token); // fire-and-forget
+    // A companion registering from `/[locale]/invite/[token]` comes back there
+    // after verifying; only a strictly validated same-origin path is used.
+    const returnPath = safeInviteReturnPath(inviteReturnPath);
+    if (returnPath) sendVerificationEmail(user.id, token, returnPath);
+    else sendVerificationEmail(user.id, token); // fire-and-forget
 
     return NextResponse.json(
       {

@@ -2739,6 +2739,10 @@ export interface InviteTravelersDict {
   /** `{maskedEmail}` placeholder, e.g. `j***@gmail.com`. */
   landingEmailMismatch: string;
   landingSwitchAccount: string;
+  /** `{maskedEmail}` placeholder; shown on the sign-up wall instead of the full address. */
+  landingEmailHint: string;
+  /** `{maskedEmail}` placeholder; signed in with an unverified email, waiting for the verification link. */
+  landingVerifyInbox: string;
   /** Buyer roster: shown on a joined row whose email is read-only. */
   emailLockedJoinedHint: string;
   landingConsentRequiredError: string;

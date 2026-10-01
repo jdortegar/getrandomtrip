@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     const dbUser = await prisma.user.findUnique({
       where: { id: sessionUserId },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, emailVerified: true },
     });
 
     if (!dbUser) {
@@ -65,12 +65,20 @@ export async function POST(request: NextRequest) {
       idDocument,
       email: dbUser.email,
       userId: dbUser.id,
+      // From the DB row above, not the session/JWT/body.
+      emailVerified: dbUser.emailVerified,
     });
 
     if (!result.ok) {
       if (result.reason === "email_mismatch") {
         return NextResponse.json(
           { error: "email_mismatch", reason: "email_mismatch" },
+          { status: 403 },
+        );
+      }
+      if (result.reason === "email_unverified") {
+        return NextResponse.json(
+          { error: "email_unverified", reason: "email_unverified" },
           { status: 403 },
         );
       }

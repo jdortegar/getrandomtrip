@@ -144,7 +144,14 @@ export const authOptions: NextAuthOptions = {
           // ever carries it, so default EMAIL_NOT_VERIFIED behaviour below
           // is otherwise unchanged. Skips the verification-email resend on
           // purpose (see design's "no resend on bypass path" — the
-          // register flow already sent one seconds earlier).
+          // register flow already sent one seconds earlier, carrying the
+          // return path back to the invite).
+          //
+          // Kept after T12 on purpose: the session only lets the invite page
+          // show its in-page "check your inbox" state. It grants NO claim —
+          // `POST /api/travelers/submit` rejects `email_unverified` from the
+          // DB value of `User.emailVerified`, so bypass + forwarded link
+          // still cannot take over a row.
           const inviteCookie = (await cookies()).get(
             TRAVELER_INVITE_COOKIE,
           )?.value;
@@ -261,6 +268,20 @@ export const authOptions: NextAuthOptions = {
       if (dbUser) {
         user.id = dbUser.id;
 
+        // Google only returns verified addresses, so signing in with it proves
+        // ownership of an account that registered with a password and never
+        // clicked its verification link.
+        if (
+          account?.provider === "google" &&
+          !isNewGoogleUser &&
+          !dbUser.emailVerified
+        ) {
+          await prisma.user.update({
+            where: { id: dbUser.id },
+            data: { emailVerified: new Date() },
+          });
+        }
+
         // Self-service account deactivation is a soft-delete — signing back
         // in (any provider) restores the account exactly as it was.
         if (dbUser.deactivatedAt) {
@@ -337,11 +358,14 @@ export const authOptions: NextAuthOptions = {
             avatarUrl: true,
             avatarUrlOriginal: true,
             siteAccessGrantedAt: true,
+            emailVerified: true,
           },
         });
 
         if (dbUser) {
           session.user.id = dbUser.id;
+          // Always from the DB, never a stale JWT claim.
+          session.user.emailVerified = Boolean(dbUser.emailVerified);
           session.user.hasSiteAccess = !!dbUser.siteAccessGrantedAt;
           session.user.name = dbUser.name;
           session.user.email = dbUser.email;

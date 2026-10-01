@@ -5935,6 +5935,8 @@
     "landingReasonEnded": "This trip has already ended, so this invite can no longer be used.",
     "landingEmailMismatch": "This invite was sent to {maskedEmail}. Sign in with that email to continue.",
     "landingSwitchAccount": "Use a different account",
+    "landingEmailHint": "Use the email this invite was sent to: {maskedEmail}",
+    "landingVerifyInbox": "Check your inbox: we sent a verification link to {maskedEmail}. After verifying, you'll come back here to join the trip.",
     "emailLockedJoinedHint": "Joined — email can't be changed",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",

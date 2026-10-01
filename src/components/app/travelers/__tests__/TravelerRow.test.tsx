@@ -50,6 +50,8 @@ const copy: InviteTravelersDict = {
   companionSubtitle: "Te sumaron",
   companionYouTag: "Vos",
   companionOtherNote: "Los gestiona quien reservó",
+  landingEmailHint: "",
+  landingVerifyInbox: "",
   emailLockedJoinedHint: "Se unió: el email no se puede cambiar",
   landingEyebrow: "",
   landingHeading: "",

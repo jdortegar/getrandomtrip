@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { peekTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
@@ -13,7 +15,8 @@ type Props = {
 /**
  * Companion invite landing — server peek → client form. Never consumes the
  * token (only `POST /api/travelers/submit` does that); never renders the
- * destination.
+ * destination; never serializes the full invited email for a viewer who is
+ * not signed in with that address.
  */
 export default async function TravelerInvitePage({ params }: Props) {
   const resolvedParams = await params;
@@ -32,7 +35,11 @@ export default async function TravelerInvitePage({ params }: Props) {
   if (!token) {
     resolution = { ok: false, reason: "invalid" };
   } else {
-    const peek = await peekTravelerInvite(token);
+    // The page payload is server-rendered, so the full invited address is
+    // only ever resolved for a viewer already signed in with that address;
+    // everyone else gets the masked form. `submit` enforces the match anyway.
+    const session = await getServerSession(authOptions);
+    const peek = await peekTravelerInvite(token, session?.user?.email);
     resolution = peek.ok
       ? {
           ok: true,
@@ -40,6 +47,7 @@ export default async function TravelerInvitePage({ params }: Props) {
           idDocumentRequired: peek.idDocumentRequired,
           invitedEmail: peek.invitedEmail,
           maskedEmail: peek.maskedEmail,
+          emailMismatch: peek.viewerEmailMatches === false,
         }
       : { ok: false, reason: peek.reason };
   }
