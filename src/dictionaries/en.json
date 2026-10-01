@@ -5329,6 +5329,16 @@
       "statusBadge": {
         "pendingReview": "Pending review"
       },
+      "translate": {
+        "downloading": "Downloading model...",
+        "downloadingProgress": "Downloading model... {progress}%",
+        "error": "Could not translate this experience. Try again.",
+        "hint": "Turns Spanish text into English, or English text into Spanish, for the title, teaser, description, activities, and itinerary. The first run downloads a model (about 37 MB) in this browser. Nothing is uploaded.",
+        "label": "AI translation",
+        "toEnglish": "Translate to English",
+        "toSpanish": "Translate to Spanish",
+        "translating": "Translating..."
+      },
       "changedFieldsBanner": {
         "prefix": "Admin proposed changes to: ",
         "peekShowOriginal": "Click to see original content",

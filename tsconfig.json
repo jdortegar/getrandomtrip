@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "runonweb/translate": [
+        "./src/lib/ai/runonweb-translate.d.ts"
       ]
     },
     "target": "ES2017"

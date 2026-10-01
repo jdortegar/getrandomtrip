@@ -25,7 +25,13 @@ const nextConfig = {
     "/api/admin/trip-requests/*/xsed-roadmap-preview": pdfAssets,
     "/api/admin/trip-requests/*/document-drafts/*/render": pdfAssets,
   },
-  transpilePackages: ["@tinymce/tinymce-react"],
+  transpilePackages: ["@tinymce/tinymce-react", "runonweb"],
+  turbopack: {
+    resolveAlias: {
+      // tsconfig maps this import to a type stub. Dev bundling must use the real module.
+      "runonweb/translate": "./node_modules/runonweb/src/translate/index.ts",
+    },
+  },
   async redirects() {
     return [
       {

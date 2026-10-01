@@ -5329,6 +5329,16 @@
       "statusBadge": {
         "pendingReview": "En revisión"
       },
+      "translate": {
+        "downloading": "Descargando modelo...",
+        "downloadingProgress": "Descargando modelo... {progress}%",
+        "error": "No se pudo traducir esta experiencia. Intenta de nuevo.",
+        "hint": "Pasa el texto en español a inglés, o el texto en inglés a español: título, teaser, descripción, actividades e itinerario. La primera vez descarga un modelo (unos 37 MB) en este navegador. Nada se sube.",
+        "label": "Traducción con IA",
+        "toEnglish": "Traducir al inglés",
+        "toSpanish": "Traducir al español",
+        "translating": "Traduciendo..."
+      },
       "changedFieldsBanner": {
         "prefix": "El admin propuso cambios en: ",
         "peekShowOriginal": "Ver contenido original",

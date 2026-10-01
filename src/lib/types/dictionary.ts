@@ -1110,6 +1110,16 @@ export interface TripperExperiencesDict {
     statusBadge: {
       pendingReview: string;
     };
+    translate: {
+      downloading: string;
+      downloadingProgress: string;
+      error: string;
+      hint: string;
+      label: string;
+      toEnglish: string;
+      toSpanish: string;
+      translating: string;
+    };
     changedFieldsBanner: {
       prefix: string;
       peekShowOriginal: string;
