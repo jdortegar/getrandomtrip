@@ -92,21 +92,23 @@ First real case: Ana Ortega's XSED trip (Oct 3–4, 2026). Her cutoff (T-72h) is
 | T3 | delegated direct | 2+ non-trivial files | done | 245675be | same review |
 | T4 | delegated direct | 2+ non-trivial files | done | 53f00c67 | same review |
 | T5 | delegated direct | 2+ non-trivial files | done | ad25b380 | same review |
-| T6 | delegated direct (one writer) | 2+ non-trivial files | done (tests, typecheck, lint, full suite green); uncommitted | none — awaiting user approval | not assessed |
-| T7 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T8 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T9 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T11 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T13 | delegated direct | 2 files | done; uncommitted | none — awaiting user approval | not assessed |
-| T14 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T10 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
-| T12 | delegated direct | 2+ non-trivial files | done; uncommitted | none — awaiting user approval | not assessed |
+| T6 | delegated direct (one writer) | 2+ non-trivial files | done | 6e96c276 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T7 | delegated direct | 2+ non-trivial files | done | 76478319 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T8 | delegated direct | 2+ non-trivial files | done | 9b071c97 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T9 | delegated direct | 2+ non-trivial files | done | 0dd24923 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T11 | delegated direct | 2+ non-trivial files | done | 6751e205 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T13 | delegated direct | 2 files | done | b3e8b53c | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T14 | delegated direct | 2+ non-trivial files | done | 0dd24923 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T10 | delegated direct | 2+ non-trivial files | done | 6e96c276 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T12 | delegated direct | 2+ non-trivial files | done | 6751e205 + ea602f63 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
 
 Phase 1 delivery: single PR #217 → develop (merge 071a5a6c), release PR #218 → main (merge fb56c68e), 2026-10-01. Production backfill: dry run listed 1 candidate (the first real companion), owner approved, `--send` reported `sent`.
 
+Phase 2 note: the full branch (2951 lines) exceeded the review lens budget (`lens_context_budget_exceeded`), so it was reviewed as two candidates. Review B found a CRITICAL account pre-hijacking issue in T12 (Google sign-in verified an unverified account without dropping its unproven password); fixed in ea602f63 (password cleared on Google verification) and validated.
+
 ## Next step
 
-Phase 2 on branch `feat/companion-invite-phase-2` (from origin/develop 071a5a6c): T6–T9, T11, T13, T14 implemented and uncommitted. Next: review the diff and approve commits (suggested slices: T13 script, T9+T14c emails, T7 reminder, T11 invite privacy, T6+T8 roster/companion view with T14a/b). T10 and T12 (owner decisions) are now implemented too, uncommitted; suggested extra slices: T12 server (consume/submit/auth), T12 return path + invite UX, T10.
+Deliver phase 2: PR to develop, then release to main. Follow-ups: review advisories (timezone-dependent companion view test, reminder retry resets due time, AuthModal unused lockEmail props, verification resend without return path, invite client error states).
 
 ## Verification log (phase 1)
 
