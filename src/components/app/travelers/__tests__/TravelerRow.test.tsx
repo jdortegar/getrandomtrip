@@ -62,7 +62,7 @@ const copy: InviteTravelersDict = {
   landingReasonInvalid: "",
   landingReasonExpired: "",
   landingReasonUsed: "",
-  landingReasonLocked: "",
+  landingReasonEnded: "",
   landingConsentRequiredError: "",
   landingGenericError: "",
   savingAction: "",

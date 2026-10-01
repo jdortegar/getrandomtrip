@@ -32,12 +32,21 @@ function hashPlaintext(plaintext: string): string {
 
 const futureTrip = {
   startDate: new Date(Date.now() + 30 * DAY_MS),
+  endDate: new Date(Date.now() + 33 * DAY_MS),
   travelersLockedAt: null,
   user: { name: "Alice Buyer" },
 };
 
 const lockedTrip = {
   startDate: new Date(Date.now() + 2 * DAY_MS),
+  endDate: new Date(Date.now() + 4 * DAY_MS),
+  travelersLockedAt: null,
+  user: { name: "Alice Buyer" },
+};
+
+const endedTrip = {
+  startDate: new Date(Date.now() - 5 * DAY_MS),
+  endDate: new Date(Date.now() - 2 * DAY_MS),
   travelersLockedAt: null,
   user: { name: "Alice Buyer" },
 };
@@ -150,7 +159,7 @@ describe("peekTravelerInvite", () => {
     expect(result).toEqual({ ok: false, reason: "expired" });
   });
 
-  it("returns locked when the trip is past the T-7d cutoff", async () => {
+  it("accepts a populated row after the cutoff while the trip has not ended (T1)", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -169,10 +178,50 @@ describe("peekTravelerInvite", () => {
 
     const result = await peekTravelerInvite("tok");
 
-    expect(result).toEqual({ ok: false, reason: "locked" });
+    expect(result).toMatchObject({ ok: true, idDocumentRequired: false });
   });
 
-  it("returns used (not locked) when a completed row's trip has also passed cutoff — 'used' must win over 'locked'", async () => {
+  it("returns ended once the trip end date has passed, even for an unexpired token", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: endedTrip,
+    });
+
+    expect(await peekTravelerInvite("tok")).toEqual({ ok: false, reason: "ended" });
+  });
+
+  it("falls back to startDate when the trip has no endDate", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: { ...endedTrip, endDate: null },
+    });
+
+    expect(await peekTravelerInvite("tok")).toEqual({ ok: false, reason: "ended" });
+  });
+
+  it("returns used (not ended or locked) when a completed row's trip has also passed cutoff — 'used' must win over 'locked'", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -330,7 +379,7 @@ describe("consumeTravelerInvite", () => {
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
-  it("rejects a still-valid, unconsumed token when the trip is past cutoff (re-checked independently)", async () => {
+  it("accepts a still-valid token after the cutoff, linking the account but freezing populated fields (T1)", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -339,6 +388,7 @@ describe("consumeTravelerInvite", () => {
       kind: "ADULT",
       status: "INVITED",
       dateOfBirth: null,
+      userId: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
@@ -348,11 +398,45 @@ describe("consumeTravelerInvite", () => {
     });
 
     const result = await consumeTravelerInvite("tok", {
+      fullName: "Account Name",
+      idDocument: "OTHER",
+      userId: "user-1",
+    });
+
+    expect(result.ok).toBe(true);
+    const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(args.data).toMatchObject({
+      fullName: "Saved Name",
+      idDocument: "SAVED",
+      userId: "user-1",
+      status: "COMPLETE",
+    });
+    expect(args.data.consentAt).toBeInstanceOf(Date);
+  });
+
+  it("rejects with ended after the trip end date without writing (T1)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: endedTrip,
+    });
+
+    const result = await consumeTravelerInvite("tok", {
       fullName: "X",
       idDocument: "Y",
     });
 
-    expect(result).toEqual({ ok: false, reason: "locked" });
+    expect(result).toEqual({ ok: false, reason: "ended" });
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
@@ -379,7 +463,7 @@ describe("consumeTravelerInvite", () => {
       email: "bob@example.com",
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: true,
       travelerId: "trav-1",
       tripRequestId: "trip-1",
@@ -525,7 +609,7 @@ describe("hasLiveTravelerInviteGrant", () => {
     expect(result).toBe(false);
   });
 
-  it("returns false for a token whose trip is past the cutoff (locked)", async () => {
+  it("returns false for a token whose trip has ended", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -536,7 +620,7 @@ describe("hasLiveTravelerInviteGrant", () => {
       dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
-      tripRequest: lockedTrip,
+      tripRequest: endedTrip,
       fullName: "Saved Name",
       email: "saved@example.com",
       idDocument: "SAVED",

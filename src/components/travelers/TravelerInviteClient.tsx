@@ -13,7 +13,7 @@ import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 
-type Reason = "invalid" | "expired" | "used" | "locked";
+type Reason = "invalid" | "expired" | "used" | "ended";
 export type TravelerInviteResolution =
   | { ok: true; buyerFirstName: string; idDocumentRequired?: boolean }
   | { ok: false; reason: Reason };
@@ -71,7 +71,7 @@ function ErrorCard({
     invalid: copy.landingReasonInvalid,
     expired: copy.landingReasonExpired,
     used: copy.landingReasonUsed,
-    locked: copy.landingReasonLocked,
+    ended: copy.landingReasonEnded,
   };
 
   return (

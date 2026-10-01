@@ -5,6 +5,7 @@ import { isRosterLocked } from "./travelerRoster";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
+  isTripEnded,
 } from "./travelerPolicy";
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -55,7 +56,7 @@ export type TravelerPeek =
       buyerFirstName: string;
       idDocumentRequired: boolean;
     }
-  | { ok: false; reason: "invalid" | "expired" | "used" | "locked" };
+  | { ok: false; reason: "invalid" | "expired" | "used" | "ended" };
 
 type TravelerInviteRow = {
   id: string;
@@ -72,6 +73,7 @@ type TravelerInviteRow = {
   tripRequest: {
     type?: string;
     startDate: Date | null;
+    endDate?: Date | null;
     travelersLockedAt: Date | null;
     user: { name: string };
   };
@@ -81,7 +83,7 @@ type TravelerInviteRow = {
  * Shared lookup + branch logic for `peekTravelerInvite` and
  * `consumeTravelerInvite` — the single place a plaintext token is resolved
  * to a row, checked for validity (unknown / already-consumed / expired /
- * fully populated after cutoff), never duplicated between the two callers.
+ * trip already ended), never duplicated between the two callers.
  *
  * IMPORTANT: `inviteTokenHash` is NEVER nulled on consume (see
  * `consumeTravelerInvite`) — it stays persisted so the row remains
@@ -103,13 +105,14 @@ async function resolveTravelerInvite(
 
   if (!row) return { ok: false, reason: "invalid" };
   if (row.status === "COMPLETE") return { ok: false, reason: "used" };
+  // The details cutoff never blocks acceptance: past it, `consume` only links
+  // the account and fills gaps. The invite dies when the trip ends.
+  if (isTripEnded(row.tripRequest)) return { ok: false, reason: "ended" };
   if (
     row.inviteTokenExpiresAt &&
     row.inviteTokenExpiresAt.getTime() < Date.now()
   )
     return { ok: false, reason: "expired" };
-  if (isRosterLocked(row.tripRequest) && !hasMissingTravelerDetails(row))
-    return { ok: false, reason: "locked" };
 
   return {
     ok: true,

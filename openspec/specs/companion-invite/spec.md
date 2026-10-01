@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green)
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script).
 
 ---
 
@@ -149,7 +149,7 @@ On success, the page MUST show the existing success copy (`landingSuccessTitle`/
 
 The cutoff is `TripRequest.startDate − 72 elapsed hours` for XSED and `startDate − 7 days` for other trips. Before cutoff, authorized travelers MAY edit any row's data on either surface, but MUST NOT add/remove rows. XSED's legacy T-7d `travelersLockedAt` stamps MUST NOT override the new cutoff.
 
-At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Incomplete adult rows MAY be invited or re-invited; valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
+At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Unlinked adult rows with an email MAY be invited or re-invited at any time until the trip ends (`POST /api/travelers/[id]/invite`: `403 ended` after the trip end, `409 already_joined` once an account is linked). A valid, unexpired invite token remains acceptable after the cutoff until the trip ends — the trip day is the UTC calendar day of `endDate`, falling back to `startDate` — and post-cutoff acceptance only links `userId` + consent while populated fields stay protected; a token presented after the trip ends resolves to reason `ended`. Valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
 
 #### Scenario: XSED purchase precedes the new cutoff
 - GIVEN an XSED trip bought Sunday for the following Saturday with an old lock stamp
@@ -161,6 +161,16 @@ At/after cutoff, populated fields MUST be protected server-side and in the UI. E
 - WHEN the buyer saves the ID or the invited companion submits a live token
 - THEN only missing details are filled and the saved identity remains unchanged
 - AND attempts to change populated fields or a previously linked account are rejected
+
+#### Scenario: Late companion can still join
+- GIVEN the cutoff has passed, the trip has not ended, and a populated, unlinked row holds a live token
+- WHEN the companion signs in with the invited email and submits
+- THEN `userId` is linked, consent is stamped, and all populated fields are unchanged
+
+#### Scenario: Token dies when the trip ends
+- GIVEN a live token for a trip whose end date (UTC day) has passed
+- WHEN the link is opened or submitted
+- THEN the response reason is `ended` and nothing is written
 
 #### Scenario: Dashboard Save now persists adult and minor edits
 - GIVEN the buyer edits an adult row's idPassport and a minor row's dateOfBirth on `dashboard/trips/[id]/page.tsx`

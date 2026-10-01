@@ -5925,7 +5925,7 @@
     "landingReasonInvalid": "This invite link isn't valid.",
     "landingReasonExpired": "This invite expired. Ask whoever invited you to send a new one.",
     "landingReasonUsed": "You've already submitted your details with this link.",
-    "landingReasonLocked": "These traveler details are already filled and protected. Contact us if you need to change them.",
+    "landingReasonEnded": "This trip has already ended, so this invite can no longer be used.",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"

@@ -61,3 +61,25 @@ export function computeTravelerCap(paxDetails: unknown): {
     minorRows: Math.max(0, minors),
   };
 }
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * True once the trip is over. The trip day is the UTC calendar day of
+ * `endDate` (falling back to `startDate`), inclusive: an invite stays
+ * acceptable through that whole day. Trips without dates never end.
+ */
+export function isTripEnded(
+  trip: { startDate: Date | null; endDate?: Date | null },
+  now: number = Date.now(),
+): boolean {
+  const reference = trip.endDate ?? trip.startDate;
+  if (!reference) return false;
+  const endOfTripDay =
+    Date.UTC(
+      reference.getUTCFullYear(),
+      reference.getUTCMonth(),
+      reference.getUTCDate(),
+    ) + DAY_MS;
+  return now >= endOfTripDay;
+}

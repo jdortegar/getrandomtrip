@@ -2723,7 +2723,7 @@ export interface InviteTravelersDict {
   landingReasonInvalid: string;
   landingReasonExpired: string;
   landingReasonUsed: string;
-  landingReasonLocked: string;
+  landingReasonEnded: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
   savingAction: string;

@@ -59,6 +59,15 @@ const lockedTrip = {
   id: "trip-1",
   userId: "buyer-1",
   startDate: new Date(Date.now() + 2 * DAY_MS),
+  endDate: new Date(Date.now() + 4 * DAY_MS),
+  travelersLockedAt: null,
+};
+
+const endedTrip = {
+  id: "trip-1",
+  userId: "buyer-1",
+  startDate: new Date(Date.now() - 5 * DAY_MS),
+  endDate: new Date(Date.now() - 2 * DAY_MS),
   travelersLockedAt: null,
 };
 
@@ -73,6 +82,7 @@ function makeAdultRow(overrides: Record<string, unknown> = {}) {
     dateOfBirth: null,
     invitedAt: null,
     submittedAt: null,
+    userId: null,
     tripRequest: futureTrip,
     ...overrides,
   };
@@ -124,16 +134,58 @@ describe("POST /api/travelers/[id]/invite", () => {
     expect(res.status).toBe(200);
   });
 
-  it("returns 403 when the roster is locked", async () => {
+  it("allows re-inviting a fully populated, unlinked adult after the cutoff while the trip has not ended (T1)", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "buyer-1" },
+    });
+    (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce(
+        makeAdultRow({
+          tripRequest: lockedTrip,
+          fullName: "Saved Name",
+          idDocument: "SAVED",
+          status: "INVITED",
+          userId: null,
+        }),
+      )
+      .mockResolvedValueOnce(makeAdultRow({ status: "INVITED" }));
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("late");
+
+    const res = await POST(makeRequest(), makeProps("trav-1"));
+
+    expect(res.status).toBe(200);
+    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "INVITED");
+    expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "late");
+  });
+
+  it("returns 403 ended once the trip has ended (T1)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "buyer-1" },
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue(makeAdultRow({ tripRequest: lockedTrip, fullName: "Saved Name", idDocument: "SAVED" }));
+    ).mockResolvedValue(makeAdultRow({ tripRequest: endedTrip }));
 
     const res = await POST(makeRequest(), makeProps("trav-1"));
+
     expect(res.status).toBe(403);
+    expect((await res.json()).error).toBe("ended");
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("returns 409 already_joined when the companion already linked an account (T1)", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: "buyer-1" },
+    });
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue(makeAdultRow({ userId: "companion-1", status: "COMPLETE" }));
+
+    const res = await POST(makeRequest(), makeProps("trav-1"));
+
+    expect(res.status).toBe(409);
+    expect((await res.json()).error).toBe("already_joined");
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
   });
 
   it("returns 400 for a MINOR row", async () => {

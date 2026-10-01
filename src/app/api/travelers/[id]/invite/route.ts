@@ -2,15 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  isRosterLocked,
-  serializeTraveler,
-} from "@/lib/travelers/travelerRoster";
+import { serializeTraveler } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerInviteEmail } from "@/lib/email";
-
-import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
+import { isTripEnded } from "@/lib/travelers/travelerPolicy";
 
 export const dynamic = "force-dynamic";
 
@@ -18,8 +14,11 @@ export const dynamic = "force-dynamic";
  * POST /api/travelers/[id]/invite — buyer sends or resends an invite email
  * for an ADULT row. Rotates the invite token in place (invalidating any
  * prior link) and flips the row to `INVITED`. Not applicable to MINOR rows
- * (no email field, no invite action). After cutoff, only incomplete rows
- * can be invited; saved identity remains protected.
+ * (no email field, no invite action). The details cutoff does not block
+ * inviting: an unlinked adult can be (re)invited until the trip ends, and
+ * acceptance after the cutoff only links the account (saved identity stays
+ * protected). Rejects with `ended` once the trip is over and `already_joined`
+ * once a companion account is linked.
  */
 export async function POST(
   request: NextRequest,
@@ -48,15 +47,16 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    if (
-      isRosterLocked(traveler.tripRequest) &&
-      !hasMissingTravelerDetails(traveler)
-    ) {
-      return NextResponse.json({ error: "locked" }, { status: 403 });
-    }
-
     if (traveler.kind !== "ADULT") {
       return NextResponse.json({ error: "not_adult" }, { status: 400 });
+    }
+
+    if (isTripEnded(traveler.tripRequest)) {
+      return NextResponse.json({ error: "ended" }, { status: 403 });
+    }
+
+    if (traveler.userId) {
+      return NextResponse.json({ error: "already_joined" }, { status: 409 });
     }
 
     if (!traveler.email?.trim()) {
