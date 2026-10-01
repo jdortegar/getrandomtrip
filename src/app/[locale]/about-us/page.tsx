@@ -11,7 +11,7 @@ import { AboutUsSteps } from "@/components/app/about-us/AboutUsSteps";
 import { TrustHero } from "@/components/app/about-us/TrustHero";
 import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import { showTripperDiscovery } from "@/lib/deployment";
-import { getAllTrippers } from "@/lib/db/tripper-queries";
+import { getDiscoverableTrippers } from "@/lib/tripper/discovery.server";
 import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -46,7 +46,7 @@ export default async function AboutUsPage(props: LocaleParams) {
   const showTrippers = showTripperDiscovery();
   const [aboutUs, rawTrippers] = await Promise.all([
     getDictionary(locale).then((d) => d.aboutUs),
-    showTrippers ? getAllTrippers() : Promise.resolve([]),
+    getDiscoverableTrippers(),
   ]);
 
   const trippers = rawTrippers

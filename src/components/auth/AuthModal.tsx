@@ -89,6 +89,11 @@ export default function AuthModal({
   const showReferrerPicker = showTripperDiscovery();
   const [referredByTripperSlug, setReferredByTripperSlug] =
     useState(NOT_DECIDED_VALUE);
+  // Only a visible picker can be left unanswered; hidden, the cookie decides.
+  const referralChoiceMissing =
+    showReferrerPicker &&
+    mode === "register" &&
+    referredByTripperSlug === NOT_DECIDED_VALUE;
   const [activeTrippers, setActiveTrippers] = useState<ActiveTripperOption[]>(
     [],
   );
@@ -213,11 +218,7 @@ export default function AuthModal({
       setError(t?.invalidEmail ?? "");
       return false;
     }
-    if (
-      showReferrerPicker &&
-      mode === "register" &&
-      referredByTripperSlug === NOT_DECIDED_VALUE
-    ) {
+    if (referralChoiceMissing) {
       setError(t?.referredByRequired ?? "");
       return false;
     }
@@ -367,11 +368,7 @@ export default function AuthModal({
     // the same reviewed/CSRF-guarded endpoint the mode-toggle banner uses
     // (`/api/attribution/mode`) right before handing off to Google. The
     // signIn callback (`auth.ts`) then reads that cookie for the new account.
-    if (
-      showReferrerPicker &&
-      mode === "register" &&
-      referredByTripperSlug === NOT_DECIDED_VALUE
-    ) {
+    if (referralChoiceMissing) {
       setError(googleReferralRequired ?? "");
       return;
     }
@@ -411,6 +408,7 @@ export default function AuthModal({
     isLoading,
     mode,
     referredByTripperSlug,
+    referralChoiceMissing,
     showReferrerPicker,
     googleReferralRequired,
     googleLoginFailed,

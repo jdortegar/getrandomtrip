@@ -25,6 +25,8 @@ export type NavLink = {
   href: string;
   labelKey: NavKeys;
   ariaKey: NavKeys;
+  /** Tripper discovery entry point; hidden while `showTripperDiscovery()` is false. */
+  tripperDiscovery?: boolean;
 };
 
 const NAV_LINKS: NavLink[] = [
@@ -32,6 +34,7 @@ const NAV_LINKS: NavLink[] = [
     href: "/trippers",
     labelKey: "labelTrippers",
     ariaKey: "ariaLabelTrippers",
+    tripperDiscovery: true,
   },
   {
     href: "/experiences",
@@ -88,7 +91,7 @@ export default function Navbar({
   const router = useRouter();
   const navLinks = showTripperDiscovery()
     ? NAV_LINKS
-    : NAV_LINKS.filter((link) => link.href !== "/trippers");
+    : NAV_LINKS.filter((link) => !link.tripperDiscovery);
   // backgroundPrimary forces the solid state (e.g. dashboard, always-solid
   // pages); otherwise this reacts to actual scroll position, transitioning
   // from the transparent hero overlay to solid once scrolled past the top.

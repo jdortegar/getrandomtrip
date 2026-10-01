@@ -82,6 +82,9 @@ it.each([
 it.each([
   ["production", false],
   ["nonproduction", true],
+  [undefined, false],
+  ["", false],
+  ["preview", false],
 ])("showTripperDiscovery for %s deploy is %s", (env, expected) => {
   vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", env);
   expect(showTripperDiscovery()).toBe(expected);
