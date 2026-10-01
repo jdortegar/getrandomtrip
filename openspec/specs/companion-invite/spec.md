@@ -192,6 +192,27 @@ At/after cutoff, populated fields MUST be protected server-side and in the UI. E
 - WHEN the buyer clicks the page's Save button (now wired to `rosterRef.current.saveAll()`)
 - THEN both rows persist identically to editing the same fields on the checkout success page
 
+### Requirement: Auto-Sent Companion Invite
+
+`PATCH /api/travelers/[id]` MUST, after a successful save of an ADULT row with `userId` null on a trip that has not ended, issue a fresh invite token and send the invite email when the saved email is valid and is new (previous email empty) or different (normalized) from the previous one. Re-saving the same email MUST send nothing; changing the email rotates the token so the old link dies. Issue/send failures MUST NOT fail the save. The response carries `invited: true` when an invite went out. The buyer roster action is labeled "Resend invite" and, when a save already auto-sent, the UI MUST NOT POST a second invite.
+
+Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row is never flipped to `COMPLETE` by a buyer save — `COMPLETE` means the companion accepted (it makes the token read as `used`). Roster completeness (`submitted` count, page Save result) is `status in (COMPLETE, INVITED)` with every required detail present (`isTravelerRosterComplete`).
+
+#### Scenario: First email save sends one invite
+- GIVEN an adult row with no email
+- WHEN the buyer saves a valid email
+- THEN exactly one token is issued and one email sent, and the row status is `INVITED`
+
+#### Scenario: Same-email re-save sends nothing
+- GIVEN an adult row already holding `bob@example.com`
+- WHEN the buyer saves ` Bob@Example.com `
+- THEN no token is issued and no email is sent
+
+#### Scenario: Changed email rotates the token
+- GIVEN an invited, unlinked row
+- WHEN the buyer saves a different email
+- THEN a new token is issued (the previous link dies) and a new email is sent
+
 ### Requirement: Automatic XSED Buyer Reminder
 
 The hourly traveler-reminder job MUST email the buyer on its first run at/after T-72h and before departure when a paid, non-cancelled, non-completed XSED trip has missing required companion details, including uninvited or not-yet-materialized roster rows. The localized email MUST link to the buyer's trip detail page and explain that empty fields remain editable while saved details are protected. A completed roster, solo trip, other product, unpaid trip, departed trip, or already-reminded booking MUST NOT receive this email.

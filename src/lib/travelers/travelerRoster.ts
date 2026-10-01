@@ -4,7 +4,7 @@ import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 
 import {
   computeTravelerCap,
-  hasMissingTravelerDetails,
+  isTravelerRosterComplete,
   rosterCutoffMs,
 } from "./travelerPolicy";
 export { computeTravelerCap, ROSTER_CUTOFF_MS } from "./travelerPolicy";
@@ -120,7 +120,7 @@ export async function getRosterForTrip(tripId: string): Promise<TravelerRoster> 
   const startDate = trip.startDate ? trip.startDate.toISOString() : null;
   const locked = isRosterLocked(trip);
   const travelers = trip.travelers.map(serializeTraveler);
-  const submitted = travelers.filter((t) => t.status === "COMPLETE" && !hasMissingTravelerDetails(t)).length;
+  const submitted = travelers.filter(isTravelerRosterComplete).length;
 
   return { deadline, startDate, locked, cap: travelers.length, submitted, travelers };
 }

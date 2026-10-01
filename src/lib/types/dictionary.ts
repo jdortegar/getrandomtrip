@@ -2690,7 +2690,6 @@ export interface InviteTravelersDict {
   idDocumentPlaceholder: string;
   idDocumentPendingPlaceholder: string;
   dateOfBirthLabel: string;
-  sendInviteAction: string;
   resendInviteAction: string;
   saveAction: string;
   lockedActionTitle: string;

@@ -32,7 +32,6 @@ const copy: InviteTravelersDict = {
   idDocumentPlaceholder: "",
   idDocumentPendingPlaceholder: "",
   dateOfBirthLabel: "",
-  sendInviteAction: "",
   resendInviteAction: "",
   saveAction: "Guardar",
   lockedActionTitle: "",

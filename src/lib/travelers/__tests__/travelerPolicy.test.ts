@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
+  isTravelerRosterComplete,
   isTripEnded,
   rosterCutoffMs,
 } from "../travelerPolicy";
@@ -59,5 +60,19 @@ describe("isTripEnded", () => {
   });
   it("is false when the trip has no dates", () => {
     expect(isTripEnded({ startDate: null, endDate: null })).toBe(false);
+  });
+});
+
+describe("isTravelerRosterComplete", () => {
+  const filled = { kind: "ADULT", fullName: "A", email: "a@x.com", idDocument: "1", dateOfBirth: null };
+
+  it.each(["COMPLETE", "INVITED"] as const)("counts a %s row with all details", (status) => {
+    expect(isTravelerRosterComplete({ ...filled, status })).toBe(true);
+  });
+  it("does not count an invited row that still misses details", () => {
+    expect(isTravelerRosterComplete({ ...filled, status: "INVITED", idDocument: " " })).toBe(false);
+  });
+  it("does not count a PENDING row (unsaved or failed save)", () => {
+    expect(isTravelerRosterComplete({ ...filled, status: "PENDING" })).toBe(false);
   });
 });

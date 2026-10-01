@@ -13,7 +13,7 @@ import { getCalendarDaysUntilDeparture } from "@/lib/helpers/getRevealCountdown"
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
-import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
+import { isTravelerRosterComplete } from "@/lib/travelers/travelerPolicy";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 import { TravelerRow, type TravelerRowHandle } from "./TravelerRow";
 
@@ -50,13 +50,13 @@ export const TravelerRosterSection = forwardRef<
       const saved = await Promise.all(
         Array.from(rowRefs.current.values()).map((row) => row.save()),
       );
-      return saved.every((t) => t.status === "COMPLETE" && !hasMissingTravelerDetails(t));
+      return saved.every(isTravelerRosterComplete);
     },
   }));
 
   if (roster.cap === 0) return null;
 
-  const submitted = travelers.filter((t) => t.status === "COMPLETE" && !hasMissingTravelerDetails(t)).length;
+  const submitted = travelers.filter(isTravelerRosterComplete).length;
   const supportHref = pathForLocale(locale, SUPPORT_HREF);
   const supportLink = (
     <Link className="text-secondary underline" href={supportHref}>

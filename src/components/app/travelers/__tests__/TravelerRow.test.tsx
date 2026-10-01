@@ -29,7 +29,6 @@ const copy: InviteTravelersDict = {
   idDocumentPlaceholder: "",
   idDocumentPendingPlaceholder: "",
   dateOfBirthLabel: "",
-  sendInviteAction: "",
   resendInviteAction: "",
   saveAction: "Guardar",
   lockedActionTitle: "",
@@ -202,4 +201,81 @@ it("does not lock a formerly empty field as the user types, only after it is sav
   expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ body: JSON.stringify({ fullName: traveler.fullName, email: traveler.email, idDocument: "PASSPORT" }) }));
   act(() => root.render(<TravelerRow copy={copy} locked onUpdated={vi.fn()} traveler={updated} travelerNumber={2} />));
   expect(input.disabled).toBe(true);
+});
+
+describe("TravelerRow — auto-sent invites (T3)", () => {
+  const textCopy: InviteTravelersDict = {
+    ...copy,
+    resendInviteAction: "Resend invite",
+    invitedNote: "Invited {date}",
+    inviteResentNote: "Invite resent just now",
+    savedNote: "Saved just now",
+  };
+
+  function renderWithText(traveler: TravelerDTO) {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    handleRef = { current: null };
+    act(() => {
+      root.render(
+        <TravelerRow
+          copy={textCopy}
+          locked={false}
+          onUpdated={vi.fn()}
+          ref={(el) => {
+            handleRef.current = el;
+          }}
+          traveler={traveler}
+          travelerNumber={2}
+        />,
+      );
+    });
+  }
+
+  it("labels the invite action 'Resend invite' for every adult row, whatever its status", () => {
+    renderWithText(baseTraveler({ status: "PENDING" }));
+    expect(container.querySelector("button")!.getAttribute("aria-label")).toBe("Resend invite");
+  });
+
+  it("tells the buyer an invite went out when a save auto-sent one", async () => {
+    const updated = baseTraveler({ status: "INVITED", invitedAt: new Date().toISOString() });
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: updated, invited: true }));
+    renderWithText(baseTraveler({ email: null }));
+
+    await act(async () => { await handleRef.current?.save(); });
+
+    expect(container.textContent).toContain("Invited ");
+    expect(container.textContent).not.toContain("{date}");
+    expect(container.textContent).not.toContain("Saved just now");
+  });
+
+  it("does not POST a second invite when the save already auto-sent one", async () => {
+    const updated = baseTraveler({ status: "INVITED", invitedAt: new Date().toISOString() });
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: updated, invited: true }));
+    renderWithText(baseTraveler());
+
+    await act(async () => {
+      container.querySelector("button")!.click();
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe("/api/travelers/trav-1");
+  });
+
+  it("explicitly resends through POST /invite when the save sent nothing (same email)", async () => {
+    const invited = baseTraveler({ status: "INVITED", invitedAt: new Date().toISOString() });
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(Response.json({ traveler: invited }))
+      .mockResolvedValueOnce(Response.json({ traveler: invited }));
+    renderWithText(invited);
+
+    await act(async () => {
+      container.querySelector("button")!.click();
+    });
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(fetch).mock.calls[1][0]).toBe("/api/travelers/trav-1/invite");
+    expect(container.textContent).toContain("Invite resent just now");
+  });
 });

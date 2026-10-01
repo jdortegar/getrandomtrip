@@ -83,3 +83,18 @@ export function isTripEnded(
     ) + DAY_MS;
   return now >= endOfTripDay;
 }
+
+/**
+ * Roster completeness: the row's details are all saved AND it is not a bare
+ * `PENDING` row. `INVITED` rows count — inviting a companion must not make a
+ * fully filled row look incomplete; `COMPLETE` only additionally means the
+ * companion accepted the invite.
+ */
+export function isTravelerRosterComplete(
+  traveler: TravelerIdentity & { status: string },
+): boolean {
+  return (
+    (traveler.status === "COMPLETE" || traveler.status === "INVITED") &&
+    !hasMissingTravelerDetails(traveler)
+  );
+}
