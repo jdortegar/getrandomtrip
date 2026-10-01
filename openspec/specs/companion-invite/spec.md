@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view).
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view, buyer roster badge).
 
 ---
 
@@ -224,6 +224,10 @@ The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buy
 ### Requirement: Joined Companion Email Is Locked
 
 Once a roster row is linked to an account (`userId` set), `PATCH /api/travelers/[id]` MUST reject any change to its email, for every viewer including the buyer, with `403 { error: "email_locked_joined" }` and no write. Re-saving the same address (case/whitespace-insensitive) is not an error and other edits allowed by the cutoff rules keep working. The buyer roster shows the email read-only with a localized hint on a Joined row.
+
+### Requirement: Buyer Roster Invite Badge
+
+Each ADULT row in the buyer's roster MUST show an invite badge derived from saved values: "No email" (no saved email), "Invitation sent {date}" (email, `invitedAt` set, no account linked; "Resend invite" stays available), "Joined" (account linked; "Resend invite" is hidden), or "Invite not sent" (email saved but no invite went out). The existing status badge (missing-details indication) is unchanged. The roster DTO exposes `invitedAt` and a boolean `joined`, never the linked user id.
 
 ### Requirement: Companion Reduced Read-Only View
 

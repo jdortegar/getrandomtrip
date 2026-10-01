@@ -2703,6 +2703,14 @@ export interface InviteTravelersDict {
   incompleteError: string;
   saveErrorGeneric: string;
   sendInviteErrorGeneric: string;
+  /** Buyer roster, adult row without a saved email. */
+  inviteBadgeNoEmail: string;
+  /** Buyer roster, invite emailed and not yet accepted. `{date}` placeholder. */
+  inviteBadgeSent: string;
+  /** Buyer roster, companion linked their account. */
+  inviteBadgeJoined: string;
+  /** Buyer roster, email saved but no invite went out (e.g. the send failed). */
+  inviteBadgeNotSent: string;
   /** Companion view of the roster: title, intro, own-row tag and note on others. */
   companionHeading: string;
   companionSubtitle: string;
