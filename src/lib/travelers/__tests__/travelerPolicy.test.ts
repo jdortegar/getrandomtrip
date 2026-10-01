@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
+  isTravelerRosterComplete,
+  isTripEnded,
   rosterCutoffMs,
 } from "../travelerPolicy";
 
@@ -37,5 +39,40 @@ describe("traveler field policy", () => {
         email: null,
       }),
     ).toBe(true);
+  });
+});
+
+describe("isTripEnded", () => {
+  const noon = (iso: string) => new Date(`${iso}T12:00:00.000Z`).getTime();
+  const trip = { startDate: new Date("2026-10-03T00:00:00.000Z"), endDate: new Date("2026-10-04T00:00:00.000Z") };
+
+  it("is false through the whole end date (inclusive, UTC day)", () => {
+    expect(isTripEnded(trip, noon("2026-10-04"))).toBe(false);
+    expect(isTripEnded(trip, Date.parse("2026-10-04T23:59:59.999Z"))).toBe(false);
+  });
+  it("is true from the day after the end date", () => {
+    expect(isTripEnded(trip, Date.parse("2026-10-05T00:00:00.000Z"))).toBe(true);
+  });
+  it("falls back to startDate when endDate is missing", () => {
+    const oneDay = { startDate: trip.startDate, endDate: null };
+    expect(isTripEnded(oneDay, noon("2026-10-03"))).toBe(false);
+    expect(isTripEnded(oneDay, noon("2026-10-04"))).toBe(true);
+  });
+  it("is false when the trip has no dates", () => {
+    expect(isTripEnded({ startDate: null, endDate: null })).toBe(false);
+  });
+});
+
+describe("isTravelerRosterComplete", () => {
+  const filled = { kind: "ADULT", fullName: "A", email: "a@x.com", idDocument: "1", dateOfBirth: null };
+
+  it.each(["COMPLETE", "INVITED"] as const)("counts a %s row with all details", (status) => {
+    expect(isTravelerRosterComplete({ ...filled, status })).toBe(true);
+  });
+  it("does not count an invited row that still misses details", () => {
+    expect(isTravelerRosterComplete({ ...filled, status: "INVITED", idDocument: " " })).toBe(false);
+  });
+  it("does not count a PENDING row (unsaved or failed save)", () => {
+    expect(isTravelerRosterComplete({ ...filled, status: "PENDING" })).toBe(false);
   });
 });

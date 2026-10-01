@@ -7,10 +7,15 @@ import {
   serializeTraveler,
 } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import { emailsMatch } from "@/lib/travelers/travelerEmail";
+import { sendTravelerInviteEmail } from "@/lib/email";
+import { isValidEmail } from "@/lib/validation/email";
 
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
+  isTripEnded,
 } from "@/lib/travelers/travelerPolicy";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +31,13 @@ export const dynamic = "force-dynamic";
  * partial saves; the row only flips to `COMPLETE` once `fullName`, `email`,
  * and `idDocument` are all present, otherwise the existing status is kept.
  * A row already `COMPLETE` is never downgraded.
+ *
+ * Auto-invite: saving a valid, new or changed email on an unlinked ADULT row
+ * (trip not ended) rotates the invite token and emails the companion — no
+ * button click needed. Re-saving the same address sends nothing. The row
+ * becomes `INVITED`, and an `INVITED` row is never flipped to `COMPLETE` here:
+ * `COMPLETE` means "the companion accepted" (it makes the token read as
+ * `used`), while roster completeness is derived from the saved details.
  */
 export async function PATCH(
   request: NextRequest,
@@ -133,15 +145,23 @@ export async function PATCH(
       dateOfBirth,
     });
 
-    const nextStatus =
-      traveler.status === "COMPLETE"
-        ? "COMPLETE"
+    const shouldInvite =
+      traveler.kind === "ADULT" &&
+      !traveler.userId &&
+      isValidEmail(email ?? "") &&
+      !emailsMatch(traveler.email, email) &&
+      !isTripEnded(traveler.tripRequest);
+
+    const nextStatus = shouldInvite
+      ? "INVITED"
+      : traveler.status === "COMPLETE" || traveler.status === "INVITED"
+        ? traveler.status
         : isComplete
           ? "COMPLETE"
           : traveler.status;
 
     const justCompleted =
-      nextStatus === "COMPLETE" && traveler.status !== "COMPLETE";
+      isComplete && traveler.status !== "COMPLETE" && !traveler.submittedAt;
 
     const updated = await prisma.tripTraveler.update({
       // Compare-and-swap: a concurrent fill must never be overwritten.
@@ -162,6 +182,20 @@ export async function PATCH(
         ...(justCompleted && { submittedAt: new Date() }),
       },
     });
+
+    if (shouldInvite) {
+      try {
+        const plaintext = await issueTravelerInvite(updated.id, updated.status);
+        sendTravelerInviteEmail(updated.id, plaintext);
+        return NextResponse.json({
+          traveler: serializeTraveler({ ...updated, invitedAt: new Date() }),
+          invited: true,
+        });
+      } catch (error) {
+        // The save already succeeded; the buyer can still use "Resend invite".
+        console.error("[travelers/[id]] auto-invite failed:", error);
+      }
+    }
 
     return NextResponse.json({ traveler: serializeTraveler(updated) });
   } catch (error) {

@@ -5892,7 +5892,6 @@
     "idDocumentPlaceholder": "Passport number",
     "idDocumentPendingPlaceholder": "Pending their input",
     "dateOfBirthLabel": "Date of birth",
-    "sendInviteAction": "Send invite",
     "resendInviteAction": "Resend invite",
     "saveAction": "Save",
     "lockedActionTitle": "Locked",
@@ -5925,7 +5924,9 @@
     "landingReasonInvalid": "This invite link isn't valid.",
     "landingReasonExpired": "This invite expired. Ask whoever invited you to send a new one.",
     "landingReasonUsed": "You've already submitted your details with this link.",
-    "landingReasonLocked": "These traveler details are already filled and protected. Contact us if you need to change them.",
+    "landingReasonEnded": "This trip has already ended, so this invite can no longer be used.",
+    "landingEmailMismatch": "This invite was sent to {maskedEmail}. Sign in with that email to continue.",
+    "landingSwitchAccount": "Use a different account",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"

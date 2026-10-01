@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green)
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script).
 
 ---
 
@@ -14,7 +14,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 (Previously: "No-Login Submission" — anonymous submit allowed; account creation was an optional link. Now: authentication via `AuthModal` is mandatory before any identity data can be entered.)
 
-`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; a populated, protected ID after cutoff is not asked again. `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
+`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`, with the invited email prefilled and read-only via `initialEmail` + `lockEmail`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; a populated, protected ID after cutoff is not asked again. `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
 
 #### Scenario: No-session visitor sees wall only
 - GIVEN an unauthenticated visitor opens a valid, unconsumed `/invite/[token]`
@@ -40,6 +40,11 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 - GIVEN a companion just registered and `session.user.emailVerified` is falsy
 - WHEN the page evaluates whether to show step 2
 - THEN step 2 renders anyway; the page gate does not read `emailVerified`
+
+#### Scenario: Signed-in account with a different email is blocked
+- GIVEN a session whose email differs (case-insensitive, trimmed) from the invited email
+- WHEN the page renders step 2
+- THEN no form renders; a localized message shows "This invite was sent to {masked}. Sign in with that email." (masked form `j***@gmail.com`, never the raw address) with a "use a different account" action that signs out
 
 #### Scenario: Consent still gates submit (unchanged)
 - GIVEN step 2 with idDocument filled but consent unchecked
@@ -77,7 +82,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 ### Requirement: Session-Gated Submission Endpoint
 
-`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry and single-use consumption are unchanged. Cutoff protection follows the field-level policy below; populated identity and account ownership must not be overwritten after cutoff.
+`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry and single-use consumption are unchanged. Cutoff protection follows the field-level policy below; populated identity and account ownership must not be overwritten after cutoff. The endpoint MUST reject with `403` and error `email_mismatch` when the normalized (trim + lowercase) session email differs from the normalized `TripTraveler.email`, or when the row has no email; the check runs inside `consumeTravelerInvite` and writes nothing.
 
 #### Scenario: No session rejected
 - GIVEN a request with no active session
@@ -88,6 +93,16 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 - GIVEN an authenticated session for Alex and a payload with a spoofed `fullName`/`email`
 - WHEN submission succeeds
 - THEN new identity values come from `session.user.name`/`session.user.email` and `userId = session.user.id`; at/after cutoff, already populated identity and an existing account link are preserved
+
+#### Scenario: Email mismatch rejected
+- GIVEN a valid token for a row invited as `jane@example.com` and a session for `other@example.com`
+- WHEN the account submits
+- THEN the response is `403 { error: "email_mismatch" }` and the row is unchanged
+
+#### Scenario: Email match is case- and whitespace-insensitive
+- GIVEN a row invited as `jane@example.com` and a session email `Jane@Example.com`
+- WHEN the account submits
+- THEN the claim succeeds
 
 #### Scenario: Token semantics unaffected by auth requirement
 - GIVEN a token already consumed or past `inviteTokenExpiresAt`
@@ -149,7 +164,7 @@ On success, the page MUST show the existing success copy (`landingSuccessTitle`/
 
 The cutoff is `TripRequest.startDate − 72 elapsed hours` for XSED and `startDate − 7 days` for other trips. Before cutoff, authorized travelers MAY edit any row's data on either surface, but MUST NOT add/remove rows. XSED's legacy T-7d `travelersLockedAt` stamps MUST NOT override the new cutoff.
 
-At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Incomplete adult rows MAY be invited or re-invited; valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
+At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Unlinked adult rows with an email MAY be invited or re-invited at any time until the trip ends (`POST /api/travelers/[id]/invite`: `403 ended` after the trip end, `409 already_joined` once an account is linked). A valid, unexpired invite token remains acceptable after the cutoff until the trip ends — the trip day is the UTC calendar day of `endDate`, falling back to `startDate` — and post-cutoff acceptance only links `userId` + consent while populated fields stay protected; a token presented after the trip ends resolves to reason `ended`. Valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
 
 #### Scenario: XSED purchase precedes the new cutoff
 - GIVEN an XSED trip bought Sunday for the following Saturday with an old lock stamp
@@ -162,10 +177,49 @@ At/after cutoff, populated fields MUST be protected server-side and in the UI. E
 - THEN only missing details are filled and the saved identity remains unchanged
 - AND attempts to change populated fields or a previously linked account are rejected
 
+#### Scenario: Late companion can still join
+- GIVEN the cutoff has passed, the trip has not ended, and a populated, unlinked row holds a live token
+- WHEN the companion signs in with the invited email and submits
+- THEN `userId` is linked, consent is stamped, and all populated fields are unchanged
+
+#### Scenario: Token dies when the trip ends
+- GIVEN a live token for a trip whose end date (UTC day) has passed
+- WHEN the link is opened or submitted
+- THEN the response reason is `ended` and nothing is written
+
 #### Scenario: Dashboard Save now persists adult and minor edits
 - GIVEN the buyer edits an adult row's idPassport and a minor row's dateOfBirth on `dashboard/trips/[id]/page.tsx`
 - WHEN the buyer clicks the page's Save button (now wired to `rosterRef.current.saveAll()`)
 - THEN both rows persist identically to editing the same fields on the checkout success page
+
+### Requirement: Auto-Sent Companion Invite
+
+`PATCH /api/travelers/[id]` MUST, after a successful save of an ADULT row with `userId` null on a trip that has not ended, issue a fresh invite token and send the invite email when the saved email is valid and is new (previous email empty) or different (normalized) from the previous one. Re-saving the same email MUST send nothing; changing the email rotates the token so the old link dies. Issue/send failures MUST NOT fail the save. The response carries `invited: true` when an invite went out. The buyer roster action is labeled "Resend invite" and, when a save already auto-sent, the UI MUST NOT POST a second invite.
+
+Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row is never flipped to `COMPLETE` by a buyer save — `COMPLETE` means the companion accepted (it makes the token read as `used`). Roster completeness (`submitted` count, page Save result) is `status in (COMPLETE, INVITED)` with every required detail present (`isTravelerRosterComplete`).
+
+#### Scenario: First email save sends one invite
+- GIVEN an adult row with no email
+- WHEN the buyer saves a valid email
+- THEN exactly one token is issued and one email sent, and the row status is `INVITED`
+
+#### Scenario: Same-email re-save sends nothing
+- GIVEN an adult row already holding `bob@example.com`
+- WHEN the buyer saves ` Bob@Example.com `
+- THEN no token is issued and no email is sent
+
+#### Scenario: Changed email rotates the token
+- GIVEN an invited, unlinked row
+- WHEN the buyer saves a different email
+- THEN a new token is issued (the previous link dies) and a new email is sent
+
+### Requirement: Companion Invite Email
+
+The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buyer} added you to their randomtrip" (en), in the buyer's locale. The body MUST include the localized trip dates and trip type label, MUST mention creating an account to see the trip in the dashboard and confirm details, MUST keep the 7-day expiry line, and MUST NEVER include the destination. The CTA is "VER MI VIAJE" / "SEE MY TRIP".
+
+### Requirement: Companion Invite Backfill Script
+
+`scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The send run requires explicit owner approval of the dry-run list.
 
 ### Requirement: Automatic XSED Buyer Reminder
 

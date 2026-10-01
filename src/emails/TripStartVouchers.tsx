@@ -55,7 +55,7 @@ const desk = "#ededeb";
 
 // ── Copy ─────────────────────────────────────────────────────────────────────
 
-const travelerTypeLabels: Record<"es" | "en", Record<string, string>> = {
+export const travelerTypeLabels: Record<"es" | "en", Record<string, string>> = {
   es: {
     solo: "Solo",
     couple: "Pareja",

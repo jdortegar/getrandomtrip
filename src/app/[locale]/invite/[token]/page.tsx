@@ -34,7 +34,13 @@ export default async function TravelerInvitePage({ params }: Props) {
   } else {
     const peek = await peekTravelerInvite(token);
     resolution = peek.ok
-      ? { ok: true, buyerFirstName: peek.buyerFirstName, idDocumentRequired: peek.idDocumentRequired }
+      ? {
+          ok: true,
+          buyerFirstName: peek.buyerFirstName,
+          idDocumentRequired: peek.idDocumentRequired,
+          invitedEmail: peek.invitedEmail,
+          maskedEmail: peek.maskedEmail,
+        }
       : { ok: false, reason: peek.reason };
   }
 

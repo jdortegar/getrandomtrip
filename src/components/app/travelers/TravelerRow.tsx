@@ -36,6 +36,13 @@ const STATUS_LABEL: Record<TravelerDTO["status"], keyof InviteTravelersDict> = {
   COMPLETE: "statusComplete",
 };
 
+function formatInvitedNote(template: string, invitedAt: string | null): string {
+  return template.replace(
+    "{date}",
+    (invitedAt ? new Date(invitedAt) : new Date()).toLocaleDateString(),
+  );
+}
+
 function toDateInputValue(iso: string | null): string {
   if (!iso) return "";
   return iso.slice(0, 10);
@@ -98,8 +105,13 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           );
           return traveler;
         }
-        setNote(copy.savedNote);
         const updated = data.traveler as TravelerDTO;
+        // The server emails the companion when a new/changed email is saved.
+        setNote(
+          data.invited
+            ? formatInvitedNote(copy.invitedNote, updated.invitedAt)
+            : copy.savedNote,
+        );
         onUpdated(updated);
         return updated;
       } catch {
@@ -126,7 +138,14 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           setError(copy.saveErrorGeneric);
           return;
         }
-        onUpdated(saveResult.data.traveler as TravelerDTO);
+        const saved = saveResult.data.traveler as TravelerDTO;
+        onUpdated(saved);
+        if (saveResult.data.invited) {
+          // Saving a new/changed email already sent the invite — a second
+          // POST would email the companion twice and rotate the fresh token.
+          setNote(formatInvitedNote(copy.invitedNote, saved.invitedAt));
+          return;
+        }
         const res = await fetch(`/api/travelers/${traveler.id}/invite`, {
           method: "POST",
         });
@@ -135,12 +154,13 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           setError(copy.sendInviteErrorGeneric);
           return;
         }
+        const invited = data.traveler as TravelerDTO;
         setNote(
           traveler.status === "INVITED"
             ? copy.inviteResentNote
-            : copy.invitedNote,
+            : formatInvitedNote(copy.invitedNote, invited.invitedAt),
         );
-        onUpdated(data.traveler as TravelerDTO);
+        onUpdated(invited);
       } catch {
         setError(copy.sendInviteErrorGeneric);
       } finally {
@@ -156,10 +176,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         : !isAdult
           ? copy.minorFilledByBuyerNote
           : traveler.status === "INVITED" && traveler.invitedAt
-            ? copy.invitedNote.replace(
-                "{date}",
-                new Date(traveler.invitedAt).toLocaleDateString(),
-              )
+            ? formatInvitedNote(copy.invitedNote, traveler.invitedAt)
             : null;
 
     return (
@@ -237,11 +254,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
               danger={false}
               disabled={!email.trim() || saving}
               onClick={() => void handleSendInvite()}
-              title={
-                traveler.status === "INVITED"
-                  ? copy.resendInviteAction
-                  : copy.sendInviteAction
-              }
+              title={copy.resendInviteAction}
             >
               {saving ? (
                 <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

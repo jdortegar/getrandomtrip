@@ -21,8 +21,18 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
+  issueTravelerInvite: vi.fn(),
+}));
+
+vi.mock("@/lib/email", () => ({
+  sendTravelerInviteEmail: vi.fn(),
+}));
+
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import { sendTravelerInviteEmail } from "@/lib/email";
 
 type RouteModule = typeof import("../route");
 
@@ -51,6 +61,15 @@ const lockedTrip = {
   id: "trip-1",
   userId: "buyer-1",
   startDate: new Date(Date.now() + 2 * DAY_MS),
+  endDate: new Date(Date.now() + 4 * DAY_MS),
+  travelersLockedAt: null,
+};
+
+const endedTrip = {
+  id: "trip-1",
+  userId: "buyer-1",
+  startDate: new Date(Date.now() - 5 * DAY_MS),
+  endDate: new Date(Date.now() - 2 * DAY_MS),
   travelersLockedAt: null,
 };
 
@@ -65,6 +84,7 @@ function makeAdultRow(overrides: Record<string, unknown> = {}) {
     dateOfBirth: null,
     invitedAt: null,
     submittedAt: null,
+    userId: null,
     tripRequest: futureTrip,
     ...overrides,
   };
@@ -176,11 +196,11 @@ describe("PATCH /api/travelers/[id]", () => {
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue(makeAdultRow());
+    ).mockResolvedValue(makeAdultRow({ email: "bob@example.com" }));
     (
       prisma.tripTraveler.update as ReturnType<typeof vi.fn>
     ).mockImplementation(({ data }: { data: Record<string, unknown> }) => ({
-      ...makeAdultRow(),
+      ...makeAdultRow({ email: "bob@example.com" }),
       ...data,
     }));
 
@@ -196,6 +216,7 @@ describe("PATCH /api/travelers/[id]", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.traveler.status).toBe("COMPLETE");
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
 
     const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
@@ -343,5 +364,128 @@ describe("PATCH late completion", () => {
     const { PATCH } = await import("../route");
     expect((await PATCH(makeRequest(body), makeProps("trav-1"))).status).toBe(400);
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("PATCH auto-send invite (T3)", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "buyer-1" } });
+    vi.mocked(prisma.tripRequest.count).mockResolvedValue(1);
+    vi.mocked(issueTravelerInvite).mockResolvedValue("plain-token");
+    (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ ...currentRow, ...data }) as never,
+    );
+  });
+
+  let currentRow: ReturnType<typeof makeAdultRow>;
+  async function patch(row: ReturnType<typeof makeAdultRow>, body: Record<string, unknown>) {
+    currentRow = row;
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    const { PATCH } = await import("../route");
+    return PATCH(makeRequest(body), makeProps("trav-1"));
+  }
+
+  it("issues a token and sends one invite when an email is first saved", async () => {
+    const res = await patch(makeAdultRow(), { fullName: "Bob", email: "bob@example.com" });
+
+    expect(res.status).toBe(200);
+    expect(issueTravelerInvite).toHaveBeenCalledTimes(1);
+    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "INVITED");
+    expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "plain-token");
+    const body = await res.json();
+    expect(body.invited).toBe(true);
+    expect(body.traveler.status).toBe("INVITED");
+  });
+
+  it("sends nothing when the same email is re-saved (case/whitespace-insensitive)", async () => {
+    const res = await patch(makeAdultRow({ email: "bob@example.com", status: "INVITED" }), {
+      email: " Bob@Example.com ",
+      fullName: "Bob Renamed",
+    });
+
+    expect(res.status).toBe(200);
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
+    expect((await res.json()).invited).toBeUndefined();
+  });
+
+  it("rotates the token and re-sends when the email changes on an unlinked row", async () => {
+    await patch(makeAdultRow({ email: "old@example.com", status: "INVITED" }), {
+      email: "new@example.com",
+    });
+
+    expect(issueTravelerInvite).toHaveBeenCalledTimes(1);
+    expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "plain-token");
+  });
+
+  it("does not send when the row is already linked to an account", async () => {
+    await patch(makeAdultRow({ email: "old@example.com", userId: "companion-1", status: "COMPLETE" }), {
+      email: "new@example.com",
+    });
+
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["an invalid email", { email: "not-an-email" }, makeAdultRow()],
+    ["no email in the payload", { fullName: "Bob" }, makeAdultRow()],
+    ["a cleared email", { email: "" }, makeAdultRow({ email: "old@example.com" })],
+  ])("does not send for %s", async (_, body, row) => {
+    const res = await patch(row, body);
+
+    expect(res.status).toBe(200);
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
+  });
+
+  it("does not send for MINOR rows", async () => {
+    await patch(
+      makeMinorRow() as never,
+      { fullName: "Kid", dateOfBirth: "2016-01-01", idDocument: "1", email: "kid@example.com" },
+    );
+
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("does not send once the trip has ended", async () => {
+    await patch(makeAdultRow({ tripRequest: endedTrip }), { email: "bob@example.com" });
+
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("sends after the cutoff for a newly saved email while the trip is still running", async () => {
+    const res = await patch(
+      makeAdultRow({ tripRequest: lockedTrip, fullName: "Saved", idDocument: "ID" }),
+      { email: "bob@example.com" },
+    );
+
+    expect(res.status).toBe(200);
+    expect(sendTravelerInviteEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps a fully populated invited row INVITED (its token must stay usable)", async () => {
+    const res = await patch(
+      makeAdultRow({ email: "bob@example.com", status: "INVITED", fullName: "Bob" }),
+      { idDocument: "ID123" },
+    );
+
+    const args = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
+    expect(args.data.status).toBe("INVITED");
+    expect((await res.json()).traveler.status).toBe("INVITED");
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("still saves and answers 200 when issuing the invite fails", async () => {
+    vi.mocked(issueTravelerInvite).mockRejectedValue(new Error("db down"));
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await patch(makeAdultRow(), { email: "bob@example.com" });
+
+    expect(res.status).toBe(200);
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
+    expect((await res.json()).invited).toBeUndefined();
+    spy.mockRestore();
   });
 });
