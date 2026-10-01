@@ -9,7 +9,7 @@ const { db, sendMailMock } = vi.hoisted(() => ({
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 vi.mock("@/lib/helpers/sendMail", () => ({ sendMail: sendMailMock }));
 
-import { sendVerificationEmail } from "../index";
+import { deliverVerificationEmail, sendVerificationEmail } from "../index";
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -41,5 +41,34 @@ describe("sendVerificationEmail return path (T12)", () => {
     const html = await sentHtml();
     expect(html).not.toContain("next=");
     expect(html).not.toContain("evil");
+  });
+});
+
+describe("deliverVerificationEmail (awaitable)", () => {
+  it("resolves after sending and includes a valid return path", async () => {
+    await deliverVerificationEmail("user-1", "tok", "/en/invite/abc123");
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react).replace(/&amp;/g, "&");
+    expect(html).toContain("/en/verify-email?token=tok&next=%2Fen%2Finvite%2Fabc123");
+  });
+
+  it("throws when the mail provider fails", async () => {
+    sendMailMock.mockRejectedValue(new Error("smtp down"));
+    await expect(deliverVerificationEmail("user-1", "tok")).rejects.toThrow("smtp down");
+  });
+
+  it("returns without sending when the user has no email", async () => {
+    db.user.findUnique.mockResolvedValue({ email: null, name: "J", locale: "en" });
+    await expect(deliverVerificationEmail("user-1", "tok")).resolves.toBeUndefined();
+    expect(sendMailMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("sendVerificationEmail failure handling", () => {
+  it("swallows and logs provider failures", async () => {
+    sendMailMock.mockRejectedValue(new Error("smtp down"));
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(() => sendVerificationEmail("user-1", "tok")).not.toThrow();
+    await vi.waitFor(() => expect(errSpy).toHaveBeenCalled());
   });
 });

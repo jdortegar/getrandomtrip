@@ -257,3 +257,140 @@ describe("TravelerInviteClient — verified email required (T12)", () => {
     expect(container.textContent).not.toContain(inbox);
   });
 });
+
+describe("TravelerInviteClient — inbox address (T16)", () => {
+  const unverified = (email: string) => {
+    sessionState.value = {
+      status: "authenticated",
+      data: { user: { email, emailVerified: false } },
+    };
+  };
+
+  it("names the session account's own (masked) address, not the invited one", () => {
+    unverified("other.person@example.com");
+    render({ ...okResolution, emailMismatch: false });
+
+    expect(container.textContent).toContain(
+      copy.landingVerifyInbox.replace("{maskedEmail}", "o***@example.com"),
+    );
+    expect(container.textContent).not.toContain("j***@gmail.com");
+    expect(container.textContent).not.toContain("other.person@example.com");
+  });
+
+  it("names the invited address when it is also the session address", () => {
+    unverified("jane.doe@gmail.com");
+    render(matchingResolution);
+
+    expect(container.textContent).toContain(
+      copy.landingVerifyInbox.replace("{maskedEmail}", "j***@gmail.com"),
+    );
+  });
+
+  it("lets the mismatch state win over the inbox state and offers no resend", () => {
+    unverified("other.person@example.com");
+    render({ ...okResolution, emailMismatch: true });
+
+    expect(container.textContent).toContain(
+      copy.landingEmailMismatch.replace("{maskedEmail}", "j***@gmail.com"),
+    );
+    expect(container.textContent).not.toContain(copy.landingResendCta);
+  });
+});
+
+describe("TravelerInviteClient — resend verification (T15)", () => {
+  const resendButton = () =>
+    [...container.querySelectorAll("button")].find(
+      (b) => b.textContent?.includes(copy.landingResendCta) || b.getAttribute("aria-busy") === "true",
+    ) as HTMLButtonElement | undefined;
+
+  beforeEach(() => {
+    sessionState.value = {
+      status: "authenticated",
+      data: { user: { email: "jane.doe@gmail.com", emailVerified: false } },
+    };
+  });
+
+  it.each([
+    ["en", enCopy.inviteTravelers],
+    ["es", esCopy.inviteTravelers],
+  ])("has localized resend copy (%s)", (_, dict) => {
+    for (const key of [
+      "landingResendCta",
+      "landingResendPending",
+      "landingResendSent",
+      "landingResendCooldown",
+      "landingResendAlreadyVerified",
+      "landingResendError",
+    ] as const) {
+      expect(dict[key].length).toBeGreaterThan(0);
+    }
+  });
+
+  it("posts the invite return path and confirms the send", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ ok: true }));
+    render(matchingResolution);
+
+    await act(async () => resendButton()!.click());
+
+    expect(fetch).toHaveBeenCalledWith("/api/auth/resend-verification", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ returnPath: "/en/invite/tok" }),
+    });
+    expect(container.textContent).toContain(copy.landingResendSent);
+  });
+
+  it("shows a busy state and ignores a second click while pending", async () => {
+    let resolve!: (r: Response) => void;
+    vi.mocked(fetch).mockReturnValue(new Promise<Response>((r) => (resolve = r)));
+    render(matchingResolution);
+
+    await act(async () => resendButton()!.click());
+    const busy = container.querySelector<HTMLButtonElement>('button[aria-busy="true"]')!;
+    expect(busy.disabled).toBe(true);
+    expect(busy.textContent).toContain(copy.landingResendPending);
+    await act(async () => busy.click());
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    await act(async () => resolve(Response.json({ ok: true })));
+    expect(container.querySelector('button[aria-busy="true"]')).toBeNull();
+    expect(container.textContent).toContain(copy.landingResendSent);
+  });
+
+  it("explains the cooldown on 429 and allows trying again later", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      Response.json({ error: "cooldown", retryAfterSeconds: 30 }, { status: 429 }),
+    );
+    render(matchingResolution);
+
+    await act(async () => resendButton()!.click());
+
+    expect(container.textContent).toContain(copy.landingResendCooldown);
+    expect(container.textContent).not.toContain(copy.landingResendSent);
+    expect(resendButton()!.disabled).toBe(false);
+  });
+
+  it("says the account is already verified on 409", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      Response.json({ error: "already_verified" }, { status: 409 }),
+    );
+    render(matchingResolution);
+
+    await act(async () => resendButton()!.click());
+
+    expect(container.textContent).toContain(copy.landingResendAlreadyVerified);
+  });
+
+  it.each([
+    ["a server error", () => vi.mocked(fetch).mockResolvedValue(Response.json({ error: "internal_error" }, { status: 500 }))],
+    ["a network failure", () => vi.mocked(fetch).mockRejectedValue(new Error("offline"))],
+  ])("shows a generic error on %s and allows retry", async (_, arrange) => {
+    arrange();
+    render(matchingResolution);
+
+    await act(async () => resendButton()!.click());
+
+    expect(container.textContent).toContain(copy.landingResendError);
+    expect(resendButton()!.disabled).toBe(false);
+  });
+});
