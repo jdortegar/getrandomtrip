@@ -336,8 +336,20 @@ describe("signIn() callback — Google verifies the email (T12)", () => {
     expect(await googleSignIn()).toBe(true);
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: "u-1" },
-      data: { emailVerified: expect.any(Date) },
+      data: { emailVerified: expect.any(Date), password: null },
     });
+  });
+
+  it("drops the unverified account's password so a pre-registered attacker cannot log in after Google verifies it", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "u-1", email: "jane@example.com", emailVerified: null, deactivatedAt: null,
+      password: "$2b$10$attacker-chosen-hash",
+    });
+
+    await googleSignIn();
+
+    const updateData = (prisma.user.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(updateData.password).toBeNull();
   });
 
   it("leaves an already-verified account's timestamp alone", async () => {

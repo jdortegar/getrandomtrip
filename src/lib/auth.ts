@@ -270,7 +270,10 @@ export const authOptions: NextAuthOptions = {
 
         // Google only returns verified addresses, so signing in with it proves
         // ownership of an account that registered with a password and never
-        // clicked its verification link.
+        // clicked its verification link. That password was never proven to
+        // belong to the inbox owner (anyone can pre-register an address), so
+        // it is dropped: verifying it would hand the account to whoever chose
+        // it. The owner can set a new password through password reset.
         if (
           account?.provider === "google" &&
           !isNewGoogleUser &&
@@ -278,7 +281,7 @@ export const authOptions: NextAuthOptions = {
         ) {
           await prisma.user.update({
             where: { id: dbUser.id },
-            data: { emailVerified: new Date() },
+            data: { emailVerified: new Date(), password: null },
           });
         }
 
