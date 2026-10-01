@@ -15,6 +15,7 @@ import { COOKIE_LOCALE, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { pathForLocale, pathWithoutLocale } from "@/lib/i18n/pathForLocale";
 import { cn } from "@/lib/utils";
+import { showTripperDiscovery } from "@/lib/deployment";
 
 export type NavbarVariant = "overlay" | "auto" | "solid";
 
@@ -85,6 +86,9 @@ export default function Navbar({
 }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const navLinks = showTripperDiscovery()
+    ? NAV_LINKS
+    : NAV_LINKS.filter((link) => link.href !== "/trippers");
   // backgroundPrimary forces the solid state (e.g. dashboard, always-solid
   // pages); otherwise this reacts to actual scroll position, transitioning
   // from the transparent hero overlay to solid once scrolled past the top.
@@ -166,7 +170,7 @@ export default function Navbar({
 
           {/* Desktop nav — visible from xl (1280px) up */}
           <div className="hidden xl:flex items-center gap-6 text-sm font-medium">
-            {NAV_LINKS.map((link) => {
+            {navLinks.map((link) => {
               const active = isActive(link.href);
               return (
                 <Link
@@ -276,7 +280,7 @@ export default function Navbar({
         isActive={isActive}
         isAuthed={isAuthed}
         isOpen={isMobileMenuOpen}
-        links={NAV_LINKS}
+        links={navLinks}
         nav={nav}
         onClose={closeMobileMenu}
         onLocaleChange={switchLocale}

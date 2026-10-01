@@ -15,6 +15,7 @@ import {
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
+import { showTripperDiscovery } from "@/lib/deployment";
 import { HomePageClient } from "./HomePageClient";
 
 export async function generateMetadata(props: {
@@ -45,7 +46,7 @@ export default async function HomePage(props: {
   const resolvedLocale = hasLocale(locale) ? locale : "es";
   const [trippers, testimonials, blogPosts, dict, requestHeaders, query] =
     await Promise.all([
-      getAllTrippers(),
+      showTripperDiscovery() ? getAllTrippers() : Promise.resolve([]),
       getHomepageTestimonials(),
       getRecentPublishedBlogs(5, resolvedLocale),
       getDictionary(resolvedLocale),

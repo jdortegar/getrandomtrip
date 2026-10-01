@@ -10,6 +10,7 @@ import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { Loader2, X } from "lucide-react";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { isValidPassword } from "@/lib/validation/password";
+import { showTripperDiscovery } from "@/lib/deployment";
 import { isValidEmail } from "@/lib/validation/email";
 import { registerErrorMessage } from "@/lib/auth/registerErrorMessages";
 import { useGoogleProvider } from "@/lib/hooks/useGoogleProvider";
@@ -79,8 +80,13 @@ export default function AuthModal({
   // sentinel previously meant an in-flight/failed pre-fill fetch always sent
   // `null`, silently and permanently losing a real cookie-based referral
   // (write-once field) if the user submitted before it resolved.
+  //
+  // In production the picker is hidden (tripper discovery is off): the value
+  // stays NOT_DECIDED_VALUE, nothing is fetched or required, and the cookie
+  // fallback above applies exactly as before.
   const NOT_DECIDED_VALUE = "";
   const NONE_OPTION_VALUE = "none";
+  const showReferrerPicker = showTripperDiscovery();
   const [referredByTripperSlug, setReferredByTripperSlug] =
     useState(NOT_DECIDED_VALUE);
   const [activeTrippers, setActiveTrippers] = useState<ActiveTripperOption[]>(
@@ -154,6 +160,7 @@ export default function AuthModal({
   // value (spec "Pre-filled from anonymous cookie"). Best-effort: a fetch
   // failure just leaves the picker on its "None" default.
   useEffect(() => {
+    if (!showReferrerPicker) return;
     if (mode !== "register" || hasFetchedActiveTrippers) return;
 
     fetch("/api/trippers/active")
@@ -179,7 +186,7 @@ export default function AuthModal({
         // No-op — register still works with the "not yet decided" default,
         // which falls back to the cookie server-side on submit.
       });
-  }, [mode, hasFetchedActiveTrippers]);
+  }, [mode, hasFetchedActiveTrippers, showReferrerPicker]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -206,7 +213,11 @@ export default function AuthModal({
       setError(t?.invalidEmail ?? "");
       return false;
     }
-    if (mode === "register" && referredByTripperSlug === NOT_DECIDED_VALUE) {
+    if (
+      showReferrerPicker &&
+      mode === "register" &&
+      referredByTripperSlug === NOT_DECIDED_VALUE
+    ) {
       setError(t?.referredByRequired ?? "");
       return false;
     }
@@ -356,7 +367,11 @@ export default function AuthModal({
     // the same reviewed/CSRF-guarded endpoint the mode-toggle banner uses
     // (`/api/attribution/mode`) right before handing off to Google. The
     // signIn callback (`auth.ts`) then reads that cookie for the new account.
-    if (mode === "register" && referredByTripperSlug === NOT_DECIDED_VALUE) {
+    if (
+      showReferrerPicker &&
+      mode === "register" &&
+      referredByTripperSlug === NOT_DECIDED_VALUE
+    ) {
       setError(googleReferralRequired ?? "");
       return;
     }
@@ -365,7 +380,7 @@ export default function AuthModal({
     setIsLoading(true);
     setError("");
     try {
-      if (mode === "register") {
+      if (showReferrerPicker && mode === "register") {
         const syncResponse = await fetch("/api/attribution/mode", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -396,6 +411,7 @@ export default function AuthModal({
     isLoading,
     mode,
     referredByTripperSlug,
+    showReferrerPicker,
     googleReferralRequired,
     googleLoginFailed,
   ]);
@@ -612,7 +628,7 @@ export default function AuthModal({
                   />
                 </div>
 
-                {mode === "register" && (
+                {showReferrerPicker && mode === "register" && (
                   <div>
                     <FormSelectField
                       id="auth-referred-by-tripper"

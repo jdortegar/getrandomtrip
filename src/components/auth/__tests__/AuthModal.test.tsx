@@ -170,6 +170,7 @@ async function clickGoogleButton() {
 }
 
 beforeEach(() => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -182,6 +183,7 @@ afterEach(() => {
   });
   container.remove();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
   vi.clearAllMocks();
 });
 
@@ -559,4 +561,48 @@ it("does not call an OAuth button click a successful authentication", async () =
   await clickGoogleButton();
   expect(signInMock).toHaveBeenCalledWith("google", expect.anything());
   expect(trackCustomEvent).not.toHaveBeenCalled();
+});
+
+describe("AuthModal in production — tripper referrer picker is hidden", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "production");
+  });
+
+  it("renders no picker and never fetches the active trippers", async () => {
+    const fetchMock = mockFetchSequence(null);
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(container.querySelector("#auth-referred-by-tripper")).toBeNull();
+    expect(
+      fetchMock.mock.calls.some((args) => args[0] === "/api/trippers/active"),
+    ).toBe(false);
+  });
+
+  it("registers without a referrer and omits the key so the server uses the cookie", async () => {
+    const fetchMock = mockFetchSequence(null);
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+    fillRequiredFields();
+    await submitForm();
+
+    const body = getRegisterRequestBody(fetchMock);
+    expect(body).not.toBeNull();
+    expect(body).not.toHaveProperty("referredByTripperSlug");
+  });
+
+  it("starts Google register without the referral gate or the mode-sync call", async () => {
+    const fetchMock = mockFetchSequence(null);
+
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+    await clickGoogleButton();
+
+    expect(
+      fetchMock.mock.calls.some((args) => args[0] === "/api/attribution/mode"),
+    ).toBe(false);
+    expect(signInMock).toHaveBeenCalledWith("google", expect.anything());
+  });
 });

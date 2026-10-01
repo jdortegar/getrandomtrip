@@ -4,6 +4,7 @@ import {
   getBlobStoreName,
   getNonproductionOrigin,
   isProductionDeployment,
+  showTripperDiscovery,
 } from "../deployment";
 import { configureAuthEnvironment } from "../auth/environment";
 
@@ -77,3 +78,11 @@ it.each([
     expect(process.env.NEXTAUTH_URL_INTERNAL).toBe("");
   },
 );
+
+it.each([
+  ["production", false],
+  ["nonproduction", true],
+])("showTripperDiscovery for %s deploy is %s", (env, expected) => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", env);
+  expect(showTripperDiscovery()).toBe(expected);
+});

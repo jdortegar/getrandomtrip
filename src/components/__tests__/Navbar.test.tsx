@@ -26,6 +26,7 @@ afterEach(() => {
   harness.unmount();
   vi.restoreAllMocks();
   document.cookie = "NEXT_LOCALE=; path=/; max-age=0";
+  vi.unstubAllEnvs();
 });
 function render(locale: Locale = "es") {
   harness.render(<Navbar backgroundPrimary dict={dict} locale={locale} />);
@@ -45,6 +46,7 @@ it.each([
   { locale: "en", copy: en, prefix: "/en" },
   { locale: "es", copy: es, prefix: "" },
 ] as const)("includes About Us in desktop and mobile navigation in $locale", ({ locale, copy, prefix }) => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
   const localizedDict = copy as unknown as Dictionary;
   harness.render(<Navbar backgroundPrimary dict={localizedDict} locale={locale} />);
   const expectedLinks = ["/trippers", "/experiences", "/xsed", "/blog", "/about-us", "/contact"].map(
@@ -64,6 +66,15 @@ it.each([
     expect(link.textContent).toBe(localizedDict.nav.labelNosotros);
     expect(link.getAttribute("aria-label")).toBe(localizedDict.nav.ariaLabelNosotros);
   }
+});
+
+it("hides the Trippers link on desktop and mobile in production", () => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "production");
+  render("es");
+  expect(harness.container.querySelector('a[href="/trippers"]')).toBeNull();
+  harness.click(harness.container.querySelector<HTMLButtonElement>(`button[aria-label="${dict.nav.openMenu}"]`)!);
+  expect(harness.container.querySelector('a[href="/trippers"]')).toBeNull();
+  expect(harness.container.querySelector('[role="dialog"] a[href="/experiences"]')).not.toBeNull();
 });
 
 it.each(["XSED", "TGIS"])("keeps %s as plain navigation text on desktop and mobile", (label) => {
@@ -136,6 +147,7 @@ it.each(["outside click", "Escape"])(
 );
 
 it("uses the current route and locale after rerender, without persisting during render", () => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
   const cookie = vi.spyOn(document, "cookie", "set");
   render();
   navigation.path = "/en/trippers/alex";
