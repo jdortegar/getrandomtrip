@@ -1,21 +1,30 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import AuthModal from "@/components/auth/AuthModal";
+import { emailsMatch } from "@/lib/travelers/travelerEmail";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 
-type Reason = "invalid" | "expired" | "used" | "locked";
+type Reason = "invalid" | "expired" | "used" | "ended";
 export type TravelerInviteResolution =
-  | { ok: true; buyerFirstName: string; idDocumentRequired?: boolean }
+  | {
+      ok: true;
+      buyerFirstName: string;
+      idDocumentRequired?: boolean;
+      /** Address the invite was sent to; prefilled and locked in the sign-up form. */
+      invitedEmail?: string | null;
+      /** Masked form (`j***@gmail.com`) shown when another account is signed in. */
+      maskedEmail?: string | null;
+    }
   | { ok: false; reason: Reason };
 
 type FormState = "form" | "submitting" | "success";
@@ -44,7 +53,9 @@ export default function TravelerInviteClient({
       buyerFirstName={resolution.buyerFirstName}
       copy={copy}
       idDocumentRequired={resolution.idDocumentRequired ?? true}
+      invitedEmail={resolution.invitedEmail ?? null}
       locale={locale}
+      maskedEmail={resolution.maskedEmail ?? null}
       token={token} data-component="TravelerInviteClient"
     />
   );
@@ -71,7 +82,7 @@ function ErrorCard({
     invalid: copy.landingReasonInvalid,
     expired: copy.landingReasonExpired,
     used: copy.landingReasonUsed,
-    locked: copy.landingReasonLocked,
+    ended: copy.landingReasonEnded,
   };
 
   return (
@@ -90,19 +101,31 @@ function InviteForm({
   buyerFirstName,
   copy,
   idDocumentRequired,
+  invitedEmail,
   locale,
+  maskedEmail,
   token,
 }: {
   authCopy: Pick<Dictionary, "auth">;
   buyerFirstName: string;
   idDocumentRequired: boolean;
   copy: InviteTravelersDict;
+  invitedEmail: string | null;
   locale: Locale;
+  maskedEmail: string | null;
   token: string | null;
 }) {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const authenticated = status === "authenticated";
+  // The invite is bound to one address: a signed-in account with another email
+  // cannot claim it (the server enforces the same rule on submit).
+  const [serverMismatch, setServerMismatch] = useState(false);
+  const emailMismatch =
+    serverMismatch ||
+    (authenticated &&
+      Boolean(invitedEmail) &&
+      !emailsMatch(session?.user?.email, invitedEmail));
   const [authOpen, setAuthOpen] = useState(false);
   const [state, setState] = useState<FormState>("form");
   const [idDocument, setIdDocument] = useState("");
@@ -173,6 +196,11 @@ function InviteForm({
       }
 
       const data = await res.json();
+      if (res.status === 403 && data?.error === "email_mismatch") {
+        setState("form");
+        setServerMismatch(true);
+        return;
+      }
       if (!res.ok || !data.ok) {
         setState("form");
         setError(copy.landingGenericError);
@@ -231,7 +259,30 @@ function InviteForm({
           </div>
         )}
 
-        {!authenticated ? (
+        {emailMismatch ? (
+          <div className="mt-6 text-left">
+            <div
+              className="rounded-md border border-amber-200 bg-amber-50 p-4"
+              role="alert"
+            >
+              <p className="text-sm text-amber-800">
+                {copy.landingEmailMismatch.replace(
+                  "{maskedEmail}",
+                  maskedEmail ?? "",
+                )}
+              </p>
+            </div>
+            <Button
+              className="mt-5 w-full"
+              onClick={() => void signOut({ callbackUrl: window.location.href })}
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              {copy.landingSwitchAccount}
+            </Button>
+          </div>
+        ) : !authenticated ? (
           <div className="mt-6 text-left">
             <p className="text-sm text-neutral-600">
               {copy.landingSignupExplainer}
@@ -294,7 +345,9 @@ function InviteForm({
         allowRegister
         defaultMode="register"
         dict={authCopy}
+        initialEmail={invitedEmail ?? undefined}
         isOpen={authOpen}
+        lockEmail={Boolean(invitedEmail)}
         onClose={() => setAuthOpen(false)}
       />
     </>

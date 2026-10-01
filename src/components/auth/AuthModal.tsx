@@ -30,6 +30,8 @@ interface AuthModalProps {
   dict?: Pick<Dictionary, "auth">;
   /** Pre-fills the email field, e.g. after landing here from a verify-email redirect. */
   initialEmail?: string;
+  /** Makes the email field read-only (e.g. an invite bound to one address). Requires `initialEmail`. */
+  lockEmail?: boolean;
   onClose: () => void;
   isOpen: boolean;
 }
@@ -39,6 +41,7 @@ export default function AuthModal({
   defaultMode = "login",
   dict,
   initialEmail,
+  lockEmail = false,
   isOpen,
   onClose,
 }: AuthModalProps) {
@@ -104,7 +107,7 @@ export default function AuthModal({
   const handleAuthSuccess = useCallback(() => {
     // Clear form state
     setName("");
-    setEmail("");
+    setEmail(lockEmail && initialEmail ? initialEmail : "");
     setPassword("");
     setError("");
     setErrorKind(null);
@@ -118,7 +121,7 @@ export default function AuthModal({
 
     // Let the page handle what happens next after authentication
     // No redirects - the page will detect the auth state change and proceed
-  }, [onClose]);
+  }, [onClose, lockEmail, initialEmail]);
 
   // Handle close - just close the modal, don't redirect
   const handleClose = useCallback(() => {
@@ -603,6 +606,7 @@ export default function AuthModal({
                     label={t?.email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t?.emailPlaceholder}
+                    readOnly={lockEmail && Boolean(initialEmail)}
                     required
                     type="email"
                     value={email}

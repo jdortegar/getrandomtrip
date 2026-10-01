@@ -32,12 +32,21 @@ function hashPlaintext(plaintext: string): string {
 
 const futureTrip = {
   startDate: new Date(Date.now() + 30 * DAY_MS),
+  endDate: new Date(Date.now() + 33 * DAY_MS),
   travelersLockedAt: null,
   user: { name: "Alice Buyer" },
 };
 
 const lockedTrip = {
   startDate: new Date(Date.now() + 2 * DAY_MS),
+  endDate: new Date(Date.now() + 4 * DAY_MS),
+  travelersLockedAt: null,
+  user: { name: "Alice Buyer" },
+};
+
+const endedTrip = {
+  startDate: new Date(Date.now() - 5 * DAY_MS),
+  endDate: new Date(Date.now() - 2 * DAY_MS),
   travelersLockedAt: null,
   user: { name: "Alice Buyer" },
 };
@@ -150,7 +159,7 @@ describe("peekTravelerInvite", () => {
     expect(result).toEqual({ ok: false, reason: "expired" });
   });
 
-  it("returns locked when the trip is past the T-7d cutoff", async () => {
+  it("accepts a populated row after the cutoff while the trip has not ended (T1)", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -169,10 +178,50 @@ describe("peekTravelerInvite", () => {
 
     const result = await peekTravelerInvite("tok");
 
-    expect(result).toEqual({ ok: false, reason: "locked" });
+    expect(result).toMatchObject({ ok: true, idDocumentRequired: false });
   });
 
-  it("returns used (not locked) when a completed row's trip has also passed cutoff — 'used' must win over 'locked'", async () => {
+  it("returns ended once the trip end date has passed, even for an unexpired token", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: endedTrip,
+    });
+
+    expect(await peekTravelerInvite("tok")).toEqual({ ok: false, reason: "ended" });
+  });
+
+  it("falls back to startDate when the trip has no endDate", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: { ...endedTrip, endDate: null },
+    });
+
+    expect(await peekTravelerInvite("tok")).toEqual({ ok: false, reason: "ended" });
+  });
+
+  it("returns used (not ended or locked) when a completed row's trip has also passed cutoff — 'used' must win over 'locked'", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -219,6 +268,8 @@ describe("peekTravelerInvite", () => {
       kind: "ADULT",
       buyerFirstName: "Alice",
       idDocumentRequired: true,
+      invitedEmail: "saved@example.com",
+      maskedEmail: "s***@example.com",
     });
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
@@ -330,7 +381,7 @@ describe("consumeTravelerInvite", () => {
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
-  it("rejects a still-valid, unconsumed token when the trip is past cutoff (re-checked independently)", async () => {
+  it("accepts a still-valid token after the cutoff, linking the account but freezing populated fields (T1)", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -339,6 +390,7 @@ describe("consumeTravelerInvite", () => {
       kind: "ADULT",
       status: "INVITED",
       dateOfBirth: null,
+      userId: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
       tripRequest: lockedTrip,
@@ -348,12 +400,132 @@ describe("consumeTravelerInvite", () => {
     });
 
     const result = await consumeTravelerInvite("tok", {
-      fullName: "X",
-      idDocument: "Y",
+      fullName: "Account Name",
+      idDocument: "OTHER",
+      email: "saved@example.com",
+      userId: "user-1",
     });
 
-    expect(result).toEqual({ ok: false, reason: "locked" });
+    expect(result.ok).toBe(true);
+    const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(args.data).toMatchObject({
+      fullName: "Saved Name",
+      idDocument: "SAVED",
+      userId: "user-1",
+      status: "COMPLETE",
+    });
+    expect(args.data.consentAt).toBeInstanceOf(Date);
+  });
+
+  it("rejects with ended after the trip end date without writing (T1)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: endedTrip,
+    });
+
+    const result = await consumeTravelerInvite("tok", {
+      fullName: "X",
+      idDocument: "Y",
+      email: "saved@example.com",
+    });
+
+    expect(result).toEqual({ ok: false, reason: "ended" });
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["a different address", "other@example.com"],
+    ["no address", undefined],
+  ])("rejects with email_mismatch for %s and does not write (T2)", async (_, email) => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await consumeTravelerInvite("tok", {
+      fullName: "X",
+      idDocument: "Y",
+      email,
+      userId: "user-1",
+    });
+
+    expect(result).toEqual({ ok: false, reason: "email_mismatch" });
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects with email_mismatch when the invited row has no email (T2)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: null,
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await consumeTravelerInvite("tok", {
+      fullName: "X",
+      idDocument: "Y",
+      email: "x@example.com",
+    });
+
+    expect(result).toEqual({ ok: false, reason: "email_mismatch" });
+  });
+
+  it("accepts the invited email regardless of case and whitespace (T2)", async () => {
+    (
+      prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
+      id: "trav-1",
+      tripRequestId: "trip-1",
+      kind: "ADULT",
+      status: "INVITED",
+      fullName: "Saved Name",
+      email: "saved@example.com",
+      idDocument: null,
+      dateOfBirth: null,
+      inviteTokenHash: "somehash",
+      inviteTokenExpiresAt: new Date(Date.now() + 60_000),
+      tripRequest: futureTrip,
+    });
+
+    const result = await consumeTravelerInvite("tok", {
+      fullName: "X",
+      idDocument: "Y",
+      email: " Saved@Example.COM ",
+      userId: "user-1",
+    });
+
+    expect(result.ok).toBe(true);
   });
 
   it("writes identity fields, stamps submittedAt + consentAt, sets COMPLETE, and LEAVES inviteTokenHash untouched (persisted, not nulled) on a valid submission", async () => {
@@ -376,10 +548,10 @@ describe("consumeTravelerInvite", () => {
     const result = await consumeTravelerInvite("tok", {
       fullName: "Bob Companion",
       idDocument: "ID999",
-      email: "bob@example.com",
+      email: "saved@example.com",
     });
 
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       ok: true,
       travelerId: "trav-1",
       tripRequestId: "trip-1",
@@ -394,7 +566,7 @@ describe("consumeTravelerInvite", () => {
     expect(args.where).toMatchObject({ id: "trav-1" });
     expect(args.data.fullName).toBe("Bob Companion");
     expect(args.data.idDocument).toBe("ID999");
-    expect(args.data.email).toBe("bob@example.com");
+    expect(args.data.email).toBe("saved@example.com");
     expect(args.data.status).toBe("COMPLETE");
     // Must NOT null the hash on consume — the row needs to remain findable
     // by its original hash so a re-visit resolves to "used" (status ===
@@ -425,6 +597,7 @@ describe("consumeTravelerInvite", () => {
     await consumeTravelerInvite("tok", {
       fullName: "Bob Companion",
       idDocument: "ID999",
+      email: "saved@example.com",
       userId: "user-42",
     });
 
@@ -453,6 +626,7 @@ describe("consumeTravelerInvite", () => {
     await consumeTravelerInvite("tok", {
       fullName: "Bob Companion",
       idDocument: "ID999",
+      email: "saved@example.com",
     });
 
     const args = (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mock
@@ -525,7 +699,7 @@ describe("hasLiveTravelerInviteGrant", () => {
     expect(result).toBe(false);
   });
 
-  it("returns false for a token whose trip is past the cutoff (locked)", async () => {
+  it("returns false for a token whose trip has ended", async () => {
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
@@ -536,7 +710,7 @@ describe("hasLiveTravelerInviteGrant", () => {
       dateOfBirth: null,
       inviteTokenHash: "somehash",
       inviteTokenExpiresAt: new Date(Date.now() + 60_000),
-      tripRequest: lockedTrip,
+      tripRequest: endedTrip,
       fullName: "Saved Name",
       email: "saved@example.com",
       idDocument: "SAVED",
@@ -585,8 +759,8 @@ describe("late companion completion", () => {
     expect(await peekTravelerInvite("late-token")).toMatchObject({ ok: true, idDocumentRequired: true });
     expect(await hasLiveTravelerInviteGrant("late-token")).toBe(true);
   });
-  it("fills the gap but preserves populated identity even if the authenticated account differs", async () => {
-    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name", email: "account@example.com", idDocument: "PASSPORT", userId: "user" })).ok).toBe(true);
+  it("fills the gap but preserves populated identity even if the account name differs", async () => {
+    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name", email: "Invited@example.com", idDocument: "PASSPORT", userId: "user" })).ok).toBe(true);
     expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({
       where: expect.objectContaining({ inviteTokenHash: hashPlaintext("late-token"), idDocument: null, status: "INVITED" }),
       data: expect.objectContaining({ fullName: row.fullName, email: row.email, idDocument: "PASSPORT", userId: "user" }),
@@ -595,19 +769,19 @@ describe("late companion completion", () => {
   it("does not ask for or overwrite a saved ID when a different required field is missing", async () => {
     vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ ...row, fullName: " ", idDocument: "SAVED" } as never);
     expect(await peekTravelerInvite("late-token")).toMatchObject({ ok: true, idDocumentRequired: false });
-    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name" })).ok).toBe(true);
+    expect((await consumeTravelerInvite("late-token", { fullName: "Account Name", email: "invited@example.com" })).ok).toBe(true);
     expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ idDocument: "SAVED", fullName: "Account Name" }) }));
   });
   it("a concurrent completion or token rotation rejects stale submission", async () => {
     vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
-    expect(await consumeTravelerInvite("late-token", { fullName: "Name", idDocument: "ID" })).toEqual({ ok: false, reason: "invalid" });
+    expect(await consumeTravelerInvite("late-token", { fullName: "Name", idDocument: "ID", email: "invited@example.com" })).toEqual({ ok: false, reason: "invalid" });
   });
 });
 
 it("does not transfer an already-linked account after cutoff when identity is incomplete", async () => {
   vi.resetAllMocks();
   vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ id: "trav", tripRequestId: "trip", kind: "ADULT", status: "INVITED", fullName: "Name", email: "saved@example.com", idDocument: null, dateOfBirth: null, userId: "original-account", inviteTokenHash: hashPlaintext("token"), inviteTokenExpiresAt: new Date(Date.now() + DAY_MS), tripRequest: lockedTrip } as never);
-  expect(await consumeTravelerInvite("token", { fullName: "New Account", email: "new@example.com", idDocument: "ID", userId: "different-account" })).toEqual({ ok: false, reason: "invalid" });
+  expect(await consumeTravelerInvite("token", { fullName: "New Account", email: "saved@example.com", idDocument: "ID", userId: "different-account" })).toEqual({ ok: false, reason: "invalid" });
   expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
 });
 
@@ -615,8 +789,8 @@ it("allows the existing owner to fill a gap with an account-link compare-and-swa
   vi.resetAllMocks();
   vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ id: "trav", tripRequestId: "trip", kind: "ADULT", status: "INVITED", fullName: "Name", email: "saved@example.com", idDocument: null, dateOfBirth: null, userId: "original-account", inviteTokenHash: hashPlaintext("token"), inviteTokenExpiresAt: new Date(Date.now() + DAY_MS), tripRequest: lockedTrip } as never);
   vi.mocked(prisma.tripTraveler.update).mockResolvedValue({} as never);
-  expect((await consumeTravelerInvite("token", { fullName: "Account Name", idDocument: "ID", userId: "original-account" })).ok).toBe(true);
+  expect((await consumeTravelerInvite("token", { fullName: "Account Name", email: "saved@example.com", idDocument: "ID", userId: "original-account" })).ok).toBe(true);
   expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ userId: "original-account" }), data: expect.objectContaining({ userId: "original-account", idDocument: "ID", fullName: "Name" }) }));
   vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
-  expect(await consumeTravelerInvite("token", { fullName: "Account Name", idDocument: "ID", userId: "original-account" })).toEqual({ ok: false, reason: "invalid" });
+  expect(await consumeTravelerInvite("token", { fullName: "Account Name", email: "saved@example.com", idDocument: "ID", userId: "original-account" })).toEqual({ ok: false, reason: "invalid" });
 });

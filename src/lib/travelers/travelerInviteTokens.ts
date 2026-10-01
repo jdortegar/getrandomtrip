@@ -5,7 +5,9 @@ import { isRosterLocked } from "./travelerRoster";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
+  isTripEnded,
 } from "./travelerPolicy";
+import { emailsMatch, maskEmail } from "./travelerEmail";
 
 const TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -54,8 +56,17 @@ export type TravelerPeek =
       kind: TravelerKind;
       buyerFirstName: string;
       idDocumentRequired: boolean;
+      /** Address the invite was sent to; prefills the sign-up form. */
+      invitedEmail: string | null;
+      /** `j***@gmail.com` form, safe to show next to a mismatched account. */
+      maskedEmail: string | null;
     }
-  | { ok: false; reason: "invalid" | "expired" | "used" | "locked" };
+  | { ok: false; reason: "invalid" | "expired" | "used" | "ended" };
+
+/** `consume` additionally refuses a session whose email differs from the invite. */
+export type TravelerConsumeResult =
+  | TravelerPeek
+  | { ok: false; reason: "email_mismatch" };
 
 type TravelerInviteRow = {
   id: string;
@@ -72,6 +83,7 @@ type TravelerInviteRow = {
   tripRequest: {
     type?: string;
     startDate: Date | null;
+    endDate?: Date | null;
     travelersLockedAt: Date | null;
     user: { name: string };
   };
@@ -81,7 +93,7 @@ type TravelerInviteRow = {
  * Shared lookup + branch logic for `peekTravelerInvite` and
  * `consumeTravelerInvite` — the single place a plaintext token is resolved
  * to a row, checked for validity (unknown / already-consumed / expired /
- * fully populated after cutoff), never duplicated between the two callers.
+ * trip already ended), never duplicated between the two callers.
  *
  * IMPORTANT: `inviteTokenHash` is NEVER nulled on consume (see
  * `consumeTravelerInvite`) — it stays persisted so the row remains
@@ -103,13 +115,14 @@ async function resolveTravelerInvite(
 
   if (!row) return { ok: false, reason: "invalid" };
   if (row.status === "COMPLETE") return { ok: false, reason: "used" };
+  // The details cutoff never blocks acceptance: past it, `consume` only links
+  // the account and fills gaps. The invite dies when the trip ends.
+  if (isTripEnded(row.tripRequest)) return { ok: false, reason: "ended" };
   if (
     row.inviteTokenExpiresAt &&
     row.inviteTokenExpiresAt.getTime() < Date.now()
   )
     return { ok: false, reason: "expired" };
-  if (isRosterLocked(row.tripRequest) && !hasMissingTravelerDetails(row))
-    return { ok: false, reason: "locked" };
 
   return {
     ok: true,
@@ -120,6 +133,8 @@ async function resolveTravelerInvite(
     idDocumentRequired:
       !isRosterLocked(row.tripRequest) ||
       !isTravelerFieldFilled(row.idDocument),
+    invitedEmail: row.email?.trim() || null,
+    maskedEmail: maskEmail(row.email),
     row,
   };
 }
@@ -134,6 +149,8 @@ function publicPeek(
     kind: resolved.kind,
     buyerFirstName: resolved.buyerFirstName,
     idDocumentRequired: resolved.idDocumentRequired,
+    invitedEmail: resolved.invitedEmail,
+    maskedEmail: resolved.maskedEmail,
   };
 }
 
@@ -167,11 +184,16 @@ export async function consumeTravelerInvite(
     email?: string;
     userId?: string;
   },
-): Promise<TravelerPeek> {
+): Promise<TravelerConsumeResult> {
   const resolved = await resolveTravelerInvite(plaintext);
   if (!resolved.ok) return resolved;
 
   const row = resolved.row!;
+  // The link alone is not enough: the claiming account must own the address
+  // the invite was sent to, so a forwarded link cannot be claimed.
+  if (!emailsMatch(row.email, data.email)) {
+    return { ok: false, reason: "email_mismatch" };
+  }
   const locked = isRosterLocked(row.tripRequest);
   if (locked && row.userId && row.userId !== data.userId) {
     return { ok: false, reason: "invalid" };

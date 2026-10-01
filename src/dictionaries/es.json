@@ -5892,7 +5892,6 @@
     "idDocumentPlaceholder": "Número de documento",
     "idDocumentPendingPlaceholder": "Pendiente de su carga",
     "dateOfBirthLabel": "Fecha de nacimiento",
-    "sendInviteAction": "Enviar invitación",
     "resendInviteAction": "Reenviar invitación",
     "saveAction": "Guardar",
     "lockedActionTitle": "Bloqueado",
@@ -5925,7 +5924,9 @@
     "landingReasonInvalid": "Este enlace de invitación no es válido.",
     "landingReasonExpired": "Esta invitación venció. Pedile a quien te invitó que te reenvíe una nueva.",
     "landingReasonUsed": "Ya completaste tus datos con este enlace.",
-    "landingReasonLocked": "Estos datos de viaje ya están completos y protegidos. Contactanos si necesitás cambiarlos.",
+    "landingReasonEnded": "Este viaje ya terminó, así que esta invitación ya no se puede usar.",
+    "landingEmailMismatch": "Esta invitación fue enviada a {maskedEmail}. Iniciá sesión con ese correo para continuar.",
+    "landingSwitchAccount": "Usar otra cuenta",
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"

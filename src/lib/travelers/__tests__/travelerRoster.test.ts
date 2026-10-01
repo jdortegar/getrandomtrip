@@ -260,6 +260,25 @@ describe("getRosterForTrip", () => {
     expect(roster.startDate).toBe(startDate.toISOString());
   });
 
+  it("counts an INVITED row that already has every detail as submitted (T3 status semantics)", async () => {
+    const startDate = new Date(Date.now() + 30 * DAY_MS);
+    const row = (id: string, status: string, idDocument: string | null) => ({
+      id, kind: "ADULT", status, fullName: "N", email: `${id}@x.com`, idDocument,
+      dateOfBirth: null, invitedAt: new Date(), submittedAt: null,
+    });
+    (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({ id: "trip-1", paxDetails: { adults: 4 }, payment: { status: "APPROVED" }, travelers: [] })
+      .mockResolvedValueOnce({
+        id: "trip-1", startDate, travelersLockedAt: null,
+        travelers: [row("a", "INVITED", "ID"), row("b", "INVITED", null), row("c", "COMPLETE", "ID")],
+      });
+
+    const roster = await getRosterForTrip("trip-1");
+
+    expect(roster.cap).toBe(3);
+    expect(roster.submitted).toBe(2);
+  });
+
   it("returns an empty locked-false roster when the trip does not exist", async () => {
     (
       prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>

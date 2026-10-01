@@ -2690,7 +2690,6 @@ export interface InviteTravelersDict {
   idDocumentPlaceholder: string;
   idDocumentPendingPlaceholder: string;
   dateOfBirthLabel: string;
-  sendInviteAction: string;
   resendInviteAction: string;
   saveAction: string;
   lockedActionTitle: string;
@@ -2723,7 +2722,10 @@ export interface InviteTravelersDict {
   landingReasonInvalid: string;
   landingReasonExpired: string;
   landingReasonUsed: string;
-  landingReasonLocked: string;
+  landingReasonEnded: string;
+  /** `{maskedEmail}` placeholder, e.g. `j***@gmail.com`. */
+  landingEmailMismatch: string;
+  landingSwitchAccount: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
   savingAction: string;
