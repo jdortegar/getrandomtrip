@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Section from "@/components/layout/Section";
 import { TabSelector } from "@/components/ui/TabSelector";
+import { showTripperDiscovery } from "@/lib/deployment";
 import type { TravelerTypeCardData } from "@/lib/utils/experiencesData";
 import { TopTrippersGrid } from "./TopTrippersGrid";
 import { TravelerTypesCarousel } from "./TravelerTypesCarousel";
@@ -43,6 +44,9 @@ interface ExplorationSectionProps {
   travelerTypes?: TravelerTypeCardData[];
 }
 
+/** Tripper discovery tab id (from `home.exploration.tabs`); hidden while `showTripperDiscovery()` is false. */
+const TOP_TRIPPERS_TAB_ID = "topTrippers";
+
 function ComingSoon({ message }: { message: string }) {
   return (
     <div className="py-4">
@@ -60,11 +64,14 @@ export function ExplorationSection({
     comingSoonText,
     eyebrow,
     subtitle,
-    tabs,
+    tabs: allTabs,
     title,
     travelerTypes: localizedTravelerTypes,
     trippersHref,
   } = content;
+  const tabs = showTripperDiscovery()
+    ? allTabs
+    : allTabs.filter((tab) => tab.id !== TOP_TRIPPERS_TAB_ID);
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
 
   const renderActiveTab = () => {
@@ -75,7 +82,7 @@ export function ExplorationSection({
             localizedTravelerTypes={localizedTravelerTypes}
           />
         );
-      case "topTrippers":
+      case TOP_TRIPPERS_TAB_ID:
         return (
           <TopTrippersGrid
             buttonHref={trippersHref}

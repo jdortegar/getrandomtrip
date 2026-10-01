@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Heart, HelpCircle, MapPin, Users } from "lucide-react";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { Locale } from "@/lib/i18n/config";
+import { showTripperDiscovery } from "@/lib/deployment";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 type NotFoundCopy = MarketingDictionary["notFound"];
@@ -41,13 +42,15 @@ export function NotFoundStatusExploreAndTip({
             <Users className="h-4 w-4" />
             {nf.linkFamily}
           </Link>
-          <Link
-            className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary/10 hover:text-primary"
-            href={pathForLocale(locale, "/trippers")}
-          >
-            <Users className="h-4 w-4" />
-            {nf.linkTrippers}
-          </Link>
+          {showTripperDiscovery() && (
+            <Link
+              className="flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-primary/10 hover:text-primary"
+              href={pathForLocale(locale, "/trippers")}
+            >
+              <Users className="h-4 w-4" />
+              {nf.linkTrippers}
+            </Link>
+          )}
         </div>
       </div>
 

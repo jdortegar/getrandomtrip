@@ -10,7 +10,8 @@ import { TeamSection } from "@/components/app/about-us/TeamSection";
 import { AboutUsSteps } from "@/components/app/about-us/AboutUsSteps";
 import { TrustHero } from "@/components/app/about-us/TrustHero";
 import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
-import { getAllTrippers } from "@/lib/db/tripper-queries";
+import { showTripperDiscovery } from "@/lib/deployment";
+import { getDiscoverableTrippers } from "@/lib/tripper/discovery.server";
 import { getTravelerTypeLabel } from "@/lib/helpers/traveler-types";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -42,9 +43,10 @@ export default async function AboutUsPage(props: LocaleParams) {
   const raw = params?.locale;
   const localeStr = typeof raw === "string" ? raw : raw?.[0];
   const locale = hasLocale(localeStr) ? localeStr : "es";
+  const showTrippers = showTripperDiscovery();
   const [aboutUs, rawTrippers] = await Promise.all([
     getDictionary(locale).then((d) => d.aboutUs),
-    getAllTrippers(),
+    getDiscoverableTrippers(),
   ]);
 
   const trippers = rawTrippers
@@ -70,9 +72,11 @@ export default async function AboutUsPage(props: LocaleParams) {
       <TeamSection content={aboutUs.curators} />
       <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
       <TrustHero content={aboutUs.trust} locale={locale} />
-      <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
+      {showTrippers && (
+        <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
+      )}
       <FaqBlock
-        className={trippers.length > 0 ? "pt-0!" : ""}
+        className={showTrippers && trippers.length > 0 ? "pt-0!" : ""}
         copy={aboutUs.faq}
       />
     </div>

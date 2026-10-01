@@ -1,10 +1,11 @@
 import { Children, isValidElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
+import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import AboutUsPage from "../page";
 
 vi.mock("@/lib/db/tripper-queries", () => ({
@@ -36,7 +37,10 @@ async function renderFaq(locale: string) {
   };
 }
 
+afterEach(() => vi.unstubAllEnvs());
+
 beforeEach(() => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
   vi.mocked(getAllTrippers).mockReset();
   vi.mocked(getAllTrippers).mockResolvedValue([]);
 });
@@ -81,5 +85,20 @@ describe.each([
     const { classes } = await renderFaq(locale);
 
     expect(classes).toContain("pt-0!");
+  });
+});
+
+describe("About Us in production", () => {
+  it("skips the trippers section and its spacing override", async () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "production");
+    vi.mocked(getAllTrippers).mockResolvedValue([tripper]);
+
+    const page = await AboutUsPage({ params: Promise.resolve({ locale: "es" }) });
+    const children = Children.toArray(page.props.children);
+    const { classes } = await renderFaq("es");
+
+    expect(children.some((c) => isValidElement(c) && c.type === PresentTrippers)).toBe(false);
+    expect(getAllTrippers).not.toHaveBeenCalled();
+    expect(classes).not.toContain("pt-0!");
   });
 });

@@ -8,13 +8,13 @@ import {
 } from "@/lib/geo/welcome";
 import { getWelcomeFlagSvg } from "@/lib/geo/welcome-flag.server";
 import {
-  getAllTrippers,
   getHomepageTestimonials,
   getRecentPublishedBlogs,
 } from "@/lib/db/tripper-queries";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
+import { getDiscoverableTrippers } from "@/lib/tripper/discovery.server";
 import { HomePageClient } from "./HomePageClient";
 
 export async function generateMetadata(props: {
@@ -45,7 +45,7 @@ export default async function HomePage(props: {
   const resolvedLocale = hasLocale(locale) ? locale : "es";
   const [trippers, testimonials, blogPosts, dict, requestHeaders, query] =
     await Promise.all([
-      getAllTrippers(),
+      getDiscoverableTrippers(),
       getHomepageTestimonials(),
       getRecentPublishedBlogs(5, resolvedLocale),
       getDictionary(resolvedLocale),
