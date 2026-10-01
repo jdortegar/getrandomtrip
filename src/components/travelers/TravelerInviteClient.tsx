@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import AuthModal from "@/components/auth/AuthModal";
@@ -34,6 +34,7 @@ export type TravelerInviteResolution =
   | { ok: false; reason: Reason };
 
 type FormState = "form" | "submitting" | "success";
+type ResendState = "idle" | "pending" | "sent" | "cooldown" | "verified" | "error";
 interface TravelerInviteClientProps {
   authCopy: Pick<Dictionary, "auth">;
   copy: InviteTravelersDict;
@@ -144,8 +145,13 @@ function InviteForm({
   const emailUnverified =
     serverUnverified ||
     (authenticated && session?.user?.emailVerified === false);
+  // The verification link goes to the SESSION account's address, so that is the
+  // inbox to name. The invited address is only a fallback when the session
+  // carries no email (it equals the session address whenever `submit` answered
+  // `email_unverified`, since the mismatch check runs first).
   const unverifiedAddress =
-    maskedEmail ?? maskEmail(session?.user?.email) ?? "";
+    maskEmail(session?.user?.email) ?? maskedEmail ?? "";
+  const [resendState, setResendState] = useState<ResendState>("idle");
   const [authOpen, setAuthOpen] = useState(false);
   const [state, setState] = useState<FormState>("form");
   const [idDocument, setIdDocument] = useState("");
@@ -188,6 +194,33 @@ function InviteForm({
       setAuthOpen(true);
     }
   }
+
+  async function handleResend() {
+    if (resendState === "pending") return;
+    setResendState("pending");
+    try {
+      const res = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          token ? { returnPath: inviteReturnPath(locale, token) } : {},
+        ),
+      });
+      if (res.ok) setResendState("sent");
+      else if (res.status === 429) setResendState("cooldown");
+      else if (res.status === 409) setResendState("verified");
+      else setResendState("error");
+    } catch {
+      setResendState("error");
+    }
+  }
+
+  const resendMessage: Partial<Record<ResendState, string>> = {
+    sent: copy.landingResendSent,
+    cooldown: copy.landingResendCooldown,
+    verified: copy.landingResendAlreadyVerified,
+    error: copy.landingResendError,
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -317,6 +350,34 @@ function InviteForm({
                 )}
               </p>
             </div>
+            <Button
+              aria-busy={resendState === "pending"}
+              className="mt-4 w-full"
+              disabled={resendState === "pending"}
+              onClick={() => void handleResend()}
+              size="lg"
+              type="button"
+              variant="secondary"
+            >
+              {resendState === "pending" ? (
+                <>
+                  <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+                  {copy.landingResendPending}
+                </>
+              ) : (
+                copy.landingResendCta
+              )}
+            </Button>
+            {resendMessage[resendState] && (
+              <p
+                className={`mt-3 text-sm ${
+                  resendState === "sent" ? "text-green-700" : "text-amber-800"
+                }`}
+                role={resendState === "error" ? "alert" : "status"}
+              >
+                {resendMessage[resendState]}
+              </p>
+            )}
           </div>
         ) : !authenticated ? (
           <div className="mt-6 text-left">

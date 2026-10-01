@@ -2743,6 +2743,18 @@ export interface InviteTravelersDict {
   landingEmailHint: string;
   /** `{maskedEmail}` placeholder; signed in with an unverified email, waiting for the verification link. */
   landingVerifyInbox: string;
+  /** Unverified state: button that asks for a new verification email. */
+  landingResendCta: string;
+  /** Button label while the resend request is in flight. */
+  landingResendPending: string;
+  /** Resend succeeded. */
+  landingResendSent: string;
+  /** Resend refused (429): one email per minute. */
+  landingResendCooldown: string;
+  /** Resend refused (409): the account became verified meanwhile. */
+  landingResendAlreadyVerified: string;
+  /** Resend failed (server or network). */
+  landingResendError: string;
   /** Buyer roster: shown on a joined row whose email is read-only. */
   emailLockedJoinedHint: string;
   landingConsentRequiredError: string;

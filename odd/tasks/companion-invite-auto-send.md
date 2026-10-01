@@ -59,6 +59,16 @@ First real case: Ana Ortega's XSED trip (Oct 3–4, 2026). Her cutoff (T-72h) is
 - [x] **T14** Review follow-ups: PATCH reports `invited` only when a token was actually issued (R3/R4); stale cutoff doc in `travelers/submit/route.ts` (R2); invite subject safe with an empty buyer name (R3).
   - Decision (a): the row now becomes `INVITED` only through `issueTravelerInvite` (PATCH no longer pre-writes `INVITED`), so a failed issuance leaves the old status and no `invitedAt`; the response carries `inviteFailed: true` and `TravelerRow` shows the send error while keeping Resend available. Success response mirrors `status: INVITED` + `invitedAt`. (b) doc comment rewritten. (c) `getSubject`/body fall back to "Te sumaron a un randomtrip" / "You've been added to a randomtrip" for blank buyer names (also in the reminder).
 
+### Phase 3 — verification dead-end fix
+
+- [x] **T15** (review R3-001/R4-001) "Resend verification email" action on the invite page's unverified state, sending a fresh verification link that returns to the invite; also covers pre-existing unverified accounts that signed in through the invite bypass (no email was sent on that path). Send is awaited per review R3-001/R4-001: the route calls the throwing `deliverVerificationEmail`; on failure it deletes the just-issued token and answers 502 `send_failed` (client keeps its existing error state, retry allowed). `sendVerificationEmail` stays a fire-and-forget wrapper for other callers.
+  - Decision: new `POST /api/auth/resend-verification` (session-gated; target is always the session user, no address in the body). 401 / 409 `already_verified` / 429 `cooldown` + `Retry-After` / 500 `internal_error`. Cooldown = 60s from the newest `EMAIL_VERIFY` token's `createdAt` (no repo rate-limit helper exists, no schema change; it is a read-then-write, so two truly concurrent requests could both pass, accepted). Reuses `issueVerificationToken` (deletes prior unconsumed tokens) and `sendVerificationEmail(userId, token, returnPath?)`; `returnPath` only via `safeInviteReturnPath`, otherwise ignored.
+  - Decision: button only, no auto-send on first visit. The unverified state is derived from the session, so a pre-existing account that signs in through the invite modal lands there and uses the button. The button follows the async-feedback rule (spinner, `aria-busy`, duplicate-safe, retry after error). Keys `inviteTravelers.landingResend*` (es + en).
+- [x] **T16** (review R3-002) The "check your inbox" message names the address the verification email actually went to (the session account's email), not the invited address.
+  - Decision: copy uses the session email (masked); the invited masked address is only a fallback when the session has no email. The mismatch state already took precedence and stays so (tests cover both).
+- [x] **T17** `companionView.test.tsx` deterministic regardless of machine timezone/locale.
+  - Finding: no change needed. The page formats dates with `toLocaleDateString(locale, { timeZone: "UTC" })` and the test fixture uses explicit UTC midnights and the explicit `en` route locale, so the expectation is already TZ/locale independent. Verified at TZ=Pacific/Kiritimati, America/Los_Angeles, Pacific/Pago_Pago, Asia/Kolkata with en_US and es_AR LANG: 3/3 pass each. No RED was possible, so no test was changed.
+
 ## Constraints
 
 - Email delivery stays disabled in nonproduction (`sendMail.ts`); QA happens in production with Ana's companion.
@@ -101,10 +111,15 @@ First real case: Ana Ortega's XSED trip (Oct 3–4, 2026). Her cutoff (T-72h) is
 | T14 | delegated direct | 2+ non-trivial files | done | 0dd24923 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
 | T10 | delegated direct | 2+ non-trivial files | done | 6e96c276 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
 | T12 | delegated direct | 2+ non-trivial files | done | 6751e205 + ea602f63 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T15 | delegated direct (one writer) | 2+ non-trivial files | done | none (uncommitted) | pending |
+| T16 | delegated direct (same writer) | same files as T15 | done | none (uncommitted) | pending |
+| T17 | delegated direct (same writer) | investigation only, no change | done | none | n/a |
 
 Phase 1 delivery: single PR #217 → develop (merge 071a5a6c), release PR #218 → main (merge fb56c68e), 2026-10-01. Production backfill: dry run listed 1 candidate (the first real companion), owner approved, `--send` reported `sent`.
 
 Phase 2 note: the full branch (2951 lines) exceeded the review lens budget (`lens_context_budget_exceeded`), so it was reviewed as two candidates. Review B found a CRITICAL account pre-hijacking issue in T12 (Google sign-in verified an unverified account without dropping its unproven password); fixed in ea602f63 (password cleared on Google verification) and validated.
+
+Phase 3 note: T15-T17 written uncommitted on branch `fix/companion-invite-verification-resend`.
 
 ## Next step
 
@@ -121,3 +136,7 @@ Deliver phase 2: PR to develop, then release to main. Follow-ups: review advisor
 
 - TDD: RED observed before implementation for T13 (4 failing `runCli` tests), T9/T14c/T7-email (12 failing across URL, reminder email, invite subject), T7 pass (9 failing), T11 (peek, client; page tests failed first but partly on a mock-setup bug, fixed before GREEN), T14a (2 failing), T6/T8 (16 failing server, 9 failing UI). Two additions had no isolated RED: the blank-email skip test in the reminder pass and the T14b comment-only edit.
 - Focused vitest files and full `npm test`: 528 files / 5632 tests pass; `npm run typecheck` and `npm run lint` clean.
+
+## Verification log (phase 3)
+
+- TDD: T15 route tests RED (suite failed, `../route` missing) then GREEN (16/16); T15/T16 client tests RED (9 failed / 16 passed) then GREEN (25/25). T17: no RED possible (already deterministic).
