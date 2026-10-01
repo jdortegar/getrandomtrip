@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: verified email required to accept, joined-email lock, reduced companion view, invited-but-not-linked reminder, buyer roster badge, deploy-origin links, masked invite payload).
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: verified email required to accept, joined-email lock, reduced companion view, invited-but-not-linked reminder, buyer roster badge, deploy-origin links, masked invite payload, dry-run backfill without production env).
 
 ---
 
@@ -239,7 +239,7 @@ The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buy
 
 ### Requirement: Companion Invite Backfill Script
 
-`scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The send run requires explicit owner approval of the dry-run list.
+`scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The dry run MUST work without `RT_DEPLOY_ENV=production`: the app modules (token issuer, mailer, which load `src/lib/prisma.ts` and its nonproduction DB-host guard) are imported dynamically only for `--send`; a dry run uses only the script's own client. The send run requires explicit owner approval of the dry-run list.
 
 ### Requirement: Companion Invite Reminder
 
