@@ -14,12 +14,15 @@ type State = "verifying" | "success" | "error";
 
 interface VerifyEmailClientProps {
   token: string | null;
+  /** Validated invite path to return to after verifying (see `safeInviteReturnPath`). */
+  nextPath?: string | null;
   locale: Locale;
   copy: VerifyEmailPageDict;
 }
 
 export default function VerifyEmailClient({
   token,
+  nextPath,
   locale,
   copy,
 }: VerifyEmailClientProps) {
@@ -46,7 +49,9 @@ export default function VerifyEmailClient({
         if (res.ok && data.ok) {
           setState("success");
           const loginPath = pathForLocale(locale, "/login");
-          const target = data.email
+          const target = nextPath
+            ? nextPath
+            : data.email
             ? `${loginPath}?email=${encodeURIComponent(data.email)}`
             : loginPath;
           router.replace(target);
@@ -65,7 +70,7 @@ export default function VerifyEmailClient({
     return () => {
       cancelled = true;
     };
-  }, [token, locale, router]);
+  }, [token, nextPath, locale, router]);
 
   const reasonCopy: Record<Reason, string> = {
     invalid: copy.reasonInvalid,

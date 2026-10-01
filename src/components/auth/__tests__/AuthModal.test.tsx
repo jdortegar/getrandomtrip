@@ -635,3 +635,37 @@ describe("AuthModal lockEmail", () => {
     expect(container.querySelector<HTMLInputElement>("#auth-email")!.readOnly).toBe(false);
   });
 });
+
+describe("AuthModal register submit — invite return path (T12)", () => {
+  it("sends the invite return path so the verification link can bring the companion back", async () => {
+    const fetchMock = mockFetchSequence(null);
+    render(
+      <AuthModal defaultMode="register" inviteReturnPath="/en/invite/abc123" isOpen onClose={() => {}} />,
+    );
+    fillRequiredFields();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    setSelectValue(container.querySelector("#auth-referred-by-tripper") as HTMLSelectElement, "none");
+
+    await submitForm();
+
+    expect(getRegisterRequestBody(fetchMock).inviteReturnPath).toBe("/en/invite/abc123");
+  });
+
+  it("omits it outside the invite flow", async () => {
+    const fetchMock = mockFetchSequence(null);
+    render(<AuthModal defaultMode="register" isOpen onClose={() => {}} />);
+    fillRequiredFields();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    setSelectValue(container.querySelector("#auth-referred-by-tripper") as HTMLSelectElement, "none");
+
+    await submitForm();
+
+    expect(getRegisterRequestBody(fetchMock)).not.toHaveProperty("inviteReturnPath");
+  });
+});

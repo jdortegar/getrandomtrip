@@ -44,6 +44,11 @@ import { getLevelName } from "@/lib/utils/levels";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 
 interface TripDetails {
+  /**
+   * The viewer's relation to the trip. A `companion` payload arrives without
+   * price/payment data and with a reduced roster (see GET /api/trips/[id]).
+   */
+  role?: "buyer" | "companion";
   basePriceUsd?: number;
   id: string;
   type: string;
@@ -240,6 +245,13 @@ function TripDetailsContent() {
   const canRevealDestination =
     trip.status === "REVEALED" || trip.status === "COMPLETED";
 
+  const isCompanion = trip.role === "companion";
+  // A companion edits only their own row; the Save button follows that row.
+  const ownRow = trip.roster?.travelers.find((t) => t.isSelf);
+  const rosterEditable = isCompanion
+    ? Boolean(ownRow) && (!trip.roster.locked || hasMissingTravelerDetails(ownRow!))
+    : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
+
   const price = getTripCostDisplay({
     ...trip,
     addons: addonsList,
@@ -386,7 +398,7 @@ function TripDetailsContent() {
                     ref={rosterRef}
                     roster={trip.roster}
                   />
-                  {(!trip.roster.locked || trip.roster.travelers.some(hasMissingTravelerDetails)) && (
+                  {rosterEditable && (
                     <div className="mt-6">
                       <Button
                         aria-busy={savingTravelers}
@@ -501,10 +513,10 @@ function TripDetailsContent() {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <TripCostSummary copy={copy} price={price} />
+              {!isCompanion && <TripCostSummary copy={copy} price={price} />}
 
-              {/* Payment Info */}
-              {trip.payment && (
+              {/* Payment Info (never sent to companions) */}
+              {!isCompanion && trip.payment && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
                   <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
                     {copy.paymentInfoTitle}

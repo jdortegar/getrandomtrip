@@ -11,6 +11,8 @@ declare module "next-auth" {
       createdAt?: string;
       dislikes?: string[];
       email: string;
+      /** Derived from `User.emailVerified` on every session read. */
+      emailVerified?: boolean;
       hasSiteAccess?: boolean;
       image?: string | null;
       interests?: string[];

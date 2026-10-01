@@ -41,7 +41,7 @@ it.each([true, false])(
       name: "Private",
     };
     vi.mocked(prisma.user.findUnique).mockResolvedValue(
-      isNew ? null : ({ id: "db-user" } as never),
+      isNew ? null : ({ id: "db-user", emailVerified: new Date() } as never),
     );
     vi.mocked(prisma.user.create).mockResolvedValue({ id: "db-user" } as never);
     const callback = authOptions.callbacks!.signIn!;

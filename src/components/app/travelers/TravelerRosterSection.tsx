@@ -16,6 +16,7 @@ import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import { isTravelerRosterComplete } from "@/lib/travelers/travelerPolicy";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 import { TravelerRow, type TravelerRowHandle } from "./TravelerRow";
+import { TravelerReadOnlyRow } from "./TravelerReadOnlyRow";
 
 export interface TravelerRosterSectionHandle {
   /**
@@ -70,6 +71,8 @@ export const TravelerRosterSection = forwardRef<
     );
   }
 
+  const isCompanionView = roster.viewerRole === "companion";
+
   const deadlineDate = roster.deadline
     ? new Date(roster.deadline).toLocaleDateString(locale, {
         day: "numeric",
@@ -85,14 +88,16 @@ export const TravelerRosterSection = forwardRef<
           {copy.eyebrow}
         </p>
         <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
-          {copy.heading}
+          {isCompanionView ? copy.companionHeading : copy.heading}
         </h2>
       </div>
       <p className="mt-2 max-w-xl text-sm text-neutral-600">
-        {copy.subtitle.replace("{count}", String(roster.cap + 1))}
+        {isCompanionView
+          ? copy.companionSubtitle
+          : copy.subtitle.replace("{count}", String(roster.cap + 1))}
       </p>
 
-      {roster.locked ? (
+      {isCompanionView ? null : roster.locked ? (
         <div className="mt-6 flex items-center gap-2.5 rounded-md border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-neutral-700">
           <Lock aria-hidden className="h-4 w-4 shrink-0 text-ink" />
           <span>
@@ -138,20 +143,29 @@ export const TravelerRosterSection = forwardRef<
       )}
 
       <div className="mt-4 space-y-3.5">
-        {travelers.map((traveler, index) => (
-          <TravelerRow
-            copy={copy}
-            key={traveler.id}
-            locked={roster.locked}
-            onUpdated={handleUpdated}
-            ref={(el) => {
-              if (el) rowRefs.current.set(traveler.id, el);
-              else rowRefs.current.delete(traveler.id);
-            }}
-            traveler={traveler}
-            travelerNumber={index + 2}
-          />
-        ))}
+        {travelers.map((traveler, index) =>
+          isCompanionView && !traveler.isSelf ? (
+            <TravelerReadOnlyRow
+              copy={copy}
+              key={traveler.id}
+              traveler={traveler}
+              travelerNumber={index + 2}
+            />
+          ) : (
+            <TravelerRow
+              copy={copy}
+              key={traveler.id}
+              locked={roster.locked}
+              onUpdated={handleUpdated}
+              ref={(el) => {
+                if (el) rowRefs.current.set(traveler.id, el);
+                else rowRefs.current.delete(traveler.id);
+              }}
+              traveler={traveler}
+              travelerNumber={index + 2}
+            />
+          ),
+        )}
       </div>
 
       <p className="mt-3 text-xs text-neutral-400">

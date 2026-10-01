@@ -42,6 +42,17 @@ const copy: InviteTravelersDict = {
   incompleteError: "Incompleto",
   saveErrorGeneric: "Error al guardar",
   sendInviteErrorGeneric: "",
+  inviteBadgeNoEmail: "Sin email",
+  inviteBadgeSent: "Enviada {date}",
+  inviteBadgeJoined: "Se unió",
+  inviteBadgeNotSent: "Sin enviar",
+  companionHeading: "Tu grupo",
+  companionSubtitle: "Te sumaron",
+  companionYouTag: "Vos",
+  companionOtherNote: "Los gestiona quien reservó",
+  landingEmailHint: "",
+  landingVerifyInbox: "",
+  emailLockedJoinedHint: "Se unió: el email no se puede cambiar",
   landingEyebrow: "",
   landingHeading: "",
   landingGreeting: "",
@@ -80,6 +91,7 @@ function baseTraveler(overrides: Partial<TravelerDTO> = {}): TravelerDTO {
     dateOfBirth: null,
     invitedAt: null,
     submittedAt: null,
+    joined: false,
     ...overrides,
   };
 }
@@ -277,5 +289,108 @@ describe("TravelerRow — auto-sent invites (T3)", () => {
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(vi.mocked(fetch).mock.calls[1][0]).toBe("/api/travelers/trav-1/invite");
     expect(container.textContent).toContain("Invite resent just now");
+  });
+});
+
+describe("TravelerRow — buyer invite badge (T8)", () => {
+  const badgeCopy: InviteTravelersDict = {
+    ...copy,
+    resendInviteAction: "Resend invite",
+    sendInviteErrorGeneric: "Invite failed",
+  };
+
+  function renderBadge(traveler: TravelerDTO) {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    handleRef = { current: null };
+    act(() => {
+      root.render(
+        <TravelerRow
+          copy={badgeCopy}
+          locked={false}
+          onUpdated={vi.fn()}
+          ref={(el) => {
+            handleRef.current = el;
+          }}
+          traveler={traveler}
+          travelerNumber={2}
+        />,
+      );
+    });
+  }
+  const resend = () => container.querySelector('button[aria-label="Resend invite"]');
+
+  it("says 'No email' for an adult without a saved email", () => {
+    renderBadge(baseTraveler({ email: null }));
+    expect(container.textContent).toContain("Sin email");
+  });
+
+  it("shows 'Invitation sent' with the sent date and keeps Resend invite", () => {
+    renderBadge(baseTraveler({ status: "INVITED", invitedAt: "2026-09-30T10:00:00.000Z" }));
+    expect(container.textContent).toContain("Enviada ");
+    expect(container.textContent).not.toContain("{date}");
+    expect(resend()).not.toBeNull();
+  });
+
+  it("shows 'Joined' and hides Resend invite once the companion linked an account", () => {
+    renderBadge(baseTraveler({ status: "COMPLETE", joined: true, invitedAt: "2026-09-30T10:00:00.000Z" }));
+    expect(container.textContent).toContain("Se unió");
+    expect(container.textContent).not.toContain("Enviada");
+    expect(resend()).toBeNull();
+  });
+
+  it("says the invite was not sent when an email is saved but no invite went out", () => {
+    renderBadge(baseTraveler({ invitedAt: null }));
+    expect(container.textContent).toContain("Sin enviar");
+  });
+
+  it("keeps the existing missing-details status badge next to the invite badge", () => {
+    renderBadge(baseTraveler({ status: "PENDING", idDocument: null }));
+    expect(container.textContent).toContain("Pendiente");
+  });
+
+  it("shows no invite badge on minor rows", () => {
+    renderBadge(baseTraveler({ kind: "MINOR", email: null, dateOfBirth: "2016-01-01T00:00:00.000Z" }));
+    expect(container.textContent).not.toContain("Sin email");
+  });
+
+  it("shows the send error and keeps the row usable when a save could not issue the invite (T14a)", async () => {
+    const updated = baseTraveler({ status: "COMPLETE" });
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: updated, inviteFailed: true }));
+    renderBadge(baseTraveler({ email: null }));
+
+    await act(async () => { await handleRef.current?.save(); });
+
+    expect(container.textContent).toContain("Invite failed");
+    expect(container.textContent).not.toContain("Guardado");
+    expect(resend()).not.toBeNull();
+  });
+});
+
+describe("TravelerRow — a companion's own row (T6)", () => {
+  it("locks the email, offers no invite action and shows no invite badge", () => {
+    render(baseTraveler({ isSelf: true, joined: true, status: "COMPLETE", idDocument: null }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(true);
+    expect(container.querySelector("button")).toBeNull();
+    expect(container.textContent).not.toContain("Se unió");
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!.disabled).toBe(false);
+  });
+});
+
+describe("TravelerRow — joined email lock (T10)", () => {
+  it("makes the email read-only with a hint once the companion joined", () => {
+    render(baseTraveler({ status: "COMPLETE", joined: true, email: "joined@example.com" }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(true);
+    expect(container.textContent).toContain("Se unió: el email no se puede cambiar");
+  });
+
+  it("keeps the email editable before the companion joins", () => {
+    render(baseTraveler({ status: "INVITED", joined: false }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(false);
+    expect(container.textContent).not.toContain("el email no se puede cambiar");
   });
 });

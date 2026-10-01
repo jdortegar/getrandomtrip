@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type { TravelerKind } from "@prisma/client";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
+import { tripRoleFor } from "./travelerAccess";
 
 import {
   computeTravelerCap,
@@ -68,6 +69,7 @@ type SerializableTravelerRow = {
   dateOfBirth: Date | null;
   invitedAt: Date | null;
   submittedAt: Date | null;
+  userId?: string | null;
 };
 
 /**
@@ -87,15 +89,49 @@ export function serializeTraveler(row: SerializableTravelerRow): TravelerDTO {
     dateOfBirth: row.dateOfBirth ? row.dateOfBirth.toISOString() : null,
     invitedAt: row.invitedAt ? row.invitedAt.toISOString() : null,
     submittedAt: row.submittedAt ? row.submittedAt.toISOString() : null,
+    joined: Boolean(row.userId),
+  };
+}
+
+/**
+ * Companion view of a row: the viewer's own row stays complete (flagged
+ * `isSelf`); every other traveler is reduced to their name — no email, ID
+ * document, date of birth, invite or account-link information. Filtering
+ * happens here, server-side; the UI never receives what it must hide.
+ */
+export function serializeTravelerForCompanion(
+  row: SerializableTravelerRow,
+  viewerUserId: string,
+): TravelerDTO {
+  if (row.userId && row.userId === viewerUserId) {
+    return { ...serializeTraveler(row), isSelf: true };
+  }
+  return {
+    id: row.id,
+    kind: row.kind,
+    status: row.status,
+    fullName: row.fullName,
+    email: null,
+    idDocument: null,
+    dateOfBirth: null,
+    invitedAt: null,
+    submittedAt: null,
+    joined: false,
   };
 }
 
 /**
  * Shared read path for both the checkout success page and the dashboard
  * trip detail page. Ensures the roster exists (lazy, idempotent, paid-gated)
- * then serializes it — the single drift-proof shape.
+ * then serializes it — the single drift-proof shape. The viewer decides the
+ * shape: the buyer gets every row in full; a companion gets the reduced view
+ * (see `serializeTravelerForCompanion`). The viewer is required so no read
+ * surface can forget to choose.
  */
-export async function getRosterForTrip(tripId: string): Promise<TravelerRoster> {
+export async function getRosterForTrip(
+  tripId: string,
+  viewerUserId: string,
+): Promise<TravelerRoster> {
   await ensureRoster(tripId);
 
   const trip = await prisma.tripRequest.findUnique({
@@ -119,8 +155,24 @@ export async function getRosterForTrip(tripId: string): Promise<TravelerRoster> 
     : null;
   const startDate = trip.startDate ? trip.startDate.toISOString() : null;
   const locked = isRosterLocked(trip);
-  const travelers = trip.travelers.map(serializeTraveler);
-  const submitted = travelers.filter(isTravelerRosterComplete).length;
+  const viewerRole = tripRoleFor(trip, viewerUserId);
+  // Progress is a trip-level fact computed from the full rows, so a companion
+  // sees the same count the buyer does without the data behind it.
+  const submitted = trip.travelers
+    .map(serializeTraveler)
+    .filter(isTravelerRosterComplete).length;
+  const travelers =
+    viewerRole === "companion"
+      ? trip.travelers.map((row) => serializeTravelerForCompanion(row, viewerUserId))
+      : trip.travelers.map(serializeTraveler);
 
-  return { deadline, startDate, locked, cap: travelers.length, submitted, travelers };
+  return {
+    deadline,
+    startDate,
+    locked,
+    cap: travelers.length,
+    submitted,
+    travelers,
+    viewerRole,
+  };
 }

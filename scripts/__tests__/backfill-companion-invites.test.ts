@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   formatCandidateTable,
   runBackfill,
+  runCli,
   selectBackfillCandidates,
   type BackfillRow,
 } from "../backfill-companion-invites";
@@ -181,5 +182,63 @@ describe("runBackfill", () => {
 
     expect(result.results).toEqual([]);
     expect(deps.issueInvite).not.toHaveBeenCalled();
+  });
+});
+
+describe("runCli", () => {
+  function makeCli(rows: BackfillRow[]) {
+    const client = makeClient(rows);
+    const sendDeps = {
+      issueInvite: vi.fn(async (id: string) => `token-${id}`),
+      deliver: vi.fn(async () => {}),
+    };
+    return {
+      client,
+      sendDeps,
+      loadSendDeps: vi.fn(async () => sendDeps),
+      withPrisma: vi.fn(async (run: (c: never) => Promise<unknown>) => run(client as never)),
+      log: vi.fn(),
+    };
+  }
+
+  it("dry run never loads the app modules (issuer, mailer) and needs no RT_DEPLOY_ENV", async () => {
+    const cli = makeCli([row()]);
+
+    const result = await runCli({ argv: [], env: undefined, now: NOW }, cli);
+
+    expect(result).toMatchObject({ exitCode: 0 });
+    expect(cli.loadSendDeps).not.toHaveBeenCalled();
+    expect(cli.withPrisma).toHaveBeenCalledTimes(1);
+    expect(cli.sendDeps.issueInvite).not.toHaveBeenCalled();
+    expect(cli.log.mock.calls.flat().join("\n")).toContain("j***@gmail.com");
+  });
+
+  it("--send refuses outside production before touching the database or app modules", async () => {
+    const cli = makeCli([row()]);
+
+    const result = await runCli({ argv: ["--send"], env: "nonproduction", now: NOW }, cli);
+
+    expect(result.exitCode).toBe(1);
+    expect(cli.withPrisma).not.toHaveBeenCalled();
+    expect(cli.loadSendDeps).not.toHaveBeenCalled();
+  });
+
+  it("--send in production loads the app modules and sends", async () => {
+    const cli = makeCli([row()]);
+
+    const result = await runCli({ argv: ["--send"], env: "production", now: NOW }, cli);
+
+    expect(cli.loadSendDeps).toHaveBeenCalledTimes(1);
+    expect(cli.sendDeps.issueInvite).toHaveBeenCalledWith("trav-1", "COMPLETE");
+    expect(result.exitCode).toBe(0);
+  });
+
+  it("exits non-zero when any send fails", async () => {
+    const cli = makeCli([row()]);
+    cli.sendDeps.deliver.mockRejectedValue(new Error("provider down"));
+
+    const result = await runCli({ argv: ["--send"], env: "production", now: NOW }, cli);
+
+    expect(result.exitCode).toBe(1);
   });
 });

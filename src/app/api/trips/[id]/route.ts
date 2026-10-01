@@ -4,7 +4,8 @@ import { authOptions } from "@/lib/auth";
 import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
-import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
+import { omitBuyerOnlyFields } from "@/lib/trips/companionTripView";
 import {
   toTravelerTripResponse,
   TRAVELER_EXPERIENCE_SELECT,
@@ -51,14 +52,15 @@ export async function GET(
       return NextResponse.json({ error: "Trip not found" }, { status: 404 });
     }
 
-    // Buyer-OR-companion, via the single shared predicate (v1: same
-    // permission level as the buyer once access is granted — narrowing is
-    // a documented follow-up, not this change's scope).
+    // Buyer-OR-companion, via the single shared predicate. A companion gets a
+    // reduced read-only view: no price/payment data and, for other travelers,
+    // names only (enforced here and in `getRosterForTrip`, never by the UI).
     if (!(await canAccessTrip(trip.id, user.id))) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const roster = await getRosterForTrip(trip.id);
+    const role = tripRoleFor(trip, user.id);
+    const roster = await getRosterForTrip(trip.id, user.id);
 
     // Server-side fulfillment-visibility gate (design.md ADR-6). `isAdmin`
     // is hardcoded `false` — this endpoint stays buyer/companion-only, no
@@ -74,6 +76,12 @@ export async function GET(
         })).map(toTripDocumentDTO)
       : undefined;
 
+    const detail = { ...responseTrip, role, roster, ...(visible && { documents }) };
+
+    if (role === "companion") {
+      return NextResponse.json({ trip: omitBuyerOnlyFields(detail) }, { status: 200 });
+    }
+
     // Resolved server-side so the displayed price always matches what
     // checkout will charge (tripper override, or global catalog fallback).
     // Per-person, pre-pax-multiplier — mirrors the previous client-side
@@ -86,7 +94,7 @@ export async function GET(
     }).price;
 
     return NextResponse.json(
-      { trip: { ...responseTrip, basePriceUsd, roster, ...(visible && { documents }) } },
+      { trip: { ...detail, basePriceUsd } },
       { status: 200 },
     );
   } catch (error) {

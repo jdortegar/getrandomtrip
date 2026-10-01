@@ -19,13 +19,13 @@ vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
 }));
 
 vi.mock("@/lib/email", () => ({
-  sendTravelerReminderEmail: vi.fn(),
+  deliverTravelerReminderEmail: vi.fn(),
 }));
 
 // ── Imports ────────────────────────────────────────────────────────────────────
 import { prisma } from "@/lib/prisma";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
-import { sendTravelerReminderEmail } from "@/lib/email";
+import { deliverTravelerReminderEmail } from "@/lib/email";
 
 type RouteModule = typeof import("../route");
 type PassesModule = typeof import("../passes");
@@ -75,86 +75,208 @@ describe("POST /api/internal/traveler-reminder — auth guard", () => {
 });
 
 // ── Pass 1 ─────────────────────────────────────────────────────────────────────
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
+const NOW = new Date("2026-09-30T12:00:00.000Z");
+
+function candidate(overrides: {
+  id?: string;
+  email?: string | null;
+  invitedAt?: Date | null;
+  startDate?: Date | null;
+  endDate?: Date | null;
+} = {}) {
+  const {
+    id = "trav-1",
+    email = "jane@example.com",
+    invitedAt = new Date(NOW.getTime() - 4 * DAY_MS),
+    startDate = new Date(NOW.getTime() + 20 * DAY_MS),
+    endDate = new Date(NOW.getTime() + 24 * DAY_MS),
+  } = overrides;
+  return { id, email, invitedAt, tripRequest: { startDate, endDate } };
+}
+
+function mockCandidates(...rows: ReturnType<typeof candidate>[]) {
+  (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue(rows);
+}
+
 describe("runPass1", () => {
-  it("sends one reminder per INVITED row with reminderSentAt null, re-issuing the token and stamping reminderSentAt", async () => {
-    (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      { id: "trav-1" },
-    ]);
-    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue(
-      "fresh-plaintext-token",
-    );
+  it("sends one reminder per due invited-but-not-linked row, re-issuing the token and stamping reminderSentAt after delivery", async () => {
+    mockCandidates(candidate());
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("fresh-plaintext-token");
 
     const mod = (await import("../passes")) as PassesModule;
-    const now = new Date();
-    const result = await mod.runPass1(now);
+    const result = await mod.runPass1(NOW);
 
     expect(result.reminded).toBe(1);
     expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1");
-    expect(sendTravelerReminderEmail).toHaveBeenCalledWith(
-      "trav-1",
-      "fresh-plaintext-token",
-    );
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("trav-1", "fresh-plaintext-token");
     expect(prisma.tripTraveler.update).toHaveBeenCalledWith({
       where: { id: "trav-1" },
-      data: { reminderSentAt: now },
+      data: { reminderSentAt: NOW },
     });
   });
 
-  it("queries only INVITED rows with reminderSentAt: null inside the pre-cutoff window", async () => {
+  it("targets unlinked, invited, never-reminded ADULT rows with an email on paid trips, regardless of status or the details cutoff", async () => {
     const mod = (await import("../passes")) as PassesModule;
-    const now = new Date();
-    await mod.runPass1(now);
+    await mod.runPass1(NOW);
 
-    expect(prisma.tripTraveler.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          status: "INVITED",
-          reminderSentAt: null,
-        }),
+    const { where } = (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(where).toMatchObject({
+      kind: "ADULT",
+      invitedAt: { not: null },
+      userId: null,
+      reminderSentAt: null,
+      email: { not: null },
+      tripRequest: {
+        status: { notIn: ["CANCELLED", "COMPLETED"] },
+        payment: { is: { status: "APPROVED" } },
+      },
+    });
+    expect(where).not.toHaveProperty("status");
+    expect(where.tripRequest).not.toHaveProperty("OR");
+    expect(where.tripRequest).not.toHaveProperty("startDate");
+  });
+
+  it("is due at invitedAt + 3 days when that comes first", async () => {
+    mockCandidates(
+      candidate({ id: "due", invitedAt: new Date(NOW.getTime() - 3 * DAY_MS) }),
+      candidate({ id: "early", invitedAt: new Date(NOW.getTime() - 3 * DAY_MS + 1000) }),
+    );
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("t");
+
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass1(NOW);
+
+    expect(result.reminded).toBe(1);
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("due", "t");
+  });
+
+  it("is due 24h before departure when that comes first", async () => {
+    mockCandidates(
+      candidate({
+        id: "soon",
+        invitedAt: new Date(NOW.getTime() - HOUR_MS),
+        startDate: new Date(NOW.getTime() + 24 * HOUR_MS),
+        endDate: new Date(NOW.getTime() + 2 * DAY_MS),
+      }),
+      candidate({
+        id: "not-yet",
+        invitedAt: new Date(NOW.getTime() - HOUR_MS),
+        startDate: new Date(NOW.getTime() + 24 * HOUR_MS + 1000),
+        endDate: new Date(NOW.getTime() + 2 * DAY_MS),
       }),
     );
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("t");
+
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass1(NOW);
+
+    expect(result.reminded).toBe(1);
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("soon", "t");
+  });
+
+  it("still reminds after the details cutoff while the trip has not ended", async () => {
+    mockCandidates(
+      candidate({
+        invitedAt: new Date(NOW.getTime() - HOUR_MS),
+        startDate: new Date(NOW.getTime() + 2 * HOUR_MS),
+        endDate: new Date(NOW.getTime() + DAY_MS),
+      }),
+    );
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("t");
+
+    const mod = (await import("../passes")) as PassesModule;
+    expect((await mod.runPass1(NOW)).reminded).toBe(1);
+  });
+
+  it("skips rows whose trip has ended (UTC end day inclusive)", async () => {
+    mockCandidates(
+      candidate({
+        id: "ended",
+        invitedAt: new Date(NOW.getTime() - 10 * DAY_MS),
+        startDate: new Date("2026-09-27T00:00:00.000Z"),
+        endDate: new Date("2026-09-29T00:00:00.000Z"),
+      }),
+      candidate({
+        id: "last-day",
+        invitedAt: new Date(NOW.getTime() - 10 * DAY_MS),
+        startDate: new Date("2026-09-29T00:00:00.000Z"),
+        endDate: new Date("2026-09-30T00:00:00.000Z"),
+      }),
+    );
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("t");
+
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass1(NOW);
+
+    expect(result.reminded).toBe(1);
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("last-day", "t");
+  });
+
+  it("skips a blank email instead of stamping a reminder nobody received", async () => {
+    mockCandidates(candidate({ email: "  " }));
+
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass1(NOW);
+
+    expect(result.reminded).toBe(0);
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
   });
 
   it("sends nothing when there are no candidates", async () => {
-    (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-
     const mod = (await import("../passes")) as PassesModule;
-    const result = await mod.runPass1(new Date());
+    const result = await mod.runPass1(NOW);
 
     expect(result.reminded).toBe(0);
-    expect(sendTravelerReminderEmail).not.toHaveBeenCalled();
+    expect(deliverTravelerReminderEmail).not.toHaveBeenCalled();
   });
 
   it("does not send a second reminder once the DB no longer returns the row as a candidate (idempotency via reminderSentAt stamp)", async () => {
     (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("token-1");
     (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce([{ id: "trav-1" }])
+      .mockResolvedValueOnce([candidate()])
       .mockResolvedValueOnce([]);
 
     const mod = (await import("../passes")) as PassesModule;
-    const firstRun = await mod.runPass1(new Date());
-    const secondRun = await mod.runPass1(new Date());
+    const firstRun = await mod.runPass1(NOW);
+    const secondRun = await mod.runPass1(NOW);
 
     expect(firstRun.reminded).toBe(1);
     expect(secondRun.reminded).toBe(0);
-    expect(sendTravelerReminderEmail).toHaveBeenCalledTimes(1);
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not stamp reminderSentAt when delivery fails, and keeps going", async () => {
+    mockCandidates(candidate({ id: "trav-err" }), candidate({ id: "trav-ok" }));
+    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("tok");
+    (deliverTravelerReminderEmail as ReturnType<typeof vi.fn>)
+      .mockRejectedValueOnce(new Error("provider down"))
+      .mockResolvedValueOnce(undefined);
+
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass1(NOW);
+
+    expect(result.reminded).toBe(1);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledTimes(1);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledWith({
+      where: { id: "trav-ok" },
+      data: { reminderSentAt: NOW },
+    });
   });
 
   it("accumulates errors per row without aborting the loop", async () => {
-    (prisma.tripTraveler.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      { id: "trav-err" },
-      { id: "trav-ok" },
-    ]);
+    mockCandidates(candidate({ id: "trav-err" }), candidate({ id: "trav-ok" }));
     (issueTravelerInvite as ReturnType<typeof vi.fn>)
       .mockRejectedValueOnce(new Error("DB error"))
       .mockResolvedValueOnce("token-ok");
 
     const mod = (await import("../passes")) as PassesModule;
-    const result = await mod.runPass1(new Date());
+    const result = await mod.runPass1(NOW);
 
     expect(result.reminded).toBe(1);
-    expect(sendTravelerReminderEmail).toHaveBeenCalledTimes(1);
-    expect(sendTravelerReminderEmail).toHaveBeenCalledWith("trav-ok", "token-ok");
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledTimes(1);
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("trav-ok", "token-ok");
   });
 });
 
@@ -207,15 +329,10 @@ describe("POST /api/internal/traveler-reminder — response contract", () => {
   });
 });
 
-it("uses separate XSED 72h and standard 7d cutoff predicates in both scheduled passes", async () => {
+it("uses separate XSED 72h and standard 7d cutoff predicates in the cutoff-lock pass", async () => {
   const mod = await import("../passes");
   const now = new Date("2026-09-30T00:00:00Z");
-  await mod.runPass1(now);
   await mod.runPass2(now);
-  expect(prisma.tripTraveler.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ tripRequest: expect.objectContaining({ OR: [
-    { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-10-03T00:00:00Z") } },
-    { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-10-07T00:00:00Z") } },
-  ] }) }) }));
   expect(prisma.tripRequest.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ OR: [
     { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-03T00:00:00Z") } },
     { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-07T00:00:00Z") } },

@@ -8,7 +8,8 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import AuthModal from "@/components/auth/AuthModal";
-import { emailsMatch } from "@/lib/travelers/travelerEmail";
+import { emailsMatch, maskEmail } from "@/lib/travelers/travelerEmail";
+import { inviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -20,10 +21,15 @@ export type TravelerInviteResolution =
       ok: true;
       buyerFirstName: string;
       idDocumentRequired?: boolean;
-      /** Address the invite was sent to; prefilled and locked in the sign-up form. */
+      /**
+       * Full invited address, present ONLY when the server saw a session with
+       * that address. Never sent to anonymous or mismatched viewers.
+       */
       invitedEmail?: string | null;
-      /** Masked form (`j***@gmail.com`) shown when another account is signed in. */
+      /** Masked form (`j***@gmail.com`): the sign-up hint and the mismatch message. */
       maskedEmail?: string | null;
+      /** Server-detected: the signed-in account's email differs from the invite. */
+      emailMismatch?: boolean;
     }
   | { ok: false; reason: Reason };
 
@@ -53,6 +59,7 @@ export default function TravelerInviteClient({
       buyerFirstName={resolution.buyerFirstName}
       copy={copy}
       idDocumentRequired={resolution.idDocumentRequired ?? true}
+      initialMismatch={resolution.emailMismatch ?? false}
       invitedEmail={resolution.invitedEmail ?? null}
       locale={locale}
       maskedEmail={resolution.maskedEmail ?? null}
@@ -101,6 +108,7 @@ function InviteForm({
   buyerFirstName,
   copy,
   idDocumentRequired,
+  initialMismatch,
   invitedEmail,
   locale,
   maskedEmail,
@@ -110,6 +118,7 @@ function InviteForm({
   buyerFirstName: string;
   idDocumentRequired: boolean;
   copy: InviteTravelersDict;
+  initialMismatch: boolean;
   invitedEmail: string | null;
   locale: Locale;
   maskedEmail: string | null;
@@ -119,13 +128,24 @@ function InviteForm({
   const { data: session, status } = useSession();
   const authenticated = status === "authenticated";
   // The invite is bound to one address: a signed-in account with another email
-  // cannot claim it (the server enforces the same rule on submit).
-  const [serverMismatch, setServerMismatch] = useState(false);
+  // cannot claim it (the server enforces the same rule on submit). The client
+  // only holds the full address when the server saw a matching session, so a
+  // mismatch is otherwise learned from the server (initial render or submit).
+  const [serverMismatch, setServerMismatch] = useState(initialMismatch);
   const emailMismatch =
     serverMismatch ||
     (authenticated &&
       Boolean(invitedEmail) &&
       !emailsMatch(session?.user?.email, invitedEmail));
+  // Claiming needs a verified email (enforced by `submit`). `emailVerified`
+  // comes from the DB-backed session; a `403 email_unverified` on submit
+  // switches to the same state.
+  const [serverUnverified, setServerUnverified] = useState(false);
+  const emailUnverified =
+    serverUnverified ||
+    (authenticated && session?.user?.emailVerified === false);
+  const unverifiedAddress =
+    maskedEmail ?? maskEmail(session?.user?.email) ?? "";
   const [authOpen, setAuthOpen] = useState(false);
   const [state, setState] = useState<FormState>("form");
   const [idDocument, setIdDocument] = useState("");
@@ -199,6 +219,11 @@ function InviteForm({
       if (res.status === 403 && data?.error === "email_mismatch") {
         setState("form");
         setServerMismatch(true);
+        return;
+      }
+      if (res.status === 403 && data?.error === "email_unverified") {
+        setState("form");
+        setServerUnverified(true);
         return;
       }
       if (!res.ok || !data.ok) {
@@ -282,11 +307,27 @@ function InviteForm({
               {copy.landingSwitchAccount}
             </Button>
           </div>
+        ) : emailUnverified ? (
+          <div className="mt-6 text-left" role="status">
+            <div className="rounded-md border border-sky-200 bg-sky-50 p-4">
+              <p className="text-sm text-sky-900">
+                {copy.landingVerifyInbox.replace(
+                  "{maskedEmail}",
+                  unverifiedAddress,
+                )}
+              </p>
+            </div>
+          </div>
         ) : !authenticated ? (
           <div className="mt-6 text-left">
             <p className="text-sm text-neutral-600">
               {copy.landingSignupExplainer}
             </p>
+            {maskedEmail && (
+              <p className="mt-3 text-sm font-medium text-ink">
+                {copy.landingEmailHint.replace("{maskedEmail}", maskedEmail)}
+              </p>
+            )}
             <Button
               className="mt-5 w-full"
               onClick={handleCtaClick}
@@ -345,9 +386,8 @@ function InviteForm({
         allowRegister
         defaultMode="register"
         dict={authCopy}
-        initialEmail={invitedEmail ?? undefined}
+        inviteReturnPath={token ? inviteReturnPath(locale, token) : undefined}
         isOpen={authOpen}
-        lockEmail={Boolean(invitedEmail)}
         onClose={() => setAuthOpen(false)}
       />
     </>

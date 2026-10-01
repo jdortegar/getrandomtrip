@@ -14,9 +14,12 @@ export const dynamic = "force-dynamic";
  * answers WHICH row; the session now answers WHO claims it. Payload
  * narrows to `{ token, idDocument, consent }` — `fullName`/`email` are
  * ALWAYS derived server-side from the authenticated user, never trusted
- * from the client. Re-validates the token (expiry + cutoff) independently
- * before writing. Rejects 403 `email_mismatch` unless the session email
- * matches the invited address (case-insensitive). On success, sets `TripTraveler.userId` and fires one
+ * from the client. Re-validates the token independently before writing: it
+ * is accepted until the trip ends (after the details cutoff it only links the
+ * account and fills gaps; populated fields stay frozen) and rejects as
+ * `expired`, `used`, `ended` or `invalid` otherwise. Rejects 403
+ * `email_mismatch` unless the session email matches the invited address
+ * (case-insensitive). On success, sets `TripTraveler.userId` and fires one
  * in-app `TRAVELER_SUBMITTED` notification for the buyer — idempotent by
  * construction, since a re-submitted (already-consumed) token resolves to
  * `used` and never reaches the notification step.
@@ -50,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     const dbUser = await prisma.user.findUnique({
       where: { id: sessionUserId },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, emailVerified: true },
     });
 
     if (!dbUser) {
@@ -62,12 +65,20 @@ export async function POST(request: NextRequest) {
       idDocument,
       email: dbUser.email,
       userId: dbUser.id,
+      // From the DB row above, not the session/JWT/body.
+      emailVerified: dbUser.emailVerified,
     });
 
     if (!result.ok) {
       if (result.reason === "email_mismatch") {
         return NextResponse.json(
           { error: "email_mismatch", reason: "email_mismatch" },
+          { status: 403 },
+        );
+      }
+      if (result.reason === "email_unverified") {
+        return NextResponse.json(
+          { error: "email_unverified", reason: "email_unverified" },
           { status: 403 },
         );
       }

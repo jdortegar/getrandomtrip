@@ -9,7 +9,10 @@
  * DRY RUN BY DEFAULT: prints the candidate table (masked emails) and sends
  * nothing. `--send` issues a token and sends the email, one row at a time, and
  * is refused unless RT_DEPLOY_ENV=production (outside production `sendMail`
- * throws). Review the dry-run list with the owner before using `--send`.
+ * throws). The dry run needs no RT_DEPLOY_ENV: the app modules (token issuer,
+ * mailer) are imported dynamically only for `--send`, so the nonproduction
+ * DB-host guard in `src/lib/prisma.ts` never loads for a dry run. Review the
+ * dry-run list with the owner before using `--send`.
  *
  *   npx tsx scripts/backfill-companion-invites.ts            # dry run
  *   RT_DEPLOY_ENV=production npx tsx scripts/backfill-companion-invites.ts --send
@@ -188,37 +191,89 @@ export async function runBackfill(
   return { mode: "send", candidates, results };
 }
 
+export interface SendDeps {
+  issueInvite: BackfillDeps["issueInvite"];
+  deliver: BackfillDeps["deliver"];
+}
+
+export interface CliOptions {
+  argv: string[];
+  env: string | undefined;
+  now?: number;
+}
+
+export interface CliDeps {
+  withPrisma: (run: (client: BackfillClient) => Promise<unknown>) => Promise<unknown>;
+  /**
+   * Loads the app modules (token issuer, mailer). They pull `src/lib/prisma.ts`
+   * and its nonproduction DB-host guard, so ONLY `--send` may call this; the
+   * dry run reads through the script's own client.
+   */
+  loadSendDeps: () => Promise<SendDeps>;
+  log: (line: string) => void;
+}
+
+/** CLI orchestration, injectable so tests can prove the dry run never loads app modules. */
+export async function runCli(
+  options: CliOptions,
+  deps: CliDeps,
+): Promise<{ exitCode: number }> {
+  const send = options.argv.includes("--send");
+  // Refuse before any env file, database or mail module is loaded.
+  if (send && options.env !== "production") {
+    deps.log(
+      "Refusing --send: set RT_DEPLOY_ENV=production (sendMail throws outside production).",
+    );
+    return { exitCode: 1 };
+  }
+
+  let exitCode = 0;
+  await deps.withPrisma(async (client) => {
+    const sendDeps: SendDeps = send
+      ? await deps.loadSendDeps()
+      : {
+          issueInvite: async () => {
+            throw new Error("issueInvite is unavailable in a dry run");
+          },
+          deliver: async () => {
+            throw new Error("deliver is unavailable in a dry run");
+          },
+        };
+    const { results } = await runBackfill(
+      client,
+      { send, env: options.env, now: options.now },
+      { ...sendDeps, log: deps.log },
+    );
+    if (results.some((r) => !r.ok)) exitCode = 1;
+  });
+  return { exitCode };
+}
+
 const isMainModule =
   process.argv[1]?.endsWith("backfill-companion-invites.ts") ?? false;
 
 if (isMainModule) {
-  const send = process.argv.includes("--send");
-  const env = process.env.RT_DEPLOY_ENV;
-  // Refuse before any env file, database or mail module is loaded.
-  if (send && env !== "production") {
-    console.error(
-      "Refusing --send: set RT_DEPLOY_ENV=production (sendMail throws outside production).",
-    );
-    process.exitCode = 1;
-  } else {
-    withPrisma(async (client) => {
-      // App modules read DATABASE_URL at import time, so load them only now.
-      const { issueTravelerInvite } = await import("../src/lib/travelers/travelerInviteTokens");
-      const { deliverTravelerInviteEmail } = await import("../src/lib/email");
-      const { results } = await runBackfill(
-        client as unknown as BackfillClient,
-        { send, env },
-        {
+  runCli(
+    { argv: process.argv.slice(2), env: process.env.RT_DEPLOY_ENV },
+    {
+      withPrisma: (run) => withPrisma((client) => run(client as unknown as BackfillClient)),
+      loadSendDeps: async () => {
+        const { issueTravelerInvite } = await import("../src/lib/travelers/travelerInviteTokens");
+        const { deliverTravelerInviteEmail } = await import("../src/lib/email");
+        return {
           issueInvite: (id, status) =>
             issueTravelerInvite(id, status as Parameters<typeof issueTravelerInvite>[1]),
           deliver: deliverTravelerInviteEmail,
-          log: (line) => console.log(line),
-        },
-      );
-      if (results.some((r) => !r.ok)) process.exitCode = 1;
-    }).catch((e) => {
+        };
+      },
+      log: (line) => console.log(line),
+    },
+  )
+    .then(({ exitCode }) => {
+      if (exitCode) process.exitCode = exitCode;
+    })
+    .catch((e) => {
       console.error(e);
       process.exitCode = 1;
     });
-  }
 }

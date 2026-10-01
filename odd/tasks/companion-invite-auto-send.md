@@ -35,11 +35,29 @@ First real case: Ana Ortega's XSED trip (Oct 3–4, 2026). Her cutoff (T-72h) is
 
 ### Phase 2 — follow-up release
 
-- [ ] **T6** Reduced read-only companion view (no price, no other travelers' ID/DOB, no editing others or inviting).
-- [ ] **T7** One reminder for invited-but-not-linked companions at invite + 3 days or 24h before departure, whichever comes first.
-- [ ] **T8** Buyer roster badge per companion: Invitation sent / Joined / No email.
-- [ ] **T9** Invite URL built from the deploy origin instead of hardcoded `https://getrandomtrip.com`.
-- [ ] **T10** (assumption, confirm) Buyer cannot change the email of a companion who already joined.
+- [x] **T6** Reduced read-only companion view (no price, no other travelers' ID/DOB, no editing others or inviting).
+  - Decision: role comes from `tripRoleFor`. `getRosterForTrip(tripId, viewerUserId)` now requires the viewer and returns `viewerRole`; a companion gets their own linked row in full (`isSelf: true`) and every other row as a name only (email, ID, DOB, invite dates, link all null/false). `submitted` stays the buyer-side trip count. `GET /api/trips/[id]` returns `role` and, for companions, omits `payment`, `basePriceUsd` and raw `travelers` (`omitBuyerOnlyFields` in `src/lib/trips/companionTripView.ts`); `GET /api/trips` (list) strips `payment`/`basePriceUsd` on joined trips. `trip-summary` is already buyer-only (payment owner) and passes the viewer id, so roster parity holds.
+  - Decision: companion PATCH only on their own linked row (403 otherwise) within existing cutoff rules, and may not change the row's email (403; re-sending the same address is fine). `POST /invite` is buyer-only (403 for companions). Dashboard trip page hides cost summary, payment card and invite/resend controls for companions; others render as `TravelerReadOnlyRow` (name only).
+  - Note: the v1 "Companion Permission Parity" requirement was removed from the spec and replaced by "Companion Reduced Read-Only View". The list card UI may still show a catalog-based price estimate client-side when `basePriceUsd`/`payment` are absent (only `UnpaidTripsAlert` shows prices; companions' trips are paid).
+- [x] **T7** One reminder for invited-but-not-linked companions at invite + 3 days or 24h before departure, whichever comes first.
+  - Decision: Pass 1 queries ADULT, `invitedAt` set, `userId` null, `reminderSentAt` null, email present, paid and not CANCELLED/COMPLETED trips; due-time (`min(invitedAt+3d, start-24h)`) and `isTripEnded` are applied in memory. Not gated by status or the details cutoff. Delivery is now awaited (`deliverTravelerReminderEmail`, replaces fire-and-forget `sendTravelerReminderEmail`) and `reminderSentAt` is stamped only after provider acceptance, so a failed send retries next run (token is rotated again; `invitedAt` refreshes, which can delay the 3-day term). Reminder template reframed to "see my trip" (dates + type, TGIS/XSED, empty-buyer fallback). Pass 2 untouched.
+- [x] **T8** Buyer roster badge per companion: Invitation sent / Joined / No email.
+  - Decision: DTO gains `joined` (derived from `userId`, id never exposed); `invitedAt` already existed. `TravelerRow` shows an invite badge next to the unchanged status badge: No email / Invitation sent {date} / Joined (Resend hidden) / plus a fourth "Invite not sent" for email-saved-but-never-invited rows (not in the original list; needed for failed issuance and ended trips). Keys under `inviteTravelers.inviteBadge*`.
+- [x] **T9** Invite URL built from the deploy origin instead of hardcoded `https://getrandomtrip.com`.
+  - Decision: `getInviteOrigin`/`buildTravelerInviteUrl` in `src/lib/travelers/travelerInviteUrl.ts`; production always `https://getrandomtrip.com`, nonproduction uses `getNonproductionOrigin()` and falls back to the production URL only when null (explicit in code and doc). Applied to the traveler invite and reminder emails only.
+- [x] **T10** (owner confirmed) Buyer cannot change the email of a companion who already joined.
+  - Decision: PATCH returns `403 email_locked_joined` for any email change (including clearing) on a row with `userId` set, for every viewer; same-address re-save and other edits still work. `TravelerRow` makes the email read-only on a Joined row with hint `emailLockedJoinedHint` (es/en). The earlier companion email rule stays (it now reports the same code for linked rows).
+- [x] **T11** (review R1-001) Invite peek exposes only the masked email to viewers who have not signed in with the invited address; the full email is no longer sent in the server-rendered payload.
+  - Decision: `peekTravelerInvite(token, viewerEmail?)` returns `invitedEmail` only when the viewer's session email matches, plus `viewerEmailMatches`; `consume` results never carry it. The page reads the session server-side and forwards `emailMismatch` (boolean). Sign-up UX: masked hint (`landingEmailHint`) above the CTA, `AuthModal` opens with an editable, unprefilled email (`lockEmail`/`initialEmail` no longer used by the invite; the AuthModal props remain). After in-page sign-up the client cannot compare, so a wrong address is caught by the server `email_mismatch` on submit.
+- [x] **T12** (review R1-002, owner decided) Require a verified email before an invite can be accepted.
+  - Decision: `consumeTravelerInvite` takes `emailVerified` (DB value) and returns `email_unverified` when a claim has no verified email (after the mismatch check); `POST /api/travelers/submit` selects `emailVerified` from the User row (not session/JWT/body) and maps it to `403 email_unverified`. The session callback now exposes `user.emailVerified` (boolean from the DB on every read). Google: new Google users were already created verified; an existing unverified account signing in with Google is now marked verified.
+  - Decision: the `grt_traveler_invite` bypass is KEPT (documented in `auth.ts` and the spec): it only yields a session so the invite page can show its in-page "check your inbox" state; enforcement at claim means it grants nothing. Removing it would send unverified sign-ups through the modal's EMAIL_NOT_VERIFIED path with no session, which also works but drops the in-page state.
+  - Decision: return path. Register accepts `inviteReturnPath`; `safeInviteReturnPath` (`src/lib/auth/inviteReturnPath.ts`) allows only `/(es|en)/invite/{token}` (no scheme/host/query/fragment). `sendVerificationEmail(userId, token, returnPath?)` appends `&next=`; the verify page re-validates it server-side and `VerifyEmailClient` redirects there instead of login. The token only appears in the path and is never logged.
+  - Decision: invite page shows `landingVerifyInbox` for a signed-in unverified session or on `email_unverified`. No Resend action: there is no resend endpoint for a signed-in session (resend today only happens by re-submitting credentials in the sign-in modal), so none was built.
+- [x] **T13** Backfill dry run works without `RT_DEPLOY_ENV=production` (load app modules that apply the DB-host guard only on `--send`, or select candidates with the script's own client).
+  - Decision: CLI logic moved into exported `runCli(options, {withPrisma, loadSendDeps, log})`; `loadSendDeps` (dynamic import of token issuer + mailer) is called only with `--send`. Tests prove a dry run never calls it and that `--send` still refuses outside production before touching the DB. NOT executed against any database.
+- [x] **T14** Review follow-ups: PATCH reports `invited` only when a token was actually issued (R3/R4); stale cutoff doc in `travelers/submit/route.ts` (R2); invite subject safe with an empty buyer name (R3).
+  - Decision (a): the row now becomes `INVITED` only through `issueTravelerInvite` (PATCH no longer pre-writes `INVITED`), so a failed issuance leaves the old status and no `invitedAt`; the response carries `inviteFailed: true` and `TravelerRow` shows the send error while keeping Resend available. Success response mirrors `status: INVITED` + `invitedAt`. (b) doc comment rewritten. (c) `getSubject`/body fall back to "Te sumaron a un randomtrip" / "You've been added to a randomtrip" for blank buyer names (also in the reminder).
 
 ## Constraints
 
@@ -69,11 +87,28 @@ First real case: Ana Ortega's XSED trip (Oct 3–4, 2026). Her cutoff (T-72h) is
 
 | Task | Route | Trigger evidence | Status | Commit | Review |
 |------|-------|------------------|--------|--------|--------|
-| T1–T5 | delegated direct (one writer) | 2+ non-trivial files | implemented, verified (focused tests, typecheck, lint, full test); uncommitted | none — awaiting user approval | not assessed |
+| T1 | delegated direct (one writer) | 2+ non-trivial files | done | 7cc4496a | high risk, granted, approved (lineage review-889c9ee9ee7cc62f, acknowledged) |
+| T2 | delegated direct | 2+ non-trivial files | done | ebc860bd | same review |
+| T3 | delegated direct | 2+ non-trivial files | done | 245675be | same review |
+| T4 | delegated direct | 2+ non-trivial files | done | 53f00c67 | same review |
+| T5 | delegated direct | 2+ non-trivial files | done | ad25b380 | same review |
+| T6 | delegated direct (one writer) | 2+ non-trivial files | done | 6e96c276 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T7 | delegated direct | 2+ non-trivial files | done | 76478319 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T8 | delegated direct | 2+ non-trivial files | done | 9b071c97 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T9 | delegated direct | 2+ non-trivial files | done | 0dd24923 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T11 | delegated direct | 2+ non-trivial files | done | 6751e205 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T13 | delegated direct | 2 files | done | b3e8b53c | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T14 | delegated direct | 2+ non-trivial files | done | 0dd24923 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+| T10 | delegated direct | 2+ non-trivial files | done | 6e96c276 | review A (commits 1–3, medium, 1 lens) approved — lineage review-d2218a6269c8bbe4, acknowledged |
+| T12 | delegated direct | 2+ non-trivial files | done | 6751e205 + ea602f63 | review B (commits 4–6, high, 4 lenses) correction ea602f63 then approved — lineage review-77029025edc0e7f1, acknowledged |
+
+Phase 1 delivery: single PR #217 → develop (merge 071a5a6c), release PR #218 → main (merge fb56c68e), 2026-10-01. Production backfill: dry run listed 1 candidate (the first real companion), owner approved, `--send` reported `sent`.
+
+Phase 2 note: the full branch (2951 lines) exceeded the review lens budget (`lens_context_budget_exceeded`), so it was reviewed as two candidates. Review B found a CRITICAL account pre-hijacking issue in T12 (Google sign-in verified an unverified account without dropping its unproven password); fixed in ea602f63 (password cleared on Google verification) and validated.
 
 ## Next step
 
-Review the uncommitted phase 1 diff, approve commits (suggested slices: T1+T2 server, T2 client, T3, T4, T5), then deploy before Oct 3. After deploy: run the backfill dry run in production and have the owner approve the list before any `--send`. Phase 2 (T6–T10) remains.
+Deliver phase 2: PR to develop, then release to main. Follow-ups: review advisories (timezone-dependent companion view test, reminder retry resets due time, AuthModal unused lockEmail props, verification resend without return path, invite client error states).
 
 ## Verification log (phase 1)
 
@@ -81,3 +116,8 @@ Review the uncommitted phase 1 diff, approve commits (suggested slices: T1+T2 se
 - `npm run typecheck`, `npm run lint`: clean. `npm test`: 523 files / 5564 tests pass (one earlier run had load-induced flakes in trip-documents PDF render + eslintConfig tests; they pass in isolation and on rerun).
 - Parent spot check (2026-09-30): `npx vitest run src/lib/travelers src/app/api/travelers src/components/app/travelers src/components/travelers` → 15 files / 167 tests pass; `npm run typecheck` clean.
 - Parent fix (T4): en email labels XSED trips as TGIS per branding rule. New test "labels XSED trips as TGIS in en" observed RED (1 failed / 5 passed) then GREEN (6/6); `npm run lint` clean.
+
+## Verification log (phase 2)
+
+- TDD: RED observed before implementation for T13 (4 failing `runCli` tests), T9/T14c/T7-email (12 failing across URL, reminder email, invite subject), T7 pass (9 failing), T11 (peek, client; page tests failed first but partly on a mock-setup bug, fixed before GREEN), T14a (2 failing), T6/T8 (16 failing server, 9 failing UI). Two additions had no isolated RED: the blank-email skip test in the reminder pass and the T14b comment-only edit.
+- Focused vitest files and full `npm test`: 528 files / 5632 tests pass; `npm run typecheck` and `npm run lint` clean.
