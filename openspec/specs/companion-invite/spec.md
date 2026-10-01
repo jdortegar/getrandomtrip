@@ -217,6 +217,10 @@ Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row i
 
 The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buyer} added you to their randomtrip" (en), in the buyer's locale. The body MUST include the localized trip dates and trip type label, MUST mention creating an account to see the trip in the dashboard and confirm details, MUST keep the 7-day expiry line, and MUST NEVER include the destination. The CTA is "VER MI VIAJE" / "SEE MY TRIP".
 
+### Requirement: Companion Invite Backfill Script
+
+`scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The send run requires explicit owner approval of the dry-run list.
+
 ### Requirement: Automatic XSED Buyer Reminder
 
 The hourly traveler-reminder job MUST email the buyer on its first run at/after T-72h and before departure when a paid, non-cancelled, non-completed XSED trip has missing required companion details, including uninvited or not-yet-materialized roster rows. The localized email MUST link to the buyer's trip detail page and explain that empty fields remain editable while saved details are protected. A completed roster, solo trip, other product, unpaid trip, departed trip, or already-reminded booking MUST NOT receive this email.

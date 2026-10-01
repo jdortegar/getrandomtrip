@@ -22,6 +22,7 @@
     "db:seed-randomtrip-user": "npx tsx scripts/seed-randomtrip-user.ts",
     "db:backfill-randomtrip-ownership": "npx tsx scripts/backfill-randomtrip-ownership.ts",
     "db:backfill-email-verified": "npx tsx scripts/backfill-email-verified.ts",
+    "db:backfill-companion-invites": "npx tsx scripts/backfill-companion-invites.ts",
     "db:backfill-tripper-since": "npx tsx scripts/backfill-tripper-since.ts",
     "db:backfill-tripper-hero-crop": "npx tsx scripts/backfill-tripper-hero-crop.ts",
     "db:cleanup-duplicate-trips": "npx tsx scripts/cleanup-duplicate-trip-requests.ts",

@@ -27,6 +27,7 @@ it.each([
   ["hero crop", () => import("../backfill-tripper-hero-crop")],
   ["tripper since", () => import("../backfill-tripper-since")],
   ["duplicate cleanup", () => import("../cleanup-duplicate-trip-requests")],
+  ["companion invites", () => import("../backfill-companion-invites")],
 ] as const)(
   "imports %s without environment or database side effects",
   async (_, load) => {
