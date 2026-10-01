@@ -606,3 +606,32 @@ describe("AuthModal in production — tripper referrer picker is hidden", () => 
     expect(signInMock).toHaveBeenCalledWith("google", expect.anything());
   });
 });
+
+describe("AuthModal lockEmail", () => {
+  it("prefills the initial email and makes the field read-only when locked", () => {
+    render(
+      <AuthModal
+        defaultMode="register"
+        initialEmail="invited@example.com"
+        isOpen
+        lockEmail
+        onClose={() => {}}
+      />,
+    );
+    const input = container.querySelector<HTMLInputElement>("#auth-email")!;
+    expect(input.value).toBe("invited@example.com");
+    expect(input.readOnly).toBe(true);
+  });
+
+  it("keeps the email editable by default", () => {
+    render(
+      <AuthModal
+        defaultMode="register"
+        initialEmail="invited@example.com"
+        isOpen
+        onClose={() => {}}
+      />,
+    );
+    expect(container.querySelector<HTMLInputElement>("#auth-email")!.readOnly).toBe(false);
+  });
+});

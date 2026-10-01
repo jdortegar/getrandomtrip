@@ -63,6 +63,8 @@ const copy: InviteTravelersDict = {
   landingReasonExpired: "",
   landingReasonUsed: "",
   landingReasonEnded: "",
+  landingEmailMismatch: "",
+  landingSwitchAccount: "",
   landingConsentRequiredError: "",
   landingGenericError: "",
   savingAction: "",

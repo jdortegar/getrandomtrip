@@ -250,6 +250,23 @@ describe("POST /api/travelers/submit", () => {
     expect(prisma.notification.create).not.toHaveBeenCalled();
   });
 
+  it("returns 403 email_mismatch when the session email differs from the invited email (T2)", async () => {
+    mockSessionAndUser();
+    (
+      consumeTravelerInvite as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({ ok: false, reason: "email_mismatch" });
+
+    const res = await POST(makeRequest(validBody));
+
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({
+      error: "email_mismatch",
+      reason: "email_mismatch",
+    });
+    expect(stampSiteAccess).not.toHaveBeenCalled();
+    expect(prisma.notification.create).not.toHaveBeenCalled();
+  });
+
   it("stamps siteAccessGrantedAt for the claiming user on a successful claim", async () => {
     mockSessionAndUser();
     (

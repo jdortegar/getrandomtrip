@@ -2724,6 +2724,9 @@ export interface InviteTravelersDict {
   landingReasonExpired: string;
   landingReasonUsed: string;
   landingReasonEnded: string;
+  /** `{maskedEmail}` placeholder, e.g. `j***@gmail.com`. */
+  landingEmailMismatch: string;
+  landingSwitchAccount: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
   savingAction: string;

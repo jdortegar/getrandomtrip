@@ -14,7 +14,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 (Previously: "No-Login Submission" — anonymous submit allowed; account creation was an optional link. Now: authentication via `AuthModal` is mandatory before any identity data can be entered.)
 
-`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; a populated, protected ID after cutoff is not asked again. `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
+`/invite/[token]` MUST render a two-step, session-driven state machine. **Step 1 (no session)**: only the personalized greeting (buyer first name, neutral pronoun, no destination reveal) and a "Sign up to continue" CTA opening `AuthModal` (`allowRegister: true`, `defaultMode="register"`, with the invited email prefilled and read-only via `initialEmail` + `lockEmail`) render — no identity fields, no submit path exists in the DOM. **Step 2 (session present, any auth state including unverified email)**: collects only `idDocument` + a required consent checkbox; a populated, protected ID after cutoff is not asked again. `name`/`email` MUST NOT be asked. The system MUST NOT gate step 2 on `emailVerified`.
 
 #### Scenario: No-session visitor sees wall only
 - GIVEN an unauthenticated visitor opens a valid, unconsumed `/invite/[token]`
@@ -40,6 +40,11 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 - GIVEN a companion just registered and `session.user.emailVerified` is falsy
 - WHEN the page evaluates whether to show step 2
 - THEN step 2 renders anyway; the page gate does not read `emailVerified`
+
+#### Scenario: Signed-in account with a different email is blocked
+- GIVEN a session whose email differs (case-insensitive, trimmed) from the invited email
+- WHEN the page renders step 2
+- THEN no form renders; a localized message shows "This invite was sent to {masked}. Sign in with that email." (masked form `j***@gmail.com`, never the raw address) with a "use a different account" action that signs out
 
 #### Scenario: Consent still gates submit (unchanged)
 - GIVEN step 2 with idDocument filled but consent unchecked
@@ -77,7 +82,7 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 
 ### Requirement: Session-Gated Submission Endpoint
 
-`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry and single-use consumption are unchanged. Cutoff protection follows the field-level policy below; populated identity and account ownership must not be overwritten after cutoff.
+`POST /api/travelers/submit` MUST require `getServerSession`; MUST return `401` with none. Payload narrows to `{ token, idDocument, consent }` — `fullName`/`email` MUST be derived server-side from `session.user.name`/`session.user.email`, never trusted from the client. On success the endpoint performs the existing `consumeTravelerInvite` writes (`status → COMPLETE`, `submittedAt`, `consentAt`) PLUS sets `TripTraveler.userId = session.user.id`. Token expiry and single-use consumption are unchanged. Cutoff protection follows the field-level policy below; populated identity and account ownership must not be overwritten after cutoff. The endpoint MUST reject with `403` and error `email_mismatch` when the normalized (trim + lowercase) session email differs from the normalized `TripTraveler.email`, or when the row has no email; the check runs inside `consumeTravelerInvite` and writes nothing.
 
 #### Scenario: No session rejected
 - GIVEN a request with no active session
@@ -88,6 +93,16 @@ This spec supersedes the prior "No-Login Submission" requirement from `openspec/
 - GIVEN an authenticated session for Alex and a payload with a spoofed `fullName`/`email`
 - WHEN submission succeeds
 - THEN new identity values come from `session.user.name`/`session.user.email` and `userId = session.user.id`; at/after cutoff, already populated identity and an existing account link are preserved
+
+#### Scenario: Email mismatch rejected
+- GIVEN a valid token for a row invited as `jane@example.com` and a session for `other@example.com`
+- WHEN the account submits
+- THEN the response is `403 { error: "email_mismatch" }` and the row is unchanged
+
+#### Scenario: Email match is case- and whitespace-insensitive
+- GIVEN a row invited as `jane@example.com` and a session email `Jane@Example.com`
+- WHEN the account submits
+- THEN the claim succeeds
 
 #### Scenario: Token semantics unaffected by auth requirement
 - GIVEN a token already consumed or past `inviteTokenExpiresAt`

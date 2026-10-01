@@ -15,7 +15,8 @@ export const dynamic = "force-dynamic";
  * narrows to `{ token, idDocument, consent }` — `fullName`/`email` are
  * ALWAYS derived server-side from the authenticated user, never trusted
  * from the client. Re-validates the token (expiry + cutoff) independently
- * before writing. On success, sets `TripTraveler.userId` and fires one
+ * before writing. Rejects 403 `email_mismatch` unless the session email
+ * matches the invited address (case-insensitive). On success, sets `TripTraveler.userId` and fires one
  * in-app `TRAVELER_SUBMITTED` notification for the buyer — idempotent by
  * construction, since a re-submitted (already-consumed) token resolves to
  * `used` and never reaches the notification step.
@@ -64,6 +65,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (!result.ok) {
+      if (result.reason === "email_mismatch") {
+        return NextResponse.json(
+          { error: "email_mismatch", reason: "email_mismatch" },
+          { status: 403 },
+        );
+      }
       return NextResponse.json({ reason: result.reason }, { status: 400 });
     }
 

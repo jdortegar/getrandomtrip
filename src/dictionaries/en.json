@@ -5926,6 +5926,8 @@
     "landingReasonExpired": "This invite expired. Ask whoever invited you to send a new one.",
     "landingReasonUsed": "You've already submitted your details with this link.",
     "landingReasonEnded": "This trip has already ended, so this invite can no longer be used.",
+    "landingEmailMismatch": "This invite was sent to {maskedEmail}. Sign in with that email to continue.",
+    "landingSwitchAccount": "Use a different account",
     "landingConsentRequiredError": "You need to accept the consent checkbox before submitting.",
     "landingGenericError": "Something went wrong submitting your details. Please try again.",
     "savingAction": "Saving…"
