@@ -23,3 +23,11 @@ export function getNonproductionOrigin(): string | null {
     process.env.NEXT_PUBLIC_RT_SITE_NAME,
   );
 }
+
+/**
+ * Tripper discovery UI is hidden in production until there are enough
+ * trippers. Fails closed: only an explicit nonproduction build shows it.
+ */
+export function showTripperDiscovery(): boolean {
+  return process.env.NEXT_PUBLIC_RT_DEPLOY_ENV === "nonproduction";
+}

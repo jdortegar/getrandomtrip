@@ -3,6 +3,7 @@ import {
   readLastSeenTripperSlug,
   resolveLiveAttribution,
 } from "@/lib/tripper/attribution-server";
+import { showTripperDiscovery } from "@/lib/deployment";
 import type { TripperAttributionDict } from "@/lib/types/dictionary";
 import { AttributionModeBannerToggle } from "@/components/tripper/AttributionModeBannerToggle";
 
@@ -25,10 +26,16 @@ interface AttributionModeBannerProps {
  * instead of the banner disappearing with no way back short of re-clicking
  * the original referral link.
  *
+ * Hidden in production together with the rest of tripper discovery; this
+ * short-circuits before any cookie/DB read and leaves attribution itself
+ * (cookie, pricing, booking stamping) untouched.
+ *
  * Renders nothing when neither signal resolves to a live tripper — a
  * visitor who never carried either cookie has nothing to toggle.
  */
 export async function AttributionModeBanner({ copy }: AttributionModeBannerProps) {
+  if (!showTripperDiscovery()) return null;
+
   const liveSlug = await readAttributionSlug();
   if (liveSlug) {
     const liveContext = await resolveLiveAttribution(liveSlug);
