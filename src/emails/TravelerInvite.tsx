@@ -43,7 +43,7 @@ export function getSubject(locale: "es" | "en", buyerFirstName: string): string 
   return copy[locale].body(buyerFirstName).replace(/\.$/, "");
 }
 
-function formatTripDates(
+export function formatTripDates(
   start: Date | null | undefined,
   end: Date | null | undefined,
   locale: "es" | "en",
@@ -59,7 +59,7 @@ function formatTripDates(
   return formatter.formatRange(first, end ?? first);
 }
 
-function tripTypeLabel(
+export function tripTypeLabel(
   tripType: string | null | undefined,
   locale: "es" | "en",
 ): string | null {

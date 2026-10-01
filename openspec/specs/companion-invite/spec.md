@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view, buyer roster badge).
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view, invited-but-not-linked reminder, buyer roster badge).
 
 ---
 
@@ -220,6 +220,25 @@ The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buy
 ### Requirement: Companion Invite Backfill Script
 
 `scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The send run requires explicit owner approval of the dry-run list.
+
+### Requirement: Companion Invite Reminder
+
+Pass 1 of the hourly traveler-reminder job MUST send exactly ONE reminder to each ADULT row with `invitedAt` set, `userId` null, `reminderSentAt` null and an email, on a paid, non-cancelled, non-completed trip that has not ended (`isTripEnded`). A row is due when `now >= min(invitedAt + 3 days, startDate - 24h)` (trips without a start date use only the first term). It is not gated by the details cutoff or the row status. The job rotates the token, awaits delivery of the reminder email (provider acceptance), and only then stamps `reminderSentAt`; a failed send leaves the row unstamped for the next run. The reminder uses the "see my trip" framing (dates and trip type, never the destination; CTA "VER MI VIAJE" / "SEE MY TRIP"), in the buyer's locale with the same empty-name fallback as the invite.
+
+#### Scenario: Due by invite age
+- GIVEN an invited, unlinked companion whose invite is 3 days old on a trip that has not ended
+- WHEN the job runs
+- THEN one reminder is sent with a fresh token and `reminderSentAt` is stamped
+
+#### Scenario: Due by departure
+- GIVEN an invite younger than 3 days and a trip starting in 24h or less
+- WHEN the job runs
+- THEN the reminder is sent
+
+#### Scenario: Not reminded twice or after joining or after the trip
+- GIVEN a row already stamped, linked to an account, or on an ended trip
+- WHEN the job runs
+- THEN nothing is sent
 
 ### Requirement: Joined Companion Email Is Locked
 

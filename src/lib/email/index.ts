@@ -62,7 +62,7 @@ import TravelerInvite, {
   getSubject as getTravelerInviteSubject,
 } from "@/emails/TravelerInvite";
 import TravelerReminder, {
-  subjects as travelerReminderSubjects,
+  getSubject as getTravelerReminderSubject,
 } from "@/emails/TravelerReminder";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
@@ -888,45 +888,45 @@ export function sendTravelerInviteEmail(
 }
 
 /**
- * Sends the companion-traveler reminder email. Same plaintext-token
- * requirement as `sendTravelerInviteEmail` — the reminder job
- * (`runPass1` in `api/internal/traveler-reminder`) reissues/rotates the
- * token via `issueTravelerInvite` immediately before calling this, since
- * the original plaintext from the first invite send is never persisted.
+ * Builds and sends the companion-traveler reminder email, rejecting when the
+ * provider fails so the cron (`runPass1` in `api/internal/traveler-reminder`)
+ * only stamps `reminderSentAt` after the provider accepted it. Same
+ * plaintext-token requirement as `deliverTravelerInviteEmail` — the job
+ * rotates the token via `issueTravelerInvite` immediately before calling this,
+ * since the original plaintext from the first invite is never persisted. The
+ * email carries trip dates and type, never the destination.
  */
-export function sendTravelerReminderEmail(
+export async function deliverTravelerReminderEmail(
   travelerId: string,
   plaintextToken: string,
-): void {
-  void (async () => {
-    try {
-      const traveler = await prisma.tripTraveler.findUnique({
-        where: { id: travelerId },
-        include: { tripRequest: { include: { user: true } } },
-      });
+): Promise<void> {
+  const traveler = await prisma.tripTraveler.findUnique({
+    where: { id: travelerId },
+    include: { tripRequest: { include: { user: true } } },
+  });
 
-      if (!traveler?.email) return;
+  if (!traveler?.email) return;
 
-      const locale = resolveLocale(traveler.tripRequest.user.locale);
-      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
-      const BASE_URL = "https://getrandomtrip.com";
-      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
+  const { tripRequest } = traveler;
+  const locale = resolveLocale(tripRequest.user.locale);
+  const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
+  const BASE_URL = "https://getrandomtrip.com";
+  const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
 
-      await sendMail({
-        to: traveler.email,
-        subject: travelerReminderSubjects[locale],
-        content: {
-          react: React.createElement(TravelerReminder, {
-            inviteUrl,
-            buyerFirstName,
-            locale,
-          }),
-        },
-      });
-    } catch (err) {
-      console.error("[email] sendTravelerReminderEmail:", err);
-    }
-  })();
+  await sendMail({
+    to: traveler.email,
+    subject: getTravelerReminderSubject(locale),
+    content: {
+      react: React.createElement(TravelerReminder, {
+        inviteUrl,
+        buyerFirstName,
+        locale,
+        startDate: tripRequest.startDate,
+        endDate: tripRequest.endDate,
+        tripType: tripRequest.type,
+      }),
+    },
+  });
 }
 
 /**
