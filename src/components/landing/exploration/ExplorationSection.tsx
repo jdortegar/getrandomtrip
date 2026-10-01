@@ -44,6 +44,9 @@ interface ExplorationSectionProps {
   travelerTypes?: TravelerTypeCardData[];
 }
 
+/** Tripper discovery tab id (from `home.exploration.tabs`); hidden while `showTripperDiscovery()` is false. */
+const TOP_TRIPPERS_TAB_ID = "topTrippers";
+
 function ComingSoon({ message }: { message: string }) {
   return (
     <div className="py-4">
@@ -68,7 +71,7 @@ export function ExplorationSection({
   } = content;
   const tabs = showTripperDiscovery()
     ? allTabs
-    : allTabs.filter((tab) => tab.id !== "topTrippers");
+    : allTabs.filter((tab) => tab.id !== TOP_TRIPPERS_TAB_ID);
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
 
   const renderActiveTab = () => {
@@ -79,7 +82,7 @@ export function ExplorationSection({
             localizedTravelerTypes={localizedTravelerTypes}
           />
         );
-      case "topTrippers":
+      case TOP_TRIPPERS_TAB_ID:
         return (
           <TopTrippersGrid
             buttonHref={trippersHref}

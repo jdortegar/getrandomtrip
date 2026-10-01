@@ -76,7 +76,7 @@ export default async function AboutUsPage(props: LocaleParams) {
         <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
       )}
       <FaqBlock
-        className={trippers.length > 0 ? "pt-0!" : ""}
+        className={showTrippers && trippers.length > 0 ? "pt-0!" : ""}
         copy={aboutUs.faq}
       />
     </div>
