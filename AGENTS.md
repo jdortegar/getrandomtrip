@@ -306,6 +306,11 @@ npm run db:seed         # Seed database
   authorization boundaries for verified linked-issue cleanup and Randomtrip Slack
   announcements; authoring or reviewing the skill never executes it.
 
+- **Release:** For `$release` or a request to merge a PR and promote `develop`
+  to `main`, read [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md).
+  Merging into `main` deploys production; never infer it from a merge-only
+  request. Authoring or reviewing the skill never executes it.
+
 - **Recap:** For feature recap videos or local browser walkthroughs, read
   [`.agents/skills/recap/SKILL.md`](.agents/skills/recap/SKILL.md). Respect its
   recording-capability and publishing-authorization gates; preview requests stay
