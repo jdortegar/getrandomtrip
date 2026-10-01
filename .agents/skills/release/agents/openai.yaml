@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release"
+  short_description: "Merge a PR into develop and promote develop to main"
+  default_prompt: "Use $release to merge the current PR into develop, then open and merge the develop to main release PR."
