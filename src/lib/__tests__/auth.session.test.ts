@@ -185,3 +185,23 @@ describe("session update — trusted identity and persisted profile refresh", ()
     });
   });
 });
+
+describe("session() callback — emailVerified flag (T12)", () => {
+  async function sessionFor(emailVerified: Date | null) {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ...baseDbUser,
+      siteAccessGrantedAt: null,
+      emailVerified,
+    });
+    const session = await getSessionCallback();
+    return session({ session: { user: {} }, token: { id: "user-1" } } as never) as unknown as Promise<{ user: { emailVerified?: boolean } }>;
+  }
+
+  it("exposes a boolean derived from the DB, true when verified", async () => {
+    expect((await sessionFor(new Date())).user.emailVerified).toBe(true);
+  });
+
+  it("is false for an unverified account", async () => {
+    expect((await sessionFor(null)).user.emailVerified).toBe(false);
+  });
+});

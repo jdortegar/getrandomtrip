@@ -6,7 +6,7 @@ import {
   isRosterLocked,
   serializeTraveler,
 } from "@/lib/travelers/travelerRoster";
-import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { emailsMatch } from "@/lib/travelers/travelerEmail";
 import { sendTravelerInviteEmail } from "@/lib/email";
@@ -59,16 +59,41 @@ export async function PATCH(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]):
-    // v1 grants companions the same permission level as the buyer once
-    // access is granted — narrowing is a documented follow-up.
+    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]).
     if (!(await canAccessTrip(traveler.tripRequestId, session.user.id))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // A companion may only edit their own (linked) row; every other row is the
+    // buyer's to manage.
+    const isCompanion =
+      tripRoleFor(traveler.tripRequest, session.user.id) === "companion";
+    if (isCompanion && traveler.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
+    }
+    // Once a companion joined, their row's email is the identity they linked
+    // with: nobody (buyer included) can change it. A same-address re-save is
+    // not an error.
+    if (
+      traveler.userId &&
+      body.email !== undefined &&
+      !emailsMatch(body.email, traveler.email)
+    ) {
+      return NextResponse.json({ error: "email_locked_joined" }, { status: 403 });
+    }
+    // The saved email is the identity the invite was bound to; a companion
+    // cannot repoint it (re-sending the same address is harmless).
+    if (
+      isCompanion &&
+      body.email !== undefined &&
+      !emailsMatch(body.email, traveler.email)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     for (const field of [
       "fullName",
@@ -152,9 +177,11 @@ export async function PATCH(
       !emailsMatch(traveler.email, email) &&
       !isTripEnded(traveler.tripRequest);
 
-    const nextStatus = shouldInvite
-      ? "INVITED"
-      : traveler.status === "COMPLETE" || traveler.status === "INVITED"
+    // A row only becomes INVITED once its token is actually issued (below):
+    // `issueTravelerInvite` sets the status itself, so a failed issuance never
+    // leaves an INVITED row without a token.
+    const nextStatus =
+      traveler.status === "COMPLETE" || traveler.status === "INVITED"
         ? traveler.status
         : isComplete
           ? "COMPLETE"
@@ -187,13 +214,23 @@ export async function PATCH(
       try {
         const plaintext = await issueTravelerInvite(updated.id, updated.status);
         sendTravelerInviteEmail(updated.id, plaintext);
+        // Token issued: mirror what `issueTravelerInvite` wrote on the row.
         return NextResponse.json({
-          traveler: serializeTraveler({ ...updated, invitedAt: new Date() }),
+          traveler: serializeTraveler({
+            ...updated,
+            status: "INVITED",
+            invitedAt: new Date(),
+          }),
           invited: true,
         });
       } catch (error) {
-        // The save already succeeded; the buyer can still use "Resend invite".
+        // The save already succeeded and the row was not marked INVITED; tell
+        // the client so it can offer "Resend invite" instead of claiming a send.
         console.error("[travelers/[id]] auto-invite failed:", error);
+        return NextResponse.json({
+          traveler: serializeTraveler(updated),
+          inviteFailed: true,
+        });
       }
     }
 

@@ -17,6 +17,13 @@ export interface TravelerDTO {
   dateOfBirth: string | null;
   invitedAt: string | null;
   submittedAt: string | null;
+  /** True once the companion linked an account (`TripTraveler.userId` set). The user id itself is never exposed. */
+  joined: boolean;
+  /**
+   * Set only in a companion's view of the roster, on the row that is the
+   * viewer's own. Other rows in that view carry names only.
+   */
+  isSelf?: true;
 }
 
 /**
@@ -34,4 +41,10 @@ export interface TravelerRoster {
   cap: number;
   submitted: number;
   travelers: TravelerDTO[];
+  /**
+   * Who the roster was built for. A `companion` view is read-only apart from
+   * the viewer's own row and omits other travelers' email, ID document and
+   * date of birth. Absent means `buyer`.
+   */
+  viewerRole?: "buyer" | "companion";
 }

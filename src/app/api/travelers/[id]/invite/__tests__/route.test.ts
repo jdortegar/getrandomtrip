@@ -118,20 +118,20 @@ describe("POST /api/travelers/[id]/invite", () => {
     expect(res.status).toBe(403);
   });
 
-  it("allows a companion (non-buyer with trip access) to send an invite", async () => {
+  it("never lets a companion (non-buyer with trip access) invite anyone (T6)", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { id: "companion-1" },
     });
-    (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce(makeAdultRow())
-      .mockResolvedValueOnce(makeAdultRow({ status: "INVITED", invitedAt: new Date() }));
-    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
-    (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue(
-      "plaintext-token",
+    (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      makeAdultRow(),
     );
+    (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
 
     const res = await POST(makeRequest(), makeProps("trav-1"));
-    expect(res.status).toBe(200);
+
+    expect(res.status).toBe(403);
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+    expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
   });
 
   it("allows re-inviting a fully populated, unlinked adult after the cutoff while the trip has not ended (T1)", async () => {

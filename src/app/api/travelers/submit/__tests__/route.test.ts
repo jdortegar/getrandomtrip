@@ -58,6 +58,7 @@ const dbUser = {
   id: "user-1",
   name: "Alex Session",
   email: "alex@example.com",
+  emailVerified: new Date("2026-01-01T00:00:00.000Z") as Date | null,
 };
 
 function mockSessionAndUser() {
@@ -122,7 +123,24 @@ describe("POST /api/travelers/submit", () => {
       idDocument: "ID999",
       email: dbUser.email,
       userId: dbUser.id,
+      emailVerified: dbUser.emailVerified,
     });
+  });
+
+  it("reads emailVerified from the DB user, never from the session or the body, and maps email_unverified to 403 (T12)", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+      user: { id: dbUser.id, email: dbUser.email, emailVerified: true },
+    });
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ ...dbUser, emailVerified: null });
+    (consumeTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: false, reason: "email_unverified" });
+
+    const res = await POST(makeRequest({ ...validBody, emailVerified: true }));
+
+    expect(vi.mocked(prisma.user.findUnique).mock.calls[0][0]).toMatchObject({ select: { emailVerified: true } });
+    expect(vi.mocked(consumeTravelerInvite).mock.calls[0][1]).toMatchObject({ emailVerified: null });
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ error: "email_unverified", reason: "email_unverified" });
+    expect(stampSiteAccess).not.toHaveBeenCalled();
   });
 
   it("returns 400 with reason when consumeTravelerInvite is not ok", async () => {

@@ -45,6 +45,17 @@ const copy: InviteTravelersDict = {
   incompleteError: "Incompleto",
   saveErrorGeneric: "Error al guardar",
   sendInviteErrorGeneric: "",
+  inviteBadgeNoEmail: "Sin email",
+  inviteBadgeSent: "Enviada {date}",
+  inviteBadgeJoined: "Se unió",
+  inviteBadgeNotSent: "Sin enviar",
+  companionHeading: "Tu grupo",
+  companionSubtitle: "Te sumaron",
+  companionYouTag: "Vos",
+  companionOtherNote: "Los gestiona quien reservó",
+  landingEmailHint: "",
+  landingVerifyInbox: "",
+  emailLockedJoinedHint: "",
   landingEyebrow: "",
   landingHeading: "",
   landingGreeting: "",
@@ -83,6 +94,7 @@ function traveler(overrides: Partial<TravelerDTO> = {}): TravelerDTO {
     dateOfBirth: null,
     invitedAt: null,
     submittedAt: null,
+    joined: false,
     ...overrides,
   };
 }
@@ -229,5 +241,45 @@ describe("TravelerRosterSection — locked banner days", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("TravelerRosterSection — companion view (T6)", () => {
+  const me = traveler({ id: "me", isSelf: true, joined: true, status: "COMPLETE", fullName: "Me Myself", email: "me@example.com", idDocument: null });
+  const other = traveler({
+    id: "other", fullName: "Other Person", email: null, idDocument: null, dateOfBirth: null,
+    status: "COMPLETE", joined: false,
+  });
+  const companionRoster = () => roster([me, other], { viewerRole: "companion", submitted: 2 });
+
+  it("renders the companion intro instead of the buyer's invite copy", () => {
+    render(companionRoster());
+    expect(container.textContent).toContain("Tu grupo");
+    expect(container.textContent).toContain("Te sumaron");
+  });
+
+  it("shows other travelers by name only, with no inputs, invite action or buyer notes", () => {
+    render(companionRoster());
+
+    expect(container.textContent).toContain("Other Person");
+    expect(container.textContent).toContain("Los gestiona quien reservó");
+    expect(container.querySelector("#traveler-other-fullName")).toBeNull();
+    expect(container.querySelector("#traveler-other-email")).toBeNull();
+    expect(container.querySelector("#traveler-other-idDocument")).toBeNull();
+    // The only inputs on screen belong to the viewer's own row.
+    const ids = Array.from(container.querySelectorAll("input")).map((i) => i.id);
+    expect(ids.length).toBeGreaterThan(0);
+    expect(ids.every((id) => id.startsWith("traveler-me-"))).toBe(true);
+    expect(container.querySelector("button")).toBeNull();
+  });
+
+  it("saveAll only saves the viewer's own row", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: { ...me, idDocument: "X" } }));
+    render(companionRoster());
+
+    await act(async () => { await handleRef.current?.saveAll(); });
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe("/api/travelers/me");
   });
 });

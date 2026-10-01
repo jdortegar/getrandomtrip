@@ -302,3 +302,63 @@ describe("signIn() callback — reactivates a self-deactivated account on next s
     expect(prisma.user.update).not.toHaveBeenCalled();
   });
 });
+
+describe("signIn() callback — Google verifies the email (T12)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    (cookies as ReturnType<typeof vi.fn>).mockResolvedValue(makeCookieStore(undefined));
+    (readAttributionSlugMock).mockResolvedValue(null);
+    (resolveReferrerIdMock).mockResolvedValue(null);
+  });
+
+  async function googleSignIn() {
+    const signIn = await getSignInCallback();
+    return signIn({
+      user: { email: "jane@example.com", name: "Jane", image: null },
+      account: { provider: "google" },
+    } as unknown as Parameters<typeof signIn>[0]);
+  }
+
+  it("creates new Google users already verified", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "u", email: "jane@example.com" });
+    (resolveOAuthInviteGrant as ReturnType<typeof vi.fn>).mockReturnValue(false);
+
+    expect(await googleSignIn()).toBe(true);
+    expect((prisma.user.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data.emailVerified).toBeInstanceOf(Date);
+  });
+
+  it("marks an existing, still-unverified account verified when it signs in with Google", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "u-1", email: "jane@example.com", emailVerified: null, deactivatedAt: null,
+    });
+
+    expect(await googleSignIn()).toBe(true);
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "u-1" },
+      data: { emailVerified: expect.any(Date), password: null },
+    });
+  });
+
+  it("drops the unverified account's password so a pre-registered attacker cannot log in after Google verifies it", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "u-1", email: "jane@example.com", emailVerified: null, deactivatedAt: null,
+      password: "$2b$10$attacker-chosen-hash",
+    });
+
+    await googleSignIn();
+
+    const updateData = (prisma.user.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(updateData.password).toBeNull();
+  });
+
+  it("leaves an already-verified account's timestamp alone", async () => {
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "u-1", email: "jane@example.com", emailVerified: new Date("2026-01-01"), deactivatedAt: null,
+    });
+
+    await googleSignIn();
+
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+});

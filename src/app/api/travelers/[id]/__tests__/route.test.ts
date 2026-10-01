@@ -154,7 +154,7 @@ describe("PATCH /api/travelers/[id]", () => {
     });
     (
       prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>
-    ).mockResolvedValue(makeAdultRow());
+    ).mockResolvedValue(makeAdultRow({ userId: "companion-1", email: "companion@example.com" }));
     (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
     (
       prisma.tripTraveler.update as ReturnType<typeof vi.fn>
@@ -166,13 +166,90 @@ describe("PATCH /api/travelers/[id]", () => {
     const res = await PATCH(
       makeRequest({
         fullName: "Companion Traveler",
-        email: "companion@example.com",
         idDocument: "ID789",
       }),
       makeProps("trav-1"),
     );
 
     expect(res.status).toBe(200);
+  });
+
+  describe("companion edits (T6)", () => {
+    beforeEach(() => {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
+        user: { id: "companion-1" },
+      });
+      (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockImplementation(
+        ({ data }: { data: Record<string, unknown> }) => ({ ...makeAdultRow(), ...data }),
+      );
+    });
+
+    it("rejects a companion editing another traveler's row", async () => {
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeAdultRow({ userId: "someone-else", email: "x@example.com" }),
+      );
+
+      const res = await PATCH(makeRequest({ fullName: "Hacked" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(403);
+      expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+    });
+
+    it("rejects a companion editing an unlinked row", async () => {
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(makeAdultRow());
+
+      const res = await PATCH(makeRequest({ fullName: "Hacked" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(403);
+      expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+    });
+
+    it("rejects a companion changing their own row's email (the invite identity)", async () => {
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeAdultRow({ userId: "companion-1", email: "me@example.com" }),
+      );
+
+      const res = await PATCH(makeRequest({ email: "other@example.com" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(403);
+      expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+    });
+
+    it("lets a companion re-send their unchanged email and fill their own missing ID", async () => {
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeAdultRow({ userId: "companion-1", email: "me@example.com", fullName: "Me" }),
+      );
+
+      const res = await PATCH(
+        makeRequest({ email: " Me@Example.com ", idDocument: "ID1" }),
+        makeProps("trav-1"),
+      );
+
+      expect(res.status).toBe(200);
+      expect(issueTravelerInvite).not.toHaveBeenCalled();
+    });
+
+    it("keeps the cutoff rules for the companion's own row", async () => {
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeAdultRow({ userId: "companion-1", email: "me@example.com", fullName: "Me", tripRequest: lockedTrip }),
+      );
+
+      const res = await PATCH(makeRequest({ fullName: "Renamed" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(403);
+      expect((await res.json()).error).toBe("locked");
+    });
+
+    it("never lets the buyer's behavior change: the buyer can edit any row", async () => {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({ user: { id: "buyer-1" } });
+      (prisma.tripTraveler.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+        makeAdultRow({ userId: "someone-else", email: "x@example.com" }),
+      );
+
+      const res = await PATCH(makeRequest({ fullName: "Fixed by buyer" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(200);
+    });
   });
 
   it("returns 403 when the roster is locked (past cutoff)", async () => {
@@ -391,11 +468,15 @@ describe("PATCH auto-send invite (T3)", () => {
 
     expect(res.status).toBe(200);
     expect(issueTravelerInvite).toHaveBeenCalledTimes(1);
-    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "INVITED");
+    // The row only becomes INVITED once the token is actually issued, so the
+    // CAS expects the status the row has when the save lands.
+    expect(issueTravelerInvite).toHaveBeenCalledWith("trav-1", "PENDING");
     expect(sendTravelerInviteEmail).toHaveBeenCalledWith("trav-1", "plain-token");
     const body = await res.json();
     expect(body.invited).toBe(true);
     expect(body.traveler.status).toBe("INVITED");
+    expect(body.traveler.invitedAt).toEqual(expect.any(String));
+    expect(body.inviteFailed).toBeUndefined();
   });
 
   it("sends nothing when the same email is re-saved (case/whitespace-insensitive)", async () => {
@@ -487,5 +568,74 @@ describe("PATCH auto-send invite (T3)", () => {
     expect(sendTravelerInviteEmail).not.toHaveBeenCalled();
     expect((await res.json()).invited).toBeUndefined();
     spy.mockRestore();
+  });
+
+  it("reports the failure and never claims INVITED when no token was issued (T14a)", async () => {
+    vi.mocked(issueTravelerInvite).mockRejectedValue(new Error("db down"));
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const res = await patch(makeAdultRow(), { email: "bob@example.com" });
+    const body = await res.json();
+
+    const args = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
+    expect(args.data.status).not.toBe("INVITED");
+    expect(body.invited).toBeUndefined();
+    expect(body.inviteFailed).toBe(true);
+    expect(body.traveler.status).not.toBe("INVITED");
+    expect(body.traveler.invitedAt).toBeNull();
+    expect(body.traveler.email).toBe("bob@example.com");
+    spy.mockRestore();
+  });
+});
+
+describe("PATCH email lock once joined (T10)", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "buyer-1" } });
+    vi.mocked(prisma.tripRequest.count).mockResolvedValue(1);
+    vi.mocked(prisma.tripTraveler.update).mockImplementation(
+      (async ({ data }: { data: Record<string, unknown> }) => ({ ...joinedRow(), ...data })) as never,
+    );
+  });
+
+  const joinedRow = () =>
+    makeAdultRow({ userId: "companion-1", status: "COMPLETE", email: "joined@example.com", fullName: "Joined", idDocument: null });
+
+  async function patch(body: Record<string, unknown>, row = joinedRow()) {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    const { PATCH } = await import("../route");
+    return PATCH(makeRequest(body), makeProps("trav-1"));
+  }
+
+  it("rejects the buyer changing a joined row's email, without writing or inviting", async () => {
+    const res = await patch({ email: "new@example.com" });
+
+    expect(res.status).toBe(403);
+    expect((await res.json()).error).toBe("email_locked_joined");
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("rejects clearing the email too", async () => {
+    expect((await patch({ email: "" })).status).toBe(403);
+  });
+
+  it("treats a same-email re-save (case/whitespace) as no change and keeps other edits working", async () => {
+    const res = await patch({ email: " Joined@Example.com ", idDocument: "ID9" });
+
+    expect(res.status).toBe(200);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledTimes(1);
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("allows other edits when no email is sent", async () => {
+    expect((await patch({ idDocument: "ID9" })).status).toBe(200);
+  });
+
+  it("still lets the buyer change the email of an unlinked row", async () => {
+    vi.mocked(issueTravelerInvite).mockResolvedValue("tok");
+    const res = await patch({ email: "new@example.com" }, makeAdultRow({ email: "old@example.com", status: "INVITED" }));
+
+    expect(res.status).toBe(200);
   });
 });

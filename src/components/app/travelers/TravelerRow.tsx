@@ -43,6 +43,43 @@ function formatInvitedNote(template: string, invitedAt: string | null): string {
   );
 }
 
+type InviteState = "none" | "noEmail" | "notSent" | "sent" | "joined";
+
+/** Buyer-side invite state of an adult row, from the saved (server) values. */
+function inviteStateOf(traveler: TravelerDTO): InviteState {
+  if (traveler.kind !== "ADULT" || traveler.isSelf) return "none";
+  if (traveler.joined) return "joined";
+  if (!isTravelerFieldFilled(traveler.email)) return "noEmail";
+  return traveler.invitedAt ? "sent" : "notSent";
+}
+
+const INVITE_BADGE_STYLE: Record<Exclude<InviteState, "none">, string> = {
+  noEmail: "bg-gray-100 text-gray-600",
+  notSent: "bg-amber-100 text-amber-800",
+  sent: "bg-sky-100 text-sky-800",
+  joined: "bg-green-100 text-green-800",
+};
+
+function inviteBadgeLabel(
+  copy: InviteTravelersDict,
+  state: Exclude<InviteState, "none">,
+  invitedAt: string | null,
+): string {
+  switch (state) {
+    case "noEmail":
+      return copy.inviteBadgeNoEmail;
+    case "notSent":
+      return copy.inviteBadgeNotSent;
+    case "joined":
+      return copy.inviteBadgeJoined;
+    case "sent":
+      return copy.inviteBadgeSent.replace(
+        "{date}",
+        invitedAt ? new Date(invitedAt).toLocaleDateString() : "",
+      );
+  }
+}
+
 function toDateInputValue(iso: string | null): string {
   if (!iso) return "";
   return iso.slice(0, 10);
@@ -65,6 +102,10 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
     const pending = useRef(false);
     const isAdult = traveler.kind === "ADULT";
+    // A companion's own row: details are editable, but the email (the invite
+    // identity) is fixed and inviting is the buyer's job.
+    const isSelf = traveler.isSelf === true;
+    const inviteState = inviteStateOf(traveler);
     const canEdit = !locked || hasMissingTravelerDetails(traveler);
     const fieldLocked = (field: "fullName" | "email" | "dateOfBirth" | "idDocument") =>
       saving || (locked && isTravelerFieldFilled(traveler[field]));
@@ -107,11 +148,18 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         }
         const updated = data.traveler as TravelerDTO;
         // The server emails the companion when a new/changed email is saved.
-        setNote(
-          data.invited
-            ? formatInvitedNote(copy.invitedNote, updated.invitedAt)
-            : copy.savedNote,
-        );
+        // The details were saved either way; if no invite could be issued the
+        // buyer is told so and can retry with "Resend invite".
+        if (data.inviteFailed) {
+          setNote(null);
+          setError(copy.sendInviteErrorGeneric);
+        } else {
+          setNote(
+            data.invited
+              ? formatInvitedNote(copy.invitedNote, updated.invitedAt)
+              : copy.savedNote,
+          );
+        }
         onUpdated(updated);
         return updated;
       } catch {
@@ -175,9 +223,11 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         ? note
         : !isAdult
           ? copy.minorFilledByBuyerNote
-          : traveler.status === "INVITED" && traveler.invitedAt
-            ? formatInvitedNote(copy.invitedNote, traveler.invitedAt)
-            : null;
+          : inviteState === "joined"
+            ? copy.emailLockedJoinedHint
+            : traveler.status === "INVITED" && traveler.invitedAt
+              ? formatInvitedNote(copy.invitedNote, traveler.invitedAt)
+              : null;
 
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5" data-component="TravelerRow">
@@ -194,10 +244,20 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             </span>
             {copy.travelerLabel.replace("{number}", String(travelerNumber))}
           </div>
-          <TravelerStatusBadge
-            label={copy[STATUS_LABEL[traveler.status]]}
-            status={traveler.status}
-          />
+          <div className="flex items-center gap-2">
+            {inviteState !== "none" && (
+              <span
+                className={`rounded-[6px] px-2 py-0.5 text-[11px] font-semibold ${INVITE_BADGE_STYLE[inviteState]}`}
+                data-invite-state={inviteState}
+              >
+                {inviteBadgeLabel(copy, inviteState, traveler.invitedAt)}
+              </span>
+            )}
+            <TravelerStatusBadge
+              label={copy[STATUS_LABEL[traveler.status]]}
+              status={traveler.status}
+            />
+          </div>
         </div>
 
         <div
@@ -219,7 +279,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
           {isAdult ? (
             <FormField
-              disabled={fieldLocked("email")}
+              disabled={isSelf || inviteState === "joined" || fieldLocked("email")}
               id={`traveler-${traveler.id}-email`}
               label={copy.emailLabel}
               onChange={(e) => setEmail(e.target.value)}
@@ -248,7 +308,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             value={idDocument}
           />
 
-          {canEdit && isAdult && (
+          {canEdit && isAdult && !isSelf && inviteState !== "joined" && (
             <TableIconButton
               aria-busy={saving}
               danger={false}

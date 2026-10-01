@@ -2703,6 +2703,19 @@ export interface InviteTravelersDict {
   incompleteError: string;
   saveErrorGeneric: string;
   sendInviteErrorGeneric: string;
+  /** Buyer roster, adult row without a saved email. */
+  inviteBadgeNoEmail: string;
+  /** Buyer roster, invite emailed and not yet accepted. `{date}` placeholder. */
+  inviteBadgeSent: string;
+  /** Buyer roster, companion linked their account. */
+  inviteBadgeJoined: string;
+  /** Buyer roster, email saved but no invite went out (e.g. the send failed). */
+  inviteBadgeNotSent: string;
+  /** Companion view of the roster: title, intro, own-row tag and note on others. */
+  companionHeading: string;
+  companionSubtitle: string;
+  companionYouTag: string;
+  companionOtherNote: string;
   landingEyebrow: string;
   landingHeading: string;
   landingGreeting: string;
@@ -2726,6 +2739,12 @@ export interface InviteTravelersDict {
   /** `{maskedEmail}` placeholder, e.g. `j***@gmail.com`. */
   landingEmailMismatch: string;
   landingSwitchAccount: string;
+  /** `{maskedEmail}` placeholder; shown on the sign-up wall instead of the full address. */
+  landingEmailHint: string;
+  /** `{maskedEmail}` placeholder; signed in with an unverified email, waiting for the verification link. */
+  landingVerifyInbox: string;
+  /** Buyer roster: shown on a joined row whose email is read-only. */
+  emailLockedJoinedHint: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
   savingAction: string;

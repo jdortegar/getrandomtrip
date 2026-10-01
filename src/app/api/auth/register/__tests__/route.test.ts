@@ -469,4 +469,32 @@ describe("POST /api/auth/register — referral capture (auth-verification spec)"
     // self-referral no-op guard (already unit-tested in attribution-server.test.ts).
     expect(stampReferralMock).toHaveBeenCalledWith("user-14", "user-14");
   });
+
+  describe("invite return path (T12)", () => {
+    async function register(extra: Record<string, unknown>) {
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.user.create as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: "user-1", name: "Ana", email: "ana@example.com", createdAt: new Date("2026-01-01"),
+      });
+      const mod = (await import("../route")) as RouteModule;
+      return mod.POST(
+        makePostRequest({ name: "Ana", email: "ana@example.com", password: "abc12345", ...extra }),
+      );
+    }
+
+    it("passes a valid invite return path to the verification email", async () => {
+      const res = await register({ inviteReturnPath: "/en/invite/abc123" });
+      expect(res.status).toBe(201);
+      expect(sendVerificationEmail).toHaveBeenCalledWith("user-1", "plaintext-token", "/en/invite/abc123");
+    });
+
+    it.each(["https://evil.example.com/en/invite/abc", "//evil.example.com", "/en/dashboard", 7])(
+      "ignores an unsafe return path %j",
+      async (value) => {
+        const res = await register({ inviteReturnPath: value });
+        expect(res.status).toBe(201);
+        expect(sendVerificationEmail).toHaveBeenCalledWith("user-1", "plaintext-token");
+      },
+    );
+  });
 });

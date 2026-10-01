@@ -31,6 +31,7 @@ const traveler: TravelerDTO = {
   dateOfBirth: null,
   invitedAt: null,
   submittedAt: null,
+  joined: false,
 };
 function summary() {
   return {
