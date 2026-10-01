@@ -2703,6 +2703,11 @@ export interface InviteTravelersDict {
   incompleteError: string;
   saveErrorGeneric: string;
   sendInviteErrorGeneric: string;
+  /** Companion view of the roster: title, intro, own-row tag and note on others. */
+  companionHeading: string;
+  companionSubtitle: string;
+  companionYouTag: string;
+  companionOtherNote: string;
   landingEyebrow: string;
   landingHeading: string;
   landingGreeting: string;
@@ -2726,6 +2731,8 @@ export interface InviteTravelersDict {
   /** `{maskedEmail}` placeholder, e.g. `j***@gmail.com`. */
   landingEmailMismatch: string;
   landingSwitchAccount: string;
+  /** Buyer roster: shown on a joined row whose email is read-only. */
+  emailLockedJoinedHint: string;
   landingConsentRequiredError: string;
   landingGenericError: string;
   savingAction: string;

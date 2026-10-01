@@ -11,6 +11,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
+import { omitBuyerOnlyFields } from "@/lib/trips/companionTripView";
 import { revertExpiredPendingPaymentsForUser } from "@/lib/db/tripRequest";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverridesBatch } from "@/lib/pricing/tripper-price-overrides.server";
@@ -134,17 +135,22 @@ export async function GET(request: NextRequest) {
     const hydratedTrips = attachPaymentsToTrips(
       trips,
       paymentsByTripRequestId,
-    ).map((trip) => ({
-      ...toTravelerTripResponse(trip),
-      basePriceUsd: resolveBasePricePerPerson({
-        levelId: trip.level,
-        overrides: trip.tripperId
-          ? (overridesByTripperId[trip.tripperId] ?? null)
-          : null,
-        travelerType: trip.type,
-      }).price,
-      role: tripRoleFor(trip, user.id),
-    }));
+    ).map((trip) => {
+      const role = tripRoleFor(trip, user.id);
+      const item = {
+        ...toTravelerTripResponse(trip),
+        basePriceUsd: resolveBasePricePerPerson({
+          levelId: trip.level,
+          overrides: trip.tripperId
+            ? (overridesByTripperId[trip.tripperId] ?? null)
+            : null,
+          travelerType: trip.type,
+        }).price,
+        role,
+      };
+      // Companions never see what the buyer paid or the resolved price.
+      return role === "companion" ? omitBuyerOnlyFields(item) : item;
+    });
     console.log("Trips found:", trips.length);
 
     return NextResponse.json(

@@ -4,7 +4,7 @@
 
 This spec supersedes the prior "No-Login Submission" requirement from `openspec/changes/archive/2026-07-29-invite-travel-friends/spec.md` (archived spec never promoted to main), consolidating the final authoritative companion-invite capability definition.
 
-**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script).
+**Changed by**: `traveler-invite-required-signup` (status: completed, all 32 tasks green); amended by `companion-invite-auto-send` (phase 1: accept until trip end, invited-email match, auto-send on save, rewritten email, backfill script; phase 2: joined-email lock, reduced companion view).
 
 ---
 
@@ -148,7 +148,7 @@ On success, the page MUST show the existing success copy (`landingSuccessTitle`/
 #### Scenario: Companion can open the trip detail page
 - GIVEN user C is linked via `TripTraveler.userId` to a trip bought by user B (C is not the buyer)
 - WHEN C calls `GET /api/trips/[id]` for that trip
-- THEN the response is `200` with the full trip detail, at the same permission level as the buyer (per the documented v1 parity gap below — no narrowing)
+- THEN the response is `200` with the reduced companion view defined in "Companion Reduced Read-Only View" below
 
 #### Scenario: Companion still cannot delete the trip
 - GIVEN user C is linked via `TripTraveler.userId` to a trip bought by user B (C is not the buyer)
@@ -162,7 +162,7 @@ On success, the page MUST show the existing success copy (`landingSuccessTitle`/
 
 ### Requirement: Edit Rules and Cutoff Enforcement
 
-The cutoff is `TripRequest.startDate − 72 elapsed hours` for XSED and `startDate − 7 days` for other trips. Before cutoff, authorized travelers MAY edit any row's data on either surface, but MUST NOT add/remove rows. XSED's legacy T-7d `travelersLockedAt` stamps MUST NOT override the new cutoff.
+The cutoff is `TripRequest.startDate − 72 elapsed hours` for XSED and `startDate − 7 days` for other trips. Before cutoff, the buyer MAY edit any row's data on either surface and a companion only their own linked row (see "Companion Reduced Read-Only View"); nobody may add/remove rows. XSED's legacy T-7d `travelersLockedAt` stamps MUST NOT override the new cutoff.
 
 At/after cutoff, populated fields MUST be protected server-side and in the UI. Empty, null, and whitespace-only required fields MUST remain fillable, including invited adult IDs and minor details. Save actions MUST remain available on both checkout success and trip detail when any required detail is missing. Unlinked adult rows with an email MAY be invited or re-invited at any time until the trip ends (`POST /api/travelers/[id]/invite`: `403 ended` after the trip end, `409 already_joined` once an account is linked). A valid, unexpired invite token remains acceptable after the cutoff until the trip ends — the trip day is the UTC calendar day of `endDate`, falling back to `startDate` — and post-cutoff acceptance only links `userId` + consent while populated fields stay protected; a token presented after the trip ends resolves to reason `ended`. Valid, unexpired tokens MAY fill gaps without overwriting protected identity or an existing account link. Concurrent fills or token consumption MUST reject stale updates, not overwrite them.
 
@@ -221,6 +221,24 @@ The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buy
 
 `scripts/backfill-companion-invites.ts` (`npm run db:backfill-companion-invites`) is a one-off tool for rows added before auto-send. It defaults to a dry run that prints ADULT rows with a non-empty email, `invitedAt` null, `userId` null, on a non-cancelled trip with an APPROVED payment that has not ended (emails masked). `--send` issues tokens and sends sequentially, reporting per-row results, and MUST be refused unless `RT_DEPLOY_ENV=production`. The send run requires explicit owner approval of the dry-run list.
 
+### Requirement: Joined Companion Email Is Locked
+
+Once a roster row is linked to an account (`userId` set), `PATCH /api/travelers/[id]` MUST reject any change to its email, for every viewer including the buyer, with `403 { error: "email_locked_joined" }` and no write. Re-saving the same address (case/whitespace-insensitive) is not an error and other edits allowed by the cutoff rules keep working. The buyer roster shows the email read-only with a localized hint on a Joined row.
+
+### Requirement: Companion Reduced Read-Only View
+
+For a viewer who can access a trip but is not its buyer (`tripRoleFor` = `companion`), the server MUST enforce a reduced view; the UI never receives what it must hide. `GET /api/trips/[id]` returns `role: "companion"` and omits `payment` and `basePriceUsd` (and raw `travelers` rows); `GET /api/trips` omits `payment` and `basePriceUsd` on the trips the viewer joined. The roster (`getRosterForTrip(tripId, viewerUserId)`) marks `viewerRole: "companion"`, returns the viewer's own linked row in full (`isSelf: true`) and every other traveler as a name only (email, `idDocument`, `dateOfBirth`, `invitedAt`, `submittedAt` null, `joined` false); `submitted` is still the trip-level count. `PATCH /api/travelers/[id]` lets a companion edit only their own linked row, within the normal cutoff rules, and never change its email (`403`); `POST /api/travelers/[id]/invite` is buyer-only (`403` for a companion). The buyer's behavior is unchanged. The dashboard trip page hides the cost summary, payment card and invite/resend controls for a companion and renders others as read-only name rows. `DELETE /api/trips/[id]` stays buyer-only.
+
+#### Scenario: Companion payload is sanitized
+- GIVEN a companion linked to a trip with two other travelers
+- WHEN they call `GET /api/trips/[id]`
+- THEN the payload has no price or payment fields, their own row is complete, and the other rows carry names only
+
+#### Scenario: Companion cannot edit others or invite
+- GIVEN a companion
+- WHEN they PATCH another traveler's row, change their own row's email, or POST an invite
+- THEN each is rejected with `403` and nothing is written
+
 ### Requirement: Automatic XSED Buyer Reminder
 
 The hourly traveler-reminder job MUST email the buyer on its first run at/after T-72h and before departure when a paid, non-cancelled, non-completed XSED trip has missing required companion details, including uninvited or not-yet-materialized roster rows. The localized email MUST link to the buyer's trip detail page and explain that empty fields remain editable while saved details are protected. A completed roster, solo trip, other product, unpaid trip, departed trip, or already-reminded booking MUST NOT receive this email.
@@ -228,12 +246,3 @@ The hourly traveler-reminder job MUST email the buyer on its first run at/after 
 Delivery MUST be awaited. A guarded, recoverable claim prevents overlapping workers; `travelerDetailsReminderSentAt` is persisted only after provider acceptance. Failed attempts remain retryable with a stable provider idempotency key. Provider acceptance followed by a prolonged database outage still has the provider's finite deduplication-window limitation; this is not an exactly-once delivery guarantee.
 
 **Rollout:** apply `prisma/migrations/20260928120000_traveler_details_reminder/migration.sql` through the database deployment workflow before deploying this code, then generate Prisma Client. This repository's `npm run db:migrate` uses `prisma db push`, not a migration runner. No customer record repair is required for legacy XSED locks.
-
-### Requirement: Companion Permission Parity Is Not Narrowed (v1 Accepted Gap)
-
-A companion linked via `TripTraveler.userId` receives the SAME `dashboard/trips/[id]` permissions as the buyer in v1 — the same trip card and detail page render with full buyer-level actions. This is an accepted risk, not an oversight; permission scoping is deferred to a follow-up change.
-
-#### Scenario: Companion has buyer-level access (documented, not a defect)
-- GIVEN a companion linked to a trip via `TripTraveler.userId`
-- WHEN they open that trip's detail page
-- THEN they see and can act on it exactly as the buyer would, with no permission narrowing

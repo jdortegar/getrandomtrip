@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { serializeTraveler } from "@/lib/travelers/travelerRoster";
-import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { sendTravelerInviteEmail } from "@/lib/email";
 import { isTripEnded } from "@/lib/travelers/travelerPolicy";
@@ -11,7 +11,7 @@ import { isTripEnded } from "@/lib/travelers/travelerPolicy";
 export const dynamic = "force-dynamic";
 
 /**
- * POST /api/travelers/[id]/invite — buyer sends or resends an invite email
+ * POST /api/travelers/[id]/invite — buyer (only) sends or resends an invite email
  * for an ADULT row. Rotates the invite token in place (invalidating any
  * prior link) and flips the row to `INVITED`. Not applicable to MINOR rows
  * (no email field, no invite action). The details cutoff does not block
@@ -40,10 +40,12 @@ export async function POST(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]):
-    // v1 grants companions the same permission level as the buyer once
-    // access is granted — narrowing is a documented follow-up.
     if (!(await canAccessTrip(traveler.tripRequestId, session.user.id))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // Inviting is the buyer's call: a linked companion never invites anyone.
+    if (tripRoleFor(traveler.tripRequest, session.user.id) === "companion") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

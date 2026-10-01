@@ -6,7 +6,7 @@ import {
   isRosterLocked,
   serializeTraveler,
 } from "@/lib/travelers/travelerRoster";
-import { canAccessTrip } from "@/lib/travelers/travelerAccess";
+import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { emailsMatch } from "@/lib/travelers/travelerEmail";
 import { sendTravelerInviteEmail } from "@/lib/email";
@@ -59,16 +59,41 @@ export async function PATCH(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]):
-    // v1 grants companions the same permission level as the buyer once
-    // access is granted — narrowing is a documented follow-up.
+    // Buyer-OR-companion, matching the read path (GET /api/trips/[id]).
     if (!(await canAccessTrip(traveler.tripRequestId, session.user.id))) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    // A companion may only edit their own (linked) row; every other row is the
+    // buyer's to manage.
+    const isCompanion =
+      tripRoleFor(traveler.tripRequest, session.user.id) === "companion";
+    if (isCompanion && traveler.userId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
     if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
+    }
+    // Once a companion joined, their row's email is the identity they linked
+    // with: nobody (buyer included) can change it. A same-address re-save is
+    // not an error.
+    if (
+      traveler.userId &&
+      body.email !== undefined &&
+      !emailsMatch(body.email, traveler.email)
+    ) {
+      return NextResponse.json({ error: "email_locked_joined" }, { status: 403 });
+    }
+    // The saved email is the identity the invite was bound to; a companion
+    // cannot repoint it (re-sending the same address is harmless).
+    if (
+      isCompanion &&
+      body.email !== undefined &&
+      !emailsMatch(body.email, traveler.email)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     for (const field of [
       "fullName",

@@ -159,6 +159,52 @@ describe("GET /api/trips/[id]", () => {
     expect(body.trip).toBeDefined();
   });
 
+  describe("reduced companion view (T6)", () => {
+    const row = (id: string, userId: string | null) => ({
+      id, kind: "ADULT", status: "COMPLETE", fullName: `Name ${id}`, email: `${id}@example.com`,
+      idDocument: `DOC-${id}`, dateOfBirth: new Date("1990-01-01T00:00:00.000Z"),
+      invitedAt: new Date(), submittedAt: new Date(), userId,
+    });
+    const withPayment = {
+      ...mockTrip,
+      payment: { id: "pay-1", status: "APPROVED", amount: 1234, currency: "USD", provider: "stripe", cardLast4: "4242" },
+      travelers: [row("me", "user-1"), row("other", "u-other")],
+    };
+
+    function asViewer(ownerId: string) {
+      (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({ user: { email: "test@example.com" } });
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ ...withPayment, userId: ownerId });
+      (prisma.tripRequest.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+    }
+
+    it("omits price fields and other travelers' ID/DOB/email from a companion's payload", async () => {
+      asViewer("other-buyer");
+
+      const body = await (await GET(makeRequest(), makeProps("trip-1"))).json();
+
+      expect(body.trip.role).toBe("companion");
+      expect(body.trip).not.toHaveProperty("basePriceUsd");
+      expect(body.trip).not.toHaveProperty("payment");
+      const text = JSON.stringify(body);
+      expect(text).not.toMatch(/1234|4242|DOC-other|other@example.com/);
+      const [mine, other] = body.trip.roster.travelers;
+      expect(mine).toMatchObject({ id: "me", idDocument: "DOC-me", email: "me@example.com", isSelf: true });
+      expect(other).toMatchObject({ id: "other", fullName: "Name other", idDocument: null, dateOfBirth: null, email: null });
+    });
+
+    it("keeps price fields and the full roster for the buyer", async () => {
+      asViewer("user-1");
+
+      const body = await (await GET(makeRequest(), makeProps("trip-1"))).json();
+
+      expect(body.trip.role).toBe("buyer");
+      expect(typeof body.trip.basePriceUsd).toBe("number");
+      expect(body.trip.payment).toMatchObject({ amount: 1234 });
+      expect(body.trip.roster.travelers[1]).toMatchObject({ idDocument: "DOC-other", email: "other@example.com", joined: true });
+    });
+  });
+
   it("omits itinerary/inclusions/exclusions/documents for a CONFIRMED (pre-reveal) trip", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue({
       user: { email: "test@example.com" },

@@ -5905,6 +5905,10 @@
     "incompleteError": "Completa todos los campos para guardar",
     "saveErrorGeneric": "No pudimos guardar los datos. Intenta de nuevo.",
     "sendInviteErrorGeneric": "No pudimos enviar la invitación. Intenta de nuevo.",
+    "companionHeading": "Tu grupo de viaje",
+    "companionSubtitle": "Te sumaron a este viaje. Podés revisar y actualizar tus datos; el resto del grupo lo gestiona quien reservó.",
+    "companionYouTag": "Vos",
+    "companionOtherNote": "Los datos los gestiona quien reservó",
     "landingEyebrow": "Te invitaron",
     "landingHeading": "Súmate al viaje",
     "landingGreeting": "{buyerFirstName} te invitó a sumarte a su randomtrip — el destino es sorpresa hasta el revelado.",
@@ -5927,6 +5931,7 @@
     "landingReasonEnded": "Este viaje ya terminó, así que esta invitación ya no se puede usar.",
     "landingEmailMismatch": "Esta invitación fue enviada a {maskedEmail}. Iniciá sesión con ese correo para continuar.",
     "landingSwitchAccount": "Usar otra cuenta",
+    "emailLockedJoinedHint": "Ya se unió: el email no se puede cambiar",
     "landingConsentRequiredError": "Tienes que aceptar el consentimiento para poder enviar tus datos.",
     "landingGenericError": "Ocurrió un error al enviar tus datos. Por favor intentá de nuevo.",
     "savingAction": "Guardando…"

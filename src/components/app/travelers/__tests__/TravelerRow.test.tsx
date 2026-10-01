@@ -42,6 +42,11 @@ const copy: InviteTravelersDict = {
   incompleteError: "Incompleto",
   saveErrorGeneric: "Error al guardar",
   sendInviteErrorGeneric: "",
+  companionHeading: "Tu grupo",
+  companionSubtitle: "Te sumaron",
+  companionYouTag: "Vos",
+  companionOtherNote: "Los gestiona quien reservó",
+  emailLockedJoinedHint: "Se unió: el email no se puede cambiar",
   landingEyebrow: "",
   landingHeading: "",
   landingGreeting: "",
@@ -80,6 +85,7 @@ function baseTraveler(overrides: Partial<TravelerDTO> = {}): TravelerDTO {
     dateOfBirth: null,
     invitedAt: null,
     submittedAt: null,
+    joined: false,
     ...overrides,
   };
 }
@@ -277,5 +283,32 @@ describe("TravelerRow — auto-sent invites (T3)", () => {
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(vi.mocked(fetch).mock.calls[1][0]).toBe("/api/travelers/trav-1/invite");
     expect(container.textContent).toContain("Invite resent just now");
+  });
+});
+
+describe("TravelerRow — a companion's own row (T6)", () => {
+  it("locks the email, offers no invite action and shows no invite badge", () => {
+    render(baseTraveler({ isSelf: true, joined: true, status: "COMPLETE", idDocument: null }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(true);
+    expect(container.querySelector("button")).toBeNull();
+    expect(container.textContent).not.toContain("Se unió");
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!.disabled).toBe(false);
+  });
+});
+
+describe("TravelerRow — joined email lock (T10)", () => {
+  it("makes the email read-only with a hint once the companion joined", () => {
+    render(baseTraveler({ status: "COMPLETE", joined: true, email: "joined@example.com" }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(true);
+    expect(container.textContent).toContain("Se unió: el email no se puede cambiar");
+  });
+
+  it("keeps the email editable before the companion joins", () => {
+    render(baseTraveler({ status: "INVITED", joined: false }));
+
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(false);
+    expect(container.textContent).not.toContain("el email no se puede cambiar");
   });
 });

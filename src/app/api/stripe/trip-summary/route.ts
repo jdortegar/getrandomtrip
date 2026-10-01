@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const roster = await getRosterForTrip(trip.id);
+  const roster = await getRosterForTrip(trip.id, session.user.id);
 
   return NextResponse.json({
     payment: {

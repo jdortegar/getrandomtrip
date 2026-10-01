@@ -65,6 +65,10 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
     const pending = useRef(false);
     const isAdult = traveler.kind === "ADULT";
+    // A companion's own row: details are editable, but the email (the invite
+    // identity) is fixed and inviting is the buyer's job.
+    const isSelf = traveler.isSelf === true;
+    const isJoined = !isSelf && traveler.joined;
     const canEdit = !locked || hasMissingTravelerDetails(traveler);
     const fieldLocked = (field: "fullName" | "email" | "dateOfBirth" | "idDocument") =>
       saving || (locked && isTravelerFieldFilled(traveler[field]));
@@ -175,9 +179,11 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         ? note
         : !isAdult
           ? copy.minorFilledByBuyerNote
-          : traveler.status === "INVITED" && traveler.invitedAt
-            ? formatInvitedNote(copy.invitedNote, traveler.invitedAt)
-            : null;
+          : isJoined
+            ? copy.emailLockedJoinedHint
+            : traveler.status === "INVITED" && traveler.invitedAt
+              ? formatInvitedNote(copy.invitedNote, traveler.invitedAt)
+              : null;
 
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-5" data-component="TravelerRow">
@@ -219,7 +225,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
           {isAdult ? (
             <FormField
-              disabled={fieldLocked("email")}
+              disabled={isSelf || isJoined || fieldLocked("email")}
               id={`traveler-${traveler.id}-email`}
               label={copy.emailLabel}
               onChange={(e) => setEmail(e.target.value)}
@@ -248,7 +254,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             value={idDocument}
           />
 
-          {canEdit && isAdult && (
+          {canEdit && isAdult && !isSelf && !isJoined && (
             <TableIconButton
               aria-busy={saving}
               danger={false}
