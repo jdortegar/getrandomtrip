@@ -59,7 +59,7 @@ import TripperInvite, {
   subjects as tripperInviteSubjects,
 } from "@/emails/TripperInvite";
 import TravelerInvite, {
-  subjects as travelerInviteSubjects,
+  getSubject as getTravelerInviteSubject,
 } from "@/emails/TravelerInvite";
 import TravelerReminder, {
   subjects as travelerReminderSubjects,
@@ -834,44 +834,57 @@ export function sendAccessInviteEmail(
 }
 
 /**
- * Sends the companion-traveler invite email. Takes the PLAINTEXT token as
- * a second arg because only its SHA-256 hash is persisted on `TripTraveler`
- * — the caller (whichever code path just rotated the token via
- * `issueTravelerInvite`) is the only place the plaintext is ever available.
+ * Builds and sends the companion-traveler invite email, rejecting when the
+ * provider fails (the backfill script needs the per-row outcome). Takes the
+ * PLAINTEXT token as a second arg because only its SHA-256 hash is persisted
+ * on `TripTraveler` — the caller (whichever code path just rotated the token
+ * via `issueTravelerInvite`) is the only place the plaintext is available.
+ * The email carries trip dates and type, never the destination.
+ */
+export async function deliverTravelerInviteEmail(
+  travelerId: string,
+  plaintextToken: string,
+): Promise<void> {
+  const traveler = await prisma.tripTraveler.findUnique({
+    where: { id: travelerId },
+    include: { tripRequest: { include: { user: true } } },
+  });
+
+  if (!traveler?.email) return;
+
+  const { tripRequest } = traveler;
+  const locale = resolveLocale(tripRequest.user.locale);
+  const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
+  const BASE_URL = "https://getrandomtrip.com";
+  const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
+
+  await sendMail({
+    to: traveler.email,
+    subject: getTravelerInviteSubject(locale, buyerFirstName),
+    content: {
+      react: React.createElement(TravelerInvite, {
+        inviteUrl,
+        buyerFirstName,
+        locale,
+        startDate: tripRequest.startDate,
+        endDate: tripRequest.endDate,
+        tripType: tripRequest.type,
+      }),
+    },
+  });
+}
+
+/**
+ * Fire-and-forget wrapper around `deliverTravelerInviteEmail`: failures are
+ * logged, never thrown (`sendMail` itself throws outside production).
  */
 export function sendTravelerInviteEmail(
   travelerId: string,
   plaintextToken: string,
 ): void {
-  void (async () => {
-    try {
-      const traveler = await prisma.tripTraveler.findUnique({
-        where: { id: travelerId },
-        include: { tripRequest: { include: { user: true } } },
-      });
-
-      if (!traveler?.email) return;
-
-      const locale = resolveLocale(traveler.tripRequest.user.locale);
-      const buyerFirstName = traveler.tripRequest.user.name?.split(" ")[0] ?? "";
-      const BASE_URL = "https://getrandomtrip.com";
-      const inviteUrl = `${BASE_URL}/${locale}/invite/${plaintextToken}`;
-
-      await sendMail({
-        to: traveler.email,
-        subject: travelerInviteSubjects[locale],
-        content: {
-          react: React.createElement(TravelerInvite, {
-            inviteUrl,
-            buyerFirstName,
-            locale,
-          }),
-        },
-      });
-    } catch (err) {
-      console.error("[email] sendTravelerInviteEmail:", err);
-    }
-  })();
+  void deliverTravelerInviteEmail(travelerId, plaintextToken).catch((err) => {
+    console.error("[email] sendTravelerInviteEmail:", err);
+  });
 }
 
 /**

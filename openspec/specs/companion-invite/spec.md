@@ -213,6 +213,10 @@ Status semantics: the auto-invited row becomes `INVITED`, and an `INVITED` row i
 - WHEN the buyer saves a different email
 - THEN a new token is issued (the previous link dies) and a new email is sent
 
+### Requirement: Companion Invite Email
+
+The invite email subject MUST be "{buyer} te sumó a su randomtrip" (es) / "{buyer} added you to their randomtrip" (en), in the buyer's locale. The body MUST include the localized trip dates and trip type label, MUST mention creating an account to see the trip in the dashboard and confirm details, MUST keep the 7-day expiry line, and MUST NEVER include the destination. The CTA is "VER MI VIAJE" / "SEE MY TRIP".
+
 ### Requirement: Automatic XSED Buyer Reminder
 
 The hourly traveler-reminder job MUST email the buyer on its first run at/after T-72h and before departure when a paid, non-cancelled, non-completed XSED trip has missing required companion details, including uninvited or not-yet-materialized roster rows. The localized email MUST link to the buyer's trip detail page and explain that empty fields remain editable while saved details are protected. A completed roster, solo trip, other product, unpaid trip, departed trip, or already-reminded booking MUST NOT receive this email.
