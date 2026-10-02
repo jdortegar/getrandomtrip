@@ -6,7 +6,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-import { getRecentPublishedBlogs } from "../tripper-queries";
+import {
+  getPublishedBlogsForTravelType,
+  getRecentPublishedBlogs,
+} from "../tripper-queries";
 import { prisma } from "@/lib/prisma";
 
 describe("getRecentPublishedBlogs — visibility guard", () => {
@@ -97,5 +100,14 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     const result = await getRecentPublishedBlogs(5);
 
     expect(result).toEqual([]);
+  });
+
+  it("limits traveler-type cards to posts tagged with that type", async () => {
+    await getPublishedBlogsForTravelType("solo", 6, "es");
+
+    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock
+      .calls[0][0];
+    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
+    expect(findManyArgs.take).toBe(6);
   });
 });

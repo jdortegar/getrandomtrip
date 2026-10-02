@@ -4,7 +4,13 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 // `getReviewsForTripType` — mock it away, same pattern as
 // `journey/__tests__/page.test.ts`.
 const getReviewsForTripTypeMock = vi.fn();
+const getPublishedBlogsForTravelTypeMock = vi.fn();
 vi.mock("@/lib/db/tripper-queries", () => ({
+  getPublishedBlogsForTravelType: (
+    travelType: string,
+    limit: number,
+    locale: string,
+  ) => getPublishedBlogsForTravelTypeMock(travelType, limit, locale),
   getReviewsForTripType: (tripType: string) =>
     getReviewsForTripTypeMock(tripType),
 }));
@@ -47,6 +53,8 @@ function delayed<T>(value: T, ms: number, log: number[], tag: number): Promise<T
 
 describe("TravelerTypePage — parallel data fetching (review finding #10)", () => {
   beforeEach(() => {
+    getPublishedBlogsForTravelTypeMock.mockReset();
+    getPublishedBlogsForTravelTypeMock.mockResolvedValue([]);
     getReviewsForTripTypeMock.mockReset();
     readAttributionSlugMock.mockReset();
     resolveLiveAttributionMock.mockReset();
@@ -108,5 +116,40 @@ describe("TravelerTypePage — parallel data fetching (review finding #10)", () 
     expect(readAttributionSlugMock).toHaveBeenCalledTimes(1);
     expect(resolveLiveAttributionMock).toHaveBeenCalledWith("maria");
     expect(element).toBeTruthy();
+  });
+
+  it("links the solo blog section to published posts instead of /blog/solo", async () => {
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+    getPublishedBlogsForTravelTypeMock.mockResolvedValue([
+      {
+        category: "Viajes",
+        href: "/blog/cabo-polonio",
+        image: "/cover.jpg",
+        title: "Cabo Polonio",
+      },
+    ]);
+
+    const element = await TravelerTypePage({
+      params: Promise.resolve({ locale: "es", type: "solo" }),
+      searchParams: Promise.resolve({ catalog: "randomtrip" }),
+    });
+    const markup = JSON.stringify(element);
+
+    expect(getPublishedBlogsForTravelTypeMock).toHaveBeenCalledWith("solo", 6, "es");
+    expect(markup).toContain("/blog/cabo-polonio");
+    expect(markup).not.toContain("/blog/solo");
+  });
+
+  it("sends placeholder solo cards to the blog index when no published posts match", async () => {
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+
+    const element = await TravelerTypePage({
+      params: Promise.resolve({ locale: "es", type: "solo" }),
+      searchParams: Promise.resolve({ catalog: "randomtrip" }),
+    });
+
+    expect(JSON.stringify(element)).not.toContain("/blog/solo");
   });
 });

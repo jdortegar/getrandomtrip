@@ -1093,16 +1093,19 @@ async function queryPublishedBlogs({
   authorId,
   limit,
   locale = "es",
+  travelType,
 }: {
   authorId?: string;
   limit: number;
   locale?: "es" | "en";
+  travelType?: string;
 }) {
   try {
     const blogs = await prisma.blogPost.findMany({
       where: {
         ...blogLocaleWhere(locale),
         ...(authorId ? { authorId } : {}),
+        ...(travelType ? { travelType: { has: travelType } } : {}),
         status: "PUBLISHED",
         // Review copies (isReviewCopy: true) share authorId with the
         // original and must never leak into this public-facing list.
@@ -1118,6 +1121,7 @@ async function queryPublishedBlogs({
         id: true,
         slug: true,
         title: true,
+        content: true,
         translations: true,
         subtitle: true,
         coverUrl: true,
@@ -1161,6 +1165,15 @@ export async function getRecentPublishedBlogs(
   locale: "es" | "en" = "es",
 ) {
   return queryPublishedBlogs({ limit, locale });
+}
+
+/** Published posts tagged for a traveler-type page, newest first. */
+export async function getPublishedBlogsForTravelType(
+  travelType: string,
+  limit: number = 6,
+  locale: "es" | "en" = "es",
+) {
+  return queryPublishedBlogs({ limit, locale, travelType });
 }
 
 /**
