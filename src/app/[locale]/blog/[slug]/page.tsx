@@ -70,9 +70,6 @@ const getBlogPost = cache(
     slugOrId: string,
     locale: string,
   ): Promise<(BlogPost & { availableLocales: Locale[] }) | null> => {
-    const story = travelerStoryPost(slugOrId, locale);
-    if (story) return story;
-
     const rawBlog = await prisma.blogPost.findFirst({
       where: {
         ...blogLocaleWhere(locale),
@@ -115,7 +112,7 @@ const getBlogPost = cache(
     });
 
     const blog = rawBlog && resolveBlogContent(rawBlog, locale);
-    if (!blog) return null;
+    if (!blog) return travelerStoryPost(slugOrId, locale);
 
     return {
       availableLocales: availableBlogLocales(rawBlog!),
