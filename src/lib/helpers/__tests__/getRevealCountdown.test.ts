@@ -172,3 +172,20 @@ describe("getCalendarDaysUntilDeparture", () => {
     expect(getCalendarDaysUntilDeparture(startDate, now)).toBe(4);
   });
 });
+
+describe("invalid stored zone or date (review R3-001)", () => {
+  it("falls back to Buenos Aires instead of throwing on an unknown zone", () => {
+    const bad = { startDate: TRIP.startDate, departureTimeZone: "Not/AZone" };
+    expect(() => getDepartureAt(bad)).not.toThrow();
+    expect(getDepartureAt(bad)).toEqual(DEPARTURE_AT);
+    expect(getRevealAt(bad)).toEqual(REVEAL_AT);
+  });
+
+  it("returns an invalid Date instead of throwing on an invalid startDate", () => {
+    const bad = { startDate: new Date("not a date"), departureTimeZone: BA };
+    expect(() => getDepartureAt(bad)).not.toThrow();
+    expect(Number.isNaN(getDepartureAt(bad).getTime())).toBe(true);
+    expect(Number.isNaN(getRevealAt(bad).getTime())).toBe(true);
+    expect(isInRevealWindow(bad, new Date())).toBe(false);
+  });
+});

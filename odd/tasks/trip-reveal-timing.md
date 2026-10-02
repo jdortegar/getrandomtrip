@@ -26,6 +26,11 @@ First real XSED customer (departure 2026-10-03) was revealed early and never not
 
 Also on this branch: `b0314f9f` fix(dashboard): stop showing companion trips as awaiting payment.
 
+### Follow-ups from review
+
+- [x] **V7** (review R3-001) An unrecognised stored `departureTimeZone` falls back to Buenos Aires and an invalid `startDate` yields an invalid Date, so one bad row cannot throw and abort a cron batch or crash a countdown. Tests in `getRevealCountdown.test.ts`.
+- [x] **V8** (review R3-002) In multi-offset countries (MX, BR, CL — `isMultiTimezoneCountry`), a valid browser zone that belongs to the origin country wins over the country's primary zone; elsewhere/invalid browser zones keep the primary; Argentina stays Buenos Aires. Tests in `tripTimeZone.test.ts`.
+
 ## Constraints
 
 - No destination in emails or notifications.
