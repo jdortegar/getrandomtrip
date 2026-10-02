@@ -2,7 +2,8 @@ import type { TravelerTypeData } from "@/types/traveler-type";
 import type { HeroContent } from "@/components/Hero";
 import type { ParagraphContent } from "@/components/Paragraph";
 import type { TypePlannerContent } from "@/types/planner";
-import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
+import { travelerStoryCards } from "@/lib/blog/travelerStories";
+import type { BlogViewAll } from "@/lib/data/shared/blog-types";
 import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 import { getExcusesByType } from "@/lib/helpers/excuse-helper";
 
@@ -227,44 +228,17 @@ export const coupleEn: TravelerTypeData = {
   blog: {
     title: "Stories from adventurous couples",
     subtitle: "Unique experiences only the two of you will live.",
-    posts: [
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1526772662000-3f88f10405ff",
-        category: "Romance",
-        title: "5 Reasons to Love a Surprise Trip as a Couple",
-      },
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-        category: "Tips",
-        title: "How to Pack for an Unknown Destination",
-      },
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1",
-        category: "Experiences",
-        title: "The Story of a Randomtrip to the Alps",
-      },
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3",
-        category: "Guides",
-        title: "Flavors of Southeast Asia",
-      },
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800",
-        category: "Adventure",
-        title: "Along the Carretera Austral",
-      },
-      {
-        href: "/blogs/couple",
-        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-        category: "Inspiration",
-        title: "Hidden Beaches of Latin America",
-      },
-    ] as BlogPost[],
+    posts: travelerStoryCards(
+      [
+        "razones-para-un-viaje-sorpresa-en-pareja",
+        "valija-para-un-destino-desconocido",
+        "randomtrip-a-los-alpes",
+        "sabores-del-sudeste-asiatico",
+        "recorriendo-la-carretera-austral",
+        "playas-escondidas-de-america-latina",
+      ],
+      "en",
+    ),
     viewAll: {
       title: "More stories",
       subtitle: "Discover all our adventures and unique experiences",

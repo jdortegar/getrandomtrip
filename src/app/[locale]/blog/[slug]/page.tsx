@@ -16,6 +16,7 @@ import BlogPostClient, {
   type BlogPost,
   BlogPostLoading,
 } from "@/components/app/blog/BlogPostClient";
+import { getTravelerStoryArticle } from "@/lib/blog/travelerStories";
 
 function isCuid(param: string): boolean {
   return (
@@ -23,11 +24,55 @@ function isCuid(param: string): boolean {
   );
 }
 
+function travelerStoryPost(
+  slug: string,
+  locale: string,
+): (BlogPost & { availableLocales: Locale[] }) | null {
+  const story = getTravelerStoryArticle(slug, locale);
+  if (!story) return null;
+
+  return {
+    author: {
+      avatarUrl: "",
+      bio: "",
+      id: "",
+      location: "",
+      motto: null,
+      name: "Randomtrip",
+      slug: "",
+      specialization: null,
+    },
+    availableLocales: story.availableLocales,
+    blocks: [],
+    content: story.content,
+    coverUrl: story.coverUrl,
+    createdAt: story.createdAt,
+    faq: null,
+    format: "article",
+    id: story.id,
+    publishedAt: story.publishedAt,
+    seo: {
+      description: story.subtitle,
+      title: `${story.title} | Randomtrip`,
+    },
+    slug: story.slug,
+    source: "RANDOMTRIP",
+    subtitle: story.subtitle,
+    tagline: "",
+    tags: story.tags,
+    title: story.title,
+    updatedAt: story.updatedAt,
+  };
+}
+
 const getBlogPost = cache(
   async (
     slugOrId: string,
     locale: string,
   ): Promise<(BlogPost & { availableLocales: Locale[] }) | null> => {
+    const story = travelerStoryPost(slugOrId, locale);
+    if (story) return story;
+
     const rawBlog = await prisma.blogPost.findFirst({
       where: {
         ...blogLocaleWhere(locale),

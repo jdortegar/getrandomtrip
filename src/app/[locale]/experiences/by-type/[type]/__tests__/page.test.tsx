@@ -4,7 +4,10 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 // `getReviewsForTripType` — mock it away, same pattern as
 // `journey/__tests__/page.test.ts`.
 const getReviewsForTripTypeMock = vi.fn();
+const getPublishedBlogsForTravelTypeMock = vi.fn();
 vi.mock("@/lib/db/tripper-queries", () => ({
+  getPublishedBlogsForTravelType: (travelType: string, locale: string) =>
+    getPublishedBlogsForTravelTypeMock(travelType, locale),
   getReviewsForTripType: (tripType: string) =>
     getReviewsForTripTypeMock(tripType),
 }));
@@ -47,6 +50,8 @@ function delayed<T>(value: T, ms: number, log: number[], tag: number): Promise<T
 
 describe("TravelerTypePage — parallel data fetching (review finding #10)", () => {
   beforeEach(() => {
+    getPublishedBlogsForTravelTypeMock.mockReset();
+    getPublishedBlogsForTravelTypeMock.mockResolvedValue([]);
     getReviewsForTripTypeMock.mockReset();
     readAttributionSlugMock.mockReset();
     resolveLiveAttributionMock.mockReset();
@@ -108,5 +113,71 @@ describe("TravelerTypePage — parallel data fetching (review finding #10)", () 
     expect(readAttributionSlugMock).toHaveBeenCalledTimes(1);
     expect(resolveLiveAttributionMock).toHaveBeenCalledWith("maria");
     expect(element).toBeTruthy();
+  });
+
+  it("keeps the solo, couple, and group cards and points them at their articles", async () => {
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+
+    const solo = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "solo" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const couple = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "couple" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const group = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "group" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+
+    expect(solo).toContain("Viajar Solo: La Mejor Decisión que Puedes Tomar");
+    expect(solo).toContain("/blog/viajar-solo-la-mejor-decision");
+    expect(solo).not.toContain("/blog/solo");
+    expect(couple).toContain("/blog/razones-para-un-viaje-sorpresa-en-pareja");
+    expect(couple).not.toContain("/blogs/couple");
+    expect(group).toContain("10 momentos que solo pasan viajando en grupo");
+    expect(group).toContain("/blog/momentos-que-solo-pasan-viajando-en-grupo");
+    expect(group).not.toContain("/blogs/group");
+  });
+
+  it("appends published posts for that travel type after the story cards", async () => {
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+    getPublishedBlogsForTravelTypeMock.mockResolvedValue([
+      {
+        category: "Viajes",
+        href: "/blog/momentos-que-solo-pasan-viajando-en-grupo",
+        image: "/cover-story.jpg",
+        title: "Duplicate story",
+      },
+      {
+        category: "Viajes",
+        href: "/blog/alto-paraiso-de-goias",
+        image: "/cover.jpg",
+        title: "Alto Paraíso de Goiás",
+      },
+    ]);
+
+    const markup = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "group" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const storyAt = markup.indexOf("/blog/momentos-que-solo-pasan-viajando-en-grupo");
+    const publishedAt = markup.indexOf("/blog/alto-paraiso-de-goias");
+
+    expect(getPublishedBlogsForTravelTypeMock).toHaveBeenCalledWith("group", "es");
+    expect(storyAt).toBeGreaterThan(-1);
+    expect(publishedAt).toBeGreaterThan(storyAt);
+    expect(markup).not.toContain("Duplicate story");
   });
 });
