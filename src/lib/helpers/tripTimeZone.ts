@@ -1,5 +1,9 @@
 import { resolveCountryCode } from "@/lib/geo/countryNameToCode";
-import { countryToTimezone } from "@/lib/xsed/country-tz";
+import {
+  countryToTimezone,
+  isMultiTimezoneCountry,
+  timezoneToCountry,
+} from "@/lib/xsed/country-tz";
 import type { LocalDateTime } from "@/types/core";
 
 /** Last-resort departure zone: the platform's home market. */
@@ -89,11 +93,22 @@ export function localTimeToUtc(
 /**
  * The ONE resolver for a trip's departure zone: origin country zone, else the
  * browser's zone (validated), else Buenos Aires. Unknown inputs fall through.
+ * In countries spanning several offsets (e.g. MX, BR, CL) the country's primary
+ * zone is only a guess, so a valid browser zone inside that country wins.
  */
 export function resolveDepartureTimeZone(input: {
   originCountryCode?: string | null;
   browserTimeZone?: string | null;
 }): string {
+  const code = input.originCountryCode?.trim().toUpperCase();
+  if (
+    code &&
+    isMultiTimezoneCountry(code) &&
+    isValidTimeZone(input.browserTimeZone) &&
+    timezoneToCountry(input.browserTimeZone) === code
+  ) {
+    return input.browserTimeZone;
+  }
   const fromCountry = input.originCountryCode
     ? countryToTimezone(input.originCountryCode)
     : null;

@@ -6,7 +6,11 @@
  * calendar date there, and the reveal opens at 09:00 local two calendar days
  * before. Callers pass a fixed `now` so each function is deterministic.
  */
-import { localTimeToUtc, DEFAULT_DEPARTURE_TIME_ZONE } from "@/lib/helpers/tripTimeZone";
+import {
+  DEFAULT_DEPARTURE_TIME_ZONE,
+  isValidTimeZone,
+  localTimeToUtc,
+} from "@/lib/helpers/tripTimeZone";
 import type { TripTiming } from "@/types/core";
 
 const REVEAL_LOCAL_HOUR = 9;
@@ -47,12 +51,24 @@ function countdownTo(target: Date, now: Date): Countdown {
   return { elapsed: false, days, hours, minutes, seconds };
 }
 
+/**
+ * A stored zone Intl does not recognise (hand-edited row, older tz data) falls
+ * back to Buenos Aires so one bad trip can never abort a whole cron batch.
+ */
 function zoneOf(trip: TripTiming): string {
-  return trip.departureTimeZone || DEFAULT_DEPARTURE_TIME_ZONE;
+  return isValidTimeZone(trip.departureTimeZone)
+    ? trip.departureTimeZone
+    : DEFAULT_DEPARTURE_TIME_ZONE;
+}
+
+/** Invalid start dates yield an invalid Date (as the old arithmetic did) instead of throwing. */
+function hasValidStart(trip: TripTiming): boolean {
+  return !Number.isNaN(trip.startDate.getTime());
 }
 
 /** 00:00 of the trip's start calendar date (UTC date part) in its departure zone. */
 export function getDepartureAt(trip: TripTiming): Date {
+  if (!hasValidStart(trip)) return new Date(Number.NaN);
   const { startDate } = trip;
   return localTimeToUtc(
     {
@@ -66,6 +82,7 @@ export function getDepartureAt(trip: TripTiming): Date {
 
 /** 09:00 departure-local on the calendar day two days before departure. */
 export function getRevealAt(trip: TripTiming): Date {
+  if (!hasValidStart(trip)) return new Date(Number.NaN);
   const { startDate } = trip;
   return localTimeToUtc(
     {

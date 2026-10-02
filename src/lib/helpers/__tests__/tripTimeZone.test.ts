@@ -96,6 +96,38 @@ describe("resolveDepartureTimeZone", () => {
   });
 });
 
+describe("resolveDepartureTimeZone in multi-zone countries (review R3-002)", () => {
+  it("prefers a valid browser zone that belongs to the origin country", () => {
+    expect(
+      resolveDepartureTimeZone({ originCountryCode: "MX", browserTimeZone: "America/Tijuana" }),
+    ).toBe("America/Tijuana");
+    expect(
+      resolveDepartureTimeZone({ originCountryCode: "br", browserTimeZone: "America/Manaus" }),
+    ).toBe("America/Manaus");
+    expect(
+      resolveDepartureTimeZone({ originCountryCode: "CL", browserTimeZone: "America/Punta_Arenas" }),
+    ).toBe("America/Punta_Arenas");
+  });
+
+  it("keeps the country's primary zone when the browser zone is elsewhere or invalid", () => {
+    expect(
+      resolveDepartureTimeZone({ originCountryCode: "MX", browserTimeZone: "Europe/Madrid" }),
+    ).toBe("America/Mexico_City");
+    expect(
+      resolveDepartureTimeZone({ originCountryCode: "MX", browserTimeZone: "Not/AZone" }),
+    ).toBe("America/Mexico_City");
+  });
+
+  it("keeps Buenos Aires for Argentina even from a provincial browser zone", () => {
+    expect(
+      resolveDepartureTimeZone({
+        originCountryCode: "AR",
+        browserTimeZone: "America/Argentina/Cordoba",
+      }),
+    ).toBe("America/Argentina/Buenos_Aires");
+  });
+});
+
 describe("getBookingTimeZoneInputs", () => {
   it("prefers the picker's country code and always sends the browser zone", () => {
     const inputs = getBookingTimeZoneInputs({ countryCode: "uy", countryName: "Argentina" });
