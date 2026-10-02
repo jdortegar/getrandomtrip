@@ -22,13 +22,13 @@ export const htmlActivityStyles = `.activity .header{margin-bottom:0}
   font-size:17px}
 .activity .details .payment{font-weight:700;
   font-size:14px;
-  background:#dcf8eb;
-  color:#1a9763;
+  background:#e5f2ec;
+  color:#174a42;
   border-radius:24px;
   padding:5px 14px;
   line-height:20px}
 .activity .details .payment:before{content:"●";
-  color:#32cc78;
+  color:#174a42;
   margin-right:7px}
 .activity .detail-row:has(.payment){padding-top:7px;
   padding-bottom:7px}
@@ -106,7 +106,7 @@ export const htmlActivityStyles = `.activity .header{margin-bottom:0}
 .footer .footer-label{flex:1;
   min-width:0}
 .footer .pagination{white-space:nowrap}
-.hotel .footer{color:#c8d8de;
+.hotel .footer{color:#d5e3df;
   background:var(--dark);
   bottom:5px}
 .dinner .footer,.activity .footer{display:block;
