@@ -65,22 +65,16 @@ describe("isRosterLocked", () => {
     ).toBe(true);
   });
 
-  it("returns true at the exact T-7d boundary", () => {
-    expect(
-      isRosterLocked({
-        startDate: new Date(Date.now() + 7 * DAY_MS),
-        travelersLockedAt: null,
-      }),
-    ).toBe(true);
-  });
-
-  it("returns false before the T-7d cutoff", () => {
-    expect(
-      isRosterLocked({
-        startDate: new Date(Date.now() + 8 * DAY_MS),
-        travelersLockedAt: null,
-      }),
-    ).toBe(false);
+  it("locks at the exact T-7d boundary measured from local-midnight departure", () => {
+    vi.useFakeTimers();
+    // Departure Tue 2026-10-20 00:00 ART = 03:00Z; cutoff 7 days earlier.
+    const trip = { startDate: new Date("2026-10-20T00:00:00Z"), travelersLockedAt: null };
+    try {
+      vi.setSystemTime(new Date("2026-10-13T02:59:59.999Z"));
+      expect(isRosterLocked(trip)).toBe(false);
+      vi.setSystemTime(new Date("2026-10-13T03:00:00Z"));
+      expect(isRosterLocked(trip)).toBe(true);
+    } finally { vi.useRealTimers(); }
   });
 
   it("returns false when there is no startDate and no lock stamp", () => {
@@ -289,7 +283,7 @@ describe("getRosterForTrip", () => {
   });
 
   it("calls ensureRoster (via the same findUnique-driven flow) then returns the shared roster shape", async () => {
-    const startDate = new Date(Date.now() + 30 * DAY_MS);
+    const startDate = new Date("2099-01-31T00:00:00Z");
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>)
       .mockResolvedValueOnce({
         id: "trip-1",
@@ -325,9 +319,8 @@ describe("getRosterForTrip", () => {
     expect(roster.submitted).toBe(1);
     expect(roster.travelers).toHaveLength(1);
     expect(roster.travelers[0].id).toBe("t-1");
-    expect(roster.deadline).toBe(
-      new Date(startDate.getTime() - 7 * DAY_MS).toISOString(),
-    );
+    // 7 days before Sat 00:00 in the default Buenos Aires zone (UTC-3).
+    expect(roster.deadline).toBe("2099-01-24T03:00:00.000Z");
     expect(roster.startDate).toBe(startDate.toISOString());
   });
 
@@ -415,16 +408,28 @@ describe("XSED cutoff regression", () => {
       vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(trip as never);
       const roster = await getRosterForTrip("trip", "buyer-1");
       expect(roster.locked).toBe(false);
-      expect(roster.deadline).toBe("2026-09-30T00:00:00.000Z");
+      // Wed Sep 30 00:00 ART (UTC-3): 72h before Sat Oct 3 00:00 ART.
+      expect(roster.deadline).toBe("2026-09-30T03:00:00.000Z");
     } finally { vi.useRealTimers(); }
   });
   it("protects populated fields at exactly 72 hours, not one millisecond earlier", () => {
     vi.useFakeTimers();
     const trip = { type: "XSED", startDate: new Date("2026-10-03T00:00:00Z"), travelersLockedAt: null };
     try {
-      vi.setSystemTime(new Date("2026-09-29T23:59:59.999Z"));
+      vi.setSystemTime(new Date("2026-09-30T02:59:59.999Z"));
       expect(isRosterLocked(trip)).toBe(false);
-      vi.setSystemTime(new Date("2026-09-30T00:00:00Z"));
+      vi.setSystemTime(new Date("2026-09-30T03:00:00Z"));
+      expect(isRosterLocked(trip)).toBe(true);
+    } finally { vi.useRealTimers(); }
+  });
+  it("uses the trip's own departure zone for the cutoff", () => {
+    vi.useFakeTimers();
+    const trip = { type: "xsed", startDate: new Date("2026-10-03T00:00:00Z"), departureTimeZone: "Europe/Madrid", travelersLockedAt: null };
+    try {
+      // Madrid is UTC+2 in October: departure 2026-10-02T22:00Z, cutoff 2026-09-29T22:00Z.
+      vi.setSystemTime(new Date("2026-09-29T21:59:59.999Z"));
+      expect(isRosterLocked(trip)).toBe(false);
+      vi.setSystemTime(new Date("2026-09-29T22:00:00Z"));
       expect(isRosterLocked(trip)).toBe(true);
     } finally { vi.useRealTimers(); }
   });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  resolveClientNotificationHref,
   resolveAdminNotificationHref,
   resolveTripperNotificationHref,
 } from "../notificationHrefs";
@@ -112,5 +113,32 @@ describe("resolveTripperNotificationHref", () => {
   it("returns null when there is no metadata", () => {
     const notification = makeNotification({ metadata: null });
     expect(resolveTripperNotificationHref(notification, "es")).toBeNull();
+  });
+});
+
+describe("resolveClientNotificationHref", () => {
+  it("links a BOOKING_REVEALED notification straight to the reveal page", () => {
+    const notification = makeNotification({
+      type: "BOOKING_REVEALED",
+      audience: "TRAVELER",
+      metadata: { tripRequestId: "t1" },
+    });
+    expect(resolveClientNotificationHref(notification, "es")).toBe(
+      "/dashboard/trips/t1/reveal",
+    );
+    expect(resolveClientNotificationHref(notification, "en")).toBe(
+      "/en/dashboard/trips/t1/reveal",
+    );
+  });
+
+  it("keeps linking other trip notifications to the trip detail page", () => {
+    const notification = makeNotification({
+      type: "BOOKING_CONFIRMED",
+      audience: "TRAVELER",
+      metadata: { tripRequestId: "t1" },
+    });
+    expect(resolveClientNotificationHref(notification, "es")).toBe(
+      "/dashboard/trips/t1",
+    );
   });
 });

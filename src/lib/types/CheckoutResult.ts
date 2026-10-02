@@ -11,6 +11,8 @@ export interface CheckoutResultSummary {
     originCountry: string;
     pax: number;
     startDate: string | null;
+    /** IANA zone the start date is interpreted in; absent/null on legacy trips (Buenos Aires). */
+    departureTimeZone?: string | null;
     type: string;
     roster: TravelerRoster;
   };

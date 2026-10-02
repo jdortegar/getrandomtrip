@@ -96,6 +96,7 @@ type TravelerInviteRow = {
     type?: string;
     startDate: Date | null;
     endDate?: Date | null;
+    departureTimeZone?: string | null;
     travelersLockedAt: Date | null;
     user: { name: string };
   };

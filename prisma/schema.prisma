@@ -134,6 +134,11 @@ model TripRequest {
   // Logistics - ORIGIN (where user starts from)
   originCountry String
   originCity    String
+  /**
+   * IANA zone `startDate`/`endDate` calendar dates are interpreted in (departure
+   * is 00:00 there). Resolved at booking; null on legacy rows = Buenos Aires.
+   */
+  departureTimeZone String?
   startDate     DateTime?
   endDate       DateTime?
   nights        Int       @default(1)
@@ -175,6 +180,7 @@ model TripRequest {
 
   // Destination reveal pipeline
   destinationAssignmentNotifiedAt DateTime? // Legacy departure-relative stamp; no longer used
+  revealNotifiedAt DateTime? // Buyer reveal email: provider accepted; null = still to (re)send
 
   // Companion travelers: populated fields protected at T-72h (XSED), otherwise T-7d
   travelersLockedAt DateTime? // Pass-2 cutoff-lock idempotency stamp
@@ -593,6 +599,7 @@ model TripTraveler {
   inviteTokenExpiresAt DateTime?
   invitedAt            DateTime? // last send; reminder-window anchor
   reminderSentAt       DateTime? // reminder idempotency stamp
+  revealNotifiedAt     DateTime? // reveal email: provider accepted (joined companions only)
   submittedAt          DateTime? // row completed (buyer or companion)
   consentAt            DateTime? // required consent checkbox at token submit
 

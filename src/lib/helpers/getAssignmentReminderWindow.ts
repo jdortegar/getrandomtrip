@@ -8,11 +8,11 @@ export interface AssignmentReminderWindow {
 
 /** Only the newest due milestone is actionable; never catch up obsolete notices. */
 export function getAssignmentReminderWindow(
-  startDate: Date | null,
+  trip: { startDate: Date | null; departureTimeZone?: string | null } | null,
   now: Date,
 ): AssignmentReminderWindow | null {
-  if (!startDate) return null;
-  const revealAt = getRevealAt(startDate);
+  if (!trip?.startDate || !Number.isFinite(trip.startDate.getTime())) return null;
+  const revealAt = getRevealAt({ ...trip, startDate: trip.startDate });
   const remaining = revealAt.getTime() - now.getTime();
   if (!Number.isFinite(remaining) || remaining <= 0) return null;
   const milestoneHours = ([24, 48, 72] as const).find(

@@ -21,7 +21,9 @@ export function makeTrip(id = "trip") {
     id,
     status: "CONFIRMED",
     experienceId: null as string | null,
-    startDate: new Date(+revealAt + 48 * hour) as Date | null,
+    // Sat 2026-10-10 from Argentina: reveals Thu 2026-10-08 09:00 ART = revealAt.
+    startDate: new Date("2026-10-10T00:00:00Z") as Date | null,
+    departureTimeZone: "America/Argentina/Buenos_Aires" as string | null,
     user: { name: "Ana" },
   };
 }

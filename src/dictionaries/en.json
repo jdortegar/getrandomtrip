@@ -6025,6 +6025,10 @@
     "fillEmpty": "Open your trip dashboard to fill in the missing details or invite your companions to complete their information.",
     "cta": "Complete companion details"
   },
+  "tripRevealNotification": {
+    "title": "Your destination is ready",
+    "body": "You can now uncover your surprise destination. Open your trip and scratch the card to see it."
+  },
   "travelerDetailsReminder": {
     "subject": "Your XSED trip: complete your companion details",
     "preview": "Your XSED trip is within 72 hours. Some companion details are still missing.",

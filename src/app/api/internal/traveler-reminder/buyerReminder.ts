@@ -2,9 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { sendTravelerDetailsReminder } from "@/lib/email/sendTravelerDetailsReminder";
 import { computeTravelerCap } from "@/lib/travelers/travelerRoster";
 import {
+  getRosterCutoffAt,
   hasMissingTravelerDetails,
   XSED_ROSTER_CUTOFF_MS,
 } from "@/lib/travelers/travelerPolicy";
+import { getDepartureAt } from "@/lib/helpers/getRevealCountdown";
+import { ZONE_QUERY_MARGIN_MS } from "@/lib/helpers/tripTimeZone";
 
 const LEASE_MS = 10 * 60 * 1000;
 
@@ -13,6 +16,19 @@ const include = {
   travelers: true,
   user: { select: { email: true, locale: true } },
 } as const;
+
+/** Exact check: inside [departure - 72h, departure) in the trip's own zone. */
+function isInReminderWindow(
+  trip: { startDate: Date | null; departureTimeZone: string | null },
+  now: Date,
+): boolean {
+  if (!trip.startDate) return false;
+  const timing = { startDate: trip.startDate, departureTimeZone: trip.departureTimeZone };
+  return (
+    now >= getRosterCutoffAt({ ...timing, type: "xsed" }) &&
+    now < getDepartureAt(timing)
+  );
+}
 
 /** One buyer reminder on the first hourly run at/after T-72h, including uninvited rows. */
 export async function runBuyerReminder(
@@ -23,9 +39,10 @@ export async function runBuyerReminder(
     status: {
       notIn: ["CANCELLED", "COMPLETED"] as ("CANCELLED" | "COMPLETED")[],
     },
+    // Widened by the zone margin; the exact local-midnight window is checked in memory.
     startDate: {
-      gt: now,
-      lte: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS),
+      gt: new Date(now.getTime() - ZONE_QUERY_MARGIN_MS),
+      lte: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS + ZONE_QUERY_MARGIN_MS),
     },
     payment: { is: { status: "APPROVED" as const } },
     travelerDetailsReminderSentAt: null,
@@ -38,6 +55,7 @@ export async function runBuyerReminder(
   let failed = 0;
 
   for (const candidate of candidates) {
+    if (!isInReminderWindow(candidate, now)) continue;
     const cap = computeTravelerCap(candidate.paxDetails);
     if (
       !candidate.travelers.some(hasMissingTravelerDetails) &&
@@ -75,6 +93,7 @@ export async function runBuyerReminder(
       const currentCap = trip ? computeTravelerCap(trip.paxDetails) : null;
       if (
         trip &&
+        isInReminderWindow(trip, now) &&
         currentCap &&
         (trip.travelers.some(hasMissingTravelerDetails) ||
           trip.travelers.length < currentCap.adultRows + currentCap.minorRows)

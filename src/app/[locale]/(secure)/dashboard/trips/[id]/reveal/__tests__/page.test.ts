@@ -15,12 +15,15 @@
 import { describe, it, expect } from "vitest";
 import { getRevealCountdown, getRevealAt } from "@/lib/helpers/getRevealCountdown";
 
+// Trip dates are calendar dates at UTC midnight, interpreted in the trip's departure zone.
+const BA = "America/Argentina/Buenos_Aires";
+
 // ── (a) Pre-reveal state ──────────────────────────────────────────────────────
 describe("Reveal page — pre-reveal branch (CONFIRMED trip)", () => {
   it("returns revealed=false with positive days/hours when startDate is far in future", () => {
-    const startDate = new Date("2026-09-01T12:00:00.000Z");
+    const trip = { startDate: new Date("2026-09-01T00:00:00.000Z"), departureTimeZone: BA };
     const now = new Date("2026-08-01T12:00:00.000Z"); // 31 days before
-    const result = getRevealCountdown(startDate, now);
+    const result = getRevealCountdown(trip, now);
 
     expect(result.revealed).toBe(false);
     expect(result.days).toBeGreaterThan(0);
@@ -29,12 +32,11 @@ describe("Reveal page — pre-reveal branch (CONFIRMED trip)", () => {
     expect(result.seconds).toBeGreaterThanOrEqual(0);
   });
 
-  it("countdown days is correct at exactly 5 days before reveal window", () => {
-    const startDate = new Date("2026-09-01T00:00:00.000Z");
-    // revealAt = startDate − 48h = 2026-08-30T00:00:00.000Z
-    // now = 5 days before revealAt = 2026-08-25T00:00:00.000Z
-    const now = new Date("2026-08-25T00:00:00.000Z");
-    const result = getRevealCountdown(startDate, now);
+  it("countdown days is correct at exactly 5 days before the reveal moment", () => {
+    const trip = { startDate: new Date("2026-09-01T00:00:00.000Z"), departureTimeZone: BA };
+    // revealAt = Sun 2026-08-30 09:00 ART = 2026-08-30T12:00Z
+    const now = new Date("2026-08-25T12:00:00.000Z");
+    const result = getRevealCountdown(trip, now);
 
     expect(result.revealed).toBe(false);
     expect(result.days).toBe(5);
@@ -44,17 +46,15 @@ describe("Reveal page — pre-reveal branch (CONFIRMED trip)", () => {
   });
 
   it("pendingAssignment: when revealAt is past but status still CONFIRMED, countdown shows revealed=true", () => {
-    // This scenario drives the pendingAssignment message — the reveal window
-    // has opened (countdown.revealed=true) but the trip is still CONFIRMED
-    // because the cron hasn't run yet or no experience is assigned.
-    const startDate = new Date("2026-08-01T12:00:00.000Z");
-    const now = new Date("2026-08-01T11:00:00.000Z"); // within 48h window
-    const revealAt = getRevealAt(startDate);
-    const result = getRevealCountdown(startDate, now);
+    // The reveal moment has passed (countdown.revealed=true) but the trip is
+    // still CONFIRMED because the cron hasn't run yet or no experience is assigned.
+    const trip = { startDate: new Date("2026-08-01T00:00:00.000Z"), departureTimeZone: BA };
+    const now = new Date("2026-07-30T13:00:00.000Z"); // Thu 10:00 ART, an hour after reveal
+    const revealAt = getRevealAt(trip);
 
-    // now (Aug 1 11:00) is past revealAt (Jul 30 12:00), so revealed=true
+    expect(revealAt.toISOString()).toBe("2026-07-30T12:00:00.000Z");
     expect(now.getTime()).toBeGreaterThan(revealAt.getTime());
-    expect(result.revealed).toBe(true);
+    expect(getRevealCountdown(trip, now).revealed).toBe(true);
   });
 });
 

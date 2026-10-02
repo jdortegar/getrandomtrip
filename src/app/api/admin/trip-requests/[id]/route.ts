@@ -8,11 +8,8 @@ import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
 import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
-import {
-  sendDestinationRevealed,
-  sendTripCancelled,
-  sendTripCompleted,
-} from "@/lib/email";
+import { sendTripCancelled, sendTripCompleted } from "@/lib/email";
+import { notifyRevealedTrip } from "@/lib/trips/revealNotifications";
 
 export const dynamic = "force-dynamic";
 
@@ -312,7 +309,13 @@ export async function PATCH(
     });
 
     if (nextStatus === "REVEALED") {
-      sendDestinationRevealed(tripRequest.id, tripRequest.userId);
+      // Awaited and stamped per recipient; a failure is retried by the hourly
+      // reveal pass (revealNotifiedAt stays null) and never fails this PATCH.
+      try {
+        await notifyRevealedTrip(tripRequest.id, new Date());
+      } catch (err) {
+        console.error("[admin/trip-requests] Reveal notification failed:", err);
+      }
     } else if (nextStatus === "CANCELLED") {
       sendTripCancelled(tripRequest.id, tripRequest.userId);
     } else if (nextStatus === "COMPLETED") {

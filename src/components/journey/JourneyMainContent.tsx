@@ -56,6 +56,7 @@ import { useStore } from "@/store/store";
 import { useUserStore } from "@/store/slices/userStore";
 import { cn } from "@/lib/utils";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { getBookingTimeZoneInputs } from "@/lib/helpers/tripTimeZone";
 import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 
 interface JourneyMainContentLabels {
@@ -311,6 +312,7 @@ export default function JourneyMainContent({
       ...(tripperSlug ? { tripper: tripperSlug } : {}),
     };
     const { originCountry, originCity } = tripPayload;
+    const timeZoneInputs = getBookingTimeZoneInputs({ countryName: originCountry });
     if (!originCountry || !originCity) {
       toast.error("Completá ciudad y país de origen para continuar.");
       return;
@@ -330,7 +332,7 @@ export default function JourneyMainContent({
       const res = await fetch("/api/trip-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tripPayload),
+        body: JSON.stringify({ ...tripPayload, ...timeZoneInputs }),
       });
       const data = await res.json();
       if (!res.ok) {

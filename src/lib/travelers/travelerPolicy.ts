@@ -1,3 +1,6 @@
+import { getDepartureAt } from "@/lib/helpers/getRevealCountdown";
+import type { TripTiming } from "@/types/core";
+
 /** Elapsed-time cutoffs, not calendar-day rounding. */
 export const ROSTER_CUTOFF_MS = 7 * 24 * 60 * 60 * 1000;
 export const XSED_ROSTER_CUTOFF_MS = 72 * 60 * 60 * 1000;
@@ -6,6 +9,11 @@ export function rosterCutoffMs(type?: string): number {
   return type?.trim().toLowerCase() === "xsed"
     ? XSED_ROSTER_CUTOFF_MS
     : ROSTER_CUTOFF_MS;
+}
+
+/** Instant populated roster fields become protected: departure (local midnight) minus the type's cutoff. */
+export function getRosterCutoffAt(trip: TripTiming & { type?: string }): Date {
+  return new Date(getDepartureAt(trip).getTime() - rosterCutoffMs(trip.type));
 }
 
 export function isTravelerFieldFilled(

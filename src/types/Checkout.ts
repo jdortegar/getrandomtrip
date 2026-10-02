@@ -19,6 +19,8 @@ export interface CheckoutTripFromApi {
   originCountry: string;
   originCity: string;
   startDate: string | null;
+  /** IANA zone the start date is interpreted in; null on legacy trips (Buenos Aires). */
+  departureTimeZone?: string | null;
   endDate: string | null;
   nights: number;
   pax: number;

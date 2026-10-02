@@ -85,6 +85,7 @@ function candidate(overrides: {
   invitedAt?: Date | null;
   startDate?: Date | null;
   endDate?: Date | null;
+  departureTimeZone?: string | null;
 } = {}) {
   const {
     id = "trav-1",
@@ -92,8 +93,9 @@ function candidate(overrides: {
     invitedAt = new Date(NOW.getTime() - 4 * DAY_MS),
     startDate = new Date(NOW.getTime() + 20 * DAY_MS),
     endDate = new Date(NOW.getTime() + 24 * DAY_MS),
+    departureTimeZone = "UTC",
   } = overrides;
-  return { id, email, invitedAt, tripRequest: { startDate, endDate } };
+  return { id, email, invitedAt, tripRequest: { startDate, endDate, departureTimeZone } };
 }
 
 function mockCandidates(...rows: ReturnType<typeof candidate>[]) {
@@ -152,28 +154,25 @@ describe("runPass1", () => {
     expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("due", "t");
   });
 
-  it("is due 24h before departure when that comes first", async () => {
+  it("is due 24h before local-midnight departure in the trip's zone, not UTC midnight", async () => {
+    const now = new Date("2026-09-30T05:00:00.000Z");
+    const invitedAt = new Date(now.getTime() - HOUR_MS);
+    const endDate = new Date("2026-10-03T00:00:00Z");
+    const start = new Date("2026-10-01T00:00:00Z");
     mockCandidates(
-      candidate({
-        id: "soon",
-        invitedAt: new Date(NOW.getTime() - HOUR_MS),
-        startDate: new Date(NOW.getTime() + 24 * HOUR_MS),
-        endDate: new Date(NOW.getTime() + 2 * DAY_MS),
-      }),
-      candidate({
-        id: "not-yet",
-        invitedAt: new Date(NOW.getTime() - HOUR_MS),
-        startDate: new Date(NOW.getTime() + 24 * HOUR_MS + 1000),
-        endDate: new Date(NOW.getTime() + 2 * DAY_MS),
-      }),
+      // Oct 1 00:00 Tokyo (UTC+9) = 09-30T15:00Z -> 24h mark 09-29T15:00Z: due.
+      candidate({ id: "tokyo", invitedAt, startDate: start, endDate, departureTimeZone: "Asia/Tokyo" }),
+      // Oct 1 00:00 Los Angeles (UTC-7) = 10-01T07:00Z -> mark 09-30T07:00Z: not yet (UTC midnight would say due).
+      candidate({ id: "la", invitedAt, startDate: start, endDate, departureTimeZone: "America/Los_Angeles" }),
     );
     (issueTravelerInvite as ReturnType<typeof vi.fn>).mockResolvedValue("t");
 
     const mod = (await import("../passes")) as PassesModule;
-    const result = await mod.runPass1(NOW);
+    const result = await mod.runPass1(now);
 
     expect(result.reminded).toBe(1);
-    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("soon", "t");
+    expect(deliverTravelerReminderEmail).toHaveBeenCalledWith("tokyo", "t");
+    expect(deliverTravelerReminderEmail).not.toHaveBeenCalledWith("la", "t");
   });
 
   it("still reminds after the details cutoff while the trip has not ended", async () => {
@@ -282,33 +281,69 @@ describe("runPass1", () => {
 
 // ── Pass 2 ─────────────────────────────────────────────────────────────────────
 describe("runPass2", () => {
-  it("stamps travelersLockedAt for paid trips at/after the cutoff threshold", async () => {
-    (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mockResolvedValue({
-      count: 2,
-    });
+  const lockCandidate = (id: string, type: string, startDate: string, departureTimeZone: string | null) => ({
+    id,
+    type,
+    startDate: new Date(startDate),
+    departureTimeZone,
+  });
+
+  it("stamps travelersLockedAt only for trips whose exact cutoff has passed and that have not departed", async () => {
+    // now = Wed 2026-09-30 03:00Z. XSED Sat Oct 3 BA: cutoff 09-30T03:00Z (reached, stamp).
+    // XSED Sat Oct 3 Madrid: cutoff 09-29T22:00Z (reached). XSED Sat Oct 3 Tokyo: departure 10-02T15:00Z, cutoff 09-29T15:00Z (reached).
+    // XSED Sat Oct 3 Los Angeles: departure 10-03T07:00Z, cutoff 09-30T07:00Z (NOT reached).
+    // Standard Oct 3 BA: cutoff 7d earlier 09-26T03:00Z (reached). Standard Oct 10 BA: cutoff 10-03T03:00Z (not yet).
+    // XSED Sep 30 BA: departed at 09-30T03:00Z == now (not stamped).
+    (prisma.tripRequest.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      lockCandidate("xsed-ba", "xsed", "2026-10-03T00:00:00Z", "America/Argentina/Buenos_Aires"),
+      lockCandidate("xsed-madrid", "xsed", "2026-10-03T00:00:00Z", "Europe/Madrid"),
+      lockCandidate("xsed-tokyo", "xsed", "2026-10-03T00:00:00Z", "Asia/Tokyo"),
+      lockCandidate("xsed-la", "xsed", "2026-10-03T00:00:00Z", "America/Los_Angeles"),
+      lockCandidate("std-ba", "family", "2026-10-03T00:00:00Z", "America/Argentina/Buenos_Aires"),
+      lockCandidate("std-later", "family", "2026-10-10T00:00:00Z", "America/Argentina/Buenos_Aires"),
+      lockCandidate("departed", "xsed", "2026-09-30T00:00:00Z", "America/Argentina/Buenos_Aires"),
+      lockCandidate("legacy-null", "xsed", "2026-10-03T00:00:00Z", null),
+    ]);
+    (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 5 });
 
     const mod = (await import("../passes")) as PassesModule;
-    const now = new Date();
+    const now = new Date("2026-09-30T03:00:00Z");
     const result = await mod.runPass2(now);
 
-    expect(result.locked).toBe(2);
-    expect(prisma.tripRequest.updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: expect.objectContaining({
-          travelersLockedAt: null,
-        }),
-        data: { travelersLockedAt: now },
-      }),
-    );
+    expect(result.locked).toBe(5);
+    const call = (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect([...call.where.id.in].sort()).toEqual(["legacy-null", "std-ba", "xsed-ba", "xsed-madrid", "xsed-tokyo"]);
+    expect(call.where.travelersLockedAt).toBeNull();
+    expect(call.data).toEqual({ travelersLockedAt: now });
+  });
+
+  it("queries a conservatively widened startDate window per product", async () => {
+    const mod = (await import("../passes")) as PassesModule;
+    const now = new Date("2026-09-30T00:00:00Z");
+    await mod.runPass2(now);
+    const { where } = (prisma.tripRequest.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    expect(where.travelersLockedAt).toBeNull();
+    expect(where.OR).toEqual([
+      { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-09-29T00:00:00Z"), lte: new Date("2026-10-04T00:00:00Z") } },
+      { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: new Date("2026-09-29T00:00:00Z"), lte: new Date("2026-10-08T00:00:00Z") } },
+    ]);
+  });
+
+  it("does not write when no candidate has reached its cutoff", async () => {
+    const mod = (await import("../passes")) as PassesModule;
+    const result = await mod.runPass2(new Date("2026-09-30T00:00:00Z"));
+    expect(result.locked).toBe(0);
+    expect(prisma.tripRequest.updateMany).not.toHaveBeenCalled();
   });
 
   it("is idempotent via the travelersLockedAt: null guard (count 0 when already locked)", async () => {
-    (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mockResolvedValue({
-      count: 0,
-    });
+    (prisma.tripRequest.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+      lockCandidate("xsed-ba", "xsed", "2026-10-03T00:00:00Z", "America/Argentina/Buenos_Aires"),
+    ]);
+    (prisma.tripRequest.updateMany as ReturnType<typeof vi.fn>).mockResolvedValue({ count: 0 });
 
     const mod = (await import("../passes")) as PassesModule;
-    const result = await mod.runPass2(new Date());
+    const result = await mod.runPass2(new Date("2026-09-30T04:00:00Z"));
 
     expect(result.locked).toBe(0);
   });
@@ -327,14 +362,4 @@ describe("POST /api/internal/traveler-reminder — response contract", () => {
       errors: expect.any(Array),
     });
   });
-});
-
-it("uses separate XSED 72h and standard 7d cutoff predicates in the cutoff-lock pass", async () => {
-  const mod = await import("../passes");
-  const now = new Date("2026-09-30T00:00:00Z");
-  await mod.runPass2(now);
-  expect(prisma.tripRequest.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ OR: [
-    { type: { equals: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-03T00:00:00Z") } },
-    { type: { not: "xsed", mode: "insensitive" }, startDate: { gt: now, lte: new Date("2026-10-07T00:00:00Z") } },
-  ] }) }));
 });

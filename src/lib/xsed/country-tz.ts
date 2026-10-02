@@ -98,3 +98,13 @@ export function timezoneToCountry(timezone: string | null): string | null {
     ? TIMEZONE_COUNTRY[timezone]!
     : null;
 }
+
+/**
+ * True when the country spans timezones with different offsets, so its primary
+ * zone is only a best guess. Argentina's provincial zones all share UTC-3, so
+ * Buenos Aires is exact for every Argentine departure.
+ */
+export function isMultiTimezoneCountry(country: string): boolean {
+  const code = country.trim().toUpperCase();
+  return code !== "AR" && Object.hasOwn(ADDITIONAL_COUNTRY_TIMEZONES, code);
+}

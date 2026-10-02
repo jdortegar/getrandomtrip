@@ -110,7 +110,13 @@ export default function CheckoutResultSuccess({
     : "/videos/hero-video-1.mp4";
   const revealCountdown =
     tripData?.trip.startDate != null
-      ? getRevealCountdown(new Date(tripData.trip.startDate), new Date())
+      ? getRevealCountdown(
+          {
+            startDate: new Date(tripData.trip.startDate),
+            departureTimeZone: tripData.trip.departureTimeZone,
+          },
+          new Date(),
+        )
       : null;
   const typeCard = tripData
     ? getCardForType(tripData.trip.type, safeLocale)

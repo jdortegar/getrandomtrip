@@ -26,6 +26,7 @@ import {
   NON_TERMINAL_TRIP_STATUSES,
   tripFamilyOf,
 } from "@/lib/db/tripRequest";
+import { resolveDepartureTimeZone } from "@/lib/helpers/tripTimeZone";
 import { Prisma, TripRequestStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -53,6 +54,20 @@ function hasBodyKey(body: Record<string, unknown>, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(body, key);
 }
 
+/** True when the client sent any input the departure zone can be resolved from. */
+function hasTimeZoneInput(body: Record<string, unknown>): boolean {
+  return hasBodyKey(body, "originCountryCode") || hasBodyKey(body, "browserTimeZone");
+}
+
+function resolveBodyTimeZone(body: Record<string, unknown>): string {
+  return resolveDepartureTimeZone({
+    originCountryCode:
+      typeof body.originCountryCode === "string" ? body.originCountryCode : null,
+    browserTimeZone:
+      typeof body.browserTimeZone === "string" ? body.browserTimeZone : null,
+  });
+}
+
 function buildTripRequestPartialUpdate(
   body: Record<string, unknown>,
   paxDetailsPayload:
@@ -76,6 +91,9 @@ function buildTripRequestPartialUpdate(
   }
   if (hasBodyKey(body, "originCity")) {
     data.originCity = String(body.originCity);
+  }
+  if (hasTimeZoneInput(body)) {
+    data.departureTimeZone = resolveBodyTimeZone(body);
   }
   if (hasBodyKey(body, "startDate")) {
     data.startDate =
@@ -149,6 +167,7 @@ type TripRequestCreateFields = {
   level: string;
   originCountry: string;
   originCity: string;
+  departureTimeZone: string;
   startDate: Date | null;
   endDate: Date | null;
   nights: number;
@@ -223,6 +242,7 @@ async function buildTripRequestCreateFields(
     level: xsedParty ? getCheckoutLevel({ type: "xsed", level: String(level), pax: xsedParty.adults + xsedParty.minors }) : level as string,
     originCountry: originCountry as string,
     originCity: originCity as string,
+    departureTimeZone: resolveBodyTimeZone(body),
     startDate: resolvedStartDate,
     endDate: resolvedEndDate,
     nights: (typeof nights === "number" ? nights : Number(nights)) || 1,
@@ -512,7 +532,13 @@ export async function POST(request: NextRequest) {
     let tripRequest;
     let statusCode: 200 | 201;
     if (active) {
-      const updateData = { ...fields, tripperId: active.tripperId ?? resolvedTripperId };
+      // A reused row keeps its stored zone unless the client sent zone inputs.
+      const { departureTimeZone, ...reusedFields } = fields;
+      const updateData = {
+        ...reusedFields,
+        ...(hasTimeZoneInput(body) ? { departureTimeZone } : {}),
+        tripperId: active.tripperId ?? resolvedTripperId,
+      };
       await invalidateCheckoutForEdit(active.payment, checkoutPriceInputsChanged(active, updateData));
       console.log("Updating active trip request for family:", family, active.id);
       tripRequest = await prisma.tripRequest.update({
