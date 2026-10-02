@@ -28,6 +28,7 @@ it.each([
   ["tripper since", () => import("../backfill-tripper-since")],
   ["duplicate cleanup", () => import("../cleanup-duplicate-trip-requests")],
   ["companion invites", () => import("../backfill-companion-invites")],
+  ["departure time zone", () => import("../backfill-departure-time-zone")],
 ] as const)(
   "imports %s without environment or database side effects",
   async (_, load) => {
