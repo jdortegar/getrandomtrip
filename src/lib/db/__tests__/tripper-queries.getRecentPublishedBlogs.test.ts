@@ -102,12 +102,13 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     expect(result).toEqual([]);
   });
 
-  it("limits traveler-type cards to posts tagged with that type", async () => {
-    await getPublishedBlogsForTravelType("solo", 6, "es");
+  it("loads every published post tagged with a travel type", async () => {
+    await getPublishedBlogsForTravelType("group", "es");
 
     const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
-    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
-    expect(findManyArgs.take).toBe(6);
+    expect(findManyArgs.where.travelType).toEqual({ has: "group" });
+    expect(findManyArgs.take).toBeUndefined();
+    expect(findManyArgs.select.content).toBe(true);
   });
 });

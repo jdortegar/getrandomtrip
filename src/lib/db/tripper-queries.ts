@@ -1096,7 +1096,7 @@ async function queryPublishedBlogs({
   travelType,
 }: {
   authorId?: string;
-  limit: number;
+  limit?: number;
   locale?: "es" | "en";
   travelType?: string;
 }) {
@@ -1121,7 +1121,7 @@ async function queryPublishedBlogs({
         id: true,
         slug: true,
         title: true,
-        content: true,
+        ...(travelType ? { content: true } : {}),
         translations: true,
         subtitle: true,
         coverUrl: true,
@@ -1129,7 +1129,7 @@ async function queryPublishedBlogs({
         publishedAt: true,
       },
       orderBy: { publishedAt: "desc" },
-      take: limit,
+      ...(typeof limit === "number" ? { take: limit } : {}),
     });
 
     const fallbackCategory = BLOG_CATEGORY_FALLBACK[locale];
@@ -1167,13 +1167,12 @@ export async function getRecentPublishedBlogs(
   return queryPublishedBlogs({ limit, locale });
 }
 
-/** Published posts tagged for a traveler-type page, newest first. */
+/** Every published post tagged for a traveler type, newest first. */
 export async function getPublishedBlogsForTravelType(
   travelType: string,
-  limit: number = 6,
   locale: "es" | "en" = "es",
 ) {
-  return queryPublishedBlogs({ limit, locale, travelType });
+  return queryPublishedBlogs({ locale, travelType });
 }
 
 /**

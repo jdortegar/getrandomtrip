@@ -1,3 +1,4 @@
+import { travelerStorySlugs } from "@/lib/blog/travelerStories";
 import { availableBlogLocales } from "@/lib/seo/blogLocales";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
@@ -100,6 +101,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       )
       .map((t) => [t.tripperSlug, t.updatedAt]),
   );
+
+  for (const slug of travelerStorySlugs()) {
+    entries.push(
+      ...toSitemapEntries(`blog/${slug}`, {
+        changeFrequency: "monthly",
+        priority: 0.6,
+      }),
+    );
+  }
 
   for (const post of blogPosts) {
     const slug = post.slug ?? post.id;

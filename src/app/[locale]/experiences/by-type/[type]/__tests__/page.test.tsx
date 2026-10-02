@@ -6,11 +6,8 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 const getReviewsForTripTypeMock = vi.fn();
 const getPublishedBlogsForTravelTypeMock = vi.fn();
 vi.mock("@/lib/db/tripper-queries", () => ({
-  getPublishedBlogsForTravelType: (
-    travelType: string,
-    limit: number,
-    locale: string,
-  ) => getPublishedBlogsForTravelTypeMock(travelType, limit, locale),
+  getPublishedBlogsForTravelType: (travelType: string, locale: string) =>
+    getPublishedBlogsForTravelTypeMock(travelType, locale),
   getReviewsForTripType: (tripType: string) =>
     getReviewsForTripTypeMock(tripType),
 }));
@@ -118,38 +115,69 @@ describe("TravelerTypePage — parallel data fetching (review finding #10)", () 
     expect(element).toBeTruthy();
   });
 
-  it("links the solo blog section to published posts instead of /blog/solo", async () => {
+  it("keeps the solo, couple, and group cards and points them at their articles", async () => {
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+
+    const solo = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "solo" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const couple = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "couple" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const group = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "group" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+
+    expect(solo).toContain("Viajar Solo: La Mejor Decisión que Puedes Tomar");
+    expect(solo).toContain("/blog/viajar-solo-la-mejor-decision");
+    expect(solo).not.toContain("/blog/solo");
+    expect(couple).toContain("/blog/razones-para-un-viaje-sorpresa-en-pareja");
+    expect(couple).not.toContain("/blogs/couple");
+    expect(group).toContain("10 momentos que solo pasan viajando en grupo");
+    expect(group).toContain("/blog/momentos-que-solo-pasan-viajando-en-grupo");
+    expect(group).not.toContain("/blogs/group");
+  });
+
+  it("appends published posts for that travel type after the story cards", async () => {
     getDictionaryMock.mockResolvedValue(FAKE_DICT);
     getReviewsForTripTypeMock.mockResolvedValue([]);
     getPublishedBlogsForTravelTypeMock.mockResolvedValue([
       {
         category: "Viajes",
-        href: "/blog/cabo-polonio",
+        href: "/blog/momentos-que-solo-pasan-viajando-en-grupo",
+        image: "/cover-story.jpg",
+        title: "Duplicate story",
+      },
+      {
+        category: "Viajes",
+        href: "/blog/alto-paraiso-de-goias",
         image: "/cover.jpg",
-        title: "Cabo Polonio",
+        title: "Alto Paraíso de Goiás",
       },
     ]);
 
-    const element = await TravelerTypePage({
-      params: Promise.resolve({ locale: "es", type: "solo" }),
-      searchParams: Promise.resolve({ catalog: "randomtrip" }),
-    });
-    const markup = JSON.stringify(element);
+    const markup = JSON.stringify(
+      await TravelerTypePage({
+        params: Promise.resolve({ locale: "es", type: "group" }),
+        searchParams: Promise.resolve({ catalog: "randomtrip" }),
+      }),
+    );
+    const storyAt = markup.indexOf("/blog/momentos-que-solo-pasan-viajando-en-grupo");
+    const publishedAt = markup.indexOf("/blog/alto-paraiso-de-goias");
 
-    expect(getPublishedBlogsForTravelTypeMock).toHaveBeenCalledWith("solo", 6, "es");
-    expect(markup).toContain("/blog/cabo-polonio");
-    expect(markup).not.toContain("/blog/solo");
-  });
-
-  it("sends placeholder solo cards to the blog index when no published posts match", async () => {
-    getDictionaryMock.mockResolvedValue(FAKE_DICT);
-    getReviewsForTripTypeMock.mockResolvedValue([]);
-
-    const element = await TravelerTypePage({
-      params: Promise.resolve({ locale: "es", type: "solo" }),
-      searchParams: Promise.resolve({ catalog: "randomtrip" }),
-    });
-
-    expect(JSON.stringify(element)).not.toContain("/blog/solo");
+    expect(getPublishedBlogsForTravelTypeMock).toHaveBeenCalledWith("group", "es");
+    expect(storyAt).toBeGreaterThan(-1);
+    expect(publishedAt).toBeGreaterThan(storyAt);
+    expect(markup).not.toContain("Duplicate story");
   });
 });

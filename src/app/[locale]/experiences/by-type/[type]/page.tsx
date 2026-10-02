@@ -93,7 +93,7 @@ export default async function TravelerTypePage(props: {
       : readAttributionSlug().then((slug) => resolveLiveAttribution(slug)),
     getDictionary(locale),
     getReviewsForTripType(typeData.meta.slug),
-    getPublishedBlogsForTravelType(typeData.meta.slug, 6, locale),
+    getPublishedBlogsForTravelType(typeData.meta.slug, locale),
   ]);
   const priceOverrides = getEffectiveTripperPriceOverrides(
     tripperContext,
@@ -102,14 +102,15 @@ export default async function TravelerTypePage(props: {
 
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
   const blogHref = pathForLocale(locale, "/blog");
-  const blogPosts =
-    publishedBlogs.length > 0
-      ? publishedBlogs
-      : typeData.blog.posts.map((post) => ({ ...post, href: "/blog" }));
+  const storyHrefs = new Set(typeData.blog.posts.map((post) => post.href));
+  const blogPosts = [
+    ...typeData.blog.posts,
+    ...publishedBlogs.filter((post) => !storyHrefs.has(post.href)),
+  ];
   const viewAll = typeData.blog.viewAll
     ? {
         ...typeData.blog.viewAll,
-        href: blogHref,
+        href: pathForLocale(locale, typeData.blog.viewAll.href),
       }
     : undefined;
 
