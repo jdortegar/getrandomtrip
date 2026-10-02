@@ -30,6 +30,8 @@ export interface Trip {
     createdAt?: string;
     status: string;
   };
+  /** Viewer's relation to the trip; companions never receive `payment`. */
+  viewerRole?: "buyer" | "companion";
 }
 
 export interface Payment {
@@ -157,7 +159,22 @@ export function mapTripFromApi(raw: unknown): Trip {
           status: String(payment.status ?? ""),
         }
       : undefined,
+    viewerRole:
+      trip.role === "buyer" || trip.role === "companion" ? trip.role : undefined,
   };
+}
+
+/**
+ * True when the viewer still owes payment for this trip. Companion trips are
+ * never awaiting payment: a companion is only linked after the buyer's payment
+ * is APPROVED, and the API strips `payment` for them, so a missing payment
+ * there does not mean unpaid.
+ */
+export function isTripAwaitingPayment(trip: Trip): boolean {
+  if (trip.viewerRole === "companion") return false;
+  if (trip.status === "CANCELLED") return false;
+  const status = trip.payment?.status;
+  return status !== "APPROVED" && status !== "COMPLETED";
 }
 
 export async function getTrips(): Promise<Trip[]> {
