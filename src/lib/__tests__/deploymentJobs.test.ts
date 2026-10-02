@@ -28,6 +28,7 @@ vi.mock("@/app/api/internal/trip-start-voucher-email/passes", () => ({
   runPass1: work,
 }));
 const jobs = [
+  "analytics-recap",
   "destination-reveal",
   "document-cleanup",
   "sales-notifications",
