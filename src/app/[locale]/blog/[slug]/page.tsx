@@ -61,6 +61,7 @@ function travelerStoryPost(
     tagline: "",
     tags: story.tags,
     title: story.title,
+    travelType: [story.travelType],
     updatedAt: story.updatedAt,
   };
 }
@@ -90,6 +91,7 @@ const getBlogPost = cache(
         blocks: true,
         faq: true,
         tags: true,
+        travelType: true,
         format: true,
         source: true,
         seo: true,
@@ -126,6 +128,7 @@ const getBlogPost = cache(
       blocks: blog.blocks as unknown as BlogPost["blocks"],
       faq: blog.faq as unknown as BlogPost["faq"],
       tags: blog.tags,
+      travelType: blog.travelType,
       format: blog.format.toLowerCase(),
       source: blog.source,
       seo: blog.seo as BlogPost["seo"],
