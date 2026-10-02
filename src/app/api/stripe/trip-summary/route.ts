@@ -74,6 +74,7 @@ export async function GET(request: NextRequest) {
       pax: trip.pax,
       paxDetails: trip.paxDetails,
       startDate: trip.startDate?.toISOString() ?? null,
+      departureTimeZone: trip.departureTimeZone,
       type: trip.type,
       roster,
     },

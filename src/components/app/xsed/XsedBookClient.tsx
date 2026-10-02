@@ -22,6 +22,7 @@ import { useUserStore } from "@/store/slices/userStore";
 import type { JourneyDetailsStepLabels } from "@/components/journey/JourneyDetailsStep";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 import type { XsedBookDict } from "@/lib/types/dictionary";
+import { getBookingTimeZoneInputs } from "@/lib/helpers/tripTimeZone";
 import type { XsedTravelType } from "@/types/core";
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -170,6 +171,7 @@ export function XsedBookClient({
           level: travelType,
           originCountry,
           originCity,
+          ...getBookingTimeZoneInputs({ countryCode: originCountryCode, countryName: originCountry }),
           pax,
           paxDetails: paxDetailsFromTotalPax(pax),
           startDate: toISODate(saturday),
@@ -197,7 +199,7 @@ export function XsedBookClient({
     } finally {
       setIsSaving(false);
     }
-  }, [originCity, originCountry, pax, travelType, locale, router, session, sessionStatus, experienceId, saturday, sunday]);
+  }, [originCity, originCountry, originCountryCode, pax, travelType, locale, router, session, sessionStatus, experienceId, saturday, sunday]);
 
   return (
     <div className="min-h-screen bg-ground" data-component="XsedBookClient">

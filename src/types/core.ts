@@ -313,3 +313,23 @@ export interface DropEntry {
   /** Detail shown next to SOLD OUT, e.g. "EN 10 MINUTOS" */
   soldOutDetail?: string;
 }
+
+/** Wall-clock fields in some IANA zone; month is 1-12. */
+export interface LocalDateTime {
+  year: number;
+  month: number;
+  day: number;
+  hour?: number;
+  minute?: number;
+}
+
+/**
+ * What the departure-relative deadline helpers need from a trip.
+ * `startDate` is a calendar date stored at UTC midnight; `departureTimeZone`
+ * is the IANA zone that calendar date is interpreted in (null on legacy rows
+ * falls back to Buenos Aires).
+ */
+export interface TripTiming {
+  startDate: Date;
+  departureTimeZone?: string | null;
+}

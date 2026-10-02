@@ -1,12 +1,16 @@
 /**
- * getRevealCountdown — pure countdown helper for the destination reveal flow.
+ * Trip clock helpers for the destination reveal flow.
  *
- * The reveal window opens 48 hours before the trip's startDate.
- * All math is in UTC. Callers pass a fixed `now` so the function is
- * deterministic and unit-testable without mocking Date.
+ * Trip dates are calendar dates stored at UTC midnight. Every deadline is
+ * anchored to the trip's departure zone: departure is 00:00 of the start
+ * calendar date there, and the reveal opens at 09:00 local two calendar days
+ * before. Callers pass a fixed `now` so each function is deterministic.
  */
+import { localTimeToUtc, DEFAULT_DEPARTURE_TIME_ZONE } from "@/lib/helpers/tripTimeZone";
+import type { TripTiming } from "@/types/core";
 
-const REVEAL_OFFSET_MS = 48 * 60 * 60 * 1000; // 48h in ms
+const REVEAL_LOCAL_HOUR = 9;
+const REVEAL_DAYS_BEFORE_DEPARTURE = 2;
 
 export interface RevealCountdown {
   revealed: boolean;
@@ -43,62 +47,68 @@ function countdownTo(target: Date, now: Date): Countdown {
   return { elapsed: false, days, hours, minutes, seconds };
 }
 
-/**
- * Returns the Date at which the destination will be revealed
- * (startDate minus 48 hours, in UTC).
- */
-export function getRevealAt(startDate: Date): Date {
-  return new Date(startDate.getTime() - REVEAL_OFFSET_MS);
+function zoneOf(trip: TripTiming): string {
+  return trip.departureTimeZone || DEFAULT_DEPARTURE_TIME_ZONE;
 }
 
-/**
- * Returns the first admin assignment reminder instant, 72h before reveal.
- */
-export function getNotifyAt(startDate: Date): Date {
-  return new Date(getRevealAt(startDate).getTime() - 72 * 60 * 60 * 1000);
+/** 00:00 of the trip's start calendar date (UTC date part) in its departure zone. */
+export function getDepartureAt(trip: TripTiming): Date {
+  const { startDate } = trip;
+  return localTimeToUtc(
+    {
+      year: startDate.getUTCFullYear(),
+      month: startDate.getUTCMonth() + 1,
+      day: startDate.getUTCDate(),
+    },
+    zoneOf(trip),
+  );
 }
 
-/**
- * Returns true when `now` is inside the 48h reveal window
- * (i.e. startDate - 48h <= now < startDate).
- */
-export function isInRevealWindow(startDate: Date, now: Date): boolean {
-  const revealAt = getRevealAt(startDate);
-  return now >= revealAt && now < startDate;
+/** 09:00 departure-local on the calendar day two days before departure. */
+export function getRevealAt(trip: TripTiming): Date {
+  const { startDate } = trip;
+  return localTimeToUtc(
+    {
+      year: startDate.getUTCFullYear(),
+      month: startDate.getUTCMonth() + 1,
+      day: startDate.getUTCDate() - REVEAL_DAYS_BEFORE_DEPARTURE,
+      hour: REVEAL_LOCAL_HOUR,
+    },
+    zoneOf(trip),
+  );
 }
 
-/**
- * Returns true during the 72h assignment-reminder window before reveal.
- */
-export function isInNotifyWindow(startDate: Date, now: Date): boolean {
-  const notifyAt = getNotifyAt(startDate);
-  return now >= notifyAt && now < getRevealAt(startDate);
+/** First admin assignment reminder instant, 72h before reveal. */
+export function getNotifyAt(trip: TripTiming): Date {
+  return new Date(getRevealAt(trip).getTime() - 72 * 60 * 60 * 1000);
 }
 
-/**
- * Computes the countdown until the reveal moment (startDate - 48h).
- *
- * @param startDate - The trip's departure date (UTC)
- * @param now       - The current moment (pass a fixed value for testing)
- * @returns         - `{ revealed: true }` once the window has opened,
- *                   or the remaining days/hours/minutes/seconds otherwise.
- */
+/** True from the reveal moment (inclusive) until departure. */
+export function isInRevealWindow(trip: TripTiming, now: Date): boolean {
+  return now >= getRevealAt(trip) && now < getDepartureAt(trip);
+}
+
+/** True during the 72h assignment-reminder window before reveal. */
+export function isInNotifyWindow(trip: TripTiming, now: Date): boolean {
+  return now >= getNotifyAt(trip) && now < getRevealAt(trip);
+}
+
+/** Countdown until the reveal moment. */
 export function getRevealCountdown(
-  startDate: Date,
+  trip: TripTiming,
   now: Date,
 ): RevealCountdown {
-  const { elapsed, ...rest } = countdownTo(getRevealAt(startDate), now);
+  const { elapsed, ...rest } = countdownTo(getRevealAt(trip), now);
   return { revealed: elapsed, ...rest };
 }
 
 /**
- * Countdown to departure itself (`startDate`) — a different axis than
- * `getRevealCountdown`, which counts down to the reveal moment (48h before
- * departure). `elapsed: true` once the trip has started. Composes
- * `countdownTo` rather than re-expressing the arithmetic (design.md ADR-5).
+ * Countdown to departure itself (local midnight of the start date) — a
+ * different axis than `getRevealCountdown`. `elapsed: true` once the trip has
+ * started. Composes `countdownTo` (design.md ADR-5).
  */
-export function getDepartureCountdown(startDate: Date, now: Date): Countdown {
-  return countdownTo(startDate, now);
+export function getDepartureCountdown(trip: TripTiming, now: Date): Countdown {
+  return countdownTo(getDepartureAt(trip), now);
 }
 
 /**

@@ -211,3 +211,12 @@ A one-off script MUST identify, per `userId` + family, every group of more than 
 ## Schema Delta
 
 None. No migration in this change (proposal decision #4).
+
+
+### Requirement: Reveal Timing and Notification
+
+Trip start/end dates are calendar dates stored at UTC midnight. `TripRequest.departureTimeZone` (IANA, resolved at booking from the origin country code, else the browser timezone, else `America/Argentina/Buenos_Aires`; NULL on legacy rows reads as Buenos Aires) is the zone those dates are interpreted in. `getDepartureAt(trip)` MUST be 00:00 of the UTC calendar date of `startDate` in that zone, and `getRevealAt(trip)` MUST be 09:00 local on the calendar day two days before departure. Every departure-relative deadline (roster cutoff, buyer details reminder, companion reminder, reveal, assignment reminders, countdown UI) MUST use these helpers; Prisma candidate windows MAY be widened by a day and MUST be re-filtered in memory with the exact helper.
+
+#### Scenario: Saturday trip from Argentina
+- GIVEN a trip starting Sat 2026-10-03 with `departureTimeZone: "America/Argentina/Buenos_Aires"`
+- THEN it reveals Thu 2026-10-01 09:00 ART and an XSED roster locks Wed 2026-09-30 00:00 ART

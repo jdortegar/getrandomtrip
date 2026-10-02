@@ -11,7 +11,8 @@ import { prisma } from "@/lib/prisma";
 import { sendTravelerDetailsReminder } from "@/lib/email/sendTravelerDetailsReminder";
 import { runBuyerReminder } from "../buyerReminder";
 
-const now = new Date("2026-09-30T00:00:00Z");
+// Departure Sat 2026-10-03 00:00 ART = 03:00Z; the 72h boundary is Wed 2026-09-30 03:00Z.
+const now = new Date("2026-09-30T03:00:00Z");
 const startDate = new Date("2026-10-03T00:00:00Z");
 function trip() {
   return {
@@ -19,6 +20,7 @@ function trip() {
     type: "xsed",
     status: "CONFIRMED",
     startDate,
+    departureTimeZone: "America/Argentina/Buenos_Aires" as string | null,
     payment: { status: "APPROVED" },
     paxDetails: { adults: 2 },
     user: { email: "buyer@example.com", locale: "en" },
@@ -98,6 +100,17 @@ describe("automatic XSED buyer reminder", () => {
     expect(record.travelerDetailsReminderSentAt).toEqual(now);
     expect(await runBuyerReminder(now)).toEqual({ reminded: 0, failed: 0 });
     expect(sendTravelerDetailsReminder).toHaveBeenCalledTimes(1);
+  });
+  it("measures 72h from local-midnight departure in the trip's own zone", async () => {
+    record.departureTimeZone = "Europe/Madrid"; // departure 2026-10-02T22:00Z, boundary 2026-09-29T22:00Z
+    expect(await runBuyerReminder(new Date("2026-09-29T21:59:59.999Z"))).toEqual({ reminded: 0, failed: 0 });
+    expect(await runBuyerReminder(new Date("2026-09-29T22:00:00Z"))).toEqual({ reminded: 1, failed: 0 });
+  });
+  it("widens the candidate query conservatively so zones east and west of UTC are not missed", async () => {
+    await runBuyerReminder(now);
+    const { where } = vi.mocked(prisma.tripRequest.findMany).mock.calls[0][0] as any;
+    expect(where.startDate.gt.getTime()).toBeLessThanOrEqual(now.getTime() - 12 * 3_600_000);
+    expect(where.startDate.lte.getTime()).toBeGreaterThanOrEqual(now.getTime() + 72 * 3_600_000 + 14 * 3_600_000);
   });
   it("catches up after a missed hourly run but before departure", async () => {
     expect(

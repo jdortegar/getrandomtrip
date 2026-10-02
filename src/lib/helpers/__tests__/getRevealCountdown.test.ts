@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  getDepartureAt,
   getRevealAt,
   getNotifyAt,
   isInRevealWindow,
@@ -9,193 +10,138 @@ import {
   getCalendarDaysUntilDeparture,
 } from "../getRevealCountdown";
 
-// Fixed reference: startDate is 2025-07-01T12:00:00.000Z
-const START_DATE = new Date("2025-07-01T12:00:00.000Z");
-// revealAt = 2025-06-29T12:00:00.000Z  (startDate - 48h)
-// notifyAt = 2025-06-26T12:00:00.000Z  (revealAt - 72h)
+const BA = "America/Argentina/Buenos_Aires";
+// Trip dates are calendar dates stored at UTC midnight: Sat 2026-10-03.
+const TRIP = { startDate: new Date("2026-10-03T00:00:00.000Z"), departureTimeZone: BA };
+// departureAt = 2026-10-03T03:00Z (00:00 ART)
+// revealAt    = 2026-10-01T12:00Z (Thu 09:00 ART)
+// notifyAt    = 2026-09-28T12:00Z (revealAt - 72h)
+const REVEAL_AT = new Date("2026-10-01T12:00:00.000Z");
+const DEPARTURE_AT = new Date("2026-10-03T03:00:00.000Z");
 
-describe("getRevealAt", () => {
-  it("returns startDate minus 48 hours", () => {
-    const result = getRevealAt(START_DATE);
-    const expected = new Date("2025-06-29T12:00:00.000Z");
-    expect(result.getTime()).toBe(expected.getTime());
+describe("getDepartureAt", () => {
+  it("is 00:00 of the start calendar date in the departure zone", () => {
+    expect(getDepartureAt(TRIP)).toEqual(DEPARTURE_AT);
   });
 
-  it("triangulation — different start date", () => {
-    const start = new Date("2025-01-05T00:00:00.000Z");
-    const result = getRevealAt(start);
-    const expected = new Date("2025-01-03T00:00:00.000Z");
-    expect(result.getTime()).toBe(expected.getTime());
+  it("uses the UTC calendar date of startDate, ignoring the time part", () => {
+    expect(
+      getDepartureAt({ startDate: new Date("2026-10-03T21:30:00.000Z"), departureTimeZone: BA }),
+    ).toEqual(DEPARTURE_AT);
+  });
+
+  it("falls back to Buenos Aires when the zone is missing (legacy rows)", () => {
+    expect(getDepartureAt({ startDate: TRIP.startDate })).toEqual(DEPARTURE_AT);
+    expect(getDepartureAt({ startDate: TRIP.startDate, departureTimeZone: null })).toEqual(DEPARTURE_AT);
+  });
+
+  it("follows other zones, including DST", () => {
+    expect(
+      getDepartureAt({ startDate: new Date("2026-10-03T00:00:00Z"), departureTimeZone: "Europe/Madrid" }),
+    ).toEqual(new Date("2026-10-02T22:00:00.000Z"));
+    expect(
+      getDepartureAt({ startDate: new Date("2026-11-02T00:00:00Z"), departureTimeZone: "America/New_York" }),
+    ).toEqual(new Date("2026-11-02T05:00:00.000Z"));
+  });
+});
+
+describe("getRevealAt", () => {
+  it("is 09:00 departure-local two calendar days before departure (Sat trip from AR reveals Thu 09:00 ART)", () => {
+    expect(getRevealAt(TRIP)).toEqual(REVEAL_AT);
+  });
+
+  it("stays 09:00 local across a DST switch between reveal and departure", () => {
+    // Madrid DST ends Sun 2026-10-25 03:00. Trip Mon 2026-10-26 -> reveal Sat 10-24 09:00 CEST (+2).
+    expect(
+      getRevealAt({ startDate: new Date("2026-10-26T00:00:00Z"), departureTimeZone: "Europe/Madrid" }),
+    ).toEqual(new Date("2026-10-24T07:00:00.000Z"));
+  });
+
+  it("crosses month boundaries by calendar day", () => {
+    expect(
+      getRevealAt({ startDate: new Date("2026-11-01T00:00:00Z"), departureTimeZone: BA }),
+    ).toEqual(new Date("2026-10-30T12:00:00.000Z"));
   });
 });
 
 describe("getNotifyAt", () => {
   it("returns revealAt minus 72 hours", () => {
-    const result = getNotifyAt(START_DATE);
-    const expected = new Date("2025-06-26T12:00:00.000Z");
-    expect(result.getTime()).toBe(expected.getTime());
+    expect(getNotifyAt(TRIP)).toEqual(new Date("2026-09-28T12:00:00.000Z"));
   });
 });
 
 describe("isInRevealWindow", () => {
-  it("returns true when now is exactly at revealAt boundary", () => {
-    const revealAt = new Date("2025-06-29T12:00:00.000Z");
-    expect(isInRevealWindow(START_DATE, revealAt)).toBe(true);
+  it("is true from revealAt (inclusive) until departure", () => {
+    expect(isInRevealWindow(TRIP, REVEAL_AT)).toBe(true);
+    expect(isInRevealWindow(TRIP, new Date("2026-10-02T12:00:00.000Z"))).toBe(true);
   });
 
-  it("returns true when now is between revealAt and startDate", () => {
-    const now = new Date("2025-06-30T00:00:00.000Z");
-    expect(isInRevealWindow(START_DATE, now)).toBe(true);
-  });
-
-  it("returns false when now is before revealAt", () => {
-    const now = new Date("2025-06-29T11:59:59.000Z");
-    expect(isInRevealWindow(START_DATE, now)).toBe(false);
-  });
-
-  it("returns false when now is at or after startDate", () => {
-    const now = new Date("2025-07-01T12:00:00.000Z");
-    expect(isInRevealWindow(START_DATE, now)).toBe(false);
+  it("is false before revealAt and from departure on", () => {
+    expect(isInRevealWindow(TRIP, new Date(REVEAL_AT.getTime() - 1000))).toBe(false);
+    expect(isInRevealWindow(TRIP, DEPARTURE_AT)).toBe(false);
   });
 });
 
 describe("isInNotifyWindow", () => {
-  it("returns true when now is exactly at notifyAt boundary", () => {
-    const notifyAt = new Date("2025-06-26T12:00:00.000Z");
-    expect(isInNotifyWindow(START_DATE, notifyAt)).toBe(true);
+  it("is true between notifyAt (inclusive) and revealAt", () => {
+    expect(isInNotifyWindow(TRIP, new Date("2026-09-28T12:00:00.000Z"))).toBe(true);
+    expect(isInNotifyWindow(TRIP, new Date("2026-09-30T00:00:00.000Z"))).toBe(true);
   });
 
-  it("returns true when now is between notifyAt and revealAt", () => {
-    const now = new Date("2025-06-28T00:00:00.000Z");
-    expect(isInNotifyWindow(START_DATE, now)).toBe(true);
-  });
-
-  it("returns false when now is before notifyAt", () => {
-    const now = new Date("2025-06-26T11:59:59.000Z");
-    expect(isInNotifyWindow(START_DATE, now)).toBe(false);
+  it("is false before notifyAt and at revealAt", () => {
+    expect(isInNotifyWindow(TRIP, new Date("2026-09-28T11:59:59.000Z"))).toBe(false);
+    expect(isInNotifyWindow(TRIP, REVEAL_AT)).toBe(false);
   });
 });
 
 describe("getRevealCountdown", () => {
-  it("returns revealed: false with correct days and hours when in the future", () => {
-    // now is 1 day and 6 hours before revealAt
-    // revealAt = 2025-06-29T12:00:00Z
-    // now      = 2025-06-28T06:00:00Z  → 30h before revealAt
-    const now = new Date("2025-06-28T06:00:00.000Z");
-    const result = getRevealCountdown(START_DATE, now);
-
-    expect(result.revealed).toBe(false);
-    expect(result.days).toBe(1);
-    expect(result.hours).toBe(6);
-    expect(result.minutes).toBe(0);
-    expect(result.seconds).toBe(0);
+  it("counts down to the reveal moment", () => {
+    const now = new Date(REVEAL_AT.getTime() - 30 * 3600 * 1000);
+    expect(getRevealCountdown(TRIP, now)).toEqual({
+      revealed: false,
+      days: 1,
+      hours: 6,
+      minutes: 0,
+      seconds: 0,
+    });
   });
 
-  it("returns revealed: true when now is past revealAt", () => {
-    // now is after revealAt (revealAt = 2025-06-29T12:00:00Z)
-    const now = new Date("2025-06-29T13:00:00.000Z");
-    const result = getRevealCountdown(START_DATE, now);
-
-    expect(result.revealed).toBe(true);
-    expect(result.days).toBe(0);
-    expect(result.hours).toBe(0);
-    expect(result.minutes).toBe(0);
-    expect(result.seconds).toBe(0);
+  it("computes minutes and seconds", () => {
+    const now = new Date(REVEAL_AT.getTime() - 90 * 1000);
+    const result = getRevealCountdown(TRIP, now);
+    expect(result).toMatchObject({ revealed: false, minutes: 1, seconds: 30 });
   });
 
-  it("returns revealed: true when now equals revealAt exactly (boundary)", () => {
-    const revealAt = new Date("2025-06-29T12:00:00.000Z");
-    const result = getRevealCountdown(START_DATE, revealAt);
-
-    expect(result.revealed).toBe(true);
-  });
-
-  it("computes minutes and seconds correctly", () => {
-    // now is 90 seconds before revealAt
-    const revealAt = new Date("2025-06-29T12:00:00.000Z");
-    const now = new Date(revealAt.getTime() - 90 * 1000);
-    const result = getRevealCountdown(START_DATE, now);
-
-    expect(result.revealed).toBe(false);
-    expect(result.days).toBe(0);
-    expect(result.hours).toBe(0);
-    expect(result.minutes).toBe(1);
-    expect(result.seconds).toBe(30);
-  });
-
-  it("UTC timezone correctness — same instant, different representations", () => {
-    // Use explicit UTC timestamps to ensure no local-tz contamination
-    const utcStart = new Date(Date.UTC(2025, 11, 25, 0, 0, 0)); // 2025-12-25T00:00:00Z
-    const utcRevealAt = new Date(Date.UTC(2025, 11, 22, 0, 0, 0)); // 2025-12-23T00:00:00Z  (startDate - 72h)
-    // 72h before: 2025-12-22T00:00:00Z → actually revealAt is -48h = 2025-12-23T00:00:00Z
-    const expectedRevealAt = new Date(Date.UTC(2025, 11, 23, 0, 0, 0));
-    const actual = getRevealAt(utcStart);
-    expect(actual.getTime()).toBe(expectedRevealAt.getTime());
-
-    // now = 2h before revealAt
-    const now = new Date(expectedRevealAt.getTime() - 2 * 60 * 60 * 1000);
-    const result = getRevealCountdown(utcStart, now);
-    expect(result.revealed).toBe(false);
-    expect(result.days).toBe(0);
-    expect(result.hours).toBe(2);
-  });
-
-  it("regression: still counts down to startDate − 48h (the reveal moment), not departure — axis unchanged by the countdownTo extraction (ADR-5)", () => {
-    // now is exactly 5 days before startDate, so it is 3 days before revealAt
-    // (revealAt = startDate - 48h). getRevealCountdown must report 3 days,
-    // NOT 5 — if the extraction accidentally moved the axis to departure,
-    // this would silently read 5 instead.
-    const now = new Date(START_DATE.getTime() - 5 * 24 * 60 * 60 * 1000);
-    const result = getRevealCountdown(START_DATE, now);
-
-    expect(result.revealed).toBe(false);
-    expect(result.days).toBe(3);
+  it("is revealed at and after revealAt", () => {
+    expect(getRevealCountdown(TRIP, REVEAL_AT).revealed).toBe(true);
+    expect(getRevealCountdown(TRIP, new Date("2026-10-02T00:00:00Z"))).toEqual({
+      revealed: true,
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    });
   });
 });
 
 describe("getDepartureCountdown", () => {
-  it("returns a positive day count when the departure is in the future", () => {
-    // 5 days before startDate
-    const now = new Date(START_DATE.getTime() - 5 * 24 * 60 * 60 * 1000);
-    const result = getDepartureCountdown(START_DATE, now);
-
+  it("counts down to local-midnight departure, not UTC midnight", () => {
+    const now = new Date(DEPARTURE_AT.getTime() - 5 * 24 * 3600 * 1000);
+    const result = getDepartureCountdown(TRIP, now);
     expect(result.elapsed).toBe(false);
     expect(result.days).toBe(5);
-    expect(result.hours).toBe(0);
   });
 
-  it("marks elapsed: true once now is at or after startDate", () => {
-    const result = getDepartureCountdown(START_DATE, START_DATE);
-    expect(result.elapsed).toBe(true);
+  it("is elapsed from departureAt on and one second before shows 1 second", () => {
+    expect(getDepartureCountdown(TRIP, DEPARTURE_AT).elapsed).toBe(true);
+    const result = getDepartureCountdown(TRIP, new Date(DEPARTURE_AT.getTime() - 1000));
+    expect(result).toEqual({ elapsed: false, days: 0, hours: 0, minutes: 0, seconds: 1 });
   });
 
-  it("marks elapsed: true when now is well past startDate", () => {
-    const now = new Date(START_DATE.getTime() + 3 * 24 * 60 * 60 * 1000);
-    const result = getDepartureCountdown(START_DATE, now);
-    expect(result.elapsed).toBe(true);
-  });
-
-  it("boundary: 1 second before startDate is not yet elapsed and shows 0 days", () => {
-    const now = new Date(START_DATE.getTime() - 1000);
-    const result = getDepartureCountdown(START_DATE, now);
-
-    expect(result.elapsed).toBe(false);
-    expect(result.days).toBe(0);
-    expect(result.hours).toBe(0);
-    expect(result.minutes).toBe(0);
-    expect(result.seconds).toBe(1);
-  });
-
-  it("counts down using the SAME axis regardless of the reveal window (departure, not reveal-at)", () => {
-    // 1 day before startDate — still inside the 48h reveal window (revealed
-    // would be true), but departure countdown must still read 1 day, not 0.
-    const now = new Date(START_DATE.getTime() - 1 * 24 * 60 * 60 * 1000);
-    const departure = getDepartureCountdown(START_DATE, now);
-    const reveal = getRevealCountdown(START_DATE, now);
-
-    expect(departure.elapsed).toBe(false);
-    expect(departure.days).toBe(1);
-    expect(reveal.revealed).toBe(true);
+  it("is on a different axis than the reveal countdown", () => {
+    const now = new Date("2026-10-02T12:00:00.000Z");
+    expect(getDepartureCountdown(TRIP, now).elapsed).toBe(false);
+    expect(getRevealCountdown(TRIP, now).revealed).toBe(true);
   });
 });
 

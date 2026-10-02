@@ -16,6 +16,8 @@ export interface TripDetailsData {
   /** `TripRequestStatus` enum value, string per the API's JSON serialization. */
   status: string;
   startDate: string | null;
+  /** IANA zone the start date is interpreted in; absent/null on legacy trips (Buenos Aires). */
+  departureTimeZone?: string | null;
   endDate: string | null;
   nights: number;
   pax: number;

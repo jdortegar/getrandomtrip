@@ -96,7 +96,10 @@ export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   if (isRevealed && trip.startDate) {
     const startDate = new Date(trip.startDate);
     const now = new Date();
-    const countdown = getDepartureCountdown(startDate, now);
+    const countdown = getDepartureCountdown(
+      { startDate, departureTimeZone: trip.departureTimeZone },
+      now,
+    );
     if (!countdown.elapsed) {
       const calendarDays = getCalendarDaysUntilDeparture(startDate, now);
       pillLabel =

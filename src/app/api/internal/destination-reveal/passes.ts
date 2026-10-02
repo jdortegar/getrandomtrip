@@ -1,20 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import { sendDestinationRevealed } from "@/lib/email";
+import { isInRevealWindow } from "@/lib/helpers/getRevealCountdown";
+import { ZONE_QUERY_MARGIN_MS } from "@/lib/helpers/tripTimeZone";
 
-// ─── Pass 2: T-48h auto-reveal ────────────────────────────────────────────────
+// ─── Pass 2: auto-reveal at 09:00 departure-local, two days before departure ──
 
 export interface Pass2Result {
   revealed: number;
 }
 
-export async function runPass2(now: Date): Promise<Pass2Result> {
-  const threshold48 = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+const REVEAL_LEAD_MS = 2 * 24 * 60 * 60 * 1000;
 
-  // Find CONFIRMED trips within T-48h that have an experience assigned
-  const revealable = await prisma.tripRequest.findMany({
+export async function runPass2(now: Date): Promise<Pass2Result> {
+  // Conservative superset: the real reveal instant depends on each trip's zone,
+  // so the exact check is done in memory with `isInRevealWindow`.
+  const candidates = await prisma.tripRequest.findMany({
     where: {
       status: "CONFIRMED",
-      startDate: { lte: threshold48, gte: now },
+      startDate: {
+        gt: new Date(now.getTime() - ZONE_QUERY_MARGIN_MS),
+        lte: new Date(now.getTime() + REVEAL_LEAD_MS + ZONE_QUERY_MARGIN_MS),
+      },
       experienceId: { not: null },
     },
     select: {
@@ -22,8 +28,13 @@ export async function runPass2(now: Date): Promise<Pass2Result> {
       userId: true,
       experienceId: true,
       actualDestination: true,
+      startDate: true,
+      departureTimeZone: true,
     },
   });
+  const revealable = candidates.filter(
+    (trip) => trip.startDate && isInRevealWindow({ startDate: trip.startDate, departureTimeZone: trip.departureTimeZone }, now),
+  );
 
   let revealed = 0;
 
