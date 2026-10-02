@@ -7,6 +7,7 @@ import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
 import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
+import { TranslateExperienceCopy } from "./TranslateExperienceCopy";
 import { AboutExperienceStep } from "./steps/AboutExperienceStep";
 import { AboutDestinationStep } from "./steps/AboutDestinationStep";
 import { LogisticsAccommodationStep } from "./steps/LogisticsAccommodationStep";
@@ -41,9 +42,14 @@ interface ExperienceFormContentProps {
   /** Renders approve/reject actions in the form action area; suppresses the pending banner. */
   reviewActionsSlot?: ReactNode;
   isReadOnly?: boolean;
+  /** Shows the in-browser English/Spanish translation control. Admin create only. */
+  enableCopyTranslation?: boolean;
   isSubmitting: boolean;
   saveStatus: SaveStatus;
   onChange: ExperienceFormDraftOnChange;
+  onApplyTranslatedCopy?: (
+    update: (current: ExperienceFormDraft) => ExperienceFormDraft,
+  ) => void;
   backHref?: string;
   /** Jumps back to the first step instead of navigating away. Takes priority over backHref. */
   onBack?: () => void;
@@ -137,9 +143,11 @@ export function ExperienceFormContent({
   form,
   imageState,
   isReadOnly = false,
+  enableCopyTranslation = false,
   isSubmitting,
   saveStatus,
   onChange,
+  onApplyTranslatedCopy,
   onClearAll,
   onNext,
   onSubmit,
@@ -157,6 +165,7 @@ export function ExperienceFormContent({
 
   // Per-field "peek at original" toggle state — display-only, never mutates `form`.
   const [peekedFields, setPeekedFields] = useState<Set<string>>(new Set());
+  const [isTranslatingCopy, setIsTranslatingCopy] = useState(false);
   const togglePeek = (field: string) => {
     setPeekedFields((prev) => {
       const next = new Set(prev);
@@ -232,6 +241,14 @@ export function ExperienceFormContent({
 
   return (
     <div className="flex flex-col gap-4" data-component="ExperienceFormContent">
+      {enableCopyTranslation && !isReadOnly && onApplyTranslatedCopy ? (
+        <TranslateExperienceCopy
+          copy={copy.translate}
+          form={form}
+          onApply={onApplyTranslatedCopy}
+          onBusyChange={setIsTranslatingCopy}
+        />
+      ) : null}
       <Accordion
         type="single"
         collapsible
@@ -242,7 +259,7 @@ export function ExperienceFormContent({
         {currentTab.substeps.map((substep) => (
           <JourneyDropdown key={substep.id} value={substep.id} label={substep.title}>
             {/* fieldset wraps only form content so accordion trigger stays clickable */}
-            <fieldset disabled={isReadOnly} className="contents">
+            <fieldset className="contents" disabled={isReadOnly || isTranslatingCopy}>
               {resolveStepContent(
                 activeTab,
                 substep.id,

@@ -14,10 +14,11 @@ export default async function NewAdminExperiencePage(props: {
 
   return (
     <NewExperienceShell
-      mode="adminCreate"
       dict={dict.tripperExperiences.form}
+      enableCopyTranslation
       finalizeCopy={dict.adminDashboard.newExperience}
       locale={locale}
+      mode="adminCreate"
       userBadgeLabels={dict.journey.userBadge}
     />
   );

@@ -6,12 +6,14 @@ import { AlertCircle, Check, Loader2 } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { JourneyDropdown } from "@/components/journey/JourneyDropdown";
 import { JourneyActionBar } from "@/components/journey/JourneyActionBar";
+import { TranslateBlogCopy } from "./TranslateBlogCopy";
 import { TitleImageStep } from "./steps/TitleImageStep";
 import { FeatureQuoteStep } from "./steps/FeatureQuoteStep";
 import { SectionsStep } from "./steps/SectionsStep";
 import { FaqStep } from "./steps/FaqStep";
 import { GalleryStep } from "./steps/GalleryStep";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
+import type { ExperienceCopyLocale } from "@/lib/ai/translateExperienceCopy";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 import { getMissingBlogFields, isBlogTabEligible } from "@/lib/helpers/blog-form";
 import { resolveBlogFieldPeek, resolveBlogEntryPeek } from "@/lib/blog/blog-form-peek";
@@ -23,8 +25,16 @@ interface BlogFormContentProps {
   validationDraft?: BlogFormDraft;
   activeTab: string;
   contentLanguageSlot?: React.ReactNode;
+  contentLocale?: ExperienceCopyLocale;
   copy: TripperBlogFormDict;
   draft: BlogFormDraft;
+  isSavingCopy?: boolean;
+  isTranslating?: boolean;
+  onApplyTranslatedCopy?: (update: (current: BlogFormDraft) => BlogFormDraft) => void;
+  onSaveCopy?: () => void;
+  onContentLocaleChange?: (locale: ExperienceCopyLocale) => void;
+  onTranslatingChange?: (busy: boolean) => void;
+  sourceDraft?: BlogFormDraft;
   imageState: BlogImageState;
   isFinishing: boolean;
   saveStatus: SaveStatus;
@@ -60,14 +70,12 @@ function resolveStepContent(
   makeSectionPeek?: (index: number, entryKey: "title" | "description") => FieldPeek | undefined,
   makeFaqPeek?: (index: number, entryKey: "question" | "answer") => FieldPeek | undefined,
   isAdmin?: boolean,
-  contentLanguageSlot?: React.ReactNode,
   readOnly?: boolean,
 ): React.ReactNode {
   if (activeTab === "general") {
     if (substepId === "title-image") {
       return (
         <TitleImageStep
-          contentLanguageSlot={contentLanguageSlot}
           copy={copy}
           draft={draft}
           onChange={onChange}
@@ -154,8 +162,16 @@ export function BlogFormContent({
   validationDraft,
   activeTab,
   contentLanguageSlot,
+  contentLocale = "es",
   copy,
   draft,
+  isSavingCopy = false,
+  isTranslating = false,
+  onApplyTranslatedCopy,
+  onSaveCopy,
+  onContentLocaleChange,
+  onTranslatingChange,
+  sourceDraft,
   imageState,
   isFinishing,
   saveStatus,
@@ -252,8 +268,26 @@ export function BlogFormContent({
     ? []
     : getMissingBlogFields(activeTab, draft, copy.fields as Record<string, string>);
 
+  const canTranslate = !readOnly && onApplyTranslatedCopy && onContentLocaleChange && onTranslatingChange;
+
   return (
     <div className="flex flex-col gap-4" data-component="BlogFormContent">
+      {contentLanguageSlot || canTranslate ? (
+        <TranslateBlogCopy
+          copy={copy.translate}
+          draft={sourceDraft ?? draft}
+          isSaving={isSavingCopy}
+          languageSlot={contentLanguageSlot}
+          locale={contentLocale}
+          onApply={onApplyTranslatedCopy ?? (() => undefined)}
+          onBusyChange={onTranslatingChange ?? (() => undefined)}
+          onSave={canTranslate ? onSaveCopy : undefined}
+          onTranslated={onContentLocaleChange ?? (() => undefined)}
+          saveLabel={copy.editSubmit}
+          savingLabel={copy.saving}
+          showActions={Boolean(canTranslate)}
+        />
+      ) : null}
       <Accordion
         type="single"
         collapsible
@@ -266,7 +300,10 @@ export function BlogFormContent({
             {/* Basic Info disables its editable fields, not its language selector. */}
             <fieldset
               className="contents"
-              disabled={readOnly && !(activeTab === "general" && substep.id === "title-image")}
+              disabled={
+                isTranslating ||
+                (readOnly && !(activeTab === "general" && substep.id === "title-image"))
+              }
             >
               {resolveStepContent(
                 activeTab,
@@ -280,7 +317,6 @@ export function BlogFormContent({
                 makeSectionPeek,
                 makeFaqPeek,
                 isAdmin,
-                contentLanguageSlot,
                 readOnly,
               )}
             </fieldset>

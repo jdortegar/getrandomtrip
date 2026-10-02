@@ -95,6 +95,20 @@ export function blogLocaleWhere(locale: string) {
     : {};
 }
 
+function englishCopy(post: LocalizableBlog): BlogTranslation | null {
+  const result = translationsSchema.safeParse(post.translations);
+  return result.success ? (result.data.en ?? null) : null;
+}
+
+/** Canonical columns are Spanish unless they are only a copy of the English translation. */
+function hasDistinctSpanishCopy(post: LocalizableBlog, copy: BlogTranslation | null): boolean {
+  if (!post.title?.trim()) return false;
+  if (!copy?.title?.trim()) return true;
+  if (post.title.trim() !== copy.title.trim()) return true;
+  if (typeof post.content !== "string" || typeof copy.content !== "string") return false;
+  return post.content !== copy.content;
+}
+
 interface LocalizableBlog {
   title?: string;
   subtitle?: unknown;
@@ -113,9 +127,8 @@ export function resolveBlogContent<T extends LocalizableBlog>(
   post: T,
   locale: string,
 ): T | null {
-  if (locale !== "en") return post;
-  const result = translationsSchema.safeParse(post.translations);
-  const copy = result.success ? result.data.en : null;
+  const copy = englishCopy(post);
+  if (locale !== "en") return hasDistinctSpanishCopy(post, copy) ? post : null;
   if (!isEnglishBlogReady(copy)) return null;
   const media = Array.isArray(post.blocks)
     ? post.blocks.flatMap((block: unknown) => {

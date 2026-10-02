@@ -59,6 +59,25 @@ describe("blog content locales", () => {
     });
     expect(blogLocaleWhere("es")).toEqual({});
   });
+  it("lists a post only in languages that have their own copy", () => {
+    const englishOnly = {
+      title: "Sunrise on the lake",
+      content: "<p>English article</p>",
+      translations: normalizeBlogTranslations({
+        en: { title: "Sunrise on the lake", content: "<p>English article</p>" },
+      }),
+    };
+    const bilingual = {
+      ...spanish,
+      translations: normalizeBlogTranslations({ en: english }),
+    };
+
+    expect(resolveBlogContent(englishOnly, "es")).toBeNull();
+    expect(resolveBlogContent(englishOnly, "en")?.title).toBe("Sunrise on the lake");
+    expect(resolveBlogContent(bilingual, "es")?.title).toBe("Español");
+    expect(resolveBlogContent(bilingual, "en")?.title).toBe("English");
+    expect(resolveBlogContent(spanish, "es")?.title).toBe("Español");
+  });
   it("rejects blank structural sections even when stale flattened HTML is nonempty", () => {
     expect(
       normalizeBlogTranslations({

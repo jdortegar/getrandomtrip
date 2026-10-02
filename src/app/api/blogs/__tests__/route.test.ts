@@ -33,6 +33,22 @@ describe("GET /api/blogs (public list) — visibility guard", () => {
     });
   });
 
+  it("asks for ready English copy on the English list and keeps Spanish rows for later copy checks", async () => {
+    const english = new NextRequest("http://localhost/api/blogs?locale=en");
+    await GET(english);
+    const englishWhere = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0].where;
+    expect(englishWhere.translations).toEqual({
+      path: ["en", "ready"],
+      equals: true,
+    });
+
+    const spanish = new NextRequest("http://localhost/api/blogs?locale=es");
+    await GET(spanish);
+    const spanishWhere = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[1][0].where;
+    expect(spanishWhere.translations).toBeUndefined();
+    expect(spanishWhere.status).toBe("PUBLISHED");
+  });
+
   it("filters by travelType/excuseKey using Prisma's { has } array operator, not exact string match", async () => {
     const req = new NextRequest(
       "http://localhost/api/blogs?travelType=solo&excuseKey=solo-adventure",

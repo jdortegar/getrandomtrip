@@ -480,6 +480,14 @@ export interface TripperBlogFormDict {
     canonicalLabel: string;
     unavailable: string;
   };
+  translate: {
+    error: string;
+    hint: string;
+    label: string;
+    toEnglish: string;
+    toSpanish: string;
+    translating: string;
+  };
   nav: {
     progress: string;
   };
@@ -1109,6 +1117,14 @@ export interface TripperExperiencesDict {
     };
     statusBadge: {
       pendingReview: string;
+    };
+    translate: {
+      error: string;
+      hint: string;
+      label: string;
+      toEnglish: string;
+      toSpanish: string;
+      translating: string;
     };
     changedFieldsBanner: {
       prefix: string;

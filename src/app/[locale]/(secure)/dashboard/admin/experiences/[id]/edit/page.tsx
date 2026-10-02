@@ -104,14 +104,15 @@ export default async function AdminEditExperiencePage(props: {
 
   return (
     <NewExperienceShell
-      mode="adminCreate"
       dict={dict.tripperExperiences.form}
-      finalizeCopy={dict.adminDashboard.newExperience}
       editModeCopy={dict.adminDashboard.editExperience}
-      locale={locale}
-      userBadgeLabels={dict.journey.userBadge}
+      enableCopyTranslation
+      finalizeCopy={dict.adminDashboard.newExperience}
       initialDraft={initialDraft}
       initialDraftId={pkg.id}
+      locale={locale}
+      mode="adminCreate"
+      userBadgeLabels={dict.journey.userBadge}
     />
   );
 }

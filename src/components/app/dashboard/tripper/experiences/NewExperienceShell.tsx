@@ -53,6 +53,8 @@ interface NewExperienceShellProps {
   /** Left side of the sticky review bar when there are no changed fields to show (e.g. tripper's note to admin). */
   reviewLeftSlot?: ReactNode;
   dict: TripperExperiencesDict["form"];
+  /** In-browser translation of filled prose into English or Spanish. */
+  enableCopyTranslation?: boolean;
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
   initialDraft?: ExperienceFormDraft;
@@ -135,6 +137,7 @@ export function NewExperienceShell({
   reviewActionsSlot,
   reviewLeftSlot,
   dict,
+  enableCopyTranslation = false,
   locale,
   userBadgeLabels,
   initialDraft,
@@ -564,6 +567,12 @@ export function NewExperienceShell({
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function handleApplyTranslatedCopy(
+    update: (current: ExperienceFormDraft) => ExperienceFormDraft,
+  ) {
+    setForm((prev) => update(prev));
+  }
+
   function handleHeroSelect(file: File) {
     const blobUrl = URL.createObjectURL(file);
     pendingFilesRef.current.set(blobUrl, file);
@@ -770,10 +779,12 @@ export function NewExperienceShell({
               copy={effectiveDict}
               form={form}
               imageState={imageState}
+              enableCopyTranslation={enableCopyTranslation}
               isReadOnly={isReadOnly}
               isSubmitting={isSubmitting}
-              saveStatus={saveStatus}
+              onApplyTranslatedCopy={handleApplyTranslatedCopy}
               onChange={handleChange}
+              saveStatus={saveStatus}
               onClearAll={handleClearAll}
               onNext={handleNext}
               onSubmit={handleRequestSubmit}
