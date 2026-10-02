@@ -12,25 +12,15 @@ body{font-family:Arimo,sans-serif;
   -webkit-print-color-adjust:exact;
   print-color-adjust:exact}
 
-body{--ink:#19323d;
-  --dark:#17313b;
-  --cyan:#4c9cc0;
-  --muted:#66899b;
-  --border:#d8e7ee;
-  --pale:#edf6fa;
+body{--ink:#16313c;
+  --dark:#082e30;
+  --cyan:#174a42;
+  --muted:#5d7377;
+  --border:#d3e4eb;
+  --pale:#e8f0ee;
   --inset:60.643px}
 
-body.roadmap{--ink:#16313c;
-  --dark:#163641;
-  --cyan:#4ca6d0;
-  --muted:#5c8495;
-  --border:#cfe2ea;
-  --pale:#e9f5fa;
-  --inset:62px}
-
-body.activity{--border:#d8eaf2;
-  --cyan:#3f96bd;
-  --pale:#eaf5fa}
+body.roadmap{--inset:62px}
 
 h1,h2,h3,p{margin:0}
 h1,h2,h3,strong,b{font-weight:700}
@@ -41,6 +31,11 @@ p{white-space:pre-wrap;
   overflow-wrap:anywhere}
 h1,h2,h3,span,strong,td{overflow-wrap:anywhere}
 svg{display:block}
+[data-icon] [fill="#4ca6d0"],
+[data-icon] [fill="#4c9cc0"],
+[data-icon] [fill="#4b9fc2"],
+[data-icon] [fill="#3f96bd"],
+[data-icon] [fill="#49cd81"]{fill:#174a42}
 .icon{display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -96,8 +91,8 @@ svg{display:block}
  .header{position:relative;
   min-height:213px;
   padding:28px var(--inset) 15px;
-  background:var(--dark);
-  color:white;
+  background:#a0b6a9;
+  color:#16313c;
   margin:0 0 26px}
 .logo{width:203.2px;
   height:51px;
@@ -119,7 +114,7 @@ svg{display:block}
   max-width:760px;
   white-space:pre-wrap}
 .header .authored-label{font-size:10px;
-  color:#9fc5d6;
+  color:#3e5c58;
   margin-top:4px;
   white-space:pre-wrap}
 .header-right{position:absolute;
@@ -127,8 +122,8 @@ svg{display:block}
   top:39px;
   width:271px;
   text-align:right}
-.status{background:#173e3c;
-  color:#36cf78;
+.status{background:#174a42;
+  color:#ffffff;
   border-radius:32px;
   padding:8px 10px;
   text-align:center;
@@ -160,7 +155,7 @@ svg{display:block}
   top:-2.453px}
 .reference{margin-top:9px;
   font-size:14px;
-  color:#7ba8bb;
+  color:#3e5c58;
   white-space:pre-wrap}
 .reference-flow{color:var(--muted);
   font-size:14px;

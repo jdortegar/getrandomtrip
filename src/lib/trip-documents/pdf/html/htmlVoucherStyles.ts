@@ -22,7 +22,7 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
   font-weight:700;
   min-width:0;
   white-space:pre-wrap}
-.payment{color:#32cc78}
+.payment{color:#174a42}
 .details-row{gap:20px}
 .items{padding:27px 26px 24px;
   min-height:285px}
@@ -94,8 +94,10 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
 .policy{padding:24px 28px;
   color:var(--ink)}
 .policy.dark{background:var(--dark);
-  color:#c8d8de;
+  color:#d5e3df;
   border-color:var(--dark)}
+.policy.dark .section-title,
+.policy.dark .policy-list p:before{color:#a0b6a9}
 .policy .section-title{margin-bottom:24px}
 .policy-list p{padding:13px 0 15px 26px;
   position:relative;
@@ -108,7 +110,7 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
   font-size:27px;
   line-height:24px}
 .policy-list.dividers p+p{border-top:1px solid var(--border)}
-.policy.dark .dividers p+p{border-color:#31505b}
+.policy.dark .dividers p+p{border-color:#245854}
 .hotel-policy{margin:22px 0 0;
   border-radius:0;
   padding:27px 74px 12px;
@@ -124,8 +126,8 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
   gap:20px;
   padding:11px 0 0}
 .number{border-radius:50%;
-  background:var(--pale);
-  color:var(--cyan);
+  background:#a0b6a9;
+  color:#082e30;
   display:flex;
   align-items:center;
   justify-content:center;

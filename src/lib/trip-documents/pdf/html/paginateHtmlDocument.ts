@@ -163,7 +163,7 @@ export function paginateHtmlDocument() {
       `${index + 1} / ${pages.length}`;
     if (index > 0 && document.body.classList.contains("hotel")) {
       (page.querySelector(".footer") as HTMLElement).style.cssText =
-        "background:white;color:#66899b;bottom:17px";
+        "background:white;color:#5d7377;bottom:17px";
     }
   }
   return {
