@@ -83,6 +83,17 @@ function resolveLocale(locale: string | null | undefined): "es" | "en" {
   return locale === "en" ? "en" : "es";
 }
 
+/** Trip dates are calendar dates stored at UTC midnight: format them in UTC so no server zone shifts the day. */
+function formatCalendarDate(
+  date: Date,
+  locale: "es" | "en" | "es-AR",
+): string {
+  return date.toLocaleDateString(
+    locale === "en" ? "en-US" : "es-AR",
+    { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" },
+  );
+}
+
 export function sendBookingConfirmed(
   tripRequestId: string,
   userId: string,
@@ -190,57 +201,57 @@ export function sendPaymentFailed(
   })();
 }
 
-export function sendDestinationRevealed(
+/**
+ * Awaitable reveal email for one recipient (the buyer or a joined companion):
+ * resolves "sent" only once the provider accepted it, "skipped" when the
+ * recipient has no email address, and rejects on any failure so the caller
+ * leaves its delivery stamp null and the next hourly run retries. The email
+ * deliberately carries dates and a link, never the destination. The
+ * idempotency key keeps a lost stamp write from double-sending.
+ */
+export async function deliverDestinationRevealedEmail(
   tripRequestId: string,
-  userId: string,
-): void {
-  void (async () => {
-    try {
-      const [user, tripRequest] = await Promise.all([
-        prisma.user.findUnique({
-          where: { id: userId },
-          select: { email: true, name: true, locale: true },
-        }),
-        prisma.tripRequest.findUnique({
-          where: { id: tripRequestId },
-          select: {
-            actualDestination: true,
-            startDate: true,
-            endDate: true,
-          },
-        }),
-      ]);
+  recipientUserId: string,
+): Promise<"sent" | "skipped"> {
+  const [user, tripRequest] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: recipientUserId },
+      select: { email: true, name: true, locale: true },
+    }),
+    prisma.tripRequest.findUnique({
+      where: { id: tripRequestId },
+      select: { actualDestination: true, startDate: true, endDate: true },
+    }),
+  ]);
 
-      if (!user?.email || !tripRequest?.actualDestination) return;
+  if (!user?.email) return "skipped";
+  if (!tripRequest?.actualDestination) {
+    throw new Error(`Trip ${tripRequestId} has no revealed destination yet`);
+  }
 
-      const locale = resolveLocale(user.locale);
-      const fmt = (d: Date | null | undefined) =>
-        d
-          ? d.toLocaleDateString(locale === "en" ? "en-US" : "es-AR", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          : undefined;
+  const locale = resolveLocale(user.locale);
+  const fmt = (d: Date | null | undefined) =>
+    d ? formatCalendarDate(d, locale) : undefined;
 
-      await sendMail({
-        to: user.email,
-        subject: destinationRevealedSubjects[locale],
-        content: {
-          react: React.createElement(DestinationRevealed, {
-            client: user.name ?? "",
-            destination: tripRequest.actualDestination,
-            departureDate: fmt(tripRequest.startDate),
-            returnDate: fmt(tripRequest.endDate),
-            locale,
-            tripId: tripRequestId,
-          }),
-        },
-      });
-    } catch (err) {
-      console.error("[email] sendDestinationRevealed:", err);
-    }
-  })();
+  const delivery = await sendMail({
+    to: user.email,
+    subject: destinationRevealedSubjects[locale],
+    idempotencyKey: `destination-revealed/${tripRequestId}/${recipientUserId}`,
+    content: {
+      react: React.createElement(DestinationRevealed, {
+        client: user.name ?? "",
+        destination: tripRequest.actualDestination,
+        departureDate: fmt(tripRequest.startDate),
+        returnDate: fmt(tripRequest.endDate),
+        locale,
+        tripId: tripRequestId,
+      }),
+    },
+  });
+  if (!delivery?.id) {
+    throw new Error("Reveal email provider did not confirm acceptance");
+  }
+  return "sent";
 }
 
 export function sendTripCancelled(

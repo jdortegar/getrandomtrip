@@ -1,12 +1,16 @@
 import { prisma } from "@/lib/prisma";
-import { sendDestinationRevealed } from "@/lib/email";
 import { isInRevealWindow } from "@/lib/helpers/getRevealCountdown";
 import { ZONE_QUERY_MARGIN_MS } from "@/lib/helpers/tripTimeZone";
+import { runRevealNotifications } from "@/lib/trips/revealNotifications";
 
 // ─── Pass 2: auto-reveal at 09:00 departure-local, two days before departure ──
 
 export interface Pass2Result {
   revealed: number;
+  /** Recipients (buyers + joined companions) whose reveal email was accepted this run, incl. retries. */
+  notified: number;
+  /** Recipients whose reveal email failed this run; left unstamped and retried next run. */
+  notifyFailed: number;
 }
 
 const REVEAL_LEAD_MS = 2 * 24 * 60 * 60 * 1000;
@@ -74,7 +78,6 @@ export async function runPass2(now: Date): Promise<Pass2Result> {
         continue;
       }
 
-      sendDestinationRevealed(trip.id, trip.userId);
       revealed++;
     } catch (err) {
       console.error(
@@ -84,5 +87,16 @@ export async function runPass2(now: Date): Promise<Pass2Result> {
     }
   }
 
-  return { revealed };
+  // Awaited delivery to buyer + joined companions, including REVEALED trips
+  // whose earlier attempt failed (stamp still null) and that have not departed.
+  let notified = 0;
+  let notifyFailed = 0;
+  try {
+    ({ notified, failed: notifyFailed } = await runRevealNotifications(now));
+  } catch (err) {
+    notifyFailed++;
+    console.error("[destination-reveal] Reveal notification pass failed:", err);
+  }
+
+  return { revealed, notified, notifyFailed };
 }

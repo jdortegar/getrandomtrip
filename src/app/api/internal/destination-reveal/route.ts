@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       failed: 0,
       skipped: 0,
     };
-    let pass2Result: Pass2Result = { revealed: 0 };
+    let pass2Result: Pass2Result = { revealed: 0, notified: 0, notifyFailed: 0 };
 
     // Reveal is independent of the email provider and runs before awaited mail work.
     try {

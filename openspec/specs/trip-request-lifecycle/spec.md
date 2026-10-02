@@ -217,6 +217,12 @@ None. No migration in this change (proposal decision #4).
 
 Trip start/end dates are calendar dates stored at UTC midnight. `TripRequest.departureTimeZone` (IANA, resolved at booking from the origin country code, else the browser timezone, else `America/Argentina/Buenos_Aires`; NULL on legacy rows reads as Buenos Aires) is the zone those dates are interpreted in. `getDepartureAt(trip)` MUST be 00:00 of the UTC calendar date of `startDate` in that zone, and `getRevealAt(trip)` MUST be 09:00 local on the calendar day two days before departure. Every departure-relative deadline (roster cutoff, buyer details reminder, companion reminder, reveal, assignment reminders, countdown UI) MUST use these helpers; Prisma candidate windows MAY be widened by a day and MUST be re-filtered in memory with the exact helper.
 
+The hourly reveal job MUST flip an assigned CONFIRMED trip to REVEALED at `getRevealAt` and MUST then, awaited, email the buyer and every joined companion (`TripTraveler.userId` set) in their own locale and create one `BOOKING_REVEALED` in-app notification each, linking to `/dashboard/trips/{id}/reveal`. `TripRequest.revealNotifiedAt` and `TripTraveler.revealNotifiedAt` MUST be stamped only after the provider accepts that recipient's email; each run MUST retry REVEALED, not-yet-departed trips with an unstamped recipient, a failure for one recipient MUST NOT resend to recipients already stamped, and invited-but-not-joined companions MUST receive nothing. Reveal emails MUST NOT contain the destination and MUST format trip calendar dates in UTC.
+
 #### Scenario: Saturday trip from Argentina
 - GIVEN a trip starting Sat 2026-10-03 with `departureTimeZone: "America/Argentina/Buenos_Aires"`
 - THEN it reveals Thu 2026-10-01 09:00 ART and an XSED roster locks Wed 2026-09-30 00:00 ART
+
+#### Scenario: Failed reveal email is retried, a delivered one is never resent
+- GIVEN a REVEALED trip whose buyer email failed on the first run
+- THEN the next hourly run retries the buyer only, and stamps `revealNotifiedAt` on provider acceptance

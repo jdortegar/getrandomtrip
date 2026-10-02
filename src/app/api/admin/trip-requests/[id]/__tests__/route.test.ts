@@ -28,8 +28,11 @@ vi.mock("@/lib/admin/trip-requests", () => ({
   ]),
 }));
 
+vi.mock("@/lib/trips/revealNotifications", () => ({
+  notifyRevealedTrip: vi.fn(),
+}));
+
 vi.mock("@/lib/email", () => ({
-  sendDestinationRevealed: vi.fn(),
   sendTripCancelled: vi.fn(),
   sendTripCompleted: vi.fn(),
 }));
@@ -39,6 +42,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { sendTripCompleted } from "@/lib/email";
+import { notifyRevealedTrip } from "@/lib/trips/revealNotifications";
 
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
 const mockTravelerUser = (id: string) => ({ id, roles: ["TRAVELER"] });
@@ -340,6 +344,29 @@ describe("PATCH /api/admin/trip-requests/[id]", () => {
     });
 
     expect(sendTripCompleted).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["delivers", () => vi.mocked(notifyRevealedTrip).mockResolvedValue({ notified: 2, failed: 0 })],
+    ["fails", () => vi.mocked(notifyRevealedTrip).mockRejectedValue(new Error("db down"))],
+  ])("awaits the per-recipient reveal notification on a manual REVEALED transition and never fails the PATCH when it %s", async (_name, arrange) => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockAdminUser("admin-1"));
+    (prisma.tripRequest.update as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "trip-1", status: "REVEALED", userId: "user-1", destinationRevealedAt: new Date(), experienceId: null, reviewToken: null,
+    });
+    (prisma.experience.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    (prisma.payment.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    arrange();
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(makePatchRequest("trip-1", { status: "REVEALED" }), {
+      params: Promise.resolve({ id: "trip-1" }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(notifyRevealedTrip).toHaveBeenCalledWith("trip-1", expect.any(Date));
   });
 
   it("returns 400 (not 422) and performs no tripRequest.update when the assigned experience's owner is inactive", async () => {
