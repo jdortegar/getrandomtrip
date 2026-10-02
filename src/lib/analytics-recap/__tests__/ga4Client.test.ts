@@ -12,7 +12,7 @@ const { privateKey, publicKey } = generateKeyPairSync("rsa", {
 });
 const pem = privateKey.export({ type: "pkcs8", format: "pem" }).toString();
 const config = {
-  propertyId: "522571029",
+  propertyId: "123456789",
   clientEmail: "svc@proj.iam.gserviceaccount.com",
   privateKey: pem,
 };
@@ -95,7 +95,7 @@ it("posts batchRunReports with the bearer token and returns reports", async () =
   expect(reports).toEqual([{ rows: [] }]);
   const [url, init] = fetchMock.mock.calls[0];
   expect(url).toBe(
-    "https://analyticsdata.googleapis.com/v1beta/properties/522571029:batchRunReports",
+    "https://analyticsdata.googleapis.com/v1beta/properties/123456789:batchRunReports",
   );
   expect(init.headers.Authorization).toBe("Bearer tok");
   expect(init.redirect).toBe("error");

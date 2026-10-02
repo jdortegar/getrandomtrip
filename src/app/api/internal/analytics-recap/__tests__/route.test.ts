@@ -18,7 +18,7 @@ beforeEach(() => {
     "SLACK_ANALYTICS_WEBHOOK_URL",
     "https://hooks.slack.com/services/T000/B000/abc",
   );
-  vi.stubEnv("GA4_PROPERTY_ID", "522571029");
+  vi.stubEnv("GA4_PROPERTY_ID", "123456789");
   vi.stubEnv("GA4_CLIENT_EMAIL", "svc@proj.iam.gserviceaccount.com");
   vi.stubEnv(
     "GA4_PRIVATE_KEY",

@@ -13,7 +13,7 @@ The team has no passive visibility into how many people visit the site, from whe
 - Schedule: daily `0 12 * * *` UTC (09:00 America/Argentina/Buenos_Aires, no DST). Covers `yesterday` vs `8daysAgo` (same weekday last week), GA4 property timezone.
 - Content: visitors (activeUsers), new users, sessions, page views with week-over-week %; top 5 countries; top 5 channel groups; top 5 pages; actions (sign_up, generate_lead, waitlist_join, purchase) counts; consent caveat footer.
 - Channel: `#analytics` via dedicated Slack app "Randomtrip Analytics" webhook.
-- Auth: service account `ga4-slack-recap@get-random-trip.iam.gserviceaccount.com`, GA4 Viewer on property 522571029.
+- Auth: dedicated read-only GCP service account with GA4 Viewer on the production property (email and property ID live only in Netlify env; never commit them — Netlify secrets scanning fails the build).
 - Message copy is internal ops text (not site UI) -> English, no i18n dictionary.
 
 ## Env

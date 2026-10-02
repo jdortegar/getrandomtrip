@@ -4,7 +4,7 @@ import { readAnalyticsRecapConfig } from "../readAnalyticsRecapConfig";
 const HOOK = "https://hooks.slack.com/services/T000/B000/abcDEF123";
 beforeEach(() => {
   vi.stubEnv("SLACK_ANALYTICS_WEBHOOK_URL", HOOK);
-  vi.stubEnv("GA4_PROPERTY_ID", "522571029");
+  vi.stubEnv("GA4_PROPERTY_ID", "123456789");
   vi.stubEnv("GA4_CLIENT_EMAIL", "svc@proj.iam.gserviceaccount.com");
   vi.stubEnv(
     "GA4_PRIVATE_KEY",
@@ -16,7 +16,7 @@ afterEach(() => vi.unstubAllEnvs());
 it("returns validated config with an unescaped key", () => {
   const config = readAnalyticsRecapConfig();
   expect(config?.webhookUrl).toBe(HOOK);
-  expect(config?.ga4.propertyId).toBe("522571029");
+  expect(config?.ga4.propertyId).toBe("123456789");
   expect(config?.ga4.privateKey).toContain("-----BEGIN PRIVATE KEY-----\nabc");
 });
 
