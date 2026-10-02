@@ -1946,6 +1946,23 @@
       "moreEyebrow": "EXPLORA",
       "moreTitle": "MÁS DE MIS AVENTURAS",
       "moreSubtitle": "Notas, guías y momentos que inspiran. Escritos en primera persona.",
+      "moreByTravelType": {
+        "couple": {
+          "eyebrow": "En pareja",
+          "title": "Más historias para viajar en pareja",
+          "subtitle": "Notas y guías para una salida de a dos."
+        },
+        "group": {
+          "eyebrow": "En grupo",
+          "title": "Más historias para viajar en grupo",
+          "subtitle": "Notas y guías para salir con amigos."
+        },
+        "solo": {
+          "eyebrow": "Viaje solo",
+          "title": "Más historias para viajar solo",
+          "subtitle": "Notas y guías para salir por tu cuenta."
+        }
+      },
       "viewAll": "Ver todo",
       "exploreMore": "Explorá más contenido",
       "testimonials": "Lo que dicen sobre {name}",

@@ -3352,6 +3352,11 @@ export interface MarketingDictionary {
       moreEyebrow: string;
       moreTitle: string;
       moreSubtitle: string;
+      moreByTravelType: {
+        couple: { eyebrow: string; subtitle: string; title: string };
+        group: { eyebrow: string; subtitle: string; title: string };
+        solo: { eyebrow: string; subtitle: string; title: string };
+      };
       viewAll: string;
       exploreMore: string;
       testimonials: string;
