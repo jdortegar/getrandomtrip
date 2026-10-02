@@ -189,6 +189,8 @@ export function NewBlogPostShell({
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [isFinishing, setIsFinishing] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isSavingCopy, setIsSavingCopy] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
@@ -404,6 +406,20 @@ export function NewBlogPostShell({
     setContentLocale(language);
   }
 
+  function handleApplyTranslatedBlog(update: (current: BlogFormDraft) => BlogFormDraft) {
+    setDraft((current) => update(current));
+  }
+
+  async function handleSaveCopy() {
+    if (isReadOnly || isTranslating || isSavingCopy || isFinishing) return;
+    setIsSavingCopy(true);
+    try {
+      await persistDraft(draft);
+    } finally {
+      setIsSavingCopy(false);
+    }
+  }
+
   async function handleCoverSelect(file: File) {
     if (!validateFileSize(file)) {
       toast.error(dict.toasts.fileTooLarge);
@@ -554,39 +570,48 @@ export function NewBlogPostShell({
 
           <div className="min-w-0 flex-1">
             <BlogFormContent
-              key={contentLocale}
-              validationDraft={draft}
-              optionalContent={contentLocale === "en"}
               activeTab={activeTab}
+              changedFields={displayedChangedFields}
               contentLanguageSlot={
                 <BlogContentLanguage
                   copy={dict.contentLanguage}
-                  disabled={isFinishing}
+                  disabled={isFinishing || isTranslating}
+                  inline
                   locale={contentLocale}
                   onChange={handleContentLocaleChange}
                   selectRef={contentLanguageRef}
                 />
               }
+              contentLocale={contentLocale}
               copy={effectiveDict}
               draft={displayedDraft}
               imageState={imageState}
+              isAdmin={isAdminProp ?? (mode !== undefined && mode !== "tripper")}
               isFinishing={isFinishing}
-              saveStatus={saveStatus}
+              isSavingCopy={isSavingCopy}
+              isTranslating={isTranslating}
+              key={contentLocale}
+              onApplyTranslatedCopy={handleApplyTranslatedBlog}
               onChange={handleChange}
               onClearAll={handleClearAll}
+              onContentLocaleChange={handleContentLocaleChange}
+              onFinish={handleRequestSubmit}
               onNext={handleNext}
               onPreviousStep={handlePreviousStep}
-              onFinish={handleRequestSubmit}
-              openSectionId={openSectionId}
+              onSaveCopy={() => void handleSaveCopy()}
               onSectionChange={handleSectionChange}
-              tabs={tabs}
+              onTranslatingChange={setIsTranslating}
+              openSectionId={openSectionId}
+              optionalContent={contentLocale === "en"}
+              originalDraft={displayedOriginal}
               readOnly={isReadOnly}
               reviewActionsSlot={
                 shouldSwapFooterForReviewActions(mode) ? reviewActionsSlot : undefined
               }
-              changedFields={displayedChangedFields}
-              originalDraft={displayedOriginal}
-              isAdmin={isAdminProp ?? (mode !== undefined && mode !== "tripper")}
+              saveStatus={saveStatus}
+              sourceDraft={draft}
+              tabs={tabs}
+              validationDraft={draft}
             />
           </div>
         </div>

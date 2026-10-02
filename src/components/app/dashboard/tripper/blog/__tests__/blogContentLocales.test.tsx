@@ -112,28 +112,35 @@ function render(
 }
 
 describe("content language editor", () => {
-  it("places one form dropdown after the Basic Info description and before Title, without a toolbar or save button", () => {
+  it("places one language dropdown above the editor on every step", () => {
     render();
-    const step = harness.container.querySelector(
-      '[data-component="TitleImageStep"]',
+    const form = harness.container.querySelector(
+      '[data-component="BlogFormContent"]',
     )!;
-    const language = step.querySelector(
+    const bar = form.querySelector('[data-component="TranslateBlogCopy"]')!;
+    const language = bar.querySelector(
       '[data-component="BlogContentLanguage"]',
     )!;
-    expect(step.firstElementChild?.textContent).toBe(
-      copy.contentTabs[0].substeps[0].description,
-    );
-    expect(step.children[1]).toBe(language);
-    expect(step.children[2].querySelector("input")?.id).toBe("blog-title");
+    const step = form.querySelector('[data-component="TitleImageStep"]')!;
+    expect(form.firstElementChild).toBe(bar);
+    expect(bar.querySelector('[data-component="BlogContentLanguage"]')).toBe(language);
+    expect(step.querySelector('[data-component="BlogContentLanguage"]')).toBeNull();
+    expect(step.querySelector("input")?.id).toBe("blog-title");
     expect(
       harness.container.querySelectorAll(
         '[data-component="BlogContentLanguage"]',
       ),
     ).toHaveLength(1);
-    expect(
-      language.querySelector('[data-component="FormSelectField"]'),
-    ).not.toBeNull();
+    const row = bar.querySelector('[data-component="BlogLocaleRow"]')!;
+    expect(row.contains(language)).toBe(true);
+    expect(language.querySelector("label")?.textContent).toBe(
+      copy.contentLanguage.label,
+    );
+    expect(row.querySelector("button")?.textContent).toBe(copy.translate.toEnglish);
+    expect(button(copy.editSubmit)).toBeTruthy();
     expect(language.querySelector("button")).toBeNull();
+    expect((button(copy.translate.toSpanish) as HTMLButtonElement).disabled).toBe(true);
+    expect((button(copy.translate.toEnglish) as HTMLButtonElement).disabled).toBe(false);
     expect(languageSelect().options.length).toBe(2);
     expect(
       [...languageSelect().options].map((option) => option.textContent),
@@ -205,7 +212,7 @@ describe("content language editor", () => {
     expect(
       harness.container.querySelector('[data-component="GalleryStep"]'),
     ).not.toBeNull();
-    expect(languageSelect()).toBeNull();
+    expect(languageSelect().value).toBe("en");
     expect(draft().title).toBe("English title");
     const general = [
       ...harness.container.querySelectorAll('aside [role="button"]'),
@@ -238,6 +245,8 @@ describe("content language editor", () => {
       { title: "", description: "<p>Original</p>" },
     ]);
     selectLanguage("en");
+    expect((button(copy.translate.toEnglish) as HTMLButtonElement).disabled).toBe(true);
+    expect((button(copy.translate.toSpanish) as HTMLButtonElement).disabled).toBe(false);
     expect(draft()).toMatchObject({
       title: "English draft",
       sections: [{ title: "Heading", description: "<p>Unsaved rich text</p>" }],
