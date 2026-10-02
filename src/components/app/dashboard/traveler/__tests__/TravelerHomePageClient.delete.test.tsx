@@ -7,7 +7,8 @@ import { getPayments, getTrips, type Trip } from "@/lib/utils/trips";
 import en from "@/dictionaries/en.json";
 
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
-vi.mock("@/lib/utils/trips", () => ({
+vi.mock("@/lib/utils/trips", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/utils/trips")>()),
   getTrips: vi.fn(),
   getPayments: vi.fn(),
 }));
@@ -111,3 +112,25 @@ it.each(["http", "network"])(
     ).not.toBeNull();
   },
 );
+
+it("never lists a companion's paid trip as awaiting payment", async () => {
+  // The API strips `payment` for companions, so the trip arrives without one.
+  vi.mocked(getTrips).mockResolvedValue([
+    { ...trips[0], id: "companion-trip", status: "CONFIRMED", viewerRole: "companion" },
+  ]);
+
+  await act(async () =>
+    root.render(
+      <TravelerHomePageClient
+        copy={en.dashboard}
+        eyebrow="Dashboard"
+        heading="Your trips"
+        locale="en"
+        roleToast=""
+      />,
+    ),
+  );
+
+  expect(container.querySelector('[data-component="UnpaidTripsAlert"]')).toBeNull();
+  expect(container.querySelector('a[href="/en/checkout?tripId=companion-trip"]')).toBeNull();
+});

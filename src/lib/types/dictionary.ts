@@ -2676,6 +2676,12 @@ export interface DestinationAssignmentReminderDict {
   cta: string;
 }
 
+/** In-app BOOKING_REVEALED notification copy (server-rendered into `Notification` rows). */
+export interface TripRevealNotificationDict {
+  title: string;
+  body: string;
+}
+
 export interface TravelerDetailsReminderDict {
   subject: string;
   preview: string;
@@ -4328,6 +4334,7 @@ export interface MarketingDictionary {
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
   destinationAssignmentReminder: DestinationAssignmentReminderDict;
+  tripRevealNotification: TripRevealNotificationDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;
   manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;

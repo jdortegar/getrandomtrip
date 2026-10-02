@@ -5,8 +5,8 @@ import { tripRoleFor } from "./travelerAccess";
 
 import {
   computeTravelerCap,
+  getRosterCutoffAt,
   isTravelerRosterComplete,
-  rosterCutoffMs,
 } from "./travelerPolicy";
 export { computeTravelerCap, ROSTER_CUTOFF_MS } from "./travelerPolicy";
 
@@ -17,11 +17,12 @@ export { computeTravelerCap, ROSTER_CUTOFF_MS } from "./travelerPolicy";
 export function isRosterLocked(trip: {
   type?: string;
   startDate: Date | null;
+  departureTimeZone?: string | null;
   travelersLockedAt: Date | null;
 }): boolean {
   if (trip.type?.trim().toLowerCase() !== "xsed" && trip.travelersLockedAt != null) return true;
   if (!trip.startDate) return false;
-  return Date.now() >= trip.startDate.getTime() - rosterCutoffMs(trip.type);
+  return Date.now() >= getRosterCutoffAt({ ...trip, startDate: trip.startDate }).getTime();
 }
 
 /**
@@ -151,7 +152,7 @@ export async function getRosterForTrip(
   }
 
   const deadline = trip.startDate
-    ? new Date(trip.startDate.getTime() - rosterCutoffMs(trip.type)).toISOString()
+    ? getRosterCutoffAt({ ...trip, startDate: trip.startDate }).toISOString()
     : null;
   const startDate = trip.startDate ? trip.startDate.toISOString() : null;
   const locked = isRosterLocked(trip);

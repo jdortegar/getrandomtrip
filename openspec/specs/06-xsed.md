@@ -8,7 +8,7 @@
 
 ## Product Context
 
-XSED is a curated-drop product: a single surprise overnight trip with limited spots (typically 10), a short booking window, and the destination revealed 48 hours before departure. It is booked independently of the main journey flow.
+XSED is a curated-drop product: a single surprise overnight trip with limited spots (typically 10), a short booking window, and the destination revealed at 09:00 (departure timezone) on the calendar day two days before departure. It is booked independently of the main journey flow.
 
 ---
 
@@ -52,7 +52,7 @@ What works end-to-end today:
 2. `/xsed/drops` → browse available and upcoming drops
 3. `/xsed/drops/[slug]` → see drop details, countdown, remaining spots → "Reservar" CTA
 4. CTA → `/xsed/book` → fill booking form → Stripe checkout → payment confirmation
-5. Trip created with XSED-canonical dates; destination revealed 48h before via the reveal flow (shared with main booking flow)
+5. Trip created with XSED-canonical dates; destination revealed at 09:00 departure-local two days before departure via the reveal flow (shared with main booking flow)
 
 **Admin drop management:**
 1. `/dashboard/admin/xsed/new` → fill drop form (date, price, capacity, destination, description) → create

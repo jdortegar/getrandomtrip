@@ -15,7 +15,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("CRON_SECRET", "test");
   vi.stubEnv("RT_DEPLOY_ENV", "production");
-  vi.mocked(runPass2).mockResolvedValue({ revealed: 1 });
+  vi.mocked(runPass2).mockResolvedValue({ revealed: 1, notified: 0, notifyFailed: 0 });
   vi.mocked(runAssignmentReminders).mockResolvedValue(empty);
 });
 afterEach(() => vi.unstubAllEnvs());
@@ -36,7 +36,7 @@ it("finishes automatic reveal before awaiting admin mail and returns acceptance 
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({
     pass1: { ...empty, queued: 3, accepted: 2, failed: 1 },
-    pass2: { revealed: 1 },
+    pass2: { revealed: 1, notified: 0, notifyFailed: 0 },
     errors: [],
   });
 });
@@ -55,7 +55,7 @@ it("reports reminder failure after automatic reveal has already completed", asyn
   const response = await POST(request("test"));
   expect(runPass2).toHaveBeenCalledOnce();
   expect(await response.json()).toMatchObject({
-    pass2: { revealed: 1 },
+    pass2: { revealed: 1, notified: 0, notifyFailed: 0 },
     errors: ["Pass 1 failed: reminder table unavailable"],
   });
 });

@@ -67,10 +67,10 @@ export async function runAssignmentReminders(
           status: "CONFIRMED",
           experienceId: null,
         },
-        select: { startDate: true },
+        select: { startDate: true, departureTimeZone: true },
       });
       const window =
-        trip && getAssignmentReminderWindow(trip.startDate, clock());
+        trip && getAssignmentReminderWindow(trip, clock());
       if (
         !authorized ||
         !window ||

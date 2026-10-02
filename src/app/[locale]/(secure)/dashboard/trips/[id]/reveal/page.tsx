@@ -78,8 +78,15 @@ function RevealContent() {
     if (!trip || trip.status !== "CONFIRMED" || !trip.startDate) return;
 
     function tick() {
-      const startDate = new Date(trip!.startDate!);
-      setCountdown(getRevealCountdown(startDate, new Date()));
+      setCountdown(
+        getRevealCountdown(
+          {
+            startDate: new Date(trip!.startDate!),
+            departureTimeZone: trip!.departureTimeZone,
+          },
+          new Date(),
+        ),
+      );
     }
 
     tick();

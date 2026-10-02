@@ -2,10 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { deliverTravelerReminderEmail } from "@/lib/email";
 import {
+  getRosterCutoffAt,
   isTripEnded,
   ROSTER_CUTOFF_MS,
   XSED_ROSTER_CUTOFF_MS,
 } from "@/lib/travelers/travelerPolicy";
+import { getDepartureAt } from "@/lib/helpers/getRevealCountdown";
+import { ZONE_QUERY_MARGIN_MS } from "@/lib/helpers/tripTimeZone";
+import type { TripTiming } from "@/types/core";
 
 // ─── Pass 1: one reminder per invited-but-not-linked companion ────────────────
 
@@ -17,11 +21,18 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const REMINDER_AFTER_INVITE_MS = 3 * DAY_MS;
 const REMINDER_BEFORE_DEPARTURE_MS = DAY_MS;
 
-/** `min(invitedAt + 3 days, startDate - 24h)`; trips without dates use only the first. */
-function reminderDueAt(invitedAt: Date, startDate: Date | null): number {
+/** `min(invitedAt + 3 days, departure - 24h)`; trips without dates use only the first. */
+function reminderDueAt(
+  invitedAt: Date,
+  trip: { startDate: Date | null; departureTimeZone: string | null },
+): number {
   const afterInvite = invitedAt.getTime() + REMINDER_AFTER_INVITE_MS;
-  return startDate
-    ? Math.min(afterInvite, startDate.getTime() - REMINDER_BEFORE_DEPARTURE_MS)
+  return trip.startDate
+    ? Math.min(
+        afterInvite,
+        getDepartureAt({ startDate: trip.startDate, departureTimeZone: trip.departureTimeZone }).getTime() -
+          REMINDER_BEFORE_DEPARTURE_MS,
+      )
     : afterInvite;
 }
 
@@ -59,7 +70,9 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
       id: true,
       email: true,
       invitedAt: true,
-      tripRequest: { select: { startDate: true, endDate: true } },
+      tripRequest: {
+        select: { startDate: true, endDate: true, departureTimeZone: true },
+      },
     },
   });
 
@@ -68,7 +81,7 @@ export async function runPass1(now: Date): Promise<Pass1Result> {
   for (const traveler of candidates) {
     if (!traveler.invitedAt || !traveler.email?.trim()) continue;
     if (isTripEnded(traveler.tripRequest, now.getTime())) continue;
-    if (now.getTime() < reminderDueAt(traveler.invitedAt, traveler.tripRequest.startDate)) {
+    if (now.getTime() < reminderDueAt(traveler.invitedAt, traveler.tripRequest)) {
       continue;
     }
 
@@ -106,27 +119,47 @@ export interface Pass2Result {
  * pattern in `destination-reveal`. Empty identity fields remain fillable.
  */
 export async function runPass2(now: Date): Promise<Pass2Result> {
-  const cutoffThreshold = new Date(now.getTime() + ROSTER_CUTOFF_MS);
-
-  const result = await prisma.tripRequest.updateMany({
+  // Candidate windows are widened by the zone margin (departure is local
+  // midnight, not UTC midnight); the exact cutoff is re-checked in memory.
+  const earliest = new Date(now.getTime() - ZONE_QUERY_MARGIN_MS);
+  const candidates = await prisma.tripRequest.findMany({
     where: {
       status: { notIn: ["CANCELLED", "COMPLETED"] },
       OR: [
         {
           type: { equals: "xsed", mode: "insensitive" },
           startDate: {
-            gt: now,
-            lte: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS),
+            gt: earliest,
+            lte: new Date(now.getTime() + XSED_ROSTER_CUTOFF_MS + ZONE_QUERY_MARGIN_MS),
           },
         },
         {
           type: { not: "xsed", mode: "insensitive" },
-          startDate: { gt: now, lte: cutoffThreshold },
+          startDate: {
+            gt: earliest,
+            lte: new Date(now.getTime() + ROSTER_CUTOFF_MS + ZONE_QUERY_MARGIN_MS),
+          },
         },
       ],
       travelersLockedAt: null,
       payment: { is: { status: "APPROVED" } },
     },
+    select: { id: true, type: true, startDate: true, departureTimeZone: true },
+  });
+
+  const due = candidates.filter((trip) => {
+    if (!trip.startDate) return false;
+    const timing: TripTiming & { type: string } = {
+      startDate: trip.startDate,
+      departureTimeZone: trip.departureTimeZone,
+      type: trip.type,
+    };
+    return now >= getRosterCutoffAt(timing) && now < getDepartureAt(timing);
+  });
+  if (due.length === 0) return { locked: 0 };
+
+  const result = await prisma.tripRequest.updateMany({
+    where: { id: { in: due.map((trip) => trip.id) }, travelersLockedAt: null },
     data: { travelersLockedAt: now },
   });
 

@@ -53,6 +53,8 @@ export interface AdminTripRequest {
   paxDetails: unknown;
   payment: AdminTripPayment | null;
   startDate: string | null;
+  /** IANA zone the start date is interpreted in; null on legacy trips (Buenos Aires). */
+  departureTimeZone?: string | null;
   status: TripRequestStatus;
   transport: string;
   tripperId: string | null;

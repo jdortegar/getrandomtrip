@@ -7,9 +7,11 @@ import {
   getAssignmentReminderNotification,
 } from "@/lib/email/sendDestinationAssignmentReminder";
 import { getAssignmentReminderWindow } from "@/lib/helpers/getAssignmentReminderWindow";
-import { getRevealAt } from "@/lib/helpers/getRevealCountdown";
+import { ZONE_QUERY_MARGIN_MS } from "@/lib/helpers/tripTimeZone";
 
 const PAGE_SIZE = 25;
+/** The reveal opens on the calendar day two days before the start date. */
+const REVEAL_LEAD_MS = 2 * 24 * 3_600_000;
 const identity = (parts: (string | number)[]) =>
   createHash("sha256").update(JSON.stringify(parts)).digest("hex");
 
@@ -27,25 +29,30 @@ export async function queueAssignmentReminders(
   let cursor: string | undefined;
   while (Date.now() < budgetEndsAt) {
     const now = clock();
-    // Derive departure bounds from the shared reveal offset, not a second 48h constant.
-    const revealOffset = -getRevealAt(new Date(0)).getTime();
     const trips = await prisma.tripRequest.findMany({
       where: {
         status: "CONFIRMED",
         experienceId: null,
+        // Conservative superset across all zones; the exact reveal instant is
+        // evaluated in memory by getAssignmentReminderWindow.
         startDate: {
-          gt: new Date(+now + revealOffset),
-          lte: new Date(+now + revealOffset + 72 * 3_600_000),
+          gt: new Date(+now + REVEAL_LEAD_MS - ZONE_QUERY_MARGIN_MS),
+          lte: new Date(+now + REVEAL_LEAD_MS + 72 * 3_600_000 + ZONE_QUERY_MARGIN_MS),
         },
       },
-      select: { id: true, startDate: true, user: { select: { name: true } } },
+      select: {
+        id: true,
+        startDate: true,
+        departureTimeZone: true,
+        user: { select: { name: true } },
+      },
       orderBy: [{ startDate: "asc" }, { id: "asc" }],
       take: PAGE_SIZE,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
     for (const trip of trips) {
       if (Date.now() >= budgetEndsAt) return queued;
-      const window = getAssignmentReminderWindow(trip.startDate, clock());
+      const window = getAssignmentReminderWindow(trip, clock());
       if (!window) continue;
       const parts = [
         trip.id,
@@ -106,11 +113,12 @@ export async function queueAssignmentReminders(
             experienceId: null,
             startDate: { equals: trip.startDate! },
           },
-          select: { startDate: true },
+          select: { startDate: true, departureTimeZone: true },
         });
         if (
           !current ||
-          getAssignmentReminderWindow(current.startDate, clock())
+          current.departureTimeZone !== trip.departureTimeZone ||
+          getAssignmentReminderWindow(current, clock())
             ?.milestoneHours !== window.milestoneHours
         )
           return 0;

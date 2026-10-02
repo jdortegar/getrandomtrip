@@ -33,11 +33,15 @@ function revealCallout(
   trip: AdminTripRequest,
 ): RevealCallout | null {
   if (!trip.startDate) return null;
-  const countdown = getRevealCountdown(new Date(trip.startDate), new Date());
+  const timing = {
+    startDate: new Date(trip.startDate),
+    departureTimeZone: trip.departureTimeZone,
+  };
+  const countdown = getRevealCountdown(timing, new Date());
   if (countdown.revealed) {
     const revealedAt =
       trip.destinationRevealedAt ??
-      getRevealAt(new Date(trip.startDate)).toISOString();
+      getRevealAt(timing).toISOString();
     return { label: copy.revealedOnLabel, value: formatAdminDate(revealedAt) };
   }
   if (countdown.days > 0) {

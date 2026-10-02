@@ -49,6 +49,14 @@ describe("durable reveal-relative assignment reminders", () => {
     );
   });
 
+  it("schedules milestones from the trip's own reveal moment (Madrid reveals at 07:00Z, not 12:00Z)", async () => {
+    state.trips[0].departureTimeZone = "Europe/Madrid"; // Thu 2026-10-08 09:00 CEST = 07:00Z
+    now = new Date("2026-10-05T07:00:00Z"); // exactly 72h before
+    expect(await run()).toMatchObject({ accepted: 3 });
+    expect(state.rows.every((row) => +row.revealAt === +new Date("2026-10-08T07:00:00Z"))).toBe(true);
+    expect(state.rows.every((row) => row.milestoneHours === 72)).toBe(true);
+  });
+
   it("catches up only the current stage, not 72/48-hour backlogs", async () => {
     now = new Date(+revealAt - 6 * hour);
     expect((await run()).accepted).toBe(3);
@@ -67,11 +75,13 @@ describe("durable reveal-relative assignment reminders", () => {
     state.trips = [
       Object.assign(makeTrip("assigned"), { experienceId: "experience" }),
       Object.assign(makeTrip("missing"), { startDate: null }),
+      // Reveal Fri 2026-10-09 09:00 ART: 96h out, before the 72h window.
       Object.assign(makeTrip("early"), {
-        startDate: new Date(+now + 121 * hour),
+        startDate: new Date("2026-10-11T00:00:00Z"),
       }),
+      // Reveal Mon 2026-10-05 09:00 ART == now: already revealed.
       Object.assign(makeTrip("expired"), {
-        startDate: new Date(+now + 48 * hour),
+        startDate: new Date("2026-10-07T00:00:00Z"),
       }),
     ];
     expect((await run()).accepted).toBe(0);
@@ -136,8 +146,9 @@ it("sends to configured and hola inboxes without database admins", async () => {
 it("materializes urgent reveal deadlines first rather than lexical trip IDs", async () => {
   state.trips = [
     makeTrip("a-later"),
+    // Start a day earlier: reveals 24h sooner than the default trip.
     Object.assign(makeTrip("z-urgent"), {
-      startDate: new Date(+now + 49 * hour),
+      startDate: new Date("2026-10-09T00:00:00Z"),
     }),
   ];
   await run();

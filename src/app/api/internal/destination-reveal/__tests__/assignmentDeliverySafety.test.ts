@@ -117,7 +117,7 @@ it.each(["assignment", "cancellation", "reschedule", "deadline"])(
         if (change === "assignment") state.trips[0].experienceId = "experience";
         if (change === "cancellation") state.trips[0].status = "CANCELLED";
         if (change === "reschedule")
-          state.trips[0].startDate = new Date(+revealAt + 49 * hour);
+          state.trips[0].startDate = new Date("2026-10-11T00:00:00Z");
         if (change === "deadline") now = revealAt;
       }
       return find(args);
@@ -150,7 +150,7 @@ it("uses a new delivery identity when the reveal is rescheduled", async () => {
   const originalKeys = vi
     .mocked(sendMail)
     .mock.calls.map(([mail]) => mail.idempotencyKey);
-  state.trips[0].startDate = new Date(+state.trips[0].startDate! + hour);
+  state.trips[0].startDate = new Date("2026-10-09T00:00:00Z");
   now = new Date(+now + hour);
   expect((await run()).accepted).toBe(3);
   expect(state.rows).toHaveLength(6);
@@ -219,7 +219,7 @@ it.each(["assignment", "cancellation", "reschedule"])(
     if (change === "assignment") state.trips[0].experienceId = "experience";
     if (change === "cancellation") state.trips[0].status = "CANCELLED";
     if (change === "reschedule")
-      state.trips[0].startDate = new Date(+originalDate! + 10 * hour);
+      state.trips[0].startDate = new Date("2026-10-11T00:00:00Z");
     now = new Date(+now + hour);
     await run();
     const pending = state.rows.find(

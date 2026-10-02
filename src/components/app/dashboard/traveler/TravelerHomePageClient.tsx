@@ -13,6 +13,7 @@ import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import {
   getPayments,
   getTrips,
+  isTripAwaitingPayment,
   type Payment,
   type Trip,
 } from "@/lib/utils/trips";
@@ -98,13 +99,7 @@ export function TravelerHomePageClient({
   }, []);
 
   const unpaidTrips = useMemo(
-    () =>
-      trips.filter((t) => {
-        if (t.status === "CANCELLED") return false;
-        const ps = t.payment?.status;
-        if (ps === "APPROVED" || ps === "COMPLETED") return false;
-        return true;
-      }),
+    () => trips.filter(isTripAwaitingPayment),
     [trips],
   );
 

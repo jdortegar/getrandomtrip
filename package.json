@@ -24,6 +24,7 @@
     "db:backfill-email-verified": "npx tsx scripts/backfill-email-verified.ts",
     "db:backfill-companion-invites": "npx tsx scripts/backfill-companion-invites.ts",
     "db:backfill-tripper-since": "npx tsx scripts/backfill-tripper-since.ts",
+    "db:backfill-departure-time-zone": "npx tsx scripts/backfill-departure-time-zone.ts",
     "db:backfill-tripper-hero-crop": "npx tsx scripts/backfill-tripper-hero-crop.ts",
     "db:cleanup-duplicate-trips": "npx tsx scripts/cleanup-duplicate-trip-requests.ts",
     "db:rename-access-invites": "npx tsx scripts/rename-tripper-invites-to-access-invites.ts",

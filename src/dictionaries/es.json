@@ -6025,6 +6025,10 @@
     "fillEmpty": "Desde el panel de tu viaje puedes completar los datos faltantes o invitar a tus acompañantes a completar su información.",
     "cta": "Completar datos de acompañantes"
   },
+  "tripRevealNotification": {
+    "title": "Tu destino ya está listo",
+    "body": "Ya podés descubrir tu destino sorpresa. Abrí tu viaje y rascá la tarjeta para verlo."
+  },
   "travelerDetailsReminder": {
     "subject": "Tu viaje XSED: completá los datos de tus acompañantes",
     "preview": "Tu viaje XSED sale en 72 horas o menos. Faltan datos de tus acompañantes.",
