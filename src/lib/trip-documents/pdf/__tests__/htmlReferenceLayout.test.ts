@@ -102,6 +102,86 @@ for (const input of referenceFixtures) {
           ),
         ).toBeLessThanOrEqual(1);
       }
+      if (input.template === "experience-roadmap") {
+        const colors = await page.evaluate(() => {
+          const paint = (selector: string) => {
+            const element = document.querySelector(selector);
+            if (!element) return "";
+            const style = getComputedStyle(element);
+            return `${style.backgroundColor}|${style.color}`;
+          };
+          const fill = (selector: string) => {
+            const element = document.querySelector(selector);
+            return element ? getComputedStyle(element).fill : "";
+          };
+          return {
+            header: paint(".header"),
+            status: paint(".status"),
+            number: paint(".itinerary-card .number"),
+            map: paint(".map-panel"),
+            button: paint(".map-button"),
+            time: paint(".itinerary-card .time"),
+            eyebrow: paint(".header .eyebrow"),
+            wordmark: fill(".pareja path"),
+            icon: fill(".itinerary-heading path"),
+          };
+        });
+        expect(colors).toEqual({
+          header: "rgb(160, 182, 169)|rgb(22, 49, 60)",
+          status: "rgb(23, 74, 66)|rgb(255, 255, 255)",
+          number: "rgb(160, 182, 169)|rgb(8, 46, 48)",
+          map: "rgb(8, 46, 48)|rgb(213, 227, 223)",
+          button: "rgb(160, 182, 169)|rgb(8, 46, 48)",
+          time: "rgba(0, 0, 0, 0)|rgb(23, 74, 66)",
+          eyebrow: "rgba(0, 0, 0, 0)|rgb(23, 74, 66)",
+          wordmark: "rgb(22, 49, 60)",
+          icon: "rgb(23, 74, 66)",
+        });
+      }
+      if (input.template === "xsed-roadmap") {
+        const colors = await page.evaluate(() => {
+          const paint = (selector: string) => {
+            const element = document.querySelector(selector);
+            if (!element) return "";
+            const style = getComputedStyle(element);
+            return `${style.backgroundColor}|${style.color}`;
+          };
+          return {
+            header: paint(".header"),
+            status: paint(".status"),
+            map: paint(".map-panel"),
+            button: paint(".map-button"),
+          };
+        });
+        expect(colors).toEqual({
+          header: "rgb(160, 182, 169)|rgb(22, 49, 60)",
+          status: "rgb(23, 74, 66)|rgb(255, 255, 255)",
+          map: "rgb(8, 46, 48)|rgb(213, 227, 223)",
+          button: "rgb(160, 182, 169)|rgb(8, 46, 48)",
+        });
+      }
+      if (
+        input.template === "hotel-voucher" ||
+        input.template === "dinner-voucher" ||
+        input.template === "activity-voucher"
+      ) {
+        const colors = await page.evaluate(() => {
+          const paint = (selector: string) => {
+            const element = document.querySelector(selector);
+            if (!element) return "";
+            const style = getComputedStyle(element);
+            return `${style.backgroundColor}|${style.color}`;
+          };
+          return {
+            header: paint(".header"),
+            status: paint(".status"),
+          };
+        });
+        expect(colors).toEqual({
+          header: "rgb(160, 182, 169)|rgb(22, 49, 60)",
+          status: "rgb(23, 74, 66)|rgb(255, 255, 255)",
+        });
+      }
       if (input.template === "hotel-voucher") {
         expect(result.boxes.find((b) => b.className.includes("items"))!.y).toBe(
           784,

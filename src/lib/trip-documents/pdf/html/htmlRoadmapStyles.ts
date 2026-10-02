@@ -20,7 +20,7 @@ export const htmlRoadmapStyles = `.roadmap .header{min-height:220px;
   top:40px}
 .roadmap .status{font-size:13px}
 .route-small{font-size:13px;
-  color:#7ba8bb;
+  color:#3e5c58;
   margin-top:9px;
   line-height:18px;
   white-space:pre-wrap}
@@ -32,6 +32,10 @@ export const htmlRoadmapStyles = `.roadmap .header{min-height:220px;
   height:36px}
 .brand-lockup svg{width:100%;
   height:100%}
+.brand-lockup [fill="#f4f1ee"],
+.brand-lockup [fill="#ffffff"],
+.experience-get-lost path,
+.pareja path{fill:#16313c}
 .experience-lockup{display:flex;
   align-items:flex-end;
   gap:10px;
@@ -121,8 +125,8 @@ export const htmlRoadmapStyles = `.roadmap .header{min-height:220px;
 .itinerary-card .rich{max-width:920px}
 .itinerary-card .rich p:not(:first-child){max-width:630px}
 .map-panel{min-height:165px;
-  background:var(--dark);
-  color:#c4d7df;
+  background:#082e30;
+  color:#d5e3df;
   border:0;
   padding:31px 86px 21px;
   position:relative;
@@ -130,18 +134,18 @@ export const htmlRoadmapStyles = `.roadmap .header{min-height:220px;
 .map-panel>.tile{position:absolute;
   left:34px;
   top:30px;
-  background:#214b58;
+  background:#174a42;
   width:42px;
   height:42px}
 .map-panel h2{font-size:15px;
   line-height:22px;
-  color:var(--cyan)}
+  color:#a0b6a9}
 .map-panel p{font-size:14px;
   line-height:22px;
   margin-top:13px}
 .map-panel .map-button{display:inline-block;
-  background:var(--cyan);
-  color:white;
+  background:#a0b6a9;
+  color:#082e30;
   text-align:center;
   width:280px;
   border-radius:8px;
@@ -154,7 +158,9 @@ export const htmlRoadmapStyles = `.roadmap .header{min-height:220px;
 .map-panel .map-farewell{position:absolute;
   bottom:32px;
   right:86px;
+  color:#a0b6a9;
   font-size:13px}
+.map-panel [data-icon] path{fill:#a0b6a9}
 .roadmap .footer{bottom:31px;
   font-size:12px}
 .split-fragment{min-height:0!important}
