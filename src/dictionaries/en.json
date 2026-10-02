@@ -1946,6 +1946,23 @@
       "moreEyebrow": "EXPLORE",
       "moreTitle": "MORE OF MY ADVENTURES",
       "moreSubtitle": "Notes, guides and inspiring moments. First-hand stories.",
+      "moreByTravelType": {
+        "couple": {
+          "eyebrow": "As a couple",
+          "title": "More stories for traveling as a couple",
+          "subtitle": "Notes and guides for a trip for two."
+        },
+        "group": {
+          "eyebrow": "In a group",
+          "title": "More stories for traveling in a group",
+          "subtitle": "Notes and guides for heading out with friends."
+        },
+        "solo": {
+          "eyebrow": "Solo travel",
+          "title": "More stories for traveling solo",
+          "subtitle": "Notes and guides for heading out on your own."
+        }
+      },
       "viewAll": "View all",
       "exploreMore": "Explore more stories",
       "testimonials": "What travelers say about {name}",

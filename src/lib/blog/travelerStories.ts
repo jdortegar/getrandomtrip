@@ -476,6 +476,7 @@ export interface TravelerStoryArticle {
   subtitle: string;
   tags: string[];
   title: string;
+  travelType: "couple" | "group" | "solo";
   updatedAt: string;
 }
 
@@ -497,6 +498,7 @@ export function getTravelerStoryArticle(
     subtitle: copy.subtitle,
     tags: [copy.category],
     title: copy.title,
+    travelType: story.travelType,
     updatedAt: PUBLISHED_AT,
   };
 }

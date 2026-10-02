@@ -43,6 +43,7 @@ export interface BlogPost {
   blocks?: BlogPostBlock[];
   faq?: { items?: { question: string; answer: string }[] } | null;
   tags: string[];
+  travelType?: string[];
   format: string;
   source?: "TRIPPER" | "RANDOMTRIP";
   seo?: {
@@ -54,6 +55,14 @@ export interface BlogPost {
   createdAt: string;
   updatedAt: string;
   author: BlogDetailAuthor;
+}
+
+const TRAVEL_TYPE_HEADINGS = ["couple", "group", "solo"] as const;
+
+type TravelTypeHeading = (typeof TRAVEL_TYPE_HEADINGS)[number];
+
+function isTravelTypeHeading(value: string): value is TravelTypeHeading {
+  return (TRAVEL_TYPE_HEADINGS as readonly string[]).includes(value);
 }
 
 interface BlogPostClientProps {
@@ -72,6 +81,14 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
   const isSofia =
     blog.author?.name?.toLowerCase() === "sofia" ||
     blog.author?.slug?.toLowerCase() === "sofia";
+  const travelTypeHeading = blog.travelType?.find(isTravelTypeHeading);
+  const moreHeading = travelTypeHeading
+    ? copy.moreByTravelType[travelTypeHeading]
+    : {
+        eyebrow: copy.moreEyebrow,
+        subtitle: copy.moreSubtitle,
+        title: copy.moreTitle,
+      };
 
   useEffect(() => {
     if (!blog.author?.id) return;
@@ -284,12 +301,12 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
       {displayPosts.length > 0 && (
         <Blog
           className="bg-gray-50"
-          eyebrow={copy.moreEyebrow}
+          eyebrow={moreHeading.eyebrow}
           id="more-posts"
           paneClassName="bg-gray-50"
           posts={displayPosts}
-          subtitle={copy.moreSubtitle}
-          title={copy.moreTitle}
+          subtitle={moreHeading.subtitle}
+          title={moreHeading.title}
           viewAll={{
             href: pathForLocale(locale as Locale, `/blog?tripperId=${blog.author.id}&tripper=${blog.author.name}`),
             subtitle: copy.exploreMore,
