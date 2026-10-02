@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
         id: true,
         slug: true,
         title: true,
+        content: true,
         translations: true,
         subtitle: true,
         tagline: true,

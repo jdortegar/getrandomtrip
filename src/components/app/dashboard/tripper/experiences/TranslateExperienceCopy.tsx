@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { translateExperiencePieces } from "@/lib/ai/browserTranslator";
+import { requestCopyTranslation } from "@/lib/ai/requestCopyTranslation";
 import {
   applyExperienceCopy,
   collectExperienceCopy,
@@ -19,19 +19,7 @@ interface TranslateExperienceCopyProps {
   onBusyChange: (busy: boolean) => void;
 }
 
-type TranslationPhase = "downloading" | "idle" | "translating";
-
 const TARGETS: ExperienceCopyLocale[] = ["en", "es"];
-
-function progressLabel(
-  copy: TripperExperiencesDict["form"]["translate"],
-  phase: TranslationPhase,
-  progress: number | undefined,
-): string {
-  if (phase === "translating") return copy.translating;
-  if (progress == null) return copy.downloading;
-  return copy.downloadingProgress.replace("{progress}", String(Math.round(progress)));
-}
 
 export function TranslateExperienceCopy({
   copy,
@@ -41,12 +29,10 @@ export function TranslateExperienceCopy({
 }: TranslateExperienceCopyProps) {
   const [activeTarget, setActiveTarget] = useState<ExperienceCopyLocale | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [phase, setPhase] = useState<TranslationPhase>("idle");
-  const [progress, setProgress] = useState<number | undefined>(undefined);
+  const [isTranslating, setIsTranslating] = useState(false);
   const busyRef = useRef(false);
 
   const hasCopy = collectExperienceCopy(form).length > 0;
-  const isBusy = phase !== "idle";
 
   async function handleTranslate(target: ExperienceCopyLocale) {
     const pieces = collectExperienceCopy(form);
@@ -55,22 +41,13 @@ export function TranslateExperienceCopy({
     busyRef.current = true;
     setActiveTarget(target);
     setHasError(false);
-    setPhase("downloading");
-    setProgress(undefined);
+    setIsTranslating(true);
     onBusyChange(true);
 
     try {
-      const translated = await translateExperiencePieces(
+      const translated = await requestCopyTranslation(
         pieces.map(({ html, text }) => ({ html, text })),
         target,
-        (info) => {
-          if (info.status === "done" || info.status === "ready" || info.status === "translating") {
-            setPhase("translating");
-            return;
-          }
-          setPhase("downloading");
-          if (typeof info.progress === "number") setProgress(info.progress);
-        },
       );
 
       onApply((current) =>
@@ -87,8 +64,7 @@ export function TranslateExperienceCopy({
     } finally {
       busyRef.current = false;
       setActiveTarget(null);
-      setPhase("idle");
-      setProgress(undefined);
+      setIsTranslating(false);
       onBusyChange(false);
     }
   }
@@ -111,7 +87,7 @@ export function TranslateExperienceCopy({
           return (
             <Button
               aria-busy={isActive}
-              disabled={!hasCopy || isBusy}
+              disabled={!hasCopy || isTranslating}
               key={target}
               onClick={() => void handleTranslate(target)}
               size="sm"
@@ -121,7 +97,7 @@ export function TranslateExperienceCopy({
               {isActive ? (
                 <>
                   <Loader2 aria-hidden className="animate-spin h-4 w-4" />
-                  {progressLabel(copy, phase, progress)}
+                  {copy.translating}
                 </>
               ) : (
                 label
@@ -131,9 +107,9 @@ export function TranslateExperienceCopy({
         })}
       </div>
 
-      {isBusy ? (
+      {isTranslating ? (
         <p aria-live="polite" className="sr-only">
-          {progressLabel(copy, phase, progress)}
+          {copy.translating}
         </p>
       ) : null}
 

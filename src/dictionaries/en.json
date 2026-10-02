@@ -4409,6 +4409,14 @@
         "canonicalLabel": "Original content: Spanish",
         "unavailable": "This article does not have an English version yet."
       },
+      "translate": {
+        "error": "Could not translate this post. Try again.",
+        "hint": "Fills the other language from the title, subtitle, quote, sections, and FAQ.",
+        "label": "AI translation",
+        "toEnglish": "Translate to English",
+        "toSpanish": "Translate to Spanish",
+        "translating": "Translating..."
+      },
       "nav": {
         "progress": "Progress"
       },
@@ -5330,10 +5338,8 @@
         "pendingReview": "Pending review"
       },
       "translate": {
-        "downloading": "Downloading model...",
-        "downloadingProgress": "Downloading model... {progress}%",
         "error": "Could not translate this experience. Try again.",
-        "hint": "Turns Spanish text into English, or English text into Spanish, for the title, teaser, description, activities, and itinerary. The first run downloads a model (about 37 MB) in this browser. Nothing is uploaded.",
+        "hint": "Turns Spanish text into English, or English text into Spanish, for the title, teaser, description, activities, and itinerary.",
         "label": "AI translation",
         "toEnglish": "Translate to English",
         "toSpanish": "Translate to Spanish",

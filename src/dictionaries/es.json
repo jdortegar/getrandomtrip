@@ -4409,6 +4409,14 @@
         "canonicalLabel": "Contenido original: español",
         "unavailable": "Este artículo todavía no tiene una versión en inglés."
       },
+      "translate": {
+        "error": "No se pudo traducir este post. Inténtalo de nuevo.",
+        "hint": "Completa el otro idioma a partir del título, el subtítulo, la cita, las secciones y las preguntas.",
+        "label": "Traducción con IA",
+        "toEnglish": "Traducir al inglés",
+        "toSpanish": "Traducir al español",
+        "translating": "Traduciendo..."
+      },
       "nav": {
         "progress": "Progreso"
       },
@@ -5330,10 +5338,8 @@
         "pendingReview": "En revisión"
       },
       "translate": {
-        "downloading": "Descargando modelo...",
-        "downloadingProgress": "Descargando modelo... {progress}%",
         "error": "No se pudo traducir esta experiencia. Intenta de nuevo.",
-        "hint": "Pasa el texto en español a inglés, o el texto en inglés a español: título, teaser, descripción, actividades e itinerario. La primera vez descarga un modelo (unos 37 MB) en este navegador. Nada se sube.",
+        "hint": "Pasa el texto en español a inglés, o el texto en inglés a español: título, teaser, descripción, actividades e itinerario.",
         "label": "Traducción con IA",
         "toEnglish": "Traducir al inglés",
         "toSpanish": "Traducir al español",

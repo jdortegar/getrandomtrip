@@ -5,12 +5,12 @@ import en from "@/dictionaries/en.json";
 import type { ExperienceFormDraft } from "@/types/tripper";
 import { TranslateExperienceCopy } from "../TranslateExperienceCopy";
 
-const { translateExperiencePieces } = vi.hoisted(() => ({
-  translateExperiencePieces: vi.fn(),
+const { requestCopyTranslation } = vi.hoisted(() => ({
+  requestCopyTranslation: vi.fn(),
 }));
 
-vi.mock("@/lib/ai/browserTranslator", () => ({
-  translateExperiencePieces,
+vi.mock("@/lib/ai/requestCopyTranslation", () => ({
+  requestCopyTranslation,
 }));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
@@ -56,7 +56,7 @@ let container: HTMLDivElement;
 let root: Root;
 
 beforeEach(() => {
-  translateExperiencePieces.mockReset();
+  requestCopyTranslation.mockReset();
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
@@ -93,16 +93,9 @@ describe("TranslateExperienceCopy", () => {
   });
 
   it("writes the English translation back into the draft", async () => {
-    translateExperiencePieces.mockImplementation(
-      async (
-        pieces: Array<{ text: string }>,
-        target: string,
-        onProgress?: (info: { progress?: number; status: string }) => void,
-      ) => {
-        onProgress?.({ progress: 40, status: "progress" });
-        onProgress?.({ status: "translating" });
-        return pieces.map((piece) => `${target}:${piece.text}`);
-      },
+    requestCopyTranslation.mockImplementation(
+      async (pieces: Array<{ text: string }>, target: string) =>
+        pieces.map((piece) => `${target}:${piece.text}`),
     );
     const form = draft("Amanecer");
     const { onApply, onBusyChange } = render(form);
@@ -111,10 +104,9 @@ describe("TranslateExperienceCopy", () => {
       container.querySelector("button")!.click();
     });
 
-    expect(translateExperiencePieces).toHaveBeenCalledWith(
+    expect(requestCopyTranslation).toHaveBeenCalledWith(
       [{ html: false, text: "Amanecer" }],
       "en",
-      expect.any(Function),
     );
     expect(onBusyChange).toHaveBeenNthCalledWith(1, true);
     expect(onBusyChange).toHaveBeenLastCalledWith(false);
@@ -127,17 +119,16 @@ describe("TranslateExperienceCopy", () => {
   });
 
   it("shows an error and leaves the draft unchanged when translation fails", async () => {
-    translateExperiencePieces.mockRejectedValue(new Error("model failed"));
+    requestCopyTranslation.mockRejectedValue(new Error("model failed"));
     const { onApply } = render(draft("Amanecer"));
 
     await act(async () => {
       container.querySelectorAll("button")[1]!.click();
     });
 
-    expect(translateExperiencePieces).toHaveBeenCalledWith(
+    expect(requestCopyTranslation).toHaveBeenCalledWith(
       [{ html: false, text: "Amanecer" }],
       "es",
-      expect.any(Function),
     );
     expect(onApply).not.toHaveBeenCalled();
     expect(container.querySelector("[role='alert']")?.textContent).toBe(copy.error);
