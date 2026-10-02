@@ -12,7 +12,10 @@ import {
   getAllTravelerTypePaths,
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
-import { getReviewsForTripType } from "@/lib/db/tripper-queries";
+import {
+  getPublishedBlogsForTravelType,
+  getReviewsForTripType,
+} from "@/lib/db/tripper-queries";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 import { getEffectiveTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -84,12 +87,13 @@ export default async function TravelerTypePage(props: {
   // now catches its own errors too (review finding #7) — so a plain
   // `Promise.all` is correct here, not `allSettled`.
   const catalogOptOut = searchParams?.catalog === "randomtrip";
-  const [tripperContext, dict, testimonials] = await Promise.all([
+  const [tripperContext, dict, testimonials, publishedBlogs] = await Promise.all([
     catalogOptOut
       ? Promise.resolve(null)
       : readAttributionSlug().then((slug) => resolveLiveAttribution(slug)),
     getDictionary(locale),
     getReviewsForTripType(typeData.meta.slug),
+    getPublishedBlogsForTravelType(typeData.meta.slug, locale),
   ]);
   const priceOverrides = getEffectiveTripperPriceOverrides(
     tripperContext,
@@ -98,6 +102,11 @@ export default async function TravelerTypePage(props: {
 
   const { blogEyebrow, inspirationBanner } = dict.packagesByType;
   const blogHref = pathForLocale(locale, "/blog");
+  const storyHrefs = new Set(typeData.blog.posts.map((post) => post.href));
+  const blogPosts = [
+    ...typeData.blog.posts,
+    ...publishedBlogs.filter((post) => !storyHrefs.has(post.href)),
+  ];
   const viewAll = typeData.blog.viewAll
     ? {
         ...typeData.blog.viewAll,
@@ -136,9 +145,9 @@ export default async function TravelerTypePage(props: {
       <Blog
         eyebrow={blogEyebrow}
         id="blog"
-        posts={typeData.blog.posts.map((p) => ({
-          ...p,
-          href: pathForLocale(locale, p.href),
+        posts={blogPosts.map((post) => ({
+          ...post,
+          href: pathForLocale(locale, post.href),
         }))}
         subtitle={typeData.blog.subtitle}
         title={typeData.blog.title}

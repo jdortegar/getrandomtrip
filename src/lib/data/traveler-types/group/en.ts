@@ -2,7 +2,8 @@ import type { TravelerTypeData } from "@/types/traveler-type";
 import type { HeroContent } from "@/components/Hero";
 import type { ParagraphContent } from "@/components/Paragraph";
 import type { TypePlannerContent } from "@/types/planner";
-import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
+import { travelerStoryCards } from "@/lib/blog/travelerStories";
+import type { BlogViewAll } from "@/lib/data/shared/blog-types";
 import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 import { getExcusesByType } from "@/lib/helpers/excuse-helper";
 
@@ -309,48 +310,21 @@ export const groupEn: TravelerTypeData = {
   blog: {
     title: "Group travel stories",
     subtitle: "Shared adventures that become legends.",
-    posts: [
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-        category: "Stories",
-        title: "10 moments that only happen when traveling in a group",
-      },
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-        category: "Tips",
-        title: "How to organize a trip with friends without drama",
-      },
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429",
-        category: "Experiences",
-        title: "The wine route we did with 8 of us",
-      },
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1543248939-ff40856f65d4",
-        category: "Guides",
-        title: "Ideal destinations for large groups",
-      },
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-        category: "Adventure",
-        title: "Group trekking: tips and laughs",
-      },
-      {
-        href: "/blogs/group",
-        image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800",
-        category: "Culture",
-        title: "Festivals to go with your crew",
-      },
-    ] as BlogPost[],
+    posts: travelerStoryCards(
+      [
+        "momentos-que-solo-pasan-viajando-en-grupo",
+        "organizar-un-viaje-con-amigos-sin-drama",
+        "la-ruta-del-vino-entre-ocho",
+        "destinos-ideales-para-grupos-grandes",
+        "trekking-en-grupo",
+        "festivales-para-ir-con-la-barra",
+      ],
+      "en",
+    ),
     viewAll: {
       title: "View all stories",
       subtitle: "Go to Blog",
-      href: "/blogs/group",
+      href: "/blog",
     } as BlogViewAll,
   },
   testimonials: {

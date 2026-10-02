@@ -1,6 +1,7 @@
 import type { TravelerTypeData } from "@/types/traveler-type";
 import type { TypePlannerContent } from "@/types/planner";
-import type { BlogPost, BlogViewAll } from "@/lib/data/shared/blog-types";
+import { travelerStoryCards } from "@/lib/blog/travelerStories";
+import type { BlogViewAll } from "@/lib/data/shared/blog-types";
 import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 import { getExcusesByType } from "@/lib/helpers/excuse-helper";
 
@@ -224,48 +225,21 @@ export const soloEn: TravelerTypeData = {
     title: "Our favorite destinations for solo travel",
     subtitle:
       "The solo path doesn't mean being alone. These stories and destinations show that getting lost is another way of finding yourself.",
-    posts: [
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
-        category: "Independence",
-        title: "Traveling Solo: The Best Decision You Can Make",
-      },
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
-        category: "Safety",
-        title: "Safety Tips for Solo Travelers",
-      },
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800",
-        category: "Destinations",
-        title: "The Best Destinations for Your First Solo Trip",
-      },
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1539635278303-d4002c07eae3",
-        category: "Budget",
-        title: "How to Travel Solo Without Overspending",
-      },
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1527631746610-bca00a040d60",
-        category: "Experiences",
-        title: "Meeting People Along the Way",
-      },
-      {
-        href: "/blog/solo",
-        image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1",
-        category: "Inspiration",
-        title: "The Art of Traveling Solo",
-      },
-    ] as BlogPost[],
+    posts: travelerStoryCards(
+      [
+        "viajar-solo-la-mejor-decision",
+        "consejos-de-seguridad-para-viajeros-solitarios",
+        "mejores-destinos-para-tu-primer-viaje-solo",
+        "viajar-solo-sin-gastar-de-mas",
+        "conociendo-personas-en-el-camino",
+        "el-arte-de-viajar-en-solitario",
+      ],
+      "en",
+    ),
     viewAll: {
       title: "View all stories",
       subtitle: "More solo adventures",
-      href: "/blog/solo",
+      href: "/blog",
     } as BlogViewAll,
   },
   testimonials: {
