@@ -119,10 +119,7 @@ export function sendBookingConfirmed(
 
       const locale = resolveLocale(user.locale);
       const departureDate = tripRequest.startDate
-        ? tripRequest.startDate.toLocaleDateString(
-            locale === "en" ? "en-US" : "es-AR",
-            { year: "numeric", month: "long", day: "numeric" },
-          )
+        ? formatCalendarDate(tripRequest.startDate, locale)
         : undefined;
 
       let receiptUrl: string | null = null;
@@ -389,11 +386,7 @@ export function sendAdminNewBooking(
 
       const adminEmails = await getAdminEmails();
       const departureDate = tripRequest.startDate
-        ? tripRequest.startDate.toLocaleDateString("es-AR", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })
+        ? formatCalendarDate(tripRequest.startDate, "es-AR")
         : undefined;
 
       await sendMail({
