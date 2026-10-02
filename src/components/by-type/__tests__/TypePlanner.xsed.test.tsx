@@ -29,6 +29,7 @@ vi.mock("next/navigation", () => ({
   },
 }));
 vi.mock("@/lib/db/tripper-queries", () => ({
+  getPublishedBlogsForTravelType: async () => [],
   getReviewsForTripType: async () => [],
 }));
 vi.mock("@/lib/tripper/attribution-server", () => ({
