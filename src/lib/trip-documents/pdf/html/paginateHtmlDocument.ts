@@ -11,9 +11,11 @@ export function paginateHtmlDocument() {
   const limit = height - (roadmap ? 78 : 72);
   const dinnerFooterBoundary = footer.offsetTop - 8;
   const header = main.querySelector<HTMLElement>(".header")!;
-  const side = header.querySelector<HTMLElement>(".header-right")!;
-  const sideBottom = side.offsetTop + side.offsetHeight + 20;
-  header.style.minHeight = `${Math.max(header.offsetHeight, sideBottom)}px`;
+  const side = header.querySelector<HTMLElement>(".header-right");
+  if (side) {
+    const sideBottom = side.offsetTop + side.offsetHeight + 20;
+    header.style.minHeight = `${Math.max(header.offsetHeight, sideBottom)}px`;
+  }
   const source = Array.from(main.children) as HTMLElement[];
   const pages: HTMLElement[] = [original];
   const contents: HTMLElement[] = [main];
