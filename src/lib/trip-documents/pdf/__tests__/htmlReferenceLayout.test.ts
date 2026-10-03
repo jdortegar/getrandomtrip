@@ -67,40 +67,78 @@ for (const input of referenceFixtures) {
           height: element.offsetHeight,
         }));
         const logo = document.querySelector<SVGSVGElement>("svg.logo")!;
-        const logoImage = logo.querySelector("image")!;
+        const logoImage = logo.querySelector("image");
         return {
           pages: document.querySelectorAll(".sheet").length,
           boxes,
           logo: {
             width: logo.width.baseVal.value,
             height: logo.height.baseVal.value,
-            preserveAspectRatio: logoImage.preserveAspectRatio.baseVal.align,
-            meetOrSlice: logoImage.preserveAspectRatio.baseVal.meetOrSlice,
+            preserveAspectRatio: logoImage
+              ? logoImage.preserveAspectRatio.baseVal.align
+              : logo.preserveAspectRatio.baseVal.align,
+            meetOrSlice: logoImage
+              ? logoImage.preserveAspectRatio.baseVal.meetOrSlice
+              : logo.preserveAspectRatio.baseVal.meetOrSlice,
+            teal: /rgb\(8,\s*46,\s*48\)/.test(logo.innerHTML),
           },
         };
       });
       expect(result.pages).toBe(1);
-      expect(result.logo.width).toBeCloseTo(203.2, 3);
+      const roadmap = input.template.endsWith("roadmap");
+      expect(result.logo.width).toBeCloseTo(roadmap ? 243.84 : 203.2, 3);
       expect(result.logo).toMatchObject({
-        height: 51,
+        height: roadmap ? 61.2 : 51,
         preserveAspectRatio: 6, // SVG xMidYMid: centered, never stretched.
         meetOrSlice: 1, // SVG meet: contain the complete approved mark.
       });
-      const roadmap = input.template.endsWith("roadmap");
+      if (roadmap) expect(result.logo.teal).toBe(true);
       expect(result.boxes[0].height).toBe(roadmap ? 220 : 213);
       if (roadmap) {
         expect(
           result.boxes.find((b) => b.className.includes("summary-row"))!.y,
         ).toBe(248);
-        expect(
-          result.boxes.find((b) => b.className.includes("itinerary-card"))!.y,
-        ).toBe(490);
-        expect(
-          Math.abs(
-            result.boxes.find((b) => b.className.includes("map-panel"))!.y -
-              1477,
-          ),
-        ).toBeLessThanOrEqual(1);
+        const fit = await page.evaluate(() => {
+          return Array.from(
+            document.querySelectorAll<HTMLElement>(".summary, .itinerary-card"),
+          ).map((card) => {
+            const style = getComputedStyle(card);
+            const cardRect = card.getBoundingClientRect();
+            const borderTop = parseFloat(style.borderTopWidth);
+            const borderBottom = parseFloat(style.borderBottomWidth);
+            const padTop = parseFloat(style.paddingTop);
+            const padBottom = parseFloat(style.paddingBottom);
+            const flowing = Array.from(card.children).filter(
+              (child) => getComputedStyle(child).position !== "absolute",
+            );
+            const tops = flowing.map(
+              (child) => child.getBoundingClientRect().top,
+            );
+            const bottoms = flowing.map(
+              (child) => child.getBoundingClientRect().bottom,
+            );
+            return {
+              border: style.borderTopColor,
+              minHeight: style.minHeight,
+              topSlack: Math.round(
+                Math.min(...tops) - (cardRect.top + borderTop + padTop),
+              ),
+              bottomSlack: Math.round(
+                cardRect.bottom -
+                  borderBottom -
+                  padBottom -
+                  Math.max(...bottoms),
+              ),
+            };
+          });
+        });
+        expect(fit.length).toBeGreaterThan(0);
+        for (const card of fit) {
+          expect(card.border).toBe("rgb(8, 46, 48)");
+          expect(card.minHeight).toBe("0px");
+          expect(Math.abs(card.topSlack)).toBeLessThanOrEqual(1);
+          expect(Math.abs(card.bottomSlack)).toBeLessThanOrEqual(1);
+        }
       }
       if (input.template === "experience-roadmap") {
         const colors = await page.evaluate(() => {
@@ -121,21 +159,19 @@ for (const input of referenceFixtures) {
             map: paint(".map-panel"),
             button: paint(".map-button"),
             time: paint(".itinerary-card .time"),
-            eyebrow: paint(".header .eyebrow"),
             wordmark: fill(".pareja path"),
             icon: fill(".itinerary-heading path"),
           };
         });
         expect(colors).toEqual({
-          header: "rgb(160, 182, 169)|rgb(22, 49, 60)",
-          status: "rgb(23, 74, 66)|rgb(255, 255, 255)",
+          header: "rgb(160, 182, 169)|rgb(8, 46, 48)",
+          status: "rgb(23, 74, 66)|rgb(160, 182, 169)",
           number: "rgb(160, 182, 169)|rgb(8, 46, 48)",
           map: "rgb(8, 46, 48)|rgb(213, 227, 223)",
           button: "rgb(160, 182, 169)|rgb(8, 46, 48)",
-          time: "rgba(0, 0, 0, 0)|rgb(23, 74, 66)",
-          eyebrow: "rgba(0, 0, 0, 0)|rgb(23, 74, 66)",
-          wordmark: "rgb(22, 49, 60)",
-          icon: "rgb(23, 74, 66)",
+          time: "rgba(0, 0, 0, 0)|rgb(8, 46, 48)",
+          wordmark: "rgb(8, 46, 48)",
+          icon: "rgb(15, 92, 96)",
         });
       }
       if (input.template === "xsed-roadmap") {
@@ -154,8 +190,8 @@ for (const input of referenceFixtures) {
           };
         });
         expect(colors).toEqual({
-          header: "rgb(160, 182, 169)|rgb(22, 49, 60)",
-          status: "rgb(23, 74, 66)|rgb(255, 255, 255)",
+          header: "rgb(160, 182, 169)|rgb(8, 46, 48)",
+          status: "rgb(23, 74, 66)|rgb(160, 182, 169)",
           map: "rgb(8, 46, 48)|rgb(213, 227, 223)",
           button: "rgb(160, 182, 169)|rgb(8, 46, 48)",
         });
