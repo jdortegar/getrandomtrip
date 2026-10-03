@@ -29,6 +29,7 @@ const names = [
 ] as const;
 export interface HtmlAssets {
   logo: Buffer;
+  roadmapLogo: string;
   fonts: string;
   icons: Record<string, string>;
 }
@@ -43,8 +44,10 @@ export function loadHtmlAssets() {
 }
 async function readAssets(): Promise<HtmlAssets> {
   const root = join(process.cwd(), "public/assets");
-  const [logo, arimo, barlow, inter, interBold, icons] = await Promise.all([
+  const [logo, roadmapLogo, arimo, barlow, inter, interBold, icons] =
+    await Promise.all([
     readFile(join(root, "logos/logo_pdf.png")),
+    readFile(join(root, "logos/logo_randomtrip.svg"), "utf8"),
     readFile(join(root, "fonts/arimo/Arimo.ttf")),
     readFile(join(root, "fonts/barlow/Barlow-Bold.ttf")),
     readFile(join(root, "fonts/inter/Inter-Regular.woff2")),
@@ -58,6 +61,15 @@ async function readAssets(): Promise<HtmlAssets> {
   ]);
   return {
     logo,
+    roadmapLogo: roadmapLogo
+      .replace(/<\?xml[\s\S]*?\?>/, "")
+      .replace(/<!DOCTYPE[\s\S]*?>/, "")
+      .replace(/rgb\(229,\s*165,\s*28\)/g, "rgb(8,46,48)")
+      .replace(
+        /<svg\b[^>]*>/,
+        '<svg class="logo" width="243.84" height="61.2" viewBox="0 0 1203 300" preserveAspectRatio="xMidYMid meet">',
+      )
+      .trim(),
     icons: Object.fromEntries(icons),
     fonts: `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${inter.toString("base64")}) format('woff2');font-weight:400}@font-face{font-family:Inter;src:url(data:font/woff2;base64,${interBold.toString("base64")}) format('woff2');font-weight:700}@font-face{font-family:Arimo;src:url(data:font/ttf;base64,${arimo.toString("base64")}) format('truetype');font-weight:400 700}@font-face{font-family:Barlow;src:url(data:font/ttf;base64,${barlow.toString("base64")}) format('truetype');font-weight:700}`,
   };

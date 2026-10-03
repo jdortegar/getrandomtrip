@@ -61,8 +61,13 @@ for (const fixture of referenceFixtures) {
     await record(fixture.template, result.buffer);
     const pages = await extract(result.buffer);
     expect(pages).toHaveLength(1);
-    expect(pages[0]).toContain("Documento de viaje | 1 / 1");
-    expect(pages[0]).toContain("DEMO-2026-89413");
+    expect(pages[0]).toContain(
+      fixture.template.endsWith("roadmap")
+        ? "Randomtrip"
+        : "Documento de viaje | 1 / 1",
+    );
+    if (!fixture.template.endsWith("roadmap"))
+      expect(pages[0]).toContain("DEMO-2026-89413");
     await record(fixture.template, result.buffer);
   });
   it(`renders ${fixture.template} with English panels and footer`, async () => {
@@ -73,7 +78,11 @@ for (const fixture of referenceFixtures) {
     if (!result.ok) throw new Error(JSON.stringify(result.errors));
     const pages = await extract(result.buffer);
     expect(pages).toHaveLength(1);
-    expect(pages[0]).toContain("Travel document | 1 / 1");
+    expect(pages[0]).toContain(
+      fixture.template.endsWith("roadmap")
+        ? "Randomtrip"
+        : "Travel document | 1 / 1",
+    );
     await record(`${fixture.template}-en`, result.buffer);
   });
   it(`paginates long ${fixture.template} content without losing the final authored marker`, async () => {
@@ -131,7 +140,9 @@ for (const fixture of referenceFixtures) {
     for (const page of bodyPages) expect(page.length).toBeGreaterThan(30);
     for (const [index, page] of pages.entries())
       expect(page).toContain(
-        `Documento de viaje | ${index + 1} / ${pages.length}`,
+        input.template.endsWith("roadmap")
+          ? "Randomtrip"
+          : `Documento de viaje | ${index + 1} / ${pages.length}`,
       );
     await record(`${fixture.template}-long`, result.buffer);
   }, 30000);

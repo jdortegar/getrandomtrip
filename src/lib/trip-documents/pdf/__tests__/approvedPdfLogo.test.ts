@@ -29,11 +29,16 @@ it.each([
     expect((await generate(document, render)).ok).toBe(true);
 
     const { html } = render.mock.calls[0][0];
-    expect(
-      html.includes(
-        `href="data:image/png;base64,${approved.toString("base64")}"`,
-      ),
-    ).toBe(true);
+    if (document.template.endsWith("roadmap")) {
+      expect(html).toContain('svg class="logo"');
+      expect(html).toContain("rgb(8,46,48)");
+      expect(html).not.toContain("logo_pdf");
+    } else
+      expect(
+        html.includes(
+          `href="data:image/png;base64,${approved.toString("base64")}"`,
+        ),
+      ).toBe(true);
     expect(html).toContain("img-src data:");
   },
 );

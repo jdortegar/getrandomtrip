@@ -159,8 +159,9 @@ export function paginateHtmlDocument() {
   }
   for (const element of source) place(element);
   for (const [index, page] of pages.entries()) {
-    page.querySelector(".page-number")!.textContent =
-      `${index + 1} / ${pages.length}`;
+    const pageNumber = page.querySelector(".page-number");
+    if (pageNumber)
+      pageNumber.textContent = `${index + 1} / ${pages.length}`;
     if (index > 0 && document.body.classList.contains("hotel")) {
       (page.querySelector(".footer") as HTMLElement).style.cssText =
         "background:white;color:#5d7377;bottom:17px";
