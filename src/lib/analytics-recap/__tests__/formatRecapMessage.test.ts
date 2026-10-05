@@ -28,7 +28,7 @@ const body = (recap: DailyRecap) =>
 it("renders the agreed layout for a normal day", () => {
   expect(body(base)).toBe(
     [
-      "📊 *GetRandomTrip* — Thu 1 Oct (vs Thu 24 Sep)",
+      "📊 *Randomtrip* — Thu 1 Oct (vs Thu 24 Sep)",
       "Visitors 142 (+18%) · New 120 (+22%) · Sessions 168 (+12%) · Page views 610 (+22%)",
       "🌎 Countries: Argentina 61 · Spain 28",
       "🔗 Sources: Organic Search 70 · Direct 40",
