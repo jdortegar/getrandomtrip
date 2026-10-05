@@ -57,7 +57,7 @@ export function formatRecapMessage(recap: DailyRecap): SlackRecapPayload {
   const metric = (label: string, now: number, before: number) =>
     `${label} ${now} (${formatWeekOverWeek(now, before)})`;
   const text = [
-    `📊 *GetRandomTrip* — ${formatDay(recap.date)} (vs ${formatDay(recap.compareDate)})`,
+    `📊 *Randomtrip* — ${formatDay(recap.date)} (vs ${formatDay(recap.compareDate)})`,
     [
       metric("Visitors", c.activeUsers, p.activeUsers),
       metric("New", c.newUsers, p.newUsers),

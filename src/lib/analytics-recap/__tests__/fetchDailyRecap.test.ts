@@ -19,8 +19,9 @@ const row = (dims: string[], metrics: number[]) => ({
 const reports = () => [
   {
     rows: [
-      row(["20261001", "date_range_0"], [142, 120, 168, 610]),
-      row(["20260924", "date_range_1"], [100, 80, 150, 500]),
+      // Order is not guaranteed; mapping must key on the range name.
+      row(["previous"], [100, 80, 150, 500]),
+      row(["current"], [142, 120, 168, 610]),
     ],
   },
   { rows: [row(["Argentina"], [61]), row(["Spain"], [28])] },
@@ -34,7 +35,10 @@ beforeEach(() => {
 });
 
 it("maps GA4 reports into a DailyRecap with missing events as 0", async () => {
-  const recap = await fetchDailyRecap(config);
+  const recap = await fetchDailyRecap(
+    config,
+    new Date("2026-10-02T12:00:00Z"), // 09:00 on 2 Oct in UTC-3
+  );
   expect(recap).toEqual({
     date: "2026-10-01",
     compareDate: "2026-09-24",
@@ -60,11 +64,13 @@ it("sends one authenticated batch with the five expected reports", async () => {
   expect(accessToken).toBe("tok");
   expect(requests).toHaveLength(5);
   const [totals, countries, channels, pages, events] = requests;
+  // No `date` dimension: GA4 crosses it with both ranges and emits zero rows
+  // (e.g. last week's date under the current range) that overwrote totals.
   expect(totals.dateRanges).toEqual([
-    { startDate: "yesterday", endDate: "yesterday" },
-    { startDate: "8daysAgo", endDate: "8daysAgo" },
+    { startDate: "yesterday", endDate: "yesterday", name: "current" },
+    { startDate: "8daysAgo", endDate: "8daysAgo", name: "previous" },
   ]);
-  expect(totals.dimensions).toEqual([{ name: "date" }]);
+  expect(totals.dimensions).toBeUndefined();
   expect(totals.metrics.map((m: { name: string }) => m.name)).toEqual([
     "activeUsers",
     "newUsers",

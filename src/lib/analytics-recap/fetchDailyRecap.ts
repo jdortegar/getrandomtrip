@@ -28,8 +28,12 @@ const top = (dimension: string, metric: string) => ({
 function buildRequests(): object[] {
   return [
     {
-      dateRanges: [YESTERDAY, LAST_WEEK],
-      dimensions: [{ name: "date" }],
+      // No `date` dimension: GA4 crosses it with every range and emits zero
+      // rows (last week's date under the current range) that clobber totals.
+      dateRanges: [
+        { ...YESTERDAY, name: "current" },
+        { ...LAST_WEEK, name: "previous" },
+      ],
       metrics: [
         { name: "activeUsers" },
         { name: "newUsers" },
@@ -61,10 +65,6 @@ const num = (value: string | undefined): number => {
 const dim = (row: Ga4Row, i = 0) => row.dimensionValues?.[i]?.value ?? "";
 const metric = (row: Ga4Row, i = 0) => num(row.metricValues?.[i]?.value);
 
-const isoFromGa4 = (value: string) =>
-  /^\d{8}$/.test(value)
-    ? `${value.slice(0, 4)}-${value.slice(4, 6)}-${value.slice(6)}`
-    : "";
 const isoDay = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
 const ranked = (report: Ga4Report): RecapRankedItem[] =>
@@ -81,8 +81,8 @@ const emptyTotals = (): RecapTotals => ({
 
 /**
  * Reads yesterday vs the same weekday last week. GA4 resolves the relative
- * ranges in the property timezone; `now` is only used for header dates when
- * GA4 returns no rows (zero-traffic day), assuming UTC-3.
+ * ranges in the property timezone (Argentina, UTC-3, no DST); header dates are
+ * derived from `now` in the same offset.
  */
 export async function fetchDailyRecap(
   config: Ga4Config,
@@ -96,21 +96,19 @@ export async function fetchDailyRecap(
 
   const current = emptyTotals();
   const previous = emptyTotals();
-  let date = "";
-  let compareDate = "";
   for (const row of totalsReport.rows ?? []) {
-    const isCurrent = dim(row, 1) !== "date_range_1";
-    const target = isCurrent ? current : previous;
+    const range = dim(row);
+    const target =
+      range === "current" ? current : range === "previous" ? previous : null;
+    if (!target) continue;
     target.activeUsers = metric(row, 0);
     target.newUsers = metric(row, 1);
     target.sessions = metric(row, 2);
     target.pageViews = metric(row, 3);
-    if (isCurrent) date = isoFromGa4(dim(row, 0));
-    else compareDate = isoFromGa4(dim(row, 0));
   }
   const localNow = now.getTime() - 3 * 3_600_000;
-  date ||= isoDay(localNow - DAY_MS);
-  compareDate ||= isoDay(localNow - 8 * DAY_MS);
+  const date = isoDay(localNow - DAY_MS);
+  const compareDate = isoDay(localNow - 8 * DAY_MS);
 
   const counts = new Map(
     (events.rows ?? []).map((row) => [dim(row), metric(row)] as const),
