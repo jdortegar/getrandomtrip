@@ -39,6 +39,8 @@ export default function BgCarousel({
           }`}
           width={1920} // Assuming a common background image width
           height={1080} // Assuming a common background image height
+          priority={i === 0}
+          sizes="100vw"
         />
       ))}
 

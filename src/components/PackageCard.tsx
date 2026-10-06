@@ -23,7 +23,13 @@ const PackageCard: React.FC<PackageCardProps> = ({
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:scale-105 hover:border-feature group" data-component="PackageCard">
       <div className="relative h-56 w-full">
-        <Image src={image} alt={tier} layout="fill" objectFit="cover" />
+        <Image
+          src={image}
+          alt={tier}
+          layout="fill"
+          objectFit="cover"
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+        />
       </div>
       <div className="p-8">
         {" "}

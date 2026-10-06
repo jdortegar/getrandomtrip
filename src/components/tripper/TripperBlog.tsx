@@ -49,6 +49,7 @@ export default function TripperBlog({
                       className="w-full h-full object-cover"
                       width={320}
                       height={192}
+                      sizes="320px"
                     />
                   </div>
                   <p className="mt-3 text-sm text-gray-400 uppercase">

@@ -71,13 +71,14 @@ export function TravelerTypesCarousel({
       whileInView={{ opacity: 1, y: 0 }} data-component="TravelerTypesCarousel"
     >
       <EmblaCarousel slidesPerView={4} overflow={overflow}>
-        {typesToShow.map((type) => {
+        {typesToShow.map((type, index) => {
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
           const isComingSoon = COMING_SOON_SLUGS.includes(slug);
           return (
             <TravelerTypeCard
               key={type.key}
               fill
+              priority={index === 0}
               className="aspect-3/4"
               comingSoonLabel={isComingSoon ? comingSoonLabel : undefined}
               href={resolveCarouselCardHref(slugify(type.key), {
