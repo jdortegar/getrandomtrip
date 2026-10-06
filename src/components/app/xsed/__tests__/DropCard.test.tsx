@@ -18,17 +18,19 @@ function renderBadge(drop: DropEntry): Element | null {
 }
 
 describe("DropCard badge", () => {
-  it("shows the stored label when present", () => {
-    expect(renderBadge({ ...baseDrop, label: "XSED Nº1 (AR)" })?.textContent).toBe(
-      "|XSED Nº1 (AR)",
+  it("shows the orange bar, the XSED word and the stored label", () => {
+    expect(renderBadge({ ...baseDrop, label: "[AR], [MENDOZA]" })?.textContent).toBe(
+      "|XSED[AR], [MENDOZA]",
     );
   });
 
-  it("uses orange branding without rewriting a custom drop label", () => {
-    const badge = renderBadge({ ...baseDrop, label: "XSED Nº1 (AR) · my escape" });
-    expect(badge?.classList.contains("bg-xsed")).toBe(true);
-    expect(badge?.classList.contains("text-neutral-900")).toBe(true);
-    expect(badge?.textContent).toBe("|XSED Nº1 (AR) · my escape");
+  it("renders without a background: thin white XSED and bold orange label", () => {
+    const badge = renderBadge({ ...baseDrop, label: "Nº1 · my escape" });
+    expect(badge?.className).not.toContain("bg-");
+    const [, word, label] = Array.from(badge?.children ?? []);
+    expect(word.className).toContain("font-light");
+    expect(label.className).toContain("text-xsed");
+    expect(label.textContent).toBe("Nº1 · my escape");
   });
 
   it("renders no badge when there is no label", () => {
