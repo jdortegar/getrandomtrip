@@ -47,12 +47,14 @@ export function TopTrippersGrid({
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        {displayedTrippers.map((tripper) => (
+        {displayedTrippers.map((tripper, index) => (
           <TripperCard
             key={tripper.id}
             name={tripper.name}
             href={tripper.tripperSlug ?? ""}
             className="h-full w-full"
+            priority={index === 0}
+            sizes="(min-width: 640px) 33vw, 100vw"
             instagramUrl={tripper.instagramUrl ?? undefined}
             imageUrl={tripper.avatarUrl ?? "/images/fallback.jpg"}
           />

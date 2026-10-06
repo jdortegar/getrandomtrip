@@ -11,6 +11,10 @@ type TripperCardProps = {
   bio?: string;
   instagramUrl?: string;
   className?: string;
+  /** Preload the image; only set for cards that are above the fold. */
+  priority?: boolean;
+  /** Rendered-width hint for the optimizer; defaults to the /trippers grid. */
+  sizes?: string;
 };
 
 export default function TripperCard({
@@ -19,6 +23,8 @@ export default function TripperCard({
   href,
   instagramUrl = "instagram",
   className,
+  priority = false,
+  sizes = "(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw",
 }: TripperCardProps) {
   return (
     <Link
@@ -37,8 +43,9 @@ export default function TripperCard({
             src={imageUrl}
             alt={name}
             fill
+            sizes={sizes}
             style={{ objectFit: "cover" }}
-            priority
+            priority={priority}
           />
           <div className="absolute bottom-0 left-0 z-20 w-full text-left text-white px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-6 bg-linear-to-t from-black/70 to-transparent">
             <h3 className="font-barlow-condensed text-lg leading-tight md:text-2xl lg:text-4xl font-extrabold uppercase wrap-break-word whitespace-normal">

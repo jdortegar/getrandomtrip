@@ -13,6 +13,7 @@ const TripCard: React.FC<TripCardProps> = ({ title, imageUrl }) => {
         src={imageUrl}
         alt={title}
         fill
+        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         style={{ objectFit: "cover" }}
         className="transition-transform duration-300 ease-in-out group-hover:scale-105"
       />

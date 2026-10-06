@@ -33,6 +33,7 @@ export default function TopTrippersGrid({ trippers }: TopTrippersGridProps) {
               imageUrl={tripper.avatarUrl ?? ""}
               instagramUrl={tripper.tripperSlug}
               name={tripper.name}
+              priority={i === 0}
             />
           </motion.div>
         ))}
