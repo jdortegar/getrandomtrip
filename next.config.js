@@ -52,7 +52,9 @@ const nextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 31536000,
+    // 30 days: public/ images are not content-hashed, so a file replaced under
+    // the same name must not keep serving its old optimized variant for a year.
+    minimumCacheTTL: 2592000,
     deviceSizes: [320, 420, 768, 1024, 1200, 1600],
     localPatterns: [
       { pathname: "/**" },

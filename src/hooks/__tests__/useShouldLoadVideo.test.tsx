@@ -109,6 +109,19 @@ describe("useShouldLoadVideo", () => {
     expect(state()).toEqual({ inView: "true", load: "true" });
   });
 
+  it("uses the latest entry when the observer batches several", () => {
+    mount();
+    intersect(true);
+    // A fast scroll can deliver an outdated entry first; the last one is current.
+    act(() => {
+      observers.at(-1)?.callback([
+        { isIntersecting: true },
+        { isIntersecting: false },
+      ]);
+    });
+    expect(state()).toEqual({ inView: "false", load: "true" });
+  });
+
   it.each([
     ["saveData", { saveData: true, effectiveType: "4g" }],
     ["2g", { effectiveType: "2g" }],

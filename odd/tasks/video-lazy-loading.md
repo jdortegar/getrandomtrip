@@ -81,3 +81,10 @@ Route evidence: 4+ non-trivial files → writer trigger fired; one bounded write
 ## Next step
 
 Ask to commit (no auto-commit). Then Phase 3 step 2: re-encode videos (and add matching .webm if wanted).
+
+## Review follow-ups (2026-10-06)
+
+- Reviews: phase-3 range approved (4 informational notes) and the broad f616178 range approved (4 notes); both acknowledged.
+- [x] R3-001: hook now reads the latest batched IntersectionObserver entry. RED 1 failed -> GREEN; 1408 tests passed; typecheck/lint exit 0.
+- [x] `images.minimumCacheTTL` lowered from 1 year to 30 days (public/ images are not content-hashed).
+- Dismissed: DropCard "duplicate XSED" warning: 0 of 32 stored labels contain XSED/TGIS (stage, prod copy).

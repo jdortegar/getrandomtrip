@@ -59,7 +59,9 @@ export function useShouldLoadVideo(ref: RefObject<Element | null>): {
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
+        // Batched entries arrive oldest first; only the last one is current.
+        const entry = entries.at(-1);
         if (!entry) return;
         setIsInView(entry.isIntersecting);
         if (entry.isIntersecting) setShouldLoad(true);
