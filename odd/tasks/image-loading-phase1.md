@@ -73,4 +73,10 @@ Route evidence: 10+ non-trivial files → writer trigger fired; one bounded writ
 
 ## Next step
 
-Ask user to commit (no auto-commit), then run RDD assess on the commit.
+Merged via PR #247 (9c9e2a56) into develop on 2026-10-06. Phase 1 complete. Phase 2 (hero CSS bg → next/image, blur placeholders) not started.
+
+## Commits
+
+- 74a43f93 perf(upload): T1
+- ac66445c perf(images): T2-T4 + this document
+- Review: assessed medium (503 lines, slice budget reached); user declined review for this candidate.
