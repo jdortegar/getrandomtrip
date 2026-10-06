@@ -79,9 +79,13 @@ describe("homepage hero", () => {
     );
     const branding = hero.querySelector('[data-component="BrandingAnimation"]');
 
-    expect(hero.querySelector("video")?.getAttribute("src")).toBe(
-      "/videos/hero-video-1.mp4",
-    );
+    // The video is still rendered, but the server markup must not point it at a
+    // file: the source attaches client-side once the hero is near the viewport,
+    // otherwise the browser would start downloading before hydration.
+    expect(hero.querySelector("video")).not.toBeNull();
+    expect(hero.querySelector("video")?.hasAttribute("src")).toBe(false);
+    expect(hero.querySelector("video source")).toBeNull();
+    expect(hero.querySelector("video")?.getAttribute("preload")).toBe("none");
     // The still renders through next/image; a poster would refetch the original.
     expect(hero.querySelector("video")?.hasAttribute("poster")).toBe(false);
     expect(branding?.textContent?.replaceAll("\u00a0", " ")).toBe(
