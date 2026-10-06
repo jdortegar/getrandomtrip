@@ -1448,7 +1448,7 @@
       "submittingLabel": "SUMANDO...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
       "helper": "Te avisaremos 10 minutos antes de que se abra la venta cada domingo.<br/><br/>Si parpadeas, te quedas afuera.",
-      "fallbackImage": "/images/hero-xsed.jpg",
+      "fallbackImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
@@ -1501,7 +1501,7 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-xsed.jpg",
+      "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
       "helper": "Cada domingo abrimos la pasarela para viajar el siguiente fin de semana, durante solo 4 horas. Déjanos tu email y te avisamos 10 minutos antes de que se abra la venta.<br/><br/>Si parpadeas, te quedas afuera.",
@@ -1852,7 +1852,7 @@
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-xsed.jpg",
+      "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
       "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
