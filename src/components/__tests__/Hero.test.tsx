@@ -82,9 +82,8 @@ describe("homepage hero", () => {
     expect(hero.querySelector("video")?.getAttribute("src")).toBe(
       "/videos/hero-video-1.mp4",
     );
-    expect(hero.querySelector("video")?.getAttribute("poster")).toBe(
-      "/images/hero-image-1.jpeg",
-    );
+    // The still renders through next/image; a poster would refetch the original.
+    expect(hero.querySelector("video")?.hasAttribute("poster")).toBe(false);
     expect(branding?.textContent?.replaceAll("\u00a0", " ")).toBe(
       "WONDER • WANDERRepeat",
     );

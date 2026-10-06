@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "@/components/common/LocalizedLink";
+import SafeImage from "@/components/common/SafeImage";
 import { Button } from "@/components/ui/Button";
 import { useDictionary } from "@/hooks/useDictionary";
 
@@ -14,9 +15,12 @@ export function XsedIntro() {
     >
       {/* Background image */}
       <div className="relative">
-        <div
-          className="absolute inset-0 bg-cover bg-center rounded-lg"
-          style={{ backgroundImage: `url(${copy.backgroundImage})` }}
+        <SafeImage
+          alt=""
+          className="absolute inset-0 h-full w-full rounded-lg object-cover object-center"
+          fill
+          sizes="100vw"
+          src={copy.backgroundImage}
         />
 
         <div className="absolute inset-0 bg-black/45 rounded-lg" />
