@@ -16,7 +16,13 @@ export default function FavoriteCard({
       className="block overflow-hidden rounded-2xl border border-neutral-200 shadow-sm hover:shadow-md dark:border-white/10" data-component="FavoriteCard"
     >
       <div className="relative h-40 w-full">
-        <Image src={image} alt="" fill className="object-cover" />
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="(min-width: 768px) 33vw, 50vw"
+          className="object-cover"
+        />
       </div>
       <div className="p-3 text-sm font-medium">{title}</div>
     </Link>

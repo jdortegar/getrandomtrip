@@ -25,6 +25,7 @@ export default function TripperGallery({ tripper }: Props) {
               src={imageSrc.src}
               alt={imageSrc.alt || `Gallery image ${index + 1}`}
               fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-black bg-opacity-25 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">

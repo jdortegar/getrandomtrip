@@ -6,6 +6,7 @@ import { DEFAULT_MAX_DIMENSIONS, optimizeImage } from "@/lib/images/optimizeImag
 import { authOptions } from "@/lib/auth";
 import { parseCropPayload } from "@/lib/images/crop";
 import { bakeCrop } from "@/lib/images/bake";
+import { blobEtag, blobResponse } from "@/lib/upload/blobCaching";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -78,15 +79,16 @@ export async function GET(request: NextRequest) {
         ? result.metadata.contentType
         : "application/octet-stream";
 
-    return new NextResponse(result.data, {
-      headers: {
-        // private: the browser may cache, but the CDN must not.
-        // "public" was allowing Netlify's CDN to cache responses keyed only by path,
-        // causing different users' images to be served from the same CDN cache entry.
-        "Cache-Control": "private, max-age=86400",
-        "Content-Type": contentType,
-        "X-Content-Type-Options": "nosniff",
-      },
+    return blobResponse({
+      data: result.data,
+      contentType,
+      etag: blobEtag(key, result.etag),
+      // private: the browser may cache, but the CDN must not.
+      // "public" was allowing Netlify's CDN to cache responses keyed only by path,
+      // causing different users' images to be served from the same CDN cache entry.
+      // ETag/304 still lets the browser revalidate cheaply.
+      cacheControl: "private, max-age=86400",
+      ifNoneMatch: request.headers.get("if-none-match"),
     });
   } catch (error) {
     console.error("[upload] GET", error);

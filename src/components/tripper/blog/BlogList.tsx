@@ -40,6 +40,7 @@ export default function BlogList({ posts }: BlogListProps) {
                   alt={post.title}
                   className="w-full h-full object-cover"
                   height={360}
+                  sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                   src={post.coverUrl}
                   width={640}
                 />

@@ -23,6 +23,8 @@ interface TravelerTypeCardProps {
   href?: string;
   imageUrl?: string;
   onClick?: () => void;
+  /** Preload the image; only set for cards that are above the fold. */
+  priority?: boolean;
   /** Localized "BY TRIPPER" label shown above the tripper's name in `tripperBadge`. Required whenever `tripperBadge` is set. */
   byTripperLabel?: string;
   selected?: boolean;
@@ -47,6 +49,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
   imageUrl: imageUrlProp,
   item,
   onClick,
+  priority = false,
   byTripperLabel,
   selected = false,
   title: titleProp,
@@ -108,7 +111,9 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
           alt={title}
           className="transition-transform duration-300 group-hover:scale-110"
           fill
-          priority
+          priority={priority}
+          // Embla slides: 80% / 50% / 33% / 25% of the container by breakpoint.
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 80vw"
           src={imageUrl}
           style={{ objectFit: "cover" }}
         />

@@ -1448,7 +1448,7 @@
       "submittingLabel": "JOINING...",
       "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We'll notify you 10 minutes before sales open every Sunday.<br/><br/>Blink, and you're out.",
-      "fallbackImage": "/images/hero-xsed.jpg",
+      "fallbackImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4"
     },
     "iconText": {
@@ -1501,7 +1501,7 @@
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-xsed.jpg",
+      "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "title": "NEXT WEEKEND, A FEW WILL ESCAPE INTO THE UNEXPECTED.\nWILL YOU BE ONE OF THEM?",
       "helper": "Every Sunday we open the gateway to travel the following weekend, for just 4 hours. Leave your email and we'll notify you 10 minutes before sales open.<br/><br/>Blink, and you're out.",
@@ -1852,7 +1852,7 @@
       "viewFullReviewLabel": "View full review"
     },
     "xsedHero": {
-      "backgroundImage": "/images/hero-xsed.jpg",
+      "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "TGIS",
       "title": "NEXT WEEKEND, A FEW WILL ESCAPE INTO THE UNEXPECTED.\nWILL YOU BE ONE OF THEM?",

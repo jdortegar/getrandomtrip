@@ -37,6 +37,7 @@ export function TestimonialCard({
                 alt={author}
                 className="h-full w-full object-cover"
                 height={40}
+                sizes="40px"
                 src={avatarUrl}
                 width={40}
               />

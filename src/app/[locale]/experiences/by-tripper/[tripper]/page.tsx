@@ -142,6 +142,7 @@ export default async function Page(props: {
                 alt={dbTripper.name}
                 width={120}
                 height={120}
+                sizes="120px"
                 className="rounded-full object-cover"
               />
             </div>
@@ -233,6 +234,7 @@ export default async function Page(props: {
                               }
                               alt="Paquete sorpresa"
                               fill
+                              sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                               className="object-cover"
                             />
                           </div>
