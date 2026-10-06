@@ -13,6 +13,8 @@ interface XsedHeroProps {
   backLabel?: string;
   className?: string;
   content: XsedPageDict["xsedHero"];
+  /** Only when this is the page's top hero; on the landing and /xsed it sits below the fold. */
+  priority?: boolean;
 }
 
 export function XsedHero({
@@ -20,6 +22,7 @@ export function XsedHero({
   backLabel,
   className,
   content,
+  priority = false,
 }: XsedHeroProps) {
   return (
     <section
@@ -31,6 +34,7 @@ export function XsedHero({
     >
       <VideoBackground
         fallbackImage={content.backgroundImage}
+        priority={priority}
         videoSrc={content.videoSrc}
       />
       <div className="relative z-10 flex flex-col justify-center h-full rt-container md:px-20!">

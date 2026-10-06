@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import SafeImage from "@/components/common/SafeImage";
 import { CountryFlag } from "@/components/common/CountryFlag";
 
 function getCountryFromLocation(
@@ -95,9 +96,13 @@ function HeaderHeroVideoBackground({
     <div className="absolute inset-0 h-full w-full">
       {/* Fallback Image */}
       {fallbackImage && (
-        <div
-          className="absolute inset-0 h-full w-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${fallbackImage})` }}
+        <SafeImage
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          fill
+          priority
+          sizes="100vw"
+          src={fallbackImage}
         />
       )}
 
@@ -112,7 +117,6 @@ function HeaderHeroVideoBackground({
           loop
           muted
           playsInline
-          poster={fallbackImage}
           preload="metadata"
         >
           <source
@@ -156,9 +160,13 @@ export default function HeaderHero({
         <>
           {/* Fallback: Background Image */}
           {backgroundImage && (
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${backgroundImage})` }}
+            <SafeImage
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              fill
+              priority
+              sizes="100vw"
+              src={backgroundImage}
             />
           )}
 

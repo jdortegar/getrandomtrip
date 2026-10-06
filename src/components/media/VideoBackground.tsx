@@ -2,12 +2,15 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
+import SafeImage from "@/components/common/SafeImage";
 
 export interface VideoBackgroundProps {
   fallbackImage?: string;
   overlayClassName?: string;
   videoSrc?: string;
   className?: string;
+  /** Preload the still; turn off when the background sits below the fold. */
+  priority?: boolean;
 }
 
 export default function VideoBackground({
@@ -15,6 +18,7 @@ export default function VideoBackground({
   overlayClassName,
   videoSrc,
   className,
+  priority = true,
 }: VideoBackgroundProps) {
   if (!videoSrc && !fallbackImage) return null;
   return (
@@ -23,9 +27,13 @@ export default function VideoBackground({
       aria-hidden data-component="VideoBackground"
     >
       {fallbackImage && (
-        <div
-          className="absolute inset-0 z-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${fallbackImage})` }}
+        <SafeImage
+          alt=""
+          className="absolute inset-0 z-0 w-full h-full object-cover object-center"
+          fill
+          priority={priority}
+          sizes="100vw"
+          src={fallbackImage}
         />
       )}
 
@@ -36,7 +44,6 @@ export default function VideoBackground({
           loop
           muted
           playsInline
-          poster={fallbackImage}
           preload="auto"
           src={videoSrc}
         >

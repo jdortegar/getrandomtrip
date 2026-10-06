@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import SafeImage from "@/components/common/SafeImage";
 import { TravelButton } from "@/components/ui/TravelButton";
 
 interface TravelHeroProps {
@@ -77,9 +78,13 @@ export function TravelHero({
     >
       {/* Background Image */}
       {backgroundImage && (
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
+        <SafeImage
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-center"
+          fill
+          priority
+          sizes="100vw"
+          src={backgroundImage}
         />
       )}
 

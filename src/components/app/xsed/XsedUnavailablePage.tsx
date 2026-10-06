@@ -12,6 +12,7 @@ export function XsedUnavailablePage() {
 
   return (
     <XsedHero
+      priority
       backHref={pathForLocale(locale, "/xsed/drops")}
       backLabel={unavailable.backLabel}
       content={{
