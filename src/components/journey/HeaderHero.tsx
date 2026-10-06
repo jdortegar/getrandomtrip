@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SafeImage from "@/components/common/SafeImage";
+import { useShouldLoadVideo } from "@/hooks/useShouldLoadVideo";
 import { CountryFlag } from "@/components/common/CountryFlag";
 
 function getCountryFromLocation(
@@ -56,11 +57,27 @@ function HeaderHeroVideoBackground({
 }) {
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { isInView, shouldLoad } = useShouldLoadVideo(containerRef);
+
+  // Sources are attached on the render that flips shouldLoad; load() makes the
+  // element pick them up.
+  useEffect(() => {
+    if (shouldLoad) videoRef.current?.load();
+  }, [shouldLoad]);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !shouldLoad) return;
+    if (isInView) video.play().catch(() => {});
+    else video.pause();
+  }, [isInView, shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    // Nothing is fetching yet, so neither the events nor the fade-in timer apply.
+    if (!video || !shouldLoad) return;
 
     const handleCanPlay = () => {
       setIsVideoReady(true);
@@ -90,10 +107,10 @@ function HeaderHeroVideoBackground({
       video.removeEventListener("error", handleError);
       clearTimeout(fallbackTimer);
     };
-  }, [isVideoReady, hasError]);
+  }, [isVideoReady, hasError, shouldLoad]);
 
   return (
-    <div className="absolute inset-0 h-full w-full">
+    <div ref={containerRef} className="absolute inset-0 h-full w-full">
       {/* Fallback Image */}
       {fallbackImage && (
         <SafeImage
@@ -117,12 +134,14 @@ function HeaderHeroVideoBackground({
           loop
           muted
           playsInline
-          preload="metadata"
+          preload="none"
         >
-          <source
-            src={videoSrc}
-            type={videoSrc.split(/[?#]/)[0].endsWith(".webm") ? "video/webm" : "video/mp4"}
-          />
+          {shouldLoad && (
+            <source
+              src={videoSrc}
+              type={videoSrc.split(/[?#]/)[0].endsWith(".webm") ? "video/webm" : "video/mp4"}
+            />
+          )}
         </video>
       )}
 
