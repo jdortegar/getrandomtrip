@@ -35,12 +35,25 @@ const { getServerSessionMock } = vi.hoisted(() => ({
 vi.mock("next-auth", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 
-const { storeSetMock, storeGetMock, getStoreMock } = vi.hoisted(() => {
-  const storeSetMock = vi.fn().mockResolvedValue(undefined);
-  const storeGetMock = vi.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
-  const getStoreMock = vi.fn(() => ({ set: storeSetMock, get: storeGetMock }));
-  return { storeSetMock, storeGetMock, getStoreMock };
-});
+const { storeSetMock, storeGetMock, storeGetWithMetadataMock, getStoreMock } =
+  vi.hoisted(() => {
+    const storeSetMock = vi.fn().mockResolvedValue(undefined);
+    const storeGetMock = vi
+      .fn()
+      .mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
+    const storeGetWithMetadataMock = vi.fn();
+    const getStoreMock = vi.fn(() => ({
+      set: storeSetMock,
+      get: storeGetMock,
+      getWithMetadata: storeGetWithMetadataMock,
+    }));
+    return {
+      storeSetMock,
+      storeGetMock,
+      storeGetWithMetadataMock,
+      getStoreMock,
+    };
+  });
 vi.mock("@netlify/blobs", () => ({ getStore: getStoreMock }));
 
 function makeFormRequest(fields: Record<string, string | File>): NextRequest {
@@ -162,5 +175,46 @@ describe("POST /api/upload", () => {
     expect(response.status).toBe(403);
     expect(body).toEqual({ error: "Forbidden" });
     expect(storeSetMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("GET /api/upload?key=", () => {
+  const KEY = "user123/avatar/photo-1700000000000.webp";
+
+  function makeGet(headers: Record<string, string> = {}): NextRequest {
+    return {
+      headers: new Headers(headers),
+      nextUrl: new URL(`http://localhost/api/upload?key=${KEY}`),
+    } as unknown as NextRequest;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    storeGetWithMetadataMock.mockResolvedValue({
+      data: new Blob([new Uint8Array([1, 2, 3])]),
+      etag: "blob-etag-1",
+      metadata: { contentType: "image/webp" },
+    });
+  });
+
+  it("stays non-shared-cacheable (private) because the CDN may key on path only", async () => {
+    const { GET } = await import("../route");
+    const res = await GET(makeGet());
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Cache-Control")).toBe("private, max-age=86400");
+    expect(res.headers.get("ETag")).toMatch(/^"[a-f0-9]+"$/);
+  });
+
+  it("returns 304 with no body when If-None-Match matches", async () => {
+    const { GET } = await import("../route");
+    const first = await GET(makeGet());
+    const etag = first.headers.get("ETag") as string;
+
+    const res = await GET(makeGet({ "if-none-match": etag }));
+
+    expect(res.status).toBe(304);
+    expect(await res.text()).toBe("");
+    expect(res.headers.get("Cache-Control")).toBe("private, max-age=86400");
   });
 });
