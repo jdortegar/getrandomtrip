@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SafeImage from "@/components/common/SafeImage";
 import { useShouldLoadVideo } from "@/hooks/useShouldLoadVideo";
+import { useVideoReveal } from "@/hooks/useVideoReveal";
 import { CountryFlag } from "@/components/common/CountryFlag";
 
 function getCountryFromLocation(
@@ -55,59 +56,11 @@ function HeaderHeroVideoBackground({
   fallbackImage?: string;
   videoSrc?: string;
 }) {
-  const [isVideoReady, setIsVideoReady] = useState(false);
-  const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isInView, shouldLoad } = useShouldLoadVideo(containerRef);
 
-  // Sources are attached on the render that flips shouldLoad; load() makes the
-  // element pick them up.
-  useEffect(() => {
-    if (shouldLoad) videoRef.current?.load();
-  }, [shouldLoad]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !shouldLoad) return;
-    if (isInView) video.play().catch(() => {});
-    else video.pause();
-  }, [isInView, shouldLoad]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    // Nothing is fetching yet, so neither the events nor the fade-in timer apply.
-    if (!video || !shouldLoad) return;
-
-    const handleCanPlay = () => {
-      setIsVideoReady(true);
-    };
-
-    const handleLoadedData = () => {
-      setIsVideoReady(true);
-    };
-
-    const handleError = () => {
-      setHasError(true);
-    };
-
-    video.addEventListener("canplay", handleCanPlay);
-    video.addEventListener("loadeddata", handleLoadedData);
-    video.addEventListener("error", handleError);
-
-    const fallbackTimer = setTimeout(() => {
-      if (!isVideoReady && !hasError) {
-        setIsVideoReady(true);
-      }
-    }, 2000);
-
-    return () => {
-      video.removeEventListener("canplay", handleCanPlay);
-      video.removeEventListener("loadeddata", handleLoadedData);
-      video.removeEventListener("error", handleError);
-      clearTimeout(fallbackTimer);
-    };
-  }, [isVideoReady, hasError, shouldLoad]);
+  const isVideoReady = useVideoReveal(videoRef, { isInView, shouldLoad, src: videoSrc });
 
   return (
     <div ref={containerRef} className="absolute inset-0 h-full w-full">
@@ -124,11 +77,11 @@ function HeaderHeroVideoBackground({
       )}
 
       {/* Video Overlay - Only when ready */}
-      {!hasError && videoSrc && (
+      {videoSrc && (
         <video
           ref={videoRef}
           autoPlay
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+          className={`absolute inset-0 h-full w-full object-cover ${
             isVideoReady ? "opacity-100" : "opacity-0"
           }`}
           loop

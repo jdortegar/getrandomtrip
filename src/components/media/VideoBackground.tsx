@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 import SafeImage from "@/components/common/SafeImage";
 import { useShouldLoadVideo } from "@/hooks/useShouldLoadVideo";
+import { useVideoReveal } from "@/hooks/useVideoReveal";
 
 export interface VideoBackgroundProps {
   fallbackImage?: string;
@@ -25,25 +26,19 @@ export default function VideoBackground({
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isInView, shouldLoad } = useShouldLoadVideo(containerRef);
 
-  // Sources are attached on the render that flips shouldLoad; load() makes the
-  // element pick them up.
-  useEffect(() => {
-    if (shouldLoad) videoRef.current?.load();
-  }, [shouldLoad]);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !shouldLoad) return;
-    if (isInView) video.play().catch(() => {});
-    else video.pause();
-  }, [isInView, shouldLoad]);
+  const isRevealed = useVideoReveal(videoRef, {
+    isInView,
+    shouldLoad,
+    src: videoSrc,
+  });
 
   if (!videoSrc && !fallbackImage) return null;
   return (
     <div
       ref={containerRef}
       className={cn("absolute inset-0 w-full h-full", className)}
-      aria-hidden data-component="VideoBackground"
+      aria-hidden
+      data-component="VideoBackground"
     >
       {fallbackImage && (
         <SafeImage
@@ -60,7 +55,10 @@ export default function VideoBackground({
         <video
           ref={videoRef}
           autoPlay
-          className="absolute inset-0 z-10 w-full h-full object-cover"
+          className={cn(
+            "absolute inset-0 z-10 w-full h-full object-cover",
+            isRevealed ? "opacity-100" : "opacity-0",
+          )}
           loop
           muted
           playsInline
