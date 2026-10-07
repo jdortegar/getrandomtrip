@@ -34,20 +34,20 @@ export type LevelIdWithExcuse = (typeof LEVEL_IDS_WITH_EXCUSE)[number];
 
 /**
  * Excuse step rule per product:
- * - 'explora-plus-and-bivouac': only Explora+ and Bivouac show excuse + refine details
- *   (BOND, KIN, CREW, SOLUM, PAWS per product maps).
- * - 'all-levels': Essenza through Bivouac show excuse (not used currently; Atelier never).
+ * - 'all-levels': Essenza, Modo Explora, Explora+ and Bivouac show excuse + refine
+ *   details (BOND, KIN, CREW, SOLUM, PAWS per product maps). Atelier never.
+ * - 'explora-plus-and-bivouac': only Explora+ and Bivouac (no product uses it today).
  * - 'none': no excuse step (NUPTIA / honeymoon).
  */
 export type ExcuseRule = "all-levels" | "explora-plus-and-bivouac" | "none";
 
 export const EXCUSE_RULE_BY_TYPE: Record<TravelerTypeSlug, ExcuseRule> = {
-  couple: "explora-plus-and-bivouac", // BOND
-  solo: "explora-plus-and-bivouac", // SOLUM — steps 3–4 only Explora+ & Bivouac
-  family: "explora-plus-and-bivouac", // KIN
-  group: "explora-plus-and-bivouac", // CREW
+  couple: "all-levels", // BOND
+  solo: "all-levels", // SOLUM
+  family: "all-levels", // KIN
+  group: "all-levels", // CREW
   honeymoon: "none", // NUPTIA
-  paws: "explora-plus-and-bivouac", // PAWS — steps 3–4 only Explora+ & Bivouac
+  paws: "all-levels", // PAWS
 };
 
 /** Normalize level id for comparison (e.g. explora-plus, modo-explora). */
@@ -61,8 +61,19 @@ function normalizeLevelId(level: string): string {
   return n;
 }
 
+/** Maximum number of refine details a traveler can pick (UI and server). */
+export const MAX_REFINE_DETAILS = 3;
+
+/**
+ * Pseudo level id for XSED bookings. XSED is not a journey level, but its
+ * booking flow shows the excuse step for every eligible traveler type.
+ */
+export const XSED_LEVEL_ID = "xsed";
+
 /**
  * Whether the given traveler type and level show the excuse + refine-details step.
+ * XSED bookings pass `XSED_LEVEL_ID` as the level: the step shows for any
+ * traveler type whose rule is not 'none' (honeymoon never).
  */
 export function hasExcuseStep(
   travelerType: string,
@@ -72,6 +83,7 @@ export function hasExcuseStep(
   const rule = EXCUSE_RULE_BY_TYPE[travelerType as TravelerTypeSlug];
   if (!rule || rule === "none") return false;
   const normalized = normalizeLevelId(levelId);
+  if (normalized === XSED_LEVEL_ID) return true;
   if (normalized === "atelier-getaway" || normalized === "atelier")
     return false;
   if (rule === "all-levels")

@@ -66,8 +66,8 @@ export function getInitialStepFromParams(params: URLSearchParams): {
   if (!travelType) return { tabId: "budget", sectionId: "travel-type" };
   if (!experience) return { tabId: "budget", sectionId: "travel-type" };
   const hasExcuseStep = getHasExcuseStep(travelType ?? "", experience ?? "");
+  // Refine details are optional, so a chosen excuse completes the step.
   if (hasExcuseStep && !excuse) return { tabId: "excuse", sectionId: "reason" };
-  if (hasExcuseStep && excuse) return { tabId: "excuse", sectionId: "reason" };
   if (!originCountry || !originCity)
     return { tabId: "details", sectionId: "origin" };
   if (!isTripStartDateEligible(startDate, travelType) || !(Number(nights) > 0)) return { tabId: "details", sectionId: "dates" };
@@ -95,7 +95,7 @@ function JourneyPageContent({
   const [activeTab, setActiveTab] = useState("budget");
   const [openSectionId, setOpenSectionId] = useState("travel-type");
   const hasSyncedJourneyStateFromUrl = useRef(false);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const journeyBarRef = useRef<HTMLDivElement>(null);
 
   // Live, draft-aware completion for the "details" tab's Origin/Dates/
   // Transport substeps — relayed here from JourneyMainContent (which owns
@@ -169,7 +169,7 @@ function JourneyPageContent({
   }, [searchParams]);
 
   useEffect(() => {
-    contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    journeyBarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [activeTab]);
 
   const handleTabChange = (tabId: string) => {
@@ -236,16 +236,19 @@ function JourneyPageContent({
         videoSrc="/videos/hero-video-1.mp4"
       />
 
-      <JourneyContentNavigation
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        tabs={contentTabsForUI.map((tab) => ({ id: tab.id, label: tab.label }))}
-        userBadgeLabels={journey.userBadge}
-      />
+      {/* Scroll target: stops just below the fixed h-16 site header. */}
+      <div className="scroll-mt-16" id="journey-bar" ref={journeyBarRef}>
+        <JourneyContentNavigation
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          tabs={contentTabsForUI.map((tab) => ({ id: tab.id, label: tab.label }))}
+          userBadgeLabels={journey.userBadge}
+        />
+      </div>
 
-      <div className="container mx-auto px-4 py-8" ref={contentRef}>
+      <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row w-full gap-8">
-          <div className="lg:sticky lg:top-8 lg:self-start hidden lg:block">
+          <div className="lg:sticky lg:top-24 lg:self-start hidden lg:block">
             <JourneyProgressSidebar
               activeSubstepId={openSectionId}
               activeTab={activeTab}
@@ -258,7 +261,7 @@ function JourneyPageContent({
             />
           </div>
 
-          <div className="lg:sticky lg:top-8 lg:self-start min-w-0 flex-1">
+          <div className="lg:sticky lg:top-24 lg:self-start min-w-0 flex-1">
             <JourneyMainContent
               mobileActionBarSlot={mobileActionBarSlot}
               bookingPriceOverrides={pricing.bookingBound ? pricing.overrides : undefined}

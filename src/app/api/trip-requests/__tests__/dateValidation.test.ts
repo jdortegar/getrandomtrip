@@ -20,6 +20,7 @@ const trip = {
   userId: "buyer",
   type: "couple",
   level: "essenza",
+  excuseKey: "escapada-romantica",
   originCountry: "AR",
   originCity: "Origin",
   status: "SAVED",

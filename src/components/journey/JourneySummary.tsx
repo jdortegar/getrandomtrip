@@ -522,7 +522,7 @@ export default function JourneySummary({
   return (
     <aside
       className={cn(
-        "flex w-full shrink-0 flex-col gap-4 rounded-lg  bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80",
+        "flex w-full shrink-0 flex-col gap-4 rounded-lg  bg-white p-6 shadow-sm lg:sticky lg:top-24 lg:self-start lg:w-80",
         className,
       )} data-component="JourneySummary"
     >

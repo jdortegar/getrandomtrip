@@ -20,7 +20,9 @@ import {
   getExcusesByTypeAndLevel,
   getExcuseOptions,
   getHasExcuseStep,
+  toggleRefineDetail,
 } from "@/lib/helpers/excuse-helper";
+import { MAX_REFINE_DETAILS } from "@/lib/constants/product-config";
 import { clearJourneyDraftStorage } from "@/lib/helpers/journeyDraftStorage";
 import {
   buildTripRequestPayloadFromSearchParams,
@@ -53,6 +55,7 @@ import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useQuerySync } from "@/hooks/useQuerySync";
 import { useStore } from "@/store/store";
+import { useJourneyAutoExcuse } from "@/hooks/useJourneyAutoExcuse";
 import { useUserStore } from "@/store/slices/userStore";
 import { cn } from "@/lib/utils";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
@@ -236,6 +239,8 @@ export default function JourneyMainContent({
     return getExcusesByTypeAndLevel(url.travelType, url.experience);
   }, [url.travelType, url.experience]);
 
+  const excuseKeys = useMemo(() => excuses.map((e) => e.key), [excuses]);
+
   const refineDetailsOptions = useMemo(() => {
     if (!url.excuse) return [];
     const options = getExcuseOptions(url.excuse);
@@ -294,10 +299,10 @@ export default function JourneyMainContent({
     onDetailsProgressChange,
   );
 
-  const scrollToActions = () => {
+  const scrollToJourneyBar = () => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        document.getElementById("journey-actions")?.scrollIntoView({
+        document.getElementById("journey-bar")?.scrollIntoView({
           behavior: "smooth",
           block: "start",
         });
@@ -398,14 +403,25 @@ export default function JourneyMainContent({
     updateQuery({ excuse: excuseKey, refineDetails: undefined });
   };
 
+  useJourneyAutoExcuse({
+    enabled: hasExcuseStep,
+    excuseKeys,
+    selectedExcuse: url.excuse,
+    onSelect: (excuseKey) => {
+      handleExcuseSelect(excuseKey);
+      // Single-excuse types skip the reason picker and land on refine details.
+      if (activeTab === "excuse") setAccordionValue("refine-details");
+    },
+  });
+
   const handleRefineDetailsSelect = (optionKey: string) => {
-    const currentDetails = [...url.refineDetails];
-    const index = currentDetails.indexOf(optionKey);
-    if (index > -1) {
-      currentDetails.splice(index, 1);
-    } else {
-      currentDetails.push(optionKey);
-    }
+    const currentDetails = toggleRefineDetail(
+      url.refineDetails,
+      optionKey,
+      MAX_REFINE_DETAILS,
+    );
+    // At the cap an unselected option is ignored: same array comes back.
+    if (currentDetails === url.refineDetails) return;
     updateQuery({
       refineDetails:
         currentDetails.length > 0 ? currentDetails.join(",") : undefined,
@@ -603,28 +619,29 @@ export default function JourneyMainContent({
   const handleContinue = () => {
     if (hasNextSubstepInTab) {
       setAccordionValue(currentSubstepOrder[currentSubstepIndex + 1]);
-      scrollToActions();
+      scrollToJourneyBar();
       return;
     }
     if (nextTab && onTabChange) {
       onTabChange(nextTab);
       const nextOrder = getTabSubstepOrder(nextTab, substepOrderCtx);
-      setAccordionValue(nextOrder[0] ?? "");
-      scrollToActions();
+      const singleExcuse = nextTab === "excuse" && excuses.length === 1;
+      setAccordionValue(singleExcuse ? "refine-details" : (nextOrder[0] ?? ""));
+      scrollToJourneyBar();
     }
   };
 
   const handleBack = () => {
     if (currentSubstepIndex > 0) {
       setAccordionValue(currentSubstepOrder[currentSubstepIndex - 1]);
-      scrollToActions();
+      scrollToJourneyBar();
       return;
     }
     if (previousTab && onTabChange) {
       onTabChange(previousTab);
       const previousOrder = getTabSubstepOrder(previousTab, substepOrderCtx);
       setAccordionValue(previousOrder[previousOrder.length - 1] ?? "");
-      scrollToActions();
+      scrollToJourneyBar();
     }
   };
 
@@ -775,7 +792,7 @@ export default function JourneyMainContent({
             maxTravelTime={draftPrefs.effectiveMaxTravelTime}
             onAccommodationTypeChange={handleAccommodationTypeChange}
             onAddonsChange={handleAddonsChange}
-            onAfterAddonsSave={scrollToActions}
+            onAfterAddonsSave={scrollToJourneyBar}
             onArrivePrefChange={handleArrivePrefChange}
             onClimateChange={handleClimateChange}
             onDepartPrefChange={handleDepartPrefChange}

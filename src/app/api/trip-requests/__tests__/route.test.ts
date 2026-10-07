@@ -288,7 +288,7 @@ describe("POST /api/trip-requests — family-scoped upsert", () => {
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledTimes(1);
     expect(prisma.tripRequest.findFirst).toHaveBeenCalledWith({
       where: { id: "trip_123", userId: "user-1" },
-      select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
+      select: { ...CHECKOUT_PRICE_SELECT, id: true, excuseKey: true, refineDetails: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true, payment: { select: { status: true, stripePaymentIntentId: true } } },
     });
     expect(prisma.tripRequest.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ id: "trip_123" }) }),

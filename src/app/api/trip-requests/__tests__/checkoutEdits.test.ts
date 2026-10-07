@@ -21,6 +21,7 @@ const trip = {
   userId: "buyer",
   type: "group",
   level: "essenza",
+  excuseKey: "group-naturaleza-fauna",
   pax: 2,
   nights: 3,
   paxDetails: { adults: 2, minors: 0, rooms: 1 },
@@ -71,7 +72,7 @@ describe("checkout-sensitive trip edits", () => {
     it.each([undefined, "plane", "bus", "own-car"])(
       "persists own-car instead of client transport %s",
       async (transport) => {
-        const xsed = { ...trip, type: "xsed", level: "family" };
+        const xsed = { ...trip, type: "xsed", level: "family", excuseKey: "family-adventure" };
         db.tripRequest.findFirst.mockResolvedValue(path === "create" ? null : xsed);
         db.tripRequest.create.mockImplementation(async ({ data }) => ({ id: "new", ...data }));
         const body = path === "id"
@@ -109,7 +110,7 @@ describe("checkout-sensitive trip edits", () => {
     ["bus", "bus"],
   ])("uses ordinary transport %s when an editable XSED becomes a journey", async (transport, expected) => {
     db.tripRequest.findFirst.mockResolvedValue({
-      ...trip, type: "xsed", level: "family", transport: "own-car",
+      ...trip, type: "xsed", level: "family", excuseKey: "family-adventure", transport: "own-car",
     });
     const response = await POST(request({
       id: trip.id, type: "couple", level: "essenza",
@@ -124,7 +125,7 @@ describe("checkout-sensitive trip edits", () => {
   });
 
   it("version-guards a derived own-car repair on an origin-only editable save", async () => {
-    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family" });
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family", excuseKey: "family-adventure" });
     const response = await POST(request({ id: trip.id, originCity: "Rosario" }));
     expect(response.status).toBe(200);
     expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
@@ -134,7 +135,7 @@ describe("checkout-sensitive trip edits", () => {
   });
 
   it("does not invalidate an already canonical XSED transport on an unchanged save", async () => {
-    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family", transport: "own-car" });
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family", excuseKey: "family-adventure", transport: "own-car" });
     const response = await POST(request({ id: trip.id, transport: "plane" }));
     expect(response.status).toBe(200);
     expect(db.tripRequest.update).toHaveBeenCalledWith(expect.objectContaining({
@@ -146,7 +147,7 @@ describe("checkout-sensitive trip edits", () => {
   it.each(["CONFIRMED", "SAVED"])("does not repair a paid %s trip's administrative metadata update", async (status) => {
     db.user.findUnique.mockResolvedValue({ id: "buyer", roles: ["ADMIN"] });
     db.tripRequest.findFirst.mockResolvedValue({
-      ...trip, type: "xsed", level: "family", status,
+      ...trip, type: "xsed", level: "family", excuseKey: "family-adventure", status,
       payment: { status: "COMPLETED", stripePaymentIntentId: "pi_paid" },
     });
     const response = await POST(request({ id: trip.id, originCity: "Rosario" }));
@@ -158,7 +159,7 @@ describe("checkout-sensitive trip edits", () => {
   });
 
   it("does not turn an empty XSED update into a repair", async () => {
-    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family" });
+    db.tripRequest.findFirst.mockResolvedValue({ ...trip, type: "xsed", level: "family", excuseKey: "family-adventure" });
     const response = await POST(request({ id: trip.id }));
     expect(response.status).toBe(400);
     expect(db.tripRequest.update).not.toHaveBeenCalled();
@@ -363,6 +364,7 @@ describe("checkout-sensitive trip edits", () => {
             status: "SAVED",
             type: "xsed",
             level: "group",
+            excuseKey: "solo-get-lost",
             pax: 1,
             paxDetails: undefined,
           }),

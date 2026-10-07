@@ -251,6 +251,8 @@ export function AdminTripFulfillmentPageClient({
               />
               <TripRequestDetails
                 labels={dict.details}
+                localizedExcuses={dictionary.journey.excuses}
+                localizedRefineOptions={dictionary.journey.refineDetailOptions}
                 locale={locale}
                 ownCarLabel={dictionary.tripTransport.ownCar}
                 trip={trip}

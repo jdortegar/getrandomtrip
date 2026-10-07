@@ -26,6 +26,14 @@ const tabs = [
     ],
   },
   {
+    id: "excuse",
+    label: "Excuse",
+    substeps: [
+      { id: "reason", title: "Reason", description: "" },
+      { id: "refine-details", title: "Refine", description: "" },
+    ],
+  },
+  {
     id: "preferences",
     label: "Preferences",
     substeps: [
@@ -95,6 +103,17 @@ describe("JourneyProgressSidebar — accessible completion", () => {
     const { container } = renderSidebar({});
     expect(description(container, "Origin")).toBe("Completed");
     expect(description(container, "Dates")).toBe("Incomplete");
+  });
+
+  it("completes optional refine details once an excuse is chosen", () => {
+    mockSearch = "travelType=solo&experience=essenza";
+    const without = renderSidebar({ activeTab: "excuse" }).container;
+    expect(description(without, "Reason")).toBe("Incomplete");
+    expect(description(without, "Refine")).toBe("Incomplete");
+    mockSearch = "travelType=solo&experience=essenza&excuse=solo-get-lost";
+    const withExcuse = renderSidebar({ activeTab: "excuse" }).container;
+    expect(description(withExcuse, "Reason")).toBe("Completed");
+    expect(description(withExcuse, "Refine")).toBe("Completed");
   });
 
   it("overrides a substep to true without changing its sibling", () => {
