@@ -114,6 +114,43 @@ describe("VideoBackground lazy loading", () => {
     expect(load).toHaveBeenCalledTimes(1);
   });
 
+  it("stays hidden until playing, then reveals instantly and stays revealed", () => {
+    mount();
+    expect(video().className).toContain("opacity-0");
+    intersect(true);
+    act(() => {
+      video().dispatchEvent(new Event("canplay"));
+    });
+    expect(video().className).toContain("opacity-0");
+    act(() => {
+      video().dispatchEvent(new Event("playing"));
+    });
+    expect(video().className).toContain("opacity-100");
+    expect(video().className).not.toMatch(/duration-/);
+    intersect(false);
+    expect(pause).toHaveBeenCalled();
+    expect(video().className).toContain("opacity-100");
+  });
+
+  it("rewinds to frame 0 before the first play", () => {
+    mount();
+    video().currentTime = 2;
+    intersect(true);
+    expect(video().currentTime).toBe(0);
+  });
+
+  it("stays hidden when playing never fires", () => {
+    vi.useFakeTimers();
+    try {
+      mount();
+      intersect(true);
+      act(() => vi.advanceTimersByTime(5000));
+      expect(video().className).toContain("opacity-0");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("never attaches sources on a data-saver connection", () => {
     Object.defineProperty(navigator, "connection", {
       configurable: true,

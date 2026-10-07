@@ -109,7 +109,7 @@ describe("lazy video", () => {
     expect(video().className).toContain("opacity-0");
   });
 
-  it("attaches the source near the viewport and fades in on canplay", () => {
+  it("attaches the source near the viewport but stays hidden until playing", () => {
     intersect(true);
     expect(video().querySelector("source")?.getAttribute("src")).toBe(
       "/videos/a.mp4",
@@ -118,7 +118,40 @@ describe("lazy video", () => {
     expect(video().className).toContain("opacity-0");
     act(() => {
       video().dispatchEvent(new Event("canplay"));
+      video().dispatchEvent(new Event("loadeddata"));
     });
+    expect(video().className).toContain("opacity-0");
+  });
+
+  it("reveals instantly on playing, without a slow fade", () => {
+    intersect(true);
+    act(() => {
+      video().dispatchEvent(new Event("playing"));
+    });
+    expect(video().className).toContain("opacity-100");
+    expect(video().className).not.toContain("duration-1000");
+  });
+
+  it("rewinds to frame 0 before the first play", () => {
+    video().currentTime = 2;
+    intersect(true);
+    expect(video().currentTime).toBe(0);
+    expect(play).toHaveBeenCalled();
+  });
+
+  it("stays hidden after 5s of timers when playing never fires", () => {
+    intersect(true);
+    act(() => vi.advanceTimersByTime(5000));
+    expect(video().className).toContain("opacity-0");
+  });
+
+  it("stays visible after scrolling away", () => {
+    intersect(true);
+    act(() => {
+      video().dispatchEvent(new Event("playing"));
+    });
+    intersect(false);
+    expect(pause).toHaveBeenCalled();
     expect(video().className).toContain("opacity-100");
   });
 
