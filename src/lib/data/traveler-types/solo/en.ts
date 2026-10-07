@@ -20,7 +20,7 @@ export const soloEn: TravelerTypeData = {
       tagline: "Personal adventure. No commitments.",
       scrollText: "SCROLL",
       videoSrc: "/videos/hero-solo-video.mp4",
-      fallbackImage: "/images/fallbacks/hero-solo-video.jpg",
+      fallbackImage: "/images/fallbacks/hero-solo-video.jpeg",
       primaryCta: {
         ariaLabel: "Go to blog section",
         href: "#blog",
