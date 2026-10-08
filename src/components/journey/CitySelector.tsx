@@ -7,6 +7,12 @@ import { Loader2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CityResult } from "@/lib/geo/types";
 
+/** Locale-aware fallbacks: this primitive resolves its own locale from the route. */
+const PLACEHOLDER_COPY: Record<"en" | "es", { city: string; countryFirst: string }> = {
+  en: { city: "Departure city", countryFirst: "Select a country first" },
+  es: { city: "Ciudad de salida", countryFirst: "Selecciona un país primero" },
+};
+
 interface CitySelectorProps {
   className?: string;
   /** Classes for the outer wrapper (e.g. flex sizing in a parent row) — className above targets the input itself. */
@@ -37,7 +43,7 @@ export default function CitySelector({
   onKeyDown,
   onOptionSelect,
   onSelect,
-  placeholder = "Ciudad de salida",
+  placeholder,
   size = "md",
   value,
 }: CitySelectorProps) {
@@ -138,7 +144,11 @@ export default function CitySelector({
             setOpen(true);
           }}
           onKeyDown={onKeyDown}
-          placeholder={hasCountry ? placeholder : "Selecciona un país primero"}
+          placeholder={
+            hasCountry
+              ? (placeholder ?? PLACEHOLDER_COPY[lang].city)
+              : PLACEHOLDER_COPY[lang].countryFirst
+          }
           type="text"
           value={value}
         />

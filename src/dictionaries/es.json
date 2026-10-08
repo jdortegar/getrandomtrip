@@ -1386,6 +1386,40 @@
       "label": "Personas",
       "countOne": "{count} persona",
       "countOther": "{count} personas"
+    },
+    "toasts": {
+      "originRequired": "Completá país y ciudad de salida para continuar.",
+      "travelTypeRequired": "Elegí con quién viajás para continuar.",
+      "excuseRequired": "Elige un motivo para continuar.",
+      "sessionLoading": "Cargando sesión…",
+      "signInRequired": "Iniciá sesión para continuar.",
+      "saveFailed": "No se pudo guardar. Intentá de nuevo.",
+      "connectionError": "Error de conexión. Intentá de nuevo."
+    },
+    "summary": {
+      "title": "Resumen",
+      "productLabel": "Producto",
+      "productDetail": "1 noche · cena · experiencia local sorpresa",
+      "dateLabel": "Fecha",
+      "originLabel": "Origen",
+      "peopleLabel": "Personas",
+      "excuseLabel": "Motivo",
+      "excuseEmpty": "Sin elegir",
+      "change": "Cambiar",
+      "add": "Agregar",
+      "personOne": "{count} persona",
+      "personOther": "{count} personas",
+      "pricePerPerson": "Precio por persona",
+      "total": "Total",
+      "importantTitle": "Importante",
+      "importantItems": [
+        "El destino es una sorpresa revelada el día del drop.",
+        "El precio final será confirmado por el equipo una vez asignado el drop.",
+        "Incluye 1 noche de alojamiento, cena y experiencia local.",
+        "Serás redirigido al checkout para completar el pago."
+      ],
+      "days": ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"],
+      "months": ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
     }
   },
   "xsedDropsPage": {
@@ -2056,7 +2090,7 @@
           {
             "id": "refine-details",
             "title": "AFINAR DETALLES",
-            "description": "Elige una o más aventuras."
+            "description": "Opcional: elige hasta 3 detalles para afinar tu viaje."
           }
         ]
       },
@@ -2130,7 +2164,7 @@
       "refineDetailsPlaceholder": "Afinar detalles",
       "refineDetailsOneSelected": "1 detalle seleccionado",
       "refineDetailsCountSelected": "{count} detalles seleccionados",
-      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía. Elige una o más aventuras.",
+      "refineDetailsStepDescription": "Cuando lo desconocido se convierte en tu mejor compañía. Opcional: elige hasta 3 detalles para afinar tu viaje.",
       "photoCreditUnsplash": "Fotos: Unsplash",
       "travelTypeLabel": "Tipo de Viaje",
       "travelTypePlaceholder": "Elige tu experiencia",
@@ -2496,6 +2530,7 @@
           "addButton": "Agregar",
           "cancelButton": "Cancelar",
           "saveDestinationsButton": "Guardar destinos",
+          "searchPlaceholder": "Buscar ciudad...",
           "selectedCountTemplate": "Seleccionados: {count} / {max}",
           "selectedDestinationsHeading": "Destinos seleccionados",
           "title": "Agregar destinos a evitar"
@@ -2726,8 +2761,18 @@
       },
       {
         "key": "family-adventure",
-        "title": "Aventura Familiar",
+        "title": "Aventura",
         "description": "Crear recuerdos inolvidables para toda la familia."
+      },
+      {
+        "key": "family-nature-wildlife",
+        "title": "Naturaleza & Fauna",
+        "description": "Parques, animales y aire libre para que los más chicos descubran el mundo salvaje."
+      },
+      {
+        "key": "family-beach-sun",
+        "title": "Playa & Sol",
+        "description": "Arena, mar tranquilo y días sin apuros para toda la familia."
       },
       {
         "key": "group-aventura-familia",
@@ -2766,8 +2811,18 @@
       },
       {
         "key": "paws-adventure",
-        "title": "Aventura con Mascotas",
+        "title": "Aventura",
         "description": "Incluir a tu mejor amigo peludo en la aventura."
+      },
+      {
+        "key": "paws-beach",
+        "title": "Escapada de Playa",
+        "description": "Sol, mar y arena con tu compañero peludo siempre a tu lado."
+      },
+      {
+        "key": "paws-city",
+        "title": "Escapada Urbana",
+        "description": "Cafés, parques y barrios para recorrer la ciudad con tu mejor amigo."
       }
     ],
     "refineDetailOptions": {
@@ -2791,7 +2846,7 @@
           {
             "key": "sl-gl-senderos-lentos",
             "label": "Senderos Lentos",
-            "desc": "Caminar sin cronómetro: el ritmo lo pones vos."
+            "desc": "Caminar sin cronómetro: el ritmo lo pones tú."
           }
         ],
         "solo-busqueda-interior": [
@@ -2886,7 +2941,7 @@
           {
             "key": "sl-la-talleres-creativos",
             "label": "Talleres Creativos",
-            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por vos."
+            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por ti."
           },
           {
             "key": "sl-la-rutas-literarias",
@@ -3144,6 +3199,40 @@
             "label": "Aprendizaje Cultural",
             "desc": "Enseñar a los niños sobre diferentes culturas."
           }
+        ],
+        "family-nature-wildlife": [
+          {
+            "key": "family-nat-parques-nacionales",
+            "label": "Parques Nacionales",
+            "desc": "Senderos accesibles y paisajes abiertos pensados para recorrer en familia."
+          },
+          {
+            "key": "family-nat-avistaje-fauna",
+            "label": "Avistaje de Fauna",
+            "desc": "Ver animales en su hábitat con guías que hacen la experiencia fácil para los niños."
+          },
+          {
+            "key": "family-nat-granja-campo",
+            "label": "Granja & Campo",
+            "desc": "Alojarse en el campo, conocer animales de granja y probar la vida rural."
+          }
+        ],
+        "family-beach-sun": [
+          {
+            "key": "family-beach-playas-tranquilas",
+            "label": "Playas Tranquilas",
+            "desc": "Mar calmo y arena amplia, ideales para los más chicos."
+          },
+          {
+            "key": "family-beach-juegos-agua",
+            "label": "Juegos de Agua",
+            "desc": "Chapuzones, olas suaves y actividades acuáticas aptas para todas las edades."
+          },
+          {
+            "key": "family-beach-pueblos-costeros",
+            "label": "Pueblos Costeros",
+            "desc": "Pasear por pueblos junto al mar con helado, mercados y atardeceres."
+          }
         ]
       },
       "group": {
@@ -3285,6 +3374,40 @@
             "key": "hiking-trails",
             "label": "Senderos para Caminar",
             "desc": "Explorar la naturaleza juntos en senderos pet-friendly."
+          }
+        ],
+        "paws-beach": [
+          {
+            "key": "paws-beach-playas-pet-friendly",
+            "label": "Playas Pet-Friendly",
+            "desc": "Playas donde tu perro puede correr y jugar en el agua."
+          },
+          {
+            "key": "paws-beach-paseos-costeros",
+            "label": "Paseos Costeros",
+            "desc": "Caminatas junto al mar a un ritmo que ambos disfrutan."
+          },
+          {
+            "key": "paws-beach-alojamientos-mar",
+            "label": "Alojamientos frente al Mar",
+            "desc": "Estadías pet-friendly a pasos de la playa."
+          }
+        ],
+        "paws-city": [
+          {
+            "key": "paws-city-cafes-pet-friendly",
+            "label": "Cafés Pet-Friendly",
+            "desc": "Mesas donde tu mascota es bienvenida mientras disfrutas un buen café."
+          },
+          {
+            "key": "paws-city-parques-urbanos",
+            "label": "Parques Urbanos",
+            "desc": "Espacios verdes dentro de la ciudad para correr, jugar y descansar."
+          },
+          {
+            "key": "paws-city-barrios-caminables",
+            "label": "Barrios Caminables",
+            "desc": "Calles tranquilas y barrios para pasear sin apuro, juntos."
           }
         ]
       }
@@ -4261,7 +4384,9 @@
       "dates": "Fechas",
       "nightsPax": "Noches / viajeros",
       "transport": "Transporte",
-      "payment": "Pago"
+      "payment": "Pago",
+      "excuse": "Motivo",
+      "refineDetails": "Afinar detalles"
     },
     "tripStatus": {
       "DRAFT": "Borrador",
@@ -4698,7 +4823,8 @@
     "recentBookings": {
       "title": "Reservas Recientes",
       "viewAll": "Ver todas",
-      "empty": "No hay reservas recientes"
+      "empty": "No hay reservas recientes",
+      "excuseLabel": "Excusa"
     },
     "quickActions": {
       "title": "Acciones Rápidas",
@@ -5886,6 +6012,8 @@
       "xsed": "XSED"
     },
     "levelLabel": "Experiencia",
+    "excuseLabel": "Excusa",
+    "refineDetailsLabel": "Detalles",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
     "revealedHint": "¡Tu destino ha sido revelado!"
   },

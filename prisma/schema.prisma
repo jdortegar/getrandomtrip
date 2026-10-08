@@ -157,6 +157,10 @@ model TripRequest {
   arrivePref        String   @default("indistinto")
   avoidDestinations String[] @default([])
 
+  // Excuse (trip reason) + optional refine details. Keys belong to the traveler type's excuse catalog.
+  excuseKey     String? // e.g. 'solo-get-lost'; null when the step does not apply or draft has none yet
+  refineDetails String[] @default([]) // option keys of the selected excuse
+
   // Addons (JSON for flexibility)
   addons Json? // Array of { id: string, qty: number, optionId?: string }
 

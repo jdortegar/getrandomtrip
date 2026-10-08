@@ -42,6 +42,9 @@ import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSum
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
+import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
+import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
+import { ExcuseSummary } from "@/components/common/ExcuseSummary";
 
 interface TripDetails {
   /**
@@ -55,6 +58,8 @@ interface TripDetails {
   level: string;
   status: string;
   from: string;
+  excuseKey?: string | null;
+  refineDetails?: string[];
 
   // Logistics
   originCountry: string;
@@ -261,6 +266,13 @@ function TripDetailsContent() {
   const typeLabel =
     (copy.typeValues as Record<string, string>)[trip.type] ?? trip.type;
   const levelLabel = getLevelName(trip.level);
+  const excuse = resolveExcuseSelectionLabels({
+    travelerType: travelerTypeOf(trip),
+    excuseKey: trip.excuseKey,
+    refineDetails: trip.refineDetails,
+    localizedExcuses: dict.journey?.excuses,
+    localizedRefineOptions: dict.journey?.refineDetailOptions,
+  });
 
   return (
     <>
@@ -699,6 +711,15 @@ function TripDetailsContent() {
                   <li>
                     • {copy.levelLabel}: <strong>{levelLabel}</strong>
                   </li>
+                  {excuse && (
+                    <li>
+                      <ExcuseSummary
+                        excuse={excuse}
+                        label={`• ${copy.excuseLabel}`}
+                        refineLabel={copy.refineDetailsLabel}
+                      />
+                    </li>
+                  )}
                   {trip.status === "CONFIRMED" && <li>• {copy.confirmedHint}</li>}
                   {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}
                 </ul>

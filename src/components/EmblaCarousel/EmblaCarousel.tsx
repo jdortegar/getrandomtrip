@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { EmblaOptionsType } from "embla-carousel";
 import WheelGestures from "embla-carousel-wheel-gestures";
 import useEmblaCarousel from "embla-carousel-react";
@@ -8,6 +8,7 @@ import {
   usePrevNextButtons,
 } from "./EmblaCarouselArrowButtons";
 import { DotButton, useDotButton } from "./EmblaCarouselDotButton";
+import { useCarouselCapacity } from "@/hooks/useCarouselCapacity";
 import { cn } from "@/lib/utils";
 
 type OverflowSide = "left" | "right" | "both";
@@ -47,7 +48,11 @@ const EmblaCarousel = ({
   // as a whole, and its inline transform on this same node fights plain CSS
   // centering. Skip attaching the ref so Embla never mounts/translates it,
   // and let flexbox center the row instead.
-  const isStatic = slides.length <= slidesPerView;
+  // Slide widths are responsive, so "fits" depends on the measured width;
+  // until measured, fall back to the count-based guess (no desktop flash).
+  const containerRef = useRef<HTMLDivElement>(null);
+  const capacity = useCarouselCapacity(containerRef, slidesPerView);
+  const isStatic = slides.length <= (capacity ?? slidesPerView);
   const wheelGestures = useMemo(() => WheelGestures(), []);
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
@@ -119,6 +124,7 @@ const EmblaCarousel = ({
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "@container mx-auto w-full",
         bleedRight
@@ -158,11 +164,20 @@ const EmblaCarousel = ({
                 key={index}
                 className={cn(
                   "min-w-0 shrink-0 flex-[0_0_80%] sm:flex-[0_0_50%]",
-                  {
-                    "@md:flex-[0_0_33.3333%]": slidesPerView === 3,
-                    "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]":
-                      slidesPerView === 4,
-                  },
+                  // A static row has no scroll to absorb the gap-3 gutters, so
+                  // the gutters come out of the slide widths to keep it in view.
+                  isStatic
+                    ? {
+                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)]":
+                          slidesPerView === 3,
+                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)] @lg:flex-[0_0_calc((100%_-_2.25rem)/4)]":
+                          slidesPerView === 4,
+                      }
+                    : {
+                        "@md:flex-[0_0_33.3333%]": slidesPerView === 3,
+                        "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]":
+                          slidesPerView === 4,
+                      },
                   slideClassName,
                 )}
               >

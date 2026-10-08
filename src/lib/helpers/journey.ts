@@ -24,6 +24,8 @@ export interface TripRequestPayloadFromJourney {
   climate: string;
   departPref: string;
   endDate: string | null;
+  /** Selected excuse key; null when none is chosen. */
+  excuseKey: string | null;
   from: "journey";
   /** When set (from `tripRequestId` query on /journey), POST updates that draft instead of creating another. */
   id?: string;
@@ -34,6 +36,8 @@ export interface TripRequestPayloadFromJourney {
   originCountry: string;
   pax: number;
   paxDetails: PaxDetails;
+  /** Selected refine-detail option keys of the excuse. */
+  refineDetails: string[];
   startDate: string | null;
   status: "DRAFT";
   transport: string;
@@ -152,6 +156,12 @@ export function buildTripRequestPayloadFromSearchParams(
     pax = paxDetails.adults + paxDetails.minors;
   }
 
+  const excuseKey = searchParams.get("excuse")?.trim() || null;
+  const refineDetails = (searchParams.get("refineDetails") ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
   const tripRequestIdRaw = searchParams.get("tripRequestId")?.trim();
   const id =
     tripRequestIdRaw && tripRequestIdRaw.length > 0
@@ -161,6 +171,8 @@ export function buildTripRequestPayloadFromSearchParams(
   return {
     from: options?.from ?? "journey",
     ...(id != null ? { id } : {}),
+    excuseKey,
+    refineDetails,
     type: travelType,
     level,
     originCountry,
@@ -396,8 +408,7 @@ export function isStepComplete(
       return Boolean(
         v.travelType &&
         v.experience &&
-        (v.excuse || !v.hasExcuseStep) &&
-        (!v.hasExcuseStep || v.refineDetails.length > 0),
+        (v.excuse || !v.hasExcuseStep),
       );
     case "details":
       return Boolean(
@@ -481,7 +492,8 @@ export function isSubstepValueComplete(
     case "excuse:reason":
       return Boolean(ctx.excuse);
     case "excuse:refine-details":
-      return ctx.refineDetails.length > 0;
+      // Refine details are optional (0..N) once an excuse is chosen.
+      return Boolean(ctx.excuse);
     case "details:origin":
       return Boolean(ctx.originCountry && ctx.originCity);
     case "details:dates":

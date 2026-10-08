@@ -38,6 +38,7 @@ const trip = {
 const createBody = {
   type: "couple",
   level: "essenza",
+  excuseKey: "escapada-romantica",
   originCity: "Origin",
   originCountry: "Country",
   startDate: "2099-01-01",

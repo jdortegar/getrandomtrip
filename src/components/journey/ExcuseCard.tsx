@@ -48,21 +48,23 @@ export default function ExcuseCard({
         "@container group relative block origin-center aspect-[293.95/347.82] w-full py-3 cursor-pointer",
         className,
       )}
-      onClick={onClick} data-component="ExcuseCard"
+      onClick={onClick}
+      type="button"
+      data-component="ExcuseCard"
     >
-      {selected && (
-        <div className="absolute right-[-9.8px] top-0 z-30 @[250px]:right-[-14px]">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <Check className="h-5 w-5 text-white" strokeWidth={3} />
-          </div>
-        </div>
-      )}
       <div
         className={cn(
           "relative h-full w-full text-left overflow-hidden rounded-2xl transition-all duration-300 border-4 ",
           selected ? "border-primary" : "border-transparent",
         )}
       >
+        {selected && (
+          <div className="absolute right-2 top-2 z-30">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+              <Check className="h-5 w-5 text-white" strokeWidth={3} />
+            </div>
+          </div>
+        )}
         <Img
           alt={title}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
@@ -85,13 +87,9 @@ export default function ExcuseCard({
             </p>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onClick}
-            className="py-1"
-          >
-            {ctaLabel}
+          {/* Visual only: the card button is the single interactive element. */}
+          <Button asChild variant="outline" size="sm" className="py-1">
+            <span>{ctaLabel}</span>
           </Button>
         </div>
       </div>

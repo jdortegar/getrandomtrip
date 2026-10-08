@@ -30,6 +30,7 @@ import type {
 import type { TestimonialData } from "@/components/Testimonials/types";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
 import { slugify } from "@/lib/helpers/slugify";
+import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
 import { EXPERIENCE_TRIP_REQUEST_COUNT_SELECT, withCanDelete } from "@/lib/experiences/deletion";
 
 /**
@@ -740,6 +741,9 @@ export async function getTripperRecentBookings(
       amount: booking.payment?.amount || booking.experience?.basePrice || 0,
       status: booking.status.toLowerCase(),
       paymentStatus: booking.payment?.status?.toLowerCase() || "pending",
+      excuseKey: booking.excuseKey,
+      refineDetails: booking.refineDetails,
+      travelerType: travelerTypeOf(booking),
     }));
   } catch (error) {
     console.error("Error fetching recent bookings:", error);

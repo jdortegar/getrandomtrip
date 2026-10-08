@@ -40,6 +40,8 @@ export interface AdminTripRequest {
   departPref: string;
   destinationRevealedAt: string | null;
   endDate: string | null;
+  /** Selected excuse key from the traveler type's catalog; null on legacy trips. */
+  excuseKey: string | null;
   experienceId: string | null;
   from: string;
   id: string;
@@ -52,6 +54,8 @@ export interface AdminTripRequest {
   pax: number;
   paxDetails: unknown;
   payment: AdminTripPayment | null;
+  /** Selected refine-detail option keys of the excuse. */
+  refineDetails: string[];
   startDate: string | null;
   /** IANA zone the start date is interpreted in; null on legacy trips (Buenos Aires). */
   departureTimeZone?: string | null;

@@ -230,7 +230,7 @@ export default async function Page(props: {
                                 excuseKey
                                   ? getExcuseImage(excuseKey)
                                   : pkg.heroImage ||
-                                    "/images/fallback-package.jpg"
+                                    "/images/fallback.jpg"
                               }
                               alt="Paquete sorpresa"
                               fill

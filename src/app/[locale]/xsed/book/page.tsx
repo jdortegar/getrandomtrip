@@ -49,7 +49,11 @@ export default async function XsedBookPage({ params }: Props) {
     <XsedBookClient
       book={dict.xsedBook}
       detailsStepLabels={dict.journey.detailsStep}
+      excuseLabels={dict.journey.mainContent}
+      excuseTab={dict.journey.contentTabs.find((tab) => tab.id === "excuse")!}
       experienceId={currentDrop?.id}
+      localizedExcuses={dict.journey.excuses}
+      localizedRefineOptions={dict.journey.refineDetailOptions}
       locale={normalizedLocale}
       userBadgeLabels={dict.journey.userBadge}
     />

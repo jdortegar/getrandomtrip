@@ -18,6 +18,7 @@ export interface AvoidSearchModalLabels {
   addButton: string;
   cancelButton: string;
   saveDestinationsButton: string;
+  searchPlaceholder: string;
   selectedCountTemplate: string;
   selectedDestinationsHeading: string;
   title: string;
@@ -143,7 +144,7 @@ export default function AvoidSearchModal({
             onChange={setQuery}
             onKeyDown={onKeyDown}
             onSelect={handleCitySelect}
-            placeholder="Buscar ciudad..."
+            placeholder={labels.searchPlaceholder}
             value={query}
           />
           <Button

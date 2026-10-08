@@ -686,6 +686,7 @@ export interface TripperDashboardDict {
     title: string;
     viewAll: string;
     empty: string;
+    excuseLabel: string;
   };
   quickActions: {
     title: string;
@@ -1452,6 +1453,39 @@ export interface XsedBookDict {
     countOne: string;
     countOther: string;
     label: string;
+  };
+  toasts: {
+    connectionError: string;
+    excuseRequired: string;
+    originRequired: string;
+    saveFailed: string;
+    sessionLoading: string;
+    signInRequired: string;
+    travelTypeRequired: string;
+  };
+  summary: {
+    add: string;
+    change: string;
+    dateLabel: string;
+    /** Weekday abbreviations, Sunday first. */
+    days: string[];
+    excuseEmpty: string;
+    excuseLabel: string;
+    importantItems: string[];
+    importantTitle: string;
+    /** Month abbreviations, January first. */
+    months: string[];
+    originLabel: string;
+    peopleLabel: string;
+    /** "{count}" template. */
+    personOne: string;
+    /** "{count}" template. */
+    personOther: string;
+    pricePerPerson: string;
+    productDetail: string;
+    productLabel: string;
+    title: string;
+    total: string;
   };
   travelType: {
     label: string;
@@ -2659,6 +2693,8 @@ export interface TripDetailDict {
     xsed: string;
   };
   levelLabel: string;
+  excuseLabel: string;
+  refineDetailsLabel: string;
   confirmedHint: string;
   revealedHint: string;
 }
@@ -3557,6 +3593,7 @@ export interface MarketingDictionary {
           addButton: string;
           cancelButton: string;
           saveDestinationsButton: string;
+          searchPlaceholder: string;
           selectedCountTemplate: string;
           selectedDestinationsHeading: string;
           title: string;
@@ -4295,9 +4332,11 @@ export interface MarketingDictionary {
     destinationPlaceholder: string;
     details: {
       dates: string;
+      excuse: string;
       nightsPax: string;
       origin: string;
       payment: string;
+      refineDetails: string;
       transport: string;
     };
     experienceLabel: string;

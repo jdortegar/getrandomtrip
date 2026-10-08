@@ -72,3 +72,117 @@ it("can bleed right without exposing previous slides to the left", () => {
     carousel?.classList.contains("[clip-path:inset(-100vh_-100vw_-100vh_0)]"),
   ).toBe(true);
 });
+
+it("subtracts the gaps from slide widths when every slide fits in view", () => {
+  harness.render(
+    <EmblaCarousel overflow="right" slidesPerView={3}>
+      {[1, 2, 3].map((index) => (
+        <article key={index}>Slide {index}</article>
+      ))}
+    </EmblaCarousel>,
+  );
+
+  const slide = harness.container.querySelector("article")?.parentElement;
+  expect(slide?.className).toContain("@md:flex-[0_0_calc((100%_-_1.5rem)/3)]");
+  expect(slide?.className).not.toContain("@md:flex-[0_0_33.3333%]");
+});
+
+it("keeps full-width slides when the row scrolls", () => {
+  harness.render(
+    <EmblaCarousel overflow="right" slidesPerView={3}>
+      {[1, 2, 3, 4].map((index) => (
+        <article key={index}>Slide {index}</article>
+      ))}
+    </EmblaCarousel>,
+  );
+
+  const slide = harness.container.querySelector("article")?.parentElement;
+  expect(slide?.className).toContain("@md:flex-[0_0_33.3333%]");
+});
+
+function mockMeasurement(width: number, wideViewport = false) {
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      constructor(private cb: ResizeObserverCallback) {}
+      observe() {
+        this.cb(
+          [{ contentRect: { width } } as ResizeObserverEntry],
+          this as unknown as ResizeObserver,
+        );
+      }
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockReturnValue({
+      matches: wideViewport,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }),
+  );
+}
+
+const threeSlides = (
+  <EmblaCarousel overflow="right" slidesPerView={3}>
+    {[1, 2, 3].map((index) => (
+      <article key={index}>Slide {index}</article>
+    ))}
+  </EmblaCarousel>
+);
+
+it("scrolls instead of going static when the slides do not fit a narrow container", () => {
+  mockMeasurement(296);
+  harness.render(threeSlides);
+
+  const slide = harness.container.querySelector("article")?.parentElement;
+  expect(slide?.parentElement?.classList.contains("justify-center")).toBe(
+    false,
+  );
+  expect(slide?.className).toContain("@md:flex-[0_0_33.3333%]");
+  expect(viewportRef).toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  vi.unstubAllGlobals();
+});
+
+it("stays static when the slides fit a wide container", () => {
+  mockMeasurement(900);
+  harness.render(threeSlides);
+
+  const slide = harness.container.querySelector("article")?.parentElement;
+  expect(slide?.parentElement?.classList.contains("justify-center")).toBe(true);
+  expect(viewportRef).not.toHaveBeenCalledWith(expect.any(HTMLDivElement));
+  vi.unstubAllGlobals();
+});
+
+it("measures on mount when the observer has not reported yet", () => {
+  // No painted frame yet: the observer never calls back, only layout is known.
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn().mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }),
+  );
+  const rect = vi
+    .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+    .mockReturnValue({ width: 296 } as DOMRect);
+  harness.render(threeSlides);
+
+  const slide = harness.container.querySelector("article")?.parentElement;
+  expect(slide?.parentElement?.classList.contains("justify-center")).toBe(
+    false,
+  );
+  rect.mockRestore();
+  vi.unstubAllGlobals();
+});

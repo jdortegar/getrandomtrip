@@ -22,8 +22,16 @@ vi.mock("@/components/journey/JourneyContentNavigation", () => ({
   default: () => null,
 }));
 
+const sidebar = vi.hoisted(() => ({
+  props: null as null | {
+    onStepClick: (tabId: string, substepId?: string) => void;
+  },
+}));
 vi.mock("@/components/journey/JourneyProgressSidebar", () => ({
-  default: () => null,
+  default: (props: NonNullable<typeof sidebar.props>) => {
+    sidebar.props = props;
+    return null;
+  },
 }));
 
 vi.mock("@/components/journey/CountrySelector", () => ({
@@ -68,6 +76,8 @@ describe("XsedBookClient travelers", () => {
       root.render(
         <XsedBookClient
           book={en.xsedBook}
+          excuseLabels={en.journey.mainContent}
+          excuseTab={en.journey.contentTabs.find((t) => t.id === "excuse")!}
           detailsStepLabels={en.journey.detailsStep}
           locale="en"
           userBadgeLabels={en.journey.userBadge}
@@ -75,10 +85,7 @@ describe("XsedBookClient travelers", () => {
       );
     });
 
-    const travelersSection = Array.from(
-      container.querySelectorAll<HTMLButtonElement>("button"),
-    ).find((button) => button.textContent?.startsWith("Travelers"));
-    act(() => travelersSection?.click());
+    act(() => sidebar.props?.onStepClick("pax"));
 
     paxInput = container.querySelector<HTMLInputElement>("#xsed-pax")!;
     travelTypeSelect =
@@ -88,6 +95,19 @@ describe("XsedBookClient travelers", () => {
   afterEach(() => {
     act(() => root.unmount());
     container.remove();
+  });
+
+  it("renders only the cards of the active tab", () => {
+    const hasCard = (prefix: string) =>
+      Array.from(container.querySelectorAll("button")).some((b) =>
+        b.textContent?.startsWith(prefix),
+      );
+    expect(hasCard("Travelers")).toBe(true);
+    expect(hasCard("Origin")).toBe(false);
+
+    act(() => sidebar.props?.onStepClick("details"));
+    expect(hasCard("Origin")).toBe(true);
+    expect(hasCard("Travelers")).toBe(false);
   });
 
   it.each(["", "couple", "family", "group"])(
@@ -101,7 +121,7 @@ describe("XsedBookClient travelers", () => {
       expect(travelTypeSelect.value).toBe("solo");
       expect(container.textContent).toContain("Solo · 1 traveler");
       const summary = container.querySelector('[data-component="XsedSummary"]');
-      expect(summary?.textContent).toContain("Solo · 1 persona");
+      expect(summary?.textContent).toContain("Solo · 1 person");
       expect(summary?.textContent).toContain("USD 350");
     },
   );

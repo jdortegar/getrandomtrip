@@ -29,10 +29,11 @@ import {
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import { formatUSD } from "@/lib/format";
 import {
-  getExcuseOptions,
-  getExcuseTitle,
   getHasExcuseStep,
+  resolveExcuseSelectionLabels,
 } from "@/lib/helpers/excuse-helper";
+import { XSED_LEVEL_ID } from "@/lib/constants/product-config";
+import { travelerTypeOf, tripFamilyOf } from "@/lib/db/tripRequestFamily";
 import {
   DEFAULT_PAX_DETAILS,
   paxDetailsEquals,
@@ -394,8 +395,8 @@ function CheckoutContent() {
   const travelType =
     trip?.type != null ? normalizeTripType(trip.type) : undefined;
   const experience = checkoutLevel || undefined;
-  const excuse: string | undefined = undefined;
-  const refineDetails: string[] = [];
+  const excuse = trip?.excuseKey ?? undefined;
+  const refineDetails = trip?.refineDetails ?? [];
   const startDateParamRaw = trip?.startDate ?? undefined;
   const startDateParam =
     typeof startDateParamRaw === "string" && startDateParamRaw.includes("T")
@@ -443,15 +444,15 @@ function CheckoutContent() {
         : "",
     };
   })();
-  const excuseTitleRes = excuse ? getExcuseTitle(excuse) : undefined;
-  const refineDetailEntries = (() => {
-    if (!excuse || refineDetails.length === 0) return [];
-    const options = getExcuseOptions(excuse);
-    return refineDetails.map((key) => ({
-      key,
-      label: options.find((o) => o.key === key)?.label ?? key,
-    }));
-  })();
+  const resolvedExcuse = resolveExcuseSelectionLabels({
+    travelerType: trip ? travelerTypeOf(trip) : "",
+    excuseKey: excuse,
+    refineDetails,
+    localizedExcuses: dict?.journey?.excuses,
+    localizedRefineOptions: dict?.journey?.refineDetailOptions,
+  });
+  const excuseTitleRes = resolvedExcuse?.title;
+  const refineDetailEntries = resolvedExcuse?.refineDetails ?? [];
   const regularTransportLabel = (() => {
     if (!transport) return undefined;
     const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
@@ -688,8 +689,14 @@ function CheckoutContent() {
         : `${startDateParam} — ${nightsNum}`
       : summary?.emptyValue;
 
+  // XSED trips keep the traveler type in `level`; legacy trips have no excuse.
   const showExcuseAndRefineDetailRows =
-    travelType != null && getHasExcuseStep(travelType, experience ?? undefined);
+    excuse != null ||
+    (trip != null &&
+      getHasExcuseStep(
+        travelerTypeOf(trip),
+        tripFamilyOf(trip.type) === "xsed" ? XSED_LEVEL_ID : experience,
+      ));
 
   const checkoutIconDetailRows: CheckoutIconDetailRow[] = [
     {

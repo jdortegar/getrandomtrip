@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 import { redirect } from "next/navigation";
@@ -23,7 +25,7 @@ const EXPERIENCE = {
   activities: [],
   destinationCity: "Synthetic City",
   destinationCountry: "Argentina",
-  heroImage: "/images/fallback-package.jpg",
+  heroImage: "/images/fallback.jpg",
   id: "synthetic-experience",
   pricingByType: null,
   tags: [],
@@ -115,7 +117,7 @@ describe.each(["en", "es"])("populated %s catalog", (locale) => {
         'img[alt="Paquete sorpresa"]',
       );
       expect(decodeURIComponent(image?.getAttribute("src") ?? "")).toContain(
-        firstKey ? getExcuseImage(firstKey) : "/images/fallback-package.jpg",
+        firstKey ? getExcuseImage(firstKey) : "/images/fallback.jpg",
       );
       const prefix = locale === "en" ? "/en" : "";
       expect(
@@ -151,4 +153,26 @@ describe.each(["en", "es"])("populated %s catalog", (locale) => {
       expect(html).toContain("Actividades: 1-2 actividades");
     },
   );
+});
+
+it("falls back to an image that exists when an experience has no excuse or hero image", async () => {
+  vi.mocked(getTripperExperiencesByTypeAndLevel).mockResolvedValueOnce({
+    solo: {
+      essenza: [{ ...EXPERIENCE, excuseKey: [], heroImage: "", level: "essenza" }],
+    },
+  });
+
+  const template = document.createElement("template");
+  template.innerHTML = renderToStaticMarkup(
+    await Page({ params: Promise.resolve({ locale: "es", tripper: "alex" }) }),
+  );
+
+  const src = decodeURIComponent(
+    template.content
+      .querySelector('img[alt="Paquete sorpresa"]')
+      ?.getAttribute("src") ?? "",
+  );
+  const asset = /url=([^&]+)/.exec(src)?.[1] ?? src;
+  expect(asset).toBe("/images/fallback.jpg");
+  expect(existsSync(path.join(process.cwd(), "public", asset))).toBe(true);
 });
