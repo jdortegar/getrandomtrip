@@ -286,6 +286,11 @@ export interface RecentBooking {
     | "FAILED"
     | "REJECTED"
     | "CANCELLED";
+  /** Stored excuse key; null for trips booked before the excuse step. */
+  excuseKey: string | null;
+  refineDetails: string[];
+  /** Traveler type (solo/couple/...); for XSED trips this is the stored level. */
+  travelerType: string;
 }
 
 // ─── Experience Types ─────────────────────────────────────────────────────────

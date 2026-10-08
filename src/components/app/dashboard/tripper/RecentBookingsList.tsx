@@ -5,11 +5,19 @@ import type { RecentBooking } from "@/types/tripper";
 import type { TripperDashboardDict } from "@/lib/types/dictionary";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
+import { ExcuseSummary } from "@/components/common/ExcuseSummary";
+import {
+  resolveExcuseSelectionLabels,
+  type LocalizedExcuseTitle,
+  type LocalizedRefineOptions,
+} from "@/lib/helpers/excuse-helper";
 
 interface RecentBookingsListProps {
   bookings: RecentBooking[];
   copy: TripperDashboardDict["recentBookings"] & TripperDashboardDict["status"];
   locale?: string;
+  localizedExcuses?: readonly LocalizedExcuseTitle[];
+  localizedRefineOptions?: LocalizedRefineOptions;
 }
 
 function formatDate(dateString: string): string {
@@ -24,6 +32,8 @@ export function RecentBookingsList({
   bookings,
   copy,
   locale = "es",
+  localizedExcuses,
+  localizedRefineOptions,
 }: RecentBookingsListProps) {
   return (
     <section data-component="RecentBookingsList">
@@ -52,6 +62,19 @@ export function RecentBookingsList({
         ) : (
           bookings.map((booking) => {
             const label = copy[booking.status as keyof TripperDashboardDict["status"]] ?? booking.status;
+            const excuseLine = (
+              <ExcuseSummary
+                excuse={resolveExcuseSelectionLabels({
+                  travelerType: booking.travelerType,
+                  excuseKey: booking.excuseKey,
+                  refineDetails: booking.refineDetails,
+                  localizedExcuses,
+                  localizedRefineOptions,
+                })}
+                label={copy.excuseLabel}
+                variant="inline"
+              />
+            );
             return (
               <div key={booking.id} className="px-6 py-[18px]">
                 {/* Mobile layout */}
@@ -62,6 +85,7 @@ export function RecentBookingsList({
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-ink">{booking.clientName}</p>
                     <p className="truncate text-sm text-ink">{booking.experienceName}</p>
+                    {excuseLine}
                   </div>
                   <StatusIndicatorBadge family="tripper-booking-summary" label={label} status={booking.status} />
                 </div>
@@ -87,6 +111,7 @@ export function RecentBookingsList({
                     <div className="min-w-0">
                       <p className="truncate font-semibold text-ink">{booking.clientName}</p>
                       <p className="truncate text-sm text-neutral-600">{booking.experienceName}</p>
+                      {excuseLine}
                     </div>
                   </div>
                   <p className="flex items-center gap-1.5 text-[13px] text-ink">

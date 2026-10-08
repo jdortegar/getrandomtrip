@@ -1390,7 +1390,7 @@
     "toasts": {
       "originRequired": "Completá país y ciudad de salida para continuar.",
       "travelTypeRequired": "Elegí con quién viajás para continuar.",
-      "excuseRequired": "Elegí un motivo para continuar.",
+      "excuseRequired": "Elige un motivo para continuar.",
       "sessionLoading": "Cargando sesión…",
       "signInRequired": "Iniciá sesión para continuar.",
       "saveFailed": "No se pudo guardar. Intentá de nuevo.",
@@ -2530,6 +2530,7 @@
           "addButton": "Agregar",
           "cancelButton": "Cancelar",
           "saveDestinationsButton": "Guardar destinos",
+          "searchPlaceholder": "Buscar ciudad...",
           "selectedCountTemplate": "Seleccionados: {count} / {max}",
           "selectedDestinationsHeading": "Destinos seleccionados",
           "title": "Agregar destinos a evitar"
@@ -2845,7 +2846,7 @@
           {
             "key": "sl-gl-senderos-lentos",
             "label": "Senderos Lentos",
-            "desc": "Caminar sin cronómetro: el ritmo lo pones vos."
+            "desc": "Caminar sin cronómetro: el ritmo lo pones tú."
           }
         ],
         "solo-busqueda-interior": [
@@ -2940,7 +2941,7 @@
           {
             "key": "sl-la-talleres-creativos",
             "label": "Talleres Creativos",
-            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por vos."
+            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por ti."
           },
           {
             "key": "sl-la-rutas-literarias",
@@ -4822,7 +4823,8 @@
     "recentBookings": {
       "title": "Reservas Recientes",
       "viewAll": "Ver todas",
-      "empty": "No hay reservas recientes"
+      "empty": "No hay reservas recientes",
+      "excuseLabel": "Excusa"
     },
     "quickActions": {
       "title": "Acciones Rápidas",
@@ -6010,6 +6012,8 @@
       "xsed": "XSED"
     },
     "levelLabel": "Experiencia",
+    "excuseLabel": "Excusa",
+    "refineDetailsLabel": "Detalles",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
     "revealedHint": "¡Tu destino ha sido revelado!"
   },

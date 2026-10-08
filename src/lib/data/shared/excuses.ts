@@ -40,13 +40,13 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-gl-naturaleza-silenciosa",
           label: "Naturaleza silenciosa",
           desc: "Bosques, valles y miradores donde el silencio es parte del itinerario.",
-          img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+          img: "https://images.unsplash.com/photo-1482841628122-9080d44bb807",
         },
         {
           key: "sl-gl-digital-detox",
           label: "Digital Detox",
           desc: "Pausa real de notificaciones: el mundo puede esperar.",
-          img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+          img: "https://images.unsplash.com/photo-1598958288736-97eab7acfa91",
         },
         {
           key: "sl-gl-retiro-minimal",
@@ -57,8 +57,8 @@ export const soloExcuses: ExcuseData[] = [
         {
           key: "sl-gl-senderos-lentos",
           label: "Senderos Lentos",
-          desc: "Caminar sin cronómetro: el ritmo lo ponés vos.",
-          img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+          desc: "Caminar sin cronómetro: el ritmo lo pones tú.",
+          img: "https://images.unsplash.com/photo-1584907600887-9732fa3647ac",
         },
       ],
     },
@@ -72,7 +72,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Búsqueda Interior",
       core: "Un viaje para escucharte: mindfulness, movimiento y sabiduría local.",
-      ctaLabel: "Buscá adentro →",
+      ctaLabel: "Busca adentro →",
       tint: "bg-teal-900/30",
       heroImg: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b",
       options: [
@@ -86,7 +86,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-bi-journaling-escritura",
           label: "Journaling & Escritura",
           desc: "Libreta, café y la libertad de ordenar lo que pasa por la cabeza.",
-          img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
+          img: "https://images.unsplash.com/photo-1456324504439-367cee3b3c32",
         },
         {
           key: "sl-bi-yoga-movimiento",
@@ -98,7 +98,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-bi-sabidurias-locales",
           label: "Sabidurías Locales",
           desc: "Encuentros con maestrxs, rituales y enseñanzas del lugar.",
-          img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+          img: "https://images.unsplash.com/photo-1772520627918-8b02228a4f9a",
         },
       ],
     },
@@ -112,7 +112,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Aventura & Desafío",
       core: "Desafíos físicos que te recuerdan de qué sos capaz, solo o acompañado por el paisaje.",
-      ctaLabel: "Subí el desafío →",
+      ctaLabel: "Sube el desafío →",
       tint: "bg-emerald-900/30",
       heroImg: "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
       options: [
@@ -120,7 +120,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-ad-trekking-hiking",
           label: "Trekking & Hiking",
           desc: "Picos, refugios y jornadas que exigen y regalan perspectiva.",
-          img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+          img: "https://images.unsplash.com/photo-1551632811-561732d1e306",
         },
         {
           key: "sl-ad-aventura-acuatica",
@@ -152,7 +152,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Exploración Cultural",
       core: "Historias, arquitectura y mercados: cultura con los cinco sentidos.",
-      ctaLabel: "Explorá la cultura →",
+      ctaLabel: "Explora la cultura →",
       tint: "bg-amber-900/30",
       heroImg: "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
       options: [
@@ -166,19 +166,19 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-ec-museos-patrimonio",
           label: "Museos & Patrimonio",
           desc: "Colecciones y sitios que merecen tiempo, no solo una foto.",
-          img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262",
+          img: "https://images.unsplash.com/photo-1606819717115-9159c900370b",
         },
         {
           key: "sl-ec-mercados-locales",
           label: "Mercados Locales",
           desc: "Sabores, olores y charlas con quienes hacen girar el barrio.",
-          img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136",
+          img: "https://images.unsplash.com/photo-1565611938260-4e1cdd882426",
         },
         {
           key: "sl-ec-festividades-rituales",
           label: "Festividades & Rituales",
           desc: "Calendario vivo: ferias, celebraciones y costumbres que te invitan.",
-          img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7d6f4",
+          img: "https://images.unsplash.com/photo-1533551268962-824e232f7ee1",
         },
       ],
     },
@@ -192,7 +192,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Fotografía & Narrativa Visual",
       core: "Ojo curioso y memoria en imágenes: cada disparo es una página del diario.",
-      ctaLabel: "Dispará tu relato →",
+      ctaLabel: "Dispara tu relato →",
       tint: "bg-violet-900/30",
       heroImg: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
       options: [
@@ -206,7 +206,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-fn-street-photography",
           label: "Street Photography",
           desc: "Gente, gestos y esquinas que no están en la guía.",
-          img: "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
+          img: "https://images.unsplash.com/photo-1493794179168-82ca7cb00437",
         },
         {
           key: "sl-fn-fauna-wildlife",
@@ -231,15 +231,15 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Literatura, Arte & Talleres Locales",
       core: "Talleres, rutas de lectura y arte urbano para viajar con las manos ocupadas.",
-      ctaLabel: "Creá en el camino →",
+      ctaLabel: "Crea en el camino →",
       tint: "bg-orange-900/30",
       heroImg: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570",
       options: [
         {
           key: "sl-la-talleres-creativos",
           label: "Talleres Creativos",
-          desc: "Cerámica, tinta, textiles: llevarte algo hecho por vos.",
-          img: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b",
+          desc: "Cerámica, tinta, textiles: llevarte algo hecho por ti.",
+          img: "https://images.unsplash.com/photo-1595351298020-038700609878",
         },
         {
           key: "sl-la-rutas-literarias",
@@ -251,13 +251,13 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-la-arte-urbano",
           label: "Arte Urbano",
           desc: "Murales, galerías alternativas y firmas locales.",
-          img: "https://images.unsplash.com/photo-1561214115-f2f134cc4912",
+          img: "https://images.unsplash.com/photo-1601913463731-cfba9fd31ed3",
         },
         {
           key: "sl-la-artesania-diseno",
           label: "Artesanía & Diseño",
           desc: "Objetos con historia y oficios que enseñan el alma del lugar.",
-          img: "https://images.unsplash.com/photo-1566127444979-b3d2b335d3c5",
+          img: "https://images.unsplash.com/photo-1774679817333-decf0d988dd5",
         },
       ],
     },
@@ -271,7 +271,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Música & Sonidos",
       core: "Del escenario al auricular: música como brújula del destino.",
-      ctaLabel: "Seguí el ritmo →",
+      ctaLabel: "Sigue el ritmo →",
       tint: "bg-pink-900/30",
       heroImg: "https://images.unsplash.com/photo-1511379938547-c1f69419868d",
       options: [
@@ -285,7 +285,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-ms-ritmos-tradicionales",
           label: "Ritmos Tradicionales",
           desc: "Folklore, instrumentos y danzas que cuentan identidades.",
-          img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7",
+          img: "https://images.unsplash.com/photo-1786781158385-86dfbb14ad34",
         },
         {
           key: "sl-ms-festivales-musica",
@@ -311,7 +311,7 @@ export const soloExcuses: ExcuseData[] = [
     details: {
       title: "Tribe Encounters",
       core: "Viajás solo pero no aislado: encuentros que suman sin robar tu autonomía.",
-      ctaLabel: "Encontrá tu tribu →",
+      ctaLabel: "Encuentra tu tribu →",
       tint: "bg-cyan-900/30",
       heroImg: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac",
       options: [
@@ -319,13 +319,13 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-te-hostels-boutique",
           label: "Hostels Boutique",
           desc: "Diseño, comunidad y espacios para cruzarte con gente afín.",
-          img: "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+          img: "https://images.unsplash.com/photo-1764006195843-e6f9a5781500",
         },
         {
           key: "sl-te-meetups-viajeros",
           label: "Meetups de Viajeros",
           desc: "Eventos y quedadas para compartir tips y rutas.",
-          img: "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
+          img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
         },
         {
           key: "sl-te-excursiones-grupales",
@@ -337,7 +337,7 @@ export const soloExcuses: ExcuseData[] = [
           key: "sl-te-community-dining",
           label: "Community Dining",
           desc: "Mesas largas, menú compartido y charla con quien llegó de otro continente.",
-          img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
+          img: "https://images.unsplash.com/photo-1528605248644-14dd04022da1",
         },
       ],
     },
@@ -375,13 +375,13 @@ export const coupleExcuses: ExcuseData[] = [
           key: "gastronomia-vinos",
           label: "Experiencias Gastronómicas & Vinos",
           desc: "El amor también se prueba en la mesa: sabores, copas y risas en plural.",
-          img: "https://images.unsplash.com/photo-1556911261-6bd341186b2f",
+          img: "https://images.unsplash.com/photo-1561132667-ab2a54ebf2dc",
         },
         {
           key: "atardeceres-momentos",
           label: "Atardeceres & Momentos Íntimos",
           desc: "Lo simple que se vuelve eterno: mirarse en silencio frente a un horizonte compartido.",
-          img: "https://images.unsplash.com/photo-1519046904884-53103a34bed6",
+          img: "https://images.unsplash.com/photo-1563196638-8c9457546e5f",
         },
       ],
     },
@@ -403,7 +403,7 @@ export const coupleExcuses: ExcuseData[] = [
           key: "trekking-naturaleza",
           label: "Trekking & Naturaleza",
           desc: "Subir juntos, descubrir juntos, conquistar juntos.",
-          img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+          img: "https://images.unsplash.com/photo-1501555088652-021faa106b9b",
         },
         {
           key: "aventura-acuatica",
@@ -415,13 +415,13 @@ export const coupleExcuses: ExcuseData[] = [
           key: "exploracion-fauna",
           label: "Exploración de Fauna",
           desc: "La emoción de observar la vida salvaje como testigos privilegiados.",
-          img: "https://images.unsplash.com/photo-1551524164-6cf77ac4e879",
+          img: "https://images.unsplash.com/photo-1665070385454-5e0c4421a38c",
         },
         {
           key: "desierto-dunas",
           label: "Desierto & Dunas",
           desc: "La vastedad dorada donde cada paso es un acto de complicidad.",
-          img: "https://images.unsplash.com/photo-1509316785399-283f1850ccaf",
+          img: "https://images.unsplash.com/photo-1611522135886-a632d94ff6ae",
         },
       ],
     },
@@ -448,13 +448,13 @@ export const coupleExcuses: ExcuseData[] = [
           key: "street-food-mercados",
           label: "Street Food & Mercados",
           desc: "Descubrir el alma de un lugar en un bocado callejero.",
-          img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+          img: "https://images.unsplash.com/photo-1552912470-ee2e96439539",
         },
         {
           key: "fine-dining-gourmet",
           label: "Fine Dining & Experiencias Gourmet",
           desc: "Una mesa donde cada plato se vuelve parte de la celebración.",
-          img: "https://images.unsplash.com/photo-1544025162-d76694265947",
+          img: "https://images.unsplash.com/photo-1776362441386-c02107b86576",
         },
         {
           key: "rutas-vino-bodegas",
@@ -482,25 +482,25 @@ export const coupleExcuses: ExcuseData[] = [
           key: "museos-patrimonio",
           label: "Museos & Patrimonio",
           desc: "El arte y la historia como excusa para caminar más lento.",
-          img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262",
+          img: "https://images.unsplash.com/photo-1563293743-a9761195b52e",
         },
         {
           key: "pueblos-caminatas",
           label: "Pueblos & Caminatas",
           desc: "Calles pequeñas, historias grandes: el encanto de lo cotidiano.",
-          img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+          img: "https://images.unsplash.com/photo-1533105079780-92b9be482077",
         },
         {
           key: "artesania-diseno-local",
           label: "Artesanía & Diseño Local",
           desc: "Objetos que cuentan historias hechas a mano, para llevarlas con ustedes.",
-          img: "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
+          img: "https://images.unsplash.com/photo-1751725154557-b10ab73f1564",
         },
         {
           key: "festivales-locales",
           label: "Festivales Locales",
           desc: "La magia de compartir costumbres que se viven con alegría colectiva.",
-          img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+          img: "https://images.unsplash.com/photo-1542897730-cc0c1dd8b73b",
         },
       ],
     },
@@ -573,7 +573,7 @@ export const coupleExcuses: ExcuseData[] = [
           key: "luces-ciudad",
           label: "Luces de Ciudad",
           desc: "Rooftops, neones y la vibra de una noche que se recuerda por siempre.",
-          img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+          img: "https://images.unsplash.com/photo-1515868769-ad822a0c67e9",
         },
         {
           key: "veladas-musica",
@@ -601,7 +601,7 @@ export const coupleExcuses: ExcuseData[] = [
           key: "relax-arena",
           label: "Relax & Arena",
           desc: "El mar como telón de fondo y el tiempo suspendido entre olas.",
-          img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
+          img: "https://images.unsplash.com/photo-1519046904884-53103b34b206",
         },
         {
           key: "deportes-acuaticos",
@@ -613,13 +613,13 @@ export const coupleExcuses: ExcuseData[] = [
           key: "paseos-escenicos",
           label: "Paseos Escénicos",
           desc: "Caminar al borde del mar, donde cada paso se acompaña con brisa y luz.",
-          img: "https://images.unsplash.com/photo-1519046904884-53103a34bed6",
+          img: "https://images.unsplash.com/photo-1673266969637-595818f123c9",
         },
         {
           key: "vida-nocturna-musica",
           label: "Vida Nocturna & Música",
           desc: "El sonido del mar mezclado con música y luces: fiesta sin relojes.",
-          img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b",
+          img: "https://images.unsplash.com/photo-1763872625791-92de6bb7796a",
         },
       ],
     },
@@ -641,13 +641,13 @@ export const coupleExcuses: ExcuseData[] = [
           key: "arte-arquitectura",
           label: "Arte & Arquitectura",
           desc: "Descubrir cómo la ciudad respira a través de sus formas y colores.",
-          img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262",
+          img: "https://images.unsplash.com/photo-1762344684115-f745020b9c54",
         },
         {
           key: "gastronomia-cocteleria",
           label: "Gastronomía & Coctelería",
           desc: "Bares escondidos y mesas vibrantes: el pulso de la ciudad en cada copa.",
-          img: "https://images.unsplash.com/photo-1556911261-6bd341186b2f",
+          img: "https://images.unsplash.com/photo-1702725365159-e06e274189a3",
         },
         {
           key: "cultura-shows",
@@ -659,7 +659,7 @@ export const coupleExcuses: ExcuseData[] = [
           key: "compras-diseno",
           label: "Compras & Diseño",
           desc: "Buscar tesoros modernos en cada esquina creativa.",
-          img: "https://images.unsplash.com/photo-1488646953014-85cb44e25828",
+          img: "https://images.unsplash.com/photo-1572611932849-7f0f116fb2f1",
         },
       ],
     },
@@ -672,13 +672,13 @@ export const familyExcuses: ExcuseData[] = [
     key: "family-adventure",
     title: "Aventura",
     description: "Crear recuerdos inolvidables para toda la familia.",
-    img: "https://images.unsplash.com/photo-1506905925346-14b1e3dba71b",
+    img: "https://images.unsplash.com/photo-1503431153573-96e959f4d9b7",
     details: {
       title: "Aventura",
       core: "Crear recuerdos inolvidables para toda la familia.",
       ctaLabel: "Aventúrense en familia →",
       tint: "bg-orange-900/30",
-      heroImg: "https://images.unsplash.com/photo-1506905925346-14b1e3dba71b",
+      heroImg: "https://images.unsplash.com/photo-1503431153573-96e959f4d9b7",
       options: [
         {
           key: "theme-parks",
@@ -705,13 +705,13 @@ export const familyExcuses: ExcuseData[] = [
     key: "family-nature-wildlife",
     title: "Naturaleza & Fauna",
     description: "Parques, animales y aire libre para que los más chicos descubran el mundo salvaje.",
-    img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    img: "https://images.unsplash.com/photo-1503431153573-96e959f4d9b7",
     details: {
       title: "Naturaleza & Fauna",
       core: "Un viaje para que grandes y chicos se asombren con la naturaleza y la vida salvaje.",
       ctaLabel: "Salgan a explorar →",
       tint: "bg-emerald-900/30",
-      heroImg: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+      heroImg: "https://images.unsplash.com/photo-1503431153573-96e959f4d9b7",
       options: [
         {
           key: "family-nat-parques-nacionales",
@@ -729,7 +729,7 @@ export const familyExcuses: ExcuseData[] = [
           key: "family-nat-granja-campo",
           label: "Granja & Campo",
           desc: "Alojarse en el campo, conocer animales de granja y probar la vida rural.",
-          img: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449",
+          img: "https://images.unsplash.com/photo-1777399308166-66296890ba49",
         },
       ],
     },
@@ -810,13 +810,13 @@ export const groupExcuses: ExcuseData[] = [
     title: "Naturaleza & fauna",
     description:
       "Reservas, avistajes y silencios que suenan a aventura compartida.",
-    img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    img: "https://images.unsplash.com/photo-1707419252416-f6dacd82735d",
     details: {
       title: "Naturaleza & fauna",
       core: "Salir en grupo a observar, respirar profundo y volver con historias de vida salvaje.",
       ctaLabel: "Exploren lo salvaje →",
       tint: "bg-emerald-900/30",
-      heroImg: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+      heroImg: "https://images.unsplash.com/photo-1707419252416-f6dacd82735d",
       options: [
         {
           key: "grp-nat-reservas-avistaje",
@@ -828,7 +828,7 @@ export const groupExcuses: ExcuseData[] = [
           key: "grp-nat-trekking-grupal",
           label: "Trekking grupal",
           desc: "Caminatas de varios días o jornadas intensas para el mismo ritmo de grupo.",
-          img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+          img: "https://images.unsplash.com/photo-1550486686-a496af34a2d5",
         },
         {
           key: "grp-nat-eco-talleres",
@@ -844,31 +844,31 @@ export const groupExcuses: ExcuseData[] = [
     title: "Cultura & tradiciones",
     description:
       "Festivales, artesanía y costumbres vividas en grupo, no solo fotografiadas.",
-    img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+    img: "https://images.unsplash.com/photo-1779651650225-ee249a87adf8",
     details: {
       title: "Cultura & tradiciones",
       core: "Sumergirse en lo local con tiempo para compartir impresiones entre ustedes.",
       ctaLabel: "Vivan la cultura →",
       tint: "bg-amber-900/30",
-      heroImg: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+      heroImg: "https://images.unsplash.com/photo-1779651650225-ee249a87adf8",
       options: [
         {
           key: "grp-cul-festivales-ferias",
           label: "Festivales y ferias",
           desc: "Calendario cultural para ir en manada y no perderse el momento clave.",
-          img: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7d6f4",
+          img: "https://images.unsplash.com/photo-1613514944763-72b9ab177004",
         },
         {
           key: "grp-cul-patrimonio-guiado",
           label: "Patrimonio guiado",
           desc: "Sitios UNESCO, museos y barrios con narrativa que engancha a todos.",
-          img: "https://images.unsplash.com/photo-1566127444979-b3d2b335d3c5",
+          img: "https://images.unsplash.com/photo-1768557598976-2712c56a7616",
         },
         {
           key: "grp-cul-artesania-oficios",
           label: "Artesanía y oficios",
           desc: "Manos a la obra: talleres donde el grupo crea algo para llevarse.",
-          img: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b",
+          img: "https://images.unsplash.com/photo-1493106641515-6b5631de4bb9",
         },
       ],
     },
@@ -890,19 +890,19 @@ export const groupExcuses: ExcuseData[] = [
           key: "grp-playa-chiringuitos-rutas",
           label: "Playas y calas",
           desc: "Rutas costeras para elegir playa según el mood del grupo.",
-          img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
+          img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
         },
         {
           key: "grp-dunas-aventura",
           label: "Dunas y aventura",
           desc: "Subidas, bajadas y deportes sobre arena para los que no paran.",
-          img: "https://images.unsplash.com/photo-1509316785289-025f5b846b35",
+          img: "https://images.unsplash.com/photo-1639402479478-f5e7881c0ccc",
         },
         {
           key: "grp-costero-pueblos",
           label: "Pueblos costeros",
           desc: "Paseos entre puertos, pescado fresco y noches largas de charla.",
-          img: "https://images.unsplash.com/photo-1519046904884-73403d63b908",
+          img: "https://images.unsplash.com/photo-1777363804236-0aff264e8304",
         },
       ],
     },
@@ -924,7 +924,7 @@ export const groupExcuses: ExcuseData[] = [
           key: "grp-grad-viaje-egreso",
           label: "Viaje de graduación",
           desc: "Esa escapada que cierra una etapa y abre la siguiente con estilo.",
-          img: "https://images.unsplash.com/photo-1523240795612-9a054b0db644",
+          img: "https://images.unsplash.com/photo-1747509228690-8f1fef36d0bf",
         },
         {
           key: "grp-celebr-reuniones",
@@ -946,13 +946,13 @@ export const groupExcuses: ExcuseData[] = [
     title: "Escapadas Madre-hij@ / Padre-hij@",
     description:
       "Tiempo a solas con tu hijo o hija: hobbies, risas y recuerdos de por vida.",
-    img: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+    img: "https://images.unsplash.com/photo-1779343456949-dcb9e1496f0b",
     details: {
       title: "Escapadas Madre-hij@ / Padre-hij@",
       core: "Un viaje para dos (o por turnos) que fortalece vínculos sin distracciones.",
       ctaLabel: "Escápense juntos →",
       tint: "bg-indigo-900/30",
-      heroImg: "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af",
+      heroImg: "https://images.unsplash.com/photo-1779343456949-dcb9e1496f0b",
       options: [
         {
           key: "grp-ph-aficion-compartida",
@@ -964,7 +964,7 @@ export const groupExcuses: ExcuseData[] = [
           key: "grp-ph-naturaleza-calma",
           label: "Naturaleza y calma",
           desc: "Ritmo suave, conversaciones largas y espacios para escucharse.",
-          img: "https://images.unsplash.com/photo-1506905925346-14b1e3dba71b",
+          img: "https://images.unsplash.com/photo-1606474226448-4aa808468efc",
         },
         {
           key: "grp-ph-ciudad-descubrimiento",
@@ -996,7 +996,7 @@ export const honeymoonExcuses: ExcuseData[] = [
           key: "romantic-dinners",
           label: "Cenas Románticas",
           desc: "Momentos íntimos con la mejor gastronomía.",
-          img: "https://images.unsplash.com/photo-1556911261-6bd341186b2f",
+          img: "https://images.unsplash.com/photo-1776740313603-a64885fff038",
         },
         {
           key: "luxury-spa",
@@ -1021,19 +1021,19 @@ export const pawsExcuses: ExcuseData[] = [
     key: "paws-adventure",
     title: "Aventura",
     description: "Incluir a tu mejor amigo peludo en la aventura.",
-    img: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1",
+    img: "https://images.unsplash.com/photo-1518056914555-de1d7f0b3967",
     details: {
       title: "Aventura",
       core: "Incluir a tu mejor amigo peludo en la aventura.",
       ctaLabel: "Aventúrense juntos →",
       tint: "bg-yellow-900/30",
-      heroImg: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1",
+      heroImg: "https://images.unsplash.com/photo-1518056914555-de1d7f0b3967",
       options: [
         {
           key: "pet-friendly-parks",
           label: "Parques Pet-Friendly",
           desc: "Espacios donde tu mascota puede correr libremente.",
-          img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+          img: "https://images.unsplash.com/photo-1607696412329-265a4103b433",
         },
         {
           key: "beach-activities",
@@ -1045,7 +1045,7 @@ export const pawsExcuses: ExcuseData[] = [
           key: "hiking-trails",
           label: "Senderos para Caminar",
           desc: "Explorar la naturaleza juntos en senderos pet-friendly.",
-          img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+          img: "https://images.unsplash.com/photo-1587916369552-4c5b9b2fc3f5",
         },
       ],
     },
@@ -1111,7 +1111,7 @@ export const pawsExcuses: ExcuseData[] = [
           key: "paws-city-barrios-caminables",
           label: "Barrios Caminables",
           desc: "Calles tranquilas y barrios para pasear sin apuro, juntos.",
-          img: "https://images.unsplash.com/photo-1514565131-fce0801e5785",
+          img: "https://images.unsplash.com/photo-1775876469878-55fc488e0fd7",
         },
       ],
     },

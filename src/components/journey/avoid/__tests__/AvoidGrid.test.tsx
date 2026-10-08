@@ -19,6 +19,7 @@ const labels = {
     addButton: "Agregar",
     cancelButton: "Cancelar",
     saveDestinationsButton: "Guardar",
+    searchPlaceholder: "Search city...",
     selectedCountTemplate: "{count} seleccionados",
     selectedDestinationsHeading: "Seleccionados",
     title: "Buscar",
