@@ -262,6 +262,49 @@ describe("POST /api/reviews", () => {
     );
   });
 
+  describe("review locale", () => {
+    async function submit(extra: Record<string, unknown>) {
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(baseTripRequest);
+      (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+        async (fn: (tx: typeof prisma) => Promise<unknown>) => fn(prisma),
+      );
+      (prisma.review.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "review-1" });
+      const mod = (await import("../route")) as RouteModule;
+      return mod.POST(
+        makePostRequest({ token: "valid-token-abc", rating: 5, content: "Great!", ...extra }),
+      );
+    }
+
+    function savedLocale(): unknown {
+      const call = (prisma.review.create as ReturnType<typeof vi.fn>).mock.calls[0]?.[0];
+      return call?.data?.locale;
+    }
+
+    it("saves locale=en when the review was submitted from the en page", async () => {
+      const res = await submit({ locale: "en" });
+      expect(res.status).toBe(200);
+      expect(savedLocale()).toBe("en");
+    });
+
+    it("saves locale=es when the review was submitted from the es page", async () => {
+      await submit({ locale: "es" });
+      expect(savedLocale()).toBe("es");
+    });
+
+    it("falls back to es when locale is missing", async () => {
+      await submit({});
+      expect(savedLocale()).toBe("es");
+    });
+
+    it("falls back to es when locale is invalid", async () => {
+      await submit({ locale: "fr" });
+      expect(savedLocale()).toBe("es");
+      (prisma.review.create as ReturnType<typeof vi.fn>).mockClear();
+      await submit({ locale: 42 });
+      expect(savedLocale()).toBe("es");
+    });
+  });
+
   it("works without auth header (Scenario 4.10 — public endpoint)", async () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(baseTripRequest);
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(

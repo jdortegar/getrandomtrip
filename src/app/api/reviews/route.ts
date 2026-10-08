@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { hasLocale, type Locale } from "@/lib/i18n/config";
 
 // POST /api/reviews — public endpoint, token-based auth, no session required
 export async function POST(request: Request) {
@@ -13,6 +14,11 @@ export async function POST(request: Request) {
       typeof body?.content === "string" ? body.content.trim() : null;
     const title =
       typeof body?.title === "string" ? body.title.trim() || null : null;
+    // Language the review was written in, taken from the review page locale.
+    const locale: Locale =
+      typeof body?.locale === "string" && hasLocale(body.locale)
+        ? body.locale
+        : "es";
 
     // Validate token presence
     if (!token) {
@@ -116,6 +122,7 @@ export async function POST(request: Request) {
           title: title ?? undefined,
           content,
           destination: tripRequest.actualDestination ?? "",
+          locale,
           isApproved: false,
           isPublic: false,
         },

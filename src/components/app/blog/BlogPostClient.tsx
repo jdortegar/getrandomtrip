@@ -92,13 +92,13 @@ export default function BlogPostClient({ blog, locale }: BlogPostClientProps) {
 
   useEffect(() => {
     if (!blog.author?.id) return;
-    fetch(`/api/tripper/${blog.author.id}/testimonials`)
+    fetch(`/api/tripper/${blog.author.id}/testimonials?locale=${locale}`)
       .then((r) => r.json())
       .then((data: { testimonials?: Testimonial[] }) => {
         if (Array.isArray(data.testimonials)) setTestimonials(data.testimonials);
       })
       .catch(() => undefined);
-  }, [blog.author?.id]);
+  }, [blog.author?.id, locale]);
 
   useEffect(() => {
     if (!blog.author?.id) return;

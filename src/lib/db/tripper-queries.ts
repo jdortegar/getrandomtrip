@@ -5,6 +5,7 @@ import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
 
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
+import type { Locale } from "@/lib/i18n/config";
 import { primaryRoleFromMembership } from "@/lib/auth/prismaUserRoles";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
@@ -1056,15 +1057,20 @@ export async function getTripperExperiences(
 }
 
 /**
- * Get approved and public reviews for a tripper (for public profile)
+ * Get approved and public reviews for a tripper (for public profile),
+ * limited to reviews written in the given UI locale.
  */
-export async function getApprovedReviewsForTripper(tripperId: string) {
+export async function getApprovedReviewsForTripper(
+  tripperId: string,
+  locale: Locale = "es",
+) {
   try {
     const reviews = await prisma.review.findMany({
       where: {
         tripperId,
         isApproved: true,
         isPublic: true,
+        locale,
       },
       select: {
         id: true,
@@ -1243,13 +1249,14 @@ export async function getBlogTeaserPosts(
   }
 }
 
-/** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc). */
+/** Approved and public reviews left by travelers of a given trip type ('solo', 'family', etc), in the given locale. */
 export async function getReviewsForTripType(
   tripType: string,
+  locale: Locale = "es",
 ): Promise<TestimonialData[]> {
   try {
     const reviews = await prisma.review.findMany({
-      where: { isApproved: true, isPublic: true, tripType },
+      where: { isApproved: true, isPublic: true, tripType, locale },
       orderBy: { createdAt: "desc" },
       take: 9,
       select: {
@@ -1313,10 +1320,13 @@ export async function getTripperSettingsExtras(
   };
 }
 
-export async function getHomepageTestimonials(): Promise<TestimonialData[]> {
+/** Approved and public Randomtrip (no tripper) reviews written in the given locale. */
+export async function getHomepageTestimonials(
+  locale: Locale = "es",
+): Promise<TestimonialData[]> {
   try {
     const reviews = await prisma.review.findMany({
-      where: { isApproved: true, isPublic: true, tripperId: null },
+      where: { isApproved: true, isPublic: true, tripperId: null, locale },
       orderBy: { createdAt: "desc" },
       take: 9,
       select: {

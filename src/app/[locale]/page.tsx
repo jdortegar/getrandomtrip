@@ -46,7 +46,7 @@ export default async function HomePage(props: {
   const [trippers, testimonials, blogPosts, dict, requestHeaders, query] =
     await Promise.all([
       getDiscoverableTrippers(),
-      getHomepageTestimonials(),
+      getHomepageTestimonials(resolvedLocale),
       getRecentPublishedBlogs(5, resolvedLocale),
       getDictionary(resolvedLocale),
       headers(),

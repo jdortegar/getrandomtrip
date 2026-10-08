@@ -628,6 +628,9 @@ model Review {
   destination String?
   isApproved  Boolean @default(false)
   isPublic    Boolean @default(false)
+  // Language the review was written in ("es" | "en"); set once at submission
+  // from the review page locale. Public surfaces filter by it.
+  locale      String  @default("es")
 
   // New submission-flow fields
   tripRequestId String? @unique
@@ -643,6 +646,7 @@ model Review {
   tripper     User?        @relation("TripperReviews", fields: [tripperId], references: [id])
 
   @@index([tripperId, isApproved])
+  @@index([isApproved, isPublic, locale])
   @@map("reviews")
 }
 
