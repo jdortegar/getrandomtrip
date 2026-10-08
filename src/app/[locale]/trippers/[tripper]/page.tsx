@@ -180,7 +180,7 @@ export default async function Page(props: {
         />
       )}
       <Testimonials
-        testimonials={await getAllTestimonialsForTripper(tripperData)}
+        testimonials={await getAllTestimonialsForTripper(tripperData, locale)}
         title={`Lo que dicen sobre ${tripperData.name}`}
         subtitle={`Lo que dicen sobre ${tripperData.name}`}
         eyebrow={`Lo que dicen sobre ${tripperData.name}`}

@@ -103,7 +103,7 @@ export default async function ReviewPage({ params }: PageProps) {
       />
       <Section className="py-8 md:py-24">
         <div className="max-w-lg mx-auto text-left">
-          <ReviewFormClient token={token} copy={copy} />
+          <ReviewFormClient token={token} copy={copy} locale={locale} />
         </div>
       </Section>
     </>

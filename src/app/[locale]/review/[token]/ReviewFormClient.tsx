@@ -7,15 +7,18 @@ import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import type { ReviewFormDict } from "@/lib/types/dictionary";
+import type { Locale } from "@/lib/i18n/config";
 
 interface ReviewFormClientProps {
   token: string;
   copy: ReviewFormDict;
+  locale: Locale;
 }
 
 export default function ReviewFormClient({
   token,
   copy,
+  locale,
 }: ReviewFormClientProps) {
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
@@ -65,6 +68,7 @@ export default function ReviewFormClient({
           rating,
           content: content.trim(),
           title: title.trim() || undefined,
+          locale,
         }),
       });
 
