@@ -22,7 +22,7 @@ export const groupEn: TravelerTypeData = {
       tagline: "The best moments are lived in plural",
       scrollText: "SCROLL",
       videoSrc: "/videos/group-hero-video.mp4",
-      fallbackImage: "/images/journey-types/friends-group.jpg",
+      fallbackImage: "/images/fallbacks/hero-group-video.jpeg",
       primaryCta: {
         ariaLabel: "Go to blog section",
         href: "#blog",

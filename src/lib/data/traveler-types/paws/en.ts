@@ -21,7 +21,7 @@ export const pawsEn: TravelerTypeData = {
       tagline: "Adventures with paw prints",
       scrollText: "SCROLL",
       videoSrc: "/videos/paws-hero-video.mp4",
-      fallbackImage: "/images/journey-types/paws-card.jpg",
+      fallbackImage: "/images/fallbacks/hero-paws-video.jpeg",
       primaryCta: {
         ariaLabel: "Go to blog section",
         href: "#blog",
