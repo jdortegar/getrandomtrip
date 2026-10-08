@@ -23,7 +23,7 @@ const pawsEs: TravelerTypeData = {
       tagline: "Aventuras con huella",
       scrollText: "SCROLL",
       videoSrc: "/videos/paws-hero-video.mp4",
-      fallbackImage: "/images/journey-types/paws-card.jpg",
+      fallbackImage: "/images/fallbacks/hero-paws-video.jpeg",
       primaryCta: {
         ariaLabel: "Ir a la sección de blog",
         href: "#blog",
