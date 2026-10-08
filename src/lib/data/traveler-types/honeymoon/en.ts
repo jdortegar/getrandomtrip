@@ -21,7 +21,7 @@ export const honeymoonEn: TravelerTypeData = {
       tagline: "The beginning of a unique story",
       scrollText: "SCROLL",
       videoSrc: "/videos/honeymoon-video.mp4",
-      fallbackImage: "/images/journey-types/honeymoon-same-sex.jpg",
+      fallbackImage: "/images/fallbacks/hero-honeymoon-video.jpeg",
       primaryCta: {
         ariaLabel: "Go to blog section",
         href: "#blog",

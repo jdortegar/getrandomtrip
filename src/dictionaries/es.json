@@ -1339,7 +1339,7 @@
     "hero": {
       "brand": "XSED",
       "description": "Completa tu información de salida para confirmar tu XSED.",
-      "fallbackImage": "/images/xsed-hero.jpg",
+      "fallbackImage": "/images/fallbacks/hero-xsed.png",
       "label": "RESERVÁ TU ESCAPE",
       "progressLabel": "Progreso",
       "subtitle": "X SUERTE,<br/>ES DOMINGO",
@@ -1911,7 +1911,7 @@
         "repeatText": "Repeat",
         "text": "WONDER • WANDER"
       },
-      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
         "href": "#travel-type-selector",

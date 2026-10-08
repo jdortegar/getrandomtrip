@@ -1339,7 +1339,7 @@
     "hero": {
       "brand": "TGIS",
       "description": "Fill in your departure information to confirm your TGIS.",
-      "fallbackImage": "/images/xsed-hero.jpg",
+      "fallbackImage": "/images/fallbacks/hero-xsed.png",
       "label": "BOOK YOUR ESCAPE",
       "progressLabel": "Progress",
       "subtitle": "THANK GOD<br/>IT'S SUNDAY",
@@ -1911,7 +1911,7 @@
         "repeatText": "Repeat",
         "text": "WONDER • WANDER"
       },
-      "fallbackImage": "/images/bg-playa-mexico.jpg",
+      "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
         "href": "#travel-type-selector",
