@@ -4823,7 +4823,8 @@
     "recentBookings": {
       "title": "Reservas Recientes",
       "viewAll": "Ver todas",
-      "empty": "No hay reservas recientes"
+      "empty": "No hay reservas recientes",
+      "excuseLabel": "Excusa"
     },
     "quickActions": {
       "title": "Acciones Rápidas",
@@ -6011,6 +6012,8 @@
       "xsed": "XSED"
     },
     "levelLabel": "Experiencia",
+    "excuseLabel": "Excusa",
+    "refineDetailsLabel": "Detalles",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
     "revealedHint": "¡Tu destino ha sido revelado!"
   },

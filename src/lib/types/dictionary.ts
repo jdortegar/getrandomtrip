@@ -686,6 +686,7 @@ export interface TripperDashboardDict {
     title: string;
     viewAll: string;
     empty: string;
+    excuseLabel: string;
   };
   quickActions: {
     title: string;
@@ -2692,6 +2693,8 @@ export interface TripDetailDict {
     xsed: string;
   };
   levelLabel: string;
+  excuseLabel: string;
+  refineDetailsLabel: string;
   confirmedHint: string;
   revealedHint: string;
 }

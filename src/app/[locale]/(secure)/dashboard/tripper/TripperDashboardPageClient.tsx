@@ -33,6 +33,7 @@ export default function TripperDashboardPageClient({
   const { user } = useUserStore();
   const copy = useDictionary((d) => d.tripperDashboard);
   const locale = useLocale();
+  const journey = useDictionary((d) => d.journey);
 
   const currentUser = session?.user || user;
 
@@ -93,6 +94,8 @@ export default function TripperDashboardPageClient({
               bookings={recentBookings}
               copy={{ ...copy.recentBookings, ...copy.status }}
               locale={locale}
+              localizedExcuses={journey.excuses}
+              localizedRefineOptions={journey.refineDetailOptions}
             />
           </div>
         )}
