@@ -4,33 +4,32 @@ import { CalendarDays, MapPin, Sparkle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getXsedPricePerPerson } from "@/lib/data/traveler-types";
 import { getNextWeekend } from "@/lib/helpers/xsed-dates";
+import type { ResolvedExcuseSelection } from "@/lib/helpers/excuse-helper";
+import type { XsedBookDict } from "@/lib/types/dictionary";
 import type { XsedTravelType } from "@/types/core";
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
-const MONTHS_ES = [
-  "ene",
-  "feb",
-  "mar",
-  "abr",
-  "may",
-  "jun",
-  "jul",
-  "ago",
-  "sep",
-  "oct",
-  "nov",
-  "dic",
-];
-const DAYS_ES = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
+function formatDay(
+  date: Date,
+  days: string[],
+  months: string[],
+): string {
+  return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
+}
 
-function formatDay(date: Date): string {
-  return `${DAYS_ES[date.getDay()]} ${date.getDate()} ${MONTHS_ES[date.getMonth()]}`;
+function fillCount(template: string, count: number): string {
+  return template.replace("{count}", String(count));
 }
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface XsedSummaryProps {
+  /** Product name (hero brand: XSED / TGIS). */
+  brand: string;
+  copy: XsedBookDict["summary"];
+  /** Localized excuse + refine labels; null until an excuse is chosen. */
+  excuse: ResolvedExcuseSelection | null;
   onEdit: (section: string) => void;
   originCity: string;
   originCountry: string;
@@ -42,6 +41,9 @@ interface XsedSummaryProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function XsedSummary({
+  brand,
+  copy,
+  excuse,
   onEdit,
   originCity,
   originCountry,
@@ -53,40 +55,46 @@ export function XsedSummary({
   const total = pricePerPerson * pax;
   const { saturday, sunday } = getNextWeekend();
 
+  const peopleText = fillCount(
+    pax === 1 ? copy.personOne : copy.personOther,
+    pax,
+  );
+
   const sectionTitleClass = "text-base font-bold text-ink";
   const detailClass = "text-sm font-normal text-ink";
   const actionButtonClass =
     "shrink-0 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-normal text-ink hover:bg-gray-200";
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-8 lg:self-start lg:w-80" data-component="XsedSummary">
-      <h2 className="text-xl font-bold text-ink">Resumen</h2>
+    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-lg border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-24 lg:self-start lg:w-80" data-component="XsedSummary">
+      <h2 className="text-xl font-bold text-ink">{copy.title}</h2>
 
-      {/* Producto */}
+      {/* Product */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={sectionTitleClass}>Producto</p>
+        <p className={sectionTitleClass}>{copy.productLabel}</p>
         <div className="mt-2">
-          <p className={cn("font-bold", detailClass)}>XSED</p>
+          <p className={cn("font-bold", detailClass)}>{brand}</p>
           <p className="text-sm font-normal text-gray-500 mt-0.5">
-            1 noche · cena · experiencia local sorpresa
+            {copy.productDetail}
           </p>
         </div>
       </div>
 
-      {/* Fecha */}
+      {/* Date */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={sectionTitleClass}>Fecha</p>
+        <p className={sectionTitleClass}>{copy.dateLabel}</p>
         <div className="mt-2 flex items-center gap-2">
           <CalendarDays className="h-4 w-4 shrink-0 text-ink" />
           <p className={detailClass}>
-            {formatDay(saturday)} · {formatDay(sunday)}
+            {formatDay(saturday, copy.days, copy.months)} ·{" "}
+            {formatDay(sunday, copy.days, copy.months)}
           </p>
         </div>
       </div>
 
-      {/* Origen */}
+      {/* Origin */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={sectionTitleClass}>Origen</p>
+        <p className={sectionTitleClass}>{copy.originLabel}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           {originCity && originCountry ? (
             <>
@@ -101,7 +109,7 @@ export function XsedSummary({
                 onClick={() => onEdit("origin")}
                 type="button"
               >
-                Cambiar
+                {copy.change}
               </button>
             </>
           ) : (
@@ -111,27 +119,49 @@ export function XsedSummary({
                 onClick={() => onEdit("origin")}
                 type="button"
               >
-                Agregar
+                {copy.add}
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Personas */}
+      {/* Travelers */}
       <div className="border-b border-gray-200 pb-4">
-        <p className={sectionTitleClass}>Personas</p>
+        <p className={sectionTitleClass}>{copy.peopleLabel}</p>
         <div className="mt-2 flex items-center justify-between gap-3">
           <p className={detailClass}>
             {travelTypeLabel ? `${travelTypeLabel} · ` : ""}
-            {pax} persona{pax !== 1 ? "s" : ""}
+            {peopleText}
           </p>
           <button
             className={actionButtonClass}
             onClick={() => onEdit("pax")}
             type="button"
           >
-            Cambiar
+            {copy.change}
+          </button>
+        </div>
+      </div>
+
+      {/* Excuse */}
+      <div className="border-b border-gray-200 pb-4" data-section="excuse">
+        <p className={sectionTitleClass}>{copy.excuseLabel}</p>
+        <div className="mt-2 flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className={detailClass}>{excuse?.title ?? copy.excuseEmpty}</p>
+            {excuse && excuse.refineDetails.length > 0 ? (
+              <p className="mt-0.5 text-sm font-normal text-gray-500">
+                {excuse.refineDetails.map((detail) => detail.label).join(", ")}
+              </p>
+            ) : null}
+          </div>
+          <button
+            className={actionButtonClass}
+            onClick={() => onEdit("excuse")}
+            type="button"
+          >
+            {excuse ? copy.change : copy.add}
           </button>
         </div>
       </div>
@@ -140,7 +170,7 @@ export function XsedSummary({
       <div>
         <div className="flex gap-4 items-start justify-between">
           <p className="font-barlow font-semibold text-sm text-ink">
-            Precio por persona
+            {copy.pricePerPerson}
           </p>
           <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
             USD {pricePerPerson}
@@ -150,10 +180,10 @@ export function XsedSummary({
         <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
           <div className="min-w-0 flex-1">
             <p className="font-barlow-condensed font-bold text-3xl text-ink">
-              Total
+              {copy.total}
             </p>
             <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
-              {pax} persona{pax !== 1 ? "s" : ""}
+              {peopleText}
             </p>
           </div>
           <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
@@ -162,23 +192,19 @@ export function XsedSummary({
         </div>
       </div>
 
-      {/* Importante */}
+      {/* Important */}
       <div className="rounded-lg bg-[#E8F4FC] p-4 text-sm">
         <div className="mb-2 flex items-center gap-2">
           <Sparkle
             aria-hidden
             className="h-4 w-4 shrink-0 text-[#5B7A8C] fill-[#5B7A8C]"
           />
-          <span className="text-base font-bold text-ink">Importante</span>
+          <span className="text-base font-bold text-ink">{copy.importantTitle}</span>
         </div>
         <ul className="list-outside list-disc pl-4 space-y-1 text-sm font-normal text-ink">
-          <li>El destino es una sorpresa revelada el día del drop.</li>
-          <li>
-            El precio final será confirmado por el equipo una vez asignado el
-            drop.
-          </li>
-          <li>Incluye 1 noche de alojamiento, cena y experiencia local.</li>
-          <li>Serás redirigido al checkout para completar el pago.</li>
+          {copy.importantItems.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
         </ul>
       </div>
     </aside>

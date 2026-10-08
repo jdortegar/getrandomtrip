@@ -1,6 +1,12 @@
 import { formatAdminAmount } from "@/lib/admin/format";
 import type { AdminTripRequest } from "@/lib/admin/types";
 import { formatTripCalendarDate } from "@/lib/helpers/formatTripCalendarDate";
+import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
+import {
+  resolveExcuseSelectionLabels,
+  type LocalizedExcuseTitle,
+  type LocalizedRefineOptions,
+} from "@/lib/helpers/excuse-helper";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import styles from "./trip-fulfillment/fulfillment.module.css";
@@ -27,6 +33,10 @@ function DetailRow({ label, value, variant }: DetailRowProps) {
 
 interface TripRequestDetailsProps {
   labels: DetailLabels;
+  /** Localized excuse titles (journey.excuses). */
+  localizedExcuses?: readonly LocalizedExcuseTitle[];
+  /** Localized refine options (journey.refineDetailOptions). */
+  localizedRefineOptions?: LocalizedRefineOptions;
   locale: string;
   ownCarLabel: string;
   trip: AdminTripRequest;
@@ -34,10 +44,19 @@ interface TripRequestDetailsProps {
 
 export function TripRequestDetails({
   labels,
+  localizedExcuses,
+  localizedRefineOptions,
   locale,
   ownCarLabel,
   trip,
 }: TripRequestDetailsProps) {
+  const excuse = resolveExcuseSelectionLabels({
+    travelerType: travelerTypeOf(trip),
+    excuseKey: trip.excuseKey,
+    refineDetails: trip.refineDetails,
+    localizedExcuses,
+    localizedRefineOptions,
+  });
   return (
     <div className={styles.factList} data-component="TripRequestDetails">
       <DetailRow
@@ -59,6 +78,15 @@ export function TripRequestDetails({
           trip.type, trip.transport, ownCarLabel, trip.transport,
         ) ?? trip.transport}
       />
+      {excuse ? (
+        <DetailRow label={labels.excuse} value={excuse.title} />
+      ) : null}
+      {excuse && excuse.refineDetails.length > 0 ? (
+        <DetailRow
+          label={labels.refineDetails}
+          value={excuse.refineDetails.map((detail) => detail.label).join(", ")}
+        />
+      ) : null}
       {trip.payment ? (
         <DetailRow
           label={labels.payment}

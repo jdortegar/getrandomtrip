@@ -76,6 +76,8 @@ function baseTrip(overrides: Partial<AdminTripRequest> = {}): AdminTripRequest {
     departPref: "any",
     destinationRevealedAt: null,
     endDate: null,
+    excuseKey: null,
+    refineDetails: [],
     experience: null,
     experienceId: null,
     from: "admin",

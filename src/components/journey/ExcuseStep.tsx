@@ -129,13 +129,13 @@ export default function ExcuseStep({
           )}
         </JourneyDropdown>
 
-        {travelType && experience && hasExcuseStep && (
-          <JourneyDropdown
-            className="mb-4"
-            content={getRefineDetailsLabel}
-            label={labels.refineDetailsLabel}
-            value="refine-details"
-          >
+        <JourneyDropdown
+          className="mb-4"
+          content={getRefineDetailsLabel}
+          label={labels.refineDetailsLabel}
+          value="refine-details"
+        >
+          {travelType && experience ? (
             <div className="space-y-4">
               <p className="text-gray-600">
                 {labels.refineDetailsStepDescription}
@@ -155,8 +155,12 @@ export default function ExcuseStep({
                 </p>
               )}
             </div>
-          </JourneyDropdown>
-        )}
+          ) : (
+            <div className="py-8 text-center">
+              <p className="text-gray-500">{labels.completeBudgetFirst}</p>
+            </div>
+          )}
+        </JourneyDropdown>
       </Accordion>
     </div>
   );

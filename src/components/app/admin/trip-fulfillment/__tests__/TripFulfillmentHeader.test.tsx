@@ -28,6 +28,8 @@ function baseTrip(overrides: Partial<AdminTripRequest> = {}): AdminTripRequest {
     departPref: "any",
     destinationRevealedAt: null,
     endDate: null,
+    excuseKey: null,
+    refineDetails: [],
     experienceId: null,
     experience: null,
     from: "traveler",

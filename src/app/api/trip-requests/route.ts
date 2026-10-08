@@ -27,6 +27,7 @@ import {
   tripFamilyOf,
 } from "@/lib/db/tripRequest";
 import { resolveDepartureTimeZone } from "@/lib/helpers/tripTimeZone";
+import { sanitizeExcuseSelection } from "@/lib/helpers/excuse-selection";
 import { Prisma, TripRequestStatus } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -66,6 +67,29 @@ function resolveBodyTimeZone(body: Record<string, unknown>): string {
     browserTimeZone:
       typeof body.browserTimeZone === "string" ? body.browserTimeZone : null,
   });
+}
+
+function bodyExcuseKey(body: Record<string, unknown>): string | null {
+  return typeof body.excuseKey === "string" ? body.excuseKey : null;
+}
+
+function bodyRefineDetails(body: Record<string, unknown>): string[] {
+  return Array.isArray(body.refineDetails)
+    ? body.refineDetails.filter((v): v is string => typeof v === "string")
+    : [];
+}
+
+function excuseError(errorCode: string) {
+  return NextResponse.json(
+    {
+      error:
+        errorCode === "EXCUSE_REQUIRED"
+          ? "An excuse is required for this trip"
+          : "Invalid excuse for this traveler type",
+      errorCode,
+    },
+    { status: 400 },
+  );
 }
 
 function buildTripRequestPartialUpdate(
@@ -180,6 +204,8 @@ type TripRequestCreateFields = {
   arrivePref: string;
   avoidDestinations: string[];
   addons: Prisma.InputJsonValue;
+  excuseKey: string | null;
+  refineDetails: string[];
   status: TripRequestStatus;
   paxDetails?: Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput;
   experienceId?: string;
@@ -236,10 +262,14 @@ async function buildTripRequestCreateFields(
     ? getCheckoutPaxDetails({ type, level: String(level), pax: Number(pax) || 1, paxDetails: paxDetailsValue })
     : null;
 
+  const resolvedLevel = xsedParty
+    ? getCheckoutLevel({ type: "xsed", level: String(level), pax: xsedParty.adults + xsedParty.minors })
+    : (level as string);
+  const resolvedStatus = (status as TripRequestStatus) || TripRequestStatus.DRAFT;
   return {
     from: (from as string) || "admin",
     type: type as string,
-    level: xsedParty ? getCheckoutLevel({ type: "xsed", level: String(level), pax: xsedParty.adults + xsedParty.minors }) : level as string,
+    level: resolvedLevel,
     originCountry: originCountry as string,
     originCity: originCity as string,
     departureTimeZone: resolveBodyTimeZone(body),
@@ -261,7 +291,10 @@ async function buildTripRequestCreateFields(
       ? (avoidDestinations as string[])
       : [],
     addons: (addons ?? []) as Prisma.InputJsonValue,
-    status: (status as TripRequestStatus) || TripRequestStatus.DRAFT,
+    // Raw client values; validated by `sanitizeExcuseSelection` in POST.
+    excuseKey: bodyExcuseKey(body),
+    refineDetails: bodyRefineDetails(body),
+    status: resolvedStatus,
     ...(xsedParty ? { paxDetails: xsedParty as unknown as Prisma.InputJsonValue }
       : paxDetailsValue !== undefined ? { paxDetails: paxDetailsValue } : {}),
     ...(experienceId ? { experienceId: String(experienceId) } : {}),
@@ -403,7 +436,7 @@ export async function POST(request: NextRequest) {
     if (clientId) {
       const owned = await prisma.tripRequest.findFirst({
         where: { id: clientId, userId: user.id },
-        select: { ...CHECKOUT_PRICE_SELECT, id: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true,
+        select: { ...CHECKOUT_PRICE_SELECT, id: true, excuseKey: true, refineDetails: true, paxDetails: true, status: true, startDate: true, endDate: true, updatedAt: true,
           payment: { select: { status: true, stripePaymentIntentId: true } } },
       });
 
@@ -447,6 +480,30 @@ export async function POST(request: NextRequest) {
         if (updatesParty || hasBodyKey(body, "type") || hasBodyKey(body, "level")) {
           updateData.level = getCheckoutLevel({ type: String(updateData.type ?? owned.type), level: String(updateData.level ?? owned.level),
             pax: Number(updateData.pax ?? owned.pax), paxDetails: updateData.paxDetails ?? owned.paxDetails });
+        }
+        // Re-validate the excuse whenever the client sends one, or changes the
+        // type/level an already stored excuse was validated against. Pure
+        // status/metadata updates leave legacy rows without an excuse untouched.
+        const sendsExcuse = hasBodyKey(body, "excuseKey") || hasBodyKey(body, "refineDetails");
+        if (sendsExcuse || (owned.excuseKey && (hasBodyKey(body, "type") || hasBodyKey(body, "level")))) {
+          const excuse = sanitizeExcuseSelection({
+            type: String(updateData.type ?? owned.type),
+            level: String(updateData.level ?? owned.level),
+            // A partial edit that did not send an excuse is never blocked for a missing one.
+            status: sendsExcuse ? String(updateData.status ?? owned.status) : "DRAFT",
+            excuseKey: hasBodyKey(body, "excuseKey") ? bodyExcuseKey(body) : owned.excuseKey,
+            refineDetails: hasBodyKey(body, "refineDetails") ? bodyRefineDetails(body) : owned.refineDetails,
+          });
+          if (excuse.ok) {
+            updateData.excuseKey = excuse.excuseKey;
+            updateData.refineDetails = excuse.refineDetails;
+          } else if (sendsExcuse) {
+            return excuseError(excuse.errorCode);
+          } else {
+            // The stored excuse no longer fits the new type/level: clear it.
+            updateData.excuseKey = null;
+            updateData.refineDetails = [];
+          }
         }
         const priceChanged = checkoutPriceInputsChanged(owned, updateData);
         const nextParty = parsePaxDetails(updateData.paxDetails);
@@ -528,6 +585,10 @@ export async function POST(request: NextRequest) {
     if (!isAdmin && body.status === "PENDING_PAYMENT" && active?.status !== "PENDING_PAYMENT") {
       return NextResponse.json({ error: "Checkout manages pending payment status" }, { status: 403 });
     }
+    const excuse = sanitizeExcuseSelection(fields);
+    if (!excuse.ok) return excuseError(excuse.errorCode);
+    fields.excuseKey = excuse.excuseKey;
+    fields.refineDetails = excuse.refineDetails;
 
     let tripRequest;
     let statusCode: 200 | 201;

@@ -1453,6 +1453,39 @@ export interface XsedBookDict {
     countOther: string;
     label: string;
   };
+  toasts: {
+    connectionError: string;
+    excuseRequired: string;
+    originRequired: string;
+    saveFailed: string;
+    sessionLoading: string;
+    signInRequired: string;
+    travelTypeRequired: string;
+  };
+  summary: {
+    add: string;
+    change: string;
+    dateLabel: string;
+    /** Weekday abbreviations, Sunday first. */
+    days: string[];
+    excuseEmpty: string;
+    excuseLabel: string;
+    importantItems: string[];
+    importantTitle: string;
+    /** Month abbreviations, January first. */
+    months: string[];
+    originLabel: string;
+    peopleLabel: string;
+    /** "{count}" template. */
+    personOne: string;
+    /** "{count}" template. */
+    personOther: string;
+    pricePerPerson: string;
+    productDetail: string;
+    productLabel: string;
+    title: string;
+    total: string;
+  };
   travelType: {
     label: string;
     placeholder: string;
@@ -4295,9 +4328,11 @@ export interface MarketingDictionary {
     destinationPlaceholder: string;
     details: {
       dates: string;
+      excuse: string;
       nightsPax: string;
       origin: string;
       payment: string;
+      refineDetails: string;
       transport: string;
     };
     experienceLabel: string;

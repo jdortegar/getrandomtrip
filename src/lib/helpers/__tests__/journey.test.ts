@@ -75,13 +75,13 @@ describe("isStepComplete", () => {
     ).toBe(false);
   });
 
-  it("excuse requires excuse + at least one refineDetails only when hasExcuseStep is true", () => {
+  it("excuse requires an excuse (refineDetails optional) only when hasExcuseStep is true", () => {
     expect(isStepComplete("excuse", baseValues)).toBe(true); // hasExcuseStep: false
     const withExcuseStep = { ...baseValues, hasExcuseStep: true };
     expect(isStepComplete("excuse", withExcuseStep)).toBe(false);
     expect(
       isStepComplete("excuse", { ...withExcuseStep, excuse: "celebration" }),
-    ).toBe(false); // still missing refineDetails
+    ).toBe(true); // refine details are optional
     expect(
       isStepComplete("excuse", {
         ...withExcuseStep,
@@ -443,7 +443,7 @@ describe("isSubstepValueComplete", () => {
     ).toBe(true);
   });
 
-  it("blocks excuse substeps until reason/refine-details are set", () => {
+  it("blocks excuse substeps until the reason is set; refine-details are optional", () => {
     expect(isSubstepValueComplete("excuse", "reason", baseCtx)).toBe(false);
     expect(
       isSubstepValueComplete("excuse", "reason", {
@@ -457,7 +457,7 @@ describe("isSubstepValueComplete", () => {
     expect(
       isSubstepValueComplete("excuse", "refine-details", {
         ...baseCtx,
-        refineDetails: ["birthday"],
+        excuse: "celebration",
       }),
     ).toBe(true);
   });
@@ -500,5 +500,29 @@ describe("isSubstepValueComplete", () => {
     expect(isSubstepValueComplete("preferences", "addons", baseCtx)).toBe(
       true,
     );
+  });
+});
+
+describe("buildTripRequestPayloadFromSearchParams — excuse fields", () => {
+  const params = (extra: Record<string, string>) =>
+    new URLSearchParams({
+      travelType: "solo",
+      originCountry: "Argentina",
+      originCity: "Buenos Aires",
+      ...extra,
+    });
+
+  it("sends the excuse and refine details from the URL", () => {
+    const payload = buildTripRequestPayloadFromSearchParams(
+      params({ excuse: "solo-get-lost", refineDetails: "a, b,,c" }),
+    );
+    expect(payload.excuseKey).toBe("solo-get-lost");
+    expect(payload.refineDetails).toEqual(["a", "b", "c"]);
+  });
+
+  it("sends null / empty when nothing is selected", () => {
+    const payload = buildTripRequestPayloadFromSearchParams(params({}));
+    expect(payload.excuseKey).toBeNull();
+    expect(payload.refineDetails).toEqual([]);
   });
 });

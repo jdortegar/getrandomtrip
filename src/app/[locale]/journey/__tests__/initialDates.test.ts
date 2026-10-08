@@ -11,7 +11,8 @@ it.each(["2026-09-01", "2026-10-03", "2026-02-30"])(
   (startDate) => {
     const params = new URLSearchParams({
       travelType: "couple",
-      experience: "essenza",
+      // Atelier has no excuse step, so the date substep is the first gap.
+      experience: "atelier-getaway",
       originCountry: "AR",
       originCity: "Origin",
       nights: "2",

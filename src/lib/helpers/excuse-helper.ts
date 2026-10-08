@@ -9,6 +9,20 @@ import { hasExcuseStep } from "@/lib/constants/product-config";
 // Re-export the centralized types and data
 export type { ExcuseData } from "@/lib/data/shared/excuses";
 
+/**
+ * Toggle a refine detail: deselect when selected, add when below `max`,
+ * otherwise return `current` unchanged (selection ignored at the cap).
+ */
+export function toggleRefineDetail(
+  current: readonly string[],
+  key: string,
+  max: number,
+): string[] {
+  if (current.includes(key)) return current.filter((k) => k !== key);
+  if (current.length >= max) return current as string[];
+  return [...current, key];
+}
+
 /** Whether the given traveler type and level show the excuse + refine-details step. */
 export function getHasExcuseStep(
   travelerType: string,
@@ -124,4 +138,74 @@ export function getExcusesByTypeAndLevel(
 ): ExcuseData[] {
   if (!hasExcuseStep(travelerType, levelId)) return [];
   return getExcusesByTravelerType(travelerType);
+}
+
+export interface LocalizedExcuseTitle {
+  key: string;
+  title: string;
+}
+
+/** Localized refine options keyed by traveler type, then excuse key (journey.refineDetailOptions). */
+export type LocalizedRefineOptions = Record<
+  string,
+  Record<string, Array<{ key: string; label: string; desc?: string }>>
+>;
+
+/**
+ * Refine-detail options of an excuse with the localized label/description
+ * applied over the catalog copy (catalog copy is the fallback).
+ */
+export function getLocalizedRefineOptions(
+  travelerType: string,
+  excuseKey: string | null | undefined,
+  localizedRefineOptions?: LocalizedRefineOptions,
+): ReturnType<typeof getExcuseOptions> {
+  if (!excuseKey) return [];
+  const localized = localizedRefineOptions?.[travelerType]?.[excuseKey];
+  return getExcuseOptions(excuseKey).map((option) => {
+    const over = localized?.find((o) => o.key === option.key);
+    return over
+      ? { ...option, label: over.label, desc: over.desc ?? option.desc }
+      : option;
+  });
+}
+
+export interface ResolvedExcuseSelection {
+  title: string;
+  refineDetails: Array<{ key: string; label: string }>;
+}
+
+/**
+ * Resolve display labels for a stored excuse + refine details, preferring the
+ * localized dictionary entries and falling back to the catalog copy.
+ */
+export function resolveExcuseSelectionLabels({
+  travelerType,
+  excuseKey,
+  refineDetails,
+  localizedExcuses,
+  localizedRefineOptions,
+}: {
+  travelerType: string;
+  excuseKey: string | null | undefined;
+  refineDetails: readonly string[] | null | undefined;
+  localizedExcuses?: readonly LocalizedExcuseTitle[];
+  localizedRefineOptions?: LocalizedRefineOptions;
+}): ResolvedExcuseSelection | null {
+  if (!excuseKey) return null;
+  const localizedOptions =
+    localizedRefineOptions?.[travelerType]?.[excuseKey] ?? [];
+  const catalogOptions = getExcuseOptions(excuseKey);
+  return {
+    title:
+      localizedExcuses?.find((e) => e.key === excuseKey)?.title ??
+      getExcuseTitle(excuseKey),
+    refineDetails: (refineDetails ?? []).map((key) => ({
+      key,
+      label:
+        localizedOptions.find((o) => o.key === key)?.label ??
+        catalogOptions.find((o) => o.key === key)?.label ??
+        key,
+    })),
+  };
 }

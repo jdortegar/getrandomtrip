@@ -128,7 +128,6 @@ export default function JourneyProgressSidebar({
     const travelType = searchParams.get("travelType");
     const experience = searchParams.get("experience");
     const excuse = searchParams.get("excuse");
-    const refineDetails = searchParams.get("refineDetails");
     const originCountry = searchParams.get("originCountry");
     const originCity = searchParams.get("originCity");
     const startDate = searchParams.get("startDate");
@@ -151,7 +150,8 @@ export default function JourneyProgressSidebar({
         return !!excuse || !hasExcuseStep;
       }
       if (substepId === "refine-details") {
-        return !!refineDetails || !hasExcuseStep;
+        // Refine details are optional: the substep is done once an excuse is chosen.
+        return !!excuse || !hasExcuseStep;
       }
     }
 

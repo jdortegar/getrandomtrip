@@ -1,6 +1,6 @@
 // Centralized excuse data - single source of truth
 // Which levels show excuse + refine-details is defined in @/lib/constants/product-config (hasExcuseStep):
-// e.g. BOND/KIN/CREW/SOLUM/PAWS → Explora+ and Bivouac only; NUPTIA (honeymoon) → none; Atelier never.
+// e.g. BOND/KIN/CREW/SOLUM/PAWS → Essenza, Modo Explora, Explora+, Bivouac and XSED; NUPTIA (honeymoon) → none; Atelier never.
 export interface ExcuseData {
   key: string;
   title: string;
@@ -670,11 +670,11 @@ export const coupleExcuses: ExcuseData[] = [
 export const familyExcuses: ExcuseData[] = [
   {
     key: "family-adventure",
-    title: "Aventura Familiar",
+    title: "Aventura",
     description: "Crear recuerdos inolvidables para toda la familia.",
     img: "https://images.unsplash.com/photo-1506905925346-14b1e3dba71b",
     details: {
-      title: "Aventura Familiar",
+      title: "Aventura",
       core: "Crear recuerdos inolvidables para toda la familia.",
       ctaLabel: "Aventúrense en familia →",
       tint: "bg-orange-900/30",
@@ -684,7 +684,7 @@ export const familyExcuses: ExcuseData[] = [
           key: "theme-parks",
           label: "Parques Temáticos",
           desc: "Diversión garantizada para todas las edades.",
-          img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
+          img: "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9",
         },
         {
           key: "nature-exploration",
@@ -696,14 +696,80 @@ export const familyExcuses: ExcuseData[] = [
           key: "cultural-learning",
           label: "Aprendizaje Cultural",
           desc: "Enseñar a los niños sobre diferentes culturas.",
-          img: "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
+          img: "https://images.unsplash.com/photo-1554907984-15263bfd63bd",
+        },
+      ],
+    },
+  },
+  {
+    key: "family-nature-wildlife",
+    title: "Naturaleza & Fauna",
+    description: "Parques, animales y aire libre para que los más chicos descubran el mundo salvaje.",
+    img: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    details: {
+      title: "Naturaleza & Fauna",
+      core: "Un viaje para que grandes y chicos se asombren con la naturaleza y la vida salvaje.",
+      ctaLabel: "Salgan a explorar →",
+      tint: "bg-emerald-900/30",
+      heroImg: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+      options: [
+        {
+          key: "family-nat-parques-nacionales",
+          label: "Parques Nacionales",
+          desc: "Senderos accesibles y paisajes abiertos pensados para recorrer en familia.",
+          img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+        },
+        {
+          key: "family-nat-avistaje-fauna",
+          label: "Avistaje de Fauna",
+          desc: "Ver animales en su hábitat con guías que hacen la experiencia fácil para los niños.",
+          img: "https://images.unsplash.com/photo-1474511320723-9a56873867b5",
+        },
+        {
+          key: "family-nat-granja-campo",
+          label: "Granja & Campo",
+          desc: "Alojarse en el campo, conocer animales de granja y probar la vida rural.",
+          img: "https://images.unsplash.com/photo-1625246333195-78d9c38ad449",
+        },
+      ],
+    },
+  },
+  {
+    key: "family-beach-sun",
+    title: "Playa & Sol",
+    description: "Arena, mar tranquilo y días sin apuros para toda la familia.",
+    img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    details: {
+      title: "Playa & Sol",
+      core: "Días de playa relajados, con espacio para jugar, descansar y disfrutar juntos.",
+      ctaLabel: "Disfruten del mar →",
+      tint: "bg-sky-900/30",
+      heroImg: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+      options: [
+        {
+          key: "family-beach-playas-tranquilas",
+          label: "Playas Tranquilas",
+          desc: "Mar calmo y arena amplia, ideales para los más chicos.",
+          img: "https://images.unsplash.com/photo-1519046904884-53103b34b206",
+        },
+        {
+          key: "family-beach-juegos-agua",
+          label: "Juegos de Agua",
+          desc: "Chapuzones, olas suaves y actividades acuáticas aptas para todas las edades.",
+          img: "https://images.unsplash.com/photo-1505228395891-9a51e7e86bf6",
+        },
+        {
+          key: "family-beach-pueblos-costeros",
+          label: "Pueblos Costeros",
+          desc: "Pasear por pueblos junto al mar con helado, mercados y atardeceres.",
+          img: "https://images.unsplash.com/photo-1533105079780-92b9be482077",
         },
       ],
     },
   },
 ];
 
-// Group traveler excuses (KIN / grupos — alineado al mapa de producto)
+// Group traveler excuses (CREW / grupos — alineado al mapa de producto)
 export const groupExcuses: ExcuseData[] = [
   {
     key: "group-aventura-familia",
@@ -953,11 +1019,11 @@ export const honeymoonExcuses: ExcuseData[] = [
 export const pawsExcuses: ExcuseData[] = [
   {
     key: "paws-adventure",
-    title: "Aventura con Mascotas",
+    title: "Aventura",
     description: "Incluir a tu mejor amigo peludo en la aventura.",
     img: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1",
     details: {
-      title: "Aventura con Mascotas",
+      title: "Aventura",
       core: "Incluir a tu mejor amigo peludo en la aventura.",
       ctaLabel: "Aventúrense juntos →",
       tint: "bg-yellow-900/30",
@@ -973,13 +1039,79 @@ export const pawsExcuses: ExcuseData[] = [
           key: "beach-activities",
           label: "Actividades en la Playa",
           desc: "Disfrutar del sol y la arena con tu compañero peludo.",
-          img: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
+          img: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6",
         },
         {
           key: "hiking-trails",
           label: "Senderos para Caminar",
           desc: "Explorar la naturaleza juntos en senderos pet-friendly.",
           img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256",
+        },
+      ],
+    },
+  },
+  {
+    key: "paws-beach",
+    title: "Escapada de Playa",
+    description: "Sol, mar y arena con tu compañero peludo siempre a tu lado.",
+    img: "https://images.unsplash.com/photo-1587300003388-59208cc962cb",
+    details: {
+      title: "Escapada de Playa",
+      core: "Escapadas junto al mar pensadas para que tu mascota también disfrute.",
+      ctaLabel: "Vayan a la playa →",
+      tint: "bg-cyan-900/30",
+      heroImg: "https://images.unsplash.com/photo-1587300003388-59208cc962cb",
+      options: [
+        {
+          key: "paws-beach-playas-pet-friendly",
+          label: "Playas Pet-Friendly",
+          desc: "Playas donde tu perro puede correr y jugar en el agua.",
+          img: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6",
+        },
+        {
+          key: "paws-beach-paseos-costeros",
+          label: "Paseos Costeros",
+          desc: "Caminatas junto al mar a un ritmo que ambos disfrutan.",
+          img: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b",
+        },
+        {
+          key: "paws-beach-alojamientos-mar",
+          label: "Alojamientos frente al Mar",
+          desc: "Estadías pet-friendly a pasos de la playa.",
+          img: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2",
+        },
+      ],
+    },
+  },
+  {
+    key: "paws-city",
+    title: "Escapada Urbana",
+    description: "Cafés, parques y barrios para recorrer la ciudad con tu mejor amigo.",
+    img: "https://images.unsplash.com/photo-1552053831-71594a27632d",
+    details: {
+      title: "Escapada Urbana",
+      core: "La ciudad también es para ellos: planes urbanos donde tu mascota es bienvenida.",
+      ctaLabel: "Recorran la ciudad →",
+      tint: "bg-amber-900/30",
+      heroImg: "https://images.unsplash.com/photo-1552053831-71594a27632d",
+      options: [
+        {
+          key: "paws-city-cafes-pet-friendly",
+          label: "Cafés Pet-Friendly",
+          desc: "Mesas donde tu mascota es bienvenida mientras disfrutas un buen café.",
+          img: "https://images.unsplash.com/photo-1554118811-1e0d58224f24",
+        },
+        {
+          key: "paws-city-parques-urbanos",
+          label: "Parques Urbanos",
+          desc: "Espacios verdes dentro de la ciudad para correr, jugar y descansar.",
+          img: "https://images.unsplash.com/photo-1534361960057-19889db9621e",
+        },
+        {
+          key: "paws-city-barrios-caminables",
+          label: "Barrios Caminables",
+          desc: "Calles tranquilas y barrios para pasear sin apuro, juntos.",
+          img: "https://images.unsplash.com/photo-1514565131-fce0801e5785",
         },
       ],
     },

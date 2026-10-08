@@ -1386,6 +1386,40 @@
       "label": "Travelers",
       "countOne": "{count} traveler",
       "countOther": "{count} travelers"
+    },
+    "toasts": {
+      "originRequired": "Complete your departure country and city to continue.",
+      "travelTypeRequired": "Choose who you're traveling with to continue.",
+      "excuseRequired": "Choose a reason to continue.",
+      "sessionLoading": "Loading session…",
+      "signInRequired": "Sign in to continue.",
+      "saveFailed": "Could not save. Please try again.",
+      "connectionError": "Connection error. Please try again."
+    },
+    "summary": {
+      "title": "Summary",
+      "productLabel": "Product",
+      "productDetail": "1 night · dinner · surprise local experience",
+      "dateLabel": "Date",
+      "originLabel": "Origin",
+      "peopleLabel": "Travelers",
+      "excuseLabel": "Reason",
+      "excuseEmpty": "Not chosen",
+      "change": "Change",
+      "add": "Add",
+      "personOne": "{count} person",
+      "personOther": "{count} people",
+      "pricePerPerson": "Price per person",
+      "total": "Total",
+      "importantTitle": "Important",
+      "importantItems": [
+        "The destination is a surprise revealed on drop day.",
+        "The final price will be confirmed by the team once the drop is assigned.",
+        "Includes 1 night of lodging, dinner and a local experience.",
+        "You will be redirected to checkout to complete payment."
+      ],
+      "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+      "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     }
   },
   "xsedDropsPage": {
@@ -2049,7 +2083,7 @@
           {
             "id": "refine-details",
             "title": "REFINE DETAILS",
-            "description": "Choose one or more adventures."
+            "description": "Optional: choose up to 3 details to fine-tune your trip."
           }
         ]
       },
@@ -2123,7 +2157,7 @@
       "refineDetailsPlaceholder": "Refine details",
       "refineDetailsOneSelected": "1 detail selected",
       "refineDetailsCountSelected": "{count} details selected",
-      "refineDetailsStepDescription": "When the unknown becomes your best companion. Choose one or more adventures.",
+      "refineDetailsStepDescription": "When the unknown becomes your best companion. Optional: choose up to 3 details to fine-tune your trip.",
       "photoCreditUnsplash": "Photos: Unsplash",
       "travelTypeLabel": "Travel type",
       "travelTypePlaceholder": "Choose your experience",
@@ -2719,8 +2753,18 @@
       },
       {
         "key": "family-adventure",
-        "title": "Family Adventure",
+        "title": "Adventure",
         "description": "Create unforgettable memories for the whole family."
+      },
+      {
+        "key": "family-nature-wildlife",
+        "title": "Nature & Wildlife",
+        "description": "Parks, animals and the great outdoors so the little ones can discover the wild world."
+      },
+      {
+        "key": "family-beach-sun",
+        "title": "Beach & Sun",
+        "description": "Sand, calm seas and unhurried days for the whole family."
       },
       {
         "key": "group-aventura-familia",
@@ -2759,8 +2803,18 @@
       },
       {
         "key": "paws-adventure",
-        "title": "Adventure with Pets",
+        "title": "Adventure",
         "description": "Include your furry best friend in the adventure."
+      },
+      {
+        "key": "paws-beach",
+        "title": "Beach Escape",
+        "description": "Sun, sea and sand with your furry companion always by your side."
+      },
+      {
+        "key": "paws-city",
+        "title": "City Escape",
+        "description": "Cafés, parks and neighborhoods to explore the city with your best friend."
       }
     ],
     "refineDetailOptions": {
@@ -3137,6 +3191,40 @@
             "label": "Cultural Learning",
             "desc": "Teach kids about different cultures."
           }
+        ],
+        "family-nature-wildlife": [
+          {
+            "key": "family-nat-parques-nacionales",
+            "label": "National Parks",
+            "desc": "Easy trails and open landscapes made for exploring as a family."
+          },
+          {
+            "key": "family-nat-avistaje-fauna",
+            "label": "Wildlife Spotting",
+            "desc": "See animals in their habitat with guides who make it easy for kids."
+          },
+          {
+            "key": "family-nat-granja-campo",
+            "label": "Farm & Countryside",
+            "desc": "Stay in the countryside, meet farm animals and try rural life."
+          }
+        ],
+        "family-beach-sun": [
+          {
+            "key": "family-beach-playas-tranquilas",
+            "label": "Calm Beaches",
+            "desc": "Gentle water and wide sandy shores, ideal for the little ones."
+          },
+          {
+            "key": "family-beach-juegos-agua",
+            "label": "Water Play",
+            "desc": "Splashing, gentle waves and water activities for all ages."
+          },
+          {
+            "key": "family-beach-pueblos-costeros",
+            "label": "Coastal Towns",
+            "desc": "Stroll through seaside towns with ice cream, markets and sunsets."
+          }
         ]
       },
       "group": {
@@ -3278,6 +3366,40 @@
             "key": "hiking-trails",
             "label": "Hiking Trails",
             "desc": "Explore nature together on pet-friendly trails."
+          }
+        ],
+        "paws-beach": [
+          {
+            "key": "paws-beach-playas-pet-friendly",
+            "label": "Pet-Friendly Beaches",
+            "desc": "Beaches where your dog can run and play in the water."
+          },
+          {
+            "key": "paws-beach-paseos-costeros",
+            "label": "Coastal Walks",
+            "desc": "Seaside walks at a pace you both enjoy."
+          },
+          {
+            "key": "paws-beach-alojamientos-mar",
+            "label": "Seaside Stays",
+            "desc": "Pet-friendly stays steps from the beach."
+          }
+        ],
+        "paws-city": [
+          {
+            "key": "paws-city-cafes-pet-friendly",
+            "label": "Pet-Friendly Cafés",
+            "desc": "Tables where your pet is welcome while you enjoy a good coffee."
+          },
+          {
+            "key": "paws-city-parques-urbanos",
+            "label": "Urban Parks",
+            "desc": "Green spaces in the city to run, play and rest."
+          },
+          {
+            "key": "paws-city-barrios-caminables",
+            "label": "Walkable Neighborhoods",
+            "desc": "Quiet streets and neighborhoods to wander together, unhurried."
           }
         ]
       }
@@ -4261,7 +4383,9 @@
       "dates": "Dates",
       "nightsPax": "Nights / travelers",
       "transport": "Transport",
-      "payment": "Payment"
+      "payment": "Payment",
+      "excuse": "Reason",
+      "refineDetails": "Refine details"
     },
     "tripStatus": {
       "DRAFT": "Draft",

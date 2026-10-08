@@ -19,6 +19,8 @@ const trip: AdminTripRequest = {
   departPref: "any",
   destinationRevealedAt: null,
   endDate: "2026-10-04T00:00:00.000Z",
+  excuseKey: null,
+  refineDetails: [],
   experience: null,
   experienceId: null,
   from: "admin",
@@ -97,5 +99,55 @@ describe("TripRequestDetails transport", () => {
     />);
     expect(html).toContain(">train<");
     expect(html).not.toContain("Own car");
+  });
+});
+
+describe("TripRequestDetails excuse", () => {
+  const render = (
+    locale: "en" | "es",
+    overrides: Partial<Parameters<typeof TripRequestDetails>[0]["trip"]>,
+  ) => {
+    const dictionary = locale === "en" ? en : es;
+    return renderToStaticMarkup(
+      <TripRequestDetails
+        labels={dictionary.adminTripEditModal.details}
+        localizedExcuses={dictionary.journey.excuses}
+        localizedRefineOptions={dictionary.journey.refineDetailOptions}
+        locale={locale}
+        ownCarLabel={dictionary.tripTransport.ownCar}
+        trip={{ ...trip, type: "solo", level: "essenza", ...overrides }}
+      />,
+    );
+  };
+
+  it.each(["en", "es"] as const)("shows the localized excuse and refine details in %s", (locale) => {
+    const dictionary = locale === "en" ? en : es;
+    const html = render(locale, {
+      excuseKey: "solo-get-lost",
+      refineDetails: ["sl-gl-naturaleza-silenciosa", "sl-gl-digital-detox"],
+    });
+    const option = dictionary.journey.refineDetailOptions.solo["solo-get-lost"];
+    expect(html).toContain(dictionary.adminTripEditModal.details.excuse);
+    expect(html).toContain(dictionary.journey.excuses[0].title);
+    expect(html).toContain(dictionary.adminTripEditModal.details.refineDetails);
+    expect(html).toContain(option[0].label);
+    expect(html).toContain(option[1].label);
+  });
+
+  it("resolves the xsed traveler type from level", () => {
+    const html = render("en", {
+      type: "xsed",
+      level: "family",
+      excuseKey: "family-adventure",
+      refineDetails: [],
+    });
+    expect(html).toContain(en.adminTripEditModal.details.excuse);
+    expect(html).not.toContain(en.adminTripEditModal.details.refineDetails);
+  });
+
+  it("omits both rows for legacy trips without an excuse", () => {
+    const html = render("en", {});
+    expect(html).not.toContain(en.adminTripEditModal.details.excuse);
+    expect(html).not.toContain(en.adminTripEditModal.details.refineDetails);
   });
 });

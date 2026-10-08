@@ -32,6 +32,10 @@ export interface CheckoutTripFromApi {
   arrivePref: string;
   accommodationType?: string;
   avoidDestinations: string[];
+  /** Selected excuse key (null on legacy trips or when the step does not apply). */
+  excuseKey?: string | null;
+  /** Selected refine-detail option keys of the excuse. */
+  refineDetails?: string[];
   addons: Array<{ id: string; qty: number }> | null;
   status: string;
   updatedAt: string;
