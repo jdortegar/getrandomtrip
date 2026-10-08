@@ -85,6 +85,7 @@ export interface JourneyFiltersFormLabels {
     addButton: string;
     cancelButton: string;
     saveDestinationsButton: string;
+    searchPlaceholder: string;
     selectedCountTemplate: string;
     selectedDestinationsHeading: string;
     title: string;

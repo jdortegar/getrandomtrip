@@ -2530,6 +2530,7 @@
           "addButton": "Agregar",
           "cancelButton": "Cancelar",
           "saveDestinationsButton": "Guardar destinos",
+          "searchPlaceholder": "Buscar ciudad...",
           "selectedCountTemplate": "Seleccionados: {count} / {max}",
           "selectedDestinationsHeading": "Destinos seleccionados",
           "title": "Agregar destinos a evitar"

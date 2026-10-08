@@ -3590,6 +3590,7 @@ export interface MarketingDictionary {
           addButton: string;
           cancelButton: string;
           saveDestinationsButton: string;
+          searchPlaceholder: string;
           selectedCountTemplate: string;
           selectedDestinationsHeading: string;
           title: string;
