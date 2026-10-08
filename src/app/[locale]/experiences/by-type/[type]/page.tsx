@@ -92,7 +92,7 @@ export default async function TravelerTypePage(props: {
       ? Promise.resolve(null)
       : readAttributionSlug().then((slug) => resolveLiveAttribution(slug)),
     getDictionary(locale),
-    getReviewsForTripType(typeData.meta.slug),
+    getReviewsForTripType(typeData.meta.slug, locale),
     getPublishedBlogsForTravelType(typeData.meta.slug, locale),
   ]);
   const priceOverrides = getEffectiveTripperPriceOverrides(

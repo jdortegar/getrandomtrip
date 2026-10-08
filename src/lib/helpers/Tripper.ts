@@ -1,6 +1,7 @@
 import type { Testimonial } from "@/lib/data/shared/testimonial-types";
 import { getApprovedReviewsForTripper } from "@/lib/db/tripper-queries";
 import { formatReviewerAuthor } from "@/lib/helpers/formatReviewerAuthor";
+import type { Locale } from "@/lib/i18n/config";
 
 /** Shape used for testimonial resolution: DB tripper. */
 export interface TripperTestimonialInput {
@@ -11,15 +12,16 @@ export interface TripperTestimonialInput {
 
 /**
  * Get all testimonials for a specific tripper.
- * Returns only real, DB-backed approved+public reviews. Returns an empty
+ * Returns only real, DB-backed approved+public reviews written in `locale`. Returns an empty
  * array when the tripper has no approved reviews — callers must hide the
  * testimonials section in that case rather than showing placeholder content.
  */
 export async function getAllTestimonialsForTripper(
   tripper: TripperTestimonialInput,
+  locale: Locale = "es",
 ): Promise<Testimonial[]> {
   const dbReviews = tripper.id
-    ? await getApprovedReviewsForTripper(tripper.id)
+    ? await getApprovedReviewsForTripper(tripper.id, locale)
     : [];
 
   return dbReviews.map((review) => ({
