@@ -1390,7 +1390,7 @@
     "toasts": {
       "originRequired": "Completá país y ciudad de salida para continuar.",
       "travelTypeRequired": "Elegí con quién viajás para continuar.",
-      "excuseRequired": "Elegí un motivo para continuar.",
+      "excuseRequired": "Elige un motivo para continuar.",
       "sessionLoading": "Cargando sesión…",
       "signInRequired": "Iniciá sesión para continuar.",
       "saveFailed": "No se pudo guardar. Intentá de nuevo.",
@@ -2845,7 +2845,7 @@
           {
             "key": "sl-gl-senderos-lentos",
             "label": "Senderos Lentos",
-            "desc": "Caminar sin cronómetro: el ritmo lo pones vos."
+            "desc": "Caminar sin cronómetro: el ritmo lo pones tú."
           }
         ],
         "solo-busqueda-interior": [
@@ -2940,7 +2940,7 @@
           {
             "key": "sl-la-talleres-creativos",
             "label": "Talleres Creativos",
-            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por vos."
+            "desc": "Cerámica, tinta, textiles: llevarte algo hecho por ti."
           },
           {
             "key": "sl-la-rutas-literarias",
