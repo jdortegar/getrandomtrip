@@ -168,22 +168,27 @@ function JourneyPageContent({
     hasSyncedJourneyStateFromUrl.current = true;
   }, [searchParams]);
 
-  useEffect(() => {
+  // Scroll only on user-driven step changes; the initial URL → tab sync must
+  // keep the page at the top so the hero is visible on arrival.
+  const scrollToJourneyBar = () => {
     journeyBarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [activeTab]);
+  };
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
+    scrollToJourneyBar();
   };
 
   const handleStepClick = (tabId: string, substepId?: string) => {
     setActiveTab(tabId);
     setOpenSectionId(getAccordionForStep(tabId, substepId, travelType, JOURNEY_ADDONS_ENABLED));
+    scrollToJourneyBar();
   };
 
   const handleSummaryEdit = (sectionId: string) => {
     setActiveTab(getTabForSection(sectionId));
     setOpenSectionId(sectionId);
+    scrollToJourneyBar();
   };
 
   if (!dict || !pricingReady) {
