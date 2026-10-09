@@ -151,7 +151,7 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
@@ -160,7 +160,7 @@ describe("TravelerRow — save() return value", () => {
     expect(onUpdated).toHaveBeenCalledWith(updated);
   });
 
-  it("resolves with the original (unchanged) traveler when the save request fails", async () => {
+  it("resolves null when the save request fails", async () => {
     const traveler = baseTraveler();
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
@@ -168,16 +168,16 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
 
-    expect(result).toEqual(traveler);
+    expect(result).toBeNull();
     expect(onUpdated).not.toHaveBeenCalled();
   });
 
-  it("resolves with the original (unchanged) traveler when a minor row fails local validation", async () => {
+  it("resolves null when a minor row fails local validation", async () => {
     const traveler = baseTraveler({
       kind: "MINOR",
       fullName: null,
@@ -186,12 +186,12 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
 
-    expect(result).toEqual(traveler);
+    expect(result).toBeNull();
     expect(fetch).not.toHaveBeenCalled();
     expect(onUpdated).not.toHaveBeenCalled();
   });
