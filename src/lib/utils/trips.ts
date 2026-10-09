@@ -177,6 +177,20 @@ export function isTripAwaitingPayment(trip: Trip): boolean {
   return status !== "APPROVED" && status !== "COMPLETED";
 }
 
+/**
+ * True when a booked trip has not ended yet. A CONFIRMED or REVEALED trip
+ * keeps its status after the travel dates pass until it's marked COMPLETED,
+ * so the status alone would keep past trips listed as upcoming. Trip dates
+ * are calendar days stored at UTC midnight, so compare against today in UTC.
+ */
+export function isUpcomingTrip(trip: Trip, now: Date = new Date()): boolean {
+  if (trip.status !== "CONFIRMED" && trip.status !== "REVEALED") return false;
+  const lastDay = new Date(trip.endDate || trip.startDate);
+  if (Number.isNaN(lastDay.getTime())) return true;
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return lastDay.getTime() >= todayUtc;
+}
+
 export async function getTrips(): Promise<Trip[]> {
   const response = await fetch("/api/trips");
   const data = (await response.json()) as TripsApiResponse;
