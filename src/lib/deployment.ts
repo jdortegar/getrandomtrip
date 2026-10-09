@@ -5,6 +5,11 @@ export function isProductionDeployment(): boolean {
   return process.env.RT_DEPLOY_ENV === "production";
 }
 
+/** Explicit develop/preview runtime; unset or unknown values are neither. */
+export function isNonproductionDeployment(): boolean {
+  return process.env.RT_DEPLOY_ENV === "nonproduction";
+}
+
 export function getBlobStoreName(name: string): string {
   // Develop and previews intentionally share one database and one media scope.
   return isProductionDeployment() ? name : `nonproduction-${name}`;

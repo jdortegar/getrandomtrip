@@ -1,4 +1,7 @@
-import { isProductionDeployment } from "@/lib/deployment";
+import {
+  isNonproductionDeployment,
+  isProductionDeployment,
+} from "@/lib/deployment";
 import React from "react";
 import { Resend } from "resend";
 
@@ -28,10 +31,18 @@ function getResendClient() {
   return new Resend(resendApiKey);
 }
 
+/** Marks emails sent from develop/preview so they can't pass for real ones. */
+const NONPRODUCTION_SUBJECT_PREFIX = "[TEST] ";
+
 export async function sendMail(params: SendMailParams) {
-  if (!isProductionDeployment()) {
-    throw new Error("Email delivery is disabled outside production");
+  const isProduction = isProductionDeployment();
+  // Fail closed: only an explicit production or nonproduction runtime sends.
+  if (!isProduction && !isNonproductionDeployment()) {
+    throw new Error("Email delivery is disabled for this deployment");
   }
+  const subject = isProduction
+    ? params.subject
+    : `${NONPRODUCTION_SUBJECT_PREFIX}${params.subject}`;
   const resend = getResendClient();
   const from = params.from || process.env.EMAIL_FROM || "onboarding@resend.dev";
 
@@ -56,7 +67,7 @@ export async function sendMail(params: SendMailParams) {
       attachments: params.attachments,
       from,
       replyTo: params.replyTo,
-      subject: params.subject,
+      subject,
       to: params.to,
     },
     params.idempotencyKey
