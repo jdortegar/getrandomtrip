@@ -21,8 +21,8 @@ import { TravelerReadOnlyRow } from "./TravelerReadOnlyRow";
 export interface TravelerRosterSectionHandle {
   /**
    * Persists every row's current field values. Called by the page-level
-   * Save action. Resolves `true` only when every row is COMPLETE afterward,
-   * so the caller can decide whether the roster is fully done.
+   * Save action. Resolves `true` when every row saved successfully, even if
+   * some rows are still incomplete, so the caller can move on.
    */
   saveAll: () => Promise<boolean>;
 }
@@ -51,7 +51,7 @@ export const TravelerRosterSection = forwardRef<
       const saved = await Promise.all(
         Array.from(rowRefs.current.values()).map((row) => row.save()),
       );
-      return saved.every(isTravelerRosterComplete);
+      return saved.every((traveler) => traveler !== null);
     },
   }));
 
