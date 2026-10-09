@@ -14,6 +14,8 @@ import Image from "next/image";
 import { getExcuseTitle, getExcuseImage } from "@/lib/helpers/excuse-helper";
 import { getLevelById } from "@/lib/utils/experiencesData";
 import { hasLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/dictionaries";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 // Helper function to get duration and activity ranges based on level
@@ -57,20 +59,27 @@ function getLevelInfo(level: string | null) {
 }
 
 export async function generateMetadata(props: {
-  params: Promise<{ tripper: string }>;
+  params: Promise<{ locale?: string; tripper: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const result = await getTripperBySlug(params.tripper);
+  const locale = hasLocale(params.locale) ? params.locale : "es";
+  const [result, dict] = await Promise.all([
+    getTripperBySlug(params.tripper),
+    getDictionary(locale),
+  ]);
 
   if (result.status !== "ok") return { title: "Randomtrip" };
 
   const { tripper } = result;
+  const copy = dict.trippers.profileMeta;
+  const vars = { name: tripper.name };
+  const title = `${interpolateTemplate(copy.packagesTitle, vars)} | Randomtrip`;
   return {
-    title: `Paquetes de ${tripper.name} | Randomtrip`,
-    description: `Explora los paquetes de viaje únicos creados por ${tripper.name}. Descubre aventuras personalizadas y experiencias auténticas.`,
+    title,
+    description: interpolateTemplate(copy.packagesDescription, vars),
     openGraph: {
-      title: `Paquetes de ${tripper.name} | Randomtrip`,
-      description: `Explora los paquetes de viaje únicos creados por ${tripper.name}.`,
+      title,
+      description: interpolateTemplate(copy.packagesOpenGraphDescription, vars),
       images: [
         {
           url: tripper.avatarUrl || "/images/fallback-profile.jpg",

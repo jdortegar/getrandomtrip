@@ -186,6 +186,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
         {...BLOG_LISTING_HERO_CONFIG}
         description={copy.heroDescription}
         title={heroTitle}
+        titleClassName={tripperName ? undefined : "uppercase"}
       />
 
       <Section>

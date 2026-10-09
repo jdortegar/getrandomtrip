@@ -45,6 +45,7 @@ export default async function FaqPage(props: LocaleParams) {
         fallbackImage="/images/hero-image-1.jpeg"
         subtitle={hero.eyebrow}
         title={hero.title}
+        titleClassName="uppercase"
         videoSrc="/videos/hero-video-1.mp4"
       />
       <main>

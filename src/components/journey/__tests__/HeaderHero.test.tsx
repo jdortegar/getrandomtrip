@@ -165,3 +165,18 @@ describe("lazy video", () => {
     expect(play).toHaveBeenCalled();
   });
 });
+
+it("applies titleClassName to the heading only when provided", () => {
+  const template = document.createElement("template");
+  template.innerHTML = renderToStaticMarkup(
+    <HeaderHero title="Preguntas frecuentes" titleClassName="uppercase" />,
+  );
+  const heading = template.content.querySelector("h1");
+  expect(heading?.textContent).toBe("Preguntas frecuentes");
+  expect(heading?.classList.contains("uppercase")).toBe(true);
+
+  template.innerHTML = renderToStaticMarkup(<HeaderHero title="Blog de Ana" />);
+  expect(
+    template.content.querySelector("h1")?.classList.contains("uppercase"),
+  ).toBe(false);
+});

@@ -46,7 +46,7 @@ export default function ExperiencesPageClient({
 
   return (
     <main className="relative" style={{ scrollBehavior: "smooth" }}>
-      <Hero content={exp.hero} scrollIndicator />
+      <Hero content={exp.hero} scrollIndicator titleClassName="uppercase" />
 
       <Section
         eyebrow={exp.travelTypeEyebrow}
