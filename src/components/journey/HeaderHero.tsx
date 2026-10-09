@@ -45,6 +45,8 @@ interface HeaderHeroProps {
   fallbackImage?: string;
   subtitle?: React.ReactNode | string | null;
   title: string;
+  /** Extra `<h1>` classes, e.g. `uppercase` for sentence-case copy displayed in caps. */
+  titleClassName?: string;
   tripperBadge?: TripperBadgeProps;
   videoSrc?: string;
 }
@@ -112,6 +114,7 @@ export default function HeaderHero({
   fallbackImage = "/images/hero-image-1.jpeg",
   subtitle = DEFAULT_SUBTITLE,
   title,
+  titleClassName,
   tripperBadge,
   videoSrc = "/videos/hero-video-1.mp4",
 }: HeaderHeroProps) {
@@ -160,7 +163,12 @@ export default function HeaderHero({
                 : { children: subtitle })}
             />
           )}
-          <h1 className="mb-8 font-barlow-condensed text-5xl font-extrabold md:mb-6 md:text-7xl">
+          <h1
+            className={cn(
+              "mb-8 font-barlow-condensed text-5xl font-extrabold md:mb-6 md:text-7xl",
+              titleClassName,
+            )}
+          >
             {title}
           </h1>
           <p className="text-base">{description}</p>

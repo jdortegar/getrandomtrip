@@ -1,7 +1,7 @@
 import type { AnalyticsRecapConfig } from "@/types/analyticsRecap";
 import { normalizePrivateKey } from "./ga4Client";
 
-function validWebhook(raw: string): boolean {
+export function validWebhook(raw: string): boolean {
   try {
     const url = new URL(raw);
     return (

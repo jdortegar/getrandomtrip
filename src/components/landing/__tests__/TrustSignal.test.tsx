@@ -10,10 +10,10 @@ describe("TrustSignal", () => {
       locale: "es",
       copy: es.home.trustSignal,
       titles: [
-        "CURADO CON INTENCIÓN",
-        "AMADO POR TRIPPERS",
-        "TÚ SOLO DI QUE SÍ",
-        "MÁS ALLÁ DE TU BURBUJA",
+        "Curado con intención",
+        "Amado por trippers",
+        "Tú solo di que sí",
+        "Más allá de tu burbuja",
       ],
       descriptions: [
         "Viajes diseñados por expertos.",
@@ -26,10 +26,10 @@ describe("TrustSignal", () => {
       locale: "en",
       copy: en.home.trustSignal,
       titles: [
-        "CURATED WITH INTENTION",
-        "LOVED BY TRIPPERS",
-        "JUST SAY YES",
-        "BEYOND YOUR BUBBLE",
+        "Curated with intention",
+        "Loved by trippers",
+        "Just say yes",
+        "Beyond your bubble",
       ],
       descriptions: [
         "Trips designed by experts.",
@@ -57,6 +57,11 @@ describe("TrustSignal", () => {
       expect(
         items.map((item) => item.querySelector("h2")?.textContent),
       ).toEqual(test.titles);
+      expect(
+        items.every((item) =>
+          item.querySelector("h2")?.classList.contains("uppercase"),
+        ),
+      ).toBe(true);
       expect(items.map((item) => item.querySelector("p")?.textContent)).toEqual(
         test.descriptions,
       );

@@ -31,19 +31,15 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 it.each([undefined, "nonproduction", "unknown"])(
-  "blocks real email and Slack for %s",
+  "blocks Slack for %s",
   async (context) => {
     vi.stubEnv("RT_DEPLOY_ENV", context);
-    vi.stubEnv("RESEND_API_KEY", "test-provider-key");
     vi.stubEnv(
       "SLACK_SALES_WEBHOOK_URL",
       "https://hooks.slack.com/services/T/B/fake",
     );
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
-    await expect(sendMail(mail)).rejects.toThrow("disabled");
-    expect(construct).not.toHaveBeenCalled();
-    expect(send).not.toHaveBeenCalled();
     expect(await sendSaleNotification(sale)).toEqual({
       sent: false,
       error: "not_configured",
@@ -51,6 +47,26 @@ it.each([undefined, "nonproduction", "unknown"])(
     expect(fetch).not.toHaveBeenCalled();
   },
 );
+it.each([undefined, "unknown"])(
+  "blocks real email for %s",
+  async (context) => {
+    vi.stubEnv("RT_DEPLOY_ENV", context);
+    vi.stubEnv("RESEND_API_KEY", "test-provider-key");
+    await expect(sendMail(mail)).rejects.toThrow("disabled");
+    expect(construct).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
+  },
+);
+it("sends nonproduction email with a [TEST] subject prefix", async () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  vi.stubEnv("RESEND_API_KEY", "test-provider-key");
+  send.mockResolvedValue({ data: { id: "provider-id" }, error: null });
+  expect(await sendMail(mail)).toEqual({ id: "provider-id" });
+  expect(send).toHaveBeenCalledWith(
+    expect.objectContaining({ to: mail.to, subject: "[TEST] Test" }),
+    undefined,
+  );
+});
 it("preserves production mail payload and provider confirmation", async () => {
   vi.stubEnv("RT_DEPLOY_ENV", "production");
   vi.stubEnv("RESEND_API_KEY", "test-provider-key");

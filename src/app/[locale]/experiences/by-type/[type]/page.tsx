@@ -52,6 +52,7 @@ export async function generateMetadata(props: {
   }
 
   return {
+    description: typeData.content.hero.subtitle,
     title: typeData.meta.pageTitle,
   };
 }

@@ -43,7 +43,6 @@ const Hero: React.FC<HeroProps> = ({
   variant = "default",
 }) => {
   const isHome = variant === "home";
-  const Heading = isHome ? motion.h1 : motion.h2;
 
   return (
     <section
@@ -75,7 +74,10 @@ const Hero: React.FC<HeroProps> = ({
             {content.eyebrow}
           </span>
         ) : (
-          <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+          // `contents` keeps the wrapper out of layout; it only scopes data-nosnippet.
+          <div className="contents" data-nosnippet>
+            <BrandingAnimation className="w-fit mx-auto md:mx-0 flex items-center gap-3 mb-4 relative justify-center md:justify-start" />
+          </div>
         )}
 
         <div
@@ -85,12 +87,12 @@ const Hero: React.FC<HeroProps> = ({
             "lg:text-left",
           )}
         >
-          <Heading
+          <motion.h1
             animate={{ y: 0, opacity: 1 }}
             className={cn(
               "font-barlow-condensed font-extrabold mb-6 text-center text-white z-10 [&_sup]:text-[0.6em]",
               "md:text-left",
-              isHome ? "text-[44px] whitespace-pre-line" : "text-[60px]",
+              isHome ? "text-[44px] uppercase whitespace-pre-line" : "text-[60px]",
               isHome
                 ? "sm:text-[64px] lg:text-[100px]"
                 : "md:text-[80px] lg:text-[130px]",
@@ -107,6 +109,7 @@ const Hero: React.FC<HeroProps> = ({
           {isHome && content.accent && (
             <motion.p
               animate={{ y: 0, opacity: 1 }}
+              data-nosnippet
               className={cn(
                 "font-nothing-you-could-do font-normal mb-6 text-[26px] text-feature",
                 "sm:text-[30px] md:text-left lg:text-[34px]",
@@ -192,8 +195,9 @@ const Hero: React.FC<HeroProps> = ({
       {scrollIndicator && (
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden md:block">
           <div
-            className="scroll-indicator pointer-events-none select-none z-10 text-white"
+            className="scroll-indicator pointer-events-none select-none uppercase z-10 text-white"
             aria-hidden="true"
+            data-nosnippet
           >
             {content.scrollText || "SCROLL"}
           </div>
