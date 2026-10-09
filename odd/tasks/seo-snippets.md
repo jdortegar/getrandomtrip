@@ -77,3 +77,10 @@ Make Google show our own titles/descriptions instead of scraping all-caps hero t
 - Diff: 23 files, +293/−147 (excluding this doc and the reviewed hero videos).
 - Pending: rendered-HTML / visual QA of `/es`, `/es/about-us`, `/es/xsed`, `/es/experiences` in a running app (not run here).
 - Pending: commit (awaiting user approval) → RDD review on that commit → deploy → Search Console reindex request for `/`.
+
+## Commit + review
+
+- Commit `2fc19343` (T1+T2). RDD assess: medium, review due (slice_budget_reached). User granted review → approved (reliability lens), acknowledged. 0 blocking; 4 warnings, 2 suggestions.
+- Warning "double-brace placeholders" verified false: `interpolateTemplate` replaces `{{key}}`.
+- Warning "tripper bio description unbounded" fixed (uncommitted): `src/lib/seo/metaDescription.ts` `toMetaDescription` (whitespace collapse, ≤155 chars at word boundary + "…"), used in `trippers/[tripper]/page.tsx`. RED (module missing) → GREEN; seo tests 55/55, typecheck 0, lint 0.
+- Suggestion left open: render-site `uppercase` assertions for untouched components (visual QA covers it).

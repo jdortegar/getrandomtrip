@@ -25,6 +25,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { toMetaDescription } from "@/lib/seo/metaDescription";
 import { buildPersonSchema } from "@/lib/seo/schemas";
 
 // 👇 Modal de video (client component)
@@ -55,7 +56,7 @@ export async function generateMetadata(props: {
   const ogImage =
     tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
   const description =
-    tripper.bio?.replace(/\s+/g, " ").trim() ||
+    toMetaDescription(tripper.bio) ||
     interpolateTemplate(dict.trippers.profileMeta.description, {
       name: tripper.name,
     });
