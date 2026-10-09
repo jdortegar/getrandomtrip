@@ -55,3 +55,6 @@ next-env.d.ts
 # gentle-ai skill registry (machine-specific, auto-regenerated)
 .atl/**
 
+
+# Local Netlify folder
+.netlify
