@@ -1423,17 +1423,20 @@
     }
   },
   "xsedDropsPage": {
-    "title": "BITÁCORA DE ESCAPADAS",
+    "title": "Bitácora de escapadas",
     "titleHighlight": "XSED",
+    "meta": {
+      "title": "Bitácora de escapadas XSED"
+    },
     "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
     "filterDate": "Fecha",
     "filterOrderBy": "Ordenar por",
-    "loadMore": "VER MÁS"
+    "loadMore": "Ver más"
   },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
-    "ctaLabel": "DESCUBRE XSED",
+    "ctaLabel": "Descubre XSED",
     "features": [
       {
         "description": "1 noche — de sábado a domingo",
@@ -1458,7 +1461,7 @@
     ],
     "name": "XSED",
     "priceFootnote": "por persona",
-    "subtitle": "POR SUERTE ES DOMINGO"
+    "subtitle": "Por Suerte Es Domingo"
   },
   "xsedPage": {
     "meta": {
@@ -1469,7 +1472,7 @@
     },
     "hero": {
       "title": "XSED",
-      "subtitle": "X SUERTE<br/>ES DOMINGO",
+      "subtitle": "X Suerte<br/>Es Domingo",
       "dropNumberLabel": "Nº {number}",
       "tagline": "<strong>1 NOCHE, 1 CENA y 1 EXPERIENCIA LOCAL</strong> a menos de 300km de tu casa.<br/><small>Solo 10 cupos liberados cada domingo por país, para una escapada el siguiente fin de semana.</small>",
       "availabilityNote": "Solo 10 cupos liberados cada domingo por país.",
@@ -1477,9 +1480,9 @@
       "invalidEmailMessage": "Ingresa un email válido.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
-      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitLabel": "Avísame antes del drop",
       "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
-      "submittingLabel": "SUMANDO...",
+      "submittingLabel": "Sumando...",
       "successMessage": "Listo. Te vamos a avisar antes de la próximo XSED.",
       "helper": "Te avisaremos 10 minutos antes de que se abra la venta cada domingo.<br/><br/>Si parpadeas, te quedas afuera.",
       "fallbackImage": "/images/fallbacks/hero-xsed.png",
@@ -1505,52 +1508,52 @@
       ]
     },
     "countdown": {
-      "title": "COMPRÁ TU",
+      "title": "Comprá tu",
       "titleHighlight": "XSED Nº{number}",
       "subtitle": "Únete a la lista de espera — no te quedes sin el tuyo.",
       "openSubtitle": "La pasarela está abierta. Quedan pocos lugares.",
-      "nextDropLabel": "NEXT DROP",
-      "windowOpenLabel": "ABIERTO AHORA",
-      "windowClosingLabel": "HASTA LAS",
+      "nextDropLabel": "Next drop",
+      "windowOpenLabel": "Abierto ahora",
+      "windowClosingLabel": "Hasta las",
       "daysLabel": "DÍAS",
       "hoursLabel": "HRS",
       "minLabel": "MIN",
       "secLabel": "SEG",
       "soldLabel": "Vendidos {sold}/{total}",
-      "ctaLabel": "COMPRAR XSED",
+      "ctaLabel": "Comprar XSED",
       "ctaHref": "/journey"
     },
     "testimonials": {
       "eyebrow": "Opiniones de viajeros",
-      "title": "EL VEREDICTO",
+      "title": "El veredicto",
       "subtitle": "Tu próximo XSED está a un solo click de distancia. No lo pienses más.",
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "dropGrid": {
-      "eyebrow": "DROPS ANTERIORES",
-      "title": "BITÁCORA DE ESCAPADAS BY",
+      "eyebrow": "Drops anteriores",
+      "title": "Bitácora de escapadas by",
       "titleHighlight": "XSED",
       "description": "Lo que otros vivieron. Lo que tú podrías vivir.",
-      "ctaLabel": "VER TODAS",
+      "ctaLabel": "Ver todas",
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
-      "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
+      "title": "El próximo fin de semana, unos pocos escaparán hacia lo inesperado.\n¿Serás uno de ellos?",
       "helper": "Cada domingo abrimos la pasarela para viajar el siguiente fin de semana, durante solo 4 horas. Déjanos tu email y te avisamos 10 minutos antes de que se abra la venta.<br/><br/>Si parpadeas, te quedas afuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
-      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitLabel": "Avísame antes del drop",
       "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
-      "submittingLabel": "SUMANDO...",
+      "submittingLabel": "Sumando...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
       "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
       "invalidEmailMessage": "Ingresa un email válido."
     },
     "faq": {
       "eyebrow": "FAQ'S",
-      "title": "PREGUNTAS DESTACADAS",
+      "title": "Preguntas destacadas",
       "description": "Más de 1.000 Trippers compartiendo experiencias! Descubre viajes exclusivos, curados a no más de 300Km de distancia.",
       "items": [
         {
@@ -1575,7 +1578,7 @@
   "faqPage": {
     "hero": {
       "eyebrow": "FAQ's",
-      "title": "PREGUNTAS FRECUENTES",
+      "title": "Preguntas frecuentes",
       "description": "Todo lo que necesitas saber antes de dar el salto."
     },
     "meta": {
@@ -1723,36 +1726,36 @@
     "hero": {
       "branding": {
         "repeatText": "Repeat",
-        "text": "WONDER • WANDER"
+        "text": "Wonder • Wander"
       },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
         "href": "#exploration-section",
-        "text": "GET RANDOMTRIP!"
+        "text": "Get Randomtrip!"
       },
-      "scrollText": "SCROLL",
+      "scrollText": "Scroll",
       "accent": "Vuelve a sentir la magia de viajar.",
       "subtitle": "Nosotros nos encargamos de todo.\nTú solo di que sí. El destino lo descubres 48hs antes.",
-      "title": "EL ASOMBRO EMPIEZA\nDONDE TERMINA\nLA CERTEZA",
+      "title": "El asombro empieza\ndonde termina\nla certeza",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "trustSignal": {
       "sectionAriaLabel": "Por qué viajar con Randomtrip",
       "curated": {
-        "title": "CURADO CON INTENCIÓN",
+        "title": "Curado con intención",
         "description": "Viajes diseñados por expertos."
       },
       "trippers": {
-        "title": "AMADO POR TRIPPERS",
+        "title": "Amado por trippers",
         "description": "Experiencias reales que inspiran."
       },
       "effortless": {
-        "title": "TÚ SOLO DI QUE SÍ",
+        "title": "Tú solo di que sí",
         "description": "Sin planificar. Sin comparar."
       },
       "discovery": {
-        "title": "MÁS ALLÁ DE TU BURBUJA",
+        "title": "Más allá de tu burbuja",
         "description": "Descubre lo que no buscarías."
       }
     },
@@ -1778,23 +1781,23 @@
         }
       ],
       "ctaScrollTarget": "#exploration-section",
-      "ctaText": "GETRANDOMTRIP!",
+      "ctaText": "GetRandomtrip!",
       "eyebrow": "Tres pasos, cero stress",
       "howItWorksSteps": [
         {
-          "title": "PLANIFICÁ",
+          "title": "Planificá",
           "description": "Elige fechas, ciudad de origen, duración y presupuesto. Suma filtros y mood si quieres.",
           "imageAlt": "Camino entre bosque verde",
           "imageSrc": "/images/how-it-works-1.png"
         },
         {
-          "title": "RECIBÍ LA SORPRESA",
+          "title": "Recibí la sorpresa",
           "description": "Confirma tu viaje. Te revelamos el destino desde 48 h antes y te enviamos la guía para ese mood.",
           "imageAlt": "Interior de avión de noche",
           "imageSrc": "/images/how-it-works-2.png"
         },
         {
-          "title": "VIAJÁ SIN STRESS",
+          "title": "Viajá sin stress",
           "description": "Haz la valija. Pasajes y alojamiento listos; soporte humano cuando lo necesites.",
           "imageAlt": "Vista desde ventanilla del avión",
           "imageSrc": "/images/how-it-works-3.png"
@@ -1806,7 +1809,7 @@
       "title": "¿Qué hacemos?"
     },
     "exploration": {
-      "buttonTrippers": "EXPLORAR TRIPPERS",
+      "buttonTrippers": "Explorar trippers",
       "comingSoonText": "¡Pronto podrás explorar esta sección!",
       "eyebrow": "Dale forma a tu aventura",
       "subtitle": "Encuentra el punto de partida perfecto para tu próximo viaje.",
@@ -1860,10 +1863,10 @@
       ],
       "trippersHref": "/trippers",
       "xsedIntro": {
-        "eyebrow": "XSED | X SUERTE ES DOMINGO",
+        "eyebrow": "XSED | X Suerte Es Domingo",
         "title": "Una experiencia nueva todos los fines de semana.",
         "description": "Un destino nuevo cada semana — 1 noche afuera, con una comida y una vivencia única por país.",
-        "ctaLabel": "CONOCER MÁS",
+        "ctaLabel": "Conocer más",
         "ctaHref": "/xsed",
         "backgroundImage": "/images/xsed-hero.jpg"
       }
@@ -1889,37 +1892,40 @@
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "XSED",
-      "title": "EL PRÓXIMO FIN DE SEMANA, UNOS POCOS ESCAPARÁN HACIA LO INESPERADO.\n¿SERÁS UNO DE ELLOS?",
+      "title": "El próximo fin de semana, unos pocos escaparán hacia lo inesperado.\n¿Serás uno de ellos?",
       "helper": "Cada domingo abrimos la pasarela para viajar el siguiente fin de semana, durante solo 4 horas. Déjanos tu email y te avisamos 10 minutos antes de que se abra la venta.<br/><br/>Si parpadeas, te quedas afuera.",
       "inputLabel": "Email",
       "inputPlaceholder": "Ingresa tu email",
-      "submitLabel": "AVÍSAME ANTES DEL DROP",
+      "submitLabel": "Avísame antes del drop",
       "submitAriaLabel": "Avisarme antes del próximo drop de XSED",
-      "submittingLabel": "SUMANDO...",
+      "submittingLabel": "Sumando...",
       "successMessage": "YA ESTÁS EN NUESTRA LISTA! RECIBIRÁS EL PRÓXIMO DROP ANTES DE QUE SEA PÚBLICO.",
       "errorMessage": "No pudimos sumarte a la lista. Intenta de nuevo.",
       "invalidEmailMessage": "Ingresa un email válido."
     },
     "meta": {
       "title": "Randomtrip — Viajes sorpresa. Espera lo inesperado.",
-      "description": "Descubre tu próximo destino con Randomtrip. Viajes sorpresa diseñados por trippers apasionados. Reserva tu escapada hoy."
+      "description": "Viajes sorpresa a medida: tú eliges fechas y presupuesto, nuestros trippers expertos diseñan el viaje y el destino se revela 48 horas antes de salir."
     }
   },
   "experiences": {
+    "meta": {
+      "title": "Experiencias"
+    },
     "hero": {
       "branding": {
         "repeatText": "Repeat",
-        "text": "WONDER • WANDER"
+        "text": "Wonder • Wander"
       },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
         "href": "#travel-type-selector",
-        "text": "GET RANDOMTRIP"
+        "text": "Get Randomtrip"
       },
-      "scrollText": "SCROLL",
+      "scrollText": "Scroll",
       "subtitle": "Elige el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
-      "title": "EXPERIENCIAS",
+      "title": "Experiencias",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "travelTypeEyebrow": "Punto de partida",
@@ -1943,7 +1949,7 @@
     },
     "hero": {
       "description": "Explora perfiles de viajeros expertos que curan experiencias auténticas y memorables.",
-      "subtitle": "CONOCÉ AL EQUIPO",
+      "subtitle": "Conocé al equipo",
       "title": "Nuestros Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
     },
@@ -1954,12 +1960,18 @@
     },
     "blogTeaser": {
       "eyebrow": "Tres pasos, cero stress",
-      "heading": "TRIPPER'S INSPIRATION",
+      "heading": "Tripper's Inspiration",
       "viewAllButton": "Ver todo"
     },
     "meta": {
       "title": "Nuestros Trippers | Randomtrip",
       "description": "Explorá perfiles de viajeros expertos que curan experiencias auténticas y memorables. Encontrá tu Tripper ideal."
+    },
+    "profileMeta": {
+      "description": "Conoce a {{name}}, tripper de Randomtrip, y descubre los viajes sorpresa que diseña para ti.",
+      "packagesTitle": "Paquetes de {{name}}",
+      "packagesDescription": "Explora los paquetes de viaje únicos creados por {{name}}. Descubre aventuras personalizadas y experiencias auténticas.",
+      "packagesOpenGraphDescription": "Explora los paquetes de viaje únicos creados por {{name}}."
     },
     "unavailable": {
       "title": "Este perfil no está disponible",
@@ -1977,8 +1989,8 @@
       "travel": "Viajes",
       "breadcrumb": "Tripper Inspirations",
       "emptyBody": "Este post aún no tiene contenido.",
-      "moreEyebrow": "EXPLORA",
-      "moreTitle": "MÁS DE MIS AVENTURAS",
+      "moreEyebrow": "Explora",
+      "moreTitle": "Más de mis aventuras",
       "moreSubtitle": "Notas, guías y momentos que inspiran. Escritos en primera persona.",
       "moreByTravelType": {
         "couple": {
@@ -2019,7 +2031,10 @@
     },
     "heroDescription": "Descubre historias, guías y experiencias de nuestros trippers",
     "heroTitleByTripper": "Blog de {name}",
-    "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "heroTitleDefault": "Tripper's Inspiration",
+    "meta": {
+      "title": "Tripper's Inspiration"
+    },
     "loadMore": "Cargar más",
     "seenAll": "Has visto todos los posts disponibles",
     "share": {
@@ -2030,7 +2045,7 @@
   "packagesByType": {
     "blogEyebrow": "Historias de viajeros",
     "inspirationBanner": {
-      "eyebrow": "INSPIRACIÓN",
+      "eyebrow": "Inspiración",
       "buttonText": "Historias inspiradoras",
       "labelText": "Historias inspiradoras",
       "title": "Historias de viajeros solitarios que inspiran"
@@ -4011,7 +4026,7 @@
   "aboutUs": {
     "cta": {
       "buttonAriaLabel": "Ir a la sección 'Comienza tu Viaje' con la tab 'By Traveller' seleccionada",
-      "buttonText": "GETRANDOMTRIP!",
+      "buttonText": "GetRandomtrip!",
       "subtitle": "Empieza con un brief de sentimientos. Tarda 3 minutos.",
       "title": "¿Listo para soltar el control y ganar libertad?"
     },
@@ -4137,7 +4152,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Ir a la sección 'Comienza tu viaje'",
-      "ctaLabel": "GET RANDOMTRIP",
+      "ctaLabel": "Get Randomtrip",
       "headline": "Confianza en el proceso",
       "items": [
         {

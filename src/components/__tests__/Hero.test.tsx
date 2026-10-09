@@ -15,7 +15,7 @@ describe("homepage hero", () => {
     {
       locale: "es",
       copy: es.home.hero,
-      title: "EL ASOMBRO EMPIEZA\nDONDE TERMINA\nLA CERTEZA",
+      title: "El asombro empieza\ndonde termina\nla certeza",
       accent: "Vuelve a sentir la magia de viajar.",
       subtitle:
         "Nosotros nos encargamos de todo.\nTú solo di que sí. El destino lo descubres 48hs antes.",
@@ -23,7 +23,7 @@ describe("homepage hero", () => {
     {
       locale: "en",
       copy: en.home.hero,
-      title: "WONDER BEGINS\nWHERE CERTAINTY\nENDS",
+      title: "Wonder begins\nwhere certainty\nends",
       accent: "Feel the magic of travel again.",
       subtitle:
         "We take care of everything.\nYou just say yes. Discover your destination 48 hours before departure.",
@@ -44,7 +44,7 @@ describe("homepage hero", () => {
       );
       expect(heading?.nextElementSibling).toBe(paragraphs[0]);
       expect(paragraphs[0].nextElementSibling).toBe(paragraphs[1]);
-      expect(cta?.textContent).toBe("GET RANDOMTRIP!");
+      expect(cta?.textContent).toBe("Get Randomtrip!");
       expect(cta?.getAttribute("href")).toBe("#exploration-section");
       expect(cta?.getAttribute("aria-label")).toBe(
         test.copy.primaryCta.ariaLabel,
@@ -62,6 +62,8 @@ describe("homepage hero", () => {
     expect(heading?.classList.contains("lg:text-[100px]")).toBe(true);
     expect(heading?.classList.contains("leading-none")).toBe(true);
     expect(heading?.classList.contains("whitespace-pre-line")).toBe(true);
+    // Copy is sentence case in the dictionary; caps come from CSS only.
+    expect(heading?.classList.contains("uppercase")).toBe(true);
     expect(heading?.classList.contains("font-barlow-condensed")).toBe(true);
     expect(accent?.classList.contains("font-nothing-you-could-do")).toBe(true);
     expect(accent?.classList.contains("text-feature")).toBe(true);
@@ -91,7 +93,21 @@ describe("homepage hero", () => {
     expect(branding?.textContent?.replaceAll("\u00a0", " ")).toBe(
       "WONDER • WANDERRepeat",
     );
-    expect(hero.querySelector(".scroll-indicator")?.textContent).toBe("SCROLL");
+    expect(hero.querySelector(".scroll-indicator")?.textContent).toBe("Scroll");
+    expect(
+      hero.querySelector(".scroll-indicator")?.classList.contains("uppercase"),
+    ).toBe(true);
+    // Decorative hero text must stay out of search snippets.
+    expect(
+      hero.querySelector(".scroll-indicator")?.hasAttribute("data-nosnippet"),
+    ).toBe(true);
+    expect(branding?.closest("[data-nosnippet]")).not.toBeNull();
+    expect(
+      hero
+        .querySelector("p.font-nothing-you-could-do")
+        ?.hasAttribute("data-nosnippet"),
+    ).toBe(true);
+    expect(hero.querySelector("h1")?.closest("[data-nosnippet]")).toBeNull();
   });
 });
 
@@ -114,10 +130,12 @@ it("preserves the shared hero's heading, tagline, links, and styling by default"
       titleClassName="custom-heading"
     />,
   );
-  const heading = hero.querySelector("h2");
+  const heading = hero.querySelector("h1");
   const paragraphs = hero.querySelectorAll("p");
 
-  expect(hero.querySelector("h1")).toBeNull();
+  // Every Hero is the page's primary heading.
+  expect(hero.querySelectorAll("h1")).toHaveLength(1);
+  expect(hero.querySelector("h2")).toBeNull();
   expect(heading?.textContent).toBe("Explore ©");
   expect(heading?.querySelector("sup")?.textContent).toBe("©");
   expect(heading?.classList.contains("lg:text-[130px]")).toBe(true);

@@ -22,6 +22,7 @@ import {
 } from "@/components/tripper/TripperTravelerTypesSection";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPersonSchema } from "@/lib/seo/schemas";
@@ -38,10 +39,14 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: {
-  params: Promise<{ tripper: string }>;
+  params: Promise<{ locale?: string; tripper: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const result = await getTripperBySlug(params.tripper);
+  const locale = hasLocale(params.locale) ? params.locale : "es";
+  const [result, dict] = await Promise.all([
+    getTripperBySlug(params.tripper),
+    getDictionary(locale),
+  ]);
 
   if (result.status !== "ok")
     return { title: "Randomtrip", robots: { index: false, follow: false } };
@@ -49,10 +54,17 @@ export async function generateMetadata(props: {
   const { tripper } = result;
   const ogImage =
     tripper.heroImage ?? tripper.avatarUrl ?? "/images/opengraph.png";
+  const description =
+    tripper.bio?.replace(/\s+/g, " ").trim() ||
+    interpolateTemplate(dict.trippers.profileMeta.description, {
+      name: tripper.name,
+    });
 
   return {
     title: `${tripper.name} | Randomtrip`,
+    description,
     openGraph: {
+      description,
       images: [{ url: ogImage, width: 1200, height: 630 }],
       title: `${tripper.name} | Randomtrip`,
     },

@@ -17,8 +17,8 @@ it("keeps the XSED hero title free of badge styling", () => {
   template.innerHTML = renderToStaticMarkup(
     <SecondaryHero content={{ ...content, title: "XSED" }} locale="es" />,
   );
-  expect(template.content.querySelector("h2")?.textContent).toBe("XSED");
-  expect(template.content.querySelector("h2 .bg-xsed")).toBeNull();
+  expect(template.content.querySelector("h1")?.textContent).toBe("XSED");
+  expect(template.content.querySelector("h1 .bg-xsed")).toBeNull();
 });
 function render(scrollIndicator?: boolean) {
   const template = document.createElement("template");
@@ -34,19 +34,20 @@ function render(scrollIndicator?: boolean) {
 
 it("preserves the literal ASCII-quoted decorative scroll copy", () => {
   const fragment = render(true);
-  expect(fragment.querySelector("h2")?.textContent).toBe("Mystery weekend");
+  expect(fragment.querySelector("h1")?.textContent).toBe("Mystery weekend");
   const indicators = [
     ...fragment.querySelectorAll('[aria-hidden="true"]'),
   ].filter((element) => element.textContent === '"SCROLL"');
   expect(indicators).toHaveLength(1);
   expect(indicators[0].tagName).toBe("DIV");
+  expect(indicators[0].hasAttribute("data-nosnippet")).toBe(true);
 });
 
 it.each([false, undefined])(
   "omits the decorative indicator for %s",
   (enabled) => {
     const fragment = render(enabled);
-    expect(fragment.querySelector("h2")?.textContent).toBe("Mystery weekend");
+    expect(fragment.querySelector("h1")?.textContent).toBe("Mystery weekend");
     expect(fragment.textContent).not.toContain("SCROLL");
   },
 );

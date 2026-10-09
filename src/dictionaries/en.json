@@ -1423,17 +1423,20 @@
     }
   },
   "xsedDropsPage": {
-    "title": "ESCAPE LOG",
+    "title": "Escape log",
     "titleHighlight": "TGIS",
+    "meta": {
+      "title": "TGIS escape log"
+    },
     "description": "What others lived. What you could live.",
     "filterDate": "Date",
     "filterOrderBy": "Order by",
-    "loadMore": "LOAD MORE"
+    "loadMore": "Load more"
   },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
     "closingLine": "One night, one dinner, and one surprise local experience close to home.",
-    "ctaLabel": "DISCOVER TGIS",
+    "ctaLabel": "Discover TGIS",
     "features": [
       {
         "description": "1 night — Saturday to Sunday",
@@ -1458,7 +1461,7 @@
     ],
     "name": "TGIS",
     "priceFootnote": "per person",
-    "subtitle": "THANK GOD IT’S SUNDAY"
+    "subtitle": "Thank God It’s Sunday"
   },
   "xsedPage": {
     "meta": {
@@ -1469,7 +1472,7 @@
     },
     "hero": {
       "title": "TGIS",
-      "subtitle": "THANK GOD<br/>IT'S SUNDAY",
+      "subtitle": "Thank God<br/>It's Sunday",
       "dropNumberLabel": "No. {number}",
       "tagline": "<strong>1 NIGHT, 1 DINNER and 1 LOCAL EXPERIENCE</strong> less than 300km from home.<br/><small>Only 10 spots released every Sunday per country, for a getaway the following weekend.</small>",
       "availabilityNote": "Only 10 spots released every Sunday per country.",
@@ -1477,9 +1480,9 @@
       "invalidEmailMessage": "Enter a valid email address.",
       "inputLabel": "Email Address",
       "inputPlaceholder": "Enter your email",
-      "submitLabel": "NOTIFY ME BEFORE THE DROP",
+      "submitLabel": "Notify me before the drop",
       "submitAriaLabel": "Notify me before the next TGIS drop",
-      "submittingLabel": "JOINING...",
+      "submittingLabel": "Joining...",
       "successMessage": "You are on the list. We will notify you before the next opening.",
       "helper": "We'll notify you 10 minutes before sales open every Sunday.<br/><br/>Blink, and you're out.",
       "fallbackImage": "/images/fallbacks/hero-xsed.png",
@@ -1505,52 +1508,52 @@
       ]
     },
     "countdown": {
-      "title": "BUY YOUR",
+      "title": "Buy your",
       "titleHighlight": "TGIS Nº{number}",
       "subtitle": "Subscribe to the waitlist — don't miss yours.",
       "openSubtitle": "The gateway is open. Only a few spots left.",
-      "nextDropLabel": "NEXT DROP",
-      "windowOpenLabel": "OPEN NOW",
-      "windowClosingLabel": "UNTIL",
+      "nextDropLabel": "Next drop",
+      "windowOpenLabel": "Open now",
+      "windowClosingLabel": "Until",
       "daysLabel": "DAYS",
       "hoursLabel": "HRS",
       "minLabel": "MIN",
       "secLabel": "SEC",
       "soldLabel": "{sold}/{total} sold",
-      "ctaLabel": "BUY TGIS",
+      "ctaLabel": "Buy TGIS",
       "ctaHref": "/journey"
     },
     "testimonials": {
       "eyebrow": "Traveler reviews",
-      "title": "THE VERDICT",
+      "title": "The verdict",
       "subtitle": "Your next TGIS is just one click away. Stop overthinking it.",
       "viewFullReviewLabel": "View full review"
     },
     "dropGrid": {
-      "eyebrow": "PREVIOUS DROPS",
-      "title": "ESCAPE LOG BY",
+      "eyebrow": "Previous drops",
+      "title": "Escape log by",
       "titleHighlight": "TGIS",
       "description": "What others lived. What you could live.",
-      "ctaLabel": "VIEW ALL",
+      "ctaLabel": "View all",
       "ctaHref": "/xsed/drops"
     },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
-      "title": "NEXT WEEKEND, A FEW WILL ESCAPE INTO THE UNEXPECTED.\nWILL YOU BE ONE OF THEM?",
+      "title": "Next weekend, a few will escape into the unexpected.\nWill you be one of them?",
       "helper": "Every Sunday we open the gateway to travel the following weekend, for just 4 hours. Leave your email and we'll notify you 10 minutes before sales open.<br/><br/>Blink, and you're out.",
       "inputLabel": "Email Address",
       "inputPlaceholder": "Enter your email",
-      "submitLabel": "NOTIFY ME BEFORE THE DROP",
+      "submitLabel": "Notify me before the drop",
       "submitAriaLabel": "Notify me before the next TGIS drop",
-      "submittingLabel": "JOINING...",
+      "submittingLabel": "Joining...",
       "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
       "errorMessage": "We couldn't add you. Please try again.",
       "invalidEmailMessage": "Please enter a valid email."
     },
     "faq": {
       "eyebrow": "FAQ'S",
-      "title": "TOP QUESTIONS",
+      "title": "Top questions",
       "description": "Over 1,000 Trippers sharing experiences! Discover exclusive trips, curated within 300km of your home.",
       "items": [
         {
@@ -1575,7 +1578,7 @@
   "faqPage": {
     "hero": {
       "eyebrow": "FAQ's",
-      "title": "FREQUENTLY ASKED QUESTIONS",
+      "title": "Frequently asked questions",
       "description": "Everything you need to know before taking the leap."
     },
     "meta": {
@@ -1723,36 +1726,36 @@
     "hero": {
       "branding": {
         "repeatText": "Repeat",
-        "text": "WONDER • WANDER"
+        "text": "Wonder • Wander"
       },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",
-        "text": "GET RANDOMTRIP!"
+        "text": "Get Randomtrip!"
       },
-      "scrollText": "SCROLL",
+      "scrollText": "Scroll",
       "accent": "Feel the magic of travel again.",
       "subtitle": "We take care of everything.\nYou just say yes. Discover your destination 48 hours before departure.",
-      "title": "WONDER BEGINS\nWHERE CERTAINTY\nENDS",
+      "title": "Wonder begins\nwhere certainty\nends",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "trustSignal": {
       "sectionAriaLabel": "Why travel with Randomtrip",
       "curated": {
-        "title": "CURATED WITH INTENTION",
+        "title": "Curated with intention",
         "description": "Trips designed by experts."
       },
       "trippers": {
-        "title": "LOVED BY TRIPPERS",
+        "title": "Loved by trippers",
         "description": "Real experiences that inspire."
       },
       "effortless": {
-        "title": "JUST SAY YES",
+        "title": "Just say yes",
         "description": "No planning. No comparing."
       },
       "discovery": {
-        "title": "BEYOND YOUR BUBBLE",
+        "title": "Beyond your bubble",
         "description": "Discover what you wouldn’t seek out."
       }
     },
@@ -1778,23 +1781,23 @@
         }
       ],
       "ctaScrollTarget": "#exploration-section",
-      "ctaText": "GETRANDOMTRIP!",
+      "ctaText": "GetRandomtrip!",
       "eyebrow": "Three steps, zero stress",
       "howItWorksSteps": [
         {
-          "title": "PLAN",
+          "title": "Plan",
           "description": "Choose dates, origin city, duration and budget. Add filters and mood if you like.",
           "imageAlt": "Road through green forest",
           "imageSrc": "/images/how-it-works-1.png"
         },
         {
-          "title": "GET THE SURPRISE",
+          "title": "Get the surprise",
           "description": "Confirm your trip. We reveal the destination 48 hours before and send you the guide for that mood.",
           "imageAlt": "Airplane interior at night",
           "imageSrc": "/images/how-it-works-2.png"
         },
         {
-          "title": "TRAVEL STRESS-FREE",
+          "title": "Travel stress-free",
           "description": "Pack your bags. Flights and accommodation ready; human support when you need it.",
           "imageAlt": "Airplane window view",
           "imageSrc": "/images/how-it-works-3.png"
@@ -1806,7 +1809,7 @@
       "title": "What do we do?"
     },
     "exploration": {
-      "buttonTrippers": "EXPLORE TRIPPERS",
+      "buttonTrippers": "Explore trippers",
       "comingSoonText": "Coming soon! You'll be able to explore this section.",
       "eyebrow": "Shape your adventure",
       "subtitle": "Find the perfect starting point for your next trip.",
@@ -1860,10 +1863,10 @@
       ],
       "trippersHref": "/en/trippers",
       "xsedIntro": {
-        "eyebrow": "TGIS | THANK GOD IT'S SUNDAY",
+        "eyebrow": "TGIS | Thank God It's Sunday",
         "title": "A new experience every weekend.",
         "description": "A new destination every week — 1 night away, with a meal and a unique local experience per country.",
-        "ctaLabel": "LEARN MORE",
+        "ctaLabel": "Learn more",
         "ctaHref": "/xsed",
         "backgroundImage": "/images/xsed-hero.jpg"
       }
@@ -1889,37 +1892,40 @@
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
       "eyebrow": "TGIS",
-      "title": "NEXT WEEKEND, A FEW WILL ESCAPE INTO THE UNEXPECTED.\nWILL YOU BE ONE OF THEM?",
+      "title": "Next weekend, a few will escape into the unexpected.\nWill you be one of them?",
       "helper": "Every Sunday we open the gateway to travel the following weekend, for just 4 hours. Leave your email and we'll notify you 10 minutes before sales open.<br/><br/>Blink, and you're out.",
       "inputLabel": "Email",
       "inputPlaceholder": "Enter your email",
-      "submitLabel": "NOTIFY ME BEFORE THE DROP",
+      "submitLabel": "Notify me before the drop",
       "submitAriaLabel": "Notify me before the next TGIS drop",
-      "submittingLabel": "JOINING...",
+      "submittingLabel": "Joining...",
       "successMessage": "YOU'RE ON OUR LIST! YOU'LL RECEIVE THE NEXT DROP BEFORE IT GOES PUBLIC.",
       "errorMessage": "We couldn't add you. Please try again.",
       "invalidEmailMessage": "Please enter a valid email."
     },
     "meta": {
       "title": "Randomtrip — Surprise trips. Expect the unexpected.",
-      "description": "Discover your next destination with Randomtrip. Surprise trips designed by passionate trippers. Book your getaway today."
+      "description": "Surprise trips made for you: pick your dates and budget, our expert trippers design the trip, and your destination is revealed 48 hours before you leave."
     }
   },
   "experiences": {
+    "meta": {
+      "title": "Experiences"
+    },
     "hero": {
       "branding": {
         "repeatText": "Repeat",
-        "text": "WONDER • WANDER"
+        "text": "Wonder • Wander"
       },
       "fallbackImage": "/images/hero-image-1.jpeg",
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
         "href": "#travel-type-selector",
-        "text": "GET RANDOMTRIP"
+        "text": "Get Randomtrip"
       },
-      "scrollText": "SCROLL",
+      "scrollText": "Scroll",
       "subtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
-      "title": "EXPERIENCES",
+      "title": "Experiences",
       "videoSrc": "/videos/hero-video-1.mp4"
     },
     "travelTypeEyebrow": "Starting point",
@@ -1943,7 +1949,7 @@
     },
     "hero": {
       "description": "Explore profiles of expert travelers who curate authentic and memorable experiences.",
-      "subtitle": "MEET THE TEAM",
+      "subtitle": "Meet the team",
       "title": "Our Trippers",
       "videoSrc": "/videos/trippers-hero.mp4"
     },
@@ -1954,12 +1960,18 @@
     },
     "blogTeaser": {
       "eyebrow": "Three steps, zero stress",
-      "heading": "TRIPPER'S INSPIRATION",
+      "heading": "Tripper's Inspiration",
       "viewAllButton": "View all"
     },
     "meta": {
       "title": "Our Trippers | Randomtrip",
       "description": "Explore profiles of expert travelers who curate authentic and memorable experiences. Find your ideal Tripper."
+    },
+    "profileMeta": {
+      "description": "Meet {{name}}, a Randomtrip tripper, and discover the surprise trips they design for you.",
+      "packagesTitle": "{{name}}'s packages",
+      "packagesDescription": "Explore the unique travel packages created by {{name}}. Discover tailored adventures and authentic experiences.",
+      "packagesOpenGraphDescription": "Explore the unique travel packages created by {{name}}."
     },
     "unavailable": {
       "title": "This profile isn't available",
@@ -1977,8 +1989,8 @@
       "travel": "Travel",
       "breadcrumb": "Tripper Inspirations",
       "emptyBody": "This post does not have content yet.",
-      "moreEyebrow": "EXPLORE",
-      "moreTitle": "MORE OF MY ADVENTURES",
+      "moreEyebrow": "Explore",
+      "moreTitle": "More of my adventures",
       "moreSubtitle": "Notes, guides and inspiring moments. First-hand stories.",
       "moreByTravelType": {
         "couple": {
@@ -2019,7 +2031,10 @@
     },
     "heroDescription": "Discover stories, guides and experiences from our trippers",
     "heroTitleByTripper": "Blog by {name}",
-    "heroTitleDefault": "TRIPPER'S INSPIRATION",
+    "heroTitleDefault": "Tripper's Inspiration",
+    "meta": {
+      "title": "Tripper's Inspiration"
+    },
     "loadMore": "Load more",
     "seenAll": "You've seen all available posts",
     "share": {
@@ -2030,7 +2045,7 @@
   "packagesByType": {
     "blogEyebrow": "Traveler stories",
     "inspirationBanner": {
-      "eyebrow": "INSPIRATION",
+      "eyebrow": "Inspiration",
       "buttonText": "Inspiring stories",
       "labelText": "Inspiring stories",
       "title": "Stories from solo travelers that inspire"
@@ -4011,7 +4026,7 @@
   "aboutUs": {
     "cta": {
       "buttonAriaLabel": "Go to 'Start your Journey' section with 'By Traveller' tab selected",
-      "buttonText": "GETRANDOMTRIP!",
+      "buttonText": "GetRandomtrip!",
       "subtitle": "Start with a feelings brief. It takes 3 minutes.",
       "title": "Ready to let go of control and gain freedom?"
     },
@@ -4137,7 +4152,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Go to the 'Start your journey' section",
-      "ctaLabel": "GET RANDOMTRIP",
+      "ctaLabel": "Get Randomtrip",
       "headline": "Trust in the process",
       "items": [
         {

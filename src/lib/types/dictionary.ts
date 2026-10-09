@@ -3160,6 +3160,8 @@ export interface MarketingDictionary {
   xsedBook: XsedBookDict;
   xsedDropsPage: {
     description: string;
+    /** Sentence-case `<title>` copy; the visible hero title stays all caps. */
+    meta: { title: string };
     filterDate: string;
     filterOrderBy: string;
     loadMore: string;
@@ -3311,6 +3313,8 @@ export interface MarketingDictionary {
     };
   };
   experiences: {
+    /** Sentence-case `<title>` copy; the visible hero title stays all caps. */
+    meta: { title: string };
     hero: {
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
@@ -3358,6 +3362,13 @@ export interface MarketingDictionary {
     meta: {
       description: string;
       title: string;
+    };
+    /** Public tripper profile/packages metadata; each value contains a literal "{{name}}" placeholder. */
+    profileMeta: {
+      description: string;
+      packagesDescription: string;
+      packagesOpenGraphDescription: string;
+      packagesTitle: string;
     };
     /** Shared "tripper unavailable" copy — used by both the profile page and the journey flow. */
     unavailable: {
@@ -3417,6 +3428,8 @@ export interface MarketingDictionary {
     heroTitleByTripper: string;
     heroTitleDefault: string;
     loadMore: string;
+    /** Sentence-case `<title>` copy; the visible hero title stays all caps. */
+    meta: { title: string };
     seenAll: string;
     share: {
       ariaLabel: string;

@@ -105,7 +105,7 @@ export function XsedInternalHero({
             </div>
 
             {title ? (
-              <h1 className="font-barlow-condensed text-[38px] font-extrabold leading-[0.85] z-10 md:text-[60px] lg:text-[100px] [&_sup]:text-[0.6em]">
+              <h1 className="font-barlow-condensed text-[38px] font-extrabold uppercase leading-[0.85] z-10 md:text-[60px] lg:text-[100px] [&_sup]:text-[0.6em]">
                 {title}
               </h1>
             ) : null}

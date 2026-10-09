@@ -53,9 +53,9 @@ export function SecondaryHero({
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h2 className="font-barlow-condensed font-extrabold text-[96px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
+            <h1 className="font-barlow-condensed font-extrabold text-[96px] md:text-[130px] z-10 leading-[0.8] [&_sup]:text-[0.6em]">
               {formatTitleWithCopyright(content.title)}
-            </h2>
+            </h1>
             <div className="flex justify-end gap-2">
               <span
                 aria-hidden
@@ -92,6 +92,7 @@ export function SecondaryHero({
           <div
             className="scroll-indicator pointer-events-none select-none z-10 text-white"
             aria-hidden="true"
+            data-nosnippet
           >
             &quot;SCROLL&quot;
           </div>

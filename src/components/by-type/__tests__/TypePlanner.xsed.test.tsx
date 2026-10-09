@@ -171,7 +171,7 @@ it.each(["en", "es"])(
         false,
       );
       expect(xsed.querySelector("a")?.textContent).toBe(
-        locale === "en" ? "DISCOVER TGIS" : "DESCUBRE XSED",
+        locale === "en" ? "Discover TGIS" : "Descubre XSED",
       );
       expect(
         cards().map((card) => card.classList.contains("bg-white")),
