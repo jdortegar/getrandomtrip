@@ -28,6 +28,7 @@
     "db:backfill-departure-time-zone": "npx tsx scripts/backfill-departure-time-zone.ts",
     "db:backfill-tripper-hero-crop": "npx tsx scripts/backfill-tripper-hero-crop.ts",
     "db:cleanup-duplicate-trips": "npx tsx scripts/cleanup-duplicate-trip-requests.ts",
+    "db:convert-approved-visas": "npx tsx scripts/convert-approved-visas-to-iso.ts",
     "db:rename-access-invites": "npx tsx scripts/rename-tripper-invites-to-access-invites.ts",
     "db:seed": "npx tsx prisma/seed.ts",
     "discord:setup": "npx tsx scripts/discord-setup.ts",

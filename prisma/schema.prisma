@@ -92,6 +92,9 @@ model User {
   passportCountry String?
   passportExpiry  DateTime?
   approvedVisas   String[]  @default([])
+  /// ISO 3166-1 alpha-2 codes of the passports the user can travel with.
+  /// Profile-level prefill for trip snapshots; `passportCountry` stays the main passport.
+  nationalities   String[]  @default([])
 
   /**
    * Tripper's social links. Stores: [{ network: string, handle: string }]
@@ -193,6 +196,11 @@ model TripRequest {
 
   // Trip-start voucher email — attaches all TripDocument rows, sent once startDate has passed
   voucherEmailSentAt DateTime? // Trip-start voucher email idempotency stamp
+
+  // Buyer travel documents, snapshotted per trip (ISO 3166-1 alpha-2 codes).
+  // Admin reads these, never the live User. Required (min 1 nationality) before payment.
+  buyerNationalities String[] @default([])
+  buyerVisas         String[] @default([]) // visas valid on the travel dates; empty = none
 
   // Timestamps
   createdAt DateTime @default(now())
@@ -589,6 +597,10 @@ model TripTraveler {
   email       String? // adults only; null for minors
   idDocument  String? // ID / passport number
   dateOfBirth DateTime? // minors only
+
+  // Travel documents, snapshotted per trip (ISO 3166-1 alpha-2 codes)
+  nationalities String[] @default([]) // passports this traveler can travel with
+  visas         String[] @default([]) // visas valid on the travel dates; empty = none
 
   // Owning account — set ONLY at successful invite submission. Nullable:
   // minor rows never authenticate, and rows completed via the buyer's
