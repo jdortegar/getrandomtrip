@@ -15,11 +15,11 @@ import type { TravelerDTO } from "@/types/traveler";
 export interface TravelerRowHandle {
   /**
    * Persists the row's current field values. Called by the page-level Save
-   * action. Resolves with the server-returned traveler on success, or the
-   * original (unchanged) traveler when the save is skipped/fails — callers
-   * use the resolved status to decide whether the whole roster is complete.
+   * action. Resolves with the server-returned traveler on success, the
+   * original (unchanged) traveler when the row is not editable, or `null`
+   * when the save fails (validation or request error).
    */
-  save: () => Promise<TravelerDTO>;
+  save: () => Promise<TravelerDTO | null>;
 }
 
 interface TravelerRowProps {
@@ -120,14 +120,14 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
       return { ok: res.ok, data };
     }
 
-    async function saveRow(): Promise<TravelerDTO> {
+    async function saveRow(): Promise<TravelerDTO | null> {
       if (!canEdit || pending.current) return traveler;
       if (
         !isAdult &&
         !isMinorRowFilled({ fullName, dateOfBirth, idDocument })
       ) {
         setError(copy.incompleteError);
-        return traveler;
+        return null;
       }
       pending.current = true;
       setSaving(true);
@@ -144,7 +144,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
               ? copy.incompleteError
               : copy.saveErrorGeneric,
           );
-          return traveler;
+          return null;
         }
         const updated = data.traveler as TravelerDTO;
         // The server emails the companion when a new/changed email is saved.
@@ -164,7 +164,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         return updated;
       } catch {
         setError(copy.saveErrorGeneric);
-        return traveler;
+        return null;
       } finally {
         pending.current = false;
         setSaving(false);

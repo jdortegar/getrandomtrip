@@ -156,8 +156,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("TravelerRosterSection — saveAll() completeness", () => {
-  it("resolves true when every row is COMPLETE after saving", async () => {
+describe("TravelerRosterSection — saveAll() result", () => {
+  it("resolves true when every row saves, even if a row is still incomplete", async () => {
     const t1 = traveler({ id: "t1" });
     const t2 = traveler({ id: "t2", fullName: "Ana B" });
     (fetch as ReturnType<typeof vi.fn>).mockImplementation(
@@ -166,22 +166,22 @@ describe("TravelerRosterSection — saveAll() completeness", () => {
         json: async () => ({
           traveler: {
             ...(url.includes("t1") ? t1 : t2),
-            status: "COMPLETE",
+            status: url.includes("t1") ? "COMPLETE" : "PENDING",
           },
         }),
       }),
     );
     render(roster([t1, t2]));
 
-    let allComplete: boolean | undefined;
+    let allSaved: boolean | undefined;
     await act(async () => {
-      allComplete = await handleRef.current?.saveAll();
+      allSaved = await handleRef.current?.saveAll();
     });
 
-    expect(allComplete).toBe(true);
+    expect(allSaved).toBe(true);
   });
 
-  it("resolves false when at least one row is not COMPLETE after saving", async () => {
+  it("resolves false when at least one row fails to save", async () => {
     const t1 = traveler({ id: "t1" });
     const t2 = traveler({ id: "t2", fullName: "Ana B" });
     (fetch as ReturnType<typeof vi.fn>).mockImplementation(
@@ -197,12 +197,12 @@ describe("TravelerRosterSection — saveAll() completeness", () => {
     );
     render(roster([t1, t2]));
 
-    let allComplete: boolean | undefined;
+    let allSaved: boolean | undefined;
     await act(async () => {
-      allComplete = await handleRef.current?.saveAll();
+      allSaved = await handleRef.current?.saveAll();
     });
 
-    expect(allComplete).toBe(false);
+    expect(allSaved).toBe(false);
   });
 });
 
