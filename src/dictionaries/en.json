@@ -4263,7 +4263,8 @@
       "tripperProfile": "Tripper public profile",
       "tripperOs": "Tripper OS",
       "nationalId": "National ID",
-      "passport": "Passport"
+      "passport": "Passport",
+      "nationalities": "Nationalities"
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
@@ -4322,10 +4323,18 @@
       "issuingCountry": "Issuing Country",
       "expiryDate": "Expiry Date",
       "passportNumber": "Passport Number",
-      "approvedVisas": "Approved Visas",
-      "approvedVisasHelper": "Countries and regions for which you currently hold a valid visa.",
+      "approvedVisas": "Visas",
+      "approvedVisasHelper": "Visas that will be valid on your travel dates.",
       "noVisas": "No visas on file.",
-      "searchVisa": "Search country or region…"
+      "searchVisa": "Search country or region…",
+      "selectVisas": "Select visas",
+      "schengenVisa": "Schengen Area",
+      "nationalitiesHelper": "Passports you can travel with. Add every nationality you hold.",
+      "noNationalities": "No nationalities on file.",
+      "selectNationalities": "Select nationalities",
+      "searchCountry": "Search country…",
+      "noCountryResults": "No countries found.",
+      "removeCountry": "Remove {country}"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",

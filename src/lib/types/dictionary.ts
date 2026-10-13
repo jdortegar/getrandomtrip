@@ -4194,6 +4194,16 @@ export interface MarketingDictionary {
       approvedVisasHelper: string;
       noVisas: string;
       searchVisa: string;
+      selectVisas: string;
+      /** Label for the `SCHENGEN` visa zone code. */
+      schengenVisa: string;
+      nationalitiesHelper: string;
+      noNationalities: string;
+      selectNationalities: string;
+      searchCountry: string;
+      noCountryResults: string;
+      /** Remove-chip aria label; `{country}` is replaced with the country name. */
+      removeCountry: string;
     };
     modal: {
       confirmPassword: string;
@@ -4237,6 +4247,7 @@ export interface MarketingDictionary {
       tripperOs: string;
       nationalId: string;
       passport: string;
+      nationalities: string;
     };
     toasts: {
       nameRequired: string;

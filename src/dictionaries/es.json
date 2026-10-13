@@ -4263,7 +4263,8 @@
       "tripperProfile": "Perfil público de Tripper",
       "tripperOs": "Tripper OS",
       "nationalId": "Documento nacional",
-      "passport": "Pasaporte"
+      "passport": "Pasaporte",
+      "nationalities": "Nacionalidades"
     },
     "comingSoon": "Próximamente",
     "comingSoonDescription": "Esta sección estará disponible próximamente.",
@@ -4322,10 +4323,18 @@
       "issuingCountry": "País emisor",
       "expiryDate": "Fecha de vencimiento",
       "passportNumber": "Número de pasaporte",
-      "approvedVisas": "Visas aprobadas",
-      "approvedVisasHelper": "Países y regiones para los que actualmente tienes una visa válida.",
+      "approvedVisas": "Visas",
+      "approvedVisasHelper": "Visas que estarán vigentes en las fechas de tu viaje.",
       "noVisas": "Sin visas registradas.",
-      "searchVisa": "Buscar país o región…"
+      "searchVisa": "Buscar país o región…",
+      "selectVisas": "Seleccionar visas",
+      "schengenVisa": "Espacio Schengen",
+      "nationalitiesHelper": "Pasaportes con los que puedes viajar. Agrega todas tus nacionalidades.",
+      "noNationalities": "Sin nacionalidades registradas.",
+      "selectNationalities": "Seleccionar nacionalidades",
+      "searchCountry": "Buscar país…",
+      "noCountryResults": "No se encontraron países.",
+      "removeCountry": "Quitar {country}"
     },
     "travelerTypes": {
       "selectPlaceholder": "Seleccionar...",

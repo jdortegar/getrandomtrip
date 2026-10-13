@@ -22,10 +22,13 @@ export default function RemovableTag({
   item,
   color = "default",
   size = "sm",
+  removeLabel,
 }: {
   item: Item;
   color?: ColorVariant;
   size?: SizeVariant;
+  /** Accessible name for the remove button; defaults to "Quitar {label|value}". */
+  removeLabel?: string;
 }) {
   const getColorClasses = (color: ColorVariant, locked: boolean) => {
     if (locked) {
@@ -98,7 +101,7 @@ export default function RemovableTag({
       ) : item.onRemove ? (
         <button
           type="button"
-          aria-label={`Quitar ${item.label ?? item.value}`}
+          aria-label={removeLabel ?? `Quitar ${item.label ?? item.value}`}
           onClick={item.onRemove}
           className={`ml-1 -mr-1 rounded p-0.5 ${getHoverColor(color)}`}
         >

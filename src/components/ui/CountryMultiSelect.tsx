@@ -34,6 +34,8 @@ interface CountryMultiSelectProps {
   /** Renders the selection as plain chips, without the picker or remove buttons. */
   readOnly?: boolean;
   triggerClassName?: string;
+  /** Accessible name for a chip's remove button, from the country label. */
+  removeLabel?: (countryLabel: string) => string;
 }
 
 /**
@@ -55,6 +57,7 @@ export function CountryMultiSelect({
   error,
   readOnly = false,
   triggerClassName,
+  removeLabel,
 }: CountryMultiSelectProps) {
   const errorId = useId();
   const options = useMemo(
@@ -110,6 +113,7 @@ export function CountryMultiSelect({
         onChange={onChange}
         options={options}
         placeholder={placeholder}
+        removeLabel={removeLabel}
         searchPlaceholder={searchPlaceholder}
         triggerClassName={triggerClassName}
         value={value}

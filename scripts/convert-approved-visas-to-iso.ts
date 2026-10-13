@@ -15,8 +15,7 @@
  *   npm run db:convert-approved-visas             # dry run
  *   npm run db:convert-approved-visas -- --apply  # write
  */
-import { resolveCountryCode } from "../src/lib/geo/countryNameToCode";
-import { isIsoCountryCode, isVisaCode } from "../src/lib/geo/countryOptions";
+import { resolveVisaCode } from "../src/lib/geo/visaCodes";
 import { withPrisma } from "./lib/withPrisma";
 
 export interface VisaUserRow {
@@ -44,29 +43,6 @@ export interface VisaConversionClient {
   };
 }
 
-/** Lowercases, strips accents and collapses whitespace for spelling comparison. */
-const normalizeSpelling = (value: string): string =>
-  value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim();
-
-/** Known spellings of the Schengen zone; "schengena" is the typo stored by the old list. */
-const SCHENGEN_SPELLINGS: ReadonlySet<string> = new Set(
-  ["Schengena", "Schengen", "Schengen Area", "Espacio Schengen", "Zona Schengen"].map(
-    normalizeSpelling,
-  ),
-);
-
-function resolveVisaCode(value: string): string | null {
-  const upper = value.toUpperCase();
-  if (isIsoCountryCode(upper)) return upper;
-  if (SCHENGEN_SPELLINGS.has(normalizeSpelling(value))) return "SCHENGEN";
-  return resolveCountryCode(value);
-}
-
 /** Pure conversion of one user's values: visa codes, deduped, unresolved names kept as-is. */
 export function convertApprovedVisas(values: readonly string[]): {
   codes: string[];
@@ -78,7 +54,7 @@ export function convertApprovedVisas(values: readonly string[]): {
     const value = raw.trim();
     if (!value) continue;
     const code = resolveVisaCode(value);
-    if (code && isVisaCode(code)) {
+    if (code) {
       if (!codes.includes(code)) codes.push(code);
     } else {
       unresolved.push(value);

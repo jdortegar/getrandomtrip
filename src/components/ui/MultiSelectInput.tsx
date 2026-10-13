@@ -28,6 +28,16 @@ interface MultiSelectInputProps {
   emptyLabel?: string;
   hint?: string;
   triggerClassName?: string;
+  /** Accessible name for a chip's remove button, from the option label. */
+  removeLabel?: (optionLabel: string) => string;
+}
+
+/** Lowercases and strips accents so "mexico" matches "México". */
+function foldForSearch(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 export function MultiSelectInput({
@@ -41,6 +51,7 @@ export function MultiSelectInput({
   emptyLabel = "No results.",
   hint,
   triggerClassName,
+  removeLabel,
 }: MultiSelectInputProps) {
   const generatedId = useId();
   const triggerId = id ?? `${generatedId}-trigger`;
@@ -58,10 +69,9 @@ export function MultiSelectInput({
   }
 
   const selected = options.filter((o) => value.includes(o.value));
-  const filtered = search
-    ? options.filter((o) =>
-        o.label.toLowerCase().includes(search.toLowerCase()),
-      )
+  const foldedSearch = foldForSearch(search.trim());
+  const filtered = foldedSearch
+    ? options.filter((o) => foldForSearch(o.label).includes(foldedSearch))
     : options;
 
   return (
@@ -117,6 +127,7 @@ export function MultiSelectInput({
                       onChange(value.filter((v) => v !== o.value)),
                   }}
                   color="secondary"
+                  removeLabel={removeLabel?.(o.label)}
                   size="sm"
                 />
               </span>

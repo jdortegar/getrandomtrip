@@ -171,6 +171,31 @@ it("selecting an extra option emits its code and shows its label", async () => {
   expect(trigger().textContent).toContain("Espacio Schengen");
 });
 
+it("matches countries without typing accents", async () => {
+  harness.render(<Example />);
+  harness.click(trigger());
+  await settle();
+  search("mexico");
+  expect(optionLabels()).toEqual(["México"]);
+});
+
+it("passes the remove-label formatter to the chips", () => {
+  harness.render(
+    <CountryMultiSelect
+      locale="en"
+      noResultsLabel="No countries"
+      onChange={() => {}}
+      placeholder="Choose countries"
+      removeLabel={(country) => `Remove ${country}`}
+      searchPlaceholder="Search countries"
+      value={["DE"]}
+    />,
+  );
+  expect(trigger().querySelector("button")?.getAttribute("aria-label")).toBe(
+    "Remove Germany",
+  );
+});
+
 it("read-only mode labels extra options from the caller", () => {
   harness.render(<Example extraOptions={schengen} initialValue={["SCHENGEN", "DE"]} readOnly />);
   expect(harness.container.textContent).toContain("Espacio Schengen");
