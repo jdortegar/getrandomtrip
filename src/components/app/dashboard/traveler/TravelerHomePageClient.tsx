@@ -14,6 +14,7 @@ import {
   getPayments,
   getTrips,
   isTripAwaitingPayment,
+  isUpcomingTrip,
   type Payment,
   type Trip,
 } from "@/lib/utils/trips";
@@ -31,9 +32,7 @@ function computeDashboardStats(
   allPayments: Payment[],
 ): DashboardStats {
   const completed = mappedTrips.filter((t) => t.status === "COMPLETED").length;
-  const upcoming = mappedTrips.filter(
-    (t) => t.status === "CONFIRMED" || t.status === "REVEALED",
-  ).length;
+  const upcoming = mappedTrips.filter((t) => isUpcomingTrip(t)).length;
   const totalSpent = allPayments
     .filter((p) => p.status === "APPROVED" || p.status === "COMPLETED")
     .reduce((sum, p) => sum + p.amount, 0);
