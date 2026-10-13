@@ -155,6 +155,7 @@ export const TravelerRosterSection = forwardRef<
             <TravelerRow
               copy={copy}
               key={traveler.id}
+              locale={locale}
               locked={roster.locked}
               onUpdated={handleUpdated}
               ref={(el) => {

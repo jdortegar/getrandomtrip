@@ -187,7 +187,27 @@ describe("serializeTraveler", () => {
       invitedAt: invitedAt.toISOString(),
       submittedAt: null,
       joined: false,
+      nationalities: [],
+      visas: [],
     });
+  });
+
+  it("exposes the row's nationalities and visas", () => {
+    const dto = serializeTraveler({
+      id: "t-4",
+      kind: "ADULT",
+      status: "COMPLETE",
+      fullName: "Dual",
+      email: "dual@example.com",
+      idDocument: "ID",
+      dateOfBirth: null,
+      invitedAt: null,
+      submittedAt: null,
+      nationalities: ["AR", "IT"],
+      visas: ["SCHENGEN", "US"],
+    });
+
+    expect(dto).toMatchObject({ nationalities: ["AR", "IT"], visas: ["SCHENGEN", "US"] });
   });
 
   it("derives `joined` from the account link without exposing the user id (T8)", () => {
@@ -239,6 +259,8 @@ describe("serializeTravelerForCompanion (T6)", () => {
     invitedAt: new Date("2026-01-01T00:00:00.000Z"),
     submittedAt: new Date("2026-01-02T00:00:00.000Z"),
     userId,
+    nationalities: ["FR"],
+    visas: ["JP"],
   });
 
   it("keeps the viewer's own row complete and marks it as theirs", () => {
@@ -250,6 +272,8 @@ describe("serializeTravelerForCompanion (T6)", () => {
       email: "me@example.com",
       idDocument: "DOC-me",
       dateOfBirth: "1990-01-01T00:00:00.000Z",
+      nationalities: ["FR"],
+      visas: ["JP"],
       isSelf: true,
     });
   });
@@ -269,7 +293,9 @@ describe("serializeTravelerForCompanion (T6)", () => {
       submittedAt: null,
       joined: false,
     });
-    expect(JSON.stringify(dto)).not.toMatch(/DOC-other|other@example.com|1990|someone-else/);
+    expect(dto).not.toHaveProperty("nationalities");
+    expect(dto).not.toHaveProperty("visas");
+    expect(JSON.stringify(dto)).not.toMatch(/DOC-other|other@example.com|1990|someone-else|"FR"|"JP"/);
   });
 
   it("never treats an unlinked row as the viewer's", () => {

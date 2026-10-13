@@ -1,15 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 
-const { peek, session } = vi.hoisted(() => ({
+const { peek, session, profileDocuments } = vi.hoisted(() => ({
   peek: vi.fn(),
   session: vi.fn(),
+  profileDocuments: vi.fn(),
 }));
 
 vi.mock("next-auth", () => ({ getServerSession: session }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: vi.fn() }));
-vi.mock("@/lib/travelers/travelerInviteTokens", () => ({ peekTravelerInvite: peek }));
+vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
+  peekTravelerInvite: peek,
+  getProfileTravelDocuments: profileDocuments,
+}));
 vi.mock("@/components/Navbar", () => ({ default: () => null }));
 vi.mock("@/components/travelers/TravelerInviteClient", () => ({ default: () => null }));
 
@@ -83,5 +87,47 @@ describe("invite page payload (T11)", () => {
     const { resolution } = await renderPage();
 
     expect(resolution).toEqual({ ok: false, reason: "expired" });
+  });
+
+  it("passes the row's own documents to the invited viewer", async () => {
+    const travelDocuments = { nationalities: ["AR"], visas: [], nationalitiesLocked: false, visasLocked: false };
+    session.mockResolvedValue({ user: { id: "user-1", email: "jane.doe@gmail.com" } });
+    peek.mockResolvedValue({ ...okPeek, invitedEmail: "jane.doe@gmail.com", viewerEmailMatches: true, travelDocuments });
+
+    const { resolution } = await renderPage();
+
+    expect(resolution.travelDocuments).toEqual(travelDocuments);
+    expect(profileDocuments).not.toHaveBeenCalled();
+  });
+
+  it("prefills an empty row from the invited viewer's profile", async () => {
+    session.mockResolvedValue({ user: { id: "user-1", email: "jane.doe@gmail.com" } });
+    peek.mockResolvedValue({
+      ...okPeek,
+      invitedEmail: "jane.doe@gmail.com",
+      viewerEmailMatches: true,
+      travelDocuments: { nationalities: [], visas: [], nationalitiesLocked: false, visasLocked: false },
+    });
+    profileDocuments.mockResolvedValue({ nationalities: ["IT"], visas: ["US"] });
+
+    const { resolution } = await renderPage();
+
+    expect(profileDocuments).toHaveBeenCalledWith("user-1");
+    expect(resolution.travelDocuments).toEqual({
+      nationalities: ["IT"],
+      visas: ["US"],
+      nationalitiesLocked: false,
+      visasLocked: false,
+    });
+  });
+
+  it("never loads a profile for a viewer who is not the invitee", async () => {
+    session.mockResolvedValue({ user: { id: "user-2", email: "other@example.com" } });
+    peek.mockResolvedValue({ ...okPeek, viewerEmailMatches: false, travelDocuments: null });
+
+    const { resolution } = await renderPage();
+
+    expect(profileDocuments).not.toHaveBeenCalled();
+    expect(resolution.travelDocuments ?? null).toBeNull();
   });
 });

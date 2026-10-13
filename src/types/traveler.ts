@@ -20,11 +20,43 @@ export interface TravelerDTO {
   /** True once the companion linked an account (`TripTraveler.userId` set). The user id itself is never exposed. */
   joined: boolean;
   /**
+   * ISO 3166-1 alpha-2 codes. Present in the buyer view and on a companion's
+   * own row; omitted for other travelers in a companion's view.
+   */
+  nationalities?: string[];
+  /** ISO 3166-1 alpha-2 codes plus visa zone codes (e.g. `SCHENGEN`). Same visibility as `nationalities`. */
+  visas?: string[];
+  /**
    * Set only in a companion's view of the roster, on the row that is the
    * viewer's own. Other rows in that view carry names only.
    */
   isSelf?: true;
 }
+
+/** A traveler's nationalities and visas, as stored on `TripTraveler`. */
+export interface TravelerDocuments {
+  /** ISO 3166-1 alpha-2 codes. */
+  nationalities: string[];
+  /** ISO 3166-1 alpha-2 codes plus visa zone codes; empty means none. */
+  visas: string[];
+}
+
+/**
+ * Travel documents the invite form starts from. A populated field is frozen
+ * (`*Locked`) once the roster cutoff passed, like every other roster field.
+ */
+export interface TravelerInviteDocuments extends TravelerDocuments {
+  nationalitiesLocked: boolean;
+  visasLocked: boolean;
+}
+
+/**
+ * Result of validating optional `nationalities` / `visas` code lists from a
+ * request body. An `undefined` list means "leave the field unchanged".
+ */
+export type TravelerDocumentCodesResult =
+  | { ok: true; nationalities?: string[]; visas?: string[] }
+  | { ok: false; error: string; invalid: string[] };
 
 /**
  * Shape returned by `getRosterForTrip`. Consumed identically by the

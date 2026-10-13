@@ -639,3 +639,100 @@ describe("PATCH email lock once joined (T10)", () => {
     expect(res.status).toBe(200);
   });
 });
+
+describe("PATCH travel documents (nationalities + visas)", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "buyer-1" } });
+    vi.mocked(prisma.tripRequest.count).mockResolvedValue(1);
+  });
+
+  function mockRow(row: Record<string, unknown>) {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    (prisma.tripTraveler.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ ...row, ...data }) as never,
+    );
+  }
+
+  it("saves normalized nationalities and visas and returns them on the traveler", async () => {
+    mockRow(makeAdultRow({ nationalities: [], visas: [] }));
+    const { PATCH } = await import("../route");
+
+    const res = await PATCH(
+      makeRequest({ fullName: "Bob", nationalities: ["ar", "IT"], visas: ["SCHENGEN"] }),
+      makeProps("trav-1"),
+    );
+
+    expect(res.status).toBe(200);
+    const args = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as {
+      where: Record<string, unknown>;
+      data: Record<string, unknown>;
+    };
+    expect(args.data).toMatchObject({ nationalities: ["AR", "IT"], visas: ["SCHENGEN"] });
+    expect(args.where).toMatchObject({ nationalities: { equals: [] }, visas: { equals: [] } });
+    expect((await res.json()).traveler).toMatchObject({ nationalities: ["AR", "IT"], visas: ["SCHENGEN"] });
+  });
+
+  it("allows empty lists (partial saves) and leaves omitted lists untouched", async () => {
+    mockRow(makeAdultRow({ nationalities: ["AR"], visas: ["US"] }));
+    const { PATCH } = await import("../route");
+
+    const res = await PATCH(makeRequest({ visas: [] }), makeProps("trav-1"));
+
+    expect(res.status).toBe(200);
+    const { data } = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
+    expect(data.visas).toEqual([]);
+    expect(data).not.toHaveProperty("nationalities");
+  });
+
+  it.each([
+    [{ nationalities: ["AR", "SCHENGEN"] }, "Invalid nationalities", ["SCHENGEN"]],
+    [{ visas: ["Narnia"] }, "Invalid visas", ["Narnia"]],
+    [{ nationalities: "AR" }, "Invalid nationalities", []],
+  ])("rejects invalid codes %j with 400 { error, invalid }", async (body, error, invalid) => {
+    mockRow(makeAdultRow());
+    const { PATCH } = await import("../route");
+
+    const res = await PATCH(makeRequest(body), makeProps("trav-1"));
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error, invalid });
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+  });
+
+  it("freezes populated lists after the cutoff but lets empty ones be filled", async () => {
+    mockRow(makeAdultRow({ tripRequest: lockedTrip, nationalities: ["AR"], visas: [] }));
+    const { PATCH } = await import("../route");
+
+    const changed = await PATCH(makeRequest({ nationalities: ["IT"] }), makeProps("trav-1"));
+    expect(changed.status).toBe(403);
+    expect((await changed.json()).error).toBe("locked");
+    expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+
+    const same = await PATCH(makeRequest({ nationalities: ["AR"], visas: ["US"] }), makeProps("trav-1"));
+    expect(same.status).toBe(200);
+  });
+
+  it("lets a minor row carry nationalities filled by the buyer", async () => {
+    mockRow(makeMinorRow({ nationalities: [], visas: [] }));
+    const { PATCH } = await import("../route");
+
+    const res = await PATCH(
+      makeRequest({ fullName: "Kid", dateOfBirth: "2015-01-01", idDocument: "ID", nationalities: ["AR"] }),
+      makeProps("trav-2"),
+    );
+
+    expect(res.status).toBe(200);
+    expect((await res.json()).traveler.nationalities).toEqual(["AR"]);
+  });
+
+  it("lets a companion set documents on their own row only", async () => {
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "companion-1" } });
+    mockRow(makeAdultRow({ userId: "someone-else", email: "x@example.com" }));
+    const { PATCH } = await import("../route");
+    expect((await PATCH(makeRequest({ nationalities: ["AR"] }), makeProps("trav-1"))).status).toBe(403);
+
+    mockRow(makeAdultRow({ userId: "companion-1", email: "me@example.com", nationalities: [], visas: [] }));
+    expect((await PATCH(makeRequest({ nationalities: ["AR"] }), makeProps("trav-1"))).status).toBe(200);
+  });
+});

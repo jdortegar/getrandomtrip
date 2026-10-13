@@ -16,6 +16,8 @@ import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
   isTripEnded,
+  parseTravelerDocumentCodes,
+  travelerCodesEqual,
 } from "@/lib/travelers/travelerPolicy";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +40,11 @@ export const dynamic = "force-dynamic";
  * becomes `INVITED`, and an `INVITED` row is never flipped to `COMPLETE` here:
  * `COMPLETE` means "the companion accepted" (it makes the token read as
  * `used`), while roster completeness is derived from the saved details.
+ *
+ * Travel documents: optional `nationalities` (ISO codes) and `visas` (ISO plus
+ * visa zones) lists; invalid codes answer 400 `{ error, invalid }`. Empty lists
+ * are allowed (partial saves) and never affect status. After the cutoff a
+ * populated list is frozen like every other populated field.
  */
 export async function PATCH(
   request: NextRequest,
@@ -112,7 +119,25 @@ export async function PATCH(
     ) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
+    const documents = parseTravelerDocumentCodes(body);
+    if (!documents.ok) {
+      return NextResponse.json(
+        { error: documents.error, invalid: documents.invalid },
+        { status: 400 },
+      );
+    }
     if (isRosterLocked(traveler.tripRequest)) {
+      for (const field of ["nationalities", "visas"] as const) {
+        const current = traveler[field] ?? [];
+        const incoming = documents[field];
+        if (
+          incoming !== undefined &&
+          current.length > 0 &&
+          !travelerCodesEqual(incoming, current)
+        ) {
+          return NextResponse.json({ error: "locked" }, { status: 403 });
+        }
+      }
       for (const field of [
         "fullName",
         "email",
@@ -199,12 +224,22 @@ export async function PATCH(
         idDocument: traveler.idDocument,
         dateOfBirth: traveler.dateOfBirth,
         status: traveler.status,
+        ...(documents.nationalities !== undefined && {
+          nationalities: { equals: traveler.nationalities ?? [] },
+        }),
+        ...(documents.visas !== undefined && {
+          visas: { equals: traveler.visas ?? [] },
+        }),
       },
       data: {
         fullName,
         email,
         idDocument,
         dateOfBirth,
+        ...(documents.nationalities !== undefined && {
+          nationalities: documents.nationalities,
+        }),
+        ...(documents.visas !== undefined && { visas: documents.visas }),
         status: nextStatus,
         ...(justCompleted && { submittedAt: new Date() }),
       },

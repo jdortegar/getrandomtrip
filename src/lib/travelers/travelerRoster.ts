@@ -71,6 +71,8 @@ type SerializableTravelerRow = {
   invitedAt: Date | null;
   submittedAt: Date | null;
   userId?: string | null;
+  nationalities?: string[];
+  visas?: string[];
 };
 
 /**
@@ -91,13 +93,16 @@ export function serializeTraveler(row: SerializableTravelerRow): TravelerDTO {
     invitedAt: row.invitedAt ? row.invitedAt.toISOString() : null,
     submittedAt: row.submittedAt ? row.submittedAt.toISOString() : null,
     joined: Boolean(row.userId),
+    nationalities: row.nationalities ?? [],
+    visas: row.visas ?? [],
   };
 }
 
 /**
  * Companion view of a row: the viewer's own row stays complete (flagged
  * `isSelf`); every other traveler is reduced to their name — no email, ID
- * document, date of birth, invite or account-link information. Filtering
+ * document, date of birth, nationalities, visas, invite or account-link
+ * information. Filtering
  * happens here, server-side; the UI never receives what it must hide.
  */
 export function serializeTravelerForCompanion(

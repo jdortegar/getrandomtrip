@@ -39,10 +39,17 @@ const okResolution: TravelerInviteResolution = {
   idDocumentRequired: true,
   maskedEmail: "j***@gmail.com",
 };
+const prefilledDocuments = {
+  nationalities: ["AR"],
+  visas: [] as string[],
+  nationalitiesLocked: false,
+  visasLocked: false,
+};
 // Server-rendered payload for a viewer already signed in with the invited address.
 const matchingResolution: TravelerInviteResolution = {
   ...okResolution,
   invitedEmail: "jane.doe@gmail.com",
+  travelDocuments: prefilledDocuments,
 };
 
 let container: HTMLDivElement;
@@ -148,7 +155,7 @@ describe("TravelerInviteClient — invited email", () => {
     vi.mocked(fetch).mockResolvedValue(
       Response.json({ error: "email_mismatch" }, { status: 403 }),
     );
-    render(okResolution);
+    render({ ...okResolution, travelDocuments: prefilledDocuments });
 
     const input = container.querySelector<HTMLInputElement>("#traveler-invite-idDocument")!;
     act(() => {
@@ -392,5 +399,83 @@ describe("TravelerInviteClient — resend verification (T15)", () => {
 
     expect(container.textContent).toContain(copy.landingResendError);
     expect(resendButton()!.disabled).toBe(false);
+  });
+});
+
+describe("TravelerInviteClient — travel documents", () => {
+  const nationalitiesRequired = enCopy.journey.checkout.errors.nationalitiesRequired;
+
+  beforeEach(() => {
+    sessionState.value = {
+      status: "authenticated",
+      data: { user: { email: "jane.doe@gmail.com", emailVerified: true } },
+    };
+  });
+
+  function fillAndSubmit() {
+    const input = container.querySelector<HTMLInputElement>("#traveler-invite-idDocument")!;
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "ID1");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    act(() => {
+      container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click();
+    });
+    return act(async () => {
+      container.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    });
+  }
+
+  const submitCalls = () =>
+    vi.mocked(fetch).mock.calls.filter(([url]) => url === "/api/travelers/submit");
+
+  it("prefills the pickers and submits nationalities and visas", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ ok: true }));
+    render({ ...matchingResolution, travelDocuments: { ...prefilledDocuments, visas: ["SCHENGEN"] } });
+
+    expect(container.textContent).toContain(enCopy.profile.sections.nationalities);
+    expect(container.textContent).toContain("Argentina");
+    expect(container.textContent).toContain(enCopy.profile.labels.schengenVisa);
+    expect(vi.mocked(fetch).mock.calls.some(([url]) => url === "/api/user/documents")).toBe(false);
+
+    await fillAndSubmit();
+
+    expect(JSON.parse(submitCalls()[0][1]!.body as string)).toEqual({
+      token: "tok",
+      idDocument: "ID1",
+      consent: true,
+      nationalities: ["AR"],
+      visas: ["SCHENGEN"],
+    });
+  });
+
+  it("requires a nationality before submitting", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({}, { status: 404 }));
+    render({ ...matchingResolution, travelDocuments: { ...prefilledDocuments, nationalities: [] } });
+
+    await fillAndSubmit();
+
+    expect(submitCalls()).toHaveLength(0);
+    expect(container.textContent).toContain(nationalitiesRequired);
+  });
+
+  it("prefills from the signed-in profile when the page had no documents", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      Response.json({ user: { nationalities: ["IT"], approvedVisas: ["US"] } }),
+    );
+    render({ ...matchingResolution, travelDocuments: null });
+    await act(async () => {});
+
+    expect(vi.mocked(fetch).mock.calls[0][0]).toBe("/api/user/documents");
+    expect(container.textContent).toContain("Italy");
+    expect(container.textContent).toContain("United States");
+  });
+
+  it("renders frozen lists read-only", () => {
+    render({ ...matchingResolution, travelDocuments: { ...prefilledDocuments, nationalitiesLocked: true } });
+
+    expect(container.querySelector("#traveler-invite-nationalities")).toBeNull();
+    expect(container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
+    expect(container.querySelector("#traveler-invite-visas")).not.toBeNull();
   });
 });

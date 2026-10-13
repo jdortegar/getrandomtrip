@@ -1,5 +1,12 @@
 import { getDepartureAt } from "@/lib/helpers/getRevealCountdown";
+import {
+  isIsoCountryCode,
+  isVisaCode,
+  normalizeCountryCodes,
+  normalizeVisaCodes,
+} from "@/lib/geo/countryOptions";
 import type { TripTiming } from "@/types/core";
+import type { TravelerDocumentCodesResult } from "@/types/traveler";
 
 /** Elapsed-time cutoffs, not calendar-day rounding. */
 export const ROSTER_CUTOFF_MS = 7 * 24 * 60 * 60 * 1000;
@@ -105,4 +112,60 @@ export function isTravelerRosterComplete(
     (traveler.status === "COMPLETE" || traveler.status === "INVITED") &&
     !hasMissingTravelerDetails(traveler)
   );
+}
+
+/**
+ * True once the traveler has at least one nationality. Feeds the admin
+ * missing-documents warning; deliberately NOT part of roster completeness.
+ */
+export function hasTravelDocuments(traveler: {
+  nationalities?: readonly string[] | null;
+}): boolean {
+  return (traveler.nationalities?.length ?? 0) > 0;
+}
+
+/** Same code set, ignoring order. */
+export function travelerCodesEqual(
+  a: readonly string[],
+  b: readonly string[],
+): boolean {
+  return a.length === b.length && a.every((code) => b.includes(code));
+}
+
+/** Entries that are not strings passing `isValid` once trimmed and uppercased. */
+function invalidCodes(values: unknown[], isValid: (code: string) => boolean): string[] {
+  return values
+    .filter((entry) => typeof entry !== "string" || !isValid(entry.trim().toUpperCase()))
+    .map(String);
+}
+
+/**
+ * Validates optional `nationalities` (ISO 3166-1 alpha-2 only) and `visas`
+ * (ISO plus visa zone codes) from a request body. Absent lists stay
+ * `undefined` (leave unchanged); empty lists are allowed. Error messages match
+ * `/api/user/documents` so clients can treat every documents endpoint alike.
+ */
+export function parseTravelerDocumentCodes(body: {
+  nationalities?: unknown;
+  visas?: unknown;
+}): TravelerDocumentCodesResult {
+  const lists = [
+    ["nationalities", body.nationalities, isIsoCountryCode, "Invalid nationalities"],
+    ["visas", body.visas, isVisaCode, "Invalid visas"],
+  ] as const;
+  for (const [, value, isValid, error] of lists) {
+    if (value === undefined) continue;
+    if (!Array.isArray(value)) return { ok: false, error, invalid: [] };
+    const invalid = invalidCodes(value, isValid);
+    if (invalid.length > 0) return { ok: false, error, invalid };
+  }
+  return {
+    ok: true,
+    nationalities: Array.isArray(body.nationalities)
+      ? normalizeCountryCodes(body.nationalities as string[])
+      : undefined,
+    visas: Array.isArray(body.visas)
+      ? normalizeVisaCodes(body.visas as string[])
+      : undefined,
+  };
 }

@@ -7,6 +7,11 @@ vi.mock("@/lib/prisma", () => ({
       update: vi.fn(),
       findUnique: vi.fn(),
     },
+    user: {
+      update: vi.fn(),
+      findUnique: vi.fn(),
+    },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -15,6 +20,7 @@ import {
   issueTravelerInvite,
   peekTravelerInvite,
   consumeTravelerInvite,
+  getProfileTravelDocuments,
   hasLiveTravelerInviteGrant,
   TRAVELER_INVITE_COOKIE,
 } from "../travelerInviteTokens";
@@ -273,6 +279,7 @@ describe("peekTravelerInvite", () => {
       invitedEmail: null,
       maskedEmail: "s***@example.com",
       viewerEmailMatches: null,
+      travelDocuments: null,
     });
     expect(JSON.stringify(result)).not.toContain("saved@example.com");
     expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
@@ -861,4 +868,101 @@ it("allows the existing owner to fill a gap with an account-link compare-and-swa
   expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ userId: "original-account" }), data: expect.objectContaining({ userId: "original-account", idDocument: "ID", fullName: "Name" }) }));
   vi.mocked(prisma.tripTraveler.update).mockRejectedValue({ code: "P2025" });
   expect(await consumeTravelerInvite("token", { fullName: "Account Name", email: "saved@example.com", idDocument: "ID", userId: "original-account", emailVerified: new Date() })).toEqual({ ok: false, reason: "invalid" });
+});
+
+describe("invite travel documents", () => {
+  const row = {
+    id: "trav-1", tripRequestId: "trip-1", kind: "ADULT", status: "INVITED",
+    fullName: "Saved", email: "invited@example.com", idDocument: "ID", dateOfBirth: null,
+    userId: null, inviteTokenHash: hashPlaintext("tok"),
+    inviteTokenExpiresAt: new Date(Date.now() + DAY_MS), tripRequest: futureTrip,
+    nationalities: ["AR"], visas: [] as string[],
+  };
+  const claim = {
+    fullName: "Acct", email: "invited@example.com", idDocument: "ID", userId: "user-1",
+    emailVerified: new Date(),
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue(row as never);
+    vi.mocked(prisma.tripTraveler.update).mockResolvedValue({} as never);
+    vi.mocked(prisma.user.update).mockResolvedValue({} as never);
+    vi.mocked(prisma.$transaction).mockImplementation((async (ops: unknown[]) => Promise.all(ops)) as never);
+  });
+
+  it("peek shares the row's documents and lock flags only with the invited viewer", async () => {
+    expect(await peekTravelerInvite("tok")).toMatchObject({ travelDocuments: null });
+    expect(await peekTravelerInvite("tok", "other@example.com")).toMatchObject({ travelDocuments: null });
+    expect(await peekTravelerInvite("tok", "invited@example.com")).toMatchObject({
+      travelDocuments: { nationalities: ["AR"], visas: [], nationalitiesLocked: false, visasLocked: false },
+    });
+  });
+
+  it("peek marks populated lists as locked after the cutoff, never empty ones", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ ...row, tripRequest: lockedTrip } as never);
+    expect(await peekTravelerInvite("tok", "invited@example.com")).toMatchObject({
+      travelDocuments: { nationalitiesLocked: true, visasLocked: false },
+    });
+  });
+
+  it("writes the trip row and the claiming user's profile in one transaction", async () => {
+    const result = await consumeTravelerInvite("tok", { ...claim, nationalities: ["IT", "AR"], visas: ["SCHENGEN"] });
+
+    expect(result.ok).toBe(true);
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(prisma.tripTraveler.update).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({ nationalities: { equals: ["AR"] }, visas: { equals: [] } }),
+      data: expect.objectContaining({ nationalities: ["IT", "AR"], visas: ["SCHENGEN"], userId: "user-1" }),
+    }));
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { nationalities: ["IT", "AR"], approvedVisas: ["SCHENGEN"] },
+    });
+  });
+
+  it("keeps populated lists frozen after the cutoff and writes back only what was applied", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ ...row, tripRequest: lockedTrip } as never);
+
+    expect((await consumeTravelerInvite("tok", { ...claim, nationalities: ["IT"], visas: ["US"] })).ok).toBe(true);
+
+    const { data } = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
+    expect(data).not.toHaveProperty("nationalities");
+    expect(data.visas).toEqual(["US"]);
+    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id: "user-1" }, data: { approvedVisas: ["US"] } });
+  });
+
+  it("rolls back as invalid when the compare-and-swap loses a race", async () => {
+    vi.mocked(prisma.$transaction).mockRejectedValue({ code: "P2025" });
+    expect(await consumeTravelerInvite("tok", { ...claim, nationalities: ["AR"], visas: [] })).toEqual({ ok: false, reason: "invalid" });
+  });
+
+  it("does not touch any profile when no documents are submitted", async () => {
+    expect((await consumeTravelerInvite("tok", claim)).ok).toBe(true);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("getProfileTravelDocuments", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("returns the profile codes, converting legacy visa names", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      nationalities: ["AR", "IT"], approvedVisas: ["United States", "Schengena"], passportCountry: null,
+    } as never);
+    expect(await getProfileTravelDocuments("user-1")).toEqual({ nationalities: ["AR", "IT"], visas: ["US", "SCHENGEN"] });
+  });
+
+  it("prefills nationalities from the passport country when empty", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      nationalities: [], approvedVisas: [], passportCountry: "Argentina",
+    } as never);
+    expect(await getProfileTravelDocuments("user-1")).toEqual({ nationalities: ["AR"], visas: [] });
+  });
+
+  it("returns empty lists for an unknown user", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    expect(await getProfileTravelDocuments("missing")).toEqual({ nationalities: [], visas: [] });
+  });
 });

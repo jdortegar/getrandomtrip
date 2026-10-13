@@ -1,11 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   hasMissingTravelerDetails,
+  hasTravelDocuments,
   isTravelerFieldFilled,
   isTravelerRosterComplete,
   isTripEnded,
+  parseTravelerDocumentCodes,
   rosterCutoffMs,
+  travelerCodesEqual,
 } from "../travelerPolicy";
+import type { TravelerDocuments } from "@/types/traveler";
 
 describe("traveler field policy", () => {
   it("uses exactly 72 elapsed hours for XSED, retaining 7d for other trips", () => {
@@ -74,5 +78,55 @@ describe("isTravelerRosterComplete", () => {
   });
   it("does not count a PENDING row (unsaved or failed save)", () => {
     expect(isTravelerRosterComplete({ ...filled, status: "PENDING" })).toBe(false);
+  });
+});
+
+describe("hasTravelDocuments", () => {
+  it("is true once the traveler has at least one nationality", () => {
+    expect(hasTravelDocuments({ nationalities: ["AR"] })).toBe(true);
+    const row: TravelerDocuments = { nationalities: ["AR", "IT"], visas: [] };
+    expect(hasTravelDocuments(row)).toBe(true);
+  });
+  it("is false with no nationalities, even when visas are present", () => {
+    const row: TravelerDocuments = { nationalities: [], visas: ["US"] };
+    expect(hasTravelDocuments(row)).toBe(false);
+    expect(hasTravelDocuments({})).toBe(false);
+  });
+  it("does not change roster completeness", () => {
+    const row = { kind: "ADULT", fullName: "A", email: "a@x.com", idDocument: "1", dateOfBirth: null, status: "COMPLETE" };
+    expect(isTravelerRosterComplete({ ...row, nationalities: [] } as typeof row)).toBe(true);
+  });
+});
+
+describe("parseTravelerDocumentCodes", () => {
+  it("leaves absent lists undefined (unchanged)", () => {
+    expect(parseTravelerDocumentCodes({})).toEqual({ ok: true, nationalities: undefined, visas: undefined });
+  });
+  it("normalizes valid ISO nationalities and visa codes, allowing empty lists", () => {
+    expect(parseTravelerDocumentCodes({ nationalities: ["AR", "IT", "AR"], visas: ["SCHENGEN", "US"] })).toEqual({
+      ok: true,
+      nationalities: ["AR", "IT"],
+      visas: ["SCHENGEN", "US"],
+    });
+    expect(parseTravelerDocumentCodes({ nationalities: [], visas: [] })).toEqual({ ok: true, nationalities: [], visas: [] });
+  });
+  it("rejects non-ISO nationalities, including visa zones", () => {
+    expect(parseTravelerDocumentCodes({ nationalities: ["AR", "SCHENGEN", "Argentina"] })).toEqual({
+      ok: false,
+      error: "Invalid nationalities",
+      invalid: ["SCHENGEN", "Argentina"],
+    });
+  });
+  it("rejects unknown visa codes and non-array values", () => {
+    expect(parseTravelerDocumentCodes({ visas: ["US", "XX"] })).toEqual({ ok: false, error: "Invalid visas", invalid: ["XX"] });
+    expect(parseTravelerDocumentCodes({ nationalities: "AR" })).toEqual({ ok: false, error: "Invalid nationalities", invalid: [] });
+  });
+});
+
+describe("travelerCodesEqual", () => {
+  it("compares code lists ignoring order", () => {
+    expect(travelerCodesEqual(["AR", "IT"], ["IT", "AR"])).toBe(true);
+    expect(travelerCodesEqual(["AR"], ["AR", "IT"])).toBe(false);
+    expect(travelerCodesEqual([], [])).toBe(true);
   });
 });
