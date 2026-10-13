@@ -41,7 +41,7 @@ import type { TripDetailsData } from "@/types/tripDetails";
 import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
-import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
+import { hasMissingTravelerDetails, isTripEnded } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
@@ -115,6 +115,13 @@ interface TripDetails extends BuyerDocumentsSnapshot {
 
 function labelFor(map: Record<string, string>, key: string): string {
   return map[key] ?? key;
+}
+
+/** ISO string from the trip payload to a `Date`; missing or invalid → `null`. */
+function parseTripDate(value: string | null | undefined): Date | null {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : null;
 }
 
 function TripDetailsContent() {
@@ -260,11 +267,16 @@ function TripDetailsContent() {
     : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
 
   // The buyer's own documents: paid trips only (checkout collects them
-  // before payment). Editable while the trip is active; once the roster
-  // locks, only the still-empty lists (the companions' rule).
+  // before payment). Editable while the trip is active and not yet over (the
+  // same `isTripEnded` check the buyer-documents route applies); once the
+  // roster locks, only the still-empty lists (the companions' rule).
   const showBuyerDocuments = !isCompanion && trip.payment?.status === "APPROVED";
   const buyerDocumentsReadOnly =
-    trip.status !== "CONFIRMED" && trip.status !== "REVEALED";
+    (trip.status !== "CONFIRMED" && trip.status !== "REVEALED") ||
+    isTripEnded({
+      startDate: parseTripDate(trip.startDate),
+      endDate: parseTripDate(trip.endDate),
+    });
 
   const price = getTripCostDisplay({
     ...trip,

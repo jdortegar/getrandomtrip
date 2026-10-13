@@ -1,6 +1,6 @@
 import { act, lazy, Suspense, type ComponentType, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
 vi.mock("next/dynamic", () => ({
   default: (load: () => Promise<ComponentType>) =>
@@ -79,6 +79,12 @@ async function mount(trip: unknown, onPatch?: (init: RequestInit) => Response) {
 const saveButton = (container: HTMLElement) =>
   [...container.querySelectorAll("button")].find((b) => b.textContent === copy.saveAction);
 
+// Pin "now" so the fixture trip (December 2026) stays upcoming; only Date is faked.
+beforeAll(() => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(new Date("2026-10-13T12:00:00.000Z"));
+});
+afterAll(() => vi.useRealTimers());
 afterEach(() => vi.unstubAllGlobals());
 
 it("shows a paid buyer with no documents the section and the completion prompt", async () => {
@@ -149,6 +155,28 @@ it("renders read-only for a cancelled trip", async () => {
     unmount();
   }
 });
+
+it.each(["CONFIRMED", "REVEALED"])(
+  "renders read-only once a paid %s trip has ended",
+  async (status) => {
+    const { container, unmount } = await mount(
+      buyerTrip({
+        status,
+        startDate: "2026-09-01T00:00:00.000Z",
+        endDate: "2026-09-05T00:00:00.000Z",
+      }),
+    );
+    try {
+      const text = container.textContent ?? "";
+      expect(text).toContain(copy.title);
+      expect(text).toContain(copy.lockedNote);
+      expect(text).not.toContain(copy.missingTitle);
+      expect(saveButton(container)).toBeUndefined();
+    } finally {
+      unmount();
+    }
+  },
+);
 
 it("leaves unpaid trips to checkout", async () => {
   const { container, unmount } = await mount(

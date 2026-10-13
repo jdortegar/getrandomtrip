@@ -54,21 +54,19 @@ export function BuyerTravelDocumentsSection({
 
   async function handleSave() {
     if (savingRef.current) return;
-    // Before the lock both lists go (nationality required). After it only the
-    // still-empty lists are sent; an untouched empty nationality list may be
-    // left out so visas alone can be added.
-    const payload: Partial<BuyerTravelDocuments> = {
-      ...(nationalitiesEditable &&
-        (!locked || value.nationalities.length > 0) && {
-          nationalities: value.nationalities,
-        }),
-      ...(visasEditable && { visas: value.visas }),
-    };
-    if (!locked && value.nationalities.length === 0) {
+    // Only editable lists are sent: both before the lock, the still-empty ones
+    // after it. An editable nationality list is required (as at checkout);
+    // once nationalities are saved and frozen, visas alone can be filled.
+    if (nationalitiesEditable && value.nationalities.length === 0) {
       setShowErrors(true);
       toast.error(errorCopy.nationalitiesRequired);
       return;
     }
+    const payload: Partial<BuyerTravelDocuments> = {
+      ...(nationalitiesEditable && { nationalities: value.nationalities }),
+      ...(visasEditable && { visas: value.visas }),
+    };
+    if (payload.nationalities === undefined && payload.visas === undefined) return;
     savingRef.current = true;
     setSaving(true);
     try {

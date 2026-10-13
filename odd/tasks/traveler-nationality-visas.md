@@ -37,6 +37,7 @@ Delivery strategy: `ask-on-risk`. Forecast is above the ~400 authored-line heuri
 - [x] **T3** Checkout "Travel documents" card: required nationalities (min 1) + visas, prefilled from `User`, saved to `TripRequest` snapshot and written back to `User`; payment blocked until the buyer snapshot has at least one nationality; es/en copy.
 - [x] **T4** (T4a + T4b) Companion fields: invite form and buyer direct-fill row (`TravelerRow`, `PATCH /api/travelers/[id]`, `POST /api/travelers/submit`) gain nationalities + visas, editable until `isRosterLocked`; claimed companions prefill from and write back to `User`; minors filled by the buyer; roster completeness includes nationalities; trip detail prompts the buyer when their snapshot is empty.
 - [x] **T5** Admin view: per-traveler table (buyer + companions) of nationalities and visas in the admin trip page; "N of M travelers missing documents" badge; confirmation dialog before setting destination/experience while incomplete; es/en copy.
+- [x] **T6** T4b review follow-ups: R3-001 buyer section never sends an empty body (editable empty nationalities → nationality-required, no request); R3-002 trip detail treats an ended trip as read-only (client `isTripEnded`, same as the route).
 
 ## Acceptance criteria
 
@@ -100,3 +101,10 @@ Delivery strategy: `ask-on-risk`. Forecast is above the ~400 authored-line heuri
 - 2026-10-13 T5 done (uncommitted, awaiting user commit approval). RED: 5 files failing (missing modules/copy, 7 assertions); GREEN: parent re-ran 65 files / 878 tests; writer typecheck + lint exit 0. +280/−19 + 4 new files.
   - `summarizeTravelDocuments` / `summarizeBookingTravelDocuments` (buyer counts; uncreated companion slots count as missing, matching "Complete details X of Y"). Admin GET adds buyer + companion lists. `TripTravelDocumentsTable` in `TripTravelersPanel` (flags, localized names, SCHENGEN label, badge).
   - Soft gate lives in `AdminTripFulfillmentPageClient.handleSave` (where PATCH fires): `ConfirmModal` when saving a new experience with missing docs; admin UI never sets `actualDestination` directly (server derives it). Server PATCH unchanged.
+- 2026-10-13 T5 committed `b56c9fba` (user-approved). RDD: medium, due; user chose "Skip this time", but the captured decline invocation failed (`invalid_request`: untracked-inventory mismatch) because another session switched the main checkout to `chore/playwright-e2e` at 13:37 with uncommitted work. Failed closed: no substitute command; T5 has no review record. Next assess base `b56c9fba`.
+- Work moved to sibling worktree `../getrandomtrip-worktrees/traveler-nationality-visas` (user worktree policy: another session active in main checkout). Main checkout untouched.
+- T6 route: delegated writer in the worktree (R3-001, R3-002).
+- 2026-10-13 T6 done (uncommitted). RED: section 1 + page 2 failing; GREEN: 11 files / 152 tests (travelers, dashboard/trips, api/trips); typecheck + lint exit 0. +63/−16 (incl. tests).
+  - R3-001: an editable empty nationality list now always blocks Save with nationality-required (also after the lock, so "both empty, fill visas only" now needs a nationality too); a payload with no lists is never sent.
+  - R3-002: page computes `isTripEnded` client-side from `startDate`/`endDate` (pure helper; `travelerPolicy` already imported by the page). No API change. Page tests pin `Date` to 2026-10-13 (`toFake: ["Date"]`) so the December fixture stays upcoming.
+  - Parent re-ran 11 files / 152 tests in worktree. Behavior: when both buyer lists are empty after lock, a nationality is required before visas can be saved (consistent with checkout).

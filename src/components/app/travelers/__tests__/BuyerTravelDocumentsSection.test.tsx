@@ -125,6 +125,27 @@ describe("BuyerTravelDocumentsSection", () => {
     expect(toast.success).toHaveBeenCalled();
   });
 
+  it("asks for a nationality instead of sending an empty body once visas froze after the lock", async () => {
+    renderSection({ nationalities: [], visas: ["US"] }, { locked: true });
+    expect(harness.container.querySelector('[aria-label="Remove United States"]')).toBeNull();
+    await clickAndSettle(saveButton()!);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith(en.journey.checkout.errors.nationalitiesRequired);
+    expect(harness.container.querySelector('[role="alert"]')?.textContent).toBe(
+      en.journey.checkout.errors.nationalitiesRequired,
+    );
+  });
+
+  it("saves visas alone after the lock when nationalities were already saved", async () => {
+    fetchMock.mockResolvedValue(
+      Response.json({ buyerNationalities: ["AR"], buyerVisas: [] }),
+    );
+    renderSection({ nationalities: ["AR"], visas: [] }, { locked: true });
+    await clickAndSettle(saveButton()!);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(toast.error).not.toHaveBeenCalled();
+  });
+
   it("saves through the buyer-documents endpoint and confirms with a toast", async () => {
     fetchMock.mockResolvedValue(
       Response.json({ buyerNationalities: ["AR", "IT"], buyerVisas: ["US"] }),
