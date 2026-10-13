@@ -6043,7 +6043,18 @@
     "excuseLabel": "Excusa",
     "refineDetailsLabel": "Detalles",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
-    "revealedHint": "¡Tu destino ha sido revelado!"
+    "revealedHint": "¡Tu destino ha sido revelado!",
+    "buyerDocuments": {
+      "title": "Tus documentos de viaje",
+      "description": "Tus nacionalidades y las visas que estarán vigentes en las fechas del viaje. Se guardan en este viaje y en tu perfil.",
+      "missingTitle": "Completa tus documentos de viaje",
+      "missingDescription": "Necesitamos las nacionalidades de cada viajero para elegir un destino al que todo el grupo pueda ingresar.",
+      "lockedNote": "Tus documentos de viaje ya no se pueden modificar para este viaje.",
+      "partiallyLockedNote": "Los documentos guardados ya no se pueden modificar, pero aún puedes agregar los que faltan.",
+      "saveAction": "Guardar documentos",
+      "savingAction": "Guardando…",
+      "savedToast": "Documentos de viaje guardados."
+    }
   },
   "reviewForm": {
     "pageTitle": "¿Cómo fue tu viaje?",

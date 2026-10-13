@@ -1,17 +1,17 @@
 "use client";
 
-import { useMemo } from "react";
-
-import { CountryMultiSelect } from "@/components/ui/CountryMultiSelect";
-import type { CountryOption } from "@/lib/geo/countryOptions";
+import { TravelerDocumentsFields } from "@/components/app/travelers/TravelerDocumentsFields";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
 import type { BuyerTravelDocuments } from "@/types/documents";
 
 interface CheckoutTravelDocumentsCardProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
-  /** Country picker labels shared with the profile Documents tab. */
-  profileCopy: Dictionary["profile"];
+  /**
+   * @deprecated Unused: the pickers read the same profile labels through
+   * `TravelerDocumentsFields`. Kept so existing callers still type-check.
+   */
+  profileCopy?: Dictionary["profile"];
   locale: string;
   value: BuyerTravelDocuments;
   onChange: (next: BuyerTravelDocuments) => void;
@@ -22,25 +22,12 @@ interface CheckoutTravelDocumentsCardProps {
 
 export function CheckoutTravelDocumentsCard({
   checkoutCopy,
-  profileCopy,
   locale,
   value,
   onChange,
   showErrors,
   readOnly = false,
 }: CheckoutTravelDocumentsCardProps) {
-  const labels = profileCopy.labels;
-  const visaZoneOptions = useMemo<CountryOption[]>(
-    () => [{ value: "SCHENGEN", label: labels.schengenVisa }],
-    [labels.schengenVisa],
-  );
-  const removeCountryLabel = (country: string) =>
-    labels.removeCountry.replace("{country}", country);
-  const nationalitiesError =
-    showErrors && value.nationalities.length === 0
-      ? checkoutCopy.errors.nationalitiesRequired
-      : undefined;
-
   return (
     <div
       className={cn(
@@ -58,41 +45,17 @@ export function CheckoutTravelDocumentsCard({
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <CountryMultiSelect
-          emptyLabel={labels.noNationalities}
-          error={nationalitiesError}
-          id="checkout-nationalities"
-          label={profileCopy.sections.nationalities}
-          locale={locale}
-          noResultsLabel={labels.noCountryResults}
-          onChange={(nationalities) => onChange({ ...value, nationalities })}
-          placeholder={labels.selectNationalities}
-          readOnly={readOnly}
-          removeLabel={removeCountryLabel}
-          searchPlaceholder={labels.searchCountry}
-          value={value.nationalities}
-        />
-        <p className="text-sm text-gray-500">{labels.nationalitiesHelper}</p>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <CountryMultiSelect
-          emptyLabel={labels.noVisas}
-          extraOptions={visaZoneOptions}
-          id="checkout-visas"
-          label={labels.approvedVisas}
-          locale={locale}
-          noResultsLabel={labels.noCountryResults}
-          onChange={(visas) => onChange({ ...value, visas })}
-          placeholder={labels.selectVisas}
-          readOnly={readOnly}
-          removeLabel={removeCountryLabel}
-          searchPlaceholder={labels.searchVisa}
-          value={value.visas}
-        />
-        <p className="text-sm text-gray-500">{labels.approvedVisasHelper}</p>
-      </div>
+      <TravelerDocumentsFields
+        className="gap-6"
+        idPrefix="checkout"
+        locale={locale}
+        nationalitiesReadOnly={readOnly}
+        onChange={onChange}
+        showHelpers
+        showNationalitiesRequired={showErrors}
+        value={value}
+        visasReadOnly={readOnly}
+      />
     </div>
   );
 }

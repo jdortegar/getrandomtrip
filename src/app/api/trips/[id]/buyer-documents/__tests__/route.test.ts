@@ -32,7 +32,7 @@ function patch(body: unknown, id = "trip-1") {
   return PATCH(request, { params: Promise.resolve({ id }) });
 }
 
-function trip(overrides: Record<string, unknown> = {}) {
+function trip(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return { id: "trip-1", userId: "user-1", status: "PENDING_PAYMENT", payment: { status: "PENDING" }, ...overrides };
 }
 
@@ -125,6 +125,178 @@ describe("PATCH /api/trips/[id]/buyer-documents", () => {
     expect(tx.user.update).toHaveBeenCalledWith({
       where: { id: "user-1" },
       data: { nationalities: ["IT", "AR"], approvedVisas: ["US", "SCHENGEN"] },
+    });
+  });
+
+  describe("after payment", () => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const paidTrip = (overrides: Record<string, unknown> = {}) =>
+      trip({
+        status: "CONFIRMED",
+        payment: { status: "APPROVED" },
+        type: "couple",
+        startDate: new Date(Date.now() + 60 * DAY),
+        endDate: new Date(Date.now() + 65 * DAY),
+        departureTimeZone: null,
+        travelersLockedAt: null,
+        buyerNationalities: [],
+        buyerVisas: [],
+        ...overrides,
+      });
+
+    it("lets the buyer edit while the roster is unlocked", async () => {
+      const paid = paidTrip();
+      findTripMock.mockResolvedValue(paid);
+      const res = await patch({ nationalities: ["AR", "IT"], visas: ["US"] });
+      expect(res.status).toBe(200);
+      expect(tx.tripRequest.updateMany).toHaveBeenCalledWith({
+        where: {
+          id: "trip-1",
+          userId: "user-1",
+          status: { in: ["CONFIRMED", "REVEALED"] },
+          payment: { is: { status: "APPROVED" } },
+          type: "couple",
+          startDate: paid.startDate,
+          endDate: paid.endDate,
+          departureTimeZone: null,
+          travelersLockedAt: null,
+        },
+        data: { buyerNationalities: ["AR", "IT"], buyerVisas: ["US"] },
+      });
+      expect(tx.user.update).toHaveBeenCalledWith({
+        where: { id: "user-1" },
+        data: { nationalities: ["AR", "IT"], approvedVisas: ["US"] },
+      });
+    });
+
+    it("also accepts a revealed trip", async () => {
+      findTripMock.mockResolvedValue(paidTrip({ status: "REVEALED" }));
+      expect((await patch({ nationalities: ["AR"] })).status).toBe(200);
+    });
+
+    it.each([
+      ["the trip is cancelled", { status: "CANCELLED" }],
+      ["the trip is completed", { status: "COMPLETED" }],
+      ["the trip has ended", { startDate: null, endDate: new Date(Date.now() - 2 * DAY) }],
+      ["the payment was refunded", { payment: { status: "REFUNDED" } }],
+    ])("returns 409 when %s", async (_label, overrides) => {
+      findTripMock.mockResolvedValue(paidTrip(overrides));
+      const res = await patch({ nationalities: ["AR"], visas: [] });
+      expect(res.status).toBe(409);
+      expect(transactionMock).not.toHaveBeenCalled();
+    });
+
+    describe("once the roster is locked (companion rule: empty lists stay fillable)", () => {
+      const lockedCases = [
+        ["locked manually", { travelersLockedAt: new Date() }],
+        ["past the cutoff", { startDate: new Date(Date.now() + 1 * DAY), endDate: null }],
+      ] as const;
+
+      it.each(lockedCases)("fills empty lists (%s)", async (_label, lock) => {
+        const locked = paidTrip({ ...lock });
+        findTripMock.mockResolvedValue(locked);
+        const res = await patch({ nationalities: ["AR"], visas: ["US"] });
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ buyerNationalities: ["AR"], buyerVisas: ["US"] });
+        expect(tx.tripRequest.updateMany).toHaveBeenCalledWith({
+          where: expect.objectContaining({
+            status: { in: ["CONFIRMED", "REVEALED"] },
+            payment: { is: { status: "APPROVED" } },
+            travelersLockedAt: locked.travelersLockedAt,
+            buyerNationalities: { equals: [] },
+            buyerVisas: { equals: [] },
+          }),
+          data: { buyerNationalities: ["AR"], buyerVisas: ["US"] },
+        });
+        expect(tx.user.update).toHaveBeenCalledWith({
+          where: { id: "user-1" },
+          data: { nationalities: ["AR"], approvedVisas: ["US"] },
+        });
+      });
+
+      it.each(lockedCases)("rejects changing a populated list (%s)", async (_label, lock) => {
+        findTripMock.mockResolvedValue(paidTrip({ ...lock, buyerNationalities: ["AR"] }));
+        const res = await patch({ nationalities: ["AR", "IT"], visas: [] });
+        expect(res.status).toBe(409);
+        expect(await res.json()).toEqual({ error: "Trip is no longer editable" });
+        expect(transactionMock).not.toHaveBeenCalled();
+      });
+
+      it("freezes visas independently of nationalities", async () => {
+        findTripMock.mockResolvedValue(
+          paidTrip({ travelersLockedAt: new Date(), buyerNationalities: [], buyerVisas: ["US"] }),
+        );
+        expect((await patch({ nationalities: ["AR"], visas: [] })).status).toBe(409);
+        expect(transactionMock).not.toHaveBeenCalled();
+      });
+
+      it("writes only the lists sent, so a frozen list can be left out", async () => {
+        findTripMock.mockResolvedValue(
+          paidTrip({ travelersLockedAt: new Date(), buyerNationalities: ["AR"], buyerVisas: [] }),
+        );
+        const res = await patch({ visas: ["SCHENGEN"] });
+        expect(res.status).toBe(200);
+        expect(await res.json()).toEqual({ buyerNationalities: ["AR"], buyerVisas: ["SCHENGEN"] });
+        const call = tx.tripRequest.updateMany.mock.calls[0][0];
+        expect(call.data).toEqual({ buyerVisas: ["SCHENGEN"] });
+        expect(call.where.buyerVisas).toEqual({ equals: [] });
+        expect(call.where).not.toHaveProperty("buyerNationalities");
+        expect(tx.user.update).toHaveBeenCalledWith({
+          where: { id: "user-1" },
+          data: { approvedVisas: ["SCHENGEN"] },
+        });
+      });
+
+      it("accepts re-saving a populated list unchanged", async () => {
+        findTripMock.mockResolvedValue(
+          paidTrip({ travelersLockedAt: new Date(), buyerNationalities: ["AR", "IT"], buyerVisas: [] }),
+        );
+        const res = await patch({ nationalities: ["IT", "AR"], visas: ["US"] });
+        expect(res.status).toBe(200);
+      });
+
+      it("still requires a nationality when nationalities are sent", async () => {
+        findTripMock.mockResolvedValue(paidTrip({ travelersLockedAt: new Date() }));
+        expect((await patch({ nationalities: [], visas: ["US"] })).status).toBe(400);
+      });
+
+      it("rejects a body with no list", async () => {
+        findTripMock.mockResolvedValue(paidTrip({ travelersLockedAt: new Date() }));
+        expect((await patch({})).status).toBe(400);
+        expect(transactionMock).not.toHaveBeenCalled();
+      });
+
+      it("returns 409 when a list was filled concurrently", async () => {
+        findTripMock.mockResolvedValue(paidTrip({ travelersLockedAt: new Date() }));
+        tx.tripRequest.updateMany.mockResolvedValue({ count: 0 });
+        expect((await patch({ nationalities: ["AR"] })).status).toBe(409);
+        expect(tx.user.update).not.toHaveBeenCalled();
+      });
+
+      it("still rejects every edit once the trip is cancelled", async () => {
+        findTripMock.mockResolvedValue(paidTrip({ travelersLockedAt: new Date(), status: "CANCELLED" }));
+        expect((await patch({ nationalities: ["AR"] })).status).toBe(409);
+      });
+    });
+
+    it("still requires nationalities before the roster locks", async () => {
+      findTripMock.mockResolvedValue(paidTrip());
+      expect((await patch({ visas: ["US"] })).status).toBe(400);
+    });
+
+    it("returns 409 when a lock input changes between the read and the write", async () => {
+      findTripMock.mockResolvedValue(paidTrip());
+      tx.tripRequest.updateMany.mockResolvedValue({ count: 0 });
+      const res = await patch({ nationalities: ["AR"] });
+      expect(res.status).toBe(409);
+      expect(tx.user.update).not.toHaveBeenCalled();
+    });
+
+    it("still forbids anyone but the buyer (companions included)", async () => {
+      findTripMock.mockResolvedValue(paidTrip({ userId: "buyer-1" }));
+      const res = await patch({ nationalities: ["AR"] });
+      expect(res.status).toBe(403);
+      expect(transactionMock).not.toHaveBeenCalled();
     });
   });
 

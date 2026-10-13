@@ -34,9 +34,11 @@ import {
   TravelerRosterSection,
   type TravelerRosterSectionHandle,
 } from "@/components/app/travelers/TravelerRosterSection";
+import { BuyerTravelDocumentsSection } from "@/components/app/travelers/BuyerTravelDocumentsSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
 import type { TripDetailsData } from "@/types/tripDetails";
+import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
@@ -46,7 +48,7 @@ import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
 import { ExcuseSummary } from "@/components/common/ExcuseSummary";
 
-interface TripDetails {
+interface TripDetails extends BuyerDocumentsSnapshot {
   /**
    * The viewer's relation to the trip. A `companion` payload arrives without
    * price/payment data and with a reduced roster (see GET /api/trips/[id]).
@@ -257,6 +259,13 @@ function TripDetailsContent() {
     ? Boolean(ownRow) && (!trip.roster.locked || hasMissingTravelerDetails(ownRow!))
     : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
 
+  // The buyer's own documents: paid trips only (checkout collects them
+  // before payment). Editable while the trip is active; once the roster
+  // locks, only the still-empty lists (the companions' rule).
+  const showBuyerDocuments = !isCompanion && trip.payment?.status === "APPROVED";
+  const buyerDocumentsReadOnly =
+    trip.status !== "CONFIRMED" && trip.status !== "REVEALED";
+
   const price = getTripCostDisplay({
     ...trip,
     addons: addonsList,
@@ -426,6 +435,23 @@ function TripDetailsContent() {
                       </Button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {showBuyerDocuments && (
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                  <BuyerTravelDocumentsSection
+                    copy={copy.buyerDocuments}
+                    errorCopy={dict.journey.checkout.errors}
+                    initialValue={{
+                      nationalities: trip.buyerNationalities ?? [],
+                      visas: trip.buyerVisas ?? [],
+                    }}
+                    locale={locale}
+                    locked={Boolean(trip.roster?.locked)}
+                    readOnly={buyerDocumentsReadOnly}
+                    tripId={trip.id}
+                  />
                 </div>
               )}
 
