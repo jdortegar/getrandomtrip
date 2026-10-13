@@ -3736,15 +3736,19 @@ export interface MarketingDictionary {
       contactStreetLabel: string;
       contactTitle: string;
       contactZipCodeLabel: string;
+      travelDocumentsTitle: string;
+      travelDocumentsDescription: string;
       errors: {
         invalidDates: string;
         connectionTryAgain: string;
         idDocumentRequired: string;
         loadTripFailed: string;
         loadTripsFailed: string;
+        nationalitiesRequired: string;
         noTripFound: string;
         noTripToContinue: string;
         noValidSession: string;
+        saveTravelDocumentsFailed: string;
         saveUserFailed: string;
         updateTripFailed: string;
       };

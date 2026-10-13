@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { Calendar, Car, Loader2, MapPin } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
+import { CheckoutTravelDocumentsCard } from "@/components/app/checkout/CheckoutTravelDocumentsCard";
 import {
   CheckoutTravelDetailsCard,
   type CheckoutIconDetailRow,
@@ -40,6 +41,8 @@ import {
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
+import type { BuyerDocumentsSnapshot, BuyerTravelDocuments } from "@/types/documents";
+import { normalizeCountryCodes, normalizeVisaCodes } from "@/lib/geo/countryOptions";
 import type { XsedTravelType } from "@/types/core";
 import { Button } from "@/components/ui/Button";
 import { useCheckoutQuote } from "@/hooks/useCheckoutQuote";
@@ -171,6 +174,15 @@ function filtersFromTrip(trip: CheckoutTripFromApi): Filters {
   };
 }
 
+/** The trip's saved buyer snapshot, or null while it has no nationality yet. */
+function buyerSnapshotFromTrip(
+  trip: BuyerDocumentsSnapshot,
+): BuyerTravelDocuments | null {
+  const nationalities = normalizeCountryCodes(trip.buyerNationalities ?? []);
+  if (nationalities.length === 0) return null;
+  return { nationalities, visas: normalizeVisaCodes(trip.buyerVisas ?? []) };
+}
+
 function CheckoutContent() {
   const params = useParams();
   const router = useRouter();
@@ -184,7 +196,7 @@ function CheckoutContent() {
   const { isAuthed } = useUserStore();
 
   const [dict, setDict] = useState<Dictionary | null>(null);
-  const [trip, setTrip] = useState<CheckoutTripFromApi | null>(null);
+  const [trip, setTrip] = useState<(CheckoutTripFromApi & BuyerDocumentsSnapshot) | null>(null);
   const [tripError, setTripError] = useState<string | null>(null);
   const [tripLoading, setTripLoading] = useState(true);
   const [promocode, setPromocode] = useState("");
@@ -332,6 +344,49 @@ function CheckoutContent() {
       cancelled = true;
     };
   }, [dict, hasTripId, session?.user?.email, status, tripIdParam, resolvedLocale, router]);
+
+  // Buyer travel documents: the trip snapshot wins, else the profile prefills.
+  // A late prefill never overwrites what the buyer already edited.
+  const [buyerDocumentsState, setBuyerDocuments] = useState<{
+    edited: boolean;
+    value: BuyerTravelDocuments;
+  }>({ edited: false, value: { nationalities: [], visas: [] } });
+  const buyerDocuments = buyerDocumentsState.value;
+  const [showDocumentErrors, setShowDocumentErrors] = useState(false);
+  const tripId = trip?.id;
+  const tripSnapshot = trip ? buyerSnapshotFromTrip(trip) : null;
+  const hasTripSnapshot = tripSnapshot !== null;
+  const [snapshotTripId, setSnapshotTripId] = useState<string | null>(null);
+  if (tripId && tripSnapshot && snapshotTripId !== tripId) {
+    setSnapshotTripId(tripId);
+    if (!buyerDocumentsState.edited) setBuyerDocuments({ edited: false, value: tripSnapshot });
+  }
+
+  useEffect(() => {
+    if (!tripId || hasTripSnapshot || status !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/user/documents")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { user?: { nationalities?: string[]; approvedVisas?: string[] } } | null) => {
+        if (cancelled || !data?.user) return;
+        const profile = {
+          edited: false,
+          value: {
+            nationalities: normalizeCountryCodes(data.user.nationalities ?? []),
+            visas: normalizeVisaCodes(data.user.approvedVisas ?? []),
+          },
+        };
+        setBuyerDocuments((previous) => (previous.edited ? previous : profile));
+      })
+      .catch(() => { /* Prefill is optional; the buyer can still fill the card. */ });
+    return () => {
+      cancelled = true;
+    };
+  }, [tripId, hasTripSnapshot, status]);
+
+  function handleBuyerDocumentsChange(next: BuyerTravelDocuments) {
+    setBuyerDocuments({ edited: true, value: next });
+  }
 
   const checkoutPax = trip
     ? Math.max(1, paxDetails.adults + paxDetails.minors)
@@ -572,7 +627,27 @@ function CheckoutContent() {
     if (contactFormRef.current && !contactFormRef.current.reportValidity()) {
       return false;
     }
+    if (buyerDocuments.nationalities.length === 0) {
+      setShowDocumentErrors(true);
+      toast.error(dict?.journey?.checkout?.errors?.nationalitiesRequired);
+      return false;
+    }
     try {
+      const documentsRes = await fetch(
+        `/api/trips/${encodeURIComponent(trip.id)}/buyer-documents`,
+        {
+          body: JSON.stringify({
+            nationalities: buyerDocuments.nationalities,
+            visas: buyerDocuments.visas,
+          }),
+          headers: { "Content-Type": "application/json" },
+          method: "PATCH",
+        },
+      );
+      if (!documentsRes.ok) {
+        toast.error(dict?.journey?.checkout?.errors?.saveTravelDocumentsFailed);
+        return false;
+      }
       const saveRes = await fetch("/api/user/update", {
         body: JSON.stringify({
           name: formData.name.trim(),
@@ -875,24 +950,36 @@ function CheckoutContent() {
             usd={usd}
           />
 
-          <CheckoutContactCard
-            checkoutCopy={checkoutCopy}
-            clientSecret={clientSecret}
-            formData={formData}
-            formRef={contactFormRef}
-            isXsed={trip?.type === "xsed"}
-            onBack={() => router.back()}
-            onBeforeConfirm={onBeforeConfirm}
-            onFieldChange={handleChange}
-            onPaymentInfoSubmitted={onPaymentInfoSubmitted}
-            onPaymentProcessingChange={handlePaymentProcessingChange}
-            onRetryPayment={() => { void payment.retry().catch(() => {}); }}
-            paymentError={paymentError}
-            paymentRecoveryHref={payment.errorCode === "INVALID_TRIP_DATES" ? `/${resolvedLocale}/dashboard/traveler` : undefined}
-            retryLabel={dict.errorFallback.retry}
-            sessionEmail={session?.user?.email || ""}
-            summary={summary}
-          />
+          <div className="flex flex-col gap-8">
+            <CheckoutTravelDocumentsCard
+              checkoutCopy={checkoutCopy}
+              locale={resolvedLocale}
+              onChange={handleBuyerDocumentsChange}
+              profileCopy={dict.profile}
+              readOnly={isConfirming}
+              showErrors={showDocumentErrors}
+              value={buyerDocuments}
+            />
+
+            <CheckoutContactCard
+              checkoutCopy={checkoutCopy}
+              clientSecret={clientSecret}
+              formData={formData}
+              formRef={contactFormRef}
+              isXsed={trip?.type === "xsed"}
+              onBack={() => router.back()}
+              onBeforeConfirm={onBeforeConfirm}
+              onFieldChange={handleChange}
+              onPaymentInfoSubmitted={onPaymentInfoSubmitted}
+              onPaymentProcessingChange={handlePaymentProcessingChange}
+              onRetryPayment={() => { void payment.retry().catch(() => {}); }}
+              paymentError={paymentError}
+              paymentRecoveryHref={payment.errorCode === "INVALID_TRIP_DATES" ? `/${resolvedLocale}/dashboard/traveler` : undefined}
+              retryLabel={dict.errorFallback.retry}
+              sessionEmail={session?.user?.email || ""}
+              summary={summary}
+            />
+          </div>
         </div>
 
         <ChatFab />
