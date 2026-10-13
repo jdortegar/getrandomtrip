@@ -2443,6 +2443,29 @@ export interface AdminTripFulfillmentDict {
     email: string;
     notProvided: string;
     phoneNotCollected: string;
+    documents: {
+      title: string;
+      description: string;
+      traveler: string;
+      nationalities: string;
+      visas: string;
+      status: string;
+      onFile: string;
+      missing: string;
+      noVisas: string;
+      schengenVisa: string;
+      /** Interpolated with {{missing}} and {{total}}. */
+      missingBadge: string;
+      /** Interpolated with {{total}}. */
+      completeBadge: string;
+      confirm: {
+        title: string;
+        /** Interpolated with {{missing}} and {{total}}. */
+        description: string;
+        confirm: string;
+        cancel: string;
+      };
+    };
   };
   eyebrow: string;
   /** Interpolated with {{userName}}. */

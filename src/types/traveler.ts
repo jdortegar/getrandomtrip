@@ -1,4 +1,5 @@
 import type { TravelerKind, TravelerStatus } from "@prisma/client";
+import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 
 export type { TravelerKind, TravelerStatus };
 
@@ -39,6 +40,28 @@ export interface TravelerDocuments {
   nationalities: string[];
   /** ISO 3166-1 alpha-2 codes plus visa zone codes; empty means none. */
   visas: string[];
+}
+
+/** Admin booking traveler (buyer or companion) with its trip snapshot documents. */
+export type AdminBookingTravelerWithDocuments = AdminBookingTraveler &
+  TravelerDocuments;
+
+/** One traveler's row in the admin travel documents table. */
+export interface TravelDocumentsRow extends TravelerDocuments {
+  id: string;
+  kind: AdminBookingTraveler["kind"];
+  name: string | null;
+  /** True when no nationality is on file. */
+  missing: boolean;
+}
+
+/** Admin view of a trip's travel documents. The buyer counts as a traveler. */
+export interface TravelDocumentsSummary {
+  /** Buyer first, then companions in roster order. */
+  rows: TravelDocumentsRow[];
+  /** Travelers without a nationality, including companion slots with no record yet. */
+  missingCount: number;
+  totalCount: number;
 }
 
 /**

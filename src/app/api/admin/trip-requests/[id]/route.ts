@@ -7,7 +7,7 @@ import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import { sendTripCancelled, sendTripCompleted } from "@/lib/email";
 import { notifyRevealedTrip } from "@/lib/trips/revealNotifications";
 
@@ -99,6 +99,8 @@ export async function GET(
           email: true,
           idDocument: true,
           dateOfBirth: true,
+          nationalities: true,
+          visas: true,
         },
       }),
     ]);
@@ -112,7 +114,8 @@ export async function GET(
       name: tripUser.name,
     };
     const address = tripUser?.address;
-    const bookingTravelers: AdminBookingTraveler[] = [
+    // Admins always see the trip snapshot documents (never `omitBuyerOnlyFields`).
+    const bookingTravelers: AdminBookingTravelerWithDocuments[] = [
       ...(tripUser
         ? [
             {
@@ -129,6 +132,8 @@ export async function GET(
                   ? address.idDocument
                   : null,
               ),
+              nationalities: trip.buyerNationalities,
+              visas: trip.buyerVisas,
             },
           ]
         : []),
@@ -144,6 +149,8 @@ export async function GET(
             : null,
         // The saved companion identity has no phone field or reliable account fallback.
         phone: null,
+        nationalities: traveler.nationalities,
+        visas: traveler.visas,
       })),
     ];
 

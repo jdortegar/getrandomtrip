@@ -4441,6 +4441,26 @@
       "email": "Email",
       "notProvided": "Not provided",
       "phoneNotCollected": "Not collected",
+      "documents": {
+        "title": "Travel documents",
+        "description": "Nationalities and visas each traveler reported for this trip. Check that every traveler can enter the destination before assigning it.",
+        "traveler": "Traveler",
+        "nationalities": "Nationalities",
+        "visas": "Visas",
+        "status": "Status",
+        "onFile": "On file",
+        "missing": "Missing nationality",
+        "noVisas": "None",
+        "schengenVisa": "Schengen Area",
+        "missingBadge": "{{missing}} of {{total}} travelers missing documents",
+        "completeBadge": "All travelers have documents on file ({{total}})",
+        "confirm": {
+          "title": "Travel documents incomplete",
+          "description": "{{missing}} of {{total}} travelers have no nationality on file. Continue anyway?",
+          "confirm": "Save anyway",
+          "cancel": "Go back"
+        }
+      },
       "incomplete": "Travelers with incomplete details: {{count}}",
       "missingRecords": "Companion records not yet created: {{count}}. These details still need to be provided.",
       "extraRecords": "Extra companion records: {{count}}. Check the booking before making reservations.",

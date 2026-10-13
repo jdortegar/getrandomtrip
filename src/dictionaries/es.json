@@ -4441,6 +4441,26 @@
       "email": "Email",
       "notProvided": "No informado",
       "phoneNotCollected": "No recopilado",
+      "documents": {
+        "title": "Documentos de viaje",
+        "description": "Nacionalidades y visas que cada viajero informó para este viaje. Verificar que todos los viajeros puedan ingresar al destino antes de asignarlo.",
+        "traveler": "Viajero",
+        "nationalities": "Nacionalidades",
+        "visas": "Visas",
+        "status": "Estado",
+        "onFile": "Registrada",
+        "missing": "Falta nacionalidad",
+        "noVisas": "Ninguna",
+        "schengenVisa": "Espacio Schengen",
+        "missingBadge": "{{missing}} de {{total}} viajeros sin documentos",
+        "completeBadge": "Todos los viajeros tienen documentos registrados ({{total}})",
+        "confirm": {
+          "title": "Documentos de viaje incompletos",
+          "description": "{{missing}} de {{total}} viajeros no tienen nacionalidad registrada. ¿Continuar de todos modos?",
+          "confirm": "Guardar de todos modos",
+          "cancel": "Volver"
+        }
+      },
       "incomplete": "Viajeros con datos incompletos: {{count}}",
       "missingRecords": "Registros de acompañantes aún no creados: {{count}}. Estos datos todavía deben completarse.",
       "extraRecords": "Registros de acompañantes adicionales: {{count}}. Revisar la reserva antes de realizar reservas.",
