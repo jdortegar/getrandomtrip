@@ -1,0 +1,4 @@
+interface:
+  display_name: "Worktree"
+  short_description: "Create, run, and clean Git worktrees when the main checkout is busy"
+  default_prompt: "Use $worktree to check whether the main checkout is busy and, if so, create or reuse a sibling worktree for this branch."
