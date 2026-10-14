@@ -1,4 +1,6 @@
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
+// Only assigned ISO codes: Intl also labels retired ones (DD "Germany", VD "Vietnam").
+import { ISO_COUNTRY_CODES } from "@/lib/geo/countryOptions";
 
 const normalize = (value: string): string =>
   value
@@ -27,11 +29,6 @@ const EXTRA_ALIASES: Record<string, string> = {
   turkey: "TR",
 };
 
-/** Retired or private-use region codes that Intl still labels (DD is "Germany"). */
-const NON_COUNTRY_CODES = new Set([
-  "AN", "BU", "CS", "DD", "EU", "EZ", "FX", "NT", "QO", "SU", "TP", "UN", "YD", "YU", "ZR", "ZZ",
-]);
-
 let index: Map<string, string> | null = null;
 
 function buildIndex(): Map<string, string> {
@@ -49,21 +46,15 @@ function buildIndex(): Map<string, string> {
   const names = (["es", "en"] as const).map(
     (locale) => new Intl.DisplayNames([locale], { type: "region" }),
   );
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (const a of letters) {
-    for (const b of letters) {
-      const code = `${a}${b}`;
-      if (NON_COUNTRY_CODES.has(code) || a === "X") continue;
-      for (const display of names) {
-        let label: string | undefined;
-        try {
-          label = display.of(code);
-        } catch {
-          continue;
-        }
-        // Unassigned codes echo themselves back.
-        if (label && label !== code) add(label, code);
+  for (const code of ISO_COUNTRY_CODES) {
+    for (const display of names) {
+      let label: string | undefined;
+      try {
+        label = display.of(code);
+      } catch {
+        continue;
       }
+      if (label && label !== code) add(label, code);
     }
   }
 

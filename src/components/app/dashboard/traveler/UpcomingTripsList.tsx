@@ -10,7 +10,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
-import type { Trip } from "@/lib/utils/trips";
+import { isUpcomingTrip, type Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
 interface UpcomingTripsListProps {
@@ -26,7 +26,7 @@ export function UpcomingTripsList({
 }: UpcomingTripsListProps) {
   const dateLocale = locale.toLowerCase().startsWith("en") ? "en-US" : "es-ES";
   const upcoming = trips
-    .filter((t) => t.status === "CONFIRMED" || t.status === "REVEALED")
+    .filter((t) => isUpcomingTrip(t))
     .sort(
       (a, b) =>
         new Date(a.startDate).getTime() - new Date(b.startDate).getTime(),

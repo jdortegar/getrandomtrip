@@ -60,9 +60,9 @@ export default function CheckoutResultSuccess({
     if (savingTravelers) return;
     setSavingTravelers(true);
     try {
-      const allComplete = await rosterRef.current?.saveAll();
-      if (allComplete) {
-        router.push(`/${safeLocale}/dashboard`);
+      const allSaved = await rosterRef.current?.saveAll();
+      if (allSaved && tripData) {
+        router.push(`/${safeLocale}/dashboard/trips/${tripData.trip.id}`);
         return;
       }
     } finally {
@@ -102,6 +102,12 @@ export default function CheckoutResultSuccess({
   }
 
   const xsedTrip = tripData && isXsed(tripData.trip.type);
+  // Saving replaces "My trips" so typed companion data is never abandoned.
+  const roster = tripData.trip.roster;
+  const canSaveTravelers =
+    !!roster &&
+    roster.cap > 0 &&
+    (!roster.locked || roster.travelers.some(hasMissingTravelerDetails));
   const fallbackImage = xsedTrip
     ? "/images/xsed-hero.jpg"
     : "/images/hero-image-1.jpeg";
@@ -265,28 +271,27 @@ export default function CheckoutResultSuccess({
             {/* Actions */}
             <div className="mt-12 flex flex-col items-center gap-2">
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <Button asChild size="lg" variant="secondary">
-                  <Link href={`/${safeLocale}/dashboard`}>
-                    {labels.ctaMyTrips}
-                  </Link>
-                </Button>
-                {tripData?.trip.roster &&
-                  tripData.trip.roster.cap > 0 &&
-                  (!tripData.trip.roster.locked || tripData.trip.roster.travelers.some(hasMissingTravelerDetails)) && (
-                    <Button
-                      aria-busy={savingTravelers}
-                      className="min-w-[280px]"
-                      disabled={savingTravelers}
-                      onClick={() => void handleSaveTravelers()}
-                      size="lg"
-                      variant="default"
-                    >
-                      {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
-                      {savingTravelers
-                        ? labels.savingTravelersAction
-                        : labels.saveTravelersAction}
-                    </Button>
-                  )}
+                {canSaveTravelers ? (
+                  <Button
+                    aria-busy={savingTravelers}
+                    className="min-w-[280px]"
+                    disabled={savingTravelers}
+                    onClick={() => void handleSaveTravelers()}
+                    size="lg"
+                    variant="default"
+                  >
+                    {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
+                    {savingTravelers
+                      ? labels.savingTravelersAction
+                      : labels.saveTravelersAction}
+                  </Button>
+                ) : (
+                  <Button asChild size="lg" variant="secondary">
+                    <Link href={`/${safeLocale}/dashboard`}>
+                      {labels.ctaMyTrips}
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>

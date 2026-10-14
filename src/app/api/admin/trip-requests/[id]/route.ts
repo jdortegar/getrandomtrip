@@ -7,7 +7,12 @@ import { attachAdminTripRequestRelations } from "@/lib/admin/trip-requests";
 import { toTripDocumentDTO } from "@/lib/trips/tripDocumentDto";
 import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup";
 import { prisma } from "@/lib/prisma";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
+import {
+  effectiveTravelDocuments,
+  PROFILE_DOCUMENTS_SELECT,
+  profileTravelDocuments,
+} from "@/lib/travelers/effectiveTravelDocuments";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import { sendTripCancelled, sendTripCompleted } from "@/lib/email";
 import { notifyRevealedTrip } from "@/lib/trips/revealNotifications";
 
@@ -82,6 +87,7 @@ export async function GET(
           name: true,
           phone: true,
           address: true,
+          ...PROFILE_DOCUMENTS_SELECT,
         },
         where: { id: trip.userId },
       }),
@@ -99,6 +105,10 @@ export async function GET(
           email: true,
           idDocument: true,
           dateOfBirth: true,
+          nationalities: true,
+          visas: true,
+          userId: true,
+          user: { select: PROFILE_DOCUMENTS_SELECT },
         },
       }),
     ]);
@@ -112,7 +122,9 @@ export async function GET(
       name: tripUser.name,
     };
     const address = tripUser?.address;
-    const bookingTravelers: AdminBookingTraveler[] = [
+    // Linked = live: the buyer and linked companions show their profile
+    // documents; only unlinked companion rows use the trip's own lists.
+    const bookingTravelers: AdminBookingTravelerWithDocuments[] = [
       ...(tripUser
         ? [
             {
@@ -129,6 +141,7 @@ export async function GET(
                   ? address.idDocument
                   : null,
               ),
+              ...profileTravelDocuments(tripUser),
             },
           ]
         : []),
@@ -144,6 +157,10 @@ export async function GET(
             : null,
         // The saved companion identity has no phone field or reliable account fallback.
         phone: null,
+        ...effectiveTravelDocuments({
+          user: traveler.userId ? traveler.user : null,
+          row: traveler,
+        }),
       })),
     ];
 

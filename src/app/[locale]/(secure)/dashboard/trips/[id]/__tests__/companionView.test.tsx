@@ -98,10 +98,12 @@ it("hides price and payment for a companion and lists others by name only (T6)",
     expect(text).toContain(en.inviteTravelers.companionHeading);
     expect(text).toContain("Other Person");
     expect(container.querySelector("#traveler-other-fullName")).toBeNull();
-    // Own details are complete and past the cutoff: nothing is editable, no Save, no invite.
+    // Own details are complete and past the cutoff, but the companion's
+    // documents are their live profile (T7), so Save stays; never an invite.
+    expect(container.querySelector<HTMLInputElement>("#traveler-me-fullName")!.disabled).toBe(true);
     expect(
       [...container.querySelectorAll("button")].some((b) => b.textContent === en.inviteTravelers.saveAction),
-    ).toBe(false);
+    ).toBe(true);
     expect(container.querySelector('button[aria-label="Resend invite"]')).toBeNull();
   } finally {
     unmount();

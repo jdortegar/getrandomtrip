@@ -1,9 +1,9 @@
 import { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
 import { AdminTripFulfillmentPageClient } from "../AdminTripFulfillmentPageClient";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import type { TripDocumentSourceSelection } from "@/lib/types/TripDocumentSource";
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 vi.mock("@/components/app/admin/TripRequestDetails", () => ({
@@ -79,7 +79,7 @@ const fetchMock = vi.fn();
 let root: Root;
 let host: HTMLDivElement;
 let savedTrip = trip;
-const buyer: AdminBookingTraveler = {
+const buyer: AdminBookingTravelerWithDocuments = {
   id: "buyer",
   kind: "BOOKING_HOLDER",
   name: "Test Buyer",
@@ -87,8 +87,10 @@ const buyer: AdminBookingTraveler = {
   phone: null,
   email: "buyer@example.test",
   dateOfBirth: null,
+  nationalities: ["AR"],
+  visas: [],
 };
-let bookingTravelers: AdminBookingTraveler[];
+let bookingTravelers: AdminBookingTravelerWithDocuments[];
 function page(tripId = "trip", locale = "en") {
   return (
     <AdminTripFulfillmentPageClient
@@ -290,6 +292,73 @@ it("renders traveler details before the summary and the itinerary", () => {
       host.querySelector('[data-component="TripItineraryReference"]')!,
     ) & Node.DOCUMENT_POSITION_FOLLOWING,
   ).toBeTruthy();
+});
+
+describe("missing travel documents warning", () => {
+  const confirmCopy = en.adminTripFulfillment.travelers.documents.confirm;
+  const patches = () =>
+    fetchMock.mock.calls.filter(([, init]) => init?.method === "PATCH");
+  function dialogButton(text: string) {
+    return [...document.querySelectorAll('[role="dialog"] button')].find(
+      (node) => node.textContent?.trim() === text,
+    ) as HTMLButtonElement | undefined;
+  }
+  async function renderWithCompanion(nationalities: string[]) {
+    savedTrip = { ...trip, pax: 2 };
+    bookingTravelers = [
+      buyer,
+      { ...buyer, id: "companion", kind: "ADULT", nationalities },
+    ];
+    await act(async () => root.render(page("docs")));
+  }
+  const description = confirmCopy.description
+    .replace("{{missing}}", "1")
+    .replace("{{total}}", "2");
+
+  it("asks before saving a new experience and sends nothing on cancel", async () => {
+    await renderWithCompanion([]);
+    await select("fulfillment-trip-experience", "B");
+    await act(async () => button(en.adminTripFulfillment.save).click());
+    expect(document.body.textContent).toContain(confirmCopy.title);
+    expect(document.body.textContent).toContain(description);
+    expect(patches()).toHaveLength(0);
+    await act(async () => dialogButton(confirmCopy.cancel)!.click());
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(patches()).toHaveLength(0);
+    expect(
+      host.querySelector<HTMLSelectElement>("#fulfillment-trip-experience")
+        ?.value,
+    ).toBe("B");
+  });
+
+  it("sends the existing PATCH once the admin confirms", async () => {
+    await renderWithCompanion([]);
+    await select("fulfillment-trip-experience", "B");
+    await act(async () => button(en.adminTripFulfillment.save).click());
+    await act(async () => dialogButton(confirmCopy.confirm)!.click());
+    expect(patches()).toHaveLength(1);
+    expect(JSON.parse(patches()[0][1].body).experienceId).toBe("B");
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+  });
+
+  it("saves without asking when every traveler has documents", async () => {
+    await renderWithCompanion(["UY"]);
+    await select("fulfillment-trip-experience", "B");
+    await act(async () => button(en.adminTripFulfillment.save).click());
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(patches()).toHaveLength(1);
+  });
+
+  it.each([
+    ["status-only changes", "fulfillment-trip-status", "CONFIRMED"],
+    ["clearing the experience", "fulfillment-trip-experience", ""],
+  ])("does not ask for %s", async (_label, id, value) => {
+    await renderWithCompanion([]);
+    await select(id, value);
+    await act(async () => button(en.adminTripFulfillment.save).click());
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(patches()).toHaveLength(1);
+  });
 });
 
 it("refreshes completed companion details without discarding unsaved status or experience", async () => {

@@ -52,6 +52,8 @@ const validBody = {
   token: "tok",
   idDocument: "ID999",
   consent: true,
+  nationalities: ["AR"],
+  visas: ["SCHENGEN"],
 };
 
 const dbUser = {
@@ -124,7 +126,42 @@ describe("POST /api/travelers/submit", () => {
       email: dbUser.email,
       userId: dbUser.id,
       emailVerified: dbUser.emailVerified,
+      nationalities: ["AR"],
+      visas: ["SCHENGEN"],
     });
+  });
+
+  it("requires at least one nationality and never consumes the token without it", async () => {
+    mockSessionAndUser();
+
+    for (const body of [{ ...validBody, nationalities: [] }, { ...validBody, nationalities: undefined }]) {
+      const res = await POST(makeRequest(body));
+      expect(res.status).toBe(400);
+      expect(await res.json()).toEqual({ error: "nationalities_required", invalid: [] });
+    }
+    expect(consumeTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("rejects invalid nationality or visa codes with 400 { error, invalid }", async () => {
+    mockSessionAndUser();
+
+    const badNationality = await POST(makeRequest({ ...validBody, nationalities: ["SCHENGEN"] }));
+    expect(badNationality.status).toBe(400);
+    expect(await badNationality.json()).toEqual({ error: "Invalid nationalities", invalid: ["SCHENGEN"] });
+
+    const badVisa = await POST(makeRequest({ ...validBody, visas: ["Narnia"] }));
+    expect(badVisa.status).toBe(400);
+    expect(await badVisa.json()).toEqual({ error: "Invalid visas", invalid: ["Narnia"] });
+    expect(consumeTravelerInvite).not.toHaveBeenCalled();
+  });
+
+  it("treats missing visas as none", async () => {
+    mockSessionAndUser();
+    vi.mocked(consumeTravelerInvite).mockResolvedValue({ ok: false, reason: "expired" });
+
+    await POST(makeRequest({ ...validBody, visas: undefined }));
+
+    expect(vi.mocked(consumeTravelerInvite).mock.calls[0][1]).toMatchObject({ nationalities: ["AR"], visas: [] });
   });
 
   it("reads emailVerified from the DB user, never from the session or the body, and maps email_unverified to 403 (T12)", async () => {

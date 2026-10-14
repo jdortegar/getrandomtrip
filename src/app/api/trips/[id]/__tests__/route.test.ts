@@ -203,6 +203,48 @@ describe("GET /api/trips/[id]", () => {
       expect(body.trip.payment).toMatchObject({ amount: 1234 });
       expect(body.trip.roster.travelers[1]).toMatchObject({ idDocument: "DOC-other", email: "other@example.com", joined: true });
     });
+
+    it("returns the buyer's live profile documents as buyerNationalities/buyerVisas (T7)", async () => {
+      asViewer("user-1");
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ...mockUser,
+        nationalities: ["AR", "CO"],
+        approvedVisas: ["United States"],
+        passportCountry: null,
+      });
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ...withPayment,
+        userId: "user-1",
+        buyerNationalities: [],
+        buyerVisas: ["GB"],
+      });
+
+      const body = await (await GET(makeRequest(), makeProps("trip-1"))).json();
+
+      expect(body.trip.buyerNationalities).toEqual(["AR", "CO"]);
+      expect(body.trip.buyerVisas).toEqual(["US"]);
+    });
+
+    it("never gives a companion the buyer's documents (T7)", async () => {
+      asViewer("other-buyer");
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ...mockUser,
+        nationalities: ["CO"],
+        approvedVisas: [],
+        passportCountry: null,
+      });
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ...withPayment,
+        userId: "other-buyer",
+        buyerNationalities: ["AR"],
+        buyerVisas: ["GB"],
+      });
+
+      const body = await (await GET(makeRequest(), makeProps("trip-1"))).json();
+
+      expect(body.trip).not.toHaveProperty("buyerNationalities");
+      expect(body.trip).not.toHaveProperty("buyerVisas");
+    });
   });
 
   it("omits itinerary/inclusions/exclusions/documents for a CONFIRMED (pre-reveal) trip", async () => {

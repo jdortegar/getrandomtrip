@@ -8,12 +8,14 @@ import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
 import AuthModal from "@/components/auth/AuthModal";
+import { TravelerDocumentsFields } from "@/components/app/travelers/TravelerDocumentsFields";
 import { emailsMatch, maskEmail } from "@/lib/travelers/travelerEmail";
 import { inviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
+import type { TravelerDocuments, TravelerInviteDocuments } from "@/types/traveler";
 
 type Reason = "invalid" | "expired" | "used" | "ended";
 export type TravelerInviteResolution =
@@ -30,6 +32,12 @@ export type TravelerInviteResolution =
       maskedEmail?: string | null;
       /** Server-detected: the signed-in account's email differs from the invite. */
       emailMismatch?: boolean;
+      /**
+       * The row's nationalities and visas (or the invitee's profile when the row
+       * has none), only for the invited viewer. `null`/absent: the client loads
+       * the signed-in profile instead (e.g. after signing in on this page).
+       */
+      travelDocuments?: TravelerInviteDocuments | null;
     }
   | { ok: false; reason: Reason };
 
@@ -64,6 +72,7 @@ export default function TravelerInviteClient({
       invitedEmail={resolution.invitedEmail ?? null}
       locale={locale}
       maskedEmail={resolution.maskedEmail ?? null}
+      travelDocuments={resolution.travelDocuments ?? null}
       token={token} data-component="TravelerInviteClient"
     />
   );
@@ -114,6 +123,7 @@ function InviteForm({
   locale,
   maskedEmail,
   token,
+  travelDocuments,
 }: {
   authCopy: Pick<Dictionary, "auth">;
   buyerFirstName: string;
@@ -124,6 +134,7 @@ function InviteForm({
   locale: Locale;
   maskedEmail: string | null;
   token: string | null;
+  travelDocuments: TravelerInviteDocuments | null;
 }) {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -156,6 +167,11 @@ function InviteForm({
   const [state, setState] = useState<FormState>("form");
   const [idDocument, setIdDocument] = useState("");
   const [consent, setConsent] = useState(false);
+  const [documents, setDocuments] = useState<TravelerDocuments>({
+    nationalities: travelDocuments?.nationalities ?? [],
+    visas: travelDocuments?.visas ?? [],
+  });
+  const [showDocumentErrors, setShowDocumentErrors] = useState(false);
   const [error, setError] = useState("");
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -175,6 +191,36 @@ function InviteForm({
       if (redirectTimer.current) clearTimeout(redirectTimer.current);
     };
   }, []);
+
+  // No server prefill (the viewer signed in on this page): start from the
+  // signed-in profile, unless the companion already picked something.
+  const canClaim = authenticated && !emailMismatch && !emailUnverified;
+  useEffect(() => {
+    if (!canClaim || travelDocuments) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/user/documents");
+        if (!res.ok) return;
+        const data = await res.json();
+        const profile = data?.user;
+        if (cancelled || !profile) return;
+        setDocuments((current) =>
+          current.nationalities.length > 0 || current.visas.length > 0
+            ? current
+            : {
+                nationalities: Array.isArray(profile.nationalities) ? profile.nationalities : [],
+                visas: Array.isArray(profile.approvedVisas) ? profile.approvedVisas : [],
+              },
+        );
+      } catch {
+        // Prefill is a convenience; the companion can still pick by hand.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [canClaim, travelDocuments]);
 
   async function handleCtaClick() {
     // Fail-open: mints the invite-grant cookie so an unverified account can
@@ -233,13 +279,23 @@ function InviteForm({
       setError(copy.landingGenericError);
       return;
     }
+    if (documents.nationalities.length === 0) {
+      setShowDocumentErrors(true);
+      return;
+    }
 
     setState("submitting");
     try {
       const res = await fetch("/api/travelers/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, idDocument, consent }),
+        body: JSON.stringify({
+          token,
+          idDocument,
+          consent,
+          nationalities: documents.nationalities,
+          visas: documents.visas,
+        }),
       });
 
       if (res.status === 401) {
@@ -412,6 +468,17 @@ function InviteForm({
               type="text"
               value={idDocument}
             />}
+
+            <TravelerDocumentsFields
+              idPrefix="traveler-invite"
+              locale={locale}
+              nationalitiesReadOnly={travelDocuments?.nationalitiesLocked ?? false}
+              onChange={setDocuments}
+              showHelpers
+              showNationalitiesRequired={showDocumentErrors}
+              value={documents}
+              visasReadOnly={travelDocuments?.visasLocked ?? false}
+            />
 
             <label className="flex items-start gap-2 text-xs leading-relaxed text-neutral-600">
               <input

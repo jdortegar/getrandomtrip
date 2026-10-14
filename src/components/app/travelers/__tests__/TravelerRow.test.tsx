@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TravelerRow, type TravelerRowHandle } from "@/components/app/travelers/TravelerRow";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import type { TravelerDTO } from "@/types/traveler";
+import enDict from "@/dictionaries/en.json";
 
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -151,7 +152,7 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
@@ -160,7 +161,7 @@ describe("TravelerRow — save() return value", () => {
     expect(onUpdated).toHaveBeenCalledWith(updated);
   });
 
-  it("resolves with the original (unchanged) traveler when the save request fails", async () => {
+  it("resolves null when the save request fails", async () => {
     const traveler = baseTraveler();
     (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
       ok: false,
@@ -168,16 +169,16 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
 
-    expect(result).toEqual(traveler);
+    expect(result).toBeNull();
     expect(onUpdated).not.toHaveBeenCalled();
   });
 
-  it("resolves with the original (unchanged) traveler when a minor row fails local validation", async () => {
+  it("resolves null when a minor row fails local validation", async () => {
     const traveler = baseTraveler({
       kind: "MINOR",
       fullName: null,
@@ -186,12 +187,12 @@ describe("TravelerRow — save() return value", () => {
     });
     const { onUpdated } = render(traveler);
 
-    let result: TravelerDTO | undefined;
+    let result: TravelerDTO | null | undefined;
     await act(async () => {
       result = await handleRef.current?.save();
     });
 
-    expect(result).toEqual(traveler);
+    expect(result).toBeNull();
     expect(fetch).not.toHaveBeenCalled();
     expect(onUpdated).not.toHaveBeenCalled();
   });
@@ -398,5 +399,131 @@ describe("TravelerRow — joined email lock (T10)", () => {
 
     expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-email")!.disabled).toBe(false);
     expect(container.textContent).not.toContain("el email no se puede cambiar");
+  });
+});
+
+describe("TravelerRow — travel documents", () => {
+  function renderEn(traveler: TravelerDTO, locked = false) {
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = createRoot(container);
+    handleRef = { current: null };
+    act(() => {
+      root.render(
+        <TravelerRow
+          copy={copy}
+          locale="en"
+          locked={locked}
+          onUpdated={vi.fn()}
+          ref={(el) => {
+            handleRef.current = el;
+          }}
+          traveler={traveler}
+          travelerNumber={2}
+        />,
+      );
+    });
+  }
+
+  it.each(["ADULT", "MINOR"] as const)("shows nationality and visa pickers on %s rows", (kind) => {
+    renderEn(baseTraveler({ kind, nationalities: ["AR"], visas: ["SCHENGEN"] }));
+    const text = container.textContent ?? "";
+    expect(text).toContain(enDict.profile.sections.nationalities);
+    expect(text).toContain(enDict.profile.labels.approvedVisas);
+    expect(text).toContain("Argentina");
+    expect(text).toContain(enDict.profile.labels.schengenVisa);
+    expect(container.querySelector("#traveler-trav-1-nationalities")).not.toBeNull();
+    expect(container.querySelector("#traveler-trav-1-visas")).not.toBeNull();
+  });
+
+  it("sends changed lists with the row save", async () => {
+    const traveler = baseTraveler({ nationalities: ["AR", "IT"], visas: [] });
+    vi.mocked(fetch).mockResolvedValue(Response.json({ traveler: { ...traveler, nationalities: ["AR"] } }));
+    renderEn(traveler);
+
+    act(() => {
+      container.querySelector<HTMLElement>('[aria-label="Remove Italy"]')!.click();
+    });
+    await act(async () => {
+      await handleRef.current?.save();
+    });
+
+    const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string);
+    expect(body).toMatchObject({ nationalities: ["AR"] });
+    expect(body).not.toHaveProperty("visas");
+  });
+
+  it("freezes populated lists after the cutoff and keeps empty ones fillable", () => {
+    renderEn(baseTraveler({ idDocument: null, nationalities: ["AR"], visas: [] }), true);
+    expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+    expect(container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
+    expect(container.textContent).toContain("Argentina");
+    expect(container.querySelector("#traveler-trav-1-visas")).not.toBeNull();
+  });
+
+  it("shows read-only lists on a locked, complete row", () => {
+    renderEn(baseTraveler({ status: "COMPLETE", nationalities: ["AR"], visas: [] }), true);
+    expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+    expect(container.querySelector("#traveler-trav-1-visas")).toBeNull();
+    expect(container.textContent).toContain(enDict.profile.labels.noVisas);
+  });
+
+  it("lets a locked, otherwise complete row fill its missing nationalities", () => {
+    renderEn(baseTraveler({ status: "COMPLETE", nationalities: [], visas: [] }), true);
+    expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-fullName")!.disabled).toBe(true);
+    expect(container.querySelector("#traveler-trav-1-nationalities")).not.toBeNull();
+  });
+
+  describe("linked rows (T7: linked = live)", () => {
+    it("shows a joined companion's live documents read-only to the buyer and never sends them", async () => {
+      const traveler = baseTraveler({
+        status: "COMPLETE",
+        joined: true,
+        email: "joined@example.com",
+        idDocument: null,
+        nationalities: ["AR"],
+        visas: [],
+      });
+      vi.mocked(fetch).mockResolvedValue(Response.json({ traveler }));
+      renderEn(traveler);
+
+      expect(container.textContent).toContain("Argentina");
+      expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).toBeNull();
+      expect(container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
+
+      await act(async () => {
+        await handleRef.current?.save();
+      });
+      const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string);
+      expect(body).not.toHaveProperty("nationalities");
+      expect(body).not.toHaveProperty("visas");
+    });
+
+    it("keeps a joined companion's empty documents read-only to the buyer, even after the cutoff", () => {
+      renderEn(
+        baseTraveler({ status: "COMPLETE", joined: true, email: "j@example.com", nationalities: [], visas: [] }),
+        true,
+      );
+      expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).toBeNull();
+    });
+
+    it("lets a companion edit their own populated documents after the cutoff", () => {
+      renderEn(
+        baseTraveler({
+          isSelf: true,
+          joined: true,
+          status: "COMPLETE",
+          email: "me@example.com",
+          nationalities: ["AR"],
+          visas: ["US"],
+        }),
+        true,
+      );
+      expect(container.querySelector("#traveler-trav-1-nationalities")).not.toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).not.toBeNull();
+      expect(container.querySelector('[aria-label="Remove Argentina"]')).not.toBeNull();
+    });
   });
 });

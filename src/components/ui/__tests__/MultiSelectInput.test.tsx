@@ -217,3 +217,55 @@ it("preserves filtering, empty results and keyboard selection through the labele
   search("");
   expect(dialog().querySelectorAll('[role="option"]')).toHaveLength(2);
 });
+
+it("matches search text regardless of accents and case", async () => {
+  harness.render(
+    <MultiSelectInput
+      onChange={() => {}}
+      options={[
+        { value: "MX", label: "México" },
+        { value: "PE", label: "Perú" },
+        { value: "CA", label: "Canada" },
+      ]}
+      placeholder="Choose"
+      value={[]}
+    />,
+  );
+  harness.click(trigger());
+  await settle();
+  const input = dialog().querySelector("input")!;
+  const labels = () =>
+    Array.from(dialog().querySelectorAll('[role="option"]')).map(
+      (option) => option.textContent,
+    );
+  function search(value: string) {
+    act(() => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+  search("mexico");
+  expect(labels()).toEqual(["México"]);
+  search("PERU");
+  expect(labels()).toEqual(["Perú"]);
+  search("Canadá");
+  expect(labels()).toEqual(["Canada"]);
+});
+
+it("names remove buttons with the caller's formatter", () => {
+  harness.render(
+    <MultiSelectInput
+      onChange={() => {}}
+      options={options}
+      placeholder="Choose"
+      removeLabel={(optionLabel) => `Remove ${optionLabel}`}
+      value={["a"]}
+    />,
+  );
+  expect(trigger().querySelector("button")?.getAttribute("aria-label")).toBe(
+    "Remove Argentina",
+  );
+});

@@ -34,9 +34,11 @@ import {
   TravelerRosterSection,
   type TravelerRosterSectionHandle,
 } from "@/components/app/travelers/TravelerRosterSection";
+import { BuyerTravelDocumentsSection } from "@/components/app/travelers/BuyerTravelDocumentsSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
 import type { TripDetailsData } from "@/types/tripDetails";
+import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
@@ -46,7 +48,7 @@ import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
 import { ExcuseSummary } from "@/components/common/ExcuseSummary";
 
-interface TripDetails {
+interface TripDetails extends BuyerDocumentsSnapshot {
   /**
    * The viewer's relation to the trip. A `companion` payload arrives without
    * price/payment data and with a reduced roster (see GET /api/trips/[id]).
@@ -252,10 +254,19 @@ function TripDetailsContent() {
 
   const isCompanion = trip.role === "companion";
   // A companion edits only their own row; the Save button follows that row.
+  // Their documents are their live profile (linked = live), editable even
+  // after the roster locks, so their own row always keeps a Save button.
   const ownRow = trip.roster?.travelers.find((t) => t.isSelf);
   const rosterEditable = isCompanion
-    ? Boolean(ownRow) && (!trip.roster.locked || hasMissingTravelerDetails(ownRow!))
+    ? Boolean(ownRow)
     : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
+
+  // The buyer's own documents: paid trips only (checkout collects them
+  // before payment). Linked = live: they are the buyer's profile documents,
+  // so no roster lock applies; only a cancelled trip is read-only (the same
+  // rule as the buyer-documents route).
+  const showBuyerDocuments = !isCompanion && trip.payment?.status === "APPROVED";
+  const buyerDocumentsReadOnly = trip.status === "CANCELLED";
 
   const price = getTripCostDisplay({
     ...trip,
@@ -426,6 +437,22 @@ function TripDetailsContent() {
                       </Button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {showBuyerDocuments && (
+                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
+                  <BuyerTravelDocumentsSection
+                    copy={copy.buyerDocuments}
+                    errorCopy={dict.journey.checkout.errors}
+                    initialValue={{
+                      nationalities: trip.buyerNationalities ?? [],
+                      visas: trip.buyerVisas ?? [],
+                    }}
+                    locale={locale}
+                    readOnly={buyerDocumentsReadOnly}
+                    tripId={trip.id}
+                  />
                 </div>
               )}
 

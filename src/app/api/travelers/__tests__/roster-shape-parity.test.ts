@@ -70,6 +70,8 @@ function makeTripRow() {
         dateOfBirth: null,
         invitedAt: null,
         submittedAt: null,
+        nationalities: ["AR", "IT"],
+        visas: ["SCHENGEN"],
         createdAt: new Date("2026-01-01T00:00:00.000Z"),
       },
       {
@@ -82,6 +84,8 @@ function makeTripRow() {
         dateOfBirth: null,
         invitedAt: null,
         submittedAt: null,
+        nationalities: [],
+        visas: [],
         createdAt: new Date("2026-01-01T00:00:01.000Z"),
       },
     ],
@@ -138,5 +142,9 @@ describe("roster shape parity between trip-summary and /api/trips/[id]", () => {
     expect(summaryBody.trip.roster).toBeDefined();
     expect(tripBody.trip.roster).toBeDefined();
     expect(summaryBody.trip.roster).toEqual(tripBody.trip.roster);
+    expect(tripBody.trip.roster.travelers[0]).toMatchObject({
+      nationalities: ["AR", "IT"],
+      visas: ["SCHENGEN"],
+    });
   });
 });

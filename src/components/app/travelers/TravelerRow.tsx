@@ -8,22 +8,30 @@ import { TravelerStatusBadge } from "@/components/common/TravelerStatusBadge";
 import {
   isMinorRowFilled,
 } from "@/lib/travelers/travelerRowValidation";
-import { hasMissingTravelerDetails, isTravelerFieldFilled } from "@/lib/travelers/travelerPolicy";
+import {
+  hasMissingTravelerDetails,
+  hasTravelDocuments,
+  isTravelerFieldFilled,
+  travelerCodesEqual,
+} from "@/lib/travelers/travelerPolicy";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
-import type { TravelerDTO } from "@/types/traveler";
+import type { TravelerDocuments, TravelerDTO } from "@/types/traveler";
+import { TravelerDocumentsFields } from "./TravelerDocumentsFields";
 
 export interface TravelerRowHandle {
   /**
    * Persists the row's current field values. Called by the page-level Save
-   * action. Resolves with the server-returned traveler on success, or the
-   * original (unchanged) traveler when the save is skipped/fails — callers
-   * use the resolved status to decide whether the whole roster is complete.
+   * action. Resolves with the server-returned traveler on success, the
+   * original (unchanged) traveler when the row is not editable, or `null`
+   * when the save fails (validation or request error).
    */
-  save: () => Promise<TravelerDTO>;
+  save: () => Promise<TravelerDTO | null>;
 }
 
 interface TravelerRowProps {
   copy: InviteTravelersDict;
+  /** UI locale for the country pickers ("es" | "en"); defaults to "es". */
+  locale?: string;
   locked: boolean;
   onUpdated: (traveler: TravelerDTO) => void;
   traveler: TravelerDTO;
@@ -87,7 +95,7 @@ function toDateInputValue(iso: string | null): string {
 
 export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
   function TravelerRow(
-    { copy, locked, onUpdated, traveler, travelerNumber },
+    { copy, locale = "es", locked, onUpdated, traveler, travelerNumber },
     ref,
   ) {
     const [fullName, setFullName] = useState(traveler.fullName ?? "");
@@ -96,6 +104,12 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     const [dateOfBirth, setDateOfBirth] = useState(
       toDateInputValue(traveler.dateOfBirth),
     );
+    const savedNationalities = traveler.nationalities ?? [];
+    const savedVisas = traveler.visas ?? [];
+    const [documents, setDocuments] = useState<TravelerDocuments>({
+      nationalities: savedNationalities,
+      visas: savedVisas,
+    });
     const [note, setNote] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
@@ -106,11 +120,39 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     // identity) is fixed and inviting is the buyer's job.
     const isSelf = traveler.isSelf === true;
     const inviteState = inviteStateOf(traveler);
-    const canEdit = !locked || hasMissingTravelerDetails(traveler);
+    // Linked = live: a joined companion's documents are their profile. The
+    // buyer only sees them; the companion edits their own at any time.
+    const documentsOwnedByProfile = traveler.joined && !isSelf;
+    const documentsAlwaysEditable = isSelf;
+    // After the cutoff a row stays editable while details or (row-owned)
+    // nationalities are missing; populated values are frozen either way.
+    const canEdit =
+      !locked ||
+      hasMissingTravelerDetails(traveler) ||
+      documentsAlwaysEditable ||
+      (!documentsOwnedByProfile && !hasTravelDocuments(traveler));
     const fieldLocked = (field: "fullName" | "email" | "dateOfBirth" | "idDocument") =>
       saving || (locked && isTravelerFieldFilled(traveler[field]));
+    const listLocked = (saved: string[]) =>
+      documentsOwnedByProfile ||
+      !canEdit ||
+      saving ||
+      (!documentsAlwaysEditable && locked && saved.length > 0);
 
-    async function persistFields(body: Record<string, string>) {
+    /** Only lists that differ from the saved row are sent, so a save never races an unchanged list. */
+    function changedDocuments(): Partial<TravelerDocuments> {
+      if (documentsOwnedByProfile) return {};
+      return {
+        ...(!travelerCodesEqual(documents.nationalities, savedNationalities) && {
+          nationalities: documents.nationalities,
+        }),
+        ...(!travelerCodesEqual(documents.visas, savedVisas) && {
+          visas: documents.visas,
+        }),
+      };
+    }
+
+    async function persistFields(body: Record<string, string | string[]>) {
       const res = await fetch(`/api/travelers/${traveler.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -120,31 +162,32 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
       return { ok: res.ok, data };
     }
 
-    async function saveRow(): Promise<TravelerDTO> {
+    async function saveRow(): Promise<TravelerDTO | null> {
       if (!canEdit || pending.current) return traveler;
       if (
         !isAdult &&
         !isMinorRowFilled({ fullName, dateOfBirth, idDocument })
       ) {
         setError(copy.incompleteError);
-        return traveler;
+        return null;
       }
       pending.current = true;
       setSaving(true);
       setError(null);
       try {
-        const { ok, data } = await persistFields(
-          isAdult
+        const { ok, data } = await persistFields({
+          ...(isAdult
             ? { fullName, email, idDocument }
-            : { fullName, dateOfBirth, idDocument },
-        );
+            : { fullName, dateOfBirth, idDocument }),
+          ...changedDocuments(),
+        });
         if (!ok) {
           setError(
             data?.error === "incomplete"
               ? copy.incompleteError
               : copy.saveErrorGeneric,
           );
-          return traveler;
+          return null;
         }
         const updated = data.traveler as TravelerDTO;
         // The server emails the companion when a new/changed email is saved.
@@ -164,7 +207,7 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         return updated;
       } catch {
         setError(copy.saveErrorGeneric);
-        return traveler;
+        return null;
       } finally {
         pending.current = false;
         setSaving(false);
@@ -181,7 +224,12 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
       try {
         // The invite email is sent server-side from the persisted row, so the
         // current field values (esp. email) must be saved first.
-        const saveResult = await persistFields({ fullName, email, idDocument });
+        const saveResult = await persistFields({
+          fullName,
+          email,
+          idDocument,
+          ...changedDocuments(),
+        });
         if (!saveResult.ok) {
           setError(copy.saveErrorGeneric);
           return;
@@ -324,6 +372,16 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
             </TableIconButton>
           )}
         </div>
+
+        <TravelerDocumentsFields
+          className="mt-3 sm:grid-cols-2"
+          idPrefix={`traveler-${traveler.id}`}
+          locale={locale}
+          nationalitiesReadOnly={listLocked(savedNationalities)}
+          onChange={setDocuments}
+          value={documents}
+          visasReadOnly={listLocked(savedVisas)}
+        />
 
         {saving && <p className="mt-2.5 text-xs text-ink" role="status">{copy.savingAction}</p>}
         {rowFoot && (

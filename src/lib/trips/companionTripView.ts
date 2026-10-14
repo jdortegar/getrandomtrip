@@ -1,10 +1,17 @@
 /**
  * Fields a companion (a linked traveler who is not the buyer) must never
  * receive: what the buyer paid, the price the trip resolves to, and any raw
- * traveler rows (the sanitized `roster` is the only traveler data they get).
+ * traveler rows (the sanitized `roster` is the only traveler data they get),
+ * and the buyer's own nationalities and visas.
  * Removed on the server, not hidden in the UI.
  */
-const BUYER_ONLY_KEYS = ["payment", "basePriceUsd", "travelers"] as const;
+const BUYER_ONLY_KEYS = [
+  "payment",
+  "basePriceUsd",
+  "travelers",
+  "buyerNationalities",
+  "buyerVisas",
+] as const;
 
 /** Drops buyer-only fields from a trip payload for a companion viewer. */
 export function omitBuyerOnlyFields<T extends Record<string, unknown>>(

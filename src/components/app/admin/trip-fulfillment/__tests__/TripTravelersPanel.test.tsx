@@ -3,7 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import { TripTravelersPanel } from "../TripTravelersPanel";
 
 (
@@ -11,7 +11,7 @@ import { TripTravelersPanel } from "../TripTravelersPanel";
 ).IS_REACT_ACT_ENVIRONMENT = true;
 let host: HTMLDivElement;
 let root: Root;
-const buyer: AdminBookingTraveler = {
+const buyer: AdminBookingTravelerWithDocuments = {
   id: "buyer",
   kind: "BOOKING_HOLDER",
   name: "Test Buyer",
@@ -19,8 +19,10 @@ const buyer: AdminBookingTraveler = {
   dateOfBirth: null,
   phone: "+1 555 0100",
   email: "buyer@example.test",
+  nationalities: ["AR"],
+  visas: [],
 };
-const companion: AdminBookingTraveler = {
+const companion: AdminBookingTravelerWithDocuments = {
   id: "companion",
   kind: "ADULT",
   name: "Test Companion",
@@ -28,6 +30,8 @@ const companion: AdminBookingTraveler = {
   dateOfBirth: null,
   phone: null,
   email: "companion@example.test",
+  nationalities: [],
+  visas: [],
 };
 beforeEach(() => {
   host = document.createElement("div");
@@ -49,6 +53,7 @@ function render(
         copy={copy}
         onRefresh={async () => {}}
         pax={pax}
+        locale="en"
         paxDetails={{}}
         travelers={travelers}
         tripId="trip"
@@ -174,5 +179,22 @@ it("does not let an extra completed companion hide missing buyer details", () =>
   );
   expect(host.textContent).toContain(
     copy.extraRecords.replace("{{count}}", "1"),
+  );
+});
+
+it("shows each traveler's travel documents and counts missing ones", () => {
+  render([buyer, companion], 3);
+  const copy = en.adminTripFulfillment.travelers;
+  const table = host.querySelector('[data-component="TripTravelDocumentsTable"]');
+  expect(table).not.toBeNull();
+  const rows = table!.querySelectorAll("tbody tr");
+  expect(rows).toHaveLength(2);
+  expect(rows[0].textContent).toContain("Test Buyer");
+  expect(rows[0].textContent).toContain("Argentina");
+  expect(rows[1].textContent).toContain(copy.documents.missing);
+  expect(table!.textContent).toContain(
+    copy.documents.missingBadge
+      .replace("{{missing}}", "2")
+      .replace("{{total}}", "3"),
   );
 });

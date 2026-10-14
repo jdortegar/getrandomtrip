@@ -213,7 +213,7 @@ describe("Checkout confirmation approval", () => {
   });
 
   it.each(["COMPLETE", "PENDING"] as const)(
-    "navigates after saving only when roster becomes COMPLETE: %s",
+    "navigates to the trip detail after a successful save, complete or not: %s",
     async (status) => {
       const saved = deferred();
       http
@@ -221,6 +221,7 @@ describe("Checkout confirmation approval", () => {
         .mockResolvedValueOnce(Response.json(summary()))
         .mockReturnValueOnce(saved.promise);
       await render();
+      expect(container.querySelector('a[href="/en/dashboard"]')).toBeNull();
       act(() => button(labels.saveTravelersAction).click());
       expect(button(labels.savingTravelersAction).disabled).toBe(true);
       expect(navigation.push).not.toHaveBeenCalled();
@@ -239,9 +240,7 @@ describe("Checkout confirmation approval", () => {
       await act(async () =>
         saved.resolve(Response.json({ traveler: { ...traveler, status } })),
       );
-      expect(navigation.push.mock.calls).toEqual(
-        status === "COMPLETE" ? [["/en/dashboard"]] : [],
-      );
+      expect(navigation.push.mock.calls).toEqual([["/en/dashboard/trips/trip-1"]]);
       expect(button(labels.saveTravelersAction).disabled).toBe(false);
       expect(container.textContent).toContain(
         status === "COMPLETE"
@@ -250,6 +249,17 @@ describe("Checkout confirmation approval", () => {
       );
     },
   );
+  it("stays on the page when saving fails", async () => {
+    http
+      .mockResolvedValueOnce(Response.json({ ok: true }))
+      .mockResolvedValueOnce(Response.json(summary()))
+      .mockResolvedValueOnce(Response.json({ error: "generic" }, { status: 500 }));
+    await render();
+    await act(async () => button(labels.saveTravelersAction).click());
+    expect(navigation.push).not.toHaveBeenCalled();
+    expect(button(labels.saveTravelersAction).disabled).toBe(false);
+  });
+
   it("still requests the summary after confirmation rejects", async () => {
     const confirm = deferred();
     http
@@ -282,6 +292,7 @@ describe("Checkout confirmation approval", () => {
     await render();
     expect(container.textContent).toContain("trip-1");
     expect(button(labels.saveTravelersAction)).toBeUndefined();
+    expect(container.querySelector('a[href="/en/dashboard"]')?.textContent).toBe(labels.ctaMyTrips);
     expect(navigation.push).not.toHaveBeenCalled();
     if (kind === "locked") {
       expect(

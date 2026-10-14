@@ -2,6 +2,11 @@ import { prisma } from "@/lib/prisma";
 import type { TravelerKind } from "@prisma/client";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 import { tripRoleFor } from "./travelerAccess";
+import {
+  effectiveTravelDocuments,
+  PROFILE_DOCUMENTS_SELECT,
+  type ProfileDocumentsSource,
+} from "./effectiveTravelDocuments";
 
 import {
   computeTravelerCap,
@@ -71,15 +76,32 @@ type SerializableTravelerRow = {
   invitedAt: Date | null;
   submittedAt: Date | null;
   userId?: string | null;
+  nationalities?: string[];
+  visas?: string[];
+  /** The linked account's profile (`PROFILE_DOCUMENTS_SELECT`), when loaded. */
+  user?: ProfileDocumentsSource | null;
 };
+
+/**
+ * Prisma `include` for roster rows: the linked account's profile documents,
+ * which `serializeTraveler` exposes instead of the row's (linked = live).
+ */
+export const TRAVELER_PROFILE_INCLUDE = {
+  user: { select: PROFILE_DOCUMENTS_SELECT },
+} as const;
 
 /**
  * The ONE place a `TripTraveler` row becomes a `TravelerDTO`. Both read
  * routes (`trip-summary`, `/api/trips/[id]`) must go through
  * `getRosterForTrip`, which calls this — no route may build a traveler
- * object inline.
+ * object inline. A linked row (`userId` set, `user` loaded) exposes the
+ * account's live profile documents; an unlinked row exposes its own lists.
  */
 export function serializeTraveler(row: SerializableTravelerRow): TravelerDTO {
+  const documents = effectiveTravelDocuments({
+    user: row.userId ? row.user : null,
+    row,
+  });
   return {
     id: row.id,
     kind: row.kind,
@@ -91,13 +113,16 @@ export function serializeTraveler(row: SerializableTravelerRow): TravelerDTO {
     invitedAt: row.invitedAt ? row.invitedAt.toISOString() : null,
     submittedAt: row.submittedAt ? row.submittedAt.toISOString() : null,
     joined: Boolean(row.userId),
+    nationalities: documents.nationalities,
+    visas: documents.visas,
   };
 }
 
 /**
  * Companion view of a row: the viewer's own row stays complete (flagged
  * `isSelf`); every other traveler is reduced to their name — no email, ID
- * document, date of birth, invite or account-link information. Filtering
+ * document, date of birth, nationalities, visas, invite or account-link
+ * information. Filtering
  * happens here, server-side; the UI never receives what it must hide.
  */
 export function serializeTravelerForCompanion(
@@ -137,7 +162,12 @@ export async function getRosterForTrip(
 
   const trip = await prisma.tripRequest.findUnique({
     where: { id: tripId },
-    include: { travelers: { orderBy: { createdAt: "asc" } } },
+    include: {
+      travelers: {
+        orderBy: { createdAt: "asc" },
+        include: TRAVELER_PROFILE_INCLUDE,
+      },
+    },
   });
 
   if (!trip) {
