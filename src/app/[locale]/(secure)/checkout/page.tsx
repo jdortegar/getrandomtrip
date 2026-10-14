@@ -41,7 +41,7 @@ import {
 } from "@/lib/helpers/pax-details";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import type { CheckoutFormFields, CheckoutTripFromApi } from "@/types/Checkout";
-import type { BuyerDocumentsSnapshot, BuyerTravelDocuments } from "@/types/documents";
+import type { BuyerTravelDocuments } from "@/types/documents";
 import { normalizeCountryCodes, normalizeVisaCodes } from "@/lib/geo/countryOptions";
 import type { XsedTravelType } from "@/types/core";
 import { Button } from "@/components/ui/Button";
@@ -174,15 +174,6 @@ function filtersFromTrip(trip: CheckoutTripFromApi): Filters {
   };
 }
 
-/** The trip's saved buyer snapshot, or null while it has no nationality yet. */
-function buyerSnapshotFromTrip(
-  trip: BuyerDocumentsSnapshot,
-): BuyerTravelDocuments | null {
-  const nationalities = normalizeCountryCodes(trip.buyerNationalities ?? []);
-  if (nationalities.length === 0) return null;
-  return { nationalities, visas: normalizeVisaCodes(trip.buyerVisas ?? []) };
-}
-
 function CheckoutContent() {
   const params = useParams();
   const router = useRouter();
@@ -196,7 +187,7 @@ function CheckoutContent() {
   const { isAuthed } = useUserStore();
 
   const [dict, setDict] = useState<Dictionary | null>(null);
-  const [trip, setTrip] = useState<(CheckoutTripFromApi & BuyerDocumentsSnapshot) | null>(null);
+  const [trip, setTrip] = useState<CheckoutTripFromApi | null>(null);
   const [tripError, setTripError] = useState<string | null>(null);
   const [tripLoading, setTripLoading] = useState(true);
   const [promocode, setPromocode] = useState("");
@@ -345,8 +336,9 @@ function CheckoutContent() {
     };
   }, [dict, hasTripId, session?.user?.email, status, tripIdParam, resolvedLocale, router]);
 
-  // Buyer travel documents: the trip snapshot wins, else the profile prefills.
-  // A late prefill never overwrites what the buyer already edited.
+  // Buyer travel documents: linked = live, so they always prefill from the
+  // buyer's profile (the trip snapshot is never read). A late prefill never
+  // overwrites what the buyer already edited.
   const [buyerDocumentsState, setBuyerDocuments] = useState<{
     edited: boolean;
     value: BuyerTravelDocuments;
@@ -354,16 +346,9 @@ function CheckoutContent() {
   const buyerDocuments = buyerDocumentsState.value;
   const [showDocumentErrors, setShowDocumentErrors] = useState(false);
   const tripId = trip?.id;
-  const tripSnapshot = trip ? buyerSnapshotFromTrip(trip) : null;
-  const hasTripSnapshot = tripSnapshot !== null;
-  const [snapshotTripId, setSnapshotTripId] = useState<string | null>(null);
-  if (tripId && tripSnapshot && snapshotTripId !== tripId) {
-    setSnapshotTripId(tripId);
-    if (!buyerDocumentsState.edited) setBuyerDocuments({ edited: false, value: tripSnapshot });
-  }
 
   useEffect(() => {
-    if (!tripId || hasTripSnapshot || status !== "authenticated") return;
+    if (!tripId || status !== "authenticated") return;
     let cancelled = false;
     fetch("/api/user/documents")
       .then((res) => (res.ok ? res.json() : null))
@@ -382,7 +367,7 @@ function CheckoutContent() {
     return () => {
       cancelled = true;
     };
-  }, [tripId, hasTripSnapshot, status]);
+  }, [tripId, status]);
 
   function handleBuyerDocumentsChange(next: BuyerTravelDocuments) {
     setBuyerDocuments({ edited: true, value: next });

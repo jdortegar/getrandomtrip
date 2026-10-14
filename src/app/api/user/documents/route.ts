@@ -8,7 +8,7 @@ import {
   normalizeCountryCodes,
   normalizeVisaCodes,
 } from "@/lib/geo/countryOptions";
-import { resolveNationalityCode, toVisaCodes } from "@/lib/geo/visaCodes";
+import { profileTravelDocuments } from "@/lib/travelers/effectiveTravelDocuments";
 
 const DOCUMENTS_SELECT = {
   idNumber: true,
@@ -47,8 +47,7 @@ function toDateOrNull(value: unknown): Date | null {
  * prefilled from a resolvable `passportCountry`.
  */
 function toDocumentsResponse(user: DocumentsRow) {
-  const nationalities = normalizeCountryCodes(user.nationalities);
-  const prefill = resolveNationalityCode(user.passportCountry);
+  const { nationalities, visas } = profileTravelDocuments(user);
   return {
     idNumber: user.idNumber ?? "",
     idCountry: user.idCountry ?? "",
@@ -56,8 +55,8 @@ function toDocumentsResponse(user: DocumentsRow) {
     passportNumber: user.passportNumber ?? "",
     passportCountry: user.passportCountry ?? "",
     passportExpiry: toDateOnlyString(user.passportExpiry),
-    nationalities: nationalities.length === 0 && prefill ? [prefill] : nationalities,
-    approvedVisas: toVisaCodes(user.approvedVisas).codes,
+    nationalities,
+    approvedVisas: visas,
   };
 }
 

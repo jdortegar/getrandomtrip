@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import {
   isRosterLocked,
   serializeTraveler,
+  serializeTravelerForCompanion,
+  TRAVELER_PROFILE_INCLUDE,
 } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
 import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
@@ -43,8 +45,12 @@ export const dynamic = "force-dynamic";
  *
  * Travel documents: optional `nationalities` (ISO codes) and `visas` (ISO plus
  * visa zones) lists; invalid codes answer 400 `{ error, invalid }`. Empty lists
- * are allowed (partial saves) and never affect status. After the cutoff a
- * populated list is frozen like every other populated field.
+ * are allowed (partial saves) and never affect status. Linked = live: on a
+ * row linked to an account the documents are that account's profile, so the
+ * buyer may not send them (403 `documents_linked`), and the companion editing
+ * their own row writes them to their `User` profile (no cutoff applies). On an
+ * unlinked row they are the row's own lists, and after the cutoff a populated
+ * list is frozen like every other populated field.
  */
 export async function PATCH(
   request: NextRequest,
@@ -59,7 +65,7 @@ export async function PATCH(
 
     const traveler = await prisma.tripTraveler.findUnique({
       where: { id: params.id },
-      include: { tripRequest: true },
+      include: { tripRequest: true, ...TRAVELER_PROFILE_INCLUDE },
     });
 
     if (!traveler) {
@@ -126,10 +132,21 @@ export async function PATCH(
         { status: 400 },
       );
     }
+    const sendsDocuments =
+      documents.nationalities !== undefined || documents.visas !== undefined;
+    const linked = Boolean(traveler.userId);
+    if (linked && !isCompanion && sendsDocuments) {
+      return NextResponse.json({ error: "documents_linked" }, { status: 403 });
+    }
+    // Only an unlinked row stores documents itself; a linked companion's own
+    // edit goes to their profile instead.
+    const rowDocuments = linked
+      ? { nationalities: undefined, visas: undefined }
+      : documents;
     if (isRosterLocked(traveler.tripRequest)) {
       for (const field of ["nationalities", "visas"] as const) {
         const current = traveler[field] ?? [];
-        const incoming = documents[field];
+        const incoming = rowDocuments[field];
         if (
           incoming !== undefined &&
           current.length > 0 &&
@@ -215,7 +232,7 @@ export async function PATCH(
     const justCompleted =
       isComplete && traveler.status !== "COMPLETE" && !traveler.submittedAt;
 
-    const updated = await prisma.tripTraveler.update({
+    const travelerUpdate = prisma.tripTraveler.update({
       // Compare-and-swap: a concurrent fill must never be overwritten.
       where: {
         id: params.id,
@@ -224,10 +241,10 @@ export async function PATCH(
         idDocument: traveler.idDocument,
         dateOfBirth: traveler.dateOfBirth,
         status: traveler.status,
-        ...(documents.nationalities !== undefined && {
+        ...(rowDocuments.nationalities !== undefined && {
           nationalities: { equals: traveler.nationalities ?? [] },
         }),
-        ...(documents.visas !== undefined && {
+        ...(rowDocuments.visas !== undefined && {
           visas: { equals: traveler.visas ?? [] },
         }),
       },
@@ -236,14 +253,43 @@ export async function PATCH(
         email,
         idDocument,
         dateOfBirth,
-        ...(documents.nationalities !== undefined && {
-          nationalities: documents.nationalities,
+        ...(rowDocuments.nationalities !== undefined && {
+          nationalities: rowDocuments.nationalities,
         }),
-        ...(documents.visas !== undefined && { visas: documents.visas }),
+        ...(rowDocuments.visas !== undefined && { visas: rowDocuments.visas }),
         status: nextStatus,
         ...(justCompleted && { submittedAt: new Date() }),
       },
+      include: TRAVELER_PROFILE_INCLUDE,
     });
+    let updated: Awaited<typeof travelerUpdate>;
+    if (linked && sendsDocuments) {
+      // The profile is written first so the row's `user` include (serialized
+      // below) already reads the new values within the same transaction.
+      const [, row] = await prisma.$transaction([
+        prisma.user.update({
+          where: { id: traveler.userId! },
+          data: {
+            ...(documents.nationalities !== undefined && {
+              nationalities: documents.nationalities,
+            }),
+            ...(documents.visas !== undefined && {
+              approvedVisas: documents.visas,
+            }),
+          },
+        }),
+        travelerUpdate,
+      ]);
+      updated = row;
+    } else {
+      updated = await travelerUpdate;
+    }
+    // A companion keeps their own-row view (`isSelf`) after saving.
+    const viewerId = session.user.id;
+    const serialize = (row: typeof updated) =>
+      isCompanion
+        ? serializeTravelerForCompanion(row, viewerId)
+        : serializeTraveler(row);
 
     if (shouldInvite) {
       try {
@@ -251,7 +297,7 @@ export async function PATCH(
         sendTravelerInviteEmail(updated.id, plaintext);
         // Token issued: mirror what `issueTravelerInvite` wrote on the row.
         return NextResponse.json({
-          traveler: serializeTraveler({
+          traveler: serialize({
             ...updated,
             status: "INVITED",
             invitedAt: new Date(),
@@ -263,13 +309,13 @@ export async function PATCH(
         // the client so it can offer "Resend invite" instead of claiming a send.
         console.error("[travelers/[id]] auto-invite failed:", error);
         return NextResponse.json({
-          traveler: serializeTraveler(updated),
+          traveler: serialize(updated),
           inviteFailed: true,
         });
       }
     }
 
-    return NextResponse.json({ traveler: serializeTraveler(updated) });
+    return NextResponse.json({ traveler: serialize(updated) });
   } catch (error) {
     if (
       error &&

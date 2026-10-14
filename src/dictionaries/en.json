@@ -6066,11 +6066,9 @@
     "revealedHint": "Your destination has been revealed!",
     "buyerDocuments": {
       "title": "Your travel documents",
-      "description": "Your nationalities and the visas that will be valid on your travel dates. They are saved to this trip and your profile.",
+      "description": "Your nationalities and the visas that will be valid on your travel dates. They are saved to your profile and apply to all your trips.",
       "missingTitle": "Complete your travel documents",
       "missingDescription": "We need the nationalities of every traveler to choose a destination the whole group can enter.",
-      "lockedNote": "Your travel documents can no longer be changed for this trip.",
-      "partiallyLockedNote": "Saved documents can no longer be changed, but you can still add the missing ones.",
       "saveAction": "Save documents",
       "savingAction": "Saving…",
       "savedToast": "Travel documents saved."

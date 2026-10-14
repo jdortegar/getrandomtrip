@@ -473,4 +473,57 @@ describe("TravelerRow — travel documents", () => {
     expect(container.querySelector<HTMLInputElement>("#traveler-trav-1-fullName")!.disabled).toBe(true);
     expect(container.querySelector("#traveler-trav-1-nationalities")).not.toBeNull();
   });
+
+  describe("linked rows (T7: linked = live)", () => {
+    it("shows a joined companion's live documents read-only to the buyer and never sends them", async () => {
+      const traveler = baseTraveler({
+        status: "COMPLETE",
+        joined: true,
+        email: "joined@example.com",
+        idDocument: null,
+        nationalities: ["AR"],
+        visas: [],
+      });
+      vi.mocked(fetch).mockResolvedValue(Response.json({ traveler }));
+      renderEn(traveler);
+
+      expect(container.textContent).toContain("Argentina");
+      expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).toBeNull();
+      expect(container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
+
+      await act(async () => {
+        await handleRef.current?.save();
+      });
+      const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string);
+      expect(body).not.toHaveProperty("nationalities");
+      expect(body).not.toHaveProperty("visas");
+    });
+
+    it("keeps a joined companion's empty documents read-only to the buyer, even after the cutoff", () => {
+      renderEn(
+        baseTraveler({ status: "COMPLETE", joined: true, email: "j@example.com", nationalities: [], visas: [] }),
+        true,
+      );
+      expect(container.querySelector("#traveler-trav-1-nationalities")).toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).toBeNull();
+    });
+
+    it("lets a companion edit their own populated documents after the cutoff", () => {
+      renderEn(
+        baseTraveler({
+          isSelf: true,
+          joined: true,
+          status: "COMPLETE",
+          email: "me@example.com",
+          nationalities: ["AR"],
+          visas: ["US"],
+        }),
+        true,
+      );
+      expect(container.querySelector("#traveler-trav-1-nationalities")).not.toBeNull();
+      expect(container.querySelector("#traveler-trav-1-visas")).not.toBeNull();
+      expect(container.querySelector('[aria-label="Remove Argentina"]')).not.toBeNull();
+    });
+  });
 });

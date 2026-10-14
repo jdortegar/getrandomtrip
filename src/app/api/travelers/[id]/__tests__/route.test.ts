@@ -18,6 +18,8 @@ vi.mock("@/lib/prisma", () => ({
     tripRequest: {
       count: vi.fn(),
     },
+    user: { update: vi.fn() },
+    $transaction: vi.fn(),
   },
 }));
 
@@ -728,11 +730,80 @@ describe("PATCH travel documents (nationalities + visas)", () => {
 
   it("lets a companion set documents on their own row only", async () => {
     vi.mocked(getServerSession).mockResolvedValue({ user: { id: "companion-1" } });
+    vi.mocked(prisma.$transaction).mockImplementation((async (ops: unknown[]) => Promise.all(ops)) as never);
+    vi.mocked(prisma.user.update).mockResolvedValue({} as never);
     mockRow(makeAdultRow({ userId: "someone-else", email: "x@example.com" }));
     const { PATCH } = await import("../route");
     expect((await PATCH(makeRequest({ nationalities: ["AR"] }), makeProps("trav-1"))).status).toBe(403);
 
     mockRow(makeAdultRow({ userId: "companion-1", email: "me@example.com", nationalities: [], visas: [] }));
     expect((await PATCH(makeRequest({ nationalities: ["AR"] }), makeProps("trav-1"))).status).toBe(200);
+  });
+
+  describe("linked rows (T7: linked = live)", () => {
+    const profile = { nationalities: ["CO"], approvedVisas: ["United States"], passportCountry: null };
+
+    beforeEach(() => {
+      vi.mocked(prisma.$transaction).mockImplementation((async (ops: unknown[]) => Promise.all(ops)) as never);
+      vi.mocked(prisma.user.update).mockResolvedValue({} as never);
+    });
+
+    it("forbids the buyer from editing a linked companion's documents", async () => {
+      mockRow(makeAdultRow({ userId: "companion-1", email: "c@example.com", nationalities: [], visas: [], user: profile }));
+      const { PATCH } = await import("../route");
+
+      for (const body of [{ nationalities: ["AR"] }, { visas: [] }]) {
+        const res = await PATCH(makeRequest(body), makeProps("trav-1"));
+        expect(res.status).toBe(403);
+        expect((await res.json()).error).toBe("documents_linked");
+      }
+      expect(prisma.tripTraveler.update).not.toHaveBeenCalled();
+      expect(prisma.user.update).not.toHaveBeenCalled();
+    });
+
+    it("still lets the buyer edit a linked row's other fields and returns the live documents", async () => {
+      mockRow(makeAdultRow({ userId: "companion-1", email: "c@example.com", nationalities: ["FR"], visas: [], user: profile }));
+      const { PATCH } = await import("../route");
+
+      const res = await PATCH(makeRequest({ fullName: "Carla", idDocument: "ID9" }), makeProps("trav-1"));
+
+      expect(res.status).toBe(200);
+      expect(vi.mocked(prisma.tripTraveler.update).mock.calls[0][0]).toMatchObject({
+        include: { user: { select: { nationalities: true, approvedVisas: true, passportCountry: true } } },
+      });
+      expect((await res.json()).traveler).toMatchObject({ nationalities: ["CO"], visas: ["US"] });
+    });
+
+    it("writes a companion's own documents to their profile, not the row, even after the cutoff", async () => {
+      vi.mocked(getServerSession).mockResolvedValue({ user: { id: "companion-1" } });
+      mockRow(makeAdultRow({
+        userId: "companion-1",
+        email: "me@example.com",
+        fullName: "Me",
+        idDocument: "ID",
+        status: "COMPLETE",
+        tripRequest: lockedTrip,
+        nationalities: ["FR"],
+        visas: ["GB"],
+        user: profile,
+      }));
+      const { PATCH } = await import("../route");
+
+      const res = await PATCH(makeRequest({ nationalities: ["IT", "AR"], visas: [] }), makeProps("trav-1"));
+
+      expect(res.status).toBe(200);
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: "companion-1" },
+        data: { nationalities: ["IT", "AR"], approvedVisas: [] },
+      });
+      const args = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as {
+        where: Record<string, unknown>;
+        data: Record<string, unknown>;
+      };
+      expect(args.data).not.toHaveProperty("nationalities");
+      expect(args.data).not.toHaveProperty("visas");
+      expect(args.where).not.toHaveProperty("nationalities");
+      expect((await res.json()).traveler).toMatchObject({ isSelf: true });
+    });
   });
 });

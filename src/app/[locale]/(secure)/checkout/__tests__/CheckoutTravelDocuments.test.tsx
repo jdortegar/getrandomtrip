@@ -141,18 +141,18 @@ describe("checkout travel documents", () => {
     return result;
   };
 
-  it("prefills from the profile when the trip has no buyer snapshot", async () => {
+  it("prefills from the live profile", async () => {
     await mount();
     expect(view.documents?.value).toEqual({ nationalities: ["AR"], visas: ["US"] });
     expect(view.documents?.showErrors).toBe(false);
   });
 
-  it("prefers the trip snapshot over the profile", async () => {
-    trip.buyerNationalities = ["IT", "AR"];
+  it("prefers the live profile over a stale trip snapshot (linked = live)", async () => {
+    trip.buyerNationalities = ["IT"];
     trip.buyerVisas = ["SCHENGEN"];
     await mount();
-    expect(view.documents?.value).toEqual({ nationalities: ["IT", "AR"], visas: ["SCHENGEN"] });
-    expect(urls()).not.toContain("/api/user/documents");
+    expect(urls()).toContain("/api/user/documents");
+    expect(view.documents?.value).toEqual({ nationalities: ["AR"], visas: ["US"] });
   });
 
   it("blocks payment and shows the error when no nationality is selected", async () => {

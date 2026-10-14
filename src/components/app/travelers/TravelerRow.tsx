@@ -120,19 +120,28 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
     // identity) is fixed and inviting is the buyer's job.
     const isSelf = traveler.isSelf === true;
     const inviteState = inviteStateOf(traveler);
-    // After the cutoff a row stays editable while details or nationalities
-    // are missing; populated values are frozen either way.
+    // Linked = live: a joined companion's documents are their profile. The
+    // buyer only sees them; the companion edits their own at any time.
+    const documentsOwnedByProfile = traveler.joined && !isSelf;
+    const documentsAlwaysEditable = isSelf;
+    // After the cutoff a row stays editable while details or (row-owned)
+    // nationalities are missing; populated values are frozen either way.
     const canEdit =
       !locked ||
       hasMissingTravelerDetails(traveler) ||
-      !hasTravelDocuments(traveler);
+      documentsAlwaysEditable ||
+      (!documentsOwnedByProfile && !hasTravelDocuments(traveler));
     const fieldLocked = (field: "fullName" | "email" | "dateOfBirth" | "idDocument") =>
       saving || (locked && isTravelerFieldFilled(traveler[field]));
     const listLocked = (saved: string[]) =>
-      !canEdit || saving || (locked && saved.length > 0);
+      documentsOwnedByProfile ||
+      !canEdit ||
+      saving ||
+      (!documentsAlwaysEditable && locked && saved.length > 0);
 
     /** Only lists that differ from the saved row are sent, so a save never races an unchanged list. */
     function changedDocuments(): Partial<TravelerDocuments> {
+      if (documentsOwnedByProfile) return {};
       return {
         ...(!travelerCodesEqual(documents.nationalities, savedNationalities) && {
           nationalities: documents.nationalities,

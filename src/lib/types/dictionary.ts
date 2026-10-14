@@ -2720,7 +2720,7 @@ export interface TripDetailDict {
   refineDetailsLabel: string;
   confirmedHint: string;
   revealedHint: string;
-  /** Buyer's own nationalities and visas, editable until the roster locks. */
+  /** Buyer's own nationalities and visas (their live profile), editable unless the trip is cancelled. */
   buyerDocuments: TripDetailBuyerDocumentsDict;
 }
 
@@ -2729,9 +2729,6 @@ export interface TripDetailBuyerDocumentsDict {
   description: string;
   missingTitle: string;
   missingDescription: string;
-  lockedNote: string;
-  /** After the roster lock: saved lists are frozen, empty ones can still be filled. */
-  partiallyLockedNote: string;
   saveAction: string;
   savingAction: string;
   savedToast: string;

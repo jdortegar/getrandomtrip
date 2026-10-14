@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AlertTriangle, Loader2, Lock } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { TravelerDocumentsFields } from "@/components/app/travelers/TravelerDocumentsFields";
@@ -15,21 +15,17 @@ interface BuyerTravelDocumentsSectionProps {
   copy: TripDetailBuyerDocumentsDict;
   /** Shared with checkout: required-nationality and save-failure messages. */
   errorCopy: { nationalitiesRequired: string; saveTravelDocumentsFailed: string };
-  /** The trip's buyer snapshot as last saved. */
+  /** The buyer's live profile documents (`buyerNationalities` / `buyerVisas`). */
   initialValue: BuyerTravelDocuments;
-  /** True once the trip is no longer active (cancelled, completed): nothing is editable. */
+  /** True for a cancelled trip: nothing is editable. */
   readOnly: boolean;
-  /**
-   * True once the roster locked: saved lists are frozen, empty ones can still
-   * be filled (the companions' rule).
-   */
-  locked: boolean;
 }
 
 /**
- * The buyer's own nationalities and visas on the trip detail page. Editable
- * until the roster locks; prompts the buyer while nothing is saved (trips
- * paid before travel documents were collected at checkout).
+ * The buyer's own nationalities and visas on the trip detail page. Linked =
+ * live: they are the buyer's profile documents, so no roster lock applies and
+ * they stay editable unless the trip was cancelled. Prompts the buyer while
+ * no nationality is saved.
  */
 export function BuyerTravelDocumentsSection({
   tripId,
@@ -38,35 +34,29 @@ export function BuyerTravelDocumentsSection({
   errorCopy,
   initialValue,
   readOnly,
-  locked,
 }: BuyerTravelDocumentsSectionProps) {
   const [value, setValue] = useState<BuyerTravelDocuments>(initialValue);
-  const [saved, setSaved] = useState<BuyerTravelDocuments>(initialValue);
   const [saving, setSaving] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
   const savingRef = useRef(false);
 
-  const nationalitiesEditable =
-    !readOnly && (!locked || saved.nationalities.length === 0);
-  const visasEditable = !readOnly && (!locked || saved.visas.length === 0);
-  const anyEditable = nationalitiesEditable || visasEditable;
-  const missing = nationalitiesEditable && saved.nationalities.length === 0;
+  const [savedNationalities, setSavedNationalities] = useState(
+    initialValue.nationalities,
+  );
+  const missing = !readOnly && savedNationalities.length === 0;
 
   async function handleSave() {
-    if (savingRef.current) return;
-    // Only editable lists are sent: both before the lock, the still-empty ones
-    // after it. An editable nationality list is required (as at checkout);
-    // once nationalities are saved and frozen, visas alone can be filled.
-    if (nationalitiesEditable && value.nationalities.length === 0) {
+    if (readOnly || savingRef.current) return;
+    // A nationality is required, as at checkout.
+    if (value.nationalities.length === 0) {
       setShowErrors(true);
       toast.error(errorCopy.nationalitiesRequired);
       return;
     }
-    const payload: Partial<BuyerTravelDocuments> = {
-      ...(nationalitiesEditable && { nationalities: value.nationalities }),
-      ...(visasEditable && { visas: value.visas }),
+    const payload: BuyerTravelDocuments = {
+      nationalities: value.nationalities,
+      visas: value.visas,
     };
-    if (payload.nationalities === undefined && payload.visas === undefined) return;
     savingRef.current = true;
     setSaving(true);
     try {
@@ -88,7 +78,7 @@ export function BuyerTravelDocumentsSection({
       };
       const next = { nationalities: data.buyerNationalities, visas: data.buyerVisas };
       setValue(next);
-      setSaved(next);
+      setSavedNationalities(next.nationalities);
       toast.success(copy.savedToast);
     } catch {
       toast.error(errorCopy.saveTravelDocumentsFailed);
@@ -126,21 +116,15 @@ export function BuyerTravelDocumentsSection({
       <TravelerDocumentsFields
         idPrefix="buyer-documents"
         locale={locale}
-        nationalitiesReadOnly={!nationalitiesEditable}
+        nationalitiesReadOnly={readOnly}
         onChange={setValue}
-        showHelpers={anyEditable}
+        showHelpers={!readOnly}
         showNationalitiesRequired={showErrors}
         value={value}
-        visasReadOnly={!visasEditable}
+        visasReadOnly={readOnly}
       />
 
-      {(readOnly || locked) && (
-        <p className="flex items-center gap-2 text-sm text-neutral-500">
-          <Lock aria-hidden className="h-4 w-4" />
-          {anyEditable ? copy.partiallyLockedNote : copy.lockedNote}
-        </p>
-      )}
-      {anyEditable && (
+      {!readOnly && (
         <div>
           <Button
             aria-busy={saving}

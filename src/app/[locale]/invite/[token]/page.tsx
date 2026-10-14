@@ -20,8 +20,8 @@ type Props = {
  * token (only `POST /api/travelers/submit` does that); never renders the
  * destination; never serializes the full invited email for a viewer who is
  * not signed in with that address. The same rule applies to travel documents:
- * only the invited viewer gets the row's nationalities and visas, prefilled
- * from their own profile when the row has none yet.
+ * only the invited viewer gets them — their own profile's nationalities and
+ * visas, or the row's while that profile is empty.
  */
 export default async function TravelerInvitePage({ params }: Props) {
   const resolvedParams = await params;
@@ -48,15 +48,20 @@ export default async function TravelerInvitePage({ params }: Props) {
     if (peek.ok) {
       let travelDocuments = peek.travelDocuments ?? null;
       const viewerId = session?.user?.id;
-      if (
-        travelDocuments &&
-        viewerId &&
-        travelDocuments.nationalities.length === 0 &&
-        travelDocuments.visas.length === 0
-      ) {
+      if (travelDocuments && viewerId) {
+        // Linked = live: claiming links this account, whose profile then holds
+        // the traveler's documents, so the profile wins and no trip lock
+        // applies. The row's lists only prefill an empty profile.
+        const profile = await getProfileTravelDocuments(viewerId);
+        const hasProfile =
+          profile.nationalities.length > 0 || profile.visas.length > 0;
         travelDocuments = {
-          ...travelDocuments,
-          ...(await getProfileTravelDocuments(viewerId)),
+          nationalities: hasProfile
+            ? profile.nationalities
+            : travelDocuments.nationalities,
+          visas: hasProfile ? profile.visas : travelDocuments.visas,
+          nationalitiesLocked: false,
+          visasLocked: false,
         };
       }
       resolution = {

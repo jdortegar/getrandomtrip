@@ -1,13 +1,15 @@
 import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import type { TravelerKind, TravelerStatus } from "@prisma/client";
-import { normalizeCountryCodes } from "@/lib/geo/countryOptions";
-import { resolveNationalityCode, toVisaCodes } from "@/lib/geo/visaCodes";
 import type {
   TravelerDocuments,
   TravelerInviteDocuments,
 } from "@/types/traveler";
 import { isRosterLocked } from "./travelerRoster";
+import {
+  PROFILE_DOCUMENTS_SELECT,
+  profileTravelDocuments,
+} from "./effectiveTravelDocuments";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
@@ -319,16 +321,20 @@ export async function consumeTravelerInvite(
     });
     if (
       data.userId !== undefined &&
-      (nationalities !== undefined || visas !== undefined)
+      (data.nationalities !== undefined || data.visas !== undefined)
     ) {
-      // The claiming user's profile is the prefill for their next trip.
+      // Linked = live: once claimed, this traveler's documents are read from
+      // their profile, so the submitted lists always reach it (the row's
+      // cutoff freeze above only guards the trip row).
       await prisma.$transaction([
         travelerUpdate,
         prisma.user.update({
           where: { id: data.userId },
           data: {
-            ...(nationalities !== undefined && { nationalities }),
-            ...(visas !== undefined && { approvedVisas: visas }),
+            ...(data.nationalities !== undefined && {
+              nationalities: data.nationalities,
+            }),
+            ...(data.visas !== undefined && { approvedVisas: data.visas }),
           },
         }),
       ]);
@@ -359,16 +365,9 @@ export async function getProfileTravelDocuments(
 ): Promise<TravelerDocuments> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { nationalities: true, approvedVisas: true, passportCountry: true },
+    select: PROFILE_DOCUMENTS_SELECT,
   });
-  if (!user) return { nationalities: [], visas: [] };
-  const nationalities = normalizeCountryCodes(user.nationalities);
-  const prefill = resolveNationalityCode(user.passportCountry);
-  return {
-    nationalities:
-      nationalities.length === 0 && prefill ? [prefill] : nationalities,
-    visas: toVisaCodes(user.approvedVisas).codes,
-  };
+  return user ? profileTravelDocuments(user) : { nationalities: [], visas: [] };
 }
 
 /**

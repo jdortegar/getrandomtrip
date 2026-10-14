@@ -921,7 +921,7 @@ describe("invite travel documents", () => {
     });
   });
 
-  it("keeps populated lists frozen after the cutoff and writes back only what was applied", async () => {
+  it("keeps the row's populated lists frozen after the cutoff but writes every list to the profile (linked = live)", async () => {
     vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ ...row, tripRequest: lockedTrip } as never);
 
     expect((await consumeTravelerInvite("tok", { ...claim, nationalities: ["IT"], visas: ["US"] })).ok).toBe(true);
@@ -929,7 +929,10 @@ describe("invite travel documents", () => {
     const { data } = vi.mocked(prisma.tripTraveler.update).mock.calls[0][0] as { data: Record<string, unknown> };
     expect(data).not.toHaveProperty("nationalities");
     expect(data.visas).toEqual(["US"]);
-    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id: "user-1" }, data: { approvedVisas: ["US"] } });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: "user-1" },
+      data: { nationalities: ["IT"], approvedVisas: ["US"] },
+    });
   });
 
   it("rolls back as invalid when the compare-and-swap loses a race", async () => {

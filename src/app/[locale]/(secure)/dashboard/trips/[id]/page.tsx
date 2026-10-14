@@ -41,7 +41,7 @@ import type { TripDetailsData } from "@/types/tripDetails";
 import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
-import { hasMissingTravelerDetails, isTripEnded } from "@/lib/travelers/travelerPolicy";
+import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
@@ -115,13 +115,6 @@ interface TripDetails extends BuyerDocumentsSnapshot {
 
 function labelFor(map: Record<string, string>, key: string): string {
   return map[key] ?? key;
-}
-
-/** ISO string from the trip payload to a `Date`; missing or invalid → `null`. */
-function parseTripDate(value: string | null | undefined): Date | null {
-  if (!value) return null;
-  const date = new Date(value);
-  return Number.isFinite(date.getTime()) ? date : null;
 }
 
 function TripDetailsContent() {
@@ -261,22 +254,19 @@ function TripDetailsContent() {
 
   const isCompanion = trip.role === "companion";
   // A companion edits only their own row; the Save button follows that row.
+  // Their documents are their live profile (linked = live), editable even
+  // after the roster locks, so their own row always keeps a Save button.
   const ownRow = trip.roster?.travelers.find((t) => t.isSelf);
   const rosterEditable = isCompanion
-    ? Boolean(ownRow) && (!trip.roster.locked || hasMissingTravelerDetails(ownRow!))
+    ? Boolean(ownRow)
     : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
 
   // The buyer's own documents: paid trips only (checkout collects them
-  // before payment). Editable while the trip is active and not yet over (the
-  // same `isTripEnded` check the buyer-documents route applies); once the
-  // roster locks, only the still-empty lists (the companions' rule).
+  // before payment). Linked = live: they are the buyer's profile documents,
+  // so no roster lock applies; only a cancelled trip is read-only (the same
+  // rule as the buyer-documents route).
   const showBuyerDocuments = !isCompanion && trip.payment?.status === "APPROVED";
-  const buyerDocumentsReadOnly =
-    (trip.status !== "CONFIRMED" && trip.status !== "REVEALED") ||
-    isTripEnded({
-      startDate: parseTripDate(trip.startDate),
-      endDate: parseTripDate(trip.endDate),
-    });
+  const buyerDocumentsReadOnly = trip.status === "CANCELLED";
 
   const price = getTripCostDisplay({
     ...trip,
@@ -460,7 +450,6 @@ function TripDetailsContent() {
                       visas: trip.buyerVisas ?? [],
                     }}
                     locale={locale}
-                    locked={Boolean(trip.roster?.locked)}
                     readOnly={buyerDocumentsReadOnly}
                     tripId={trip.id}
                   />

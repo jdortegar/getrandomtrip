@@ -89,15 +89,45 @@ describe("invite page payload (T11)", () => {
     expect(resolution).toEqual({ ok: false, reason: "expired" });
   });
 
-  it("passes the row's own documents to the invited viewer", async () => {
-    const travelDocuments = { nationalities: ["AR"], visas: [], nationalitiesLocked: false, visasLocked: false };
+  it("falls back to the row's documents, unlocked, while the viewer's profile is empty", async () => {
     session.mockResolvedValue({ user: { id: "user-1", email: "jane.doe@gmail.com" } });
-    peek.mockResolvedValue({ ...okPeek, invitedEmail: "jane.doe@gmail.com", viewerEmailMatches: true, travelDocuments });
+    peek.mockResolvedValue({
+      ...okPeek,
+      invitedEmail: "jane.doe@gmail.com",
+      viewerEmailMatches: true,
+      travelDocuments: { nationalities: ["AR"], visas: [], nationalitiesLocked: true, visasLocked: false },
+    });
+    profileDocuments.mockResolvedValue({ nationalities: [], visas: [] });
 
     const { resolution } = await renderPage();
 
-    expect(resolution.travelDocuments).toEqual(travelDocuments);
-    expect(profileDocuments).not.toHaveBeenCalled();
+    expect(resolution.travelDocuments).toEqual({
+      nationalities: ["AR"],
+      visas: [],
+      nationalitiesLocked: false,
+      visasLocked: false,
+    });
+  });
+
+  it("prefers the invited viewer's live profile over the row (linked = live)", async () => {
+    session.mockResolvedValue({ user: { id: "user-1", email: "jane.doe@gmail.com" } });
+    peek.mockResolvedValue({
+      ...okPeek,
+      invitedEmail: "jane.doe@gmail.com",
+      viewerEmailMatches: true,
+      travelDocuments: { nationalities: ["AR"], visas: ["GB"], nationalitiesLocked: true, visasLocked: true },
+    });
+    profileDocuments.mockResolvedValue({ nationalities: ["IT"], visas: ["US"] });
+
+    const { resolution } = await renderPage();
+
+    expect(profileDocuments).toHaveBeenCalledWith("user-1");
+    expect(resolution.travelDocuments).toEqual({
+      nationalities: ["IT"],
+      visas: ["US"],
+      nationalitiesLocked: false,
+      visasLocked: false,
+    });
   });
 
   it("prefills an empty row from the invited viewer's profile", async () => {

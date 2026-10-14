@@ -5,6 +5,7 @@ import { withDocumentCascadeCleanup } from "@/lib/db/withDocumentCascadeCleanup"
 import { prisma } from "@/lib/prisma";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 import { canAccessTrip, tripRoleFor } from "@/lib/travelers/travelerAccess";
+import { withLiveBuyerDocuments } from "@/lib/travelers/effectiveTravelDocuments";
 import { omitBuyerOnlyFields } from "@/lib/trips/companionTripView";
 import {
   toTravelerTripResponse,
@@ -93,8 +94,10 @@ export async function GET(
       travelerType: trip.type,
     }).price;
 
+    // The viewer is the buyer here: their documents are read live from
+    // their profile (linked = live), never from the trip snapshot.
     return NextResponse.json(
-      { trip: { ...detail, basePriceUsd } },
+      { trip: { ...withLiveBuyerDocuments(detail, user), basePriceUsd } },
       { status: 200 },
     );
   } catch (error) {

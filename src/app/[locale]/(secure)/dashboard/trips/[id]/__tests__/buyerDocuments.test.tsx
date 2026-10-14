@@ -118,28 +118,24 @@ it("prefills the buyer's saved documents and saves through the endpoint", async 
   }
 });
 
-it("keeps empty documents fillable after the roster locks", async () => {
-  const { container, unmount } = await mount(buyerTrip({}, true));
+it("keeps the buyer's live documents editable after the roster locks (linked = live)", async () => {
+  const { container, unmount } = await mount(
+    buyerTrip({ buyerNationalities: ["AR"], buyerVisas: ["US"] }, true),
+  );
   try {
-    const text = container.textContent ?? "";
-    expect(text).toContain(copy.missingTitle);
-    expect(text).toContain(copy.partiallyLockedNote);
+    expect(container.textContent).toContain(copy.title);
     expect(saveButton(container)).toBeDefined();
+    expect(container.querySelector('[aria-label="Remove Argentina"]')).not.toBeNull();
   } finally {
     unmount();
   }
 });
 
-it("renders populated documents read-only once the roster is locked", async () => {
-  const { container, unmount } = await mount(
-    buyerTrip({ buyerNationalities: ["AR"], buyerVisas: ["US"] }, true),
-  );
+it("still prompts for missing documents after the roster locks", async () => {
+  const { container, unmount } = await mount(buyerTrip({}, true));
   try {
-    const text = container.textContent ?? "";
-    expect(text).toContain(copy.title);
-    expect(text).toContain(copy.lockedNote);
-    expect(saveButton(container)).toBeUndefined();
-    expect(container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
+    expect(container.textContent).toContain(copy.missingTitle);
+    expect(saveButton(container)).toBeDefined();
   } finally {
     unmount();
   }
@@ -148,7 +144,7 @@ it("renders populated documents read-only once the roster is locked", async () =
 it("renders read-only for a cancelled trip", async () => {
   const { container, unmount } = await mount(buyerTrip({ status: "CANCELLED" }));
   try {
-    expect(container.textContent).toContain(copy.lockedNote);
+    expect(container.textContent).toContain(copy.title);
     expect(container.textContent).not.toContain(copy.missingTitle);
     expect(saveButton(container)).toBeUndefined();
   } finally {
@@ -156,8 +152,8 @@ it("renders read-only for a cancelled trip", async () => {
   }
 });
 
-it.each(["CONFIRMED", "REVEALED"])(
-  "renders read-only once a paid %s trip has ended",
+it.each(["CONFIRMED", "REVEALED", "COMPLETED"])(
+  "stays editable once a paid %s trip has ended (profile documents)",
   async (status) => {
     const { container, unmount } = await mount(
       buyerTrip({
@@ -167,11 +163,8 @@ it.each(["CONFIRMED", "REVEALED"])(
       }),
     );
     try {
-      const text = container.textContent ?? "";
-      expect(text).toContain(copy.title);
-      expect(text).toContain(copy.lockedNote);
-      expect(text).not.toContain(copy.missingTitle);
-      expect(saveButton(container)).toBeUndefined();
+      expect(container.textContent).toContain(copy.title);
+      expect(saveButton(container)).toBeDefined();
     } finally {
       unmount();
     }

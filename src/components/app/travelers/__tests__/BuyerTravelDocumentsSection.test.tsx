@@ -18,7 +18,7 @@ const fetchMock = vi.fn();
 
 function renderSection(
   value: BuyerTravelDocuments,
-  options: { locale?: "en" | "es"; readOnly?: boolean; locked?: boolean } = {},
+  options: { locale?: "en" | "es"; readOnly?: boolean } = {},
 ) {
   const dict = options.locale === "es" ? es : en;
   harness.render(
@@ -27,7 +27,6 @@ function renderSection(
       errorCopy={dict.journey.checkout.errors}
       initialValue={value}
       locale={options.locale ?? "en"}
-      locked={options.locked ?? false}
       readOnly={options.readOnly ?? false}
       tripId="trip-1"
     />,
@@ -85,65 +84,37 @@ describe("BuyerTravelDocumentsSection", () => {
     expect(text).not.toContain(en.tripDetail.buyerDocuments.missingTitle);
   });
 
-  it("is fully read-only once locked with both lists populated", () => {
-    renderSection({ nationalities: ["AR"], visas: ["US"] }, { locked: true });
-    expect(saveButton()).toBeUndefined();
-    expect(harness.container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
-    expect(harness.container.querySelector('[aria-label="Remove United States"]')).toBeNull();
-    expect(harness.container.textContent).toContain(en.tripDetail.buyerDocuments.lockedNote);
-  });
-
-  it("is fully read-only for an inactive trip, even with empty lists", () => {
+  it("is read-only without a prompt or lock note for a cancelled trip", () => {
     renderSection({ nationalities: [], visas: [] }, { readOnly: true });
     expect(saveButton()).toBeUndefined();
     const text = harness.container.textContent ?? "";
     expect(text).not.toContain(en.tripDetail.buyerDocuments.missingTitle);
-    expect(text).toContain(en.tripDetail.buyerDocuments.lockedNote);
+    expect(harness.container.querySelector("svg.lucide-lock")).toBeNull();
   });
 
-  it("keeps empty lists fillable after the lock and still prompts for nationalities", async () => {
-    fetchMock.mockResolvedValue(Response.json({ buyerNationalities: [], buyerVisas: [] }));
-    renderSection({ nationalities: [], visas: [] }, { locked: true });
-    const text = harness.container.textContent ?? "";
-    expect(text).toContain(en.tripDetail.buyerDocuments.missingTitle);
-    expect(text).toContain(en.tripDetail.buyerDocuments.partiallyLockedNote);
-    expect(saveButton()).toBeDefined();
-  });
-
-  it("freezes a populated list after the lock and saves only the editable one", async () => {
+  it("keeps both populated lists editable (linked = live: no roster lock)", async () => {
     fetchMock.mockResolvedValue(
-      Response.json({ buyerNationalities: ["AR"], buyerVisas: [] }),
+      Response.json({ buyerNationalities: ["AR"], buyerVisas: ["US"] }),
     );
-    renderSection({ nationalities: ["AR"], visas: [] }, { locked: true });
-    expect(harness.container.querySelector('[aria-label="Remove Argentina"]')).toBeNull();
-    expect(harness.container.textContent).not.toContain(en.tripDetail.buyerDocuments.missingTitle);
+    renderSection({ nationalities: ["AR"], visas: ["US"] });
+    expect(harness.container.querySelector('[aria-label="Remove Argentina"]')).not.toBeNull();
+    expect(harness.container.querySelector('[aria-label="Remove United States"]')).not.toBeNull();
+    await clickAndSettle(saveButton()!);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+      nationalities: ["AR"],
+      visas: ["US"],
+    });
+  });
+
+  it("explains that documents are saved to the profile", () => {
+    renderSection({ nationalities: ["AR"], visas: [] });
     expect(harness.container.textContent).toContain(
-      en.tripDetail.buyerDocuments.partiallyLockedNote,
+      en.tripDetail.buyerDocuments.description,
     );
-    await clickAndSettle(saveButton()!);
-    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ visas: [] });
-    expect(toast.success).toHaveBeenCalled();
-  });
-
-  it("asks for a nationality instead of sending an empty body once visas froze after the lock", async () => {
-    renderSection({ nationalities: [], visas: ["US"] }, { locked: true });
-    expect(harness.container.querySelector('[aria-label="Remove United States"]')).toBeNull();
-    await clickAndSettle(saveButton()!);
-    expect(fetchMock).not.toHaveBeenCalled();
-    expect(toast.error).toHaveBeenCalledWith(en.journey.checkout.errors.nationalitiesRequired);
-    expect(harness.container.querySelector('[role="alert"]')?.textContent).toBe(
-      en.journey.checkout.errors.nationalitiesRequired,
-    );
-  });
-
-  it("saves visas alone after the lock when nationalities were already saved", async () => {
-    fetchMock.mockResolvedValue(
-      Response.json({ buyerNationalities: ["AR"], buyerVisas: [] }),
-    );
-    renderSection({ nationalities: ["AR"], visas: [] }, { locked: true });
-    await clickAndSettle(saveButton()!);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(toast.error).not.toHaveBeenCalled();
+    expect(en.tripDetail.buyerDocuments).not.toHaveProperty("lockedNote");
+    expect(en.tripDetail.buyerDocuments).not.toHaveProperty("partiallyLockedNote");
+    expect(es.tripDetail.buyerDocuments).not.toHaveProperty("lockedNote");
+    expect(es.tripDetail.buyerDocuments).not.toHaveProperty("partiallyLockedNote");
   });
 
   it("saves through the buyer-documents endpoint and confirms with a toast", async () => {

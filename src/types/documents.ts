@@ -19,7 +19,7 @@ export interface BuyerTravelDocuments {
   visas: string[];
 }
 
-/** Per-trip buyer snapshot as returned by the trip APIs. */
+/** The buyer's documents as returned by the trip APIs to the buyer: their live profile values (linked = live). */
 export interface BuyerDocumentsSnapshot {
   buyerNationalities?: string[];
   buyerVisas?: string[];
