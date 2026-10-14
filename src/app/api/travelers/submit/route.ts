@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { consumeTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
+import { parseTravelerDocumentCodes } from "@/lib/travelers/travelerPolicy";
 import { stampSiteAccess } from "@/lib/auth/accessInviteTokens";
 import esCopy from "@/dictionaries/es.json";
 import enCopy from "@/dictionaries/en.json";
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/travelers/submit — session + token gated. The token still
  * answers WHICH row; the session now answers WHO claims it. Payload
- * narrows to `{ token, idDocument, consent }` — `fullName`/`email` are
+ * narrows to `{ token, idDocument, consent, nationalities, visas }` — `fullName`/`email` are
  * ALWAYS derived server-side from the authenticated user, never trusted
  * from the client. Re-validates the token independently before writing: it
  * is accepted until the trip ends (after the details cutoff it only links the
@@ -23,6 +24,11 @@ export const dynamic = "force-dynamic";
  * in-app `TRAVELER_SUBMITTED` notification for the buyer — idempotent by
  * construction, since a re-submitted (already-consumed) token resolves to
  * `used` and never reaches the notification step.
+ *
+ * Travel documents: `nationalities` (ISO codes, at least one — else 400
+ * `nationalities_required`) and optional `visas` (none when omitted). Invalid
+ * codes answer 400 `{ error, invalid }`. The consume step writes them to the
+ * row and back to the claiming user's profile in one transaction.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +52,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "invalid" }, { status: 400 });
     }
 
+    const documents = parseTravelerDocumentCodes(body);
+    if (!documents.ok) {
+      return NextResponse.json(
+        { error: documents.error, invalid: documents.invalid },
+        { status: 400 },
+      );
+    }
+    if (!documents.nationalities?.length) {
+      return NextResponse.json(
+        { error: "nationalities_required", invalid: [] },
+        { status: 400 },
+      );
+    }
+
     const sessionUserId = (session.user as { id?: string }).id;
     if (!sessionUserId) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
@@ -67,6 +87,8 @@ export async function POST(request: NextRequest) {
       userId: dbUser.id,
       // From the DB row above, not the session/JWT/body.
       emailVerified: dbUser.emailVerified,
+      nationalities: documents.nationalities,
+      visas: documents.visas ?? [],
     });
 
     if (!result.ok) {

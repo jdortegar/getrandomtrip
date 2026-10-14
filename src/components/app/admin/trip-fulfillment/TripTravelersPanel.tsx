@@ -1,23 +1,27 @@
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { summarizeCompanionDetails } from "@/lib/travelers/bookingTravelerPolicy";
+import { summarizeBookingTravelDocuments } from "@/lib/travelers/travelDocumentsSummary";
 import { TripTravelerReminder } from "./TripTravelerReminder";
+import { TripTravelDocumentsTable } from "./TripTravelDocumentsTable";
 import { cn } from "@/lib/utils";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 import type { AdminTripFulfillmentDict } from "@/lib/types/dictionary";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import styles from "./fulfillment.module.css";
 
 interface TripTravelersPanelProps {
   copy: AdminTripFulfillmentDict["travelers"];
+  locale: string;
   onRefresh: () => Promise<void>;
   pax: number;
   paxDetails: unknown;
   tripId: string;
-  travelers: AdminBookingTraveler[];
+  travelers: AdminBookingTravelerWithDocuments[];
 }
 
 export function TripTravelersPanel({
   copy,
+  locale,
   onRefresh,
   pax,
   paxDetails,
@@ -127,6 +131,13 @@ export function TripTravelersPanel({
             </li>
           ))}
         </ul>
+        <TripTravelDocumentsTable
+          copy={copy.documents}
+          kindLabels={kinds}
+          locale={locale}
+          notProvided={copy.notProvided}
+          summary={summarizeBookingTravelDocuments(travelers, pax, paxDetails)}
+        />
         {companions.needsReminder && (
           <TripTravelerReminder
             copy={copy.reminder}

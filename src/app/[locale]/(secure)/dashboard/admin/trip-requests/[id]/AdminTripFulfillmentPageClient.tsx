@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { TripRequestDetails } from "@/components/app/admin/TripRequestDetails";
 import { TripFulfillmentHeader } from "@/components/app/admin/trip-fulfillment/TripFulfillmentHeader";
 import { TripManagePanel } from "@/components/app/admin/trip-fulfillment/TripManagePanel";
 import { TripTravelersPanel } from "@/components/app/admin/trip-fulfillment/TripTravelersPanel";
-import type { AdminBookingTraveler } from "@/lib/types/AdminBookingTravelers";
 import { TripItineraryReference } from "@/components/app/admin/trip-fulfillment/TripItineraryReference";
 import { useTripDocumentSource } from "@/components/app/admin/trip-fulfillment/useTripDocumentSource";
 import { DocumentSourceFeedback } from "@/components/app/admin/trip-fulfillment/DocumentSourceFeedback";
@@ -23,9 +23,12 @@ import { AddTripDocumentForm } from "@/components/app/admin/trip-fulfillment/Add
 import { TripDangerZone } from "@/components/app/admin/trip-fulfillment/TripDangerZone";
 import { ContactTravelerModal } from "@/components/app/admin/trip-fulfillment/ContactTravelerModal";
 import { buildAssignableExperiencesQuery } from "@/lib/admin/assignableExperiences";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+import { summarizeBookingTravelDocuments } from "@/lib/travelers/travelDocumentsSummary";
 import type { AdminTripRequest, TripRequestStatus } from "@/lib/admin/types";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
+import type { AdminBookingTravelerWithDocuments } from "@/types/traveler";
 import styles from "@/components/app/admin/trip-fulfillment/fulfillment.module.css";
 
 interface AssignableExperience {
@@ -59,9 +62,9 @@ export function AdminTripFulfillmentPageClient({
 }: AdminTripFulfillmentPageClientProps) {
   const router = useRouter();
   const [trip, setTrip] = useState<AdminTripRequest | null>(null);
-  const [bookingTravelers, setBookingTravelers] = useState<AdminBookingTraveler[]>(
-    [],
-  );
+  const [bookingTravelers, setBookingTravelers] = useState<
+    AdminBookingTravelerWithDocuments[]
+  >([]);
   const attached = useAttachedDocuments(tripId);
   const { documents, replace: setDocuments } = attached;
   const dictionary = locale === "en" ? en : es;
@@ -75,6 +78,7 @@ export function AdminTripFulfillmentPageClient({
   const [notFound, setNotFound] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [confirmDocumentsOpen, setConfirmDocumentsOpen] = useState(false);
   const savePending = useRef(false);
   const attachmentActions = useAttachedDocumentActions({
     tripId,
@@ -108,7 +112,7 @@ export function AdminTripFulfillmentPageClient({
         const data = (await res.json()) as {
           tripRequest: AdminTripRequest;
           documents: TripDocumentDTO[];
-          bookingTravelers: AdminBookingTraveler[];
+          bookingTravelers: AdminBookingTravelerWithDocuments[];
         };
         setTrip(data.tripRequest);
         setBookingTravelers(data.bookingTravelers);
@@ -141,7 +145,9 @@ export function AdminTripFulfillmentPageClient({
   async function refreshBookingTravelers() {
     const response = await fetch(`/api/admin/trip-requests/${tripId}`);
     if (!response.ok) throw new Error("travelers_refresh_failed");
-    const data = (await response.json()) as { bookingTravelers: AdminBookingTraveler[] };
+    const data = (await response.json()) as {
+      bookingTravelers: AdminBookingTravelerWithDocuments[];
+    };
     setBookingTravelers(data.bookingTravelers);
   }
 
@@ -154,6 +160,23 @@ export function AdminTripFulfillmentPageClient({
     !!draft &&
     (draft.experienceId !== (trip.experienceId ?? "") ||
       draft.status !== trip.status);
+
+  const travelDocuments = trip
+    ? summarizeBookingTravelDocuments(bookingTravelers, trip.pax, trip.paxDetails)
+    : null;
+
+  /** Soft gate: assigning an experience while documents are missing needs
+   * confirmation. The server does not block it. */
+  function requestSave() {
+    if (!draft || savePending.current) return;
+    const assigning =
+      !!draft.experienceId && draft.experienceId !== (trip?.experienceId ?? "");
+    if (assigning && (travelDocuments?.missingCount ?? 0) > 0) {
+      setConfirmDocumentsOpen(true);
+      return;
+    }
+    void handleSave();
+  }
 
   async function handleSave() {
     if (!draft || savePending.current) return;
@@ -217,6 +240,7 @@ export function AdminTripFulfillmentPageClient({
 
         <TripTravelersPanel
           copy={fulfillmentDict.travelers}
+          locale={locale}
           onRefresh={refreshBookingTravelers}
           pax={trip.pax}
           paxDetails={trip.paxDetails}
@@ -368,7 +392,7 @@ export function AdminTripFulfillmentPageClient({
             aria-busy={saving}
             className={`${styles.btn} ${styles.btnPrimary}`}
             disabled={saving || !hasChanges}
-            onClick={() => void handleSave()}
+            onClick={requestSave}
             type="button"
           >
             {saving && (
@@ -378,6 +402,28 @@ export function AdminTripFulfillmentPageClient({
           </button>
         </div>
       </div>
+
+      {travelDocuments && (
+        <ConfirmModal
+          cancelLabel={fulfillmentDict.travelers.documents.confirm.cancel}
+          confirmLabel={fulfillmentDict.travelers.documents.confirm.confirm}
+          description={interpolateTemplate(
+            fulfillmentDict.travelers.documents.confirm.description,
+            {
+              missing: String(travelDocuments.missingCount),
+              total: String(travelDocuments.totalCount),
+            },
+          )}
+          icon={AlertTriangle}
+          onConfirm={() => {
+            setConfirmDocumentsOpen(false);
+            void handleSave();
+          }}
+          onOpenChange={setConfirmDocumentsOpen}
+          open={confirmDocumentsOpen}
+          title={fulfillmentDict.travelers.documents.confirm.title}
+        />
+      )}
 
       <ContactTravelerModal
         copy={fulfillmentDict}

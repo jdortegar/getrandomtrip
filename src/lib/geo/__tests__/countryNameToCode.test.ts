@@ -10,6 +10,9 @@ describe("resolveCountryCode", () => {
     ["Brazil", "BR"],
     ["México", "MX"],
     ["Mexico", "MX"],
+    // Intl also labels the retired "VD" (Viet-Nam, Democratic Republic) as Vietnam.
+    ["Vietnam", "VN"],
+    ["Czech Republic", "CZ"],
     ["Perú", "PE"],
     ["Peru", "PE"],
     ["Estados Unidos", "US"],

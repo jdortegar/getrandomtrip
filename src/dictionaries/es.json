@@ -3510,15 +3510,19 @@
       "contactStreetLabel": "Dirección",
       "contactTitle": "Información de contacto",
       "contactZipCodeLabel": "Código postal",
+      "travelDocumentsTitle": "Documentos de viaje",
+      "travelDocumentsDescription": "Los usamos para elegir un destino al que puedas ingresar. Se guardan en este viaje y en tu perfil.",
       "errors": {
         "invalidDates": "Las fechas del viaje faltan, no son válidas o ya no están disponibles. Ve a tus viajes para revisar las fechas antes de pagar.",
         "connectionTryAgain": "Error de conexión. Intenta de nuevo.",
         "idDocumentRequired": "Ingresa tu DNI o número de pasaporte.",
         "loadTripFailed": "Error al cargar el viaje",
         "loadTripsFailed": "No se pudieron cargar tus viajes",
+        "nationalitiesRequired": "Agrega al menos una nacionalidad para continuar.",
         "noTripFound": "Viaje no encontrado",
         "noTripToContinue": "No tienes un viaje para continuar",
         "noValidSession": "No hay sesión válida.",
+        "saveTravelDocumentsFailed": "No se pudieron guardar tus documentos de viaje.",
         "saveUserFailed": "No se pudieron guardar tus datos.",
         "updateTripFailed": "No se pudo actualizar el viaje."
       },
@@ -4263,7 +4267,8 @@
       "tripperProfile": "Perfil público de Tripper",
       "tripperOs": "Tripper OS",
       "nationalId": "Documento nacional",
-      "passport": "Pasaporte"
+      "passport": "Pasaporte",
+      "nationalities": "Nacionalidades"
     },
     "comingSoon": "Próximamente",
     "comingSoonDescription": "Esta sección estará disponible próximamente.",
@@ -4322,10 +4327,18 @@
       "issuingCountry": "País emisor",
       "expiryDate": "Fecha de vencimiento",
       "passportNumber": "Número de pasaporte",
-      "approvedVisas": "Visas aprobadas",
-      "approvedVisasHelper": "Países y regiones para los que actualmente tienes una visa válida.",
+      "approvedVisas": "Visas",
+      "approvedVisasHelper": "Visas que estarán vigentes en las fechas de tu viaje.",
       "noVisas": "Sin visas registradas.",
-      "searchVisa": "Buscar país o región…"
+      "searchVisa": "Buscar país o región…",
+      "selectVisas": "Seleccionar visas",
+      "schengenVisa": "Espacio Schengen",
+      "nationalitiesHelper": "Pasaportes con los que puedes viajar. Agrega todas tus nacionalidades.",
+      "noNationalities": "Sin nacionalidades registradas.",
+      "selectNationalities": "Seleccionar nacionalidades",
+      "searchCountry": "Buscar país…",
+      "noCountryResults": "No se encontraron países.",
+      "removeCountry": "Quitar {country}"
     },
     "travelerTypes": {
       "selectPlaceholder": "Seleccionar...",
@@ -4428,6 +4441,26 @@
       "email": "Email",
       "notProvided": "No informado",
       "phoneNotCollected": "No recopilado",
+      "documents": {
+        "title": "Documentos de viaje",
+        "description": "Nacionalidades y visas que cada viajero informó para este viaje. Verificar que todos los viajeros puedan ingresar al destino antes de asignarlo.",
+        "traveler": "Viajero",
+        "nationalities": "Nacionalidades",
+        "visas": "Visas",
+        "status": "Estado",
+        "onFile": "Registrada",
+        "missing": "Falta nacionalidad",
+        "noVisas": "Ninguna",
+        "schengenVisa": "Espacio Schengen",
+        "missingBadge": "{{missing}} de {{total}} viajeros sin documentos",
+        "completeBadge": "Todos los viajeros tienen documentos registrados ({{total}})",
+        "confirm": {
+          "title": "Documentos de viaje incompletos",
+          "description": "{{missing}} de {{total}} viajeros no tienen nacionalidad registrada. ¿Continuar de todos modos?",
+          "confirm": "Guardar de todos modos",
+          "cancel": "Volver"
+        }
+      },
       "incomplete": "Viajeros con datos incompletos: {{count}}",
       "missingRecords": "Registros de acompañantes aún no creados: {{count}}. Estos datos todavía deben completarse.",
       "extraRecords": "Registros de acompañantes adicionales: {{count}}. Revisar la reserva antes de realizar reservas.",
@@ -6030,7 +6063,16 @@
     "excuseLabel": "Excusa",
     "refineDetailsLabel": "Detalles",
     "confirmedHint": "El destino será revelado 48 horas antes del viaje",
-    "revealedHint": "¡Tu destino ha sido revelado!"
+    "revealedHint": "¡Tu destino ha sido revelado!",
+    "buyerDocuments": {
+      "title": "Tus documentos de viaje",
+      "description": "Tus nacionalidades y las visas que estarán vigentes en las fechas del viaje. Se guardan en tu perfil y se aplican a todos tus viajes.",
+      "missingTitle": "Completa tus documentos de viaje",
+      "missingDescription": "Necesitamos las nacionalidades de cada viajero para elegir un destino al que todo el grupo pueda ingresar.",
+      "saveAction": "Guardar documentos",
+      "savingAction": "Guardando…",
+      "savedToast": "Documentos de viaje guardados."
+    }
   },
   "reviewForm": {
     "pageTitle": "¿Cómo fue tu viaje?",

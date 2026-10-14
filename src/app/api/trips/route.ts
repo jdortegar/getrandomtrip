@@ -11,6 +11,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { attachPaymentsToTrips } from "@/lib/utils/trip-relations";
 import { tripAccessWhere, tripRoleFor } from "@/lib/travelers/travelerAccess";
+import { withLiveBuyerDocuments } from "@/lib/travelers/effectiveTravelDocuments";
 import { omitBuyerOnlyFields } from "@/lib/trips/companionTripView";
 import { revertExpiredPendingPaymentsForUser } from "@/lib/db/tripRequest";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
@@ -148,8 +149,11 @@ export async function GET(request: NextRequest) {
         }).price,
         role,
       };
-      // Companions never see what the buyer paid or the resolved price.
-      return role === "companion" ? omitBuyerOnlyFields(item) : item;
+      // Companions never see what the buyer paid or the resolved price. The
+      // buyer's documents are their live profile (linked = live).
+      return role === "companion"
+        ? omitBuyerOnlyFields(item)
+        : withLiveBuyerDocuments(item, user);
     });
     console.log("Trips found:", trips.length);
 

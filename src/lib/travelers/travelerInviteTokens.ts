@@ -1,7 +1,15 @@
 import { createHash, randomBytes } from "crypto";
 import { prisma } from "@/lib/prisma";
 import type { TravelerKind, TravelerStatus } from "@prisma/client";
+import type {
+  TravelerDocuments,
+  TravelerInviteDocuments,
+} from "@/types/traveler";
 import { isRosterLocked } from "./travelerRoster";
+import {
+  PROFILE_DOCUMENTS_SELECT,
+  profileTravelDocuments,
+} from "./effectiveTravelDocuments";
 import {
   hasMissingTravelerDetails,
   isTravelerFieldFilled,
@@ -69,6 +77,11 @@ export type TravelerPeek =
        * when no viewer email was supplied (anonymous).
        */
       viewerEmailMatches: boolean | null;
+      /**
+       * The row's nationalities and visas with their cutoff locks. Non-null
+       * ONLY for a viewer signed in with the invited address, like `invitedEmail`.
+       */
+      travelDocuments: TravelerInviteDocuments | null;
     }
   | { ok: false; reason: "invalid" | "expired" | "used" | "ended" };
 
@@ -92,6 +105,8 @@ type TravelerInviteRow = {
   userId: string | null;
   inviteTokenHash: string | null;
   inviteTokenExpiresAt: Date | null;
+  nationalities?: string[];
+  visas?: string[];
   tripRequest: {
     type?: string;
     startDate: Date | null;
@@ -119,7 +134,9 @@ type TravelerInviteRow = {
  */
 async function resolveTravelerInvite(
   plaintext: string,
-): Promise<TravelerPeek & { row?: TravelerInviteRow }> {
+): Promise<
+  TravelerPeek & { row?: TravelerInviteRow; documents?: TravelerInviteDocuments }
+> {
   const tokenHash = hashToken(plaintext);
   const row = (await prisma.tripTraveler.findUnique({
     where: { inviteTokenHash: tokenHash },
@@ -137,19 +154,27 @@ async function resolveTravelerInvite(
   )
     return { ok: false, reason: "expired" };
 
+  const locked = isRosterLocked(row.tripRequest);
+  const nationalities = row.nationalities ?? [];
+  const visas = row.visas ?? [];
   return {
     ok: true,
     travelerId: row.id,
     tripRequestId: row.tripRequestId,
     kind: row.kind,
     buyerFirstName: row.tripRequest.user.name.split(" ")[0],
-    idDocumentRequired:
-      !isRosterLocked(row.tripRequest) ||
-      !isTravelerFieldFilled(row.idDocument),
+    idDocumentRequired: !locked || !isTravelerFieldFilled(row.idDocument),
     invitedEmail: null,
     maskedEmail: maskEmail(row.email),
     viewerEmailMatches: null,
+    travelDocuments: null,
     row,
+    documents: {
+      nationalities,
+      visas,
+      nationalitiesLocked: locked && nationalities.length > 0,
+      visasLocked: locked && visas.length > 0,
+    },
   };
 }
 
@@ -166,6 +191,7 @@ function publicPeek(
     invitedEmail: null,
     maskedEmail: resolved.maskedEmail,
     viewerEmailMatches: null,
+    travelDocuments: null,
   };
 }
 
@@ -189,6 +215,7 @@ export async function peekTravelerInvite(
     ...peek,
     invitedEmail: matches ? (resolved.row?.email?.trim() ?? null) : null,
     viewerEmailMatches: matches,
+    travelDocuments: matches ? (resolved.documents ?? null) : null,
   };
 }
 
@@ -215,6 +242,10 @@ export async function consumeTravelerInvite(
      * account: a null/missing value is rejected as `email_unverified`.
      */
     emailVerified?: Date | null;
+    /** Validated ISO codes; `undefined` leaves the row's list unchanged. */
+    nationalities?: string[];
+    /** Validated visa codes; `undefined` leaves the row's list unchanged. */
+    visas?: string[];
   },
 ): Promise<TravelerConsumeResult> {
   const resolved = await resolveTravelerInvite(plaintext);
@@ -252,9 +283,16 @@ export async function consumeTravelerInvite(
   if (hasMissingTravelerDetails({ ...row, fullName, email, idDocument })) {
     return { ok: false, reason: "invalid" };
   }
+  // Travel documents follow the same freeze rule: after cutoff a populated
+  // list is kept, and only the lists actually applied are written back.
+  const rowNationalities = row.nationalities ?? [];
+  const rowVisas = row.visas ?? [];
+  const nationalities =
+    locked && rowNationalities.length > 0 ? undefined : data.nationalities;
+  const visas = locked && rowVisas.length > 0 ? undefined : data.visas;
   const now = new Date();
   try {
-    await prisma.tripTraveler.update({
+    const travelerUpdate = prisma.tripTraveler.update({
       where: {
         id: row.id,
         inviteTokenHash: hashToken(plaintext),
@@ -264,17 +302,45 @@ export async function consumeTravelerInvite(
         email: row.email,
         idDocument: row.idDocument,
         inviteTokenExpiresAt: row.inviteTokenExpiresAt,
+        ...(nationalities !== undefined && {
+          nationalities: { equals: rowNationalities },
+        }),
+        ...(visas !== undefined && { visas: { equals: rowVisas } }),
       },
       data: {
         fullName,
         idDocument,
         email,
         ...(data.userId !== undefined && { userId: data.userId }),
+        ...(nationalities !== undefined && { nationalities }),
+        ...(visas !== undefined && { visas }),
         submittedAt: now,
         consentAt: now,
         status: "COMPLETE",
       },
     });
+    if (
+      data.userId !== undefined &&
+      (data.nationalities !== undefined || data.visas !== undefined)
+    ) {
+      // Linked = live: once claimed, this traveler's documents are read from
+      // their profile, so the submitted lists always reach it (the row's
+      // cutoff freeze above only guards the trip row).
+      await prisma.$transaction([
+        travelerUpdate,
+        prisma.user.update({
+          where: { id: data.userId },
+          data: {
+            ...(data.nationalities !== undefined && {
+              nationalities: data.nationalities,
+            }),
+            ...(data.visas !== undefined && { approvedVisas: data.visas }),
+          },
+        }),
+      ]);
+    } else {
+      await travelerUpdate;
+    }
   } catch (error) {
     if (
       error &&
@@ -287,6 +353,21 @@ export async function consumeTravelerInvite(
     throw error;
   }
   return publicPeek(resolved);
+}
+
+/**
+ * The user's profile nationalities and visas as invite-form prefill, with the
+ * same read-time conversions as `/api/user/documents`: legacy visa names
+ * become codes, and empty nationalities fall back to `passportCountry`.
+ */
+export async function getProfileTravelDocuments(
+  userId: string,
+): Promise<TravelerDocuments> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: PROFILE_DOCUMENTS_SELECT,
+  });
+  return user ? profileTravelDocuments(user) : { nationalities: [], visas: [] };
 }
 
 /**

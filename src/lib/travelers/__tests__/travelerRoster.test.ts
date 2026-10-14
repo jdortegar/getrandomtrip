@@ -187,7 +187,68 @@ describe("serializeTraveler", () => {
       invitedAt: invitedAt.toISOString(),
       submittedAt: null,
       joined: false,
+      nationalities: [],
+      visas: [],
     });
+  });
+
+  it("exposes the row's nationalities and visas", () => {
+    const dto = serializeTraveler({
+      id: "t-4",
+      kind: "ADULT",
+      status: "COMPLETE",
+      fullName: "Dual",
+      email: "dual@example.com",
+      idDocument: "ID",
+      dateOfBirth: null,
+      invitedAt: null,
+      submittedAt: null,
+      nationalities: ["AR", "IT"],
+      visas: ["SCHENGEN", "US"],
+    });
+
+    expect(dto).toMatchObject({ nationalities: ["AR", "IT"], visas: ["SCHENGEN", "US"] });
+  });
+
+  it("exposes a linked row's live profile documents instead of the row's (T7)", () => {
+    const dto = serializeTraveler({
+      id: "t-5",
+      kind: "ADULT",
+      status: "COMPLETE",
+      fullName: "Linked",
+      email: "linked@example.com",
+      idDocument: "ID",
+      dateOfBirth: null,
+      invitedAt: null,
+      submittedAt: null,
+      userId: "user-5",
+      nationalities: ["FR"],
+      visas: ["JP"],
+      user: { nationalities: ["AR", "CO"], approvedVisas: ["United States"], passportCountry: null },
+    });
+
+    expect(dto).toMatchObject({ nationalities: ["AR", "CO"], visas: ["US"] });
+    expect(JSON.stringify(dto)).not.toContain("passportCountry");
+  });
+
+  it("keeps an unlinked row's own documents (T7)", () => {
+    const dto = serializeTraveler({
+      id: "t-6",
+      kind: "MINOR",
+      status: "COMPLETE",
+      fullName: "Kid",
+      email: null,
+      idDocument: "ID",
+      dateOfBirth: null,
+      invitedAt: null,
+      submittedAt: null,
+      userId: null,
+      nationalities: ["FR"],
+      visas: [],
+      user: null,
+    });
+
+    expect(dto).toMatchObject({ nationalities: ["FR"], visas: [] });
   });
 
   it("derives `joined` from the account link without exposing the user id (T8)", () => {
@@ -239,6 +300,8 @@ describe("serializeTravelerForCompanion (T6)", () => {
     invitedAt: new Date("2026-01-01T00:00:00.000Z"),
     submittedAt: new Date("2026-01-02T00:00:00.000Z"),
     userId,
+    nationalities: ["FR"],
+    visas: ["JP"],
   });
 
   it("keeps the viewer's own row complete and marks it as theirs", () => {
@@ -250,6 +313,8 @@ describe("serializeTravelerForCompanion (T6)", () => {
       email: "me@example.com",
       idDocument: "DOC-me",
       dateOfBirth: "1990-01-01T00:00:00.000Z",
+      nationalities: ["FR"],
+      visas: ["JP"],
       isSelf: true,
     });
   });
@@ -269,7 +334,26 @@ describe("serializeTravelerForCompanion (T6)", () => {
       submittedAt: null,
       joined: false,
     });
-    expect(JSON.stringify(dto)).not.toMatch(/DOC-other|other@example.com|1990|someone-else/);
+    expect(dto).not.toHaveProperty("nationalities");
+    expect(dto).not.toHaveProperty("visas");
+    expect(JSON.stringify(dto)).not.toMatch(/DOC-other|other@example.com|1990|someone-else|"FR"|"JP"/);
+  });
+
+  it("shows the viewer's own linked row with their live profile documents (T7)", () => {
+    const dto = serializeTravelerForCompanion(
+      { ...row("me", "viewer-1"), user: { nationalities: ["CO"], approvedVisas: [], passportCountry: null } },
+      "viewer-1",
+    );
+    expect(dto).toMatchObject({ nationalities: ["CO"], visas: [], isSelf: true });
+  });
+
+  it("never exposes another linked traveler's profile documents (T7)", () => {
+    const dto = serializeTravelerForCompanion(
+      { ...row("other", "someone-else"), user: { nationalities: ["CO"], approvedVisas: ["US"], passportCountry: null } },
+      "viewer-1",
+    );
+    expect(dto).not.toHaveProperty("nationalities");
+    expect(JSON.stringify(dto)).not.toMatch(/"CO"|"US"/);
   });
 
   it("never treats an unlinked row as the viewer's", () => {
@@ -314,6 +398,14 @@ describe("getRosterForTrip", () => {
     const roster = await getRosterForTrip("trip-1", "buyer-1");
 
     expect(prisma.tripRequest.findUnique).toHaveBeenCalledTimes(2);
+    // Linked rows are serialized with their account's live documents (T7).
+    expect(vi.mocked(prisma.tripRequest.findUnique).mock.calls[1][0]).toMatchObject({
+      include: {
+        travelers: {
+          include: { user: { select: { nationalities: true, approvedVisas: true, passportCountry: true } } },
+        },
+      },
+    });
     expect(roster.locked).toBe(false);
     expect(roster.cap).toBe(1);
     expect(roster.submitted).toBe(1);

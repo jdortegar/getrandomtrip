@@ -116,6 +116,27 @@ describe("GET /api/trips", () => {
     expect(JSON.stringify(trips[1])).not.toContain("999");
   });
 
+  it("lists the buyer's own trips with their live profile documents, never a companion's (T7)", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      ...mockUser,
+      nationalities: ["AR", "CO"],
+      approvedVisas: ["SCHENGEN"],
+      passportCountry: null,
+    } as never);
+    vi.mocked(prisma.tripRequest.findMany).mockResolvedValue([
+      { id: "mine", userId: "user-1", type: "couple", level: "essenza", status: "SAVED", buyerNationalities: [], buyerVisas: [] },
+      { id: "joined", userId: "other-buyer", type: "couple", level: "essenza", status: "CONFIRMED", buyerNationalities: ["FR"], buyerVisas: [] },
+    ] as never);
+    vi.mocked(prisma.payment.findUnique).mockResolvedValue(null);
+    const { GET } = await import("../route");
+
+    const { trips } = await (await GET(makeRequest())).json();
+
+    expect(trips[0]).toMatchObject({ buyerNationalities: ["AR", "CO"], buyerVisas: ["SCHENGEN"] });
+    expect(trips[1]).not.toHaveProperty("buyerNationalities");
+    expect(trips[1]).not.toHaveProperty("buyerVisas");
+  });
+
   it("returns 401 when session is missing", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(null);
     const { GET } = await import("../route");

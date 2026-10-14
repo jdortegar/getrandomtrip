@@ -30,6 +30,10 @@ const buyer = {
   address: { idDocument: " CHECKOUT-ID ", street: "PRIVATE-STREET" },
   idNumber: "PROFILE-ID",
   passportNumber: "PROFILE-PASSPORT",
+  // Live profile documents (T7): the trip snapshot below is empty.
+  nationalities: ["AR", "CO"],
+  approvedVisas: ["Schengena"],
+  passportCountry: "PRIVATE-PASSPORT-COUNTRY",
 };
 const request = () =>
   GET(new NextRequest("http://local/api/admin/trip-requests/trip"), {
@@ -49,6 +53,8 @@ beforeEach(() => {
     experienceId: null,
     status: "CONFIRMED",
     pax: 4,
+    buyerNationalities: [],
+    buyerVisas: [],
   } as never);
   vi.mocked(prisma.tripTraveler.findMany).mockResolvedValue([]);
   vi.mocked(prisma.tripDocument.findMany).mockResolvedValue([]);
@@ -78,7 +84,7 @@ it.each(["anonymous", "revoked-admin", "missing-account"])(
   },
 );
 
-it("returns allowlisted booking identity for every status without writes or linked-account fallback", async () => {
+it("returns allowlisted booking identity with live documents for linked travelers (T7), without writes", async () => {
   const companions = ["PENDING", "INVITED", "COMPLETE"].map(
     (status, index) => ({
       id: `companion-${index}`,
@@ -87,9 +93,20 @@ it("returns allowlisted booking identity for every status without writes or link
       fullName: index === 2 ? "  " : ` Companion ${index} `,
       email: index === 2 ? null : ` companion${index}@example.test `,
       idDocument: index === 2 ? "" : ` DOC-${index} `,
-      user: { phone: "LINKED-PHONE" },
-      userId: "LINKED-ID",
+      // companion-1 is linked: its live profile wins over its stale row lists.
+      user:
+        index === 1
+          ? {
+              phone: "LINKED-PHONE",
+              nationalities: ["CO"],
+              approvedVisas: ["Canada"],
+              passportCountry: null,
+            }
+          : null,
+      userId: index === 1 ? "LINKED-ID" : null,
       inviteTokenHash: "PRIVATE-TOKEN",
+      nationalities: index === 0 ? ["UY"] : index === 1 ? ["FR"] : [],
+      visas: index === 0 ? ["US"] : index === 1 ? ["GB"] : [],
     }),
   );
   vi.mocked(prisma.tripTraveler.findMany).mockResolvedValue(
@@ -109,6 +126,8 @@ it("returns allowlisted booking identity for every status without writes or link
       phone: "+1 555 0100",
       dateOfBirth: null,
       idDocument: "CHECKOUT-ID",
+      nationalities: ["AR", "CO"],
+      visas: ["SCHENGEN"],
     },
     {
       id: "companion-0",
@@ -118,6 +137,8 @@ it("returns allowlisted booking identity for every status without writes or link
       phone: null,
       dateOfBirth: null,
       idDocument: "DOC-0",
+      nationalities: ["UY"],
+      visas: ["US"],
     },
     {
       id: "companion-1",
@@ -127,6 +148,8 @@ it("returns allowlisted booking identity for every status without writes or link
       phone: null,
       dateOfBirth: null,
       idDocument: "DOC-1",
+      nationalities: ["CO"],
+      visas: ["CA"],
     },
     {
       id: "companion-2",
@@ -136,6 +159,8 @@ it("returns allowlisted booking identity for every status without writes or link
       phone: null,
       dateOfBirth: null,
       idDocument: null,
+      nationalities: [],
+      visas: [],
     },
   ]);
   expect(body.tripRequest.user).toEqual({
@@ -153,6 +178,9 @@ it("returns allowlisted booking identity for every status without writes or link
       locale: true,
       phone: true,
       address: true,
+      nationalities: true,
+      approvedVisas: true,
+      passportCountry: true,
     },
   });
   expect(prisma.tripTraveler.findMany).toHaveBeenCalledWith({
@@ -165,6 +193,12 @@ it("returns allowlisted booking identity for every status without writes or link
       email: true,
       idDocument: true,
       dateOfBirth: true,
+      nationalities: true,
+      visas: true,
+      userId: true,
+      user: {
+        select: { nationalities: true, approvedVisas: true, passportCountry: true },
+      },
     },
   });
   for (const secret of [
@@ -174,6 +208,7 @@ it("returns allowlisted booking identity for every status without writes or link
     "PRIVATE-TOKEN",
     "LINKED-PHONE",
     "LINKED-ID",
+    "PRIVATE-PASSPORT-COUNTRY",
   ])
     expect(JSON.stringify(body)).not.toContain(secret);
   expect(prisma.user.update).not.toHaveBeenCalled();
@@ -205,6 +240,8 @@ it.each([null, [], "legacy", { idDocument: " \n " }, { idDocument: 123 }])(
         phone: null,
         dateOfBirth: null,
         idDocument: null,
+        nationalities: ["AR", "CO"],
+        visas: ["SCHENGEN"],
       },
     ]);
   },

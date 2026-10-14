@@ -3503,15 +3503,19 @@
       "contactStreetLabel": "Address",
       "contactTitle": "Contact information",
       "contactZipCodeLabel": "ZIP / Postal code",
+      "travelDocumentsTitle": "Travel documents",
+      "travelDocumentsDescription": "We use them to choose a destination you can enter. They are saved to this trip and your profile.",
       "errors": {
         "invalidDates": "Your trip dates are missing, invalid, or no longer available. Go to your trips to review the dates before paying.",
         "connectionTryAgain": "Connection error. Please try again.",
         "idDocumentRequired": "Please enter your ID or passport number.",
         "loadTripFailed": "Error loading trip",
         "loadTripsFailed": "Couldn't load your trips",
+        "nationalitiesRequired": "Add at least one nationality to continue.",
         "noTripFound": "Trip not found",
         "noTripToContinue": "You don't have a trip to continue",
         "noValidSession": "No valid session.",
+        "saveTravelDocumentsFailed": "Couldn't save your travel documents.",
         "saveUserFailed": "Couldn't save your details.",
         "updateTripFailed": "Couldn't update the trip."
       },
@@ -4263,7 +4267,8 @@
       "tripperProfile": "Tripper public profile",
       "tripperOs": "Tripper OS",
       "nationalId": "National ID",
-      "passport": "Passport"
+      "passport": "Passport",
+      "nationalities": "Nationalities"
     },
     "comingSoon": "Coming soon",
     "comingSoonDescription": "This section will be available soon.",
@@ -4322,10 +4327,18 @@
       "issuingCountry": "Issuing Country",
       "expiryDate": "Expiry Date",
       "passportNumber": "Passport Number",
-      "approvedVisas": "Approved Visas",
-      "approvedVisasHelper": "Countries and regions for which you currently hold a valid visa.",
+      "approvedVisas": "Visas",
+      "approvedVisasHelper": "Visas that will be valid on your travel dates.",
       "noVisas": "No visas on file.",
-      "searchVisa": "Search country or region…"
+      "searchVisa": "Search country or region…",
+      "selectVisas": "Select visas",
+      "schengenVisa": "Schengen Area",
+      "nationalitiesHelper": "Passports you can travel with. Add every nationality you hold.",
+      "noNationalities": "No nationalities on file.",
+      "selectNationalities": "Select nationalities",
+      "searchCountry": "Search country…",
+      "noCountryResults": "No countries found.",
+      "removeCountry": "Remove {country}"
     },
     "travelerTypes": {
       "selectPlaceholder": "Select…",
@@ -4428,6 +4441,26 @@
       "email": "Email",
       "notProvided": "Not provided",
       "phoneNotCollected": "Not collected",
+      "documents": {
+        "title": "Travel documents",
+        "description": "Nationalities and visas each traveler reported for this trip. Check that every traveler can enter the destination before assigning it.",
+        "traveler": "Traveler",
+        "nationalities": "Nationalities",
+        "visas": "Visas",
+        "status": "Status",
+        "onFile": "On file",
+        "missing": "Missing nationality",
+        "noVisas": "None",
+        "schengenVisa": "Schengen Area",
+        "missingBadge": "{{missing}} of {{total}} travelers missing documents",
+        "completeBadge": "All travelers have documents on file ({{total}})",
+        "confirm": {
+          "title": "Travel documents incomplete",
+          "description": "{{missing}} of {{total}} travelers have no nationality on file. Continue anyway?",
+          "confirm": "Save anyway",
+          "cancel": "Go back"
+        }
+      },
       "incomplete": "Travelers with incomplete details: {{count}}",
       "missingRecords": "Companion records not yet created: {{count}}. These details still need to be provided.",
       "extraRecords": "Extra companion records: {{count}}. Check the booking before making reservations.",
@@ -6030,7 +6063,16 @@
     "excuseLabel": "Excuse",
     "refineDetailsLabel": "Details",
     "confirmedHint": "Your destination will be revealed 48 hours before the trip",
-    "revealedHint": "Your destination has been revealed!"
+    "revealedHint": "Your destination has been revealed!",
+    "buyerDocuments": {
+      "title": "Your travel documents",
+      "description": "Your nationalities and the visas that will be valid on your travel dates. They are saved to your profile and apply to all your trips.",
+      "missingTitle": "Complete your travel documents",
+      "missingDescription": "We need the nationalities of every traveler to choose a destination the whole group can enter.",
+      "saveAction": "Save documents",
+      "savingAction": "Saving…",
+      "savedToast": "Travel documents saved."
+    }
   },
   "reviewForm": {
     "pageTitle": "How was your trip?",

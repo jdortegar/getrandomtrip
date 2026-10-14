@@ -2443,6 +2443,29 @@ export interface AdminTripFulfillmentDict {
     email: string;
     notProvided: string;
     phoneNotCollected: string;
+    documents: {
+      title: string;
+      description: string;
+      traveler: string;
+      nationalities: string;
+      visas: string;
+      status: string;
+      onFile: string;
+      missing: string;
+      noVisas: string;
+      schengenVisa: string;
+      /** Interpolated with {{missing}} and {{total}}. */
+      missingBadge: string;
+      /** Interpolated with {{total}}. */
+      completeBadge: string;
+      confirm: {
+        title: string;
+        /** Interpolated with {{missing}} and {{total}}. */
+        description: string;
+        confirm: string;
+        cancel: string;
+      };
+    };
   };
   eyebrow: string;
   /** Interpolated with {{userName}}. */
@@ -2697,6 +2720,18 @@ export interface TripDetailDict {
   refineDetailsLabel: string;
   confirmedHint: string;
   revealedHint: string;
+  /** Buyer's own nationalities and visas (their live profile), editable unless the trip is cancelled. */
+  buyerDocuments: TripDetailBuyerDocumentsDict;
+}
+
+export interface TripDetailBuyerDocumentsDict {
+  title: string;
+  description: string;
+  missingTitle: string;
+  missingDescription: string;
+  saveAction: string;
+  savingAction: string;
+  savedToast: string;
 }
 
 export interface DestinationAssignmentReminderDict {
@@ -3736,15 +3771,19 @@ export interface MarketingDictionary {
       contactStreetLabel: string;
       contactTitle: string;
       contactZipCodeLabel: string;
+      travelDocumentsTitle: string;
+      travelDocumentsDescription: string;
       errors: {
         invalidDates: string;
         connectionTryAgain: string;
         idDocumentRequired: string;
         loadTripFailed: string;
         loadTripsFailed: string;
+        nationalitiesRequired: string;
         noTripFound: string;
         noTripToContinue: string;
         noValidSession: string;
+        saveTravelDocumentsFailed: string;
         saveUserFailed: string;
         updateTripFailed: string;
       };
@@ -4194,6 +4233,16 @@ export interface MarketingDictionary {
       approvedVisasHelper: string;
       noVisas: string;
       searchVisa: string;
+      selectVisas: string;
+      /** Label for the `SCHENGEN` visa zone code. */
+      schengenVisa: string;
+      nationalitiesHelper: string;
+      noNationalities: string;
+      selectNationalities: string;
+      searchCountry: string;
+      noCountryResults: string;
+      /** Remove-chip aria label; `{country}` is replaced with the country name. */
+      removeCountry: string;
     };
     modal: {
       confirmPassword: string;
@@ -4237,6 +4286,7 @@ export interface MarketingDictionary {
       tripperOs: string;
       nationalId: string;
       passport: string;
+      nationalities: string;
     };
     toasts: {
       nameRequired: string;

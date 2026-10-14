@@ -1,73 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { BookOpen, CreditCard, Edit, Globe, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { BookOpen, CreditCard, Edit, Flag, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/Button";
+import { CountryMultiSelect } from "@/components/ui/CountryMultiSelect";
 import { FormField } from "@/components/ui/FormField";
-import RemovableTag from "@/components/RemovableTag";
 import { cn } from "@/lib/utils";
+import type { CountryOption } from "@/lib/geo/countryOptions";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { TravelDocumentsFormState } from "@/types/documents";
-
-const VISA_COUNTRIES = [
-  "Argentina",
-  "Australia",
-  "Austria",
-  "Belgium",
-  "Bolivia",
-  "Brazil",
-  "Canada",
-  "Chile",
-  "China",
-  "Colombia",
-  "Costa Rica",
-  "Croatia",
-  "Czech Republic",
-  "Denmark",
-  "Ecuador",
-  "Egypt",
-  "Finland",
-  "France",
-  "Germany",
-  "Greece",
-  "Hungary",
-  "India",
-  "Indonesia",
-  "Ireland",
-  "Israel",
-  "Italy",
-  "Japan",
-  "Jordan",
-  "Kenya",
-  "Malaysia",
-  "Mexico",
-  "Morocco",
-  "Netherlands",
-  "New Zealand",
-  "Norway",
-  "Panama",
-  "Paraguay",
-  "Peru",
-  "Philippines",
-  "Poland",
-  "Portugal",
-  "Schengena",
-  "Singapore",
-  "South Africa",
-  "South Korea",
-  "Spain",
-  "Sweden",
-  "Switzerland",
-  "Thailand",
-  "Turkey",
-  "United Arab Emirates",
-  "United Kingdom",
-  "United States",
-  "Uruguay",
-  "Vietnam",
-];
 
 const EMPTY_FORM: TravelDocumentsFormState = {
   idNumber: "",
@@ -76,6 +20,7 @@ const EMPTY_FORM: TravelDocumentsFormState = {
   passportNumber: "",
   passportCountry: "",
   passportExpiry: "",
+  nationalities: [],
   approvedVisas: [],
 };
 
@@ -86,14 +31,19 @@ interface AccountSettingsDocumentsTabProps {
 export function AccountSettingsDocumentsTab({
   copy,
 }: AccountSettingsDocumentsTabProps) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "es";
   const [form, setForm] = useState<TravelDocumentsFormState>(EMPTY_FORM);
   const [savedForm, setSavedForm] = useState<TravelDocumentsFormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [visaQuery, setVisaQuery] = useState("");
-  const [isVisaDropdownOpen, setIsVisaDropdownOpen] = useState(false);
-  const comboboxRef = useRef<HTMLDivElement>(null);
+  const visaZoneOptions = useMemo<CountryOption[]>(
+    () => [{ value: "SCHENGEN", label: copy.labels.schengenVisa }],
+    [copy.labels.schengenVisa],
+  );
+  const removeCountryLabel = (country: string) =>
+    copy.labels.removeCountry.replace("{country}", country);
 
   useEffect(() => {
     let cancelled = false;
@@ -118,19 +68,6 @@ export function AccountSettingsDocumentsTab({
     };
   }, []);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        comboboxRef.current &&
-        !comboboxRef.current.contains(e.target as Node)
-      ) {
-        setIsVisaDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   function handleEdit() {
     setIsEditing(true);
   }
@@ -138,8 +75,6 @@ export function AccountSettingsDocumentsTab({
   function handleCancel() {
     setForm(savedForm);
     setIsEditing(false);
-    setVisaQuery("");
-    setIsVisaDropdownOpen(false);
   }
 
   async function handleSave() {
@@ -170,25 +105,7 @@ export function AccountSettingsDocumentsTab({
     }
   }
 
-  function addVisa(country: string) {
-    setForm((f) => ({ ...f, approvedVisas: [...f.approvedVisas, country] }));
-    setVisaQuery("");
-    setIsVisaDropdownOpen(false);
-  }
-
-  function removeVisa(country: string) {
-    setForm((f) => ({
-      ...f,
-      approvedVisas: f.approvedVisas.filter((v) => v !== country),
-    }));
-  }
-
   const fieldCn = cn(!isEditing && "cursor-not-allowed opacity-80");
-  const filteredVisaCountries = VISA_COUNTRIES.filter(
-    (c) =>
-      !form.approvedVisas.includes(c) &&
-      c.toLowerCase().includes(visaQuery.toLowerCase()),
-  ).slice(0, 20);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm" data-component="AccountSettingsDocumentsTab">
@@ -317,7 +234,35 @@ export function AccountSettingsDocumentsTab({
           </div>
         </div>
 
-        {/* Approved Visas */}
+        {/* Nationalities */}
+        <div className="rounded-xl border border-gray-200 bg-neutral-50 p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
+              <Flag className="h-4 w-4" />
+            </span>
+            <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-ink">
+              {copy.sections.nationalities}
+            </h3>
+          </div>
+          <p className="mb-3 text-sm text-ink">
+            {copy.labels.nationalitiesHelper}
+          </p>
+          <CountryMultiSelect
+            emptyLabel={copy.labels.noNationalities}
+            id="doc-nationalities"
+            locale={locale}
+            noResultsLabel={copy.labels.noCountryResults}
+            onChange={(codes) => setForm((f) => ({ ...f, nationalities: codes }))}
+            placeholder={copy.labels.selectNationalities}
+            readOnly={!isEditing}
+            removeLabel={removeCountryLabel}
+            searchPlaceholder={copy.labels.searchCountry}
+            triggerClassName="bg-white border border-gray-200"
+            value={form.nationalities}
+          />
+        </div>
+
+        {/* Visas */}
         <div className="rounded-xl border border-gray-200 bg-neutral-50 p-6">
           <div className="mb-4 flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/10 text-secondary">
@@ -330,60 +275,20 @@ export function AccountSettingsDocumentsTab({
           <p className="mb-3 text-sm text-ink">
             {copy.labels.approvedVisasHelper}
           </p>
-
-          <div className="flex flex-wrap gap-2">
-            {form.approvedVisas.length === 0 ? (
-              <p className="text-sm italic text-neutral-400">
-                {copy.labels.noVisas}
-              </p>
-            ) : (
-              form.approvedVisas.map((visa) => (
-                <RemovableTag
-                  key={visa}
-                  item={{
-                    key: visa,
-                    value: visa,
-                    onRemove: isEditing ? () => removeVisa(visa) : undefined,
-                  }}
-                  color="secondary"
-                  size="sm"
-                />
-              ))
-            )}
-          </div>
-
-          {isEditing && (
-            <div className="relative mt-3" ref={comboboxRef}>
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
-                <input
-                  className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-800 outline-none focus:border-secondary"
-                  onChange={(e) => {
-                    setVisaQuery(e.target.value);
-                    setIsVisaDropdownOpen(true);
-                  }}
-                  onFocus={() => setIsVisaDropdownOpen(true)}
-                  placeholder={copy.labels.searchVisa}
-                  type="text"
-                  value={visaQuery}
-                />
-              </div>
-              {isVisaDropdownOpen && filteredVisaCountries.length > 0 && (
-                <div className="absolute z-10 mt-1 max-h-[200px] w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
-                  {filteredVisaCountries.map((country) => (
-                    <button
-                      className="block w-full px-3 py-2 text-left text-sm text-neutral-700 hover:bg-gray-50"
-                      key={country}
-                      onMouseDown={() => addVisa(country)}
-                      type="button"
-                    >
-                      {country}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          <CountryMultiSelect
+            emptyLabel={copy.labels.noVisas}
+            extraOptions={visaZoneOptions}
+            id="doc-visas"
+            locale={locale}
+            noResultsLabel={copy.labels.noCountryResults}
+            onChange={(codes) => setForm((f) => ({ ...f, approvedVisas: codes }))}
+            placeholder={copy.labels.selectVisas}
+            readOnly={!isEditing}
+            removeLabel={removeCountryLabel}
+            searchPlaceholder={copy.labels.searchVisa}
+            triggerClassName="bg-white border border-gray-200"
+            value={form.approvedVisas}
+          />
         </div>
       </div>
     </div>
