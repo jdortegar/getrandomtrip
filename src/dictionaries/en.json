@@ -558,7 +558,13 @@
       "JM": "Jamaica",
       "TT": "Trinidad and Tobago"
     },
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "imageUpload": {
+      "formats": "JPG, PNG or WebP.",
+      "minSize": "Minimum {width} × {height} px recommended",
+      "copyright": "Only use images you own or are licensed to use.",
+      "tooSmall": "Image too small"
+    }
   },
   "imageEditor": {
     "title": "Edit image",
@@ -783,9 +789,6 @@
         "slug": "Slug",
         "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
         "heroImage": "Hero image",
-        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "copyrightHint": "Only use images you own or are licensed to use.",
-        "imageTooSmall": "Image too small",
         "uploadImage": "Upload image",
         "destinationCity": "Destination city",
         "destinationCityPlaceholder": "Search city...",
@@ -4700,10 +4703,7 @@
         "subtitle": "Subtitle",
         "subtitlePlaceholder": "Subtitle (optional)",
         "coverImage": "Cover image",
-        "coverImageHint": "JPG, PNG or WebP. Shown as the post's main image.",
-        "coverImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "copyrightHint": "Only use images you own or are licensed to use.",
-        "imageTooSmall": "Image too small",
+        "coverImageHint": "Shown as the post's main image.",
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove image",
@@ -4736,7 +4736,7 @@
         "faqLabel": "Question",
         "addFaq": "Add question",
         "removeFaq": "Remove question",
-        "galleryHint": "Add photos for your post's carousel.",
+        "galleryAlt": "Post gallery photo",
         "addImage": "Upload photos",
         "removeImageAria": "Remove image",
         "imageTooLarge": "Image must be under 10 MB."
@@ -5484,10 +5484,6 @@
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove",
-        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "entryImageSizeHint": "Minimum 800 × 600 px recommended",
-        "imageTooSmall": "Image too small",
-        "copyrightHint": "Only use images you own or are licensed to use.",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",

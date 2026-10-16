@@ -168,13 +168,10 @@ export function ActivitiesListStep({ copy, form, onChange, imageState, isReadOnl
               </label>
               <ImageUploadTile
                 alt={`Activity ${index + 1}`}
-                copyrightHint={fields.copyrightHint}
                 minHeight={600}
                 minWidth={800}
                 onRemove={() => onEntryImageRemove("activities", index)}
                 onSelect={(file) => onEntryImageSelect("activities", index, file)}
-                sizeHint={fields.entryImageSizeHint}
-                tooSmallLabel={fields.imageTooSmall}
                 uploadLabel={fields.uploadImage}
                 value={entry.image}
               />

@@ -540,9 +540,6 @@ export interface TripperBlogFormDict {
     subtitlePlaceholder: string;
     coverImage: string;
     coverImageHint: string;
-    coverImageSizeHint: string;
-    copyrightHint: string;
-    imageTooSmall: string;
     uploadImage: string;
     uploading: string;
     removeImage: string;
@@ -572,7 +569,7 @@ export interface TripperBlogFormDict {
     faqLabel: string;
     addFaq: string;
     removeFaq: string;
-    galleryHint: string;
+    galleryAlt: string;
     addImage: string;
     removeImageAria: string;
     imageTooLarge: string;
@@ -1257,15 +1254,11 @@ export interface TripperExperiencesDict {
       tagInput: string;
       heroImage: string;
       heroImageHint: string;
-      heroImageSizeHint: string;
       activityImageLabel: string;
       dayImageLabel: string;
-      entryImageSizeHint: string;
-      imageTooSmall: string;
       uploadImage: string;
       uploading: string;
       removeImage: string;
-      copyrightHint: string;
       isActive: string;
       isActiveHint: string;
       isFeatured: string;
@@ -1747,9 +1740,6 @@ export interface AdminXsedDict {
       slug: string;
       slugHint: string;
       heroImage: string;
-      heroImageSizeHint: string;
-      copyrightHint: string;
-      imageTooSmall: string;
       uploadImage: string;
       destinationCity: string;
       destinationCityPlaceholder: string;
@@ -2884,6 +2874,15 @@ export interface TripperAttributionDict {
  * every call site (tripper hero, avatar) regardless of mask shape, since the
  * upload/crop/zoom/save flow language is identical across both.
  */
+/** Shared hint and error copy rendered by ImageUploadTile / ImageUploadTileGroup. */
+export interface ImageUploadDict {
+  formats: string;
+  /** Interpolated with {width} and {height} (px). */
+  minSize: string;
+  copyright: string;
+  tooSmall: string;
+}
+
 export interface ImageEditorDict {
   title: string;
   dropHint: string;
@@ -3102,6 +3101,7 @@ export interface MarketingDictionary {
      */
     countries: Record<string, string>;
     backToTop: string;
+    imageUpload: ImageUploadDict;
   };
   imageEditor: ImageEditorDict;
   adminXsed: AdminXsedDict;

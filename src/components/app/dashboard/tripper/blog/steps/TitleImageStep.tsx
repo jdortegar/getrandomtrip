@@ -157,13 +157,10 @@ export function TitleImageStep({ contentLanguageSlot, copy, draft, onChange, ima
           <ImageUploadTile
             alt={fields.coverImage}
             className={ch("coverUrl")}
-            copyrightHint={fields.copyrightHint}
             minHeight={720}
             minWidth={1280}
             onRemove={onCoverRemove}
             onSelect={onCoverSelect}
-            sizeHint={fields.coverImageSizeHint}
-            tooSmallLabel={fields.imageTooSmall}
             uploadLabel={fields.uploadImage}
             uploading={coverUploading}
             uploadingLabel={fields.uploading}

@@ -12,6 +12,7 @@ interface ImageUploadInputProps {
   onRemove: (url: string) => void;
 }
 
+/** @deprecated Unused — scheduled for deletion; use ImageUploadTile instead. */
 export function ImageUploadInput({
   values,
   max = 1,

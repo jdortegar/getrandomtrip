@@ -558,7 +558,13 @@
       "JM": "Jamaica",
       "TT": "Trinidad y Tobago"
     },
-    "backToTop": "Volver arriba"
+    "backToTop": "Volver arriba",
+    "imageUpload": {
+      "formats": "JPG, PNG o WebP.",
+      "minSize": "Mínimo {width} × {height} px recomendado",
+      "copyright": "Usa solo imágenes de tu propiedad o con licencia de uso.",
+      "tooSmall": "Imagen demasiado pequeña"
+    }
   },
   "imageEditor": {
     "title": "Editar imagen",
@@ -783,9 +789,6 @@
         "slug": "Slug",
         "slugHint": "Identificador URL, ej: patagonia-2026",
         "heroImage": "Imagen principal",
-        "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
-        "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
-        "imageTooSmall": "Imagen demasiado pequeña",
         "uploadImage": "Subir imagen",
         "destinationCity": "Ciudad de destino",
         "destinationCityPlaceholder": "Buscar ciudad...",
@@ -4700,10 +4703,7 @@
         "subtitle": "Subtítulo",
         "subtitlePlaceholder": "Subtítulo (opcional)",
         "coverImage": "Imagen de portada",
-        "coverImageHint": "JPG, PNG o WebP. Se muestra como imagen principal del post.",
-        "coverImageSizeHint": "Mínimo 1280 × 720 px recomendado",
-        "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
-        "imageTooSmall": "Imagen demasiado pequeña",
+        "coverImageHint": "Se muestra como imagen principal del post.",
         "uploadImage": "Subir imagen",
         "uploading": "Subiendo…",
         "removeImage": "Quitar imagen",
@@ -4736,7 +4736,7 @@
         "faqLabel": "Pregunta",
         "addFaq": "Añadir pregunta",
         "removeFaq": "Quitar pregunta",
-        "galleryHint": "Añadí fotos para el carrusel de tu publicación.",
+        "galleryAlt": "Foto de la galería del post",
         "addImage": "Subir fotos",
         "removeImageAria": "Eliminar imagen",
         "imageTooLarge": "La imagen no puede superar 10 MB."
@@ -5484,10 +5484,6 @@
         "uploadImage": "Subir imagen",
         "uploading": "Subiendo…",
         "removeImage": "Quitar",
-        "heroImageSizeHint": "Mínimo 1280 × 720 px recomendado",
-        "entryImageSizeHint": "Mínimo 800 × 600 px recomendado",
-        "imageTooSmall": "Imagen demasiado pequeña",
-        "copyrightHint": "Usa solo imágenes de tu propiedad o con licencia de uso.",
         "isActive": "Experiencia activo",
         "isActiveHint": "Visible para matching con clientes",
         "isFeatured": "Destacado",

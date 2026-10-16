@@ -107,13 +107,10 @@ export function ItineraryStep({ copy, form, onChange, imageState, changedFieldSe
               </label>
               <ImageUploadTile
                 alt={`Day ${index + 1}`}
-                copyrightHint={fields.copyrightHint}
                 minHeight={600}
                 minWidth={800}
                 onRemove={() => onEntryImageRemove("itinerary", index)}
                 onSelect={(file) => onEntryImageSelect("itinerary", index, file)}
-                sizeHint={fields.entryImageSizeHint}
-                tooSmallLabel={fields.imageTooSmall}
                 uploadLabel={fields.uploadImage}
                 value={day.image}
               />
