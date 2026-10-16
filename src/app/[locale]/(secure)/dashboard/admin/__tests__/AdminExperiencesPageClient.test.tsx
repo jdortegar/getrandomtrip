@@ -88,6 +88,19 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+describe("AdminExperiencesPageClient — default status filter", () => {
+  it("defaults the status filter to ALL and fetches without a status param", async () => {
+    render(<AdminExperiencesPageClient />);
+    await flush();
+
+    const select = container.querySelector("select") as HTMLSelectElement;
+    expect(select.value).toBe("ALL");
+    const firstUrl = String(fetchMock().mock.calls[0][0]);
+    expect(firstUrl).toContain("/api/admin/experiences?");
+    expect(firstUrl).not.toContain("status=");
+  });
+});
+
 describe("AdminExperiencesPageClient — refetch keeps chrome mounted and dims the panel", () => {
   it("keeps filters mounted and sets aria-busy during a status-filter refetch", async () => {
     render(<AdminExperiencesPageClient />);
@@ -105,7 +118,7 @@ describe("AdminExperiencesPageClient — refetch keeps chrome mounted and dims t
 
     const select = container.querySelector("select") as HTMLSelectElement;
     act(() => {
-      select.value = "ALL";
+      select.value = "PENDING";
       select.dispatchEvent(new Event("change", { bubbles: true }));
     });
 
@@ -142,7 +155,7 @@ describe("AdminExperiencesPageClient — refetch error keeps chrome mounted", ()
 
     const select = container.querySelector("select") as HTMLSelectElement;
     await act(async () => {
-      select.value = "ALL";
+      select.value = "PENDING";
       select.dispatchEvent(new Event("change", { bubbles: true }));
       await Promise.resolve();
     });
