@@ -31,7 +31,7 @@ The current model infers language from data (`hasDistinctSpanishCopy`), stores t
 ## Tasks
 
 - [x] T1 — Schema + core: expand rollout SQL, Prisma models, `CONTENT_LOCALES`, completeness + slug utilities, unit tests (route: delegated writer — 2+ non-trivial files)
-- [ ] T2 — Backfill script (idempotent, dry-run / diff-only, counts) + fixture tests
+- [x] T2 — Backfill script (idempotent, dry-run / diff-only, counts) + fixture tests
 - [ ] T3 — Repository module + public reads (blog page, public API, sitemap, hreflang, slug redirects)
 - [ ] T4 — Write APIs (tripper/admin) on new tables + dual-write old columns; `sourceLocale` rules
 - [ ] T5 — Review flow: clone/overwrite translation rows, `<locale>.<field>` diffs + peek
@@ -54,3 +54,13 @@ Per slice: test-first Vitest (observe RED → GREEN), `npm run typecheck`, `npm 
 - GREEN: same 4 files → 24/24 passed.
 - Verification: `npx prisma validate` valid; `npx prisma generate` ok; `npx vitest run src/lib/blog` 11 files / 90 tests passed; `npm run typecheck` clean; `npm run lint` clean.
 - No SQL applied anywhere. Uncommitted, awaiting parent spot check.
+
+### T2 — Backfill script (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `scripts/backfill-blog-translations.ts` (pure `planBlogTranslationBackfill` + `diffTranslationFields` + thin `runBlogTranslationBackfill` runner; `--dry-run` default / `--apply` / `--diff-only`), `scripts/__tests__/backfill-blog-translations.test.ts`, `package.json` (`db:backfill-blog-translations`), `docs/BlogContentLocales.md` (Rollout section).
+- Behavior: `es` row per post from legacy columns; `en` row per valid `translations.en` (parsed via `normalizeBlogTranslations`, `ready` dropped) with Spanish image/video/embed blocks appended in order, captions as-is; invalid JSON skipped + reported; `isComplete` recomputed (only schema-valid blocks feed it); slugs per locale from that locale's title, ordered by createdAt then id, never reusing another post's legacy slug; review copies slug null; slug history only for newly created rows whose slug differs from the legacy slug and is not taken; existing (postId, locale) rows are never modified (create-only upsert with `update: {}`), content differences reported as drift. `sourceLocale` relies on the column default ('es').
+- Consistency: `--apply` re-counts `es` rows from the DB; `--diff-only` uses existing `es` rows; non-zero exit when `es` rows != posts. Drift alone does not fail the exit code (legacy `en` JSON cannot hold captions, so some `en` drift is expected after dual-write).
+- RED: `npx vitest run scripts/__tests__/backfill-blog-translations.test.ts` → 1 file failed (module not found), before implementation.
+- GREEN: same file → 17/17 passed.
+- Verification: `npx vitest run scripts/__tests__/backfill-blog-translations.test.ts src/lib/blog` 12 files / 107 tests passed; `npm run typecheck` clean (tsconfig includes `scripts/`); `npm run lint` clean (covers `src` only); `npx eslint --max-warnings 0` on both new script files clean; `npx tsx` import smoke loads the module (alias resolution OK, no DB).
+- Not run: the backfill itself against any database. Uncommitted, awaiting parent spot check.
