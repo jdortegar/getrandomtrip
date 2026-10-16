@@ -1,6 +1,4 @@
-import { getBlobStoreName } from "@/lib/deployment";
 import { NextRequest, NextResponse } from "next/server";
-import { getStore } from "@netlify/blobs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import {
@@ -8,29 +6,13 @@ import {
   blobEtag,
   blobResponse,
 } from "@/lib/upload/blobCaching";
+import {
+  deleteMediaBlob,
+  getMediaBlobWithMetadata,
+} from "@/lib/upload/mediaStores";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const FEATURE_STORE: Record<string, string> = {
-  avatar: "user-avatars",
-  blog: "blog-media",
-  experience: "experience-media",
-};
-const DEFAULT_STORE = "user-media";
-
-function getBlobStore(feature?: string) {
-  const storeName = (feature && FEATURE_STORE[feature]) ?? DEFAULT_STORE;
-  return getStore(getBlobStoreName(storeName), {
-    consistency: "strong",
-    ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? {
-          siteID: process.env.NETLIFY_SITE_ID,
-          token: process.env.NETLIFY_AUTH_TOKEN,
-        }
-      : {}),
-  });
-}
 
 function isSafePath(segments: string[]): boolean {
   if (segments.length !== 3) return false;
@@ -59,15 +41,7 @@ export async function GET(
   const feature = path[1];
 
   try {
-    const store = getBlobStore(feature);
-    let result = await store.getWithMetadata(key, { type: "blob" });
-
-    if (!result && feature !== DEFAULT_STORE) {
-      result = await getBlobStore(undefined).getWithMetadata(key, {
-        type: "blob",
-      });
-    }
-
+    const result = await getMediaBlobWithMetadata(key, feature);
     if (!result) return new NextResponse("Not Found", { status: 404 });
 
     const contentType =
@@ -109,8 +83,7 @@ export async function DELETE(
   }
 
   try {
-    const store = getBlobStore(path[1]);
-    await store.delete(key);
+    await deleteMediaBlob(key, path[1]);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[upload/path] DELETE", error);

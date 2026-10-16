@@ -15,6 +15,26 @@ export function getBlobStoreName(name: string): string {
   return isProductionDeployment() ? name : `nonproduction-${name}`;
 }
 
+/** User media lives in one store shared by every environment. */
+export function getSharedMediaStoreName(name: string): string {
+  return name;
+}
+
+/** Pre-unification non-production media store; read/delete fallback only. */
+export function getLegacyMediaStoreName(name: string): string | null {
+  return isProductionDeployment() ? null : `nonproduction-${name}`;
+}
+
+export const DEV_UPLOAD_PREFIX = "dev-";
+
+/** Marks non-production uploads in the shared store so they can be purged. */
+export function withEnvironmentUploadPrefix(filename: string): string {
+  if (isProductionDeployment() || filename.startsWith(DEV_UPLOAD_PREFIX)) {
+    return filename;
+  }
+  return `${DEV_UPLOAD_PREFIX}${filename}`;
+}
+
 export function getAuthSecret(): string {
   return isProductionDeployment()
     ? (process.env.NEXTAUTH_SECRET ?? "")

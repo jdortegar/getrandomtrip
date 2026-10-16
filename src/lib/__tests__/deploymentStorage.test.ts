@@ -28,10 +28,14 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 it.each(["production", "nonproduction", undefined])(
-  "scopes both upload entry points and their legacy fallback for %s",
+  "shares upload stores across environments with a legacy fallback for %s",
   async (mode) => {
     vi.stubEnv("RT_DEPLOY_ENV", mode);
     const prefix = mode === "production" ? "" : "nonproduction-";
+    // User media is shared; non-production also reads/deletes its legacy
+    // `nonproduction-` store. Trip documents stay environment-scoped.
+    const withLegacy = (name: string) =>
+      mode === "production" ? [name] : [name, `nonproduction-${name}`];
     const query = {
       nextUrl: new URL(
         "https://preview.test/api/upload?key=user123/avatar/picture.webp",
@@ -44,16 +48,16 @@ it.each(["production", "nonproduction", undefined])(
       getStore.mockClear();
       expect((await read()).status).toBe(404);
       expect(getStore.mock.calls.map(([name]) => name)).toEqual([
-        `${prefix}user-avatars`,
-        `${prefix}user-media`,
+        ...withLegacy("user-avatars"),
+        ...withLegacy("user-media"),
       ]);
     }
     getStore.mockClear();
     await queryDelete(query);
     await pathDelete(query, params);
     expect(getStore.mock.calls.map(([name]) => name)).toEqual([
-      `${prefix}user-avatars`,
-      `${prefix}user-avatars`,
+      ...withLegacy("user-avatars"),
+      ...withLegacy("user-avatars"),
     ]);
     expect(store.delete).toHaveBeenCalledWith("user123/avatar/picture.webp");
     getStore.mockClear();

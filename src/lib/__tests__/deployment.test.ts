@@ -1,10 +1,14 @@
 import { afterEach, expect, it, vi } from "vitest";
 import {
+  DEV_UPLOAD_PREFIX,
   getAuthSecret,
   getBlobStoreName,
+  getLegacyMediaStoreName,
+  getSharedMediaStoreName,
   getNonproductionOrigin,
   isProductionDeployment,
   showTripperDiscovery,
+  withEnvironmentUploadPrefix,
 } from "../deployment";
 import { configureAuthEnvironment } from "../auth/environment";
 
@@ -88,4 +92,37 @@ it.each([
 ])("showTripperDiscovery for %s deploy is %s", (env, expected) => {
   vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", env);
   expect(showTripperDiscovery()).toBe(expected);
+});
+
+it.each(["production", "nonproduction", undefined])(
+  "shares user media store names across environments (%s)",
+  (env) => {
+    vi.stubEnv("RT_DEPLOY_ENV", env);
+    expect(getSharedMediaStoreName("experience-media")).toBe(
+      "experience-media",
+    );
+  },
+);
+
+it.each([
+  ["production", null],
+  ["nonproduction", "nonproduction-user-media"],
+  [undefined, "nonproduction-user-media"],
+])("legacy media store for %s deploy is %s", (env, expected) => {
+  vi.stubEnv("RT_DEPLOY_ENV", env);
+  expect(getLegacyMediaStoreName("user-media")).toBe(expected);
+});
+
+it("prefixes non-production upload filenames exactly once", () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  expect(DEV_UPLOAD_PREFIX).toBe("dev-");
+  expect(withEnvironmentUploadPrefix("photo-1.webp")).toBe("dev-photo-1.webp");
+  expect(withEnvironmentUploadPrefix("dev-photo-1.webp")).toBe(
+    "dev-photo-1.webp",
+  );
+});
+
+it("leaves production upload filenames unchanged", () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "production");
+  expect(withEnvironmentUploadPrefix("photo-1.webp")).toBe("photo-1.webp");
 });

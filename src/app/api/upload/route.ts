@@ -1,48 +1,20 @@
-import { getBlobStoreName } from "@/lib/deployment";
+import { withEnvironmentUploadPrefix } from "@/lib/deployment";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { getStore } from "@netlify/blobs";
 import { DEFAULT_MAX_DIMENSIONS, optimizeImage } from "@/lib/images/optimizeImage";
 import { authOptions } from "@/lib/auth";
 import { parseCropPayload } from "@/lib/images/crop";
 import { bakeCrop } from "@/lib/images/bake";
 import { blobEtag, blobResponse } from "@/lib/upload/blobCaching";
+import {
+  deleteMediaBlob,
+  getMediaArrayBuffer,
+  getMediaBlobWithMetadata,
+  getMediaWriteStore,
+} from "@/lib/upload/mediaStores";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-const FEATURE_STORE: Record<string, string> = {
-  avatar: "user-avatars",
-  blog: "blog-media",
-  experience: "experience-media",
-};
-const DEFAULT_STORE = "user-media";
-
-/** Strips a trailing `-original` suffix so an original blob resolves to the
- * same store as its baked derivative (e.g. "tripper-hero-original" ->
- * "tripper-hero"'s store) — the existing GET handler derives `feature` from
- * `key.split("/")[1]` unchanged and must keep finding it. */
-function resolveStoreFeature(feature?: string): string | undefined {
-  if (!feature) return feature;
-  return feature.endsWith("-original")
-    ? feature.slice(0, -"-original".length)
-    : feature;
-}
-
-function getBlobStore(feature?: string) {
-  const storeName =
-    (feature && FEATURE_STORE[resolveStoreFeature(feature) ?? feature]) ??
-    DEFAULT_STORE;
-  return getStore(getBlobStoreName(storeName), {
-    consistency: "strong",
-    ...(process.env.NETLIFY_SITE_ID && process.env.NETLIFY_AUTH_TOKEN
-      ? {
-          siteID: process.env.NETLIFY_SITE_ID,
-          token: process.env.NETLIFY_AUTH_TOKEN,
-        }
-      : {}),
-  });
-}
 
 function isSafeKey(key: string): boolean {
   if (key.length > 512 || key.length < 8) return false;
@@ -60,15 +32,7 @@ export async function GET(request: NextRequest) {
   const feature = key.split("/")[1];
 
   try {
-    const store = getBlobStore(feature);
-    let result = await store.getWithMetadata(key, { type: "blob" });
-
-    // Blobs uploaded before the feature-store split all lived in user-media.
-    // Fall back to the legacy store so old URLs keep working.
-    if (!result && feature !== DEFAULT_STORE) {
-      const legacyStore = getBlobStore(undefined);
-      result = await legacyStore.getWithMetadata(key, { type: "blob" });
-    }
+    const result = await getMediaBlobWithMetadata(key, feature);
 
     if (!result) {
       return new NextResponse("Not Found", { status: 404 });
@@ -113,8 +77,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const store = getBlobStore(key.split("/")[1]);
-    await store.delete(key);
+    await deleteMediaBlob(key, key.split("/")[1]);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[upload] DELETE", error);
@@ -230,11 +193,13 @@ export async function POST(request: NextRequest) {
         // Persist the untouched (optimized-but-uncropped) original so a
         // later re-open of the editor can re-crop losslessly from source.
         const originalFeature = `${rawFeature}-original`;
-        const originalFilename = `${baseName}-${Date.now()}.webp`;
+        const originalFilename = withEnvironmentUploadPrefix(
+          `${baseName}-${Date.now()}.webp`,
+        );
         const originalKeyOut = `${session.user.id}/${originalFeature}/${originalFilename}`;
         const { buffer: optimizedOriginal, contentType: originalContentType } =
           await optimizeImage(rawBuffer, file.type, originalFeature);
-        const originalStore = getBlobStore(originalFeature);
+        const originalStore = getMediaWriteStore(originalFeature);
         await originalStore.set(
           originalKeyOut,
           new Uint8Array(optimizedOriginal).buffer,
@@ -244,10 +209,10 @@ export async function POST(request: NextRequest) {
       } else {
         // Re-crop path: read the retained original back from its own
         // store; ownership was already enforced above.
-        const originalStore = getBlobStore(`${rawFeature}-original`);
-        const stored = await originalStore.get(originalKey as string, {
-          type: "arrayBuffer",
-        });
+        const stored = await getMediaArrayBuffer(
+          originalKey as string,
+          `${rawFeature}-original`,
+        );
         if (!stored) {
           return NextResponse.json(
             { error: "Original not found" },
@@ -263,9 +228,12 @@ export async function POST(request: NextRequest) {
 
       const outputDims = FEATURE_OUTPUT_DIMENSIONS[rawFeature] ?? DEFAULT_MAX_DIMENSIONS;
       const bakedBuffer = await bakeCrop(rawBuffer, crop, outputDims);
-      const bakedFilename = `${baseName}-${Date.now()}.webp`;
+      // A `dev-` original keeps its prefix in baseName; the helper is idempotent.
+      const bakedFilename = withEnvironmentUploadPrefix(
+        `${baseName}-${Date.now()}.webp`,
+      );
       const bakedKey = `${session.user.id}/${rawFeature}/${bakedFilename}`;
-      const store = getBlobStore(rawFeature);
+      const store = getMediaWriteStore(rawFeature);
       await store.set(bakedKey, new Uint8Array(bakedBuffer).buffer, {
         metadata: { contentType: "image/webp" },
       });
@@ -282,7 +250,9 @@ export async function POST(request: NextRequest) {
     const rawExt = file.name.split(".").pop() ?? "bin";
     const ext = rawExt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8) || "bin";
     const baseName = slugifyBaseName(file.name);
-    const filename = `${baseName}-${Date.now()}.${ext}`;
+    const filename = withEnvironmentUploadPrefix(
+      `${baseName}-${Date.now()}.${ext}`,
+    );
     const key = `${session.user.id}/${rawFeature}/${filename}`;
 
     if (file.size > MAX_BYTES) {
@@ -303,7 +273,7 @@ export async function POST(request: NextRequest) {
       rawFeature,
     );
 
-    const store = getBlobStore(rawFeature);
+    const store = getMediaWriteStore(rawFeature);
     await store.set(key, new Uint8Array(optimizedBuffer).buffer, {
       metadata: { contentType },
     });
