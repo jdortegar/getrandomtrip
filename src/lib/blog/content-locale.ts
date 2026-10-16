@@ -1,12 +1,21 @@
 import { z } from "zod";
 import type { BlogTranslation, BlogTranslations } from "@/types/blog";
+import {
+  faqItemSchema as faqItem,
+  faqSchema,
+  richText,
+  seoSchema,
+  shortText,
+} from "./translation-schema";
+import {
+  hasBlogArticleContent,
+  isBlogTranslationComplete,
+} from "./translation-completeness";
 
-const shortText = z.string().max(500);
-const richText = z.string().max(500_000);
-const faqItem = z.object({
-  question: shortText,
-  answer: z.string().max(20_000),
-});
+export { hasBlogArticleContent };
+
+// Legacy `translations.en` JSON shape (text blocks only); kept until the
+// contract rollout removes the column.
 const translationSchema = z.object({
   title: shortText.optional(),
   subtitle: z.string().max(2_000).nullable().optional(),
@@ -31,50 +40,15 @@ const translationSchema = z.object({
     )
     .max(200)
     .optional(),
-  faq: z
-    .object({ items: z.array(faqItem).max(100) })
-    .nullable()
-    .optional(),
-  seo: z
-    .object({
-      title: shortText.optional(),
-      description: z.string().max(2_000).optional(),
-      keywords: z.array(shortText).max(100).optional(),
-    })
-    .nullable()
-    .optional(),
+  faq: faqSchema.nullable().optional(),
+  seo: seoSchema.nullable().optional(),
 });
 const translationsSchema = z
   .object({ en: translationSchema.nullable().optional() })
   .strict();
 
-/** TinyMCE's empty paragraphs are not usable article content. HTML is kept
- * verbatim, using the existing canonical article's trusted-author model. */
-export function hasBlogArticleContent(html?: string | null): boolean {
-  if (!html) return false;
-  const text = html
-    .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;|&#160;|&#xA0;/gi, " ")
-    .replace(/[\s\u200B-\u200D\uFEFF]/g, "");
-  return !!text || /<(img|video|audio|iframe)\b[^>]*\bsrc\s*=/i.test(html);
-}
-
 export function isEnglishBlogReady(copy?: BlogTranslation | null): boolean {
-  if (!copy?.title?.trim() || !hasBlogArticleContent(copy.content))
-    return false;
-  const sections =
-    copy.blocks?.filter((block) => block.type === "section") ?? [];
-  const quote = copy.blocks?.find((block) => block.type === "quote");
-  // The public renderer prefers structural blocks over flattened HTML.
-  if (sections.length)
-    return (
-      sections.some(
-        (section) =>
-          hasBlogArticleContent(section.title) ||
-          hasBlogArticleContent(section.description),
-      ) || !!quote?.text.trim()
-    );
-  return true;
+  return isBlogTranslationComplete(copy);
 }
 
 /** Undefined means PATCH omission, null explicitly removes English. Unknown

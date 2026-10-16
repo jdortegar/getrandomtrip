@@ -1,9 +1,37 @@
+import type { Locale } from "@/lib/i18n/config";
+
 export type BlogStatus =
   | "draft"
   | "pending_review"
   | "pending_tripper_review"
   | "published";
 export type BlogFormat = "article" | "photo" | "video" | "mixed";
+
+/** A locale a blog translation row can be authored in (derived from LOCALES). */
+export type ContentLocale = Locale;
+
+/** One ordered content block; media URLs are shared, captions/titles localized. */
+export type BlogBlock = BlogPost["blocks"][number];
+
+/** Media blocks whose URL must match across translations of the same post. */
+export type BlogMediaBlock = Extract<BlogBlock, { type: "image" | "video" | "embed" }>;
+
+/** Localized content of one `blog_post_translations` row (slug and isComplete are server-owned). */
+export interface BlogTranslationContent {
+  title: string;
+  subtitle?: string | null;
+  tagline?: string | null;
+  content?: string | null;
+  blocks?: BlogBlock[];
+  faq?: BlogPost["faq"];
+  seo?: BlogPost["seo"] | null;
+}
+
+/** Non-blocking editor warning: media URLs a translation lacks or adds vs. its source. */
+export interface BlogMediaMismatch {
+  missing: string[];
+  extra: string[];
+}
 
 export interface BlogTranslation {
   title?: string;

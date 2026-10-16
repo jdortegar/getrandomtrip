@@ -695,7 +695,12 @@ model BlogPost {
   content String? @db.Text
 
   // Canonical copy remains Spanish; optional authored English includes server-derived readiness.
+  // Legacy: kept for dual-write until the contract rollout; new code uses translationRows.
   translations Json?
+
+  // Locale the post was authored in (one of CONTENT_LOCALES; SQL CHECK constraint).
+  // Its translation row must be complete to submit/publish.
+  sourceLocale String @default("es")
 
   // Legacy content blocks (JSON); kept for backward compat / gallery extraction
   blocks Json @default("[]")
@@ -729,10 +734,54 @@ model BlogPost {
   createdById    String? // Real account that clicked "create" — distinct from authorId, which is the pseudo Randomtrip user for RANDOMTRIP-sourced posts
 
   // Relations
-  author    User  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  createdBy User? @relation("BlogCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  author          User                  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdBy       User?                 @relation("BlogCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  translationRows BlogPostTranslation[]
 
   @@map("blog_posts")
+}
+
+// One row per locale (source included). Only src/lib/blog's repository module
+// may read or write it. Rollout: prisma/rollouts/blog-post-translations.sql.
+model BlogPostTranslation {
+  id         String  @id @default(cuid())
+  postId     String
+  locale     String // one of CONTENT_LOCALES (SQL CHECK constraint)
+  title      String
+  subtitle   String?
+  tagline    String?
+  content    String? @db.Text // rich text HTML
+  blocks     Json? // full ordered blocks; media URLs shared, captions/embed titles localized
+  faq        Json?
+  seo        Json?
+  slug       String? // null on review copies; follows title until first publish, then frozen
+  isComplete Boolean @default(false) // server-computed on every write
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post        BlogPost              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  slugHistory BlogPostSlugHistory[]
+
+  @@unique([postId, locale])
+  @@unique([locale, slug])
+  @@index([locale, isComplete])
+  @@map("blog_post_translations")
+}
+
+// Retired slugs per locale, resolved to their translation for 301 redirects.
+model BlogPostSlugHistory {
+  id            String   @id @default(cuid())
+  locale        String // one of CONTENT_LOCALES (SQL CHECK constraint)
+  slug          String
+  translationId String
+  createdAt     DateTime @default(now())
+
+  translation BlogPostTranslation @relation(fields: [translationId], references: [id], onDelete: Cascade)
+
+  @@unique([locale, slug])
+  @@index([translationId])
+  @@map("blog_post_slug_history")
 }
 
 // ============================================================================
