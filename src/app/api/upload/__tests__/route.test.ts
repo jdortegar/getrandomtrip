@@ -332,7 +332,21 @@ describe("environment-scoped media naming", () => {
     expect(storeNames()).toEqual(["user-avatars", "user-media"]);
   });
 
-  it("non-production DELETE removes the key from the shared and legacy stores", async () => {
+  it("non-production DELETE removes a dev- key from the shared and legacy stores", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { DELETE } = await import("../route");
+
+    const res = await DELETE({
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/dev-a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(204);
+    expect(storeNames()).toEqual(["user-avatars", "nonproduction-user-avatars"]);
+    expect(storeDeleteMock).toHaveBeenCalledTimes(2);
+    expect(storeDeleteMock).toHaveBeenCalledWith("user123/avatar/dev-a.webp");
+  });
+
+  it("non-production DELETE never removes a non-dev- key from the shared (production) store", async () => {
     vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
     const { DELETE } = await import("../route");
 
@@ -341,8 +355,20 @@ describe("environment-scoped media naming", () => {
     } as unknown as NextRequest);
 
     expect(res.status).toBe(204);
-    expect(storeNames()).toEqual(["user-avatars", "nonproduction-user-avatars"]);
-    expect(storeDeleteMock).toHaveBeenCalledTimes(2);
+    expect(storeNames()).toEqual(["nonproduction-user-avatars"]);
+    expect(storeDeleteMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("production DELETE removes any key from the shared store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    const { DELETE } = await import("../route");
+
+    const res = await DELETE({
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(204);
+    expect(storeNames()).toEqual(["user-avatars"]);
     expect(storeDeleteMock).toHaveBeenCalledWith("user123/avatar/a.webp");
   });
 });

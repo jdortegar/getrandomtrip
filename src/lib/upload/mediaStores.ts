@@ -1,7 +1,9 @@
 import { getStore } from "@netlify/blobs";
 import {
+  DEV_UPLOAD_PREFIX,
   getLegacyMediaStoreName,
   getSharedMediaStoreName,
+  isProductionDeployment,
 } from "@/lib/deployment";
 
 const FEATURE_STORE: Record<string, string> = {
@@ -70,9 +72,15 @@ export async function getMediaArrayBuffer(key: string, feature?: string) {
   return null;
 }
 
-/** Deletes a key from the feature store and its legacy twin. */
+/** Deletes a key from the feature store and its legacy twin. The shared store
+ * is production's, so non-production may only delete its own `dev-` uploads
+ * there — never a production blob that happens to share a user id. */
 export async function deleteMediaBlob(key: string, feature?: string) {
-  for (const name of storeNamesFor(resolveStoreName(feature))) {
-    await openStore(name).delete(key);
+  const storeName = resolveStoreName(feature);
+  const filename = key.split("/").pop() ?? "";
+  if (isProductionDeployment() || filename.startsWith(DEV_UPLOAD_PREFIX)) {
+    await openStore(getSharedMediaStoreName(storeName)).delete(key);
   }
+  const legacy = getLegacyMediaStoreName(storeName);
+  if (legacy) await openStore(legacy).delete(key);
 }

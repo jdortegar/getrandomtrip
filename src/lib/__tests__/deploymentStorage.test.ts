@@ -55,9 +55,13 @@ it.each(["production", "nonproduction", undefined])(
     getStore.mockClear();
     await queryDelete(query);
     await pathDelete(query, params);
+    // Outside production, a non-dev- key is never deleted from the shared
+    // (production) store — only from the legacy one.
+    const deleteStores =
+      mode === "production" ? ["user-avatars"] : ["nonproduction-user-avatars"];
     expect(getStore.mock.calls.map(([name]) => name)).toEqual([
-      ...withLegacy("user-avatars"),
-      ...withLegacy("user-avatars"),
+      ...deleteStores,
+      ...deleteStores,
     ]);
     expect(store.delete).toHaveBeenCalledWith("user123/avatar/picture.webp");
     getStore.mockClear();
