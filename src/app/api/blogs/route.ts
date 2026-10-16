@@ -1,15 +1,13 @@
-import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
-import type { Prisma } from "@prisma/client";
 // ============================================================================
 // GET /api/blogs - Get all published blog posts (public, with pagination)
 // ============================================================================
 
-import { BlogStatus } from "@prisma/client";
+import { listPublished } from "@/lib/blog/blogRepository";
 import { interleavePostsByAuthor } from "@/lib/blog/interleavePostsByAuthor";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { NextRequest, NextResponse } from "next/server";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
-import { prisma } from "@/lib/prisma";
+import type { PublicBlogListFilters } from "@/types/blog";
 
 export const dynamic = "force-dynamic";
 
@@ -26,90 +24,52 @@ export async function GET(request: NextRequest) {
     const excuseKey = searchParams.get("excuseKey");
     const skip = (page - 1) * limit;
 
-    const where: Prisma.BlogPostWhereInput = {
-      ...blogLocaleWhere(locale),
-      status: BlogStatus.PUBLISHED,
-      // Review copies (isReviewCopy: true) share authorId with the original
-      // and must never leak into public listings.
-      isReviewCopy: false,
-      // Tripper-unpublished posts stay PUBLISHED (approval history) but must
-      // not be publicly visible.
-      isActive: true,
-    };
+    // Visibility (PUBLISHED, active, not a review copy) and the locale's
+    // complete-translation gate are enforced by the repository.
+    const filters: PublicBlogListFilters = {};
     if (tripperId) {
-      where.authorId = tripperId;
+      filters.authorId = tripperId;
     } else if (tripperIds?.trim()) {
       const ids = tripperIds
         .split(",")
         .map((id) => id.trim())
         .filter(Boolean);
       if (ids.length > 0) {
-        where.authorId = { in: ids };
+        filters.authorId = ids;
       }
     }
 
     // "level" is backed by BlogPost.level — independent of travelType (both
     // filters can be applied together; see TitleImageStep).
     if (level?.trim() && isValidExperienceLevel(level.trim())) {
-      where.level = level.trim();
+      filters.level = level.trim();
     }
     if (travelType?.trim()) {
-      where.travelType = { has: travelType.trim() };
+      filters.travelType = travelType.trim();
     }
 
     if (excuseKey?.trim()) {
-      where.excuseKey = { has: excuseKey.trim() };
+      filters.excuseKey = excuseKey.trim();
     }
 
     // Fetch every matching post (no skip/take yet) so consecutive posts from
     // the same tripper can be interleaved with other trippers' posts before
     // paginating — otherwise a prolific tripper's recent posts crowd out
     // everyone else's on page 1.
-    const allBlogs = await prisma.blogPost.findMany({
-      where,
-      orderBy: { publishedAt: "desc" },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        content: true,
-        translations: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        tags: true,
-        format: true,
-        publishedAt: true,
-        travelType: true,
-        excuseKey: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-            avatarUrl: true,
-            location: true,
-          },
-        },
-      },
-    });
-
-    const localizedBlogs = resolveBlogList(allBlogs, locale);
-
-    type BlogWithAuthor = (typeof allBlogs)[number];
+    const localizedBlogs = await listPublished(locale, filters);
 
     // Round-robin across trippers, preserving each tripper's internal
     // recency order (their most recent post still comes before their older ones).
     const interleavedBlogs = interleavePostsByAuthor(
       localizedBlogs,
-      (blog: BlogWithAuthor) => blog.author.id,
+      (blog) => blog.author.id,
     );
 
     const total = localizedBlogs.length;
     const blogs = interleavedBlogs.slice(skip, skip + limit);
 
     // Transform to match frontend type (author included via select)
-    const transformedBlogs = blogs.map((blog: BlogWithAuthor) => ({
+    const transformedBlogs = blogs.map((blog) => ({
       author: {
         avatarUrl: normalizeUploadUrl(blog.author.avatarUrl) ?? "",
         id: blog.author.id,
@@ -122,7 +82,7 @@ export async function GET(request: NextRequest) {
       format: blog.format.toLowerCase(),
       id: blog.id,
       publishedAt: blog.publishedAt?.toISOString(),
-      slug: blog.slug ?? blog.id,
+      slug: blog.slug,
       subtitle: blog.subtitle ?? "",
       tagline: blog.tagline ?? "",
       tags: blog.tags,

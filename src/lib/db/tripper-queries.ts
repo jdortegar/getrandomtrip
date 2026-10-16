@@ -1,4 +1,4 @@
-import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
+import { listPublished } from "@/lib/blog/blogRepository";
 // ============================================================================
 // Tripper Database Queries
 // ============================================================================
@@ -1111,42 +1111,22 @@ async function queryPublishedBlogs({
   travelType?: string;
 }) {
   try {
-    const blogs = await prisma.blogPost.findMany({
-      where: {
-        ...blogLocaleWhere(locale),
-        ...(authorId ? { authorId } : {}),
-        ...(travelType ? { travelType: { has: travelType } } : {}),
-        status: "PUBLISHED",
-        // Review copies (isReviewCopy: true) share authorId with the
-        // original and must never leak into this public-facing list.
-        isReviewCopy: false,
-        // Tripper-unpublished posts stay PUBLISHED (approval history) but
-        // must not appear on the public profile.
-        isActive: true,
-        // Filtered in the query (not after `take`) so a short run of
-        // cover-less posts can't shrink the result below `limit`.
-        coverUrl: { not: null },
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        ...(travelType ? { content: true } : {}),
-        translations: true,
-        subtitle: true,
-        coverUrl: true,
-        tags: true,
-        publishedAt: true,
-      },
-      orderBy: { publishedAt: "desc" },
+    // Visibility guards (PUBLISHED, active, not a review copy) and the
+    // locale's complete-translation gate live in the repository; the cover
+    // filter runs in the query (not after `take`) so a short run of
+    // cover-less posts can't shrink the result below `limit`.
+    const blogs = await listPublished(locale, {
+      ...(authorId ? { authorId } : {}),
+      ...(travelType ? { travelType } : {}),
+      requireCover: true,
       ...(typeof limit === "number" ? { take: limit } : {}),
     });
 
     const fallbackCategory = BLOG_CATEGORY_FALLBACK[locale];
 
-    return resolveBlogList(blogs, locale).map((blog) => ({
+    return blogs.map((blog) => ({
       category: blog.tags[0] ?? fallbackCategory,
-      href: `/blog/${blog.slug ?? blog.id}`,
+      href: `/blog/${blog.slug}`,
       image: blog.coverUrl!,
       title: blog.title,
     }));
@@ -1194,39 +1174,15 @@ export async function getBlogTeaserPosts(
   locale: "es" | "en" = "es",
 ): Promise<BlogTeaserPost[]> {
   try {
-    const blogs = await prisma.blogPost.findMany({
-      where: {
-        ...blogLocaleWhere(locale),
-        status: "PUBLISHED",
-        isReviewCopy: false,
-        isActive: true,
-        coverUrl: { not: null },
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        translations: true,
-        subtitle: true,
-        coverUrl: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-            avatarUrl: true,
-            location: true,
-          },
-        },
-      },
-      orderBy: { publishedAt: "desc" },
-      // Wide enough pool that the round-robin below can actually diversify
-      // authors instead of just re-sorting a single tripper's recent run.
+    // Wide enough pool that the round-robin below can actually diversify
+    // authors instead of just re-sorting a single tripper's recent run.
+    const blogs = await listPublished(locale, {
+      requireCover: true,
       take: limit * 10,
     });
 
     const interleaved = interleavePostsByAuthor(
-      resolveBlogList(blogs, locale),
+      blogs,
       (blog) => blog.author.id,
     ).slice(0, limit);
 
@@ -1239,7 +1195,7 @@ export async function getBlogTeaserPosts(
         slug: blog.author.tripperSlug ?? "",
       },
       coverUrl: blog.coverUrl,
-      slug: blog.slug ?? blog.id,
+      slug: blog.slug,
       subtitle: blog.subtitle ?? "",
       title: blog.title,
     }));

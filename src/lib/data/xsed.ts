@@ -1,10 +1,12 @@
-import { blogLocaleWhere, resolveBlogList } from "@/lib/blog/content-locale";
+import { listPublished } from "@/lib/blog/blogRepository";
+import { isContentLocale } from "@/lib/blog/locales";
 import { isPublicXsedExperience, PUBLIC_XSED_EXPERIENCE_WHERE } from "@/lib/xsed/publication";
 import { XSED_EXPERIENCE_WHERE } from "@/lib/experiences/xsedExperience";
 import type { Prisma, TripRequestStatus } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
 import type { DropEntry } from "@/types/core";
+import type { PublicBlogSummary } from "@/types/blog";
 
 const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
   "SAVED",
@@ -191,18 +193,10 @@ export async function getPublicDropEntries(
   return { drops, hasMore: offset + limit < filtered.length };
 }
 
-const xsedBlogPostSelect = {
-  translations: true,
-  id: true,
-  slug: true,
-  title: true,
-  label: true,
-  coverUrl: true,
-  publishedAt: true,
-  createdAt: true,
-} as const;
-
-type XsedBlogPostRow = Prisma.BlogPostGetPayload<{ select: typeof xsedBlogPostSelect }>;
+type XsedBlogPostRow = Pick<
+  PublicBlogSummary,
+  "id" | "slug" | "title" | "label" | "coverUrl" | "publishedAt" | "createdAt"
+>;
 
 /**
  * XSED grid entries sourced from BlogPost (tagged via `level: "xsed"`,
@@ -223,24 +217,17 @@ function toXsedBlogDropEntry(
     image: blog.coverUrl || "/images/drops/drops-mendoza.jpg",
     number: total - position,
     label: blog.label ?? undefined,
-    slug: blog.slug ?? blog.id,
+    slug: blog.slug,
     title: blog.title,
   };
 }
 
+/** XSED-level posts public in `locale` (complete translation), newest created first. */
 async function findPublicXsedBlogPosts(locale: string): Promise<XsedBlogPostRow[]> {
-  const posts = await prisma.blogPost.findMany({
-    where: {
-      ...blogLocaleWhere(locale),
-      level: "xsed",
-      status: "PUBLISHED",
-      isActive: true,
-      isReviewCopy: false,
-    },
-    orderBy: { createdAt: "desc" },
-    select: xsedBlogPostSelect,
+  return listPublished(isContentLocale(locale) ? locale : "es", {
+    level: "xsed",
+    orderBy: "createdAt",
   });
-  return resolveBlogList(posts, locale);
 }
 
 export async function getXsedBlogDropsForGrid(locale: string): Promise<DropEntry[]> {

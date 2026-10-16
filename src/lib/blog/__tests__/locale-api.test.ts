@@ -21,12 +21,6 @@ vi.mock("@/lib/prisma", () => ({
     },
   },
 }));
-import {
-  getBlogTeaserPosts,
-  getRecentPublishedBlogs,
-  getTripperPublishedBlogs,
-} from "@/lib/db/tripper-queries";
-import { getPublicXsedBlogDropEntries } from "@/lib/data/xsed";
 import { prisma } from "@/lib/prisma";
 import { POST, GET as getManagementList } from "@/app/api/tripper/blogs/route";
 import {
@@ -34,8 +28,6 @@ import {
   GET as getManagementDetail,
 } from "@/app/api/tripper/blogs/[id]/route";
 import { PATCH as patchCopy } from "@/app/api/admin/blogs/[id]/edit-copy/route";
-import { GET as getPublicList } from "@/app/api/blogs/route";
-import { GET as getPublicDetail } from "@/app/api/blogs/[id]/route";
 import {
   computeChangedFields,
   overwriteOriginalWithCopy,
@@ -235,61 +227,9 @@ describe("localized write boundary", () => {
   });
 });
 
+// Public locale-aware reads (lists, details, cards, XSED archive) moved to the
+// translation table and are covered by blogRepository.test.ts and the consumer tests.
 describe("locale-aware reads", () => {
-  it("filters English readiness before pagination/count and never emits Spanish optional copy", async () => {
-    vi.mocked(prisma.blogPost.findMany).mockResolvedValue([
-      base,
-      {
-        ...base,
-        id: "translated",
-        translations: { en: { ...en, ready: true } },
-      },
-    ] as never);
-    const response = await getPublicList(
-      request("/api/blogs?locale=en&limit=1"),
-    );
-    const data = await response.json();
-    expect(
-      vi.mocked(prisma.blogPost.findMany).mock.calls[0][0]?.where,
-    ).toMatchObject({
-      isActive: true,
-      isReviewCopy: false,
-      status: "PUBLISHED",
-      translations: { path: ["en", "ready"], equals: true },
-    });
-    expect(data.pagination).toMatchObject({
-      total: 1,
-      totalPages: 1,
-      hasMore: false,
-    });
-    expect(data.blogs).toHaveLength(1);
-    expect(data.blogs[0]).toMatchObject({
-      title: "English",
-      subtitle: "",
-      tagline: "",
-    });
-  });
-  it("returns EN 404 for Spanish-only details and translated detail without Spanish SEO/FAQ", async () => {
-    expect(
-      (await getPublicDetail(request("/api/blogs/post?locale=en"), params))
-        .status,
-    ).toBe(404);
-    vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
-      ...base,
-      translations: { en: { ...en, ready: true } },
-    } as never);
-    const response = await getPublicDetail(
-      request("/api/blogs/post?locale=en"),
-      params,
-    );
-    expect((await response.json()).blog).toMatchObject({
-      title: "English",
-      content: en.content,
-      seo: null,
-      faq: null,
-      subtitle: "",
-    });
-  });
   it("keeps raw management lists/details discoverable on English UI", async () => {
     const list = await getManagementList(
       request("/api/tripper/blogs?locale=en"),
@@ -310,45 +250,6 @@ describe("locale-aware reads", () => {
     expect((await detail.json()).blog).toMatchObject({
       title: "Español",
       translations,
-    });
-  });
-});
-
-describe("server-side cards and XSED archive", () => {
-  it("queries translated readiness before every teaser limit and resolves all card titles", async () => {
-    vi.mocked(prisma.blogPost.findMany).mockResolvedValue([
-      { ...base, translations: { en: { ...en, ready: true } } },
-    ] as never);
-    const home = await getRecentPublishedBlogs(5, "en");
-    const profile = await getTripperPublishedBlogs("owner", 6, "en");
-    const teaser = await getBlogTeaserPosts(3, "en");
-    expect([home[0].title, profile[0].title, teaser[0].title]).toEqual([
-      "English",
-      "English",
-      "English",
-    ]);
-    for (const [query] of vi.mocked(prisma.blogPost.findMany).mock.calls) {
-      expect(query?.where?.translations).toEqual({
-        path: ["en", "ready"],
-        equals: true,
-      });
-      expect(query?.take).toBeGreaterThan(0);
-    }
-  });
-  it("omits untranslated XSED archive posts before pagination and hasMore", async () => {
-    vi.mocked(prisma.blogPost.findMany).mockResolvedValue([
-      base,
-      { ...base, id: "en", translations: { en: { ...en, ready: true } } },
-    ] as never);
-    const result = await getPublicXsedBlogDropEntries("en", 0, 1);
-    expect(result.drops).toHaveLength(1);
-    expect(result.drops[0].title).toBe("English");
-    expect(result.hasMore).toBe(false);
-    expect(
-      vi.mocked(prisma.blogPost.findMany).mock.calls[0][0]?.where,
-    ).toMatchObject({
-      level: "xsed",
-      translations: { path: ["en", "ready"], equals: true },
     });
   });
 });
