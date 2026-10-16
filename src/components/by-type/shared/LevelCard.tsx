@@ -255,7 +255,7 @@ export default function LevelCard({
       <div className="mt-3">
         <Button
           asChild
-          className={cn("w-full text-ink", ctaClassName)}
+          className={cn("w-full", ctaClassName)}
           variant="feature"
         >
           <Link
