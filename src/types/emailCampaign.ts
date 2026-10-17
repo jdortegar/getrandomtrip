@@ -47,6 +47,49 @@ export interface Contact {
   createdAt: string;
 }
 
+/** Admin contacts list filters. `page` is 1-based; `limit` is capped at 100. */
+export interface ContactListQuery {
+  page: number;
+  limit: number;
+  source?: ContactSource;
+  status?: ContactStatus;
+  /** Case-insensitive match on email or name. */
+  q?: string;
+}
+
+export interface ContactListResult {
+  items: Contact[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface WaitlistContactInput {
+  email: string;
+  name?: string | null;
+}
+
+export interface FriendsFamilyContactInput {
+  email: string;
+  name?: string | null;
+  locale?: CampaignLocale;
+  tags?: string[];
+}
+
+/** Admin edit. `status` may only be `SUBSCRIBED` (manual resubscribe). */
+export interface ContactUpdateInput {
+  name?: string | null;
+  locale?: CampaignLocale;
+  tags?: string[];
+  status?: ContactStatus;
+}
+
+/** Contact operation failures the admin API maps to 409 / 404 / 400. */
+export type ContactErrorCode =
+  | "duplicate_email"
+  | "not_found"
+  | "invalid_status_change";
+
 export interface Campaign {
   id: string;
   /** Internal admin label, never shown to recipients. */
