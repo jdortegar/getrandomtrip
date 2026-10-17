@@ -1,6 +1,12 @@
 # Netlify Configuration for Next.js 14
 # Minimal configuration - Netlify handles most defaults automatically
 
+# Production builds are merges to main. Apply pending Prisma migrations
+# before the app build when that database is behind. A current database is
+# left unchanged. Develop and preview builds do not run this command.
+[context.production]
+  command = "npx tsx scripts/migrate-if-outdated.ts && npm run build"
+
 [context.deploy-preview]
   # Exit 0 skips release previews; exit 1 continues all other builds.
   ignore = '[ "$CONTEXT" = "deploy-preview" ] && [ "$HEAD" = "develop" ]'
