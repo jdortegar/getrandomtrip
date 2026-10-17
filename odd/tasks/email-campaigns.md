@@ -84,4 +84,11 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Files: `src/lib/email-campaigns/contactRules.ts` (pure, script-safe), `src/lib/email-campaigns/contacts.ts` (`upsertWaitlistContact`, `listContacts`, `createFriendsFamilyContact`, `updateContact`, `ContactError`), `src/lib/validation/emailCampaigns.ts`, `src/app/api/admin/email-campaigns/contacts/route.ts` (GET/POST), `.../contacts/[id]/route.ts` (PATCH), `src/app/api/waitlist/route.ts` (best-effort contact upsert), `scripts/backfill-waitlist-contacts.ts` + `db:backfill-waitlist-contacts`, `src/types/emailCampaign.ts`, 5 test files.
 - RED: 5/5 new test files failed (modules missing). GREEN: 163/163 across email-campaigns, admin contacts API, scripts (parent re-run); typecheck + lint pass (writer).
 - Notes: waitlist signup test lives in `src/lib/email-campaigns/__tests__/waitlistSignup.test.ts`; concurrent duplicate signup may log a unique-constraint error (backfill heals). Backfill not run anywhere.
+- Commit: `c84f4fa2`. Assessment: high risk, RDD off → independent verifier: PASS (auth, no-resubscribe, normalization, backfill dry-run safety; 163 tests + typecheck). Lows: unbounded `page` → 500 (fixed below, uncommitted); joined waitlist name can exceed 120 chars (accepted, harmless).
+- Follow-up fix (inline): `positiveInt` rejects non-finite values; test `src/lib/validation/__tests__/emailCampaigns.test.ts` (written after the fix — no RED observed), 19/19 pass. Uncommitted, awaiting approval.
+
+### T2b — Promo attribution on confirm-payment fallback (route: inline; one mechanical file + test)
+
+- `src/app/api/stripe/confirm-payment/route.ts` sets `promoCode` / `stripePromotionCodeId` from verified intent metadata (empty → unset), so fallback-settled payments count immediately.
+- RED: "stores the checkout promo code from the verified intent metadata" failed. GREEN: stripe + db 418/418, typecheck, eslint pass.
 - Status: uncommitted, awaiting user approval.

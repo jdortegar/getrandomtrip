@@ -62,6 +62,39 @@ it("authorizes an owned legacy provider-ID row before repairing settlement", asy
   expect(mocks.update).toHaveBeenCalledWith("pi_test", expect.objectContaining({ status: "APPROVED" }), undefined, true);
 });
 
+it("stores the checkout promo code from the verified intent metadata", async () => {
+  mocks.find.mockResolvedValue({ userId: "buyer" });
+  mocks.retrieve.mockResolvedValue({
+    id: "pi_test",
+    status: "succeeded",
+    created: 1,
+    livemode: true,
+    metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123" },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.update).toHaveBeenCalledWith(
+    "pi_test",
+    expect.objectContaining({ promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123" }),
+    undefined,
+    true,
+  );
+});
+
+it("leaves promo columns unset when checkout applied no promo", async () => {
+  mocks.find.mockResolvedValue({ userId: "buyer" });
+  mocks.retrieve.mockResolvedValue({
+    id: "pi_test",
+    status: "succeeded",
+    created: 1,
+    livemode: true,
+    metadata: { promoCode: "", promoCodeId: "" },
+  });
+  await POST(request());
+  const data = mocks.update.mock.calls[0][1];
+  expect(data.promoCode).toBeUndefined();
+  expect(data.stripePromotionCodeId).toBeUndefined();
+});
+
 it("takes live mode only from Stripe, not the browser request", async () => {
   mocks.find.mockResolvedValue({ userId: "buyer" });
   mocks.retrieve.mockResolvedValue({ id: "pi_test", status: "succeeded", created: 1, livemode: false });

@@ -69,6 +69,8 @@ export async function POST(request: NextRequest) {
     providerPaymentId: intent.id,
     stripePaymentIntentId: intent.id,
     paidAt: new Date(intent.created * 1000),
+    promoCode: intent.metadata?.promoCode || undefined,
+    stripePromotionCodeId: intent.metadata?.promoCodeId || undefined,
   };
 
   try {
