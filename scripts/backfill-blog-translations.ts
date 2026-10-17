@@ -400,24 +400,27 @@ export async function runBlogTranslationBackfill(
   logger: Logger = console,
 ): Promise<{ ok: boolean; plan: BlogTranslationBackfillPlan }> {
   const [posts, translations, slugHistory] = await Promise.all([
-    client.blogPost.findMany({
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        content: true,
-        blocks: true,
-        faq: true,
-        seo: true,
-        translations: true,
-        publishedAt: true,
-        isReviewCopy: true,
-        createdAt: true,
-      },
-      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
-    }),
+    // Expand-phase read: leftover BlogPost columns are not in the Prisma
+    // schema after T7. Raw SQL still sees them on a database that has not
+    // applied the contract DROP. Do not run this after the contract SQL.
+    client.$queryRaw<LegacyBlogPostRow[]>`
+      SELECT
+        id,
+        slug,
+        title,
+        subtitle,
+        tagline,
+        content,
+        blocks,
+        faq,
+        seo,
+        translations,
+        "publishedAt",
+        "isReviewCopy",
+        "createdAt"
+      FROM blog_posts
+      ORDER BY "createdAt" ASC, id ASC
+    `,
     client.blogPostTranslation.findMany({
       select: {
         id: true,

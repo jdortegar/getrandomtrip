@@ -10,7 +10,10 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
-import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
+import {
+  sourceTitleForPost,
+  syncTranslationsForPost,
+} from "@/lib/blog/blogRepository";
 import { SourceTranslationIncompleteError } from "@/lib/blog/legacy-translation-mapping";
 import { sendMail } from "@/lib/helpers/sendMail";
 import BlogApproved, { subjects as approvedSubjects } from "@/emails/BlogApproved";
@@ -39,8 +42,8 @@ export async function POST(
 
     const blog = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
-      select: { id: true, status: true, authorId: true, title: true, publishedAt: true },
-    }) as { id: string; status: string; authorId: string; title: string; publishedAt: Date | null } | null;
+      select: { id: true, status: true, authorId: true, publishedAt: true },
+    }) as { id: string; status: string; authorId: string; publishedAt: Date | null } | null;
 
     if (!blog) {
       return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
@@ -66,13 +69,13 @@ export async function POST(
       select: { id: true },
     }) as { id: string } | null;
 
-    let updated: { id: string; status: string; authorId: string; title: string };
+    let updated: { id: string; status: string; authorId: string };
 
     if (existingCopy) {
       // Copy-based approve: overwrite + delete copy in transaction
 
       updated = await (prisma.$transaction as any)(async (tx: any) => {
-        // Overwrites legacy columns + translation rows from the copy; an
+        // Overwrites shared fields + translation rows from the copy; an
         // incomplete source translation throws and rolls everything back.
         const result = await overwriteOriginalWithCopy(tx, params.id, existingCopy.id);
 
@@ -109,10 +112,13 @@ export async function POST(
     const authorId = updated.authorId;
     if (authorId) {
       void (async () => {
-        const author = await prisma.user.findUnique({
-          where: { id: authorId },
-          select: { email: true, name: true, locale: true },
-        });
+        const [author, blogTitle] = await Promise.all([
+          prisma.user.findUnique({
+            where: { id: authorId },
+            select: { email: true, name: true, locale: true },
+          }),
+          sourceTitleForPost(prisma, updated.id),
+        ]);
         const locale = author?.locale === "en" ? "en" : "es";
 
         if (author?.email) {
@@ -124,7 +130,7 @@ export async function POST(
                 react: (
                   <BlogApproved
                     tripper={author.name ?? ""}
-                    blogTitle={updated.title ?? ""}
+                    blogTitle={blogTitle}
                     locale={locale}
                   />
                 ),
@@ -137,8 +143,8 @@ export async function POST(
 
         try {
           const notifCopy = locale === "en"
-            ? { title: "Your article has been approved!", body: `"${updated.title ?? ""}" is now live.` }
-            : { title: "¡Tu artículo fue aprobado!", body: `"${updated.title ?? ""}" ya está publicado.` };
+            ? { title: "Your article has been approved!", body: `"${blogTitle}" is now live.` }
+            : { title: "¡Tu artículo fue aprobado!", body: `"${blogTitle}" ya está publicado.` };
           await prisma.notification.create({
             data: {
               userId: authorId,

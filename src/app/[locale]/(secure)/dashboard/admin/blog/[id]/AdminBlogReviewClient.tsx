@@ -7,7 +7,7 @@ import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlo
 import type { BlogShellMode } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
 import { AdminBlogReviewActionsBar } from "../../AdminBlogReviewActionsBar";
 import { useDictionary } from "@/hooks/useDictionary";
-import type { BlogFormDraft } from "@/types/blog";
+import type { BlogEditorDraft } from "@/types/blog";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 
@@ -15,7 +15,7 @@ interface AdminBlogReviewClientProps {
   dict: TripperBlogFormDict;
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
-  initialDraft: BlogFormDraft;
+  initialDraft: BlogEditorDraft;
   blogId: string;
   currentAdminId: string;
   initialMode?: BlogShellMode;

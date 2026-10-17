@@ -18,34 +18,6 @@ import {
 // when the locale exists on only one side.
 // ============================================================================
 
-/**
- * Legacy BlogPost columns copied onto the original on approval (dual-write
- * until the contract rollout). Identity fields (id, authorId, createdAt,
- * slug) are intentionally excluded, as are review-mechanism fields
- * (reviewNote, tripperNote, reviewLockedBy, changedFields, isReviewCopy,
- * parentId, isDiscarded, publishedAt).
- */
-export const MUTABLE_BLOG_FIELDS = [
-  "title",
-  "subtitle",
-  "tagline",
-  "coverUrl",
-  "content",
-  "blocks",
-  "translations",
-  "tags",
-  "travelType",
-  "excuseKey",
-  "level",
-  "label",
-  "format",
-  "seo",
-  "faq",
-  "sourceLocale",
-] as const;
-
-export type MutableBlogField = (typeof MUTABLE_BLOG_FIELDS)[number];
-
 /** Post-level fields shared by every locale, diffed on the BlogPost itself. */
 export const SHARED_BLOG_FIELDS = [
   "coverUrl",
@@ -57,6 +29,15 @@ export const SHARED_BLOG_FIELDS = [
   "format",
   "sourceLocale",
 ] as const;
+
+/**
+ * Shared BlogPost fields copied onto the original on approval. Localized
+ * copy is written only via overwriteTranslationsFromCopy. Identity and
+ * review-mechanism fields are excluded.
+ */
+export const MUTABLE_BLOG_FIELDS = SHARED_BLOG_FIELDS;
+
+export type MutableBlogField = (typeof MUTABLE_BLOG_FIELDS)[number];
 
 /** Compared canonically: key-order-insensitive (JSONB reorders keys). */
 const JSON_FIELDS = new Set<string>([
@@ -118,13 +99,12 @@ export function computeChangedFields(
 
 /**
  * Overwrites the original BlogPost with the copy inside a Prisma
- * transaction: the legacy columns (incl. `sourceLocale`) first, then the
+ * transaction: shared fields (incl. `sourceLocale`) first, then the
  * translation rows per locale (original slugs kept, source translation
  * required to be complete — throwing rolls the caller's transaction back).
- * Preserves the original's `slug` (avoids @unique churn) and `publishedAt`
- * (keeps prior publish history if this is a re-publish).
+ * Preserves `publishedAt` (keeps prior publish history if this is a re-publish).
  *
- * Preserved fields: id, authorId, createdAt, slug, isReviewCopy, parentId,
+ * Preserved fields: id, authorId, createdAt, isReviewCopy, parentId,
  *                    reviewLockedBy, reviewNote, changedFields.
  *
  * @param tx          - Prisma transaction client

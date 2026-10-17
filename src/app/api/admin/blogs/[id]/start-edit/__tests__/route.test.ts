@@ -176,7 +176,8 @@ describe("POST /api/admin/blogs/[id]/start-edit", () => {
 
     const createArgs = mockCreate.mock.calls[0][0];
     expect(createArgs.data.id).toBeUndefined();
-    expect(createArgs.data.slug).toBeNull();
+    expect(createArgs.data).not.toHaveProperty("slug");
+    expect(createArgs.data).not.toHaveProperty("title");
     expect(createArgs.data.isReviewCopy).toBe(true);
     expect(createArgs.data.isDiscarded).toBe(false);
     expect(createArgs.data.parentId).toBe("blog-1");

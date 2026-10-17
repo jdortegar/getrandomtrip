@@ -15,6 +15,7 @@ import {
   loadTranslationsForReview,
   type ReviewPostSnapshot,
 } from "@/lib/blog/blogRepository";
+import { pickSourceRow } from "@/lib/blog/source-copy";
 import { sendBlogPendingTripperReview } from "@/lib/email";
 
 export async function POST(
@@ -111,7 +112,9 @@ export async function POST(
           select: { locale: true },
         });
         const locale = author?.locale === "en" ? "en" : "es";
-        const title = original.title as string;
+        const title =
+          pickSourceRow(String(original.sourceLocale ?? "es"), originalRows)?.title ??
+          "";
         const notifCopy = locale === "en"
           ? { title: "Admin proposed changes to your article", body: `The Randomtrip team has proposed changes to "${title}".` }
           : { title: "El admin propuso cambios en tu artículo", body: `El equipo de Randomtrip propuso cambios para "${title}".` };

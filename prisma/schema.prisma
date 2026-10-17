@@ -684,26 +684,13 @@ model BlogPost {
   format   BlogFormat @default(ARTICLE)
   source   BlogSource @default(TRIPPER) // immutable ownership signal, server-derived at create — mirrors Experience.source
 
-  // Basic info
-  title    String
-  slug     String? @unique // SEO-friendly URL (e.g. aventura-acuatica)
-  subtitle String?
-  tagline  String?
-  coverUrl String? // Hero/cover image URL
-
-  // Rich text body (HTML from editor)
-  content String? @db.Text
-
-  // Canonical copy remains Spanish; optional authored English includes server-derived readiness.
-  // Legacy: kept for dual-write until the contract rollout; new code uses translationRows.
-  translations Json?
+  // Hero/cover image URL. Localized copy lives on translationRows only
+  // (contract: prisma/rollouts/blog-post-translations-contract.sql).
+  coverUrl String?
 
   // Locale the post was authored in (one of CONTENT_LOCALES; SQL CHECK constraint).
   // Its translation row must be complete to submit/publish.
   sourceLocale String @default("es")
-
-  // Legacy content blocks (JSON); kept for backward compat / gallery extraction
-  blocks Json @default("[]")
 
   // Metadata
   tags       String[] @default([])
@@ -711,12 +698,6 @@ model BlogPost {
   excuseKey  String[] @default([]) // e.g. solo-adventure (from shared excuses)
   level      String? // one of EXPERIENCE_LEVELS values (src/lib/constants/packages.ts); XSED is a level, not a travelType
   label      String? // display ID shown on the XSED grid, e.g. "XSED Nº1 (AR)"
-
-  // SEO
-  seo Json? // { title?: string, description?: string, keywords?: string[] }
-
-  // FAQ (array of { question: string, answer: string })
-  faq Json?
 
   // Timestamps
   createdAt   DateTime  @default(now())
@@ -754,7 +735,7 @@ model BlogPostTranslation {
   blocks     Json? // full ordered blocks; media URLs shared, captions/embed titles localized
   faq        Json?
   seo        Json?
-  slug       String? // null on review copies; follows title until first publish, then frozen
+  slug       String? // null on review copies; follows the locale title on save
   isComplete Boolean @default(false) // server-computed on every write
 
   createdAt DateTime @default(now())

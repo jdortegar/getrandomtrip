@@ -490,13 +490,19 @@ export function NewExperienceShell({
       const maybeCreateBlogPost = async () => {
         if (!finalForm.createBlogPost) return;
         try {
+          const sourceLocale = locale === "en" ? "en" : "es";
           await fetch("/api/tripper/blogs", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              title: finalForm.title,
-              subtitle: finalForm.teaser || null,
-              content: finalForm.description || null,
+              sourceLocale,
+              translations: {
+                [sourceLocale]: {
+                  title: finalForm.title,
+                  subtitle: finalForm.teaser || null,
+                  content: finalForm.description || null,
+                },
+              },
               coverUrl: finalForm.heroImage || null,
               tags: finalForm.tags,
               travelType: getExperienceBlogTravelTypes(finalForm),
@@ -504,7 +510,6 @@ export function NewExperienceShell({
               // experience's own classification (isXsedExperience).
               level: isXsedExperience(finalForm) ? "xsed" : null,
               excuseKey: finalForm.excuseKey[0] ?? null,
-              status: "draft",
               format: "article",
             }),
           });

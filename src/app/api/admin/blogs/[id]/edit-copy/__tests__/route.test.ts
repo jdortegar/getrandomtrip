@@ -23,11 +23,12 @@ vi.mock("@/lib/prisma", () => {
 
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "admin@example.com" } });
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
@@ -110,8 +111,9 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
     expect(res.status).toBe(200);
     const updateArgs = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(updateArgs.where).toEqual({ id: "copy-1" });
-    expect(updateArgs.data.title).toBe("New Title");
+    expect(updateArgs.data).not.toHaveProperty("title");
     expect(updateArgs.data.coverUrl).toBe("https://example.com/x.jpg");
+    expect(writeTranslationsFromEditor).toHaveBeenCalled();
     expect(updateArgs.data).not.toHaveProperty("slug");
   });
 
@@ -233,7 +235,7 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy — translation dual-write", () 
     vi.resetModules();
   });
 
-  it("writes the copy's legacy columns and syncs its translation rows in the same transaction", async () => {
+  it("writes translation rows and does not write dropped BlogPost columns", async () => {
     (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
     (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockAdminUser("admin-1"),
@@ -246,31 +248,31 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy — translation dual-write", () 
     const written = {
       id: "copy-1",
       isReviewCopy: true,
-      title: "Nuevo",
-      translations: { en: { title: "New", content: "<p>Body</p>", ready: true } },
+      title: "Viaje",
     };
     const txUpdate = vi.fn().mockResolvedValue(written);
     const tx = { blogPost: { update: txUpdate } };
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
       (fn: (client: unknown) => unknown) => fn(tx),
     );
+    const ES = { title: "Viaje", content: "<p>Hola</p>" };
+    const EN = { title: "Trip", content: "<p>Body</p>", blocks: [{ type: "image", url: "/a.jpg", caption: "Lake" }] };
 
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.PATCH(
-      makePatchRequest("copy-1", {
-        title: "Nuevo",
-        translations: { en: { title: "New", content: "<p>Body</p>" } },
-      }),
+      makePatchRequest("copy-1", { sourceLocale: "es", translations: { es: ES, en: EN } }),
       { params: Promise.resolve({ id: "copy-1" }) },
     );
 
     expect(res.status).toBe(200);
-    expect(txUpdate.mock.calls[0][0].data).toMatchObject({
-      title: "Nuevo",
-      translations: { en: { title: "New", content: "<p>Body</p>", ready: true } },
-    });
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("translations");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledWith(
+      tx,
+      expect.objectContaining({ id: "copy-1", isReviewCopy: true, sourceLocale: "es" }),
+      { es: ES, en: EN },
+    );
     expect(prisma.blogPost.update).not.toHaveBeenCalled();
-    expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(tx, written);
   });
 });
 

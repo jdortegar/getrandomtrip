@@ -243,8 +243,9 @@ describe("overwriteOriginalWithCopy (blog)", () => {
       expect.objectContaining({
         where: { id: "original-1" },
         data: expect.objectContaining({
-          title: "Copy Title",
+          coverUrl: "https://example.com/copy.jpg",
           level: "xsed",
+          sourceLocale: "en",
           status: "PUBLISHED",
           isActive: true,
           isReviewCopy: false,
@@ -258,7 +259,8 @@ describe("overwriteOriginalWithCopy (blog)", () => {
     // slug must NOT be part of the overwrite payload (preserves original slug)
     const callArgs = tx.blogPost.update.mock.calls[0][0];
     expect(callArgs.data).not.toHaveProperty("slug");
-    expect(result.title).toBe("Copy Title");
+    expect(callArgs.data).not.toHaveProperty("title");
+    expect(result.level).toBe("xsed");
   });
 
   it("sets publishedAt to now when original had none", async () => {

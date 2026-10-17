@@ -1,6 +1,20 @@
-import type { BlogContentDraft, BlogFormDraft, BlogPost, BlogStatus } from "@/types/blog";
-
-type BlogBlock = BlogPost["blocks"][number];
+import type {
+  BlogBlock,
+  BlogEditorDraft,
+  BlogEditorPayload,
+  BlogEditorPost,
+  BlogEditorTranslation,
+  BlogFormDraft,
+  BlogLocaleDraft,
+  BlogMediaBlock,
+  BlogPost,
+  BlogStatus,
+  BlogTranslationContent,
+  BlogTranslationInput,
+  ContentLocale,
+} from "@/types/blog";
+import { resolveSourceLocale } from "@/lib/blog/legacy-translation-mapping";
+import { CONTENT_LOCALES, isContentLocale } from "@/lib/blog/locales";
 
 /**
  * Submission completeness gate for the tripper "submit for review" action.
@@ -25,11 +39,6 @@ export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean 
     case "general":
       return !!(draft.title.trim() && draft.coverUrl.trim());
     case "content":
-      // `content` (submitted to the server) is built from the feature quote
-      // AND these sections — a post with only a Feature Quote and no
-      // sections is a valid, submittable post, so both must be checked here
-      // or the wizard never reveals the submit action despite the server
-      // accepting it.
       return (
         !!draft.featureText.trim() ||
         draft.sections.some((s) => s.title.trim() || s.description.trim())
@@ -37,7 +46,6 @@ export function isBlogTabComplete(tabId: string, draft: BlogFormDraft): boolean 
     case "faq":
       return draft.faq.length > 0 && draft.faq.every((f) => f.question.trim() && f.answer.trim());
     case "gallery":
-      // Multi-image upload — zero images is a valid, complete state.
       return true;
     default:
       return false;
@@ -71,158 +79,171 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
-/**
- * Builds the POST/PATCH `/api/tripper/blogs` payload from a `BlogFormDraft`.
- *
- * `blocks` is the authoritative, round-trippable representation — a `quote`
- * block for the feature text, a `section` block per entry, and an `image`
- * block per gallery photo (not a dedicated `gallery` block type, so the
- * public page's existing carousel-extraction logic — which only recognizes
- * `type: "image"` — keeps working unchanged). `mapBlogPostToDraft` below
- * reads these same blocks back into a `BlogFormDraft` for editing.
- *
- * The public blog page (`src/app/[locale]/blog/[slug]/page.tsx`) still
- * renders the flat `content` HTML field directly and does not render
- * `section`/`quote` blocks, so `content` is also synthesized here from the
- * feature quote + sections to keep posts visible there without changing
- * that render pipeline.
- */
-function buildCanonicalBlogPayload(draft: BlogFormDraft) {
-  const contentParts: string[] = [];
+function isMediaBlock(block: BlogBlock): block is BlogMediaBlock {
+  return block.type === "image" || block.type === "video" || block.type === "embed";
+}
 
-  const featureText = draft.featureText.trim();
-  const featureAttribution = draft.featureAttribution.trim();
-  if (featureText) {
-    const cite = featureAttribution ? `<cite>— ${escapeHtml(featureAttribution)}</cite>` : "";
-    contentParts.push(`<blockquote>${escapeHtml(featureText)}${cite}</blockquote>`);
-  }
-
-  const nonEmptySections = draft.sections.filter(
-    (s) => s.title.trim() || s.description.trim(),
-  );
-  for (const section of nonEmptySections) {
-    if (section.title.trim()) {
-      contentParts.push(`<h2>${escapeHtml(section.title.trim())}</h2>`);
-    }
-    // `description` is already an HTML fragment from RichTextInput (TinyMCE) —
-    // same trust model as the rich-text `content` field BlogComposer already
-    // stores verbatim, so it's inserted as-is (not re-escaped).
-    if (section.description.trim()) {
-      contentParts.push(section.description);
-    }
-  }
-
-  let blocks = [
-    ...(featureText
-      ? [{ type: "quote" as const, text: featureText, cite: featureAttribution || undefined }]
-      : []),
-    ...nonEmptySections.map((s) => ({
-      type: "section" as const,
-      title: s.title,
-      description: s.description,
-    })),
-    ...draft.gallery.map((url) => ({ type: "image" as const, url })),
-  ];
-
-  // A translation-only edit must not rewrite legacy Spanish HTML/blocks or
-  // discard image captions that this editor cannot edit.
-  const original = draft.originalPost;
-  const baseline = original ? mapBlogPostToDraft(original) : null;
-  const bodyUnchanged = baseline && ["featureText", "featureAttribution", "sections"].every(
-    (key) => JSON.stringify(draft[key as keyof BlogFormDraft]) === JSON.stringify(baseline[key as keyof BlogFormDraft]),
-  );
-  if (bodyUnchanged && original?.blocks) {
-    blocks = JSON.stringify(draft.gallery) === JSON.stringify(baseline.gallery)
-      ? original.blocks as typeof blocks
-      : [
-      ...original.blocks.filter((block) => block.type !== "image"),
-      ...draft.gallery.map((url) => original.blocks?.find((block) => block.type === "image" && block.url === url) ?? { type: "image" as const, url }),
-    ] as typeof blocks;
-  }
-
-  const nonEmptyFaq = draft.faq.filter(
-    (f) => f.question.trim() || f.answer.trim(),
-  );
-
+export function emptyBlogLocaleDraft(): BlogLocaleDraft {
   return {
-    title: draft.title,
-    ...(draft.tagline !== undefined && { tagline: draft.tagline }),
-    ...(draft.seo !== undefined && { seo: draft.seo }),
-    subtitle: baseline && draft.subtitle === baseline.subtitle
-      ? original?.subtitle ?? null : draft.subtitle.trim() ? draft.subtitle.trim() : null,
-    coverUrl: draft.coverUrl || null,
-    content: bodyUnchanged ? original?.content ?? null : contentParts.length > 0 ? contentParts.join("\n") : null,
-    blocks,
-    faq: baseline && JSON.stringify(draft.faq) === JSON.stringify(baseline.faq)
-      ? original?.faq ?? null : nonEmptyFaq.length > 0 ? { items: nonEmptyFaq } : null,
-    status: draft.status,
-    travelType: draft.travelType,
-    excuseKey: draft.excuseKey,
-    level: draft.level || null,
-    label: draft.label.trim() || null,
-    tripperNote: draft.tripperNote ?? null,
+    title: "",
+    subtitle: "",
+    featureText: "",
+    featureAttribution: "",
+    sections: [{ title: "", description: "" }],
+    faq: [{ question: "", answer: "" }],
   };
 }
 
-/**
- * Reverse of `buildBlogSubmitPayload` — maps a fetched `BlogPost` back into a
- * `BlogFormDraft` for editing in `NewBlogPostShell`.
- *
- * Posts created by this shell round-trip cleanly via the `quote`/`section`/
- * `image` blocks. Posts authored before this migration (via the old
- * `BlogComposer` free-text body) have no `section` blocks — their entire
- * `content` HTML is folded into a single section's description instead of
- * being silently dropped, so opening a legacy post here doesn't wipe it out
- * on the next autosave.
- */
-export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
-  const blocks = post.blocks ?? [];
+export function emptyBlogEditorDraft(
+  sourceLocale: ContentLocale = "es",
+): BlogEditorDraft {
+  return {
+    sourceLocale,
+    translations: { [sourceLocale]: emptyBlogLocaleDraft() },
+    status: "draft",
+    coverUrl: "",
+    gallery: [],
+    travelType: [],
+    excuseKey: [],
+    level: "",
+    label: "",
+    tripperNote: null,
+  };
+}
 
+/** Lifts a flat single-locale form draft into editor state (legacy callers / tests). */
+export function editorDraftFromForm(
+  form: BlogFormDraft,
+  sourceLocale: ContentLocale = "es",
+): BlogEditorDraft {
+  return {
+    ...emptyBlogEditorDraft(sourceLocale),
+    translations: { [sourceLocale]: pickBlogContentDraft(form) },
+    status: form.status,
+    coverUrl: form.coverUrl,
+    gallery: form.gallery,
+    travelType: form.travelType,
+    excuseKey: form.excuseKey,
+    level: form.level,
+    label: form.label,
+    tripperNote: form.tripperNote,
+  };
+}
+
+export function coerceEditorDraft(
+  draft: BlogEditorDraft | BlogFormDraft,
+  fallbackSource: ContentLocale,
+): BlogEditorDraft {
+  if ("translations" in draft && draft.translations) return draft;
+  return editorDraftFromForm(draft as BlogFormDraft, fallbackSource);
+}
+
+export function pickBlogContentDraft(draft: BlogFormDraft): BlogLocaleDraft {
+  return {
+    title: draft.title,
+    subtitle: draft.subtitle,
+    featureText: draft.featureText,
+    featureAttribution: draft.featureAttribution,
+    sections: draft.sections,
+    faq: draft.faq,
+    tagline: draft.tagline,
+    seo: draft.seo,
+  };
+}
+
+export const BLOG_LOCALIZED_DRAFT_FIELDS = new Set<keyof BlogFormDraft>([
+  "title",
+  "subtitle",
+  "featureText",
+  "featureAttribution",
+  "sections",
+  "faq",
+  "tagline",
+  "seo",
+]);
+
+function galleryFromBlocks(blocks: BlogBlock[]): string[] {
+  return blocks.filter((block): block is Extract<BlogBlock, { type: "image" }> => block.type === "image")
+    .map((block) => block.url);
+}
+
+function mediaFromBlocks(blocks: BlogBlock[]): BlogMediaBlock[] {
+  return blocks.filter(isMediaBlock);
+}
+
+function mapContentToLocaleDraft(
+  post: Partial<BlogTranslationContent> & { blocks?: BlogBlock[] },
+): BlogLocaleDraft {
+  const blocks = post.blocks ?? [];
   const quoteBlock = blocks.find(
     (b): b is Extract<BlogBlock, { type: "quote" }> => b.type === "quote",
   );
   const sectionBlocks = blocks.filter(
     (b): b is Extract<BlogBlock, { type: "section" }> => b.type === "section",
   );
-  const imageBlocks = blocks.filter(
-    (b): b is Extract<BlogBlock, { type: "image" }> => b.type === "image",
-  );
-
   let sections = sectionBlocks.map((b) => ({
     title: b.title,
     description: b.description,
   }));
-  // Legacy-content fallback only applies to genuinely pre-migration posts
-  // (no blocks at all — flat `content` HTML from the old BlogComposer). A
-  // post with blocks but zero sections (e.g. a quote-only post) must NOT
-  // fall into this branch — `post.content` is itself synthesized from the
-  // quote block, so stuffing it into a phantom section would duplicate the
-  // quote text on every re-edit.
   if (sections.length === 0 && blocks.length === 0) {
     const legacyContent = post.content?.trim();
     sections = [{ title: "", description: legacyContent ?? "" }];
   }
-
   const faqItems = post.faq?.items;
-
   return {
-    // Server pages pass raw Prisma rows (uppercase enum, e.g. "PUBLISHED");
-    // the API lowercases it. Normalize so every caller maps to BlogStatus.
-    originalPost: { title: post.title, subtitle: post.subtitle, tagline: post.tagline, content: post.content, blocks: post.blocks, faq: post.faq, seo: post.seo },
-    status: (post.status?.toLowerCase() ?? "draft") as BlogStatus,
     title: post.title ?? "",
-    tagline: post.tagline,
-    seo: post.seo,
-    ...(post.translations !== undefined && { english: post.translations?.en
-      ? pickBlogContentDraft(mapBlogPostToDraft(post.translations.en as Partial<BlogPost>))
-      : null }),
     subtitle: post.subtitle ?? "",
-    coverUrl: post.coverUrl ?? "",
     featureText: quoteBlock?.text ?? "",
     featureAttribution: quoteBlock?.cite ?? "",
     sections,
     faq: faqItems && faqItems.length > 0 ? faqItems : [{ question: "", answer: "" }],
-    gallery: imageBlocks.map((b) => b.url),
+    tagline: post.tagline ?? undefined,
+    seo: post.seo ?? undefined,
+    original: {
+      title: post.title ?? "",
+      subtitle: post.subtitle,
+      tagline: post.tagline,
+      content: post.content,
+      blocks: post.blocks,
+      faq: post.faq,
+      seo: post.seo,
+    },
+    media: mediaFromBlocks(blocks),
+  };
+}
+
+function isEditorPost(
+  post: Partial<BlogPost> | BlogEditorPost,
+): post is BlogEditorPost {
+  const translations = (post as BlogEditorPost).translations;
+  return !!translations && ("es" in translations || "en" in translations) &&
+    !!(translations.es?.isComplete !== undefined || translations.en?.isComplete !== undefined ||
+      translations.es?.slug !== undefined || translations.en?.slug !== undefined);
+}
+
+/** Maps a fetched post (`getForEditor` or a flattened public shape) into editor state. */
+export function mapBlogPostToDraft(
+  post: Partial<BlogPost> | BlogEditorPost,
+): BlogEditorDraft {
+  if (isEditorPost(post)) return mapEditorPostToDraft(post);
+
+  const sourceLocale = resolveSourceLocale(
+    (post as Partial<BlogPost> & { sourceLocale?: unknown }).sourceLocale,
+  );
+  const es = mapContentToLocaleDraft(post);
+  const translations: BlogEditorDraft["translations"] = { es };
+  const english = post.translations?.en;
+  if (english)
+    translations.en = mapContentToLocaleDraft({
+      ...english,
+      blocks: english.blocks ?? [],
+    });
+  return {
+    sourceLocale,
+    translations,
+    status: (post.status?.toLowerCase() ?? "draft") as BlogStatus,
+    coverUrl: post.coverUrl ?? "",
+    gallery: galleryFromBlocks(post.blocks ?? []),
     travelType: post.travelType ?? [],
     excuseKey: post.excuseKey ?? [],
     level: post.level ?? "",
@@ -231,32 +252,207 @@ export function mapBlogPostToDraft(post: Partial<BlogPost>): BlogFormDraft {
   };
 }
 
-/** Text-only editor state; media, taxonomy and workflow fields stay shared. */
-export function pickBlogContentDraft(draft: BlogFormDraft): BlogContentDraft {
+export function mapEditorPostToDraft(post: BlogEditorPost): BlogEditorDraft {
+  const translations: BlogEditorDraft["translations"] = {};
+  const translationMeta: NonNullable<BlogEditorDraft["translationMeta"]> = {};
+  for (const locale of CONTENT_LOCALES) {
+    const row = post.translations[locale];
+    if (!row) continue;
+    translations[locale] = mapContentToLocaleDraft(row);
+    translationMeta[locale] = { slug: row.slug, isComplete: row.isComplete };
+  }
+  const source = translations[post.sourceLocale];
+  const gallery = source?.media
+    ? source.media.filter((block) => block.type === "image").map((block) => block.url)
+    : [];
   return {
-    title: draft.title, subtitle: draft.subtitle, featureText: draft.featureText,
-    featureAttribution: draft.featureAttribution, sections: draft.sections,
-    faq: draft.faq, tagline: draft.tagline, seo: draft.seo, originalPost: draft.originalPost,
+    sourceLocale: post.sourceLocale,
+    translations,
+    translationMeta,
+    publishedAt: post.publishedAt,
+    isReviewCopy: post.isReviewCopy,
+    status: (post.status.toLowerCase() ?? "draft") as BlogStatus,
+    coverUrl: post.coverUrl ?? "",
+    gallery,
+    travelType: post.travelType,
+    excuseKey: post.excuseKey,
+    level: post.level ?? "",
+    label: post.label ?? "",
+    tripperNote: post.tripperNote,
   };
 }
 
-export const BLOG_LOCALIZED_DRAFT_FIELDS = new Set<keyof BlogFormDraft>([
-  "title", "subtitle", "featureText", "featureAttribution", "sections", "faq", "tagline", "seo",
-]);
-
-export function getBlogLocaleDraft(draft: BlogFormDraft, locale: string): BlogFormDraft {
-  if (locale !== "en") return draft;
-  const emptyCopy = pickBlogContentDraft(mapBlogPostToDraft({}));
-  return { ...draft, ...(draft.english ?? emptyCopy) };
+/** Flat single-locale view for the step components. */
+export function getBlogLocaleView(
+  draft: BlogEditorDraft,
+  locale: string,
+): BlogFormDraft {
+  const copy =
+    (isContentLocale(locale) && draft.translations?.[locale]) || emptyBlogLocaleDraft();
+  return {
+    status: draft.status,
+    title: copy.title,
+    subtitle: copy.subtitle,
+    coverUrl: draft.coverUrl,
+    featureText: copy.featureText,
+    featureAttribution: copy.featureAttribution,
+    sections: copy.sections,
+    faq: copy.faq,
+    gallery: draft.gallery,
+    travelType: draft.travelType,
+    excuseKey: draft.excuseKey,
+    level: draft.level,
+    label: draft.label,
+    tripperNote: draft.tripperNote,
+    tagline: copy.tagline,
+    seo: copy.seo,
+  };
 }
 
-export function buildBlogSubmitPayload(draft: BlogFormDraft) {
-  const canonical = buildCanonicalBlogPayload(draft);
-  if (draft.english === undefined) return canonical;
-  if (draft.english === null) return { ...canonical, translations: null };
-  const english = buildCanonicalBlogPayload({ ...draft, ...draft.english, gallery: [] });
-  return { ...canonical, translations: { en: {
-    title: english.title, subtitle: english.subtitle, tagline: english.tagline,
-    content: english.content, blocks: english.blocks, faq: english.faq, seo: english.seo,
-  } } };
+export const getBlogLocaleDraft = getBlogLocaleView;
+
+function buildLocaleInput(
+  locale: BlogLocaleDraft,
+  gallery: string[],
+): BlogTranslationInput {
+  const contentParts: string[] = [];
+  const featureText = locale.featureText.trim();
+  const featureAttribution = locale.featureAttribution.trim();
+  if (featureText) {
+    const cite = featureAttribution ? `<cite>— ${escapeHtml(featureAttribution)}</cite>` : "";
+    contentParts.push(`<blockquote>${escapeHtml(featureText)}${cite}</blockquote>`);
+  }
+  const nonEmptySections = locale.sections.filter(
+    (s) => s.title.trim() || s.description.trim(),
+  );
+  for (const section of nonEmptySections) {
+    if (section.title.trim())
+      contentParts.push(`<h2>${escapeHtml(section.title.trim())}</h2>`);
+    if (section.description.trim()) contentParts.push(section.description);
+  }
+
+  const media: BlogBlock[] = locale.media?.length
+    ? locale.media.filter(
+        (block) => block.type !== "image" || gallery.includes(block.url),
+      ).concat(
+        gallery
+          .filter((url) => !locale.media?.some((block) => block.type === "image" && block.url === url))
+          .map((url) => ({ type: "image" as const, url })),
+      )
+    : gallery.map((url) => ({ type: "image" as const, url }));
+
+  let blocks: BlogBlock[] = [
+    ...(featureText
+      ? [{ type: "quote" as const, text: featureText, cite: featureAttribution || undefined }]
+      : []),
+    ...nonEmptySections.map((s) => ({
+      type: "section" as const,
+      title: s.title,
+      description: s.description,
+    })),
+    ...media,
+  ];
+
+  const original = locale.original;
+  const baseline = original ? mapContentToLocaleDraft(original) : null;
+  const bodyUnchanged =
+    baseline &&
+    ["featureText", "featureAttribution", "sections"].every(
+      (key) =>
+        JSON.stringify(locale[key as keyof BlogLocaleDraft]) ===
+        JSON.stringify(baseline[key as keyof BlogLocaleDraft]),
+    );
+  if (bodyUnchanged && original?.blocks) {
+    const originalGallery = galleryFromBlocks(original.blocks as BlogBlock[]);
+    blocks =
+      JSON.stringify(gallery) === JSON.stringify(originalGallery)
+        ? (original.blocks as BlogBlock[])
+        : [
+            ...(original.blocks as BlogBlock[]).filter((block) => block.type !== "image"),
+            ...gallery.map(
+              (url) =>
+                (original.blocks as BlogBlock[]).find(
+                  (block) => block.type === "image" && block.url === url,
+                ) ?? { type: "image" as const, url },
+            ),
+          ];
+  }
+
+  const nonEmptyFaq = locale.faq.filter((f) => f.question.trim() || f.answer.trim());
+  return {
+    title: locale.title,
+    subtitle:
+      baseline && locale.subtitle === baseline.subtitle
+        ? original?.subtitle ?? null
+        : locale.subtitle.trim()
+          ? locale.subtitle.trim()
+          : null,
+    tagline: locale.tagline,
+    content: bodyUnchanged
+      ? original?.content ?? null
+      : contentParts.length > 0
+        ? contentParts.join("\n")
+        : null,
+    blocks,
+    faq:
+      baseline && JSON.stringify(locale.faq) === JSON.stringify(baseline.faq)
+        ? original?.faq ?? null
+        : nonEmptyFaq.length > 0
+          ? { items: nonEmptyFaq }
+          : null,
+    seo: locale.seo,
+  };
+}
+
+/** POST/PATCH payload: translations keyed by locale plus shared fields. */
+export function buildBlogSubmitPayload(draft: BlogEditorDraft): BlogEditorPayload {
+  const translations: BlogEditorPayload["translations"] = {};
+  for (const locale of CONTENT_LOCALES) {
+    const localeDraft = draft.translations[locale];
+    if (!localeDraft) continue;
+    translations[locale] = buildLocaleInput(localeDraft, draft.gallery);
+  }
+  return {
+    sourceLocale: draft.sourceLocale,
+    translations,
+    coverUrl: draft.coverUrl || null,
+    travelType: draft.travelType,
+    excuseKey: draft.excuseKey,
+    level: draft.level || null,
+    label: draft.label.trim() || null,
+    tripperNote: draft.tripperNote ?? null,
+  };
+}
+
+export function syncGalleryAcrossLocales(
+  translations: BlogEditorDraft["translations"],
+  gallery: string[],
+): BlogEditorDraft["translations"] {
+  const next: BlogEditorDraft["translations"] = {};
+  for (const locale of CONTENT_LOCALES) {
+    const current = translations[locale];
+    if (!current) continue;
+    const kept = (current.media ?? []).filter(
+      (block) => block.type !== "image" || gallery.includes(block.url),
+    );
+    const added = gallery
+      .filter((url) => !kept.some((block) => block.type === "image" && block.url === url))
+      .map((url) => ({ type: "image" as const, url }));
+    next[locale] = { ...current, media: [...kept, ...added] };
+  }
+  return next;
+}
+
+export function editorTranslationToContent(
+  row: BlogEditorTranslation,
+): BlogTranslationContent {
+  return {
+    title: row.title,
+    subtitle: row.subtitle,
+    tagline: row.tagline,
+    content: row.content,
+    blocks: row.blocks,
+    faq: row.faq,
+    seo: row.seo,
+  };
 }

@@ -1,6 +1,4 @@
 import { ZodError } from "zod";
-import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
-import { Prisma } from "@prisma/client";
 // ============================================================================
 // PATCH /api/admin/blogs/[id]/edit-copy
 // Saves content edits to a review copy. Admin-only — no ownership check.
@@ -13,12 +11,14 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 import {
-  isLegacyLocaleComplete,
+  EditorWriteError,
+  editorWriteErrorBody,
+  parseEditorWriteRequest,
   resolveSourceLocale,
-} from "@/lib/blog/legacy-translation-mapping";
-import { contentLocaleSchema } from "@/lib/blog/locales";
+  rowsFromLoadedPost,
+} from "@/lib/blog/editor-write";
 import { prisma } from "@/lib/prisma";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
@@ -57,25 +57,24 @@ export async function PATCH(
 
     const copy = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
-      select: {
-        id: true,
-        isReviewCopy: true,
-        status: true,
-        sourceLocale: true,
-        title: true,
-        content: true,
-        blocks: true,
-        translations: true,
-      },
+      include: { translationRows: true },
     }) as {
       id: string;
       isReviewCopy: boolean;
       status: string;
       sourceLocale?: string | null;
-      title?: string;
-      content?: string | null;
-      blocks?: unknown;
-      translations?: unknown;
+      publishedAt?: Date | string | null;
+      translationRows?: Array<{
+        locale: string;
+        title: string;
+        subtitle?: string | null;
+        tagline?: string | null;
+        content?: string | null;
+        blocks?: unknown;
+        faq?: unknown;
+        seo?: unknown;
+        isComplete?: boolean;
+      }>;
     } | null;
 
     if (!copy) {
@@ -90,22 +89,21 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const translations = normalizeBlogTranslations(body.translations);
+    const currentRows = rowsFromLoadedPost({
+      translationRows: copy.translationRows,
+    });
+    const parsed = parseEditorWriteRequest(body, {
+      sourceLocale: resolveSourceLocale(copy.sourceLocale),
+      rows: currentRows,
+    });
     const {
-      title,
-      subtitle,
-      tagline,
       coverUrl,
-      content,
-      blocks,
-      faq,
       tags,
       travelType,
       excuseKey,
       level,
       label,
       format,
-      seo,
     } = body;
 
     const levelValue: string | null | undefined =
@@ -116,72 +114,43 @@ export async function PATCH(
     const labelValue = normalizeBlogLabel(label);
     // No XSED admin-gate here: this whole route is admin-only already.
 
-    // sourceLocale may only change to a locale whose translation is complete
-    // once this request is applied (same rule as the tripper PATCH).
-    const sourceLocaleInput = contentLocaleSchema.optional().safeParse(body.sourceLocale);
-    if (!sourceLocaleInput.success) {
-      return NextResponse.json(
-        { error: "invalid_source_locale", message: "Unsupported source locale." },
-        { status: 400 },
-      );
-    }
-    const sourceLocale = sourceLocaleInput.data;
-    const sourceLocaleChanged =
-      sourceLocale !== undefined &&
-      sourceLocale !== resolveSourceLocale(copy.sourceLocale);
-    if (
-      sourceLocaleChanged &&
-      !isLegacyLocaleComplete(
-        {
-          title: title ?? copy.title ?? "",
-          content: content !== undefined ? (content ?? null) : copy.content,
-          blocks: blocks !== undefined ? blocks : copy.blocks,
-          translations: translations !== undefined ? translations : copy.translations,
-        },
-        sourceLocale,
-      )
-    ) {
-      return NextResponse.json(
-        {
-          error: "source_locale_incomplete",
-          locale: sourceLocale,
-          message: "The source locale must have a complete translation.",
-        },
-        { status: 400 },
-      );
-    }
+    const sourceLocale = parsed.sourceLocale;
+    const sourceLocaleChanged = parsed.sourceLocaleChanged;
 
-    // Dual-write: the copy's legacy columns + its translation rows (slug null)
-    // in one transaction so they never diverge.
     const updated = await prisma.$transaction(async (tx) => {
       const written = await (tx.blogPost.update as any)({
       where: { id: params.id },
       data: {
-        ...(title !== undefined && { title }),
-        ...(subtitle !== undefined && { subtitle: subtitle || null }),
-        ...(tagline !== undefined && { tagline: tagline || null }),
         ...(coverUrl !== undefined && { coverUrl: coverUrl || null }),
-        ...(content !== undefined && { content: content ?? null }),
-        ...(blocks !== undefined && { blocks }),
-        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
-        ...(faq !== undefined && { faq: faq ?? null }),
         ...(tags !== undefined && { tags }),
         ...(travelType !== undefined && { travelType: normalizeStringArray(travelType) }),
         ...(excuseKey !== undefined && { excuseKey: normalizeStringArray(excuseKey) }),
         ...(levelValue !== undefined && { level: levelValue }),
         ...(labelValue !== undefined && { label: labelValue }),
         ...(format !== undefined && { format: format.toUpperCase?.() ?? format }),
-        ...(seo !== undefined && { seo: seo || null }),
         ...(sourceLocaleChanged && { sourceLocale }),
-        // slug is intentionally never written here — copies have no public slug.
       },
       });
-      await syncTranslationsFromLegacy(tx, written);
-      return written;
+      const rows = parsed.translations
+        ? await writeTranslationsFromEditor(
+            tx,
+            {
+              id: params.id,
+              isReviewCopy: true,
+              publishedAt: copy.publishedAt ?? null,
+              sourceLocale,
+            },
+            parsed.translations,
+          )
+        : undefined;
+      return rows ? { ...written, translations: rows } : written;
     });
 
     return NextResponse.json({ blog: updated });
   } catch (error) {
+    if (error instanceof EditorWriteError) {
+      return NextResponse.json(editorWriteErrorBody(error), { status: 400 });
+    }
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
     }

@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 import type { FieldPeek } from "@/components/ui/field-peek";
-import type { BlogImageState } from "../NewBlogPostShell";
+import type { BlogImageState } from "../useBlogEditorImages";
 
 interface Props {
   contentLanguageSlot?: ReactNode;

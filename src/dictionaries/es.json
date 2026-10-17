@@ -4602,6 +4602,16 @@
         "canonicalLabel": "Contenido original: español",
         "unavailable": "Este artículo todavía no tiene una versión en inglés."
       },
+      "mediaMismatch": {
+        "title": "Las imágenes no coinciden con el idioma original",
+        "missing": "Faltan en esta traducción",
+        "extra": "Solo en esta traducción"
+      },
+      "errors": {
+        "invalidSourceLocale": "Ese idioma original no está admitido.",
+        "sourceLocaleIncomplete": "Completa la traducción del idioma original antes de cambiarlo.",
+        "sourceTranslationIncomplete": "Completa el idioma original antes de enviar."
+      },
       "translate": {
         "error": "No se pudo traducir este post. Inténtalo de nuevo.",
         "hint": "Completa el otro idioma a partir del título, el subtítulo, la cita, las secciones y las preguntas.",
@@ -4632,7 +4642,26 @@
         "prefix": "El admin propuso cambios en: ",
         "peekShowOriginal": "Ver contenido original",
         "peekShowSuggestion": "Ver sugerencia del admin",
-        "noContent": "(sin contenido)"
+        "noContent": "(sin contenido)",
+        "all": "Todo el contenido",
+        "locale": { "es": "ES", "en": "EN" },
+        "fields": {
+          "title": "Título",
+          "subtitle": "Subtítulo",
+          "tagline": "Bajada",
+          "content": "Artículo",
+          "blocks": "Secciones",
+          "faq": "FAQ",
+          "seo": "SEO",
+          "sourceLocale": "Idioma original",
+          "coverUrl": "Imagen de portada",
+          "tags": "Etiquetas",
+          "travelType": "Tipo de viajero",
+          "excuseKey": "Excusa",
+          "level": "Nivel",
+          "label": "Etiqueta",
+          "translations": "Inglés"
+        }
       },
       "review": {
         "pendingTitle": "En revisión",

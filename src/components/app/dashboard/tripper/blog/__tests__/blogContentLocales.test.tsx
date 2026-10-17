@@ -139,8 +139,11 @@ describe("content language editor", () => {
     expect(row.querySelector("button")?.textContent).toBe(copy.translate.toEnglish);
     expect(button(copy.editSubmit)).toBeTruthy();
     expect(language.querySelector("button")).toBeNull();
-    expect((button(copy.translate.toSpanish) as HTMLButtonElement).disabled).toBe(true);
+    expect(button(copy.translate.toSpanish)).toBeUndefined();
     expect((button(copy.translate.toEnglish) as HTMLButtonElement).disabled).toBe(false);
+    expect(
+      harness.container.querySelector('[data-component="BlogSourceLocaleField"]'),
+    ).toBeNull();
     expect(languageSelect().options.length).toBe(2);
     expect(
       [...languageSelect().options].map((option) => option.textContent),
@@ -245,7 +248,7 @@ describe("content language editor", () => {
       { title: "", description: "<p>Original</p>" },
     ]);
     selectLanguage("en");
-    expect((button(copy.translate.toEnglish) as HTMLButtonElement).disabled).toBe(true);
+    expect(button(copy.translate.toEnglish)).toBeUndefined();
     expect((button(copy.translate.toSpanish) as HTMLButtonElement).disabled).toBe(false);
     expect(draft()).toMatchObject({
       title: "English draft",
@@ -278,10 +281,12 @@ describe("content language editor", () => {
     expect(args[0]).toBe("/api/tripper/blogs");
     expect(args[1]?.method).toBe("POST");
     expect(JSON.parse(String(args[1]?.body))).toMatchObject({
-      title: "Español",
-      content: "<p>Original</p>",
+      sourceLocale: "es",
       coverUrl: "/new-shared.jpg",
-      translations: { en: { title: "Incomplete English", content: null } },
+      translations: {
+        es: { title: "Español", content: "<p>Original</p>" },
+        en: { title: "Incomplete English", content: null },
+      },
     });
     selectLanguage("es");
     expect(draft().coverUrl).toBe("/new-shared.jpg");
@@ -304,9 +309,11 @@ describe("content language editor", () => {
     expect(args[0]).toBe("/api/tripper/blogs/post-1");
     expect(args[1]?.method).toBe("PATCH");
     expect(JSON.parse(String(args[1]?.body))).toMatchObject({
-      title: "Español",
-      content: "<p>Original</p>",
-      translations: { en: { title: "English edit", content: null } },
+      sourceLocale: "es",
+      translations: {
+        es: { title: "Español", content: "<p>Original</p>" },
+        en: { title: "English edit", content: null },
+      },
     });
     expect(fetch).toHaveBeenNthCalledWith(
       2,

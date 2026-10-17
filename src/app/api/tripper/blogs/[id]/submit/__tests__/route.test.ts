@@ -43,10 +43,17 @@ const completeDraftBlog = (authorId: string, overrides: Record<string, unknown> 
   id: "blog-1",
   authorId,
   status: "DRAFT",
-  title: "Mi aventura",
+  sourceLocale: "es",
   coverUrl: "https://example.com/cover.jpg",
-  content: "<p>Contenido</p>",
   reviewNote: null,
+  translationRows: [
+    {
+      locale: "es",
+      title: "Mi aventura",
+      content: "<p>Contenido</p>",
+      isComplete: true,
+    },
+  ],
   ...overrides,
 });
 
@@ -236,7 +243,18 @@ describe("POST /api/tripper/blogs/[id]/submit — source translation rules", () 
         roles: ["TRIPPER", "ADMIN"],
       });
       (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-        completeDraftBlog("tripper-1", { source, sourceLocale: "en", translations: null }),
+        completeDraftBlog("tripper-1", {
+          source,
+          sourceLocale: "en",
+          translationRows: [
+            {
+              locale: "en",
+              title: "Trip",
+              content: "<p>Body</p>",
+              isComplete: false,
+            },
+          ],
+        }),
       );
       const mod = (await import("../route")) as RouteModule;
       const res = await mod.POST(makePostRequest("blog-1"), {
@@ -251,12 +269,9 @@ describe("POST /api/tripper/blogs/[id]/submit — source translation rules", () 
     },
   );
 
-  it("syncs translation rows inside the submit transaction", async () => {
+  it("does not re-derive translation rows on submit", async () => {
     (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
-      completeDraftBlog("tripper-1", {
-        sourceLocale: "en",
-        translations: { en: { title: "Trip", content: "<p>Body</p>" } },
-      }),
+      completeDraftBlog("tripper-1"),
     );
     const tx = {
       blogPost: {
@@ -276,6 +291,6 @@ describe("POST /api/tripper/blogs/[id]/submit — source translation rules", () 
     expect(await res.json()).toEqual({
       blog: { id: "blog-1", status: "PENDING_REVIEW" },
     });
-    expect(syncTranslationsForPost).toHaveBeenCalledWith(tx, "blog-1");
+    expect(syncTranslationsForPost).not.toHaveBeenCalled();
   });
 });

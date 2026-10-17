@@ -4,10 +4,9 @@ import { CONTENT_LOCALES, isContentLocale } from "./locales";
 import { isBlogTranslationComplete } from "./translation-completeness";
 import { blogBlockSchema } from "./translation-schema";
 
-// Pure mapping from the legacy BlogPost shape (Spanish columns + optional
-// `translations.en` JSON) to translation rows. Shared by the backfill script
-// and the dual-write path so both derive rows identically until the contract
-// rollout removes the legacy columns.
+// Pure mapping from the expand-phase BlogPost shape (Spanish columns + optional
+// `translations.en` JSON) to translation rows. Used by the backfill script
+// only. Writers no longer reverse-map rows onto BlogPost columns.
 
 const MEDIA_TYPES = new Set(["image", "video", "embed"]);
 
@@ -156,3 +155,4 @@ export function assertLegacySourceComplete(
   if (!isLegacyLocaleComplete(post, locale))
     throw new SourceTranslationIncompleteError(locale);
 }
+

@@ -3,7 +3,7 @@
 import { ImageUploadTileGroup } from "@/components/ui/ImageUploadTileGroup";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
-import type { BlogImageState } from "../NewBlogPostShell";
+import type { BlogImageState } from "../useBlogEditorImages";
 
 interface Props {
   copy: TripperBlogFormDict;

@@ -171,15 +171,48 @@ export interface BlogPost {
   isDiscarded?: boolean;
 }
 
-/**
- * Draft shape for the tabs + accordion "new blog post" shell
- * (`NewBlogPostShell`). This is the flat, form-friendly representation
- * edited in the UI — distinct from `BlogPost` (the API/DB shape).
- * `buildBlogSubmitPayload` (src/lib/helpers/blog-form.ts) converts it into
- * the POST/PATCH `/api/tripper/blogs` payload.
- */
-export interface BlogContentDraft {
-  originalPost?: Partial<BlogPost>;
+/** Server-owned, read-only facts about one translation row (decision 8). */
+export interface BlogTranslationMeta {
+  slug: string | null;
+  isComplete: boolean;
+}
+
+/** One translation row as the editor reads it. */
+export interface BlogEditorTranslation extends BlogTranslationContent, BlogTranslationMeta {}
+
+export type BlogEditorTranslations = Partial<Record<ContentLocale, BlogEditorTranslation>>;
+
+/** Editor read model (`getForEditor`): shared post fields plus every
+ * translation keyed by locale. `status`/`format` are raw Prisma enum values. */
+export interface BlogEditorPost {
+  id: string;
+  authorId: string;
+  source: "TRIPPER" | "RANDOMTRIP";
+  status: string;
+  format: string;
+  sourceLocale: ContentLocale;
+  coverUrl: string | null;
+  tags: string[];
+  travelType: string[];
+  excuseKey: string[];
+  level: string | null;
+  label: string | null;
+  isActive: boolean;
+  isReviewCopy: boolean;
+  parentId: string | null;
+  reviewNote: string | null;
+  tripperNote: string | null;
+  reviewLockedBy: string | null;
+  changedFields: string[];
+  publishedAt: Date | string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  author: PublicBlogAuthor | null;
+  translations: BlogEditorTranslations;
+}
+
+/** Text the editor edits for one locale (form-friendly, flat). */
+export interface BlogLocaleDraft {
   title: string;
   subtitle: string;
   featureText: string;
@@ -188,11 +221,63 @@ export interface BlogContentDraft {
   faq: { question: string; answer: string }[];
   tagline?: string;
   seo?: BlogPost["seo"];
+  /** The translation as loaded; unchanged text keeps its exact HTML/blocks on save. */
+  original?: BlogTranslationContent;
+  /** Localized media blocks (captions, embed titles). URLs follow the shared gallery. */
+  media?: BlogMediaBlock[];
 }
 
+/**
+ * Editor state of `NewBlogPostShell`: shared post fields, the source locale
+ * and one `BlogLocaleDraft` per translation (every locale symmetric).
+ * `buildBlogSubmitPayload` (src/lib/helpers/blog-form.ts) converts it into
+ * the POST/PATCH `/api/tripper/blogs` payload.
+ */
+export interface BlogEditorDraft {
+  sourceLocale: ContentLocale;
+  translations: Partial<Record<ContentLocale, BlogLocaleDraft>>;
+  /** Read-only slug/completeness of the saved rows. */
+  translationMeta?: Partial<Record<ContentLocale, BlogTranslationMeta>>;
+  publishedAt?: Date | string | null;
+  isReviewCopy?: boolean;
+  status: BlogStatus;
+  coverUrl: string;
+  gallery: string[];
+  travelType: string[];
+  excuseKey: string[];
+  level: string;
+  label: string;
+  tripperNote?: string | null;
+}
+
+/** Translation payload the editor sends for one locale (slug/isComplete are server-owned). */
+export interface BlogTranslationInput {
+  title: string;
+  subtitle: string | null;
+  tagline?: string | null;
+  content: string | null;
+  blocks: BlogBlock[];
+  faq: BlogPost["faq"] | null;
+  seo?: BlogPost["seo"] | null;
+}
+
+/** POST/PATCH/edit-copy body built from a `BlogEditorDraft`. */
+export interface BlogEditorPayload {
+  sourceLocale: ContentLocale;
+  translations: Partial<Record<ContentLocale, BlogTranslationInput>>;
+  coverUrl: string | null;
+  travelType: string[];
+  excuseKey: string[];
+  level: string | null;
+  label: string | null;
+  tripperNote: string | null;
+}
+
+/**
+ * Flat single-locale view consumed by the step components: shared fields
+ * plus the displayed locale's copy (see `getBlogLocaleView`).
+ */
 export interface BlogFormDraft {
-  originalPost?: Partial<BlogPost>;
-  english?: BlogContentDraft | null;
   tagline?: string;
   seo?: BlogPost["seo"];
   status: BlogStatus;

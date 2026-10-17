@@ -23,6 +23,7 @@ vi.mock("@/lib/prisma", () => {
 
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsForPost: vi.fn(),
+  sourceTitleForPost: vi.fn().mockResolvedValue("My Trip"),
 }));
 
 vi.mock("@/lib/helpers/sendMail", () => ({

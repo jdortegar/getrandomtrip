@@ -1,6 +1,6 @@
 // ============================================================================
 // POST /api/admin/blogs/[id]/start-edit
-// Creates a lazy review copy of a PENDING_REVIEW blog post (legacy columns +
+// Creates a lazy review copy of a PENDING_REVIEW blog post (shared fields +
 // cloned translation rows, slug null) and sets a soft lock on the original.
 // Idempotent: if the same admin already holds the lock
 // and a copy exists, returns the existing copy id.
@@ -71,23 +71,25 @@ export async function POST(
         return { copyId: existingCopy.id, created: false };
       }
 
-      // Create the review copy — omit identity fields: id, authorId, createdAt, slug
+      // Create the review copy — omit identity fields: id, authorId, createdAt
       const {
         id: _id,
         authorId: _authorId,
         createdAt: _createdAt,
         slug: _slug,
-
+        title: _title,
+        subtitle: _subtitle,
+        tagline: _tagline,
+        content: _content,
+        blocks: _blocks,
+        faq: _faq,
+        seo: _seo,
+        translations: _translations,
         isReviewCopy: _irc,
-
         parentId: _pid,
-
         reviewLockedBy: _rlb,
-
         changedFields: _cf,
-
         isDiscarded: _isDiscarded,
-
         updatedAt: _updatedAt,
         ...copyableFields
       } = original;
@@ -100,7 +102,6 @@ export async function POST(
           isReviewCopy: true,
           parentId: params.id,
           status: "DRAFT",
-          slug: null,
           isDiscarded: false,
           changedFields: [],
           reviewLockedBy: null,

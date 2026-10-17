@@ -480,6 +480,16 @@ export interface TripperBlogFormDict {
     canonicalLabel: string;
     unavailable: string;
   };
+  mediaMismatch: {
+    title: string;
+    missing: string;
+    extra: string;
+  };
+  errors: {
+    invalidSourceLocale: string;
+    sourceLocaleIncomplete: string;
+    sourceTranslationIncomplete: string;
+  };
   translate: {
     error: string;
     hint: string;
@@ -511,6 +521,25 @@ export interface TripperBlogFormDict {
     peekShowOriginal: string;
     peekShowSuggestion: string;
     noContent: string;
+    all: string;
+    locale: { es: string; en: string };
+    fields: {
+      title: string;
+      subtitle: string;
+      tagline: string;
+      content: string;
+      blocks: string;
+      faq: string;
+      seo: string;
+      sourceLocale: string;
+      coverUrl: string;
+      tags: string;
+      travelType: string;
+      excuseKey: string;
+      level: string;
+      label: string;
+      translations: string;
+    };
   };
   review: {
     pendingTitle: string;

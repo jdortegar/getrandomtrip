@@ -29,11 +29,12 @@ vi.mock("@/lib/prisma", () => {
 
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 import { GET, POST } from "../route";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "tripper@example.com" } });
@@ -106,7 +107,9 @@ describe("GET /api/tripper/blogs (own list) — visibility guard", () => {
       isReviewCopy: false,
       status: "DRAFT",
       travelType: { has: "solo" },
-      title: { contains: "patagonia", mode: "insensitive" },
+      translationRows: {
+        some: { title: { contains: "patagonia", mode: "insensitive" } },
+      },
     });
     expect(prisma.blogPost.count).toHaveBeenCalledWith({
       where: findManyArgs.where,
@@ -380,7 +383,7 @@ describe("POST /api/tripper/blogs (create) — status is never accepted from the
   });
 });
 
-describe("POST /api/tripper/blogs — translation dual-write and sourceLocale", () => {
+describe("POST /api/tripper/blogs — editor translations and sourceLocale", () => {
   const created = {
     id: "new-blog",
     title: "Viaje",
@@ -390,7 +393,8 @@ describe("POST /api/tripper/blogs — translation dual-write and sourceLocale", 
     updatedAt: new Date(),
     publishedAt: null,
   };
-  const complete = { title: "Trip", content: "<p>English</p>" };
+  const ES = { title: "Viaje", content: "<p>Hola</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lago" }] };
+  const EN = { title: "Trip", content: "<p>English</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lake" }] };
 
   function createRequest(body: Record<string, unknown>) {
     return new NextRequest("http://localhost/api/tripper/blogs", {
@@ -407,34 +411,48 @@ describe("POST /api/tripper/blogs — translation dual-write and sourceLocale", 
       mockTripperUser("tripper-1"),
     );
     (prisma.blogPost.create as ReturnType<typeof vi.fn>).mockResolvedValue(created);
+    vi.mocked(writeTranslationsFromEditor).mockResolvedValue({
+      es: { ...ES, slug: "viaje", isComplete: true },
+    });
   });
 
-  it("writes the legacy columns and syncs translation rows in the same transaction", async () => {
+  it("writes rows from the request and does not write dropped BlogPost columns", async () => {
     const txCreate = vi.fn().mockResolvedValue(created);
     const tx = { blogPost: { create: txCreate } };
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
       (fn: (client: unknown) => unknown) => fn(tx),
     );
 
-    const res = await POST(
-      createRequest({
-        title: "Viaje",
-        content: "<p>Hola</p>",
-        translations: { en: complete },
-      }),
-    );
+    const res = await POST(createRequest({ sourceLocale: "es", translations: { es: ES, en: EN } }));
 
     expect(res.status).toBe(201);
     expect(txCreate.mock.calls[0][0].data).toMatchObject({
-      title: "Viaje",
-      content: "<p>Hola</p>",
-      translations: { en: { ...complete, ready: true } },
+      sourceLocale: "es",
     });
-    expect(prisma.blogPost.create).not.toHaveBeenCalled();
-    expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(
+    expect(txCreate.mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(txCreate.mock.calls[0][0].data).not.toHaveProperty("slug");
+    expect(txCreate.mock.calls[0][0].data).not.toHaveProperty("translations");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledWith(
       tx,
-      expect.objectContaining({ id: "new-blog", isReviewCopy: false }),
+      expect.objectContaining({ id: "new-blog", isReviewCopy: false, sourceLocale: "es" }),
+      { es: ES, en: EN },
     );
+    expect((await res.json()).blog.translations).toEqual({
+      es: { ...ES, slug: "viaje", isComplete: true },
+    });
+  });
+
+  it("maps a legacy flat body (experience shell) to the es translation", async () => {
+    await POST(createRequest({ title: "Viaje", content: "<p>Hola</p>" }));
+    expect(vi.mocked(writeTranslationsFromEditor).mock.calls[0][2]).toEqual({
+      es: { title: "Viaje", content: "<p>Hola</p>" },
+    });
+  });
+
+  it("requires a title in the source translation", async () => {
+    const res = await POST(createRequest({ sourceLocale: "es", translations: { es: { title: " " } } }));
+    expect(res.status).toBe(400);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it("rejects an unsupported sourceLocale with 400", async () => {
@@ -444,34 +462,28 @@ describe("POST /api/tripper/blogs — translation dual-write and sourceLocale", 
     expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
-  it("rejects a sourceLocale whose translation is incomplete", async () => {
-    const res = await POST(
-      createRequest({
-        title: "Viaje",
-        content: "<p>Hola</p>",
-        sourceLocale: "en",
-        translations: { en: { title: "Trip" } },
-      }),
-    );
+  it("rejects a sourceLocale that has no translation in the request", async () => {
+    const res = await POST(createRequest({ sourceLocale: "en", translations: { es: ES } }));
     expect(res.status).toBe(400);
-    expect(await res.json()).toMatchObject({
-      error: "source_locale_incomplete",
-      locale: "en",
-    });
+    expect(await res.json()).toMatchObject({ error: "source_locale_incomplete", locale: "en" });
     expect(prisma.blogPost.create).not.toHaveBeenCalled();
   });
 
-  it("persists a sourceLocale whose translation is complete", async () => {
+  it("starts a new post in an incomplete non-default source (the editor defaults to the UI language)", async () => {
     const res = await POST(
-      createRequest({
-        title: "Viaje",
-        sourceLocale: "en",
-        translations: { en: complete },
-      }),
+      createRequest({ sourceLocale: "en", translations: { en: { title: "Draft" } } }),
     );
     expect(res.status).toBe(201);
     expect(
       (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data,
     ).toMatchObject({ sourceLocale: "en" });
+    expect(
+      (prisma.blogPost.create as ReturnType<typeof vi.fn>).mock.calls[0][0].data,
+    ).not.toHaveProperty("title");
+  });
+
+  it("returns 400 for malformed translations", async () => {
+    const res = await POST(createRequest({ translations: { es: { title: 5 } } }));
+    expect(res.status).toBe(400);
   });
 });

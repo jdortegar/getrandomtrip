@@ -23,11 +23,13 @@ vi.mock("@/lib/prisma", () => {
 
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
+  getForEditor: vi.fn().mockResolvedValue({ id: "blog-1", translations: {} }),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "user@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
@@ -37,12 +39,24 @@ const baseBlog = (authorId: string, overrides: Record<string, unknown> = {}) => 
   authorId,
   source: "TRIPPER",
   status: "DRAFT",
+  sourceLocale: "es",
   title: "My Trip",
   subtitle: "A subtitle",
   tagline: "A tagline",
   coverUrl: "https://example.com/cover.jpg",
   content: "<p>Body</p>",
   blocks: [],
+  translationRows: [
+    {
+      locale: "es",
+      title: "My Trip",
+      subtitle: "A subtitle",
+      tagline: "A tagline",
+      content: "<p>Body</p>",
+      blocks: [],
+      isComplete: true,
+    },
+  ],
   tags: ["adventure"],
   travelType: ["solo"],
   excuseKey: ["solo-adventure"],
@@ -408,9 +422,10 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
         });
         expect(prisma.blogPost.update).not.toHaveBeenCalled();
       } else {
+        expect(vi.mocked(prisma.blogPost.update)).toHaveBeenCalled();
         expect(
           vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
-        ).toMatchObject({ title: "Changed" });
+        ).not.toHaveProperty("title");
         expect(
           vi.mocked(prisma.blogPost.update).mock.calls[0][0].data.status,
         ).toBeUndefined();
@@ -706,8 +721,10 @@ describe("DELETE /api/tripper/blogs/[id]", () => {
   });
 });
 
-describe("PATCH /api/tripper/blogs/[id] — translation dual-write and sourceLocale", () => {
+describe("PATCH /api/tripper/blogs/[id] — editor translations and sourceLocale", () => {
   const completeEn = { title: "Trip", content: "<p>English</p>" };
+  const ES = { title: "Viaje", content: "<p>Hola</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lago" }] };
+  const EN = { title: "Trip", content: "<p>English</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lake" }] };
   const patch = async (body: Record<string, unknown>) => {
     const mod = (await import("../route")) as RouteModule;
     return mod.PATCH(makePatchRequest(body), {
@@ -727,13 +744,16 @@ describe("PATCH /api/tripper/blogs/[id] — translation dual-write and sourceLoc
         ...data,
       }),
     );
+    vi.mocked(writeTranslationsFromEditor).mockResolvedValue({
+      es: { ...ES, slug: "viaje", isComplete: true },
+    });
   });
 
   afterEach(() => {
     vi.resetModules();
   });
 
-  it("writes the legacy columns and syncs translation rows in the same transaction", async () => {
+  it("writes rows from the request and derives the legacy columns from them in one transaction", async () => {
     mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
     const txUpdate = vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({
       ...baseBlog("tripper-1"),
@@ -745,34 +765,41 @@ describe("PATCH /api/tripper/blogs/[id] — translation dual-write and sourceLoc
     );
 
     const res = await patch({
-      content: "<p>Nuevo</p>",
-      translations: { en: completeEn },
-      regenerateSlug: { es: true },
+      sourceLocale: "es",
+      translations: { es: ES, en: EN },
     });
 
     expect(res.status).toBe(200);
-    expect(txUpdate.mock.calls[0][0].data).toMatchObject({
-      content: "<p>Nuevo</p>",
-      translations: { en: { ...completeEn, ready: true } },
-    });
-    expect(prisma.blogPost.update).not.toHaveBeenCalled();
-    expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("translations");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledWith(
       tx,
-      expect.objectContaining({
-        id: "blog-1",
-        content: "<p>Nuevo</p>",
-        isReviewCopy: false,
-      }),
-      { regenerateSlug: { es: true } },
+      expect.objectContaining({ id: "blog-1", isReviewCopy: false, sourceLocale: "es" }),
+      { es: ES, en: EN },
     );
   });
 
-  it("rejects a malformed regenerateSlug with 400 before writing", async () => {
+  it("overlays a legacy flat body on the current es row and keeps other locales", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", {
+        translationRows: [
+          { locale: "es", title: "Viaje", content: "<p>Hola</p>", blocks: [], isComplete: true },
+          { locale: "en", title: "Trip", content: "<p>English</p>", blocks: [], isComplete: true },
+        ],
+      }),
+    );
+    await patch({ title: "Nuevo" });
+    expect(vi.mocked(writeTranslationsFromEditor).mock.calls[0][2]).toMatchObject({
+      es: { title: "Nuevo", content: "<p>Hola</p>" },
+      en: { title: "Trip", content: "<p>English</p>" },
+    });
+  });
+
+  it("leaves rows untouched when neither translations nor localized fields are sent", async () => {
     mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
-    const res = await patch({ regenerateSlug: { fr: true } });
-    expect(res.status).toBe(400);
-    expect((await res.json()).error).toBe("invalid_regenerate_slug");
-    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+    const res = await patch({ isActive: false });
+    expect(res.status).toBe(200);
+    expect(writeTranslationsFromEditor).not.toHaveBeenCalled();
   });
 
   it("rejects an unsupported sourceLocale with 400", async () => {

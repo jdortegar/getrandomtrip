@@ -2,6 +2,9 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import type {
   BlogBlock,
+  BlogEditorPost,
+  BlogEditorTranslation,
+  BlogEditorTranslations,
   BlogLocaleSlugs,
   BlogPost,
   ContentLocale,
@@ -11,23 +14,15 @@ import type {
   PublicBlogSummary,
 } from "@/types/blog";
 import { CONTENT_LOCALES, isContentLocale } from "./locales";
+import type { EditorTranslationsInput } from "./editor-write";
 import {
-  LEGACY_MAPPED_LOCALES,
   SourceTranslationIncompleteError,
-  assertLegacySourceComplete,
   computeTranslationIsComplete,
-  legacyEnglishTranslation,
-  legacySpanishTranslation,
   resolveSourceLocale,
-  type LegacyBlogContent,
   type TranslationRowData,
 } from "./legacy-translation-mapping";
-import {
-  resolveUniqueSlug,
-  shouldRegenerateSlug,
-  slugForTitle,
-  type RegenerateSlugInput,
-} from "./translation-slug";
+import { pickSourceRow } from "./source-copy";
+import { resolveUniqueSlug, slugForTitle } from "./translation-slug";
 
 // The only module that reads or writes `blog_post_translations` /
 // `blog_post_slug_history`.
@@ -302,21 +297,7 @@ export async function listPublishedLocaleSlugs(): Promise<
   });
 }
 
-// ── Writes (dual-write from the legacy columns until the editor sends rows) ──
-
-/** The post as just written: legacy content plus the fields slug rules need. */
-export interface LegacyBlogSnapshot extends LegacyBlogContent {
-  id: string;
-  publishedAt: Date | string | null;
-  isReviewCopy: boolean;
-  status?: string;
-  sourceLocale?: string | null;
-}
-
-export interface SyncTranslationsOptions {
-  /** Explicit per-locale slug regeneration for already-published posts. */
-  regenerateSlug?: RegenerateSlugInput;
-}
+// ── Writes: translation rows are the only localized store ──
 
 interface CurrentRow {
   id: string;
@@ -365,31 +346,27 @@ async function uniqueSlugFor(
   });
 }
 
-/** Slug rules: review copies → null; new rows → from the title; unpublished
- * rows follow the title (no history); published rows are frozen unless an
- * explicit regenerate is requested, which retires the old slug. */
+/** Slug rules: review copies → null; otherwise the slug follows the title on
+ * save. A published slug that actually changes is retired for 301s. */
+interface SlugTarget {
+  publishedAt: Date | string | null;
+  isReviewCopy: boolean;
+}
+
 async function planSlug(
   tx: Prisma.TransactionClient,
-  post: LegacyBlogSnapshot,
+  post: SlugTarget,
   locale: string,
   title: string,
   current: CurrentRow | undefined,
-  explicitRegenerate: boolean,
 ): Promise<SlugPlan> {
   if (post.isReviewCopy) return { slug: null };
   if (!current?.slug)
     return { slug: await uniqueSlugFor(tx, locale, title, current?.id) };
-
-  const published = !!post.publishedAt;
-  const titleChanged = current.title !== title;
-  const regenerate =
-    shouldRegenerateSlug({ publishedAt: post.publishedAt, explicitRegenerate }) &&
-    (explicitRegenerate || titleChanged);
-  if (!regenerate) return { slug: current.slug };
+  if (current.title === title) return { slug: current.slug };
 
   const slug = await uniqueSlugFor(tx, locale, title, current.id);
-  // No history before first publish: the old slug was never a public URL.
-  return published && slug !== current.slug
+  return post.publishedAt && slug !== current.slug
     ? { slug, retired: current.slug }
     : { slug };
 }
@@ -407,97 +384,42 @@ function rowContent(data: TranslationRowData) {
   };
 }
 
-/** Mirrors the legacy columns (es) and `translations.en` (en) into translation
- * rows inside the caller's transaction: upserts present locales, deletes `en`
- * when legacy English was cleared (invalid legacy JSON leaves it untouched),
- * recomputes `isComplete`, and applies the slug rules. */
-export async function syncTranslationsFromLegacy(
-  tx: Prisma.TransactionClient,
-  post: LegacyBlogSnapshot,
-  options: SyncTranslationsOptions = {},
-): Promise<void> {
-  const english = legacyEnglishTranslation(post);
-  const byLocale: Partial<Record<string, TranslationRowData>> = {
-    es: legacySpanishTranslation(post),
-    ...(english.kind === "valid" ? { en: english.data } : {}),
-  };
-  const currentRows: CurrentRow[] = await tx.blogPostTranslation.findMany({
-    where: { postId: post.id },
-    select: { id: true, locale: true, title: true, slug: true },
-  });
-
-  const cleared = LEGACY_MAPPED_LOCALES.filter(
-    (locale) =>
-      !byLocale[locale] &&
-      !(locale === "en" && english.kind === "invalid") &&
-      currentRows.some((row) => row.locale === locale),
-  );
-  if (cleared.length)
-    await tx.blogPostTranslation.deleteMany({
-      where: { postId: post.id, locale: { in: [...cleared] } },
-    });
-
-  for (const locale of LEGACY_MAPPED_LOCALES) {
-    const data = byLocale[locale];
-    if (!data) continue;
-    const current = currentRows.find((row) => row.locale === locale);
-    const { slug, retired } = await planSlug(
-      tx,
-      post,
-      locale,
-      data.title,
-      current,
-      !!options.regenerateSlug?.[locale],
-    );
-    const content = rowContent(data);
-    const saved = await tx.blogPostTranslation.upsert({
-      where: { postId_locale: { postId: post.id, locale } },
-      create: { postId: post.id, locale, ...content, slug },
-      update: { ...content, slug },
-      select: { id: true },
-    });
-    if (retired)
-      await tx.blogPostSlugHistory.upsert({
-        where: { locale_slug: { locale, slug: retired } },
-        update: {},
-        create: { locale, slug: retired, translationId: saved.id },
-      });
-  }
-}
-
-const LEGACY_SNAPSHOT_SELECT = {
-  id: true,
-  title: true,
-  subtitle: true,
-  tagline: true,
-  content: true,
-  blocks: true,
-  faq: true,
-  seo: true,
-  translations: true,
-  publishedAt: true,
-  isReviewCopy: true,
-  status: true,
-  sourceLocale: true,
-} satisfies Prisma.BlogPostSelect;
-
-/** Re-reads the post inside the transaction and syncs its rows; with
- * `requireCompleteSource` it first throws `SourceTranslationIncompleteError`
- * (rolling the transaction back) when the source translation is incomplete. */
+/** Source completeness uses stored rows only. Posts with no rows have no
+ * source translation — there are no legacy columns to fall back to. */
 export async function syncTranslationsForPost(
   tx: Prisma.TransactionClient,
   postId: string,
-  options: SyncTranslationsOptions & { requireCompleteSource?: boolean } = {},
+  options: { requireCompleteSource?: boolean } = {},
 ): Promise<void> {
   const post = await tx.blogPost.findUnique({
     where: { id: postId },
-    select: LEGACY_SNAPSHOT_SELECT,
+    select: { sourceLocale: true },
   });
   if (!post) throw new Error(`Blog post ${postId} not found`);
-  if (options.requireCompleteSource) assertLegacySourceComplete(post);
-  await syncTranslationsFromLegacy(tx, post, {
-    regenerateSlug: options.regenerateSlug,
+  if (!options.requireCompleteSource) return;
+  const existing = await tx.blogPostTranslation.findMany({
+    where: { postId },
+    select: { locale: true, isComplete: true },
   });
+  const source = resolveSourceLocale(post.sourceLocale);
+  if (!existing.find((row) => row.locale === source)?.isComplete)
+    throw new SourceTranslationIncompleteError(source);
+}
+
+/** Title of the source-locale translation, or empty when the post has none. */
+export async function sourceTitleForPost(
+  client: Pick<Prisma.TransactionClient, "blogPost">,
+  postId: string,
+): Promise<string> {
+  const post = await client.blogPost.findUnique({
+    where: { id: postId },
+    select: {
+      sourceLocale: true,
+      translationRows: { select: { locale: true, title: true } },
+    },
+  });
+  if (!post) return "";
+  return pickSourceRow(post.sourceLocale, post.translationRows)?.title ?? "";
 }
 
 // ── Review copies: rows are cloned with a null slug; approval overwrites the
@@ -509,8 +431,8 @@ export interface ReviewTranslationRow extends TranslationRowData {
   locale: string;
 }
 
-/** A review-flow post: its id plus the legacy content used when it has no rows yet. */
-export interface ReviewPostSnapshot extends LegacyBlogContent {
+/** A review-flow post: id plus sourceLocale. Rows come from translationRows. */
+export interface ReviewPostSnapshot {
   id: string;
   sourceLocale?: unknown;
 }
@@ -552,8 +474,7 @@ function toReviewRow(row: ReviewRowRecord): ReviewTranslationRow {
   };
 }
 
-/** The post's translation rows in `CONTENT_LOCALES` order; posts written
- * before the backfill fall back to rows derived from the legacy columns. */
+/** The post's translation rows in `CONTENT_LOCALES` order. Empty when none. */
 export async function loadTranslationsForReview(
   client: ReviewClient,
   post: ReviewPostSnapshot,
@@ -562,16 +483,9 @@ export async function loadTranslationsForReview(
     where: { postId: post.id },
     select: REVIEW_ROW_SELECT,
   });
-  if (rows.length)
-    return rows
-      .map(toReviewRow)
-      .sort((a, b) => localeRank(a.locale) - localeRank(b.locale));
-
-  const english = legacyEnglishTranslation(post);
-  return [
-    { locale: "es", ...legacySpanishTranslation(post) },
-    ...(english.kind === "valid" ? [{ locale: "en", ...english.data }] : []),
-  ];
+  return rows
+    .map(toReviewRow)
+    .sort((a, b) => localeRank(a.locale) - localeRank(b.locale));
 }
 
 /** Clones every translation row of the original into its new review copy
@@ -648,4 +562,228 @@ export async function overwriteTranslationsFromCopy(
       select: { id: true },
     });
   }
+}
+
+// ── Editor reads/writes: translations keyed by locale (decision 8) ──
+
+export interface EditorWriteTarget {
+  id: string;
+  publishedAt: Date | string | null;
+  isReviewCopy: boolean;
+  sourceLocale: ContentLocale;
+}
+
+const EDITOR_ROW_SELECT = {
+  locale: true,
+  title: true,
+  subtitle: true,
+  tagline: true,
+  content: true,
+  blocks: true,
+  faq: true,
+  seo: true,
+  slug: true,
+  isComplete: true,
+} satisfies Prisma.BlogPostTranslationSelect;
+
+const EDITOR_POST_SELECT = {
+  id: true,
+  authorId: true,
+  source: true,
+  status: true,
+  format: true,
+  sourceLocale: true,
+  coverUrl: true,
+  tags: true,
+  travelType: true,
+  excuseKey: true,
+  level: true,
+  label: true,
+  isActive: true,
+  isReviewCopy: true,
+  parentId: true,
+  reviewNote: true,
+  tripperNote: true,
+  reviewLockedBy: true,
+  changedFields: true,
+  publishedAt: true,
+  createdAt: true,
+  updatedAt: true,
+  author: {
+    select: {
+      id: true,
+      name: true,
+      tripperSlug: true,
+      avatarUrl: true,
+      bio: true,
+      location: true,
+      motto: true,
+      specialization: true,
+    },
+  },
+  translationRows: { select: EDITOR_ROW_SELECT },
+} satisfies Prisma.BlogPostSelect;
+
+type EditorRowRecord = Prisma.BlogPostTranslationGetPayload<{
+  select: typeof EDITOR_ROW_SELECT;
+}>;
+
+function inputToRowData(
+  input: NonNullable<EditorTranslationsInput[ContentLocale]>,
+): TranslationRowData {
+  const data = {
+    title: input.title,
+    subtitle: input.subtitle ?? null,
+    tagline: input.tagline ?? null,
+    content: input.content ?? null,
+    blocks: input.blocks ?? [],
+    faq: input.faq ?? null,
+    seo: input.seo ?? null,
+  };
+  return { ...data, isComplete: computeTranslationIsComplete(data) };
+}
+
+function toEditorTranslation(
+  data: TranslationRowData,
+  slug: string | null,
+): BlogEditorTranslation {
+  return {
+    title: data.title,
+    subtitle: data.subtitle,
+    tagline: data.tagline,
+    content: data.content,
+    blocks: data.blocks as BlogBlock[],
+    faq: data.faq as BlogPost["faq"],
+    seo: (data.seo as BlogPost["seo"] | null) ?? null,
+    slug,
+    isComplete: data.isComplete,
+  };
+}
+
+function editorTranslationFromRow(row: EditorRowRecord): BlogEditorTranslation {
+  return {
+    title: row.title,
+    subtitle: row.subtitle,
+    tagline: row.tagline,
+    content: row.content,
+    blocks: Array.isArray(row.blocks) ? (row.blocks as BlogBlock[]) : [],
+    faq: row.faq as BlogPost["faq"],
+    seo: (row.seo as BlogPost["seo"] | null) ?? null,
+    slug: row.slug,
+    isComplete: row.isComplete,
+  };
+}
+
+/** Writes the requested locales, deletes omitted non-source locales, and
+ * never deletes the source row. Slugs follow each locale's title on save. */
+export async function writeTranslationsFromEditor(
+  tx: Prisma.TransactionClient,
+  target: EditorWriteTarget,
+  translations: EditorTranslationsInput,
+): Promise<BlogEditorTranslations> {
+  const currentRows = await tx.blogPostTranslation.findMany({
+    where: { postId: target.id },
+    select: {
+      id: true,
+      locale: true,
+      title: true,
+      slug: true,
+      subtitle: true,
+      tagline: true,
+      content: true,
+      blocks: true,
+      faq: true,
+      seo: true,
+      isComplete: true,
+    },
+  });
+  const requested = new Set(
+    CONTENT_LOCALES.filter((locale) => translations[locale] !== undefined),
+  );
+  const removed = currentRows
+    .filter(
+      (row) => !requested.has(row.locale as ContentLocale) && row.locale !== target.sourceLocale,
+    )
+    .map((row) => row.locale);
+  if (removed.length)
+    await tx.blogPostTranslation.deleteMany({
+      where: { postId: target.id, locale: { in: removed } },
+    });
+
+  const result: BlogEditorTranslations = {};
+  for (const locale of CONTENT_LOCALES) {
+    const input = translations[locale];
+    if (!input) continue;
+    const data = inputToRowData(input);
+    const current = currentRows.find((row) => row.locale === locale);
+    const { slug, retired } = await planSlug(
+      tx,
+      target,
+      locale,
+      data.title,
+      current,
+    );
+    const content = rowContent(data);
+    const saved = await tx.blogPostTranslation.upsert({
+      where: { postId_locale: { postId: target.id, locale } },
+      create: { postId: target.id, locale, ...content, slug },
+      update: { ...content, slug },
+      select: { id: true },
+    });
+    if (retired)
+      await tx.blogPostSlugHistory.upsert({
+        where: { locale_slug: { locale, slug: retired } },
+        update: {},
+        create: { locale, slug: retired, translationId: saved.id },
+      });
+    result[locale] = toEditorTranslation(data, slug);
+  }
+
+  if (!requested.has(target.sourceLocale)) {
+    const source = currentRows.find((row) => row.locale === target.sourceLocale);
+    if (source)
+      result[target.sourceLocale] = editorTranslationFromRow(source);
+  }
+  return result;
+}
+
+/** Editor/review read: shared post fields plus translations keyed by locale
+ * (slug + isComplete read-only). Posts without rows return empty translations. */
+export async function getForEditor(id: string): Promise<BlogEditorPost | null> {
+  const post = await prisma.blogPost.findUnique({
+    where: { id },
+    select: EDITOR_POST_SELECT,
+  });
+  if (!post) return null;
+  const translations = Object.fromEntries(
+    post.translationRows
+      .filter((row) => isContentLocale(row.locale))
+      .map((row) => [row.locale, editorTranslationFromRow(row)]),
+  );
+  return {
+    id: post.id,
+    authorId: post.authorId,
+    source: post.source,
+    status: post.status,
+    format: post.format,
+    sourceLocale: resolveSourceLocale(post.sourceLocale),
+    coverUrl: post.coverUrl,
+    tags: post.tags,
+    travelType: post.travelType,
+    excuseKey: post.excuseKey,
+    level: post.level,
+    label: post.label,
+    isActive: post.isActive,
+    isReviewCopy: post.isReviewCopy,
+    parentId: post.parentId,
+    reviewNote: post.reviewNote,
+    tripperNote: post.tripperNote,
+    reviewLockedBy: post.reviewLockedBy,
+    changedFields: Array.isArray(post.changedFields) ? post.changedFields : [],
+    publishedAt: post.publishedAt,
+    createdAt: post.createdAt,
+    updatedAt: post.updatedAt,
+    author: post.author,
+    translations,
+  };
 }

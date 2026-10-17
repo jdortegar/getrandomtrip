@@ -352,6 +352,7 @@ function makeClient(
         count: vi.fn().mockResolvedValue(esCount),
       },
       blogPostSlugHistory: { findMany: vi.fn().mockResolvedValue([]) },
+      $queryRaw: vi.fn().mockResolvedValue(posts),
       $transaction: vi.fn().mockImplementation((fn: (t: typeof tx) => unknown) => fn(tx)),
     },
   };

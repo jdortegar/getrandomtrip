@@ -1,7 +1,5 @@
 import { equalBlogJson } from "@/lib/blog/equal-json";
 import { ZodError } from "zod";
-import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
-import { Prisma } from "@prisma/client";
 // ============================================================================
 // GET /api/tripper/blogs/[id] - Get a single blog post by ID for tripper
 // PATCH /api/tripper/blogs/[id] - Update a blog post by ID for tripper
@@ -15,13 +13,18 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
 import {
-  isLegacyLocaleComplete,
+  getForEditor,
+  writeTranslationsFromEditor,
+} from "@/lib/blog/blogRepository";
+import {
+  EditorWriteError,
+  editorWriteErrorBody,
+  parseEditorWriteRequest,
   resolveSourceLocale,
-} from "@/lib/blog/legacy-translation-mapping";
-import { contentLocaleSchema } from "@/lib/blog/locales";
-import { regenerateSlugInputSchema } from "@/lib/blog/translation-slug";
+  rowsFromLoadedPost,
+  translationsChanged,
+} from "@/lib/blog/editor-write";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -74,38 +77,6 @@ export async function GET(
         id: true,
         authorId: true,
         source: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        translations: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        excuseKey: true,
-        level: true,
-        label: true,
-        format: true,
-        status: true,
-        isActive: true,
-        seo: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-            avatarUrl: true,
-            bio: true,
-            location: true,
-            motto: true,
-            specialization: true,
-          },
-        },
       },
     });
 
@@ -123,17 +94,15 @@ export async function GET(
       );
     }
 
-    // Transform to match frontend type
-    const transformedBlog = {
-      ...blog,
-      status: blog.status.toLowerCase(),
-      format: blog.format.toLowerCase(),
-      createdAt: blog.createdAt.toISOString(),
-      updatedAt: blog.updatedAt.toISOString(),
-      publishedAt: blog.publishedAt?.toISOString(),
-    };
+    const editor = await getForEditor(blog.id);
+    if (!editor) {
+      return NextResponse.json(
+        { error: "Blog post not found or access denied" },
+        { status: 404 },
+      );
+    }
 
-    return NextResponse.json({ blog: transformedBlog });
+    return NextResponse.json({ blog: editor });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
@@ -180,6 +149,7 @@ export async function PATCH(
         id: blogId,
         isReviewCopy: false,
       },
+      include: { translationRows: true },
     });
 
     // Owner may always edit their own post. An admin may additionally edit
@@ -215,20 +185,17 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const translations = normalizeBlogTranslations(body.translations);
+    const currentRows = rowsFromLoadedPost(existingBlog);
+    const parsed = parseEditorWriteRequest(body, {
+      sourceLocale: resolveSourceLocale(existingBlog.sourceLocale),
+      rows: currentRows,
+    });
     const {
-      title,
-      subtitle,
-      tagline,
-      content,
-      blocks,
-      faq,
       tags,
       format,
       // status is intentionally NOT destructured for persistence — transitions
       // only happen via the guarded submit/approve/reject/copy endpoints.
       coverUrl,
-      seo,
       travelType,
       excuseKey,
       level,
@@ -236,6 +203,7 @@ export async function PATCH(
       tripperNote,
       isActive,
     } = body;
+    const title = parsed.translations?.[parsed.sourceLocale]?.title ?? body.title;
 
     // Validate required fields
     if (title !== undefined && !title) {
@@ -260,52 +228,8 @@ export async function PATCH(
       );
     }
 
-    // Explicit per-locale slug regeneration (published slugs are frozen).
-    const regenerateSlugInput = regenerateSlugInputSchema
-      .optional()
-      .safeParse(body.regenerateSlug);
-    if (!regenerateSlugInput.success) {
-      return NextResponse.json(
-        { error: "invalid_regenerate_slug", message: "Invalid slug regeneration request." },
-        { status: 400 },
-      );
-    }
-
-    // sourceLocale may only change to a locale whose translation is complete
-    // once this request is applied.
-    const sourceLocaleInput = contentLocaleSchema.optional().safeParse(body.sourceLocale);
-    if (!sourceLocaleInput.success) {
-      return NextResponse.json(
-        { error: "invalid_source_locale", message: "Unsupported source locale." },
-        { status: 400 },
-      );
-    }
-    const sourceLocale = sourceLocaleInput.data;
-    const sourceLocaleChanged =
-      sourceLocale !== undefined &&
-      sourceLocale !== resolveSourceLocale(existingBlog.sourceLocale);
-    if (
-      sourceLocaleChanged &&
-      !isLegacyLocaleComplete(
-        {
-          title: title ?? existingBlog.title,
-          content: content !== undefined ? (content ?? null) : existingBlog.content,
-          blocks: blocks !== undefined ? blocks : existingBlog.blocks,
-          translations:
-            translations !== undefined ? translations : existingBlog.translations,
-        },
-        sourceLocale,
-      )
-    ) {
-      return NextResponse.json(
-        {
-          error: "source_locale_incomplete",
-          locale: sourceLocale,
-          message: "The source locale must have a complete translation.",
-        },
-        { status: 400 },
-      );
-    }
+    const sourceLocale = parsed.sourceLocale;
+    const sourceLocaleChanged = parsed.sourceLocaleChanged;
 
     // Revert to DRAFT only if a reviewable content field actually changed.
     // Autosave fires on mount even when nothing changed — we must not
@@ -314,13 +238,9 @@ export async function PATCH(
     const eq = equalBlogJson;
 
     const contentChanged =
-      (translations !== undefined && !eq(translations, existingBlog.translations)) ||
-      (title !== undefined && !eq(title, existingBlog.title)) ||
-      (subtitle !== undefined && !eq(subtitle || null, existingBlog.subtitle)) ||
-      (tagline !== undefined && !eq(tagline || null, existingBlog.tagline)) ||
+      (parsed.translations !== undefined &&
+        translationsChanged(parsed.translations, currentRows, sourceLocale)) ||
       (coverUrl !== undefined && !eq(coverUrl || null, existingBlog.coverUrl)) ||
-      (content !== undefined && !eq(content ?? null, existingBlog.content)) ||
-      (blocks !== undefined && !eq(blocks, existingBlog.blocks)) ||
       (tags !== undefined && !eq(tags, existingBlog.tags)) ||
       (travelType !== undefined &&
         !eq(normalizeStringArray(travelType), existingBlog.travelType)) ||
@@ -328,9 +248,7 @@ export async function PATCH(
         !eq(normalizeStringArray(excuseKey), existingBlog.excuseKey)) ||
       (levelValue !== undefined && !eq(levelValue, existingBlog.level)) ||
       (labelValue !== undefined && !eq(labelValue, existingBlog.label)) ||
-      (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format)) ||
-      (seo !== undefined && !eq(seo || null, existingBlog.seo)) ||
-      (faq !== undefined && !eq(faq ?? null, existingBlog.faq));
+      (format !== undefined && !eq(format.toUpperCase?.() ?? format, existingBlog.format));
 
     // RANDOMTRIP posts skip review entirely (see BlogPost.source), so editing
     // a live one must not silently unpublish it — only TRIPPER posts revert
@@ -341,30 +259,7 @@ export async function PATCH(
       contentChanged &&
       existingBlog.source === "TRIPPER";
 
-    // Convert string enums to uppercase for Prisma
-    const { slugify } = await import("@/lib/helpers/slugify");
-    const updateData: any = {};
-    if (title !== undefined && title !== existingBlog.title) {
-      updateData.title = title;
-      const baseSlug = slugify(title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (true) {
-        const existing = await prisma.blogPost.findFirst({
-          where: { slug, id: { not: blogId } },
-        });
-        if (!existing) break;
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      updateData.slug = slug;
-    }
-    if (subtitle !== undefined) updateData.subtitle = subtitle || null;
-    if (tagline !== undefined) updateData.tagline = tagline || null;
-    if (content !== undefined) updateData.content = content ?? null;
-    if (blocks !== undefined) updateData.blocks = blocks;
-    if (translations !== undefined) updateData.translations = translations === null ? Prisma.DbNull : translations;
-    if (faq !== undefined) updateData.faq = faq ?? null;
+    const updateData: Record<string, unknown> = {};
     if (tags !== undefined) updateData.tags = tags;
     if (travelType !== undefined) {
       updateData.travelType = normalizeStringArray(travelType);
@@ -375,7 +270,6 @@ export async function PATCH(
     if (levelValue !== undefined) updateData.level = levelValue;
     if (labelValue !== undefined) updateData.label = labelValue;
     if (coverUrl !== undefined) updateData.coverUrl = coverUrl || null;
-    if (seo !== undefined) updateData.seo = seo || null;
 
     if (format !== undefined) {
       const formatMap: Record<string, "ARTICLE" | "PHOTO" | "VIDEO" | "MIXED"> =
@@ -406,8 +300,6 @@ export async function PATCH(
       updateData.isActive = false;
     }
 
-    // Dual-write: legacy columns + translation rows in one transaction so
-    // they never diverge.
     const updatedBlog = await prisma.$transaction(async (tx) => {
       const updated = await tx.blogPost.update({
         where: { id: blogId },
@@ -415,14 +307,8 @@ export async function PATCH(
         select: {
           id: true,
           authorId: true,
-          title: true,
-          subtitle: true,
-          tagline: true,
+          sourceLocale: true,
           coverUrl: true,
-          content: true,
-          blocks: true,
-          translations: true,
-          faq: true,
           tags: true,
           travelType: true,
           excuseKey: true,
@@ -431,18 +317,24 @@ export async function PATCH(
           format: true,
           status: true,
           isActive: true,
-          seo: true,
           createdAt: true,
           updatedAt: true,
           publishedAt: true,
         },
       });
-      await syncTranslationsFromLegacy(
-        tx,
-        { ...updated, isReviewCopy: false },
-        { regenerateSlug: regenerateSlugInput.data },
-      );
-      return updated;
+      const written = parsed.translations
+        ? await writeTranslationsFromEditor(
+            tx,
+            {
+              id: blogId,
+              isReviewCopy: false,
+              publishedAt: updated.publishedAt,
+              sourceLocale,
+            },
+            parsed.translations,
+          )
+        : undefined;
+      return written ? { ...updated, translations: written } : updated;
     });
 
     // Transform to match frontend type
@@ -457,6 +349,9 @@ export async function PATCH(
 
     return NextResponse.json({ blog: transformedBlog });
   } catch (error) {
+    if (error instanceof EditorWriteError) {
+      return NextResponse.json(editorWriteErrorBody(error), { status: 400 });
+    }
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
     }

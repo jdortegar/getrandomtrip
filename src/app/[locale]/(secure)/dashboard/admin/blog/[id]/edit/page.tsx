@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
-import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
+import { getForEditor } from "@/lib/blog/blogRepository";
+import { mapEditorPostToDraft } from "@/lib/helpers/blog-form";
 import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlogPostShell";
 import type { BlogPost } from "@/types/blog";
 import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
@@ -45,6 +46,9 @@ export default async function AdminEditBlogPostPage(props: {
     redirect(`/${locale}/dashboard/admin/blog/${params.id}`);
   }
 
+  const editor = await getForEditor(post.id);
+  if (!editor) notFound();
+
   const dict = await getDictionary(locale);
 
   return (
@@ -54,7 +58,7 @@ export default async function AdminEditBlogPostPage(props: {
       finalizeCopy={dict.adminDashboard.newBlogPost}
       locale={locale}
       userBadgeLabels={dict.journey.userBadge}
-      initialDraft={mapBlogPostToDraft(post)}
+      initialDraft={mapEditorPostToDraft(editor)}
       initialDraftId={post.id}
       isAdmin
       source={post.source}

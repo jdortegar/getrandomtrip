@@ -19,6 +19,117 @@ const prisma = new PrismaClient(
 
 const TRIPPER_MEMBERSHIP: UserRole[] = ["TRAVELER", "TRIPPER"];
 
+interface SeedBlogLocalized {
+  id?: string;
+  authorId: string;
+  title: string;
+  subtitle?: string;
+  tagline?: string;
+  coverUrl?: string | null;
+  content?: string | null;
+  blocks?: unknown;
+  tags?: string[];
+  travelType?: string[];
+  excuseKey?: string[];
+  format: BlogFormat;
+  status: BlogStatus;
+  seo?: unknown;
+  faq?: unknown;
+  publishedAt?: Date;
+  slug?: string;
+}
+
+async function uniqueTranslationSlug(
+  client: PrismaClient,
+  locale: string,
+  base: string,
+): Promise<string> {
+  let slug = base;
+  let suffix = 0;
+  while (
+    await client.blogPostTranslation.findUnique({
+      where: { locale_slug: { locale, slug } },
+    })
+  ) {
+    suffix += 1;
+    slug = `${base}-${suffix}`;
+  }
+  return slug;
+}
+
+function esTranslationCreate(
+  data: SeedBlogLocalized,
+  slug: string,
+) {
+  return {
+    locale: "es",
+    title: data.title,
+    subtitle: data.subtitle ?? null,
+    tagline: data.tagline ?? null,
+    content: data.content ?? null,
+    blocks: data.blocks ?? [],
+    faq: data.faq ?? undefined,
+    seo: data.seo ?? undefined,
+    slug,
+    isComplete: true,
+  };
+}
+
+function blogSharedFields(data: SeedBlogLocalized) {
+  return {
+    authorId: data.authorId,
+    coverUrl: data.coverUrl ?? null,
+    tags: data.tags ?? [],
+    travelType: data.travelType ?? [],
+    excuseKey: data.excuseKey ?? [],
+    format: data.format,
+    status: data.status,
+    publishedAt: data.publishedAt,
+    sourceLocale: "es",
+  };
+}
+
+async function createSeedBlogPost(client: PrismaClient, data: SeedBlogLocalized) {
+  const slug = await uniqueTranslationSlug(
+    client,
+    "es",
+    data.slug ?? (slugify(data.title) || "post"),
+  );
+  const created = await client.blogPost.create({
+    data: {
+      ...(data.id ? { id: data.id } : {}),
+      ...blogSharedFields(data),
+      translationRows: { create: esTranslationCreate(data, slug) },
+    },
+    select: { id: true },
+  });
+  return { id: created.id, title: data.title, status: data.status };
+}
+
+async function upsertSeedBlogPost(
+  client: PrismaClient,
+  id: string,
+  data: SeedBlogLocalized,
+) {
+  const slug = data.slug ?? (slugify(data.title) || "post");
+  const shared = blogSharedFields(data);
+  const row = esTranslationCreate(data, slug);
+  await client.blogPost.upsert({
+    where: { id },
+    create: {
+      id,
+      ...shared,
+      translationRows: { create: row },
+    },
+    update: shared,
+  });
+  await client.blogPostTranslation.upsert({
+    where: { postId_locale: { postId: id, locale: "es" } },
+    create: { postId: id, ...row },
+    update: row,
+  });
+}
+
 async function seedTrippersAndPackages() {
   console.log("🌱 Seeding trippers and packages...");
 
@@ -793,9 +904,7 @@ async function seedTrippersAndPackages() {
 
     // Mockup post with fixed id for /blog/cmly0imzt000bgg1gosc0dow9 (or slug aventura-acuatica)
     const mockupPostId = "cmly0imzt000bgg1gosc0dow9";
-    await prisma.blogPost.upsert({
-      where: { id: mockupPostId },
-      create: {
+    const mockupSeed: SeedBlogLocalized = {
         id: mockupPostId,
         authorId: dawson.id,
         slug: "aventura-acuatica",
@@ -868,71 +977,8 @@ async function seedTrippersAndPackages() {
             },
           ],
         },
-      },
-      update: {
-        slug: "aventura-acuatica",
-        title: "Aventura Acuática en el Caribe",
-        subtitle: "Buceo, snorkel y playas secretas en una semana",
-        tagline: "Guía práctica para tu primera escapada al mar",
-        coverUrl:
-          "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80",
-        blocks: [
-          {
-            type: "paragraph",
-            text: "El Caribe no es solo sol y playa: es buceo en arrecifes vivos, snorkel con tortugas y atardeceres que no se olvidan. En esta guía te cuento cómo armé mi primera semana acuática y qué me hubiera gustado saber antes.",
-          },
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=800&q=80",
-            caption: "Snorkel en aguas cristalinas",
-          },
-          {
-            type: "paragraph",
-            text: "Elegí una base en la costa y desde ahí hice excursiones de un día. Así evité cambiar de alojamiento cada noche y pude repetir los spots que más me gustaron. La clave está en contratar lanchas locales y salir temprano.",
-          },
-          {
-            type: "quote",
-            text: "El mar nos devuelve lo que le damos: respeto y curiosidad.",
-            cite: "Jacques Cousteau",
-          },
-          {
-            type: "paragraph",
-            text: "Si es tu primera vez, invierte en un buen curso de snorkel o un bautismo de buceo. La diferencia entre ver peces desde la superficie y bajar unos metros es enorme. Yo lo hice el segundo día y no me arrepiento.",
-          },
-          {
-            type: "image",
-            url: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80",
-            caption: "Atardecer desde la playa",
-          },
-          {
-            type: "paragraph",
-            text: "Lleva protector solar biodegradable y no toques el coral. Con pequeños gestos mantenemos estos lugares para los que vienen después.",
-          },
-        ],
-        tags: ["caribe", "buceo", "snorkel", "playas", "aventura"],
-        faq: {
-          items: [
-            {
-              question: "¿Hace falta saber nadar para hacer snorkel?",
-              answer:
-                "Sí, es recomendable sentirse cómodo en el agua. En muchas excursiones te dan chaleco y puedes flotar sin esfuerzo, pero saber nadar te da seguridad y te permite moverte mejor.",
-            },
-            {
-              question: "¿Cuál es la mejor época para el Caribe?",
-              answer:
-                "Diciembre a abril suele tener menos lluvia y mar más tranquilo. De junio a noviembre es temporada de huracanes en la región; sigue el pronóstico si viajas en esas fechas.",
-            },
-            {
-              question: "¿Necesito certificación para bucear?",
-              answer:
-                "Para un bautismo (inmersión guiada hasta ~12 m) no. Para inmersiones más profundas o repetidas, sí: el curso Open Water es el estándar y vale la pena.",
-            },
-          ],
-        },
-        publishedAt: new Date("2024-05-20"),
-        status: BlogStatus.PUBLISHED,
-      },
-    });
+    };
+    await upsertSeedBlogPost(prisma, mockupPostId, mockupSeed);
     console.log(
       `✅ Upserted mockup blog post: Aventura Acuática (${mockupPostId})`,
     );
@@ -1153,16 +1199,7 @@ async function seedTrippersAndPackages() {
     ];
 
     for (const blogData of blogPosts) {
-      const baseSlug = slugify(blogData.title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (await prisma.blogPost.findUnique({ where: { slug } })) {
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      const blog = await prisma.blogPost.create({
-        data: { ...blogData, slug },
-      });
+      const blog = await createSeedBlogPost(prisma, blogData);
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 
@@ -1227,16 +1264,7 @@ async function seedTrippersAndPackages() {
 
     console.log("\n📝 Creating blog posts for Alma...");
     for (const blogData of almaBlogPosts) {
-      const baseSlug = slugify(blogData.title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (await prisma.blogPost.findUnique({ where: { slug } })) {
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      const blog = await prisma.blogPost.create({
-        data: { ...blogData, slug },
-      });
+      const blog = await createSeedBlogPost(prisma, blogData);
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 
@@ -1276,16 +1304,7 @@ async function seedTrippersAndPackages() {
 
     console.log("\n📝 Creating blog posts for Randomtrip...");
     for (const blogData of randomtripBlogPosts) {
-      const baseSlug = slugify(blogData.title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (await prisma.blogPost.findUnique({ where: { slug } })) {
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      const blog = await prisma.blogPost.create({
-        data: { ...blogData, slug },
-      });
+      const blog = await createSeedBlogPost(prisma, blogData);
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 
@@ -1346,16 +1365,7 @@ async function seedTrippersAndPackages() {
 
     console.log("\n📝 Creating blog posts for David Ortega...");
     for (const blogData of davidBlogPosts) {
-      const baseSlug = slugify(blogData.title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (await prisma.blogPost.findUnique({ where: { slug } })) {
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      const blog = await prisma.blogPost.create({
-        data: { ...blogData, slug },
-      });
+      const blog = await createSeedBlogPost(prisma, blogData);
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 
@@ -1430,16 +1440,7 @@ async function seedTrippersAndPackages() {
 
     console.log("\n📝 Creating blog posts for Sofia...");
     for (const blogData of sofiaBlogPosts) {
-      const baseSlug = slugify(blogData.title) || "post";
-      let slug = baseSlug;
-      let suffix = 0;
-      while (await prisma.blogPost.findUnique({ where: { slug } })) {
-        suffix += 1;
-        slug = `${baseSlug}-${suffix}`;
-      }
-      const blog = await prisma.blogPost.create({
-        data: { ...blogData, slug },
-      });
+      const blog = await createSeedBlogPost(prisma, blogData);
       console.log(`✅ Created blog post: ${blog.title} (${blog.status})`);
     }
 

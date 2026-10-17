@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-import { Prisma } from "@prisma/client";
 vi.mock("next-auth", () => ({
   getServerSession: vi.fn(async () => ({ user: { id: "owner" } })),
 }));
@@ -19,19 +18,21 @@ vi.mock("@/lib/prisma", () => {
       create: vi.fn(),
       update: vi.fn(),
     },
-    // Interactive transaction: runs the callback against the same mock client.
     $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
   };
   return { prisma };
 });
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
+  getForEditor: vi.fn(),
   overwriteTranslationsFromCopy: vi.fn(),
 }));
 import { prisma } from "@/lib/prisma";
 import {
+  getForEditor,
   overwriteTranslationsFromCopy,
-  syncTranslationsFromLegacy,
+  writeTranslationsFromEditor,
 } from "@/lib/blog/blogRepository";
 import { POST, GET as getManagementList } from "@/app/api/tripper/blogs/route";
 import {
@@ -44,12 +45,14 @@ import {
   overwriteOriginalWithCopy,
 } from "../changed-fields";
 
-const en = { title: "English", content: "<p>Article</p>" };
+const ES = { title: "Español", content: "<p>Original</p>" };
+const EN = { title: "English", content: "<p>Article</p>" };
 const base = {
   id: "post",
   slug: "original-slug",
   authorId: "owner",
   source: "TRIPPER",
+  sourceLocale: "es",
   title: "Español",
   subtitle: "Subtítulo",
   content: "<p>Original</p>",
@@ -58,6 +61,20 @@ const base = {
   blocks: [],
   faq: null,
   seo: { title: "SEO Español" },
+  translationRows: [
+    {
+      locale: "es",
+      title: "Español",
+      subtitle: "Subtítulo",
+      tagline: "Bajada",
+      content: "<p>Original</p>",
+      blocks: [],
+      faq: null,
+      seo: { title: "SEO Español" },
+      slug: "original-slug",
+      isComplete: true,
+    },
+  ],
   tags: [],
   travelType: [],
   excuseKey: [],
@@ -69,6 +86,14 @@ const base = {
   updatedAt: new Date(),
   publishedAt: new Date(),
   author: { id: "owner", name: "Person", tripperSlug: "person" },
+};
+const editorPost = {
+  id: "post",
+  sourceLocale: "es",
+  translations: {
+    es: { ...ES, slug: "espanol", isComplete: true },
+    en: { ...EN, slug: "english", isComplete: true },
+  },
 };
 const params = { params: Promise.resolve({ id: "post" }) };
 function request(path: string, body?: unknown, method = "PATCH") {
@@ -99,19 +124,26 @@ beforeEach(() => {
   vi.mocked(prisma.blogPost.create).mockImplementation(
     ({ data }) => Promise.resolve({ ...base, ...data }) as never,
   );
+  vi.mocked(getForEditor).mockResolvedValue(editorPost as never);
+  vi.mocked(writeTranslationsFromEditor).mockResolvedValue({
+    es: { ...ES, slug: "espanol", isComplete: true },
+    en: { ...EN, slug: "english", isComplete: true },
+  } as never);
 });
 
 describe("localized write boundary", () => {
-  it("dual-writes: every write route keeps the legacy columns and syncs rows in the same transaction", async () => {
-    const translations = { en: { ...en, ready: true } };
+  it("writes rows and does not write dropped BlogPost columns", async () => {
     await POST(
-      request("/api/tripper/blogs", { title: "Español", translations: { en } }, "POST"),
+      request("/api/tripper/blogs", { sourceLocale: "es", translations: { es: ES, en: EN } }, "POST"),
     );
     vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
       ...base,
       status: "DRAFT",
     } as never);
-    await PATCH(request("/api/tripper/blogs/post", { translations: { en } }), params);
+    await PATCH(
+      request("/api/tripper/blogs/post", { sourceLocale: "es", translations: { es: ES, en: EN } }),
+      params,
+    );
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "owner",
       roles: ["ADMIN"],
@@ -120,114 +152,69 @@ describe("localized write boundary", () => {
       ...base,
       isReviewCopy: true,
     } as never);
-    vi.mocked(prisma.blogPost.update).mockImplementationOnce(
-      ({ data }) => Promise.resolve({ ...base, isReviewCopy: true, ...data }) as never,
-    );
     await patchCopy(
-      request("/api/admin/blogs/post/edit-copy", { translations: { en } }),
+      request("/api/admin/blogs/post/edit-copy", {
+        sourceLocale: "es",
+        translations: { es: ES, en: EN },
+      }),
       params,
     );
 
     expect(vi.mocked(prisma.blogPost.create).mock.calls[0][0].data).toMatchObject({
-      title: "Español",
-      translations,
+      sourceLocale: "es",
     });
-    expect(vi.mocked(prisma.blogPost.update).mock.calls[0][0].data).toMatchObject({
-      translations,
-    });
-    expect(vi.mocked(prisma.blogPost.update).mock.calls[1][0].data).toMatchObject({
-      translations,
-    });
+    expect(vi.mocked(prisma.blogPost.create).mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledTimes(3);
     expect(prisma.$transaction).toHaveBeenCalledTimes(3);
-    const synced = vi.mocked(syncTranslationsFromLegacy).mock.calls;
-    expect(synced).toHaveLength(3);
-    for (const [tx, post] of synced) {
-      expect(tx).toBe(prisma);
-      expect(post).toMatchObject({ translations });
-    }
-    expect(synced[2][1]).toMatchObject({ isReviewCopy: true });
   });
-  it("saves partial translation drafts but ignores forged readiness", async () => {
+
+  it("saves an incomplete non-source locale", async () => {
     const response = await POST(
       request(
         "/api/tripper/blogs",
-        {
-          title: "Español",
-          translations: { en: { title: "Draft", ready: true } },
-        },
+        { sourceLocale: "es", translations: { es: ES, en: { title: "Draft" } } },
         "POST",
       ),
     );
     expect(response.status).toBe(201);
-    expect(
-      vi.mocked(prisma.blogPost.create).mock.calls[0][0].data,
-    ).toMatchObject({
-      title: "Español",
-      translations: { en: { title: "Draft", ready: false } },
+    expect(vi.mocked(writeTranslationsFromEditor).mock.calls[0][2]).toMatchObject({
+      es: ES,
+      en: { title: "Draft" },
     });
   });
+
   it.each(["TRIPPER", "RANDOMTRIP"])(
-    "English-only %s edits preserve Spanish and slug and honor review semantics",
+    "English-only %s edits keep Spanish rows and honor review semantics",
     async (source) => {
       vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
         ...base,
         source,
       } as never);
       const response = await PATCH(
-        request("/api/tripper/blogs/post", { translations: { en } }),
+        request("/api/tripper/blogs/post", {
+          translations: { es: ES, en: EN },
+        }),
         params,
       );
       expect(response.status).toBe(200);
       const data = vi.mocked(prisma.blogPost.update).mock.calls[0][0].data;
-      expect(data).toMatchObject({
-        translations: { en: { ...en, ready: true } },
-      });
       expect(data).not.toHaveProperty("title");
-      expect(data).not.toHaveProperty("slug");
-      expect(data).not.toHaveProperty("content");
+      expect(data).not.toHaveProperty("translations");
+      expect(writeTranslationsFromEditor).toHaveBeenCalled();
       if (source === "TRIPPER")
         expect(data).toMatchObject({ status: "DRAFT", isActive: false });
       else expect(data).not.toHaveProperty("status");
     },
   );
-  it("preserves omitted English, recognizes no-op and supports explicit clear", async () => {
-    const translations = { en: { ...en, ready: true } };
-    vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
-      ...base,
-      translations,
-    } as never);
+
+  it("leaves rows untouched when neither translations nor localized fields are sent", async () => {
     await PATCH(request("/api/tripper/blogs/post", { isActive: true }), params);
+    expect(writeTranslationsFromEditor).not.toHaveBeenCalled();
     expect(
       vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
     ).not.toHaveProperty("translations");
-    await PATCH(request("/api/tripper/blogs/post", { translations }), params);
-    expect(
-      vi.mocked(prisma.blogPost.update).mock.calls[1][0].data,
-    ).not.toHaveProperty("status");
-    await PATCH(
-      request("/api/tripper/blogs/post", { translations: null }),
-      params,
-    );
-    expect(
-      vi.mocked(prisma.blogPost.update).mock.calls[2][0].data,
-    ).toMatchObject({ translations: Prisma.DbNull, status: "DRAFT" });
   });
-  it("does not unpublish a no-op English edit after JSONB reorders object keys", async () => {
-    const stored = {
-      en: { ready: true, content: en.content, title: en.title },
-    };
-    vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
-      ...base,
-      translations: stored,
-    } as never);
-    await PATCH(
-      request("/api/tripper/blogs/post", { translations: { en } }),
-      params,
-    );
-    expect(
-      vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
-    ).not.toHaveProperty("status");
-  });
+
   it("rejects malformed translated values before writing", async () => {
     const response = await PATCH(
       request("/api/tripper/blogs/post", {
@@ -238,7 +225,8 @@ describe("localized write boundary", () => {
     expect(response.status).toBe(400);
     expect(prisma.blogPost.update).not.toHaveBeenCalled();
   });
-  it("validates and persists review-copy translations and approves both languages", async () => {
+
+  it("validates review-copy translations and still overwrites both languages on approve", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "owner",
       roles: ["ADMIN"],
@@ -247,15 +235,14 @@ describe("localized write boundary", () => {
       ...base,
       isReviewCopy: true,
     } as never);
-    const translations = { en: { ...en, ready: true } };
     const response = await patchCopy(
-      request("/api/admin/blogs/post/edit-copy", { translations }),
+      request("/api/admin/blogs/post/edit-copy", {
+        translations: { es: ES, en: EN },
+      }),
       params,
     );
     expect(response.status).toBe(200);
-    expect(
-      vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
-    ).toMatchObject({ translations });
+    expect(writeTranslationsFromEditor).toHaveBeenCalled();
     const esRow = {
       locale: "es",
       title: base.title,
@@ -267,14 +254,14 @@ describe("localized write boundary", () => {
       seo: base.seo,
       isComplete: true,
     };
-    const enRow = { ...esRow, locale: "en", ...en, subtitle: null, tagline: null, seo: null };
+    const enRow = { ...esRow, locale: "en", ...EN, subtitle: null, tagline: null, seo: null };
     expect(
-      computeChangedFields({ ...base, translations }, base, {
+      computeChangedFields({ ...base, translations: { en: EN } }, base, {
         copy: [esRow, enRow],
         original: [esRow],
       }),
     ).toEqual(["en.*"]);
-    const copy = { ...base, id: "copy", translations };
+    const copy = { ...base, id: "copy", translations: { en: EN } };
     const tx = {
       blogPost: {
         findUnique: vi
@@ -285,41 +272,23 @@ describe("localized write boundary", () => {
       },
     };
     await overwriteOriginalWithCopy(tx, "original", "copy");
-    expect(tx.blogPost.update.mock.calls[0][0].data).toMatchObject({
-      title: "Español",
-      translations,
-      status: "PUBLISHED",
-    });
-    // Both languages' rows are upserted from the copy in the same transaction.
     expect(overwriteTranslationsFromCopy).toHaveBeenCalledWith(tx, "original", copy, {
       requireCompleteSource: true,
     });
   });
 });
 
-// Public locale-aware reads (lists, details, cards, XSED archive) moved to the
-// translation table and are covered by blogRepository.test.ts and the consumer tests.
 describe("locale-aware reads", () => {
-  it("keeps raw management lists/details discoverable on English UI", async () => {
+  it("flattens the source-locale title on the list and returns the editor shape on detail GET", async () => {
     const list = await getManagementList(
       request("/api/tripper/blogs?locale=en"),
     );
     expect((await list.json()).blogs[0].title).toBe("Español");
-    expect(
-      vi.mocked(prisma.blogPost.findMany).mock.calls[0][0]?.where,
-    ).not.toHaveProperty("translations");
-    const translations = { en: { ...en, ready: true } };
-    vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
-      ...base,
-      translations,
-    } as never);
     const detail = await getManagementDetail(
       request("/api/tripper/blogs/post?locale=en"),
       params,
     );
-    expect((await detail.json()).blog).toMatchObject({
-      title: "Español",
-      translations,
-    });
+    expect(getForEditor).toHaveBeenCalledWith("post");
+    expect((await detail.json()).blog).toMatchObject(editorPost);
   });
 });

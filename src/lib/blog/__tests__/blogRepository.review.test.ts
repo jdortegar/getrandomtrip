@@ -192,24 +192,17 @@ describe("loadTranslationsForReview", () => {
     const { tx } = fakeTx({ translations: [ORIGINAL_EN, ORIGINAL_ES] });
     const rows = await loadTranslationsForReview(tx as never, {
       id: "original",
-      title: "ignored",
     });
     expect(rows.map((r) => r.locale)).toEqual(["es", "en"]);
     expect(rows[0]).toMatchObject({ title: "Mi viaje", isComplete: true });
   });
 
-  it("derives rows from the legacy columns when the post has none yet", async () => {
+  it("returns no rows when the post has none", async () => {
     const { tx } = fakeTx();
     const rows = await loadTranslationsForReview(tx as never, {
       id: "copy",
-      title: "Legacy",
-      content: text("Legacy body"),
-      translations: { en: { title: "Legacy EN", content: text("EN body") } },
     });
-    expect(rows.map((r) => [r.locale, r.title])).toEqual([
-      ["es", "Legacy"],
-      ["en", "Legacy EN"],
-    ]);
+    expect(rows).toEqual([]);
   });
 });
 
@@ -317,20 +310,17 @@ describe("overwriteTranslationsFromCopy", () => {
     expect(tx.blogPostTranslation.deleteMany).not.toHaveBeenCalled();
   });
 
-  it("falls back to the copy's legacy columns when the copy has no rows", async () => {
-    const { tx, translations } = fakeTx({ translations: [ORIGINAL_ES, ORIGINAL_EN] });
+  it("throws when the copy has no rows and the source must be complete", async () => {
+    const { tx } = fakeTx({ translations: [ORIGINAL_ES, ORIGINAL_EN] });
 
-    await overwriteTranslationsFromCopy(
-      tx as never,
-      "original",
-      copyPost({ title: "Desde columnas" }),
-      { requireCompleteSource: true },
-    );
-
-    expect(
-      translations
-        .filter((r) => r.postId === "original")
-        .map((r) => [r.locale, r.title, r.slug]),
-    ).toEqual([["es", "Desde columnas", "mi-viaje"]]);
+    await expect(
+      overwriteTranslationsFromCopy(
+        tx as never,
+        "original",
+        copyPost(),
+        { requireCompleteSource: true },
+      ),
+    ).rejects.toBeInstanceOf(SourceTranslationIncompleteError);
+    expect(tx.blogPostTranslation.upsert).not.toHaveBeenCalled();
   });
 });

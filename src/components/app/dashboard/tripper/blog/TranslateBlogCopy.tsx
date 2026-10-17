@@ -8,20 +8,17 @@ import {
   applyBlogCopy,
   collectBlogCopy,
 } from "@/lib/ai/translateBlogCopy";
-import {
-  sourceLocaleFor,
-  type ExperienceCopyLocale,
-} from "@/lib/ai/translateExperienceCopy";
+import { type ExperienceCopyLocale } from "@/lib/ai/translateExperienceCopy";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
-import type { BlogFormDraft } from "@/types/blog";
+import type { BlogEditorDraft } from "@/types/blog";
 
 interface TranslateBlogCopyProps {
   copy: TripperBlogFormDict["translate"];
-  draft: BlogFormDraft;
+  draft: BlogEditorDraft;
   languageSlot?: ReactNode;
   isSaving?: boolean;
   locale: ExperienceCopyLocale;
-  onApply: (update: (current: BlogFormDraft) => BlogFormDraft) => void;
+  onApply: (update: (current: BlogEditorDraft) => BlogEditorDraft) => void;
   onBusyChange: (busy: boolean) => void;
   onSave?: () => void;
   onTranslated: (locale: ExperienceCopyLocale) => void;
@@ -52,7 +49,7 @@ export function TranslateBlogCopy({
   const busyRef = useRef(false);
 
   async function handleTranslate(target: ExperienceCopyLocale) {
-    const pieces = collectBlogCopy(draft, sourceLocaleFor(target));
+    const pieces = collectBlogCopy(draft, locale);
     if (target === locale || pieces.length === 0 || busyRef.current) return;
 
     busyRef.current = true;
@@ -75,6 +72,7 @@ export function TranslateBlogCopy({
             ...piece,
             text: translated[index] ?? piece.text,
           })),
+          locale,
         ),
       );
       onTranslated(target);
@@ -100,16 +98,15 @@ export function TranslateBlogCopy({
         {languageSlot}
         {showActions ? (
           <div className="flex flex-wrap gap-2">
-            {TARGETS.map((target) => {
+            {TARGETS.filter((target) => target !== locale).map((target) => {
               const isActive = activeTarget === target;
               const label = target === "en" ? copy.toEnglish : copy.toSpanish;
-              const hasCopy = collectBlogCopy(draft, sourceLocaleFor(target)).length > 0;
-              const isSameLanguage = target === locale;
+              const hasCopy = collectBlogCopy(draft, locale).length > 0;
 
               return (
                 <Button
                   aria-busy={isActive}
-                  disabled={isSameLanguage || !hasCopy || isTranslating || isSaving}
+                  disabled={!hasCopy || isTranslating || isSaving}
                   key={target}
                   onClick={() => void handleTranslate(target)}
                   size="sm"

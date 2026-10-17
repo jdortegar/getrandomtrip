@@ -96,8 +96,8 @@ async function seedTravelerStories() {
   let skipped = 0;
 
   for (const story of STORIES) {
-    const existing = await prisma.blogPost.findUnique({
-      where: { slug: story.slug },
+    const existing = await prisma.blogPostTranslation.findUnique({
+      where: { locale_slug: { locale: "es", slug: story.slug } },
       select: { id: true },
     });
     if (existing) {
@@ -114,27 +114,48 @@ async function seedTravelerStories() {
     await prisma.blogPost.create({
       data: {
         authorId: author.id,
-        blocks: [
-          ...sectionBlocks(story.es),
-          ...imageBlocks(story.gallery, "es"),
-        ] as Prisma.InputJsonValue,
-        content: articleHtml(story.es),
         coverUrl: unsplash(story.coverPhotoId),
         format: "ARTICLE",
         isActive: true,
         publishedAt: PUBLISHED_AT,
-        seo: {
-          description: story.es.subtitle,
-          title: `${story.es.title} | Randomtrip`,
-        },
-        slug: story.slug,
         source: "RANDOMTRIP",
+        sourceLocale: "es",
         status: "PUBLISHED",
-        subtitle: story.es.subtitle,
         tags: [story.es.category],
-        title: story.es.title,
-        translations: english as Prisma.InputJsonValue,
         travelType: [story.travelType],
+        translationRows: {
+          create: [
+            {
+              locale: "es",
+              title: story.es.title,
+              subtitle: story.es.subtitle,
+              content: articleHtml(story.es),
+              blocks: [
+                ...sectionBlocks(story.es),
+                ...imageBlocks(story.gallery, "es"),
+              ] as Prisma.InputJsonValue,
+              seo: {
+                description: story.es.subtitle,
+                title: `${story.es.title} | Randomtrip`,
+              },
+              slug: story.slug,
+              isComplete: true,
+            },
+            {
+              locale: "en",
+              title: english.en.title,
+              subtitle: english.en.subtitle,
+              content: english.en.content,
+              blocks: [
+                ...english.en.blocks,
+                ...imageBlocks(story.gallery, "en"),
+              ] as Prisma.InputJsonValue,
+              seo: english.en.seo,
+              slug: story.slug,
+              isComplete: true,
+            },
+          ],
+        },
       },
     });
     created += 1;

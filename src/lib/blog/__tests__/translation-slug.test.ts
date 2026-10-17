@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  resolveUniqueSlug,
-  shouldRegenerateSlug,
-  slugForTitle,
-} from "../translation-slug";
+import { resolveUniqueSlug, slugForTitle } from "../translation-slug";
 
 describe("slugForTitle", () => {
   it("slugifies the title and keeps accented letters readable", () => {
@@ -39,26 +35,5 @@ describe("resolveUniqueSlug", () => {
     await expect(
       resolveUniqueSlug("trip", async () => true, { maxAttempts: 5 }),
     ).rejects.toThrow(/unique slug/);
-  });
-});
-
-describe("shouldRegenerateSlug", () => {
-  it("follows the title until first publish", () => {
-    expect(shouldRegenerateSlug({ publishedAt: null })).toBe(true);
-    expect(shouldRegenerateSlug({ publishedAt: undefined })).toBe(true);
-  });
-
-  it("freezes the slug after first publish unless explicitly regenerated", () => {
-    const publishedAt = new Date("2026-01-01T00:00:00Z");
-    expect(shouldRegenerateSlug({ publishedAt })).toBe(false);
-    expect(
-      shouldRegenerateSlug({ publishedAt, explicitRegenerate: false }),
-    ).toBe(false);
-    expect(shouldRegenerateSlug({ publishedAt, explicitRegenerate: true })).toBe(
-      true,
-    );
-    expect(
-      shouldRegenerateSlug({ publishedAt: "2026-01-01T00:00:00Z" }),
-    ).toBe(false);
   });
 });

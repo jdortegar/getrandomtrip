@@ -78,9 +78,20 @@ import { prisma } from "@/lib/prisma";
 import { getTripDocumentStore } from "@/lib/storage/tripDocumentStore";
 import { getStripe } from "@/lib/stripe";
 import React from "react";
+import { pickSourceRow } from "@/lib/blog/source-copy";
 
 function resolveLocale(locale: string | null | undefined): "es" | "en" {
   return locale === "en" ? "en" : "es";
+}
+
+function blogSourceTitle(
+  blog: {
+    sourceLocale: string;
+    translationRows: Array<{ locale: string; title: string }>;
+  } | null,
+): string {
+  if (!blog) return "";
+  return pickSourceRow(blog.sourceLocale, blog.translationRows)?.title ?? "";
 }
 
 /** Trip dates are calendar dates stored at UTC midnight: format them in UTC so no server zone shifts the day. */
@@ -550,7 +561,10 @@ export function sendBlogSubmitted(blogId: string, tripperId: string): void {
       const [blog, tripper, to] = await Promise.all([
         prisma.blogPost.findUnique({
           where: { id: blogId },
-          select: { title: true },
+          select: {
+            sourceLocale: true,
+            translationRows: { select: { locale: true, title: true } },
+          },
         }),
         prisma.user.findUnique({
           where: { id: tripperId },
@@ -559,7 +573,8 @@ export function sendBlogSubmitted(blogId: string, tripperId: string): void {
         getAdminEmails(),
       ]);
 
-      if (!blog?.title) return;
+      const blogTitle = blogSourceTitle(blog);
+      if (!blogTitle) return;
 
       const result = await sendMail({
         to,
@@ -567,7 +582,7 @@ export function sendBlogSubmitted(blogId: string, tripperId: string): void {
         content: {
           react: React.createElement(BlogSubmitted, {
             tripperName: tripper?.name ?? "",
-            blogTitle: blog.title,
+            blogTitle,
             blogId,
           }),
         },
@@ -589,7 +604,10 @@ export function sendBlogPendingTripperReview(
       const [blog, tripper] = await Promise.all([
         prisma.blogPost.findUnique({
           where: { id: blogId },
-          select: { title: true },
+          select: {
+            sourceLocale: true,
+            translationRows: { select: { locale: true, title: true } },
+          },
         }),
         prisma.user.findUnique({
           where: { id: tripperId },
@@ -597,7 +615,8 @@ export function sendBlogPendingTripperReview(
         }),
       ]);
 
-      if (!blog?.title || !tripper?.email) return;
+      const blogTitle = blogSourceTitle(blog);
+      if (!blogTitle || !tripper?.email) return;
 
       const locale = resolveLocale(tripper.locale);
       const BASE_URL = "https://getrandomtrip.com";
@@ -609,7 +628,7 @@ export function sendBlogPendingTripperReview(
         content: {
           react: React.createElement(BlogPendingTripperReview, {
             tripperName: tripper.name ?? "",
-            blogTitle: blog.title,
+            blogTitle,
             changedFields,
             reviewUrl,
             locale,
@@ -628,7 +647,10 @@ export function sendBlogCopyApproved(blogId: string, tripperId: string): void {
       const [blog, tripper] = await Promise.all([
         prisma.blogPost.findUnique({
           where: { id: blogId },
-          select: { title: true },
+          select: {
+            sourceLocale: true,
+            translationRows: { select: { locale: true, title: true } },
+          },
         }),
         prisma.user.findUnique({
           where: { id: tripperId },
@@ -636,7 +658,8 @@ export function sendBlogCopyApproved(blogId: string, tripperId: string): void {
         }),
       ]);
 
-      if (!blog?.title) return;
+      const blogTitle = blogSourceTitle(blog);
+      if (!blogTitle) return;
 
       const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
@@ -647,7 +670,7 @@ export function sendBlogCopyApproved(blogId: string, tripperId: string): void {
         content: {
           react: React.createElement(BlogCopyApproved, {
             adminName,
-            blogTitle: blog.title,
+            blogTitle,
             tripperName: tripper?.name ?? "",
             locale: "es",
           }),
@@ -665,7 +688,10 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
       const [blog, tripper] = await Promise.all([
         prisma.blogPost.findUnique({
           where: { id: blogId },
-          select: { title: true },
+          select: {
+            sourceLocale: true,
+            translationRows: { select: { locale: true, title: true } },
+          },
         }),
         prisma.user.findUnique({
           where: { id: tripperId },
@@ -673,7 +699,8 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
         }),
       ]);
 
-      if (!blog?.title) return;
+      const blogTitle = blogSourceTitle(blog);
+      if (!blogTitle) return;
 
       const adminEmails = await getAdminEmails();
       const adminName = process.env.ADMIN_NAME ?? "Admin";
@@ -684,7 +711,7 @@ export function sendBlogCopyRejected(blogId: string, tripperId: string): void {
         content: {
           react: React.createElement(BlogCopyRejected, {
             adminName,
-            blogTitle: blog.title,
+            blogTitle,
             tripperName: tripper?.name ?? "",
             locale: "es",
           }),

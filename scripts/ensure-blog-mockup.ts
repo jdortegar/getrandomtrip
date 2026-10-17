@@ -31,13 +31,23 @@ const mockupContent = `<p>El Caribe no es solo sol y playa: es buceo en arrecife
 </figure>
 <p>Lleva protector solar biodegradable y no toques el coral. Con pequeños gestos mantenemos estos lugares para los que vienen después.</p>`;
 
-const mockupData = {
-  slug: SLUG,
+const mockupShared = {
+  coverUrl:
+    "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80",
+  tags: ["caribe", "buceo", "snorkel", "playas", "aventura"],
+  travelType: ["solo"],
+  excuseKey: ["solo-adventure"],
+  format: BlogFormat.ARTICLE,
+  status: BlogStatus.PUBLISHED,
+  publishedAt: new Date("2024-05-20"),
+  sourceLocale: "es",
+};
+
+const mockupEs = {
+  locale: "es",
   title: "Aventura Acuática en el Caribe",
   subtitle: "Buceo, snorkel y playas secretas en una semana",
   tagline: "Guía práctica para tu primera escapada al mar",
-  coverUrl:
-    "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=80",
   content: mockupContent,
   blocks: [
     {
@@ -72,18 +82,12 @@ const mockupData = {
       text: "Lleva protector solar biodegradable y no toques el coral. Con pequeños gestos mantenemos estos lugares para los que vienen después.",
     },
   ],
-  tags: ["caribe", "buceo", "snorkel", "playas", "aventura"],
-  travelType: ["solo"],
-  excuseKey: ["solo-adventure"],
-  format: BlogFormat.ARTICLE,
-  status: BlogStatus.PUBLISHED,
   seo: {
     title: "Aventura Acuática en el Caribe - Guía práctica",
     description:
       "Buceo, snorkel y playas secretas: cómo planear tu primera semana en el Caribe",
     keywords: ["caribe", "buceo", "snorkel", "playas", "guía"],
   },
-  publishedAt: new Date("2024-05-20"),
   faq: {
     items: [
       {
@@ -103,6 +107,8 @@ const mockupData = {
       },
     ],
   },
+  slug: SLUG,
+  isComplete: true,
 };
 
 async function main() {
@@ -128,9 +134,15 @@ async function main() {
     create: {
       id: MOCKUP_POST_ID,
       authorId: author.id,
-      ...mockupData,
+      ...mockupShared,
+      translationRows: { create: mockupEs },
     },
-    update: mockupData,
+    update: mockupShared,
+  });
+  await prisma.blogPostTranslation.upsert({
+    where: { postId_locale: { postId: MOCKUP_POST_ID, locale: "es" } },
+    create: { postId: MOCKUP_POST_ID, ...mockupEs },
+    update: mockupEs,
   });
 
   console.log(

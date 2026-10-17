@@ -3,30 +3,35 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AlertCircle, Check } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import JourneyContentNavigation from "@/components/journey/JourneyContentNavigation";
 import JourneyProgressSidebar from "@/components/journey/JourneyProgressSidebar";
-import { Button } from "@/components/ui/Button";
-import {
-  Modal,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/Modal";
 import { BlogContentLanguage } from "./BlogContentLanguage";
 import { BlogFormContent } from "./BlogFormContent";
+import { BlogEditorLocaleTools } from "./BlogEditorLocaleTools";
 import { BlogReviewActionsBar } from "./BlogReviewActionsBar";
-import type { BlogFormDraft } from "@/types/blog";
+import { BlogSubmitConfirmModal } from "./BlogSubmitConfirmModal";
+import { useBlogEditorImages } from "./useBlogEditorImages";
+import {
+  messageForEditorWriteError,
+  persistBlogEditorDraft,
+} from "./persistBlogEditorDraft";
+import type { BlogEditorDraft, BlogFormDraft } from "@/types/blog";
+import { findMediaMismatch } from "@/lib/blog/translation-completeness";
+import { labelBlogChangedFields } from "@/lib/blog/label-changed-fields";
+import { isContentLocale } from "@/lib/blog/locales";
 import { resolveBlogChangedFieldsForLocale } from "@/lib/blog/blog-form-peek";
 import {
   BLOG_LOCALIZED_DRAFT_FIELDS,
-  getBlogLocaleDraft,
-  pickBlogContentDraft,
-  buildBlogSubmitPayload,
+  coerceEditorDraft,
+  emptyBlogEditorDraft,
+  emptyBlogLocaleDraft,
+  getBlogLocaleView,
   isBlogTabComplete,
   isBlogTabEligible,
+  syncGalleryAcrossLocales,
 } from "@/lib/helpers/blog-form";
+import type { ContentLocale } from "@/types/blog";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 import {
@@ -42,24 +47,16 @@ import {
 } from "./newBlogPostShellHelpers";
 
 export type { BlogShellMode } from "./newBlogPostShellHelpers";
+export type { BlogImageState } from "./useBlogEditorImages";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error";
-
-export interface BlogImageState {
-  coverUploading: boolean;
-  onCoverSelect: (file: File) => void;
-  onCoverRemove: () => void;
-  galleryUploading: boolean;
-  onGalleryFilesSelect: (files: File[]) => void;
-  onGalleryImageRemove: (index: number) => void;
-}
 
 interface NewBlogPostShellProps {
   dict: TripperBlogFormDict;
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
   /** Seeds the form when editing an existing post; omitted when creating. */
-  initialDraft?: BlogFormDraft;
+  initialDraft?: BlogEditorDraft;
   /** ID of the existing post; when set, autosave PATCHes instead of POSTing a new one. */
   initialDraftId?: string;
   /** Controls editability and autosave routing. Defaults to 'tripper'. */
@@ -73,7 +70,7 @@ interface NewBlogPostShellProps {
   /** Fields changed by the admin's proposed copy; when provided, highlights those fields and enables the per-field peek toggle. */
   changedFields?: string[];
   /** Tripper's pristine original draft; enables the per-field peek toggle in `adminReadOnly` mode. */
-  originalDraft?: BlogFormDraft;
+  originalDraft?: BlogEditorDraft;
   /** True when the logged-in user has the admin role — independent of `mode`, since
    * (unlike experiences) there's no dedicated admin composer route for blogs; an
    * admin's own tripper-mode blog pages still need to show admin-only fields. */
@@ -85,49 +82,7 @@ interface NewBlogPostShellProps {
   source?: "TRIPPER" | "RANDOMTRIP";
 }
 
-const EMPTY_DRAFT: BlogFormDraft = {
-  status: "draft",
-  title: "",
-  subtitle: "",
-  coverUrl: "",
-  featureText: "",
-  featureAttribution: "",
-  sections: [{ title: "", description: "" }],
-  faq: [{ question: "", answer: "" }],
-  gallery: [],
-  travelType: [],
-  excuseKey: [],
-  level: "",
-  label: "",
-  tripperNote: null,
-};
-
 const AUTOSAVE_DELAY_MS = 2000;
-const MAX_BLOG_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
-
-function validateFileSize(file: File): boolean {
-  return file.size <= MAX_BLOG_IMAGE_BYTES;
-}
-
-async function uploadImageFile(file: File, feature: string): Promise<string> {
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("feature", feature);
-  const response = await fetch("/api/upload", { method: "POST", body: formData });
-  if (!response.ok) throw new Error("upload failed");
-  const data = (await response.json()) as { url?: string };
-  if (!data.url) throw new Error("no url");
-  return data.url;
-}
-
-async function deleteImageFile(url: string): Promise<void> {
-  if (!url.includes("/api/upload?key=")) return;
-  const res = await fetch(url, { method: "DELETE" });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error(`[deleteImageFile] ${res.status} ${res.statusText}`, body, url);
-  }
-}
 
 export function NewBlogPostShell({
   dict,
@@ -155,10 +110,17 @@ export function NewBlogPostShell({
   const contentGenerationRef = useRef(0);
   const contentGeneration = contentGenerationRef.current;
   const saveQueueRef = useRef<Promise<void>>(Promise.resolve());
-  const [contentLocale, setContentLocale] = useState<"es" | "en">("es");
+  const defaultSource = isContentLocale(locale) ? locale : "es";
+  const [contentLocale, setContentLocale] = useState<ContentLocale>(
+    initialDraftId ? "es" : defaultSource,
+  );
   const contentLanguageRef = useRef<HTMLSelectElement>(null);
   const restoreLanguageFocusRef = useRef(false);
-  const [draft, setDraft] = useState<BlogFormDraft>(initialDraft ?? EMPTY_DRAFT);
+  const [draft, setDraft] = useState<BlogEditorDraft>(() =>
+    initialDraft
+      ? coerceEditorDraft(initialDraft, defaultSource)
+      : emptyBlogEditorDraft(defaultSource),
+  );
 
   useLayoutEffect(() => {
     if (restoreLanguageFocusRef.current) {
@@ -167,9 +129,18 @@ export function NewBlogPostShell({
     }
   }, [contentLocale]);
 
-  const displayedDraft = getBlogLocaleDraft(draft, contentLocale);
-  const displayedOriginal = originalDraft && getBlogLocaleDraft(originalDraft, contentLocale);
+  const displayedDraft = getBlogLocaleView(draft, contentLocale);
+  const displayedOriginal = originalDraft && getBlogLocaleView(originalDraft, contentLocale);
   const displayedChangedFields = resolveBlogChangedFieldsForLocale(changedFields ?? [], contentLocale);
+  const labeledChangedFields = labelBlogChangedFields(
+    changedFields ?? [],
+    dict.changedFieldsBanner,
+  );
+  const sourceView = getBlogLocaleView(draft, draft.sourceLocale);
+  const mediaMismatch = findMediaMismatch(
+    { blocks: draft.translations[draft.sourceLocale]?.media },
+    { blocks: draft.translations[contentLocale]?.media },
+  );
 
   // Derived read-only flag — controlled by mode and status, mirrors
   // NewExperienceShell's isReadOnly exactly. 'tripper': editable except
@@ -188,8 +159,6 @@ export function NewBlogPostShell({
   const [isFinishing, setIsFinishing] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isSavingCopy, setIsSavingCopy] = useState(false);
-  const [coverUploading, setCoverUploading] = useState(false);
-  const [galleryUploading, setGalleryUploading] = useState(false);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [submitNote, setSubmitNote] = useState("");
   const [submitError, setSubmitError] = useState<string[] | null>(null);
@@ -206,36 +175,20 @@ export function NewBlogPostShell({
   const contentRef = useRef<HTMLDivElement>(null);
 
   const persistDraft = useCallback(
-    async (snapshot: BlogFormDraft) => {
+    async (snapshot: BlogEditorDraft) => {
       const task = saveQueueRef.current.then(async () => {
       setSaveStatus("saving");
       try {
-        const payload = buildBlogSubmitPayload(snapshot);
         const target = resolveBlogPersistTarget(mode, adminCopyId, draftIdRef.current);
-        if (target.kind === "adminEditCopy") {
-          const res = await fetch(`/api/admin/blogs/${target.copyId}/edit-copy`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) throw new Error();
-        } else if (target.kind === "createDraft") {
-          const res = await fetch("/api/tripper/blogs", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) throw new Error();
-          const data = (await res.json()) as { blog: { id: string } };
-          draftIdRef.current = data.blog.id;
-        } else {
-          const res = await fetch(`/api/tripper/blogs/${target.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          if (!res.ok) throw new Error();
+        const result = await persistBlogEditorDraft(snapshot, target);
+        if (result.error) {
+          toast.error(
+            messageForEditorWriteError(result.error, dict.errors) ?? dict.toasts.saveError,
+          );
+          setSaveStatus("error");
+          return false;
         }
+        if (result.id) draftIdRef.current = result.id;
         setSaveStatus("saved");
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
         savedTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
@@ -249,7 +202,7 @@ export function NewBlogPostShell({
       saveQueueRef.current = task.then(() => undefined);
       return task;
     },
-    [dict.toasts.saveError, mode, adminCopyId],
+    [dict.errors, dict.toasts.saveError, mode, adminCopyId],
   );
 
   useEffect(() => {
@@ -259,11 +212,11 @@ export function NewBlogPostShell({
     }
     if (shouldSkipAutosave(mode)) return;
     if (isEditingExisting) return; // editing an existing post — only an explicit "Finish" click persists
-    if (!draftIdRef.current && !draft.title.trim()) return;
+    if (!draftIdRef.current && !sourceView.title.trim()) return;
     setSaveStatus("saving");
     const timer = setTimeout(() => persistDraft(draft), AUTOSAVE_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [draft, persistDraft, mode, isEditingExisting]);
+  }, [draft, persistDraft, mode, isEditingExisting, sourceView.title]);
 
   function scrollToContent() {
     setTimeout(() => {
@@ -272,12 +225,12 @@ export function NewBlogPostShell({
   }
 
   function canNavigateTo(targetTabId: string): boolean {
-    if (mode !== "tripper" || contentLocale === "en") return true;
+    if (mode !== "tripper" || contentLocale !== draft.sourceLocale) return true;
     const targetIndex = tabs.findIndex((t) => t.id === targetTabId);
     const currentIndex = tabs.findIndex((t) => t.id === activeTab);
     if (targetIndex <= currentIndex) return true;
     for (let i = 0; i < targetIndex; i++) {
-      if (!isBlogTabEligible(tabs[i]!.id, draft)) return false;
+      if (!isBlogTabEligible(tabs[i]!.id, sourceView)) return false;
     }
     return true;
   }
@@ -315,9 +268,27 @@ export function NewBlogPostShell({
   }
 
   function handleClearAll() {
-    if (contentLocale === "en") {
-      setDraft((prev) => ({ ...prev, english: null }));
-    } else setDraft({ ...EMPTY_DRAFT, english: draft.english });
+    setDraft((prev) => {
+      if (contentLocale === prev.sourceLocale) {
+        return {
+          ...emptyBlogEditorDraft(prev.sourceLocale),
+          translations: { ...prev.translations, [contentLocale]: emptyBlogLocaleDraft() },
+          coverUrl: prev.coverUrl,
+          gallery: prev.gallery,
+          travelType: prev.travelType,
+          excuseKey: prev.excuseKey,
+          level: prev.level,
+          label: prev.label,
+          tripperNote: prev.tripperNote,
+          translationMeta: prev.translationMeta,
+          publishedAt: prev.publishedAt,
+          isReviewCopy: prev.isReviewCopy,
+          status: prev.status,
+        };
+      }
+      const { [contentLocale]: _removed, ...rest } = prev.translations;
+      return { ...prev, translations: rest };
+    });
   }
 
   // Editing an already-published RANDOMTRIP post: there is no review step —
@@ -351,7 +322,7 @@ export function NewBlogPostShell({
     setSubmitError(null);
     setSubmitFailed(false);
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
-    const finalDraft = { ...draft, tripperNote: submitNote };
+    const finalDraft = { ...draft, tripperNote: submitNote } satisfies BlogEditorDraft;
     setDraft(finalDraft);
     try {
       if (!await persistDraft(finalDraft)) throw new Error("Failed to save draft");
@@ -390,12 +361,30 @@ export function NewBlogPostShell({
 
   function handleChange<K extends keyof BlogFormDraft>(key: K, value: BlogFormDraft[K]) {
     if (contentGeneration !== contentGenerationRef.current) return;
-    setDraft((prev) => contentLocale === "en" && BLOG_LOCALIZED_DRAFT_FIELDS.has(key)
-      ? { ...prev, english: { ...pickBlogContentDraft(getBlogLocaleDraft(prev, "en")), [key]: value } }
-      : { ...prev, [key]: value });
+    setDraft((prev) => {
+      if (BLOG_LOCALIZED_DRAFT_FIELDS.has(key)) {
+        const current = prev.translations[contentLocale] ?? emptyBlogLocaleDraft();
+        return {
+          ...prev,
+          translations: {
+            ...prev.translations,
+            [contentLocale]: { ...current, [key]: value },
+          },
+        };
+      }
+      if (key === "gallery") {
+        const gallery = value as string[];
+        return {
+          ...prev,
+          gallery,
+          translations: syncGalleryAcrossLocales(prev.translations, gallery),
+        };
+      }
+      return { ...prev, [key]: value };
+    });
   }
 
-  function handleContentLocaleChange(language: "es" | "en") {
+  function handleContentLocaleChange(language: ContentLocale) {
     if (language === contentLocale) return;
     // Native option menus can blur before change; this handler only serves the selector.
     restoreLanguageFocusRef.current = true;
@@ -403,7 +392,7 @@ export function NewBlogPostShell({
     setContentLocale(language);
   }
 
-  function handleApplyTranslatedBlog(update: (current: BlogFormDraft) => BlogFormDraft) {
+  function handleApplyTranslatedBlog(update: (current: BlogEditorDraft) => BlogEditorDraft) {
     setDraft((current) => update(current));
   }
 
@@ -417,78 +406,12 @@ export function NewBlogPostShell({
     }
   }
 
-  async function handleCoverSelect(file: File) {
-    if (!validateFileSize(file)) {
-      toast.error(dict.toasts.fileTooLarge);
-      return;
-    }
-    setCoverUploading(true);
-    try {
-      const oldCover = draft.coverUrl;
-      const url = await uploadImageFile(file, "blog-cover");
-      setDraft((prev) => ({ ...prev, coverUrl: url }));
-      if (oldCover) await deleteImageFile(oldCover).catch(() => null);
-    } catch {
-      toast.error(dict.toasts.uploadError);
-    } finally {
-      setCoverUploading(false);
-    }
-  }
-
-  function handleCoverRemove() {
-    const old = draft.coverUrl;
-    setDraft((prev) => ({ ...prev, coverUrl: "" }));
-    if (old) void deleteImageFile(old).catch(() => null);
-  }
-
-  async function handleGalleryFilesSelect(files: File[]) {
-    const oversized = files.filter((f) => !validateFileSize(f));
-    if (oversized.length > 0) {
-      toast.error(dict.toasts.fileTooLarge);
-      return;
-    }
-    setGalleryUploading(true);
-    try {
-      const results = await Promise.allSettled(
-        files.map((f) => uploadImageFile(f, "blog-gallery")),
-      );
-      const urls: string[] = [];
-      let failCount = 0;
-      for (const result of results) {
-        if (result.status === "fulfilled") urls.push(result.value);
-        else failCount++;
-      }
-      if (failCount > 0) toast.error(dict.toasts.uploadError);
-      if (urls.length > 0) {
-        setDraft((prev) => ({ ...prev, gallery: [...prev.gallery, ...urls] }));
-      }
-    } finally {
-      setGalleryUploading(false);
-    }
-  }
-
-  function handleGalleryImageRemove(index: number) {
-    const url = draft.gallery[index];
-    setDraft((prev) => ({
-      ...prev,
-      gallery: prev.gallery.filter((_, i) => i !== index),
-    }));
-    if (url) void deleteImageFile(url).catch(() => null);
-  }
-
-  const imageState: BlogImageState = {
-    coverUploading,
-    onCoverSelect: handleCoverSelect,
-    onCoverRemove: handleCoverRemove,
-    galleryUploading,
-    onGalleryFilesSelect: handleGalleryFilesSelect,
-    onGalleryImageRemove: handleGalleryImageRemove,
-  };
+  const imageState = useBlogEditorImages(draft, setDraft, dict.toasts);
 
   const navTabs = tabs.map((t) => ({ id: t.id, label: t.label }));
   const completedTabIds = useMemo(
-    () => tabs.filter((t) => isBlogTabComplete(t.id, draft)).map((t) => t.id),
-    [tabs, draft],
+    () => tabs.filter((t) => isBlogTabComplete(t.id, sourceView)).map((t) => t.id),
+    [tabs, sourceView],
   );
 
   // Finalize CTA label + confirm-modal copy — falls back to the tripper
@@ -525,9 +448,9 @@ export function NewBlogPostShell({
 
       {reviewActionsSlot && (
         <BlogReviewActionsBar
-          changedFields={changedFields ?? []}
-          changedFieldsLabel={dict.changedFieldsBanner.prefix}
           actionsSlot={reviewActionsSlot}
+          changedFields={labeledChangedFields}
+          changedFieldsLabel={dict.changedFieldsBanner.prefix}
           leftSlot={reviewLeftSlot}
         />
       )}
@@ -588,6 +511,14 @@ export function NewBlogPostShell({
               isSavingCopy={isSavingCopy}
               isTranslating={isTranslating}
               key={contentLocale}
+              localeToolsSlot={
+                <BlogEditorLocaleTools
+                  contentLocale={contentLocale}
+                  copy={dict.mediaMismatch}
+                  draft={draft}
+                  mismatch={mediaMismatch}
+                />
+              }
               onApplyTranslatedCopy={handleApplyTranslatedBlog}
               onChange={handleChange}
               onClearAll={handleClearAll}
@@ -599,7 +530,7 @@ export function NewBlogPostShell({
               onSectionChange={handleSectionChange}
               onTranslatingChange={setIsTranslating}
               openSectionId={openSectionId}
-              optionalContent={contentLocale === "en"}
+              optionalContent={contentLocale !== draft.sourceLocale}
               originalDraft={displayedOriginal}
               readOnly={isReadOnly}
               reviewActionsSlot={
@@ -608,60 +539,24 @@ export function NewBlogPostShell({
               saveStatus={saveStatus}
               sourceDraft={draft}
               tabs={tabs}
-              validationDraft={draft}
+              validationDraft={sourceView}
             />
           </div>
         </div>
       </div>
 
-      <Modal
-        open={showSubmitConfirm}
+      <BlogSubmitConfirmModal
+        confirm={resolvedFinalizeCopy}
+        dict={dict}
+        isFinishing={isFinishing}
+        onCancel={() => setShowSubmitConfirm(false)}
+        onConfirm={() => void confirmSubmit()}
+        onNoteChange={setSubmitNote}
         onOpenChange={setShowSubmitConfirm}
-        showCloseButton
-        className="max-w-md"
-      >
-        <DialogHeader>
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/10">
-            <Check className="h-5 w-5 text-secondary" />
-          </div>
-          <DialogTitle className="text-2xl font-bold text-ink">
-            {resolvedFinalizeCopy.confirmTitle}
-          </DialogTitle>
-          <DialogDescription className="text-sm text-ink">
-            {resolvedFinalizeCopy.confirmBody}
-          </DialogDescription>
-        </DialogHeader>
-        {showTripperNoteField && (
-        <div className="mt-2 flex flex-col gap-1.5">
-          <label htmlFor="blog-submit-note" className="text-sm font-medium text-gray-700">
-            {dict.tripperNoteLabel}{" "}
-            <span className="font-normal text-gray-400">{dict.tripperNoteOptional}</span>
-          </label>
-          <textarea
-            id="blog-submit-note"
-            rows={3}
-            value={submitNote}
-            onChange={(e) => setSubmitNote(e.target.value)}
-            placeholder={dict.tripperNotePlaceholder}
-            disabled={isFinishing}
-            className="flex w-full rounded-md border border-input bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none disabled:opacity-50"
-          />
-          <p className="text-xs text-neutral-400">{dict.tripperNoteHint}</p>
-        </div>
-        )}
-        <DialogFooter className="mt-6">
-          <Button
-            variant="secondary"
-            onClick={() => setShowSubmitConfirm(false)}
-            disabled={isFinishing}
-          >
-            {dict.cancel}
-          </Button>
-          <Button onClick={() => void confirmSubmit()} disabled={isFinishing}>
-            {isFinishing ? dict.saving : resolvedFinalizeCopy.submitLabel}
-          </Button>
-        </DialogFooter>
-      </Modal>
+        open={showSubmitConfirm}
+        showTripperNoteField={showTripperNoteField}
+        submitNote={submitNote}
+      />
     </div>
   );
 }

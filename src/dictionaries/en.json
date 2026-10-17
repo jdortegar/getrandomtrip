@@ -4602,6 +4602,16 @@
         "canonicalLabel": "Original content: Spanish",
         "unavailable": "This article does not have an English version yet."
       },
+      "mediaMismatch": {
+        "title": "Images do not match the original language",
+        "missing": "Missing in this translation",
+        "extra": "Only in this translation"
+      },
+      "errors": {
+        "invalidSourceLocale": "That original language is not supported.",
+        "sourceLocaleIncomplete": "Finish the original-language translation before changing it.",
+        "sourceTranslationIncomplete": "Finish the original language before submitting."
+      },
       "translate": {
         "error": "Could not translate this post. Try again.",
         "hint": "Fills the other language from the title, subtitle, quote, sections, and FAQ.",
@@ -4632,7 +4642,26 @@
         "prefix": "Admin proposed changes to: ",
         "peekShowOriginal": "Click to see original content",
         "peekShowSuggestion": "Click to see admin's suggestion",
-        "noContent": "(no content)"
+        "noContent": "(no content)",
+        "all": "All content",
+        "locale": { "es": "ES", "en": "EN" },
+        "fields": {
+          "title": "Title",
+          "subtitle": "Subtitle",
+          "tagline": "Tagline",
+          "content": "Article",
+          "blocks": "Sections",
+          "faq": "FAQ",
+          "seo": "SEO",
+          "sourceLocale": "Original language",
+          "coverUrl": "Cover image",
+          "tags": "Tags",
+          "travelType": "Traveler type",
+          "excuseKey": "Excuse",
+          "level": "Level",
+          "label": "Label",
+          "translations": "English"
+        }
       },
       "review": {
         "pendingTitle": "Pending review",
