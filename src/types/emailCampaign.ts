@@ -317,6 +317,11 @@ export interface ResendTrackingEvent {
   type: EmailEventType;
   /** Resend message id (`data.email_id`), matched to `CampaignSend.resendMessageId`. */
   emailId: string;
+  /**
+   * `CampaignSend.id` from the `send_id` tag. Lets an event that arrives
+   * before `resendMessageId` is persisted still find its send.
+   */
+  sendId?: string;
   occurredAt: Date;
   metadata: ClickedEventMetadata | BouncedEventMetadata | null;
 }

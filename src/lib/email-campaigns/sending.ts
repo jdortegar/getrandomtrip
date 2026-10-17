@@ -201,19 +201,47 @@ async function sendChunk(
 
   const sentAt = new Date();
   await prisma.$transaction(
-    rows.map((row, index) => {
-      const result = results[index];
-      return prisma.campaignSend.update({
-        where: { id: row.id },
-        data: result?.ok
-          ? { status: "SENT", resendMessageId: result.id, sentAt, error: null }
-          : {
-              status: "FAILED",
-              error: shortError(result?.error ?? "Missing send result"),
-            },
-      });
-    }),
+    rows.flatMap((row, index) => resultWrites(row.id, results[index], sentAt)),
   );
+}
+
+/**
+ * Status writes apply only while the row is still pending, so a webhook that
+ * already moved it (DELIVERED / BOUNCED) is never downgraded. An accepted
+ * message still records its provider id (if the webhook did not backfill it)
+ * and `sentAt`; the follow-up writes are no-ops after a SENT write.
+ */
+function resultWrites(
+  sendId: string,
+  result: BatchMailResult | undefined,
+  sentAt: Date,
+): Prisma.PrismaPromise<Prisma.BatchPayload>[] {
+  const pending = { id: sendId, status: { in: PENDING_STATUSES } };
+  if (!result?.ok) {
+    return [
+      prisma.campaignSend.updateMany({
+        where: pending,
+        data: {
+          status: "FAILED",
+          error: shortError(result?.error ?? "Missing send result"),
+        },
+      }),
+    ];
+  }
+  return [
+    prisma.campaignSend.updateMany({
+      where: pending,
+      data: { status: "SENT", resendMessageId: result.id, sentAt, error: null },
+    }),
+    prisma.campaignSend.updateMany({
+      where: { id: sendId, resendMessageId: null },
+      data: { resendMessageId: result.id },
+    }),
+    prisma.campaignSend.updateMany({
+      where: { id: sendId, sentAt: null },
+      data: { sentAt },
+    }),
+  ];
 }
 
 /** Recounts rows and settles the campaign as SENT or PARTIAL. */

@@ -107,7 +107,47 @@ export function parseResendEvent(payload: unknown): ResendTrackingEvent | null {
     };
   }
 
-  return { type, emailId, occurredAt, metadata };
+  const sendId = readTag(data.tags, "send_id");
+  return { type, emailId, ...(sendId ? { sendId } : {}), occurredAt, metadata };
+}
+
+/** Reads a tag from the object form (`{ name: value }`) or the array form. */
+function readTag(tags: unknown, name: string): string | null {
+  if (Array.isArray(tags)) {
+    const tag = tags.map(asRecord).find((entry) => entry?.name === name);
+    return asString(tag?.value);
+  }
+  return asString(asRecord(tags)?.[name]);
+}
+
+type MatchedSend = { id: string; contactId: string; backfill: boolean };
+
+/**
+ * Finds the send by provider id, falling back to the `send_id` tag for an
+ * event that beat `sending.ts` to persisting `resendMessageId`. A tagged send
+ * already bound to another message id is not this email.
+ */
+async function findSend(event: ResendTrackingEvent): Promise<MatchedSend | null> {
+  const byMessageId = await prisma.campaignSend.findUnique({
+    select: { id: true, contactId: true },
+    where: { resendMessageId: event.emailId },
+  });
+  if (byMessageId) return { ...byMessageId, backfill: false };
+  if (!event.sendId) return null;
+
+  const byTag = await prisma.campaignSend.findUnique({
+    select: { id: true, contactId: true, resendMessageId: true },
+    where: { id: event.sendId },
+  });
+  if (!byTag) return null;
+  if (byTag.resendMessageId !== null && byTag.resendMessageId !== event.emailId) {
+    return null;
+  }
+  return {
+    id: byTag.id,
+    contactId: byTag.contactId,
+    backfill: byTag.resendMessageId === null,
+  };
 }
 
 function isPermanentBounce(metadata: ResendTrackingEvent["metadata"]): boolean {
@@ -126,10 +166,7 @@ export async function handleResendEvent(
   providerEventId: string,
 ): Promise<ResendEventOutcome> {
   // Transactional emails share the endpoint and have no CampaignSend.
-  const send = await prisma.campaignSend.findUnique({
-    select: { id: true, contactId: true },
-    where: { resendMessageId: event.emailId },
-  });
+  const send = await findSend(event);
   if (!send) return "unknown_email";
 
   try {
@@ -144,16 +181,25 @@ export async function handleResendEvent(
         },
       });
 
+      if (send.backfill) {
+        // Guarded: a concurrent batch-result write may have set it first.
+        await tx.campaignSend.updateMany({
+          where: { id: send.id, resendMessageId: null },
+          data: { resendMessageId: event.emailId },
+        });
+      }
+
+      // QUEUED is accepted because an early event can precede the batch result.
       switch (event.type) {
         case "DELIVERED":
           await tx.campaignSend.updateMany({
-            where: { id: send.id, status: "SENT" },
+            where: { id: send.id, status: { in: ["QUEUED", "SENT"] } },
             data: { status: "DELIVERED" },
           });
           break;
         case "BOUNCED":
           await tx.campaignSend.updateMany({
-            where: { id: send.id, status: { in: ["SENT", "DELIVERED"] } },
+            where: { id: send.id, status: { in: ["QUEUED", "SENT", "DELIVERED"] } },
             data: { status: "BOUNCED" },
           });
           if (isPermanentBounce(event.metadata)) {

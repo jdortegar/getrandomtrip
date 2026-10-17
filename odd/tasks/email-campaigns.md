@@ -137,10 +137,15 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Rules: conversion = settled payment with the campaign's `stripePromotionCodeId` and `paidAt >= sentAt`; attributed by userId or case-insensitive payer email vs send/contact email, else shared; revenue = USD `Payment.amount` (non-USD counted in `otherCurrencyConversions`); discount from stored PaymentIntent metadata, null when absent; a code shared by two campaigns counts for both.
 - RED: metrics test + metrics route failed (missing modules); 2 list-route tests failed. GREEN: 208/208 email-campaigns + admin API + webhooks (parent re-run); tsc + eslint clean.
 - Risks: nested select/groupBy relation filters only exercised via fake; confirm-payment-settled payments carry no discount JSON; buyer with a different account/email counts as shared.
+- Commit: `4a5ba074`. Independent verifier: PASS (conversion rules, Prisma 7 nested select `distinct`/`where` and `groupBy` relation filters valid on Postgres, ≤5 queries; 200 tests + tsc). Lows: `discountTotal` silently partial when the confirm-payment fallback settled first (decision pending: "known for X of Y" count vs a `Payment.discountAmountUsd` column); `paidAt` is intent creation time (pre-existing); summaries over-select JSON columns.
 
 ### T7b — Early webhook events (pending; after T8 to avoid overlapping `src/types/emailCampaign.ts`)
 
 - Webhook falls back to `data.tags.send_id` (Resend includes tags in events) when `email_id` is unknown, backfilling `resendMessageId`; send transitions accept QUEUED (delivered from QUEUED|SENT, bounced from QUEUED|SENT|DELIVERED).
 - `sending.ts` success write must not downgrade a row a webhook already moved (guarded update on pending statuses; still set `resendMessageId`/`sentAt`).
+- Done (route: delegated writer; 2+ non-trivial files): `parseResendEvent` reads `send_id` (object or array tags); `findSend` falls back to the tagged send only when its `resendMessageId` is null or equal, backfilled with a guarded `updateMany` in the event transaction; webhook transitions accept QUEUED; `sending.ts` `resultWrites` guards SENT/FAILED on QUEUED|FAILED and fills `resendMessageId`/`sentAt` only where null.
+- RED: 24 tests failed (6 webhook, 18 sending). GREEN: 221/221 email-campaigns + webhooks + admin API (parent re-run); tsc + eslint clean (writer).
+- Risk: guarded writes only exercised via the in-memory fake.
+- Status: uncommitted, awaiting user approval.
 
 - Remaining: T8 metrics, T7b, T9 admin UI, T10 ops docs.

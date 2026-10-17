@@ -11,7 +11,7 @@ vi.mock("@/lib/prisma", () => ({
       deleteMany: vi.fn(),
       findMany: vi.fn(),
       groupBy: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
     contact: { count: vi.fn(), findMany: vi.fn() },
   },
@@ -47,7 +47,21 @@ import { verifyUnsubscribeToken } from "../unsubscribeToken";
 import { getCampaignAudienceCount, sendCampaign } from "../sending";
 import type { PromotionCodeSummary } from "@/types/emailCampaign";
 
-type SendRow = { id: string; contactId: string; email: string; status: string };
+type SendRow = {
+  id: string;
+  contactId: string;
+  email: string;
+  status: string;
+  resendMessageId?: string | null;
+  sentAt?: Date | null;
+  error?: string | null;
+};
+type SendWhere = {
+  id?: string;
+  status?: { in?: string[] };
+  resendMessageId?: null;
+  sentAt?: null;
+};
 type ContactRow = { id: string; email: string; status: string };
 type Where = Record<string, unknown> & {
   status?: string;
@@ -190,16 +204,22 @@ beforeEach(() => {
       .filter(statusIn(where))
       .sort((a, b) => a.id.localeCompare(b.id))
       .map(({ id, contactId, email }) => ({ id, contactId, email }))) as never);
-  vi.mocked(prisma.campaignSend.update).mockImplementation((async ({
+  vi.mocked(prisma.campaignSend.updateMany).mockImplementation((async ({
     where,
     data,
   }: {
-    where: { id: string };
+    where: SendWhere;
     data: Record<string, unknown>;
   }) => {
-    const send = state.sends.find((row) => row.id === where.id);
-    if (send) Object.assign(send, data);
-    return send;
+    const matches = state.sends.filter(
+      (row) =>
+        (where.id === undefined || row.id === where.id) &&
+        statusIn(where)(row) &&
+        (!("resendMessageId" in where) || row.resendMessageId == null) &&
+        (!("sentAt" in where) || row.sentAt == null),
+    );
+    for (const row of matches) Object.assign(row, data);
+    return { count: matches.length };
   }) as never);
   vi.mocked(prisma.campaignSend.groupBy).mockImplementation((async () => {
     const counts = new Map<string, number>();
@@ -342,8 +362,8 @@ describe("sendCampaign first send", () => {
     await sendCampaign("c1");
 
     expect(state.sends.map((s) => s.status)).toEqual(["SENT", "SENT"]);
-    expect(prisma.campaignSend.update).toHaveBeenCalledWith({
-      where: { id: "s-k000" },
+    expect(prisma.campaignSend.updateMany).toHaveBeenCalledWith({
+      where: { id: "s-k000", status: { in: ["QUEUED", "FAILED"] } },
       data: {
         status: "SENT",
         resendMessageId: "m-s-k000",
@@ -466,8 +486,8 @@ describe("sendCampaign failures and retry", () => {
     const summary = await sendCampaign("c1");
 
     expect(summary).toEqual({ status: "PARTIAL", sent: 1, failed: 1, total: 2 });
-    expect(prisma.campaignSend.update).toHaveBeenCalledWith({
-      where: { id: "s-k001" },
+    expect(prisma.campaignSend.updateMany).toHaveBeenCalledWith({
+      where: { id: "s-k001", status: { in: ["QUEUED", "FAILED"] } },
       data: { status: "FAILED", error: "invalid recipient" },
     });
     expect(state.campaign.status).toBe("PARTIAL");
@@ -484,8 +504,8 @@ describe("sendCampaign failures and retry", () => {
 
     expect(summary).toEqual({ status: "PARTIAL", sent: 0, failed: 2, total: 2 });
     expect(state.sends.map((s) => s.status)).toEqual(["FAILED", "FAILED"]);
-    expect(prisma.campaignSend.update).toHaveBeenCalledWith({
-      where: { id: "s-k000" },
+    expect(prisma.campaignSend.updateMany).toHaveBeenCalledWith({
+      where: { id: "s-k000", status: { in: ["QUEUED", "FAILED"] } },
       data: { status: "FAILED", error: "Email delivery is disabled for this deployment" },
     });
   });
@@ -496,10 +516,7 @@ describe("sendCampaign failures and retry", () => {
 
     await sendCampaign("c1");
 
-    const data = vi.mocked(prisma.campaignSend.update).mock.calls[0][0].data as {
-      error: string;
-    };
-    expect(data.error.length).toBeLessThanOrEqual(500);
+    expect(state.sends[0].error!.length).toBeLessThanOrEqual(500);
   });
 
   it("retries only QUEUED and FAILED rows and adds no new contacts", async () => {
@@ -559,6 +576,69 @@ describe("sendCampaign failures and retry", () => {
     const summary = await sendCampaign("c1");
 
     expect(summary).toEqual({ status: "SENT", sent: 3, failed: 0, total: 3 });
+  });
+
+  describe("webhook events arriving before the batch result is written", () => {
+    /** Accepts every message after a webhook has already moved each row. */
+    function webhookWinsWith(status: string, backfilled: boolean) {
+      vi.mocked(sendMailBatch).mockImplementation(async (messages: BatchMailMessage[]) => {
+        for (const send of state.sends) {
+          send.status = status;
+          if (backfilled) send.resendMessageId = `m-${send.id}`;
+        }
+        return messages.map((message) => ({
+          ok: true as const,
+          id: `m-${message.tags?.find((tag) => tag.name === "send_id")?.value}`,
+        }));
+      });
+    }
+
+    it.each(["DELIVERED", "BOUNCED"])(
+      "keeps a webhook-set %s status but records the provider id and sentAt",
+      async (status) => {
+        state.contacts = contacts(1);
+        webhookWinsWith(status, false);
+
+        const summary = await sendCampaign("c1");
+
+        expect(state.sends[0]).toMatchObject({
+          status,
+          resendMessageId: "m-s-k000",
+          sentAt: expect.any(Date),
+        });
+        expect(summary).toEqual({ status: "SENT", sent: 1, failed: 0, total: 1 });
+      },
+    );
+
+    it("keeps an id the webhook already backfilled", async () => {
+      state.contacts = contacts(1);
+      webhookWinsWith("DELIVERED", true);
+
+      await sendCampaign("c1");
+
+      expect(state.sends[0]).toMatchObject({
+        status: "DELIVERED",
+        resendMessageId: "m-s-k000",
+        sentAt: expect.any(Date),
+      });
+    });
+
+    it("does not mark a webhook-moved row FAILED", async () => {
+      state.contacts = contacts(2);
+      vi.mocked(sendMailBatch).mockImplementation(async () => {
+        state.sends[0].status = "BOUNCED";
+        return [
+          { ok: false, error: "late failure" },
+          { ok: false, error: "invalid recipient" },
+        ];
+      });
+
+      const summary = await sendCampaign("c1");
+
+      expect(state.sends.map((s) => s.status)).toEqual(["BOUNCED", "FAILED"]);
+      expect(state.sends[0].error).toBeUndefined();
+      expect(summary).toEqual({ status: "PARTIAL", sent: 1, failed: 1, total: 2 });
+    });
   });
 
   it("finalizes as PARTIAL and rethrows when processing crashes", async () => {

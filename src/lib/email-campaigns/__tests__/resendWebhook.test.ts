@@ -168,6 +168,41 @@ describe("parseResendEvent", () => {
     expect(parseResendEvent("x")).toBeNull();
   });
 
+  it("reads send_id from object-form tags", () => {
+    const event = parseResendEvent({
+      ...base,
+      type: "email.bounced",
+      data: { email_id: "re_1", tags: { campaign_id: "c1", send_id: "s1" } },
+    });
+    expect(event?.sendId).toBe("s1");
+  });
+
+  it("reads send_id from array-form tags", () => {
+    const event = parseResendEvent({
+      ...base,
+      type: "email.delivered",
+      data: {
+        email_id: "re_1",
+        tags: [
+          { name: "campaign_id", value: "c1" },
+          { name: "send_id", value: "s2" },
+        ],
+      },
+    });
+    expect(event?.sendId).toBe("s2");
+  });
+
+  it("leaves sendId undefined without a usable send_id tag", () => {
+    for (const tags of [undefined, {}, { send_id: "" }, [{ name: "x", value: "y" }], "s1"]) {
+      const event = parseResendEvent({
+        ...base,
+        type: "email.opened",
+        data: { email_id: "re_1", tags },
+      });
+      expect(event?.sendId).toBeUndefined();
+    }
+  });
+
   it("falls back to now when created_at is invalid", () => {
     const before = Date.now();
     const event = parseResendEvent({
@@ -231,10 +266,102 @@ describe("handleResendEvent", () => {
       },
     });
     expect(mocked.campaignSend.updateMany).toHaveBeenCalledWith({
-      where: { id: "s1", status: "SENT" },
+      where: { id: "s1", status: { in: ["QUEUED", "SENT"] } },
       data: { status: "DELIVERED" },
     });
     expect(mocked.contact.updateMany).not.toHaveBeenCalled();
+  });
+
+  describe("early events (before sending persists resendMessageId)", () => {
+    it("falls back to the send_id tag and backfills resendMessageId", async () => {
+      mocked.campaignSend.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: "s9", contactId: "c9", resendMessageId: null });
+
+      const outcome = await handleResendEvent(
+        { type: "DELIVERED", emailId: "re_9", sendId: "s9", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(outcome).toBe("recorded");
+      expect(mocked.campaignSend.findUnique).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ where: { id: "s9" } }),
+      );
+      expect(mocked.campaignSend.updateMany).toHaveBeenCalledWith({
+        where: { id: "s9", resendMessageId: null },
+        data: { resendMessageId: "re_9" },
+      });
+      expect(mocked.emailEvent.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ sendId: "s9" }),
+      });
+      expect(mocked.campaignSend.updateMany).toHaveBeenCalledWith({
+        where: { id: "s9", status: { in: ["QUEUED", "SENT"] } },
+        data: { status: "DELIVERED" },
+      });
+    });
+
+    it("accepts a tagged send that already carries the same message id", async () => {
+      mocked.campaignSend.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: "s9", contactId: "c9", resendMessageId: "re_9" });
+
+      const outcome = await handleResendEvent(
+        { type: "OPENED", emailId: "re_9", sendId: "s9", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(outcome).toBe("recorded");
+      expect(mocked.campaignSend.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("ignores a send_id tag pointing to a send with another message id", async () => {
+      mocked.campaignSend.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: "s9", contactId: "c9", resendMessageId: "re_other" });
+
+      const outcome = await handleResendEvent(
+        { type: "BOUNCED", emailId: "re_9", sendId: "s9", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(outcome).toBe("unknown_email");
+      expect(mocked.emailEvent.create).not.toHaveBeenCalled();
+      expect(mocked.campaignSend.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("returns unknown_email when the tagged send does not exist", async () => {
+      mocked.campaignSend.findUnique.mockResolvedValue(null);
+
+      const outcome = await handleResendEvent(
+        { type: "DELIVERED", emailId: "re_9", sendId: "s404", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(outcome).toBe("unknown_email");
+      expect(mocked.emailEvent.create).not.toHaveBeenCalled();
+    });
+
+    it("does not look up by id when no send_id tag is present", async () => {
+      mocked.campaignSend.findUnique.mockResolvedValue(null);
+
+      await handleResendEvent(
+        { type: "DELIVERED", emailId: "re_9", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(mocked.campaignSend.findUnique).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not backfill when found by message id", async () => {
+      await handleResendEvent(
+        { type: "OPENED", emailId: "re_1", sendId: "s1", occurredAt, metadata: null },
+        "msg_1",
+      );
+
+      expect(mocked.campaignSend.findUnique).toHaveBeenCalledTimes(1);
+      expect(mocked.campaignSend.updateMany).not.toHaveBeenCalled();
+    });
   });
 
   it("marks the send BOUNCED but keeps the contact on a soft bounce", async () => {
@@ -254,7 +381,7 @@ describe("handleResendEvent", () => {
       }),
     });
     expect(mocked.campaignSend.updateMany).toHaveBeenCalledWith({
-      where: { id: "s1", status: { in: ["SENT", "DELIVERED"] } },
+      where: { id: "s1", status: { in: ["QUEUED", "SENT", "DELIVERED"] } },
       data: { status: "BOUNCED" },
     });
     expect(mocked.contact.updateMany).not.toHaveBeenCalled();
