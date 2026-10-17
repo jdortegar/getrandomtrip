@@ -23,7 +23,11 @@ authorize running the workflow or publishing a PR.
 ## Decision Gates
 
 - For UI changes, place described screenshots of the rendered result before the
-  prompt/summary pairs. Omit screenshots for non-UI changes.
+  prompt/summary pairs. Omit screenshots for non-UI changes. Capture and host
+  them with [Screenshots](references/screenshots.md); its privacy gate applies
+  because the repository is public.
+- If no dev server, test account, or seeded data can show the change, publish
+  without screenshots and report what is missing. Never capture production.
 - If history is incomplete or publishing fails, report the gap or blocker. Do not
   invent prompts or commits, claim success, or bypass repository protections.
 
@@ -35,9 +39,12 @@ authorize running the workflow or publishing a PR.
 2. Inspect the requested head, base diff, commits, and any existing PR. Run the
    repository's relevant checks; commit and push only within the authorization
    boundary above. Build the final body after any needed commits exist.
-3. Before publication, compare prompts with their sources and check rendered
+3. For UI changes, capture screenshots and view each one before publishing it,
+   per [Screenshots](references/screenshots.md). Images publish only after the
+   PR exists, so create it first and add them with `gh pr edit`.
+4. Before publication, compare prompts with their sources and check rendered
    images, prompt/blockquote boundaries, and commit links.
-4. When publication is requested, use a temporary body file outside the repository
+5. When publication is requested, use a temporary body file outside the repository
    with `gh pr create --body-file`, `gh pr edit --body-file`, or an equivalent
    structured GitHub API call. Verify the published description, head/base, and
    open state by reading them back. On failure, keep the body and report the blocker.
@@ -52,3 +59,7 @@ prepared description or blocker without implying publication.
 
 - [Description contract](references/description-contract.md) — required before
   selecting prompt history or writing a PR description.
+- [Screenshots](references/screenshots.md) — required before capturing or
+  publishing UI screenshots.
+- [pr-shots.mjs](scripts/pr-shots.mjs) — Playwright capture and `pr-assets`
+  publishing; pure helpers tested in `pr-shots.test.mjs`.
