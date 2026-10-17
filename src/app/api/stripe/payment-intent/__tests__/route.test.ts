@@ -53,6 +53,9 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: vi.fn(),
       update: vi.fn(),
     },
+    payment: {
+      count: vi.fn(),
+    },
   },
 }));
 
@@ -236,6 +239,8 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
       revertExpiredPendingPayment as ReturnType<typeof vi.fn>
     ).mockImplementation(async (trip: { status: string }) => trip.status);
 
+    vi.mocked(prisma.payment.count).mockResolvedValue(0);
+
     const mod = await import("../route");
     POST = mod.POST;
   });
@@ -279,6 +284,65 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
     stripeMock.promotionCodes.list.mockResolvedValue({ data: [{ id: "promo", promotion: { coupon: null } }] });
     expect((await POST(makeRequest("trip-1", "UNSUPPORTED"))).status).toBe(400);
     expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
+
+  describe("promotion code rules", () => {
+    const restrictions = { first_time_transaction: false, minimum_amount: null, minimum_amount_currency: null };
+    function promo(overrides: Record<string, unknown> = {}, restrictionOverrides: Record<string, unknown> = {}) {
+      return {
+        id: "promo_launch",
+        expires_at: null,
+        max_redemptions: null,
+        promotion: { coupon: { valid: true, percent_off: 10, redeem_by: null } },
+        ...overrides,
+        restrictions: { ...restrictions, ...restrictionOverrides },
+      };
+    }
+
+    it.each([
+      ["expired", promo({ expires_at: Math.floor(Date.now() / 1000) - 60 }), {}, "PROMO_EXPIRED"],
+      ["max redemptions", promo({ max_redemptions: 2 }), { code: 2 }, "PROMO_MAX_REDEMPTIONS_REACHED"],
+      ["already used", promo(), { userCode: 1 }, "PROMO_ALREADY_USED"],
+      ["first-time only", promo({}, { first_time_transaction: true }), { user: 1 }, "PROMO_FIRST_TIME_ONLY"],
+      ["minimum amount", promo({}, { minimum_amount: 25000, minimum_amount_currency: "usd" }), {}, "PROMO_MINIMUM_AMOUNT"],
+    ])("rejects a %s code with a distinguishable error code", async (_label, promotion, counts, errorCode) => {
+      vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip() as never);
+      stripeMock.promotionCodes.list.mockResolvedValue({ data: [promotion] });
+      vi.mocked(prisma.payment.count).mockImplementation((async ({ where }: { where: Record<string, unknown> }) => {
+        const result = counts as { code?: number; userCode?: number; user?: number };
+        if (where.stripePromotionCodeId && where.userId) return result.userCode ?? 0;
+        if (where.stripePromotionCodeId) return result.code ?? 0;
+        return result.user ?? 0;
+      }) as never);
+      const response = await POST(makeRequest("trip-1", "LAUNCH"));
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({ code: "LAUNCH", errorCode });
+      expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    });
+
+    it("counts only settled payments with the code, excluding this trip, for the buyer and the code", async () => {
+      vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(baseTrip() as never);
+      stripeMock.promotionCodes.list.mockResolvedValue({ data: [promo({ max_redemptions: 5 }, { first_time_transaction: true })] });
+      stripeMock.paymentIntents.create.mockResolvedValue({ id: "pi_new", client_secret: "new_secret" });
+      const response = await POST(makeRequest("trip-1", "LAUNCH"));
+      expect(response.status).toBe(200);
+      const settled = { in: ["APPROVED", "COMPLETED"] };
+      const otherTrips = { not: "trip-1" };
+      expect(prisma.payment.count).toHaveBeenCalledWith({ where: { stripePromotionCodeId: "promo_launch", status: settled, tripRequestId: otherTrips } });
+      expect(prisma.payment.count).toHaveBeenCalledWith({ where: { stripePromotionCodeId: "promo_launch", status: settled, tripRequestId: otherTrips, userId: "buyer-1" } });
+      expect(prisma.payment.count).toHaveBeenCalledWith({ where: { status: settled, tripRequestId: otherTrips, userId: "buyer-1" } });
+    });
+
+    it("cancels the retained discounted intent when its code now breaks a rule", async () => {
+      vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(tripWithExistingIntent() as never);
+      stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_existing", status: "requires_payment_method", metadata: { promoCode: "LAUNCH" } });
+      stripeMock.promotionCodes.list.mockResolvedValue({ data: [promo({ expires_at: 1 })] });
+      stripeMock.paymentIntents.cancel.mockResolvedValue({ id: "pi_existing" });
+      const response = await POST(makeRequest("trip-1"));
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({ errorCode: "PROMO_EXPIRED" });
+      expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_existing");
+    });
   });
 
   it.each(["processing", "succeeded", "requires_capture"])("never replaces an intent already %s", async (status) => {

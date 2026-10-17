@@ -3527,7 +3527,14 @@
         "noValidSession": "No hay sesión válida.",
         "saveTravelDocumentsFailed": "No se pudieron guardar tus documentos de viaje.",
         "saveUserFailed": "No se pudieron guardar tus datos.",
-        "updateTripFailed": "No se pudo actualizar el viaje."
+        "updateTripFailed": "No se pudo actualizar el viaje.",
+        "promo": {
+          "expired": "Este código promocional venció.",
+          "max_redemptions_reached": "Este código promocional alcanzó su límite de usos.",
+          "already_used": "Ya usaste este código promocional.",
+          "first_time_only": "Este código promocional solo es válido en tu primera compra.",
+          "minimum_amount": "Tu viaje no alcanza el monto mínimo de este código promocional."
+        }
       },
       "addonsPerPersonLabel": "Extras y seguro (por persona)",
       "filterFeeLabel": "Recargo por filtros",

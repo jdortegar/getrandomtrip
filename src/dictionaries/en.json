@@ -3520,7 +3520,14 @@
         "noValidSession": "No valid session.",
         "saveTravelDocumentsFailed": "Couldn't save your travel documents.",
         "saveUserFailed": "Couldn't save your details.",
-        "updateTripFailed": "Couldn't update the trip."
+        "updateTripFailed": "Couldn't update the trip.",
+        "promo": {
+          "expired": "This promo code has expired.",
+          "max_redemptions_reached": "This promo code has reached its usage limit.",
+          "already_used": "You've already used this promo code.",
+          "first_time_only": "This promo code is only valid on your first purchase.",
+          "minimum_amount": "Your trip doesn't reach this promo code's minimum amount."
+        }
       },
       "addonsPerPersonLabel": "Add-ons & insurance (per person)",
       "filterFeeLabel": "Filter surcharge",

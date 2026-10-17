@@ -13,10 +13,74 @@ import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
+import { evaluatePromoRules, promoErrorCode } from "@/lib/payments/promo-rules";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
+import type { PromoRejectionReason } from "@/types/payments";
+import type { PaymentStatus } from "@prisma/client";
 
 const fail = (error: string, status: number, errorCode?: string) =>
   NextResponse.json({ error, ...(errorCode ? { errorCode } : {}) }, { status });
+
+/** Fallback API messages; the checkout UI localizes by `errorCode`. */
+const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
+  already_used: "You have already used this promo code",
+  expired: "This promo code has expired",
+  first_time_only: "This promo code is only valid on your first purchase",
+  max_redemptions_reached: "This promo code has reached its usage limit",
+  minimum_amount: "Your trip does not reach this promo code's minimum amount",
+};
+
+/** Payment statuses that mean the charge settled (see the Stripe webhook). */
+const SETTLED_PAYMENT_STATUSES: PaymentStatus[] = ["APPROVED", "COMPLETED"];
+
+/** Enforces the promotion code rules Stripe would apply on redemption. Counts
+ * exclude this trip so re-quoting a code already applied here never rejects it.
+ * Coupon-level `max_redemptions` is not enforced: payments only record the
+ * promotion code, not every code that shares the coupon. */
+async function checkPromoRules(params: {
+  amountCents: number;
+  coupon: Stripe.Coupon;
+  promotion: Stripe.PromotionCode;
+  tripId: string;
+  userId: string;
+}) {
+  const { coupon, promotion, tripId, userId } = params;
+  const restrictions: Partial<Stripe.PromotionCode.Restrictions> =
+    promotion.restrictions ?? {};
+  const settled = {
+    status: { in: SETTLED_PAYMENT_STATUSES },
+    tripRequestId: { not: tripId },
+  };
+  const byCode = { ...settled, stripePromotionCodeId: promotion.id };
+  const [codeRedemptions, userCodeUses, userSettledPayments] = await Promise.all([
+    promotion.max_redemptions != null
+      ? prisma.payment.count({ where: byCode })
+      : 0,
+    prisma.payment.count({ where: { ...byCode, userId } }),
+    restrictions.first_time_transaction
+      ? prisma.payment.count({ where: { ...settled, userId } })
+      : 0,
+  ]);
+  return evaluatePromoRules({
+    amountCents: params.amountCents,
+    codeRedemptions,
+    coupon: { redeem_by: coupon.redeem_by ?? null },
+    currency: "usd",
+    nowSeconds: Math.floor(Date.now() / 1000),
+    promotion: {
+      expires_at: promotion.expires_at ?? null,
+      max_redemptions: promotion.max_redemptions ?? null,
+      restrictions: {
+        currency_options: restrictions.currency_options,
+        first_time_transaction: Boolean(restrictions.first_time_transaction),
+        minimum_amount: restrictions.minimum_amount ?? null,
+        minimum_amount_currency: restrictions.minimum_amount_currency ?? null,
+      },
+    },
+    userCodeUses,
+    userSettledPayments,
+  });
+}
 
 /** One quote path for initial checkout, traveler changes, and promo apply/remove. */
 export async function checkoutQuoteResponse(
@@ -147,7 +211,7 @@ export async function checkoutQuoteResponse(
     let discount = 0;
     let promoCodeId = "";
     if (code) {
-      const rejectPromo = async (error: string) => {
+      const rejectPromo = async (error: string, errorCode?: string) => {
         // A retained promo that cannot be repriced must not leave an old,
         // discounted intent confirmable from another open checkout tab.
         if (
@@ -160,7 +224,10 @@ export async function checkoutQuoteResponse(
             return fail("Payment already in progress, please retry", 409);
           }
         }
-        return NextResponse.json({ error, code }, { status: 400 });
+        return NextResponse.json(
+          { error, code, ...(errorCode ? { errorCode } : {}) },
+          { status: 400 },
+        );
       };
       const promotion = (
         await stripe.promotionCodes.list({ code, active: true, limit: 1 })
@@ -174,6 +241,15 @@ export async function checkoutQuoteResponse(
           : (ref as Stripe.Coupon);
       if (!coupon.valid)
         return rejectPromo("This promo code is no longer valid");
+      const rules = await checkPromoRules({
+        amountCents: Math.round(totals.totalTrip * 100),
+        coupon,
+        promotion,
+        tripId,
+        userId: session.user.id,
+      });
+      if (!rules.ok)
+        return rejectPromo(PROMO_RULE_MESSAGES[rules.reason], promoErrorCode(rules.reason));
       discount = coupon.percent_off
         ? (totals.totalTrip * coupon.percent_off) / 100
         : (coupon.amount_off ?? 0) / 100;

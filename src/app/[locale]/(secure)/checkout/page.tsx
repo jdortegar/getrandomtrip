@@ -67,6 +67,7 @@ import {
   resolveTripTransportLabel,
 } from "@/lib/helpers/transport";
 import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
+import { promoReasonFromErrorCode } from "@/lib/payments/promo-rules";
 
 const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
 
@@ -200,9 +201,12 @@ function CheckoutContent() {
   const appliedPromocode = payment.promoCode;
   const promoDiscount = payment.quote?.discountAmount ?? 0;
   const promoLoading = payment.pending || isConfirming;
+  const promoRejection = promoReasonFromErrorCode(payment.errorCode);
   const paymentError = payment.errorCode === "INVALID_TRIP_DATES"
     ? dict?.journey.checkout.errors.invalidDates ?? null
-    : payment.error;
+    : promoRejection
+      ? dict?.journey.checkout.errors.promo[promoRejection] ?? payment.error
+      : payment.error;
   const promoError = paymentError;
   const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
   const onPaymentInfoSubmitted = useCheckoutTracking(trip?.id, trip?.type, clientSecret ? payment.quote : null);

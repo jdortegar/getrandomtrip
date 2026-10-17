@@ -68,5 +68,13 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Files: `prisma/schema.prisma` (5 enums, `Contact`, `Campaign`, `CampaignSend`, `EmailEvent`, User back-relations, `Payment.promoCode` / `stripePromotionCodeId` + index), `prisma/migrations/20261017120000_email_campaigns/migration.sql` (additive, idempotent, names verified against `prisma migrate diff`), `src/types/emailCampaign.ts`, `src/lib/db/payment.ts`, `src/app/api/stripe/webhook/route.ts`, tests in `src/lib/db/__tests__/stripeWebhookPayment.test.ts` and `src/app/api/stripe/webhook/__tests__/route.test.ts`.
 - Extra: when `confirm-payment` settles first, the webhook backfills only the promo columns (guarded `updateMany`, no emails).
 - RED: 2 new tests failed before implementation. GREEN: webhook + payment tests 49/49 (parent re-run); writer also ran confirm-payment tests 54/54 total, `prisma validate`, `prisma generate`, typecheck, lint — all pass.
-- Not done: migration never applied to a real database. Status: uncommitted, awaiting user approval.
-- Note: unrelated uncommitted review/notification edits exist in this checkout from another session — stage T1 paths only.
+- Not done: migration never applied to a real database.
+- Commit: `52e9966c`. Assessment: high risk, RDD off (global) → independent verifier: PASS (migration matches `prisma migrate diff`, idempotent, backfill guarded; 409 tests + typecheck green). Low notes: legacy payments found via `providerPaymentId` with null intent id are not backfilled.
+- Note: unrelated uncommitted review/notification edits exist in this checkout from another session — stage task paths only.
+
+### T2 — Promo enforcement (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `src/lib/payments/promo-rules.ts` (pure `evaluatePromoRules`, order expired → max_redemptions_reached → already_used → first_time_only → minimum_amount), `src/types/payments.ts`, `src/lib/payments/checkout-quote.ts` (`checkPromoRules` counts APPROVED/COMPLETED payments excluding the current trip; rejection via existing `rejectPromo` + `errorCode: PROMO_<REASON>`), `src/app/[locale]/(secure)/checkout/page.tsx` (maps errorCode to dictionary copy), `journey.checkout.errors.promo.*` in es/en + dictionary type, tests in `src/lib/payments/__tests__/promo-rules.test.ts` and `src/app/api/stripe/payment-intent/__tests__/route.test.ts`.
+- RED: rules test (module missing) + 7 route tests failed before implementation. GREEN: payments + stripe 80/80 (parent re-run); writer: 134 incl. checkout page/hook tests, typecheck, lint pass.
+- Known limits: max_redemptions only counts settled payments (concurrent unsettled checkouts can exceed it); coupon-level max not enforced; refunded payments free the use; unknown-code message still English-only (pre-existing).
+- Status: uncommitted, awaiting user approval.

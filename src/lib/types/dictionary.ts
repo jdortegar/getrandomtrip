@@ -1,3 +1,5 @@
+import type { PromoRejectionReason } from "@/types/payments";
+
 export interface DesignSystemDict {
   skip: string;
   navigation: string;
@@ -3817,6 +3819,7 @@ export interface MarketingDictionary {
         saveTravelDocumentsFailed: string;
         saveUserFailed: string;
         updateTripFailed: string;
+        promo: Record<PromoRejectionReason, string>;
       };
       addonsPerPersonLabel: string;
       filterFeeLabel: string;
