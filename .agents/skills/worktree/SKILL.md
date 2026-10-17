@@ -19,7 +19,9 @@ commands below; it never authorizes commits, pushes, or remote deletion.
 - Location: `../<repo>-worktrees/<branch with / -> ->`; one worktree per
   branch, reused if it exists. Never `/tmp`.
 - Never stash, switch, reset, or edit files in another session's checkout.
-- Never read or copy `.env*`. Show the user the printed `! cp ...` command.
+- `create` seeds `.env` / `.env.local` from the main checkout itself. Agents never
+  read, print, or copy `.env*` by hand; the script never overwrites an existing
+  file and refuses symlinks, the main checkout, and files Git does not ignore.
 - Branches start with upstream unset; push only with an explicit refspec:
   `git push -u origin <branch>:<branch>`.
 - Delete a remote branch only after the user confirms it.
@@ -33,7 +35,7 @@ commands below; it never authorizes commits, pushes, or remote deletion.
 | Main checkout not busy | Work there; no worktree |
 | Checkout changed under you mid-task | Stop writing; `create` a worktree and continue there |
 | User reports another session, script sees nothing | `create <branch> --user-says-busy` |
-| `create` prints `! cp ...` | Ask the user to run it; wait before `dev` |
+| `create` prints `env: not copying ...` | Report the reason; the user fixes the source file before `dev` |
 | Port 3010 busy | `dev` picks the next free port; warn Google login needs that callback registered |
 | Worktree has real changes | Ask: back up to a branch, or discard |
 | `remove` refused | Report the reason; do not force |
@@ -44,7 +46,7 @@ commands below; it never authorizes commits, pushes, or remote deletion.
 
 - `create <branch> [--from <ref>] [--user-says-busy]`: verify busy, add or
   reuse the worktree (default from `origin/develop`), unset upstream, `npm ci`
-  with a placeholder `DATABASE_URL`, print `! cp` for missing env files.
+  with a placeholder `DATABASE_URL`, seed missing `.env` / `.env.local` from the main checkout.
 - `dev <branch>`: first free port from 3010; runs `next dev -p <port>` with
   inline `NEXTAUTH_URL=http://localhost:<port>` (`.env` untouched).
 - `list`: read-only; path, branch, merged into `origin/main`, real changes,
@@ -56,7 +58,7 @@ commands below; it never authorizes commits, pushes, or remote deletion.
 
 ## Execution Steps
 
-Testing a branch: `create <branch>` → user runs the `! cp` line → `dev <branch>`
+Testing a branch: `create <branch>` (seeds env files) → `dev <branch>`
 → give the user the printed URL.
 
 Cleanup: `git fetch origin main` → `list` → `clean` (dry run) → `clean --apply`
@@ -66,7 +68,7 @@ after the user agrees → per-case decisions for `needs-decision` →
 ## Output Contract
 
 Report the worktree path, branch, upstream state, URL/port when running, any
-`! cp` command the user must run, and for cleanup what was removed, kept, and
+env files copied or refused (names only, never contents), and for cleanup what was removed, kept, and
 awaits a decision. Never claim removal or push that did not happen.
 
 ## References
