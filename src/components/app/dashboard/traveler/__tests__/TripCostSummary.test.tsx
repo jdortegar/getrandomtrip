@@ -41,6 +41,11 @@ it("renders the paid currency and recorded amount without invented current line 
   );
   expect(container.textContent).toContain("EUR 1800.00");
   expect(container.textContent).toContain("EUR 900.00");
+  const total = [...container.querySelectorAll("span")].find(
+    (node) => node.textContent === "EUR 1800.00",
+  );
+  expect(total?.classList.contains("text-primary")).toBe(true);
+  expect(total?.classList.contains("text-secondary")).toBe(false);
   expect(container.textContent).not.toContain("Base");
   expect(container.textContent).not.toContain("Estimate");
   act(() => root.unmount());

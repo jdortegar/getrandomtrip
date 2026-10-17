@@ -427,7 +427,7 @@ function TripDetailsContent() {
                         aria-busy={savingTravelers}
                         disabled={savingTravelers}
                         onClick={() => void handleSaveTravelers()}
-                        size="lg"
+                        size="sm"
                         variant="default"
                       >
                         {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
@@ -743,7 +743,7 @@ function TripDetailsContent() {
                       <ExcuseSummary
                         excuse={excuse}
                         label={`• ${copy.excuseLabel}`}
-                        refineLabel={copy.refineDetailsLabel}
+                        refineLabel={`• ${copy.refineDetailsLabel}`}
                       />
                     </li>
                   )}
