@@ -4,6 +4,7 @@ import {
   CreditCard,
   FilePlus2,
   LayoutDashboard,
+  Mail,
   Newspaper,
   Package,
   PackagePlus,
@@ -66,6 +67,12 @@ export function buildAdminNavTabs(
       href: base("/blog/new"),
       icon: FilePlus2,
       label: copy.newPost,
+    },
+    {
+      // Non-exact so contacts and campaign pages keep this tab active.
+      href: base("/email-campaigns"),
+      icon: Mail,
+      label: copy.emailCampaigns,
     },
     {
       audience: "ADMIN",

@@ -21,6 +21,15 @@ describe("dashboardPageMetadata", () => {
     expect(traveler.title).toBe(es.travelerDashboard.pageHeadings.trips.title);
   });
 
+  it("resolves the email campaigns list and contacts routes", async () => {
+    const campaigns = await dashboardPageMetadata("/dashboard/admin/email-campaigns")(params("en"));
+    const contacts = await dashboardPageMetadata(
+      "/dashboard/admin/email-campaigns/contacts",
+    )(params("es"));
+    expect(campaigns.title).toBe(en.adminDashboard.pageHeadings.emailCampaigns.title);
+    expect(contacts.title).toBe(es.adminDashboard.pageHeadings.emailCampaignContacts.title);
+  });
+
   it("gives different routes different titles", async () => {
     const a = await dashboardPageMetadata("/dashboard/tripper/blog")(params("en"));
     const b = await dashboardPageMetadata("/dashboard/tripper/experiences")(params("en"));

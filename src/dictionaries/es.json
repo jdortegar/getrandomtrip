@@ -590,7 +590,8 @@
       "xsed": "Nuevo XSED Drop",
       "notifications": "Notificaciones",
       "blog": "Blog",
-      "newPost": "Nuevo Post"
+      "newPost": "Nuevo Post",
+      "emailCampaigns": "Campañas de email"
     },
     "pageHeadings": {
       "blog": {
@@ -636,6 +637,14 @@
       "reviews": {
         "title": "Reseñas",
         "description": "Modera las reseñas de los clientes."
+      },
+      "emailCampaigns": {
+        "title": "Campañas de email",
+        "description": "Crea campañas y compara su rendimiento y conversiones."
+      },
+      "emailCampaignContacts": {
+        "title": "Contactos de email",
+        "description": "Gestiona los contactos que reciben campañas."
       },
       "xsedNew": {
         "title": "Nuevo XSED drop",
@@ -1183,6 +1192,101 @@
         "ariaSortBy": "Ordenar por {field}",
         "ariaAscending": "ascendente",
         "ariaDescending": "descendente"
+      }
+    },
+    "emailCampaigns": {
+      "tabs": {
+        "campaigns": "Campañas",
+        "contacts": "Contactos"
+      },
+      "locales": {
+        "en": "Inglés",
+        "es": "Español"
+      },
+      "campaigns": {
+        "eyebrow": "Comparación de rendimiento",
+        "heading": "Campañas",
+        "newCampaign": "Nueva campaña",
+        "errorLoad": "No se pudieron cargar las campañas. Intenta de nuevo.",
+        "notSent": "Sin enviar",
+        "noPromo": "Sin código",
+        "empty": {
+          "title": "Todavía no hay campañas",
+          "body": "Crea tu primera campaña para enviarla a tus contactos y medir sus conversiones."
+        },
+        "columns": {
+          "campaign": "Campaña",
+          "locale": "Idioma",
+          "segment": "Segmento",
+          "promoCode": "Código",
+          "status": "Estado",
+          "sentAt": "Enviada",
+          "sent": "Enviados",
+          "opens": "Aperturas únicas",
+          "clicks": "Clics únicos",
+          "conversions": "Conversiones",
+          "revenue": "Ingresos"
+        },
+        "status": {
+          "DRAFT": "Borrador",
+          "PARTIAL": "Parcial",
+          "SENDING": "Enviando",
+          "SENT": "Enviada"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Audiencia",
+        "heading": "Contactos",
+        "errorLoad": "No se pudieron cargar los contactos. Intenta de nuevo.",
+        "empty": "No hay contactos que coincidan con los filtros.",
+        "searchPlaceholder": "Buscar por email o nombre",
+        "filters": {
+          "source": "Origen",
+          "status": "Estado",
+          "allSources": "Todos los orígenes",
+          "allStatuses": "Todos los estados"
+        },
+        "columns": {
+          "email": "Email",
+          "name": "Nombre",
+          "source": "Origen",
+          "status": "Estado",
+          "locale": "Idioma",
+          "createdAt": "Alta",
+          "actions": "Acciones"
+        },
+        "source": {
+          "FRIENDS_FAMILY": "Amigos y familia",
+          "WAITLIST": "Lista de espera"
+        },
+        "status": {
+          "BOUNCED": "Rebotado",
+          "SUBSCRIBED": "Suscrito",
+          "UNSUBSCRIBED": "Desuscrito"
+        },
+        "actions": {
+          "resubscribe": "Volver a suscribir",
+          "resubscribing": "Suscribiendo…",
+          "resubscribeError": "No se pudo volver a suscribir el contacto. Intenta de nuevo."
+        },
+        "form": {
+          "title": "Agregar amigos y familia",
+          "description": "Suma contactos que recibirán las campañas del segmento amigos y familia.",
+          "email": "Email",
+          "name": "Nombre (opcional)",
+          "locale": "Idioma",
+          "tags": "Etiquetas (opcional)",
+          "tagsPlaceholder": "Separadas por comas",
+          "submit": "Agregar contacto",
+          "submitting": "Agregando…",
+          "success": "Contacto agregado.",
+          "errors": {
+            "duplicate": "Ya existe un contacto con este email.",
+            "generic": "No se pudo agregar el contacto. Intenta de nuevo.",
+            "invalid": "Revisa los datos: nombre de hasta 120 caracteres y hasta 20 etiquetas de 50 caracteres.",
+            "invalidEmail": "Ingresa un email válido."
+          }
+        }
       }
     },
     "waitlist": {

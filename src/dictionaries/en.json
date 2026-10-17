@@ -590,7 +590,8 @@
       "xsed": "New TGIS Drop",
       "notifications": "Notifications",
       "blog": "Blog",
-      "newPost": "New Post"
+      "newPost": "New Post",
+      "emailCampaigns": "Email campaigns"
     },
     "pageHeadings": {
       "blog": {
@@ -636,6 +637,14 @@
       "reviews": {
         "title": "Reviews",
         "description": "Moderate customer reviews."
+      },
+      "emailCampaigns": {
+        "title": "Email campaigns",
+        "description": "Create campaigns and compare their performance and conversions."
+      },
+      "emailCampaignContacts": {
+        "title": "Email contacts",
+        "description": "Manage the contacts who receive campaigns."
       },
       "xsedNew": {
         "title": "New TGIS Drop",
@@ -1183,6 +1192,101 @@
         "ariaSortBy": "Sort by {field}",
         "ariaAscending": "ascending",
         "ariaDescending": "descending"
+      }
+    },
+    "emailCampaigns": {
+      "tabs": {
+        "campaigns": "Campaigns",
+        "contacts": "Contacts"
+      },
+      "locales": {
+        "en": "English",
+        "es": "Spanish"
+      },
+      "campaigns": {
+        "eyebrow": "Performance comparison",
+        "heading": "Campaigns",
+        "newCampaign": "New campaign",
+        "errorLoad": "Campaigns could not be loaded. Please try again.",
+        "notSent": "Not sent",
+        "noPromo": "No code",
+        "empty": {
+          "title": "No campaigns yet",
+          "body": "Create your first campaign to send it to your contacts and measure its conversions."
+        },
+        "columns": {
+          "campaign": "Campaign",
+          "locale": "Language",
+          "segment": "Segment",
+          "promoCode": "Code",
+          "status": "Status",
+          "sentAt": "Sent on",
+          "sent": "Sent",
+          "opens": "Unique opens",
+          "clicks": "Unique clicks",
+          "conversions": "Conversions",
+          "revenue": "Revenue"
+        },
+        "status": {
+          "DRAFT": "Draft",
+          "PARTIAL": "Partial",
+          "SENDING": "Sending",
+          "SENT": "Sent"
+        }
+      },
+      "contacts": {
+        "eyebrow": "Audience",
+        "heading": "Contacts",
+        "errorLoad": "Contacts could not be loaded. Please try again.",
+        "empty": "No contacts match these filters.",
+        "searchPlaceholder": "Search by email or name",
+        "filters": {
+          "source": "Source",
+          "status": "Status",
+          "allSources": "All sources",
+          "allStatuses": "All statuses"
+        },
+        "columns": {
+          "email": "Email",
+          "name": "Name",
+          "source": "Source",
+          "status": "Status",
+          "locale": "Language",
+          "createdAt": "Added",
+          "actions": "Actions"
+        },
+        "source": {
+          "FRIENDS_FAMILY": "Friends & family",
+          "WAITLIST": "Waitlist"
+        },
+        "status": {
+          "BOUNCED": "Bounced",
+          "SUBSCRIBED": "Subscribed",
+          "UNSUBSCRIBED": "Unsubscribed"
+        },
+        "actions": {
+          "resubscribe": "Resubscribe",
+          "resubscribing": "Resubscribing…",
+          "resubscribeError": "The contact could not be resubscribed. Please try again."
+        },
+        "form": {
+          "title": "Add friends & family",
+          "description": "Add contacts who will receive campaigns sent to the friends & family segment.",
+          "email": "Email",
+          "name": "Name (optional)",
+          "locale": "Language",
+          "tags": "Tags (optional)",
+          "tagsPlaceholder": "Comma separated",
+          "submit": "Add contact",
+          "submitting": "Adding…",
+          "success": "Contact added.",
+          "errors": {
+            "duplicate": "A contact with this email already exists.",
+            "generic": "The contact could not be added. Please try again.",
+            "invalid": "Check the details: name up to 120 characters and up to 20 tags of 50 characters.",
+            "invalidEmail": "Enter a valid email."
+          }
+        }
       }
     },
     "waitlist": {

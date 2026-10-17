@@ -1638,6 +1638,7 @@ export interface AdminDashboardDict {
   nav: {
     blog: string;
     dashboard: string;
+    emailCampaigns: string;
     experiences: string;
     newExperience: string;
     newPost: string;
@@ -1652,6 +1653,8 @@ export interface AdminDashboardDict {
     blog: { description: string; title: string };
     blogDetail: { description: string; title: string };
     blogNew: { description: string; title: string };
+    emailCampaignContacts: { description: string; title: string };
+    emailCampaigns: { description: string; title: string };
     experiences: { description: string; title: string };
     experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
@@ -1870,6 +1873,86 @@ export interface AdminXsedDict {
   };
 }
 
+/** Admin email campaigns: campaigns list (comparison view) and contacts. */
+export interface EmailCampaignsAdminDict {
+  tabs: { campaigns: string; contacts: string };
+  /** Keyed by `CampaignLocale`. */
+  locales: { en: string; es: string };
+  campaigns: {
+    eyebrow: string;
+    heading: string;
+    newCampaign: string;
+    errorLoad: string;
+    notSent: string;
+    noPromo: string;
+    empty: { title: string; body: string };
+    columns: {
+      campaign: string;
+      locale: string;
+      segment: string;
+      promoCode: string;
+      status: string;
+      sentAt: string;
+      sent: string;
+      opens: string;
+      clicks: string;
+      conversions: string;
+      revenue: string;
+    };
+    /** Keyed by `CampaignStatus`. */
+    status: { DRAFT: string; PARTIAL: string; SENDING: string; SENT: string };
+  };
+  contacts: {
+    eyebrow: string;
+    heading: string;
+    errorLoad: string;
+    empty: string;
+    searchPlaceholder: string;
+    filters: {
+      source: string;
+      status: string;
+      allSources: string;
+      allStatuses: string;
+    };
+    columns: {
+      email: string;
+      name: string;
+      source: string;
+      status: string;
+      locale: string;
+      createdAt: string;
+      actions: string;
+    };
+    /** Keyed by `ContactSource`. */
+    source: { FRIENDS_FAMILY: string; WAITLIST: string };
+    /** Keyed by `ContactStatus`. */
+    status: { BOUNCED: string; SUBSCRIBED: string; UNSUBSCRIBED: string };
+    actions: {
+      resubscribe: string;
+      resubscribing: string;
+      resubscribeError: string;
+    };
+    form: {
+      title: string;
+      description: string;
+      email: string;
+      name: string;
+      locale: string;
+      tags: string;
+      tagsPlaceholder: string;
+      submit: string;
+      submitting: string;
+      success: string;
+      errors: {
+        duplicate: string;
+        generic: string;
+        invalid: string;
+        invalidEmail: string;
+      };
+    };
+  };
+}
+
 export interface AdminPagesDict {
   home: {
     eyebrow: string;
@@ -2078,6 +2161,7 @@ export interface AdminPagesDict {
       ariaSortBy: string;
     };
   };
+  emailCampaigns: EmailCampaignsAdminDict;
   waitlist: {
     count: string;
     errorLoad: string;

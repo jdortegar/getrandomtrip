@@ -30,6 +30,12 @@ export function resolveAdminPageHeading(
   if (pathname === base("/blog") || pathname.startsWith(base("/blog/"))) {
     return headings.blog;
   }
+  if (pathname.startsWith(base("/email-campaigns/contacts"))) {
+    return headings.emailCampaignContacts;
+  }
+  if (pathname.startsWith(base("/email-campaigns"))) {
+    return headings.emailCampaigns;
+  }
   if (pathname.startsWith(base("/payments"))) return headings.payments;
   if (pathname.startsWith(base("/reviews"))) return headings.reviews;
   return headings.home;

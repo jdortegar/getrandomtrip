@@ -31,6 +31,9 @@ export type EmailEventType =
 /** A campaign is written in exactly one locale. */
 export type CampaignLocale = "es" | "en";
 
+/** Admin email campaigns secondary navigation views. */
+export type EmailCampaignsAdminView = "campaigns" | "contacts";
+
 export interface Contact {
   id: string;
   /** Always lowercase. */

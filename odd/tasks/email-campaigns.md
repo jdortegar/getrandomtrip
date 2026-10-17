@@ -152,7 +152,13 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 
 - `Payment.promoDiscountUsd Float?` added to schema and to the still-unapplied `20261017120000_email_campaigns` migration (matches `prisma migrate diff`). Shared parser `promoAttributionFromMetadata` in `src/lib/db/payment.ts` (discount only for finite values > 0) used by the webhook and confirm-payment; the already-settled backfill fills promo ids and discount in separate null-guarded writes. Metrics: column first, JSON fallback for older rows, null when none; summaries no longer select JSON columns.
 - RED: 6 tests failed. GREEN: 643/643 stripe + db + email-campaigns + admin API (parent re-run); prisma validate/generate, tsc, lint clean.
-- Status: uncommitted, awaiting user approval.
-- Remaining: T9 admin UI, T10 ops docs.
+- Commit: `2e527dec`. Independent verifier (range 4a5ba074..2e527dec): no blockers — both race orders correct, migration matches `prisma migrate diff`, parser identical across paths, summaries skip JSON; 651 tests + tsc clean. Lows: early event may backfill an id onto a row a thrown batch call marked FAILED (cosmetic; retry returns same id); JSON fallback accepts a 0 discount (pre-existing).
+
+### T9 — Admin UI (split into T9a and T9b)
+
+- T9a (route: delegated writer): nav entry, contacts page, campaigns list/comparison. User approved extra surfaces `src/components/common/StatusIndicatorBadge.tsx` + its test for `email-contact` / `email-campaign` badge families. Pattern: `AdminUsersPageClient.tsx` (TableFilterToolbar, TableQueryBoundary).
+- T9a done: badge families in `StatusIndicatorBadge.tsx`; nav tab "Email campaigns" (11 tabs) + headings (contacts own heading); pages `email-campaigns/page.tsx`, `email-campaigns/contacts/page.tsx`; components in `src/components/app/admin/email-campaigns/` (`EmailCampaignsSubnav`, `EmailCampaignsSectionHeader`, `CampaignsPageClient`, `CampaignsTable`, `ContactsPageClient`, `ContactsTable`, `AddContactForm`); copy `adminPages.emailCampaigns` + nav/heading keys in es/en, typed. RED: 12 tests + 2 missing-module files failed. GREEN: 69/69 targeted (parent re-run), 597/597 wider UI suites, tsc + lint clean (writer). Not done: manual responsive QA at 360/1280px; `/new` and `/[id]` links 404 until T9b. Status: uncommitted, awaiting user approval.
+- T9b: campaign editor (form, promo lookup, preview iframe, test send, send confirm) + detail page (metrics, recipients).
+- Remaining after T9: T10 ops docs.
 
 - Remaining: T8 metrics, T7b, T9 admin UI, T10 ops docs.
