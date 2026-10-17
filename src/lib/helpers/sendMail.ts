@@ -36,17 +36,30 @@ function getResendClient() {
 /** Marks emails sent from develop/preview so they can't pass for real ones. */
 const NONPRODUCTION_SUBJECT_PREFIX = "[TEST] ";
 
-export async function sendMail(params: SendMailParams) {
+/**
+ * Fails closed: only an explicit production or nonproduction runtime sends.
+ * Returns the subject transform for this deployment.
+ */
+function resolveDelivery(): { subject: (subject: string) => string } {
   const isProduction = isProductionDeployment();
-  // Fail closed: only an explicit production or nonproduction runtime sends.
   if (!isProduction && !isNonproductionDeployment()) {
     throw new Error("Email delivery is disabled for this deployment");
   }
-  const subject = isProduction
-    ? params.subject
-    : `${NONPRODUCTION_SUBJECT_PREFIX}${params.subject}`;
+  return {
+    subject: (subject) =>
+      isProduction ? subject : `${NONPRODUCTION_SUBJECT_PREFIX}${subject}`,
+  };
+}
+
+function resolveFrom(from?: string): string {
+  return from || process.env.EMAIL_FROM || "onboarding@resend.dev";
+}
+
+export async function sendMail(params: SendMailParams) {
+  const delivery = resolveDelivery();
+  const subject = delivery.subject(params.subject);
   const resend = getResendClient();
-  const from = params.from || process.env.EMAIL_FROM || "onboarding@resend.dev";
+  const from = resolveFrom(params.from);
 
   let content:
     | { react: React.ReactElement }
@@ -80,4 +93,76 @@ export async function sendMail(params: SendMailParams) {
 
   if (error) throw new Error(error.message || "Failed to send email");
   return data;
+}
+
+/** Resend's batch API limit per call. */
+export const MAX_BATCH_SIZE = 100;
+
+/** Resend tag; name and value allow only ASCII letters, digits, `_` and `-`. */
+export interface MailTag {
+  name: string;
+  value: string;
+}
+
+/** One email of a batch. Batches support neither attachments nor scheduling. */
+export interface BatchMailMessage {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+  from?: string;
+  headers?: Record<string, string>;
+  replyTo?: string;
+  tags?: MailTag[];
+}
+
+/** Per-message outcome, in the same order as the input messages. */
+export type BatchMailResult =
+  | { ok: true; id: string }
+  | { ok: false; error: string };
+
+/**
+ * Sends up to {@link MAX_BATCH_SIZE} emails in one Resend call. Same gating,
+ * sender and nonproduction subject prefix as `sendMail` (throws the same
+ * error when delivery is disabled). Validation is strict, so a provider
+ * error fails every message of the batch.
+ */
+export async function sendMailBatch(
+  messages: BatchMailMessage[],
+  options: { idempotencyKey?: string } = {},
+): Promise<BatchMailResult[]> {
+  const delivery = resolveDelivery();
+  if (messages.length > MAX_BATCH_SIZE) {
+    throw new Error(`A batch holds at most ${MAX_BATCH_SIZE} emails`);
+  }
+  if (messages.length === 0) return [];
+
+  const resend = getResendClient();
+  const { data, error } = await resend.batch.send(
+    messages.map((message) => ({
+      from: resolveFrom(message.from),
+      to: message.to,
+      subject: delivery.subject(message.subject),
+      html: message.html,
+      text: message.text,
+      headers: message.headers,
+      replyTo: message.replyTo,
+      tags: message.tags,
+    })),
+    options.idempotencyKey
+      ? { idempotencyKey: options.idempotencyKey }
+      : undefined,
+  );
+
+  if (error) {
+    const message = error.message || "Failed to send email";
+    return messages.map(() => ({ ok: false, error: message }));
+  }
+  // Strict batches return one id per email, in request order.
+  return messages.map((_, index) => {
+    const id = data?.data[index]?.id;
+    return id
+      ? { ok: true, id }
+      : { ok: false, error: "Provider returned no message id" };
+  });
 }

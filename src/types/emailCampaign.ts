@@ -158,7 +158,18 @@ export type CampaignErrorCode =
   | "not_found"
   | "campaign_not_editable"
   | "invalid_promo_code"
-  | "admin_email_missing";
+  | "admin_email_missing"
+  | "campaign_not_sendable"
+  | "campaign_empty_audience";
+
+/** Outcome of a send run. `failed` counts rows still QUEUED or FAILED. */
+export interface CampaignSendSummary {
+  status: Extract<CampaignStatus, "SENT" | "PARTIAL">;
+  /** Rows accepted by the provider (SENT, DELIVERED or BOUNCED). */
+  sent: number;
+  failed: number;
+  total: number;
+}
 
 /** Admin-facing view of a Stripe promotion code and its redemption rules. */
 export interface PromotionCodeSummary {

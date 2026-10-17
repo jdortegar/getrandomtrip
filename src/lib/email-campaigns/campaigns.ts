@@ -33,6 +33,8 @@ export const CAMPAIGN_ERROR_STATUS: Record<CampaignErrorCode, number> = {
   campaign_not_editable: 409,
   invalid_promo_code: 400,
   admin_email_missing: 400,
+  campaign_not_sendable: 409,
+  campaign_empty_audience: 400,
 };
 
 /** sendMail already prefixes this outside production. */

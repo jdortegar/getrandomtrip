@@ -107,4 +107,14 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Parent cleanup: shared `SETTLED_PAYMENT_STATUSES` in `src/lib/payments/settledStatuses.ts`, used by `checkout-quote.ts` and `promo.ts`.
 - RED: 8 test files failed on missing modules. GREEN: 274/274 across email-campaigns, templates, validation, admin API, payments, stripe, checkout (parent re-run); typecheck + lint pass.
 - Notes for later tasks: PATCH must send `ctaLabel` + `ctaUrl` together (T9); preview/test send reload the promo from Stripe per render — T6 must load once per campaign; preview must be shown in an iframe (T9). ~2,500 lines, mostly tests — kept as one coherent unit.
+- Commit: `82f982e4`. Assessment: high risk, RDD off → independent verifier: PASS (XSS-safe markdown/links, preview CSP sandbox, admin-only, test-send only to own email, DRAFT race-safe; 165 tests). Low: promo lookup lacked checkout's `active` preference → fixed with T6 (prefer active, fall back to inactive to show its rules; RED → GREEN).
+
+### T6 — Sending (route: delegated writer; resumed once after a rate limit)
+
+- Files: `src/lib/helpers/sendMail.ts` (shared gating/prefix/sender helpers + `sendMailBatch`, ≤100, idempotency key, headers, tags, per-message results), `src/lib/email-campaigns/sending.ts` (`getCampaignAudienceCount`, `sendCampaign`: atomic claim DRAFT|PARTIAL|stale SENDING>10min, rows created once, retry only QUEUED/FAILED, unsubscribed rows deleted, promo loaded once, per-recipient unsubscribe URL + headers, chunked batch, updatedAt heartbeat, final SENT|PARTIAL), `campaigns.ts` (`campaign_not_sendable` 409, `campaign_empty_audience` 400), routes `[id]/audience` (GET) and `[id]/send` (POST), tests.
+- Writer decisions: BOUNCED rows count as sent; an unresolvable/inactive promo blocks the send (400 `invalid_promo_code`); disabled delivery marks the chunk FAILED → PARTIAL.
+- RED: sendMailBatch, sending module and routes failed before implementation. GREEN: 151/151 email-campaigns + admin API + sendMail (parent re-run incl. promo fix); eslint clean; tsc clean except an unrelated in-progress file from another session (`DashboardRoleShell.tsx`).
+- Safety finding: `sendMail` has NO nonproduction recipient restriction (only a `[TEST]` subject prefix) → a campaign sent from develop/preview reaches real subscribed contacts. Proposed guard pending user decision.
+- Risks: synchronous send inside the request (fine at ~10 contacts; Netlify timeout for large audiences); a batch is all-or-nothing per chunk; relation filter in `deleteMany` only exercised against mocks.
 - Status: uncommitted, awaiting user approval.
+- Remaining after T6: T7 webhook, T8 metrics, T9 admin UI, T10 ops docs.

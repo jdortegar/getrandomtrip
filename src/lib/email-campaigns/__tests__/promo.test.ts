@@ -55,7 +55,7 @@ describe("lookupPromotionCode", () => {
 
     expect(stripe.promotionCodes.list).toHaveBeenCalledWith({
       code: "FUNDADOR30",
-      limit: 1,
+      limit: 10,
     });
     expect(stripe.coupons.retrieve).toHaveBeenCalledWith("co_1");
     expect(prisma.payment.count).toHaveBeenCalledWith({
@@ -123,6 +123,20 @@ describe("lookupPromotionCode", () => {
     stripe.promotionCodes.list.mockResolvedValue({ data: [promotion()] });
     stripe.coupons.retrieve.mockResolvedValue({ ...coupon, valid: false });
     expect((await lookupPromotionCode("FUNDADOR30"))?.active).toBe(false);
+  });
+
+  it("prefers the active code when inactive codes share its text", async () => {
+    stripe.promotionCodes.list.mockResolvedValue({
+      data: [
+        promotion({ id: "promo_old", active: false }),
+        promotion({ id: "promo_live" }),
+      ],
+    });
+
+    const summary = await lookupPromotionCode("FUNDADOR30");
+
+    expect(summary?.id).toBe("promo_live");
+    expect(summary?.active).toBe(true);
   });
 
   it("returns null for unknown or blank codes", async () => {

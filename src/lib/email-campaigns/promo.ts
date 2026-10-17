@@ -34,8 +34,10 @@ export async function lookupPromotionCode(
   if (!code) return null;
 
   const stripe = getStripe();
-  const promotion = (await stripe.promotionCodes.list({ code, limit: 1 }))
-    .data[0];
+  // Inactive codes can share the text of the live one; checkout only matches
+  // active codes, so prefer it and fall back to an inactive one to show why.
+  const { data } = await stripe.promotionCodes.list({ code, limit: 10 });
+  const promotion = data.find((candidate) => candidate.active) ?? data[0];
   if (!promotion) return null;
 
   const ref = promotion.promotion.coupon;
