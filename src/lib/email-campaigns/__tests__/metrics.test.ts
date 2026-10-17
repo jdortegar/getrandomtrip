@@ -40,6 +40,7 @@ type PaymentRow = {
   paidAt: Date | null;
   amount: number;
   currency: string;
+  promoDiscountUsd: number | null;
   providerResponse: unknown;
   webhookData: unknown;
   user: { email: string };
@@ -102,6 +103,14 @@ function groupBy(args: { by: string[]; where?: Where }) {
   return [...groups.values()];
 }
 
+/** Top-level `select` projection, so tests see only the columns the module asks for. */
+function project<T extends object>(row: T, select: Record<string, unknown> | undefined) {
+  if (!select) return row;
+  return Object.fromEntries(
+    Object.entries(row).filter(([key]) => Boolean(select[key])),
+  ) as Partial<T>;
+}
+
 function day(n: number) {
   return new Date(Date.UTC(2026, 9, n));
 }
@@ -126,6 +135,7 @@ function payment(partial: Partial<PaymentRow> & { id: string }): PaymentRow {
     paidAt: day(12),
     amount: 100,
     currency: "USD",
+    promoDiscountUsd: null,
     providerResponse: null,
     webhookData: null,
     user: { email: `${partial.id}@buyer.test` },
@@ -154,8 +164,13 @@ beforeEach(() => {
       .sort((a, b) => a.email.localeCompare(b.email))
       .map((row) => ({ ...row, events: eventsFor(row, args.select?.events) }))) as never);
   vi.mocked(prisma.campaignSend.groupBy).mockImplementation(groupBy as never);
-  vi.mocked(prisma.payment.findMany).mockImplementation((async (args: { where?: Where }) =>
-    db.payments.filter((row) => matches(row, args.where))) as never);
+  vi.mocked(prisma.payment.findMany).mockImplementation((async (args: {
+    where?: Where;
+    select?: Record<string, unknown>;
+  }) =>
+    db.payments
+      .filter((row) => matches(row, args.where))
+      .map((row) => project(row, args.select))) as never);
 });
 
 describe("getCampaignMetrics", () => {
@@ -271,6 +286,27 @@ describe("getCampaignMetrics", () => {
       otherCurrencyConversions: 1,
     });
   });
+
+  it("prefers the stored discount column and falls back to JSON for older rows", async () => {
+    db.payments = [
+      payment({
+        id: "p1",
+        promoDiscountUsd: 25,
+        webhookData: { data: { object: { metadata: { discountAmountUsd: "99" } } } },
+      }),
+      payment({ id: "p2", promoDiscountUsd: 10.25 }),
+      payment({ id: "p3", providerResponse: { metadata: { discountAmountUsd: "5" } } }),
+      payment({ id: "p4" }),
+    ];
+
+    expect((await getCampaignMetrics("c1"))?.discountTotal).toBe(40.25);
+  });
+
+  it("keeps the discount total null when no conversion has discount data", async () => {
+    db.payments = [payment({ id: "p1" }), payment({ id: "p2", webhookData: "garbage" })];
+
+    expect((await getCampaignMetrics("c1"))?.discountTotal).toBeNull();
+  });
 });
 
 describe("readDiscountAmountUsd", () => {
@@ -373,6 +409,13 @@ describe("getCampaignSummaries", () => {
     ]);
     expect(prisma.campaignSend.findMany).not.toHaveBeenCalled();
     expect(prisma.payment.findMany).toHaveBeenCalledTimes(1);
+    // Summaries never report discounts, so the stored Stripe JSON stays unread.
+    const [{ select }] = vi.mocked(prisma.payment.findMany).mock.calls[0] as [
+      { select: Record<string, unknown> },
+    ];
+    expect(select).not.toHaveProperty("providerResponse");
+    expect(select).not.toHaveProperty("webhookData");
+    expect(select).not.toHaveProperty("promoDiscountUsd");
   });
 
   it("skips the payment query when no campaign has a sent promo", async () => {

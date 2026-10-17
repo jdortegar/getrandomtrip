@@ -4,7 +4,11 @@ const mocks = vi.hoisted(() => ({ constructEvent: vi.fn(), update: vi.fn() }));
 vi.mock("@/lib/stripe", () => ({
   getStripe: () => ({ webhooks: { constructEvent: mocks.constructEvent } }),
 }));
-vi.mock("@/lib/db/payment", () => ({
+vi.mock("@/lib/prisma", () => ({ prisma: {} }));
+vi.mock("@/lib/db/payment", async (importOriginal) => ({
+  // The real metadata parser runs, so route tests cover the stored values.
+  promoAttributionFromMetadata: (await importOriginal<typeof import("@/lib/db/payment")>())
+    .promoAttributionFromMetadata,
   updatePaymentFromStripeWebhook: mocks.update,
 }));
 import { POST } from "../route";
@@ -108,7 +112,7 @@ it("persists the checkout promo code from succeeded intent metadata", async () =
         status: "succeeded",
         created: 1,
         livemode: false,
-        metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123" },
+        metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123", discountAmountUsd: "30.5" },
       },
     },
   });
@@ -118,12 +122,13 @@ it("persists the checkout promo code from succeeded intent metadata", async () =
     expect.objectContaining({
       promoCode: "FUNDADOR30",
       stripePromotionCodeId: "promo_123",
+      promoDiscountUsd: 30.5,
     }),
     expect.anything(),
     false,
   );
 });
-it.each([{}, { promoCode: "", promoCodeId: "" }, undefined])(
+it.each([{}, { promoCode: "", promoCodeId: "", discountAmountUsd: "0" }, undefined])(
   "leaves promo columns untouched without promo metadata (%o)",
   async (metadata) => {
     mocks.constructEvent.mockReturnValue({
@@ -136,6 +141,27 @@ it.each([{}, { promoCode: "", promoCodeId: "" }, undefined])(
     const [, data] = mocks.update.mock.calls[0];
     expect(data.promoCode).toBeUndefined();
     expect(data.stripePromotionCodeId).toBeUndefined();
+    expect(data.promoDiscountUsd).toBeUndefined();
+  },
+);
+it.each(["", "abc", "-5", "0", "Infinity", 30])(
+  "leaves the promo discount unset for invalid metadata (%o)",
+  async (discountAmountUsd) => {
+    mocks.constructEvent.mockReturnValue({
+      type: "payment_intent.succeeded",
+      data: {
+        object: {
+          id: "pi_test",
+          status: "succeeded",
+          created: 1,
+          metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123", discountAmountUsd },
+        },
+      },
+    });
+    expect((await POST(request())).status).toBe(200);
+    const [, data] = mocks.update.mock.calls[0];
+    expect(data.stripePromotionCodeId).toBe("promo_123");
+    expect(data.promoDiscountUsd).toBeUndefined();
   },
 );
 it("does not attribute a promo code to a failed intent", async () => {
@@ -146,11 +172,12 @@ it("does not attribute a promo code to a failed intent", async () => {
         id: "pi_test",
         status: "requires_payment_method",
         created: 1,
-        metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123" },
+        metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123", discountAmountUsd: "30" },
       },
     },
   });
   expect((await POST(request())).status).toBe(200);
   const [, data] = mocks.update.mock.calls[0];
   expect(data.stripePromotionCodeId).toBeUndefined();
+  expect(data.promoDiscountUsd).toBeUndefined();
 });

@@ -146,6 +146,13 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Done (route: delegated writer; 2+ non-trivial files): `parseResendEvent` reads `send_id` (object or array tags); `findSend` falls back to the tagged send only when its `resendMessageId` is null or equal, backfilled with a guarded `updateMany` in the event transaction; webhook transitions accept QUEUED; `sending.ts` `resultWrites` guards SENT/FAILED on QUEUED|FAILED and fills `resendMessageId`/`sentAt` only where null.
 - RED: 24 tests failed (6 webhook, 18 sending). GREEN: 221/221 email-campaigns + webhooks + admin API (parent re-run); tsc + eslint clean (writer).
 - Risk: guarded writes only exercised via the in-memory fake.
+- Commit: `bf147d15`.
+
+### T8b — Persist promo discount on Payment (route: delegated writer; user chose column over a "known for X of Y" count)
+
+- `Payment.promoDiscountUsd Float?` added to schema and to the still-unapplied `20261017120000_email_campaigns` migration (matches `prisma migrate diff`). Shared parser `promoAttributionFromMetadata` in `src/lib/db/payment.ts` (discount only for finite values > 0) used by the webhook and confirm-payment; the already-settled backfill fills promo ids and discount in separate null-guarded writes. Metrics: column first, JSON fallback for older rows, null when none; summaries no longer select JSON columns.
+- RED: 6 tests failed. GREEN: 643/643 stripe + db + email-campaigns + admin API (parent re-run); prisma validate/generate, tsc, lint clean.
 - Status: uncommitted, awaiting user approval.
+- Remaining: T9 admin UI, T10 ops docs.
 
 - Remaining: T8 metrics, T7b, T9 admin UI, T10 ops docs.

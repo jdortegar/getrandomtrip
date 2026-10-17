@@ -251,9 +251,10 @@ export interface CampaignMetrics {
    */
   revenue: number;
   /**
-   * Sum of the checkout discount (`discountAmountUsd` PaymentIntent metadata)
-   * over all conversions, in major USD units. `null` when no conversion has
-   * that metadata stored.
+   * Sum of the checkout discount over all conversions, in major USD units:
+   * `Payment.promoDiscountUsd`, or for older rows without it the
+   * `discountAmountUsd` PaymentIntent metadata in the stored Stripe JSON.
+   * `null` when no conversion has any discount data.
    */
   discountTotal: number | null;
   /** Uppercase ISO 4217 code of `revenue`. Checkout charges USD only. */

@@ -559,6 +559,9 @@ model Payment {
   // Promo attribution, copied from PaymentIntent metadata on settlement
   promoCode             String? // Code the buyer typed, uppercased (e.g. 'FUNDADOR30')
   stripePromotionCodeId String? // Stripe promotion code id ('promo_...')
+  /// Discount granted by the promo code, in major USD units (e.g. 30.5 = USD 30.50),
+  /// from PaymentIntent metadata `discountAmountUsd`. Null when unknown or no discount.
+  promoDiscountUsd      Float?
 
   @@index([stripePromotionCodeId])
   @@map("payments")

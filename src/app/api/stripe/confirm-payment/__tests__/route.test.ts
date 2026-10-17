@@ -13,7 +13,11 @@ vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/stripe", () => ({
   getStripe: () => ({ paymentIntents: { retrieve: mocks.retrieve } }),
 }));
-vi.mock("@/lib/db/payment", () => ({
+vi.mock("@/lib/prisma", () => ({ prisma: {} }));
+vi.mock("@/lib/db/payment", async (importOriginal) => ({
+  // The real metadata parser runs, so route tests cover the stored values.
+  promoAttributionFromMetadata: (await importOriginal<typeof import("@/lib/db/payment")>())
+    .promoAttributionFromMetadata,
   findPaymentByStripeIntentId: mocks.find,
   findPaymentByProviderId: mocks.findLegacy,
   updatePaymentFromStripeWebhook: mocks.update,
@@ -69,12 +73,12 @@ it("stores the checkout promo code from the verified intent metadata", async () 
     status: "succeeded",
     created: 1,
     livemode: true,
-    metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123" },
+    metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123", discountAmountUsd: "30" },
   });
   expect((await POST(request())).status).toBe(200);
   expect(mocks.update).toHaveBeenCalledWith(
     "pi_test",
-    expect.objectContaining({ promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123" }),
+    expect.objectContaining({ promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123", promoDiscountUsd: 30 }),
     undefined,
     true,
   );
@@ -87,12 +91,28 @@ it("leaves promo columns unset when checkout applied no promo", async () => {
     status: "succeeded",
     created: 1,
     livemode: true,
-    metadata: { promoCode: "", promoCodeId: "" },
+    metadata: { promoCode: "", promoCodeId: "", discountAmountUsd: "0" },
   });
   await POST(request());
   const data = mocks.update.mock.calls[0][1];
   expect(data.promoCode).toBeUndefined();
   expect(data.stripePromotionCodeId).toBeUndefined();
+  expect(data.promoDiscountUsd).toBeUndefined();
+});
+
+it("leaves the promo discount unset for malformed metadata", async () => {
+  mocks.find.mockResolvedValue({ userId: "buyer" });
+  mocks.retrieve.mockResolvedValue({
+    id: "pi_test",
+    status: "succeeded",
+    created: 1,
+    livemode: true,
+    metadata: { promoCode: "FUNDADOR30", promoCodeId: "promo_123", discountAmountUsd: "abc" },
+  });
+  await POST(request());
+  const data = mocks.update.mock.calls[0][1];
+  expect(data.stripePromotionCodeId).toBe("promo_123");
+  expect(data.promoDiscountUsd).toBeUndefined();
 });
 
 it("takes live mode only from Stripe, not the browser request", async () => {

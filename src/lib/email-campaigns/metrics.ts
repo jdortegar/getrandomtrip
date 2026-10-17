@@ -46,9 +46,14 @@ type ConversionPayment = {
   currency: string;
   paidAt: Date | null;
   stripePromotionCodeId: string | null;
+  user: { email: string };
+};
+
+/** A conversion loaded with its discount sources (report path only). */
+type DiscountedConversionPayment = ConversionPayment & {
+  promoDiscountUsd: number | null;
   providerResponse: unknown;
   webhookData: unknown;
-  user: { email: string };
 };
 
 type RecipientIdentity = {
@@ -94,8 +99,13 @@ export function readDiscountAmountUsd(json: unknown): number | null {
   return null;
 }
 
-function paymentDiscount(payment: ConversionPayment): number | null {
+/**
+ * The persisted `promoDiscountUsd` column wins; rows settled before it existed
+ * fall back to the discount in the stored Stripe JSON, when there is any.
+ */
+function paymentDiscount(payment: DiscountedConversionPayment): number | null {
   return (
+    payment.promoDiscountUsd ??
     readDiscountAmountUsd(payment.webhookData) ??
     readDiscountAmountUsd(payment.providerResponse)
   );
@@ -118,24 +128,48 @@ function tracksConversions(
   return Boolean(campaign.stripePromotionCodeId && campaign.sentAt);
 }
 
+const conversionSelect = {
+  id: true,
+  userId: true,
+  amount: true,
+  currency: true,
+  paidAt: true,
+  stripePromotionCodeId: true,
+  user: { select: { email: true } },
+} satisfies Prisma.PaymentSelect;
+
 /** Settled payments with the given codes; the per-campaign `sentAt` cut-off is applied by callers. */
-function findSettledPromoPayments(promotionCodeIds: string[]) {
+function settledPromoPaymentsWhere(promotionCodeIds: string[]) {
+  return {
+    stripePromotionCodeId: { in: promotionCodeIds },
+    status: { in: SETTLED_PAYMENT_STATUSES },
+    paidAt: { not: null },
+  } satisfies Prisma.PaymentWhereInput;
+}
+
+/** Summaries never report discounts, so they never load the Stripe JSON columns. */
+function findSettledPromoPayments(promotionCodeIds: string[]): Promise<ConversionPayment[]> {
   return prisma.payment.findMany({
-    where: {
-      stripePromotionCodeId: { in: promotionCodeIds },
-      status: { in: SETTLED_PAYMENT_STATUSES },
-      paidAt: { not: null },
-    },
+    where: settledPromoPaymentsWhere(promotionCodeIds),
+    select: conversionSelect,
+  });
+}
+
+/**
+ * Same payments plus their discount sources, for the single-campaign report:
+ * `promoDiscountUsd` and the Stripe JSON columns that back the fallback for
+ * older rows (bounded by one campaign's conversions).
+ */
+function findSettledDiscountedPromoPayments(
+  promotionCodeIds: string[],
+): Promise<DiscountedConversionPayment[]> {
+  return prisma.payment.findMany({
+    where: settledPromoPaymentsWhere(promotionCodeIds),
     select: {
-      id: true,
-      userId: true,
-      amount: true,
-      currency: true,
-      paidAt: true,
-      stripePromotionCodeId: true,
+      ...conversionSelect,
+      promoDiscountUsd: true,
       providerResponse: true,
       webhookData: true,
-      user: { select: { email: true } },
     },
   });
 }
@@ -196,7 +230,7 @@ export async function getCampaignReport(
   });
 
   const payments = tracksConversions(campaign)
-    ? (await findSettledPromoPayments([campaign.stripePromotionCodeId])).filter(
+    ? (await findSettledDiscountedPromoPayments([campaign.stripePromotionCodeId])).filter(
         (payment) => paidAfterSend(campaign, payment),
       )
     : [];

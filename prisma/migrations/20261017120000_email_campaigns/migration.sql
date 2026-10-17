@@ -1,7 +1,8 @@
 -- Additive only. Apply through the approved deployment database workflow before code rollout.
 -- Email campaigns: marketing contacts (waitlist + friends & family), campaigns, per-recipient
 -- sends and Resend webhook events. payments.promoCode / stripePromotionCodeId attribute a
--- settled payment to the Stripe promotion code a campaign distributed.
+-- settled payment to the Stripe promotion code a campaign distributed; payments.promoDiscountUsd
+-- keeps the discount it granted (major USD units) for campaign metrics.
 -- Idempotent: every statement is guarded so a partial or repeated apply is safe.
 BEGIN;
 SET LOCAL lock_timeout = '5s';
@@ -33,7 +34,8 @@ END $$;
 
 ALTER TABLE "payments"
   ADD COLUMN IF NOT EXISTS "promoCode" TEXT,
-  ADD COLUMN IF NOT EXISTS "stripePromotionCodeId" TEXT;
+  ADD COLUMN IF NOT EXISTS "stripePromotionCodeId" TEXT,
+  ADD COLUMN IF NOT EXISTS "promoDiscountUsd" DOUBLE PRECISION;
 
 CREATE INDEX IF NOT EXISTS "payments_stripePromotionCodeId_idx"
   ON "payments"("stripePromotionCodeId");
