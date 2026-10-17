@@ -37,7 +37,7 @@ export function NotificationListRow({
     <li>
       <div
         className={cn(
-          "flex items-start gap-4 px-5 py-4 transition-colors",
+          "flex items-center gap-4 px-5 py-4 transition-colors",
           isRead ? "bg-white" : "bg-sky-50/40",
           selected && "bg-secondary/10",
         )}
@@ -46,7 +46,7 @@ export function NotificationListRow({
         <input
           aria-label={copy.table.selectRow}
           checked={checked}
-          className="mt-2.5 h-4 w-4 shrink-0 rounded border-gray-300"
+          className="h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300"
           onChange={() => onToggleChecked(id)}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={(e) => e.stopPropagation()}
@@ -55,7 +55,7 @@ export function NotificationListRow({
 
         <button
           aria-current={selected}
-          className="flex min-w-0 flex-1 items-start gap-4 text-left"
+          className="flex min-w-0 flex-1 cursor-pointer items-center gap-4 text-left"
           onClick={() => onOpen(id)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") onOpen(id);

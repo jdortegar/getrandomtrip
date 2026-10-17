@@ -305,6 +305,54 @@ describe("POST /api/reviews", () => {
     });
   });
 
+  describe("admin notification", () => {
+    async function submit(extra: Record<string, unknown>) {
+      (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(baseTripRequest);
+      (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+        async (fn: (tx: typeof prisma) => Promise<unknown>) => fn(prisma),
+      );
+      (prisma.review.create as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "review-1" });
+      const mod = (await import("../route")) as RouteModule;
+      return mod.POST(
+        makePostRequest({ token: "valid-token-abc", rating: 4, content: "Great trip!", ...extra }),
+      );
+    }
+
+    function notifications(): Array<Record<string, unknown>> {
+      return (prisma.notification.createMany as ReturnType<typeof vi.fn>).mock.calls[0]?.[0]?.data;
+    }
+
+    it("includes a body with the rating and review text", async () => {
+      (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+        { id: "admin-1", locale: null },
+      ]);
+      await submit({ title: "Loved it" });
+      const [notif] = notifications();
+      expect(notif.title).toBe("Nueva reseña (Randomtrip)");
+      expect(notif.body).toBe('Calificación: 4/5 — "Loved it"');
+    });
+
+    it("localizes title and body per admin locale and falls back to content", async () => {
+      (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+        { id: "admin-en", locale: "en" },
+      ]);
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ name: "Ana" });
+      await submit({});
+      const [notif] = notifications();
+      expect(notif.title).toBe("New review for Ana");
+      expect(notif.body).toBe('Rating: 4/5 — "Great trip!"');
+    });
+
+    it("truncates long review text in the body", async () => {
+      (prisma.user.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
+        { id: "admin-1", locale: "es" },
+      ]);
+      await submit({ content: "a".repeat(300) });
+      const [notif] = notifications();
+      expect(notif.body).toBe(`Calificación: 4/5 — "${"a".repeat(140)}…"`);
+    });
+  });
+
   it("works without auth header (Scenario 4.10 — public endpoint)", async () => {
     (prisma.tripRequest.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(baseTripRequest);
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
