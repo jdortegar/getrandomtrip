@@ -54,7 +54,7 @@ when there is no UI change.
 Put a brief description of what each image shows immediately above its embedded
 image. Use only that description and the image: no generic labels or headings such
 as “Screenshots.” Use image URLs that render for PR readers: the commit-pinned
-`pr-assets` URLs that `pr-shots.mjs publish` prints (see
+`pr-assets/<branch>` URLs that `pr-shots.mjs publish` prints (see
 [Screenshots](screenshots.md)).
 
 For each prompt, write its text as ordinary Markdown paragraphs, then a blank line,

@@ -40,8 +40,8 @@ authorize running the workflow or publishing a PR.
    repository's relevant checks; commit and push only within the authorization
    boundary above. Build the final body after any needed commits exist.
 3. For UI changes, capture screenshots and view each one before publishing it,
-   per [Screenshots](references/screenshots.md). Images publish only after the
-   PR exists, so create it first and add them with `gh pr edit`.
+   per [Screenshots](references/screenshots.md). They publish to the PR's own
+   `pr-assets/<head branch>` orphan branch, so they can go in the first body.
 4. Before publication, compare prompts with their sources and check rendered
    images, prompt/blockquote boundaries, and commit links.
 5. When publication is requested, use a temporary body file outside the repository
@@ -61,5 +61,5 @@ prepared description or blocker without implying publication.
   selecting prompt history or writing a PR description.
 - [Screenshots](references/screenshots.md) — required before capturing or
   publishing UI screenshots.
-- [pr-shots.mjs](scripts/pr-shots.mjs) — Playwright capture and `pr-assets`
-  publishing; pure helpers tested in `pr-shots.test.mjs`.
+- [pr-shots.mjs](scripts/pr-shots.mjs) — Playwright capture and per-PR
+  `pr-assets/<branch>` publishing; pure helpers tested in `pr-shots.test.mjs`.

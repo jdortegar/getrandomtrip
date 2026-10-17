@@ -8,8 +8,8 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-/** Orphan branch holding PR screenshots; never merged into develop/main. */
-export const ASSETS_BRANCH = "pr-assets";
+/** Prefix of the per-PR orphan branches holding screenshots; never merged. */
+export const ASSETS_PREFIX = "pr-assets/";
 export const MANIFEST = "manifest.json";
 /** Same sizes as the `desktop` / `mobile` projects in playwright.config.ts. */
 export const VIEWPORTS = {
@@ -133,9 +133,16 @@ export function parseRemote(url) {
   return `${match[1]}/${match[2]}`;
 }
 
-export function assetPath(pr, name) {
-  if (!/^\d+$/.test(String(pr))) throw new Error(`invalid PR number "${pr}"`);
-  return `pr-${pr}/${name}.png`;
+/** One orphan branch per PR, named after its head branch. */
+export function assetsBranchFor(branch) {
+  if (!branch || branch === "HEAD" || branch.startsWith(ASSETS_PREFIX)) {
+    throw new Error(`invalid PR head branch "${branch}" (pass --branch)`);
+  }
+  return `${ASSETS_PREFIX}${branch}`;
+}
+
+export function assetPath(name) {
+  return `${name}.png`;
 }
 
 export function rawUrl(nameWithOwner, commit, file) {
@@ -244,15 +251,20 @@ async function cmdCapture({ spec: specFile, out, "base-url": baseUrlFlag }) {
 }
 
 /**
- * Commit the PNGs onto the orphan assets branch with git plumbing (temporary
- * index, no checkout), so a busy working tree is never touched.
+ * Commit the PNGs onto the PR's orphan assets branch with git plumbing
+ * (temporary index, no checkout), so a busy working tree is never touched.
+ * Republishing adds a commit on top, replacing images with the same name.
  */
-function cmdPublish({ pr, dir, "dry-run": dryRun }) {
-  if (!pr || !dir) throw new Error(USAGE);
+function cmdPublish({ branch: branchFlag, dir, "dry-run": dryRun }) {
+  if (!dir) throw new Error(USAGE);
+  const branch =
+    typeof branchFlag === "string" ? branchFlag : git(["rev-parse", "--abbrev-ref", "HEAD"]);
+  const assetsBranch = assetsBranchFor(branch);
   const manifest = JSON.parse(readFileSync(path.join(dir, MANIFEST), "utf8"));
   const nameWithOwner = parseRemote(git(["remote", "get-url", "origin"]));
-  tryGit(["fetch", "--quiet", "origin", `${ASSETS_BRANCH}:refs/remotes/origin/${ASSETS_BRANCH}`]);
-  const parent = tryGit(["rev-parse", "--verify", "--quiet", `refs/remotes/origin/${ASSETS_BRANCH}`]);
+  const remoteRef = `refs/remotes/origin/${assetsBranch}`;
+  tryGit(["fetch", "--quiet", "origin", `+refs/heads/${assetsBranch}:${remoteRef}`]);
+  const parent = tryGit(["rev-parse", "--verify", "--quiet", remoteRef]);
 
   const tmp = mkdtempSync(path.join(os.tmpdir(), "pr-shots-"));
   const env = { ...process.env, GIT_INDEX_FILE: path.join(tmp, "index") };
@@ -262,25 +274,25 @@ function cmdPublish({ pr, dir, "dry-run": dryRun }) {
     else git(["read-tree", "--empty"], { env });
     for (const entry of manifest) {
       const blob = git(["hash-object", "-w", entry.file]);
-      git(["update-index", "--add", "--cacheinfo", `100644,${blob},${assetPath(pr, entry.name)}`], { env });
+      git(["update-index", "--add", "--cacheinfo", `100644,${blob},${assetPath(entry.name)}`], { env });
     }
     const tree = git(["write-tree"], { env });
     commit = git(
-      ["commit-tree", tree, ...(parent ? ["-p", parent] : []), "-m", `chore: screenshots for PR #${pr}`],
+      ["commit-tree", tree, ...(parent ? ["-p", parent] : []), "-m", `docs: PR screenshots for ${branch}`],
       { env },
     );
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
 
-  if (dryRun) console.log(`dry run: built ${commit}, not pushed`);
-  else git(["push", "--quiet", "origin", `${commit}:refs/heads/${ASSETS_BRANCH}`]);
+  if (dryRun) console.log(`dry run: built ${commit} for ${assetsBranch}, not pushed`);
+  else git(["push", "--quiet", "origin", `${commit}:refs/heads/${assetsBranch}`]);
 
   console.log(
     `\n${markdownFor(
       manifest.map((entry) => ({
         description: entry.description,
-        url: rawUrl(nameWithOwner, commit, assetPath(pr, entry.name)),
+        url: rawUrl(nameWithOwner, commit, assetPath(entry.name)),
       })),
     )}`,
   );
@@ -290,7 +302,7 @@ function cmdPublish({ pr, dir, "dry-run": dryRun }) {
 
 const USAGE = `usage: pr-shots.mjs <command>
   capture --spec <spec.json> --out <dir outside repo> [--base-url <url>]
-  publish --pr <number> --dir <capture out dir> [--dry-run]`;
+  publish --dir <capture out dir> [--branch <PR head branch>] [--dry-run]`;
 
 export async function main(argv) {
   const { cmd, flags } = parseArgs(argv);

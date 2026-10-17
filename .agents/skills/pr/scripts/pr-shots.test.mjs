@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import {
   assetPath,
+  assetsBranchFor,
   credentialsEnvFor,
   isAllowedBaseUrl,
   markdownFor,
@@ -147,16 +148,27 @@ describe("parseRemote / assetPath / rawUrl", () => {
     expect(() => parseRemote("https://gitlab.com/a/b")).toThrow(/GitHub/);
   });
 
-  it("builds a commit-pinned raw URL under the PR folder", () => {
-    expect(assetPath(280, "notification-modal")).toBe(
-      "pr-280/notification-modal.png",
-    );
-    expect(() => assetPath("abc", "x")).toThrow(/PR number/);
+  it("stores each image at the root of the per-PR assets branch", () => {
+    expect(assetPath("notification-modal")).toBe("notification-modal.png");
     expect(
-      rawUrl("jdortegar/getrandomtrip", "abc123", "pr-280/x.png"),
+      rawUrl("jdortegar/getrandomtrip", "abc123", "x.png"),
     ).toBe(
-      "https://raw.githubusercontent.com/jdortegar/getrandomtrip/abc123/pr-280/x.png",
+      "https://raw.githubusercontent.com/jdortegar/getrandomtrip/abc123/x.png",
     );
+  });
+});
+
+describe("assetsBranchFor", () => {
+  it("prefixes the PR head branch", () => {
+    expect(assetsBranchFor("fix/review-notification-body")).toBe(
+      "pr-assets/fix/review-notification-body",
+    );
+  });
+
+  it("refuses a missing, detached, or already-prefixed branch", () => {
+    expect(() => assetsBranchFor("")).toThrow(/branch/);
+    expect(() => assetsBranchFor("HEAD")).toThrow(/branch/);
+    expect(() => assetsBranchFor("pr-assets/x")).toThrow(/branch/);
   });
 });
 

@@ -6,8 +6,9 @@ Capture rendered UI with Playwright and embed it in the PR description.
 
 ## Privacy gate (public repository)
 
-This repository is public, and published screenshots live on the public
-`pr-assets` branch forever (deleting a file does not remove it from history).
+This repository is public, and published screenshots live on a public
+`pr-assets/<branch>` branch. Treat them as permanent: forks and caches can keep
+them after the branch is deleted.
 
 - Capture only from `localhost` or a Netlify deploy preview. The script refuses
   production because it holds real customer data.
@@ -86,17 +87,26 @@ it should show. Recapture until each image is right.
 
 ## 4. Publish
 
-The PR must exist first; its number names the asset folder.
+Run from the PR head checkout, or pass its branch explicitly:
 
 ```bash
-node .agents/skills/pr/scripts/pr-shots.mjs publish --pr <number> --dir <capture dir> [--dry-run]
+node .agents/skills/pr/scripts/pr-shots.mjs publish --dir <capture dir> [--branch <PR head branch>] [--dry-run]
 ```
 
-`publish` commits the PNGs to `pr-<number>/` on the orphan `pr-assets` branch
-with git plumbing (no checkout, working tree untouched) and pushes it. It prints
-Markdown with each description above its image, pinned to the asset commit's
-raw URL. `--dry-run` builds the commit without pushing.
+`publish` commits the PNGs to the root of the orphan branch
+`pr-assets/<PR head branch>` with git plumbing (no checkout, working tree
+untouched) and pushes it. Republishing adds a commit on top and replaces images
+with the same name. It prints Markdown with each description above its image,
+pinned to the asset commit's raw URL. `--dry-run` builds the commit without
+pushing.
 
 Paste that Markdown at the top of the description, then update the PR with
 `gh pr edit --body-file`. Read the published body back and confirm each image
 URL returns `200`.
+
+## Cleanup
+
+Image URLs are pinned to the asset commit, so they break once the branch is
+deleted and GitHub garbage-collects it. Keep `pr-assets/<branch>` while the PR
+description matters; delete it only with the user's confirmation
+(`git push origin --delete pr-assets/<branch>`).
