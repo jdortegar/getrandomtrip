@@ -10,6 +10,8 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
+import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
+import { SourceTranslationIncompleteError } from "@/lib/blog/legacy-translation-mapping";
 import { sendMail } from "@/lib/helpers/sendMail";
 import BlogApproved, { subjects as approvedSubjects } from "@/emails/BlogApproved";
 
@@ -76,6 +78,9 @@ export async function POST(
           where: { id: params.id },
           data: { reviewNote },
         });
+        // Publishing requires a complete source translation; throwing here
+        // rolls the overwrite back. Full review-row cloning lands with T5.
+        await syncTranslationsForPost(tx, params.id, { requireCompleteSource: true });
 
         await (tx.blogPost.delete as any)({ where: { id: existingCopy.id } });
         return finalResult ?? result;
@@ -83,14 +88,18 @@ export async function POST(
     } else {
       // Direct approve path (no copy)
 
-      updated = await (prisma.blogPost.update as any)({
-        where: { id: params.id },
-        data: {
-          status: "PUBLISHED",
-          isActive: true,
-          publishedAt: blog.publishedAt ?? new Date(),
-          reviewNote,
-        },
+      updated = await (prisma.$transaction as any)(async (tx: any) => {
+        const result = await (tx.blogPost.update as any)({
+          where: { id: params.id },
+          data: {
+            status: "PUBLISHED",
+            isActive: true,
+            publishedAt: blog.publishedAt ?? new Date(),
+            reviewNote,
+          },
+        });
+        await syncTranslationsForPost(tx, params.id, { requireCompleteSource: true });
+        return result;
       });
     }
 
@@ -150,6 +159,16 @@ export async function POST(
 
     return NextResponse.json({ blog: updated });
   } catch (error) {
+    if (error instanceof SourceTranslationIncompleteError) {
+      return NextResponse.json(
+        {
+          error: error.code,
+          locale: error.locale,
+          message: "The source translation must be complete to publish.",
+        },
+        { status: 400 },
+      );
+    }
     console.error("[admin/blogs/approve] POST", error);
     return NextResponse.json(
       { error: "Internal server error" },

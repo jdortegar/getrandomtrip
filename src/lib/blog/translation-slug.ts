@@ -1,4 +1,6 @@
+import { z } from "zod";
 import { slugify } from "@/lib/helpers/slugify";
+import { CONTENT_LOCALES } from "./locales";
 
 const FALLBACK_SLUG = "post";
 const DEFAULT_MAX_ATTEMPTS = 1000;
@@ -37,3 +39,12 @@ export function shouldRegenerateSlug({
 }): boolean {
   return explicitRegenerate || !publishedAt;
 }
+
+/** Optional PATCH field: `{ [locale]: true }` regenerates that locale's
+ * frozen (published) slug from its current title. */
+export const regenerateSlugInputSchema = z.partialRecord(
+  z.enum(CONTENT_LOCALES),
+  z.boolean(),
+);
+
+export type RegenerateSlugInput = z.infer<typeof regenerateSlugInputSchema>;

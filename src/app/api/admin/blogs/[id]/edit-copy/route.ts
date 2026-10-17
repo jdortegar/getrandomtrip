@@ -13,6 +13,7 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
 import { prisma } from "@/lib/prisma";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
@@ -92,7 +93,10 @@ export async function PATCH(
     const labelValue = normalizeBlogLabel(label);
     // No XSED admin-gate here: this whole route is admin-only already.
 
-    const updated = await (prisma.blogPost.update as any)({
+    // Dual-write: the copy's legacy columns + its translation rows (slug null)
+    // in one transaction so they never diverge.
+    const updated = await prisma.$transaction(async (tx) => {
+      const written = await (tx.blogPost.update as any)({
       where: { id: params.id },
       data: {
         ...(title !== undefined && { title }),
@@ -112,6 +116,9 @@ export async function PATCH(
         ...(seo !== undefined && { seo: seo || null }),
         // slug is intentionally never written here — copies have no public slug.
       },
+      });
+      await syncTranslationsFromLegacy(tx, written);
+      return written;
     });
 
     return NextResponse.json({ blog: updated });

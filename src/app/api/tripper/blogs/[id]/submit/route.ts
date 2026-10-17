@@ -13,6 +13,11 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { getBlogCompleteness } from "@/lib/helpers/blog-form";
 import { sendBlogSubmitted } from "@/lib/email";
+import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
+import {
+  isLegacyLocaleComplete,
+  resolveSourceLocale,
+} from "@/lib/blog/legacy-translation-mapping";
 
 export async function POST(
   _request: Request,
@@ -48,6 +53,9 @@ export async function POST(
       title: string;
       coverUrl: string | null;
       content: string | null;
+      blocks?: unknown;
+      translations?: unknown;
+      sourceLocale?: string | null;
       source: "TRIPPER" | "RANDOMTRIP";
     } | null;
 
@@ -84,6 +92,19 @@ export async function POST(
       );
     }
 
+    // Submitting (or auto-publishing) requires a complete source translation.
+    const sourceLocale = resolveSourceLocale(blog.sourceLocale);
+    if (!isLegacyLocaleComplete(blog, sourceLocale)) {
+      return NextResponse.json(
+        {
+          error: "source_translation_incomplete",
+          locale: sourceLocale,
+          message: "The source translation must be complete to submit.",
+        },
+        { status: 400 },
+      );
+    }
+
     // RANDOMTRIP (admin-created) posts skip PENDING_REVIEW entirely — there's
     // no human review step, so this IS the publish action.
     const isRandomtrip = blog.source === "RANDOMTRIP";
@@ -109,7 +130,7 @@ export async function POST(
       }
 
 
-      return (tx.blogPost.update as any)({
+      const result = await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: {
           status: targetStatus,
@@ -118,6 +139,9 @@ export async function POST(
         },
         select: { id: true, status: true },
       });
+      // Keep translation rows in step with the legacy columns (dual-write).
+      await syncTranslationsForPost(tx, params.id);
+      return result;
     }) as { id: string; status: string };
 
     if (targetStatus === "PENDING_REVIEW") {

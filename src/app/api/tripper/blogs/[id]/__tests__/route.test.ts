@@ -11,15 +11,23 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: { findFirst: vi.fn(), update: vi.fn() },
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsFromLegacy: vi.fn(),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "user@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
@@ -695,5 +703,115 @@ describe("DELETE /api/tripper/blogs/[id]", () => {
 
     expect(res.status).toBe(204);
     expect(prisma.blogPost.delete).toHaveBeenCalledWith({ where: { id: "blog-1" } });
+  });
+});
+
+describe("PATCH /api/tripper/blogs/[id] — translation dual-write and sourceLocale", () => {
+  const completeEn = { title: "Trip", content: "<p>English</p>" };
+  const patch = async (body: Record<string, unknown>) => {
+    const mod = (await import("../route")) as RouteModule;
+    return mod.PATCH(makePatchRequest(body), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({
+        ...baseBlog("tripper-1"),
+        ...data,
+      }),
+    );
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("writes the legacy columns and syncs translation rows in the same transaction", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const txUpdate = vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({
+      ...baseBlog("tripper-1"),
+      ...data,
+    }));
+    const tx = { blogPost: { update: txUpdate } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      (fn: (client: unknown) => unknown) => fn(tx),
+    );
+
+    const res = await patch({
+      content: "<p>Nuevo</p>",
+      translations: { en: completeEn },
+      regenerateSlug: { es: true },
+    });
+
+    expect(res.status).toBe(200);
+    expect(txUpdate.mock.calls[0][0].data).toMatchObject({
+      content: "<p>Nuevo</p>",
+      translations: { en: { ...completeEn, ready: true } },
+    });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+    expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(
+      tx,
+      expect.objectContaining({
+        id: "blog-1",
+        content: "<p>Nuevo</p>",
+        isReviewCopy: false,
+      }),
+      { regenerateSlug: { es: true } },
+    );
+  });
+
+  it("rejects a malformed regenerateSlug with 400 before writing", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const res = await patch({ regenerateSlug: { fr: true } });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe("invalid_regenerate_slug");
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unsupported sourceLocale with 400", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const res = await patch({ sourceLocale: "fr" });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe("invalid_source_locale");
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects changing sourceLocale to a locale whose translation is incomplete", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "es", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({
+      error: "source_locale_incomplete",
+      locale: "en",
+    });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("accepts changing sourceLocale to a locale completed in the same request", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "es", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en", translations: { en: completeEn } });
+    expect(res.status).toBe(200);
+    expect(
+      (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data,
+    ).toMatchObject({ sourceLocale: "en" });
+  });
+
+  it("does not re-check an unchanged sourceLocale", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "en", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en", subtitle: "Otro" });
+    expect(res.status).toBe(200);
   });
 });

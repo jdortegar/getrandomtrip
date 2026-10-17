@@ -15,6 +15,9 @@ import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getRandomtripUserId } from "@/lib/randomtrip-user";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import { isLegacyLocaleComplete } from "@/lib/blog/legacy-translation-mapping";
+import { contentLocaleSchema } from "@/lib/blog/locales";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -190,6 +193,39 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
+    // sourceLocale defaults to the column default ('es'); any other source
+    // must already have a complete translation.
+    const sourceLocaleInput = contentLocaleSchema
+      .optional()
+      .safeParse(body.sourceLocale);
+    if (!sourceLocaleInput.success) {
+      return NextResponse.json(
+        {
+          error: "invalid_source_locale",
+          message: "Unsupported source locale.",
+        },
+        { status: 400 },
+      );
+    }
+    const sourceLocale = sourceLocaleInput.data;
+    if (
+      sourceLocale !== undefined &&
+      sourceLocale !== "es" &&
+      !isLegacyLocaleComplete(
+        { title, content, blocks, translations },
+        sourceLocale,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error: "source_locale_incomplete",
+          locale: sourceLocale,
+          message: "The source locale must have a complete translation.",
+        },
+        { status: 400 },
+      );
+    }
+
     const levelValue: string | null = level && level !== "" ? level : null;
     if (levelValue !== null && !isValidExperienceLevel(levelValue)) {
       return NextResponse.json({ error: "Invalid level" }, { status: 400 });
@@ -234,52 +270,64 @@ export async function POST(request: NextRequest) {
       slug = `${baseSlug}-${suffix}`;
     }
 
-    const blog = await prisma.blogPost.create({
-      data: {
-        authorId,
-        createdById: user.id,
-        title,
-        slug,
-        subtitle: subtitle || null,
-        tagline: tagline || null,
-        content: content ?? null,
-        blocks: blocks || [],
-        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
-        faq: faq ?? null,
-        tags: tags || [],
-        excuseKey: excuseKeyValue,
-        travelType: travelTypeValue,
-        level: levelValue,
-        label: normalizeBlogLabel(label) ?? null,
-        format: prismaFormat,
-        coverUrl: coverUrl || null,
-        seo: seo || null,
-        source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
-      },
-      select: {
-        id: true,
-        authorId: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        translations: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        excuseKey: true,
-        level: true,
-        label: true,
-        format: true,
-        status: true,
-        isActive: true,
-        seo: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-      },
+    // Dual-write: legacy columns + translation rows in one transaction so
+    // they never diverge.
+    const blog = await prisma.$transaction(async (tx) => {
+      const created = await tx.blogPost.create({
+        data: {
+          authorId,
+          createdById: user.id,
+          title,
+          slug,
+          subtitle: subtitle || null,
+          tagline: tagline || null,
+          content: content ?? null,
+          blocks: blocks || [],
+          ...(translations !== undefined && {
+            translations:
+              translations === null
+                ? Prisma.DbNull
+                : (translations as Prisma.InputJsonValue),
+          }),
+          faq: faq ?? null,
+          tags: tags || [],
+          excuseKey: excuseKeyValue,
+          travelType: travelTypeValue,
+          level: levelValue,
+          label: normalizeBlogLabel(label) ?? null,
+          format: prismaFormat,
+          coverUrl: coverUrl || null,
+          seo: seo || null,
+          source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
+          ...(sourceLocale !== undefined && { sourceLocale }),
+        },
+        select: {
+          id: true,
+          authorId: true,
+          title: true,
+          subtitle: true,
+          tagline: true,
+          coverUrl: true,
+          content: true,
+          blocks: true,
+          translations: true,
+          faq: true,
+          tags: true,
+          travelType: true,
+          excuseKey: true,
+          level: true,
+          label: true,
+          format: true,
+          status: true,
+          isActive: true,
+          seo: true,
+          createdAt: true,
+          updatedAt: true,
+          publishedAt: true,
+        },
+      });
+      await syncTranslationsFromLegacy(tx, { ...created, isReviewCopy: false });
+      return created;
     });
 
     // Transform to match frontend type

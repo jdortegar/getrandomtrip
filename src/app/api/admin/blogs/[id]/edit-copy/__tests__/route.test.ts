@@ -11,15 +11,23 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: { findUnique: vi.fn(), update: vi.fn() },
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsFromLegacy: vi.fn(),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "admin@example.com" } });
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
@@ -213,5 +221,55 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
       params: Promise.resolve({ id: "copy-1" }),
     });
     expect(res.status).toBe(404);
+  });
+});
+
+describe("PATCH /api/admin/blogs/[id]/edit-copy — translation dual-write", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("writes the copy's legacy columns and syncs its translation rows in the same transaction", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "PENDING_REVIEW",
+    });
+    const written = {
+      id: "copy-1",
+      isReviewCopy: true,
+      title: "Nuevo",
+      translations: { en: { title: "New", content: "<p>Body</p>", ready: true } },
+    };
+    const txUpdate = vi.fn().mockResolvedValue(written);
+    const tx = { blogPost: { update: txUpdate } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      (fn: (client: unknown) => unknown) => fn(tx),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(
+      makePatchRequest("copy-1", {
+        title: "Nuevo",
+        translations: { en: { title: "New", content: "<p>Body</p>" } },
+      }),
+      { params: Promise.resolve({ id: "copy-1" }) },
+    );
+
+    expect(res.status).toBe(200);
+    expect(txUpdate.mock.calls[0][0].data).toMatchObject({
+      title: "Nuevo",
+      translations: { en: { title: "New", content: "<p>Body</p>", ready: true } },
+    });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+    expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(tx, written);
   });
 });

@@ -15,6 +15,13 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import {
+  isLegacyLocaleComplete,
+  resolveSourceLocale,
+} from "@/lib/blog/legacy-translation-mapping";
+import { contentLocaleSchema } from "@/lib/blog/locales";
+import { regenerateSlugInputSchema } from "@/lib/blog/translation-slug";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -253,6 +260,53 @@ export async function PATCH(
       );
     }
 
+    // Explicit per-locale slug regeneration (published slugs are frozen).
+    const regenerateSlugInput = regenerateSlugInputSchema
+      .optional()
+      .safeParse(body.regenerateSlug);
+    if (!regenerateSlugInput.success) {
+      return NextResponse.json(
+        { error: "invalid_regenerate_slug", message: "Invalid slug regeneration request." },
+        { status: 400 },
+      );
+    }
+
+    // sourceLocale may only change to a locale whose translation is complete
+    // once this request is applied.
+    const sourceLocaleInput = contentLocaleSchema.optional().safeParse(body.sourceLocale);
+    if (!sourceLocaleInput.success) {
+      return NextResponse.json(
+        { error: "invalid_source_locale", message: "Unsupported source locale." },
+        { status: 400 },
+      );
+    }
+    const sourceLocale = sourceLocaleInput.data;
+    const sourceLocaleChanged =
+      sourceLocale !== undefined &&
+      sourceLocale !== resolveSourceLocale(existingBlog.sourceLocale);
+    if (
+      sourceLocaleChanged &&
+      !isLegacyLocaleComplete(
+        {
+          title: title ?? existingBlog.title,
+          content: content !== undefined ? (content ?? null) : existingBlog.content,
+          blocks: blocks !== undefined ? blocks : existingBlog.blocks,
+          translations:
+            translations !== undefined ? translations : existingBlog.translations,
+        },
+        sourceLocale,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error: "source_locale_incomplete",
+          locale: sourceLocale,
+          message: "The source locale must have a complete translation.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Revert to DRAFT only if a reviewable content field actually changed.
     // Autosave fires on mount even when nothing changed — we must not
     // penalise no-ops, and review-mechanism fields (tripperNote, slug,
@@ -340,6 +394,7 @@ export async function PATCH(
     // Publishing/unpublishing an already-approved post never touches status
     // or triggers re-review.
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (sourceLocaleChanged) updateData.sourceLocale = sourceLocale;
 
     // Status is never accepted from the client — transitions only happen via
     // the guarded submit/approve/reject/copy endpoints. The one exception is
@@ -351,34 +406,43 @@ export async function PATCH(
       updateData.isActive = false;
     }
 
-    // Update blog in database
-    const updatedBlog = await prisma.blogPost.update({
-      where: { id: blogId },
-      data: updateData,
-      select: {
-        id: true,
-        authorId: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        translations: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        excuseKey: true,
-        level: true,
-        label: true,
-        format: true,
-        status: true,
-        isActive: true,
-        seo: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-      },
+    // Dual-write: legacy columns + translation rows in one transaction so
+    // they never diverge.
+    const updatedBlog = await prisma.$transaction(async (tx) => {
+      const updated = await tx.blogPost.update({
+        where: { id: blogId },
+        data: updateData,
+        select: {
+          id: true,
+          authorId: true,
+          title: true,
+          subtitle: true,
+          tagline: true,
+          coverUrl: true,
+          content: true,
+          blocks: true,
+          translations: true,
+          faq: true,
+          tags: true,
+          travelType: true,
+          excuseKey: true,
+          level: true,
+          label: true,
+          format: true,
+          status: true,
+          isActive: true,
+          seo: true,
+          createdAt: true,
+          updatedAt: true,
+          publishedAt: true,
+        },
+      });
+      await syncTranslationsFromLegacy(
+        tx,
+        { ...updated, isReviewCopy: false },
+        { regenerateSlug: regenerateSlugInput.data },
+      );
+      return updated;
     });
 
     // Transform to match frontend type

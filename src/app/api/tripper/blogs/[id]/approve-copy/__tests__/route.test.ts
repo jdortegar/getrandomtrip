@@ -26,10 +26,15 @@ vi.mock("@/lib/email", () => ({
   sendBlogCopyApproved: vi.fn(),
 }));
 
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsForPost: vi.fn(),
+}));
+
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
 import { sendBlogCopyApproved } from "@/lib/email";
+import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "tripper@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
@@ -154,5 +159,60 @@ describe("POST /api/tripper/blogs/[id]/approve-copy", () => {
     expect(res.status).toBe(404);
     const body = await res.json();
     expect(body.error).toBe("no_copy");
+  });
+});
+
+describe("POST /api/tripper/blogs/[id]/approve-copy — source translation rules", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({ id: "blog-1", authorId: "tripper-1", status: "PENDING_TRIPPER_REVIEW" })
+      .mockResolvedValueOnce({ id: "copy-1" });
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("syncs the published original's translation rows inside the approve transaction", async () => {
+    const tx = { blogPost: { delete: vi.fn() } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (cb: (client: unknown) => unknown) => cb(tx),
+    );
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(makePostRequest("blog-1"), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+    expect(res.status).toBe(200);
+    expect(syncTranslationsForPost).toHaveBeenCalledWith(tx, "blog-1", {
+      requireCompleteSource: true,
+    });
+  });
+
+  it("returns 400 and sends no email when the source translation is incomplete", async () => {
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (cb: (client: unknown) => unknown) => cb({ blogPost: { delete: vi.fn() } }),
+    );
+    const mod = (await import("../route")) as RouteModule;
+    // Same module graph as the route (modules are reset between tests).
+    const { SourceTranslationIncompleteError } = await import(
+      "@/lib/blog/legacy-translation-mapping"
+    );
+    (syncTranslationsForPost as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new SourceTranslationIncompleteError("es"),
+    );
+    const res = await mod.POST(makePostRequest("blog-1"), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({
+      error: "source_translation_incomplete",
+      locale: "es",
+    });
+    expect(sendBlogCopyApproved).not.toHaveBeenCalled();
   });
 });

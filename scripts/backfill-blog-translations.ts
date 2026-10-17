@@ -27,15 +27,18 @@
  */
 import type { PrismaClient } from "@prisma/client";
 import { withPrisma } from "./lib/withPrisma";
-import { normalizeBlogTranslations } from "../src/lib/blog/content-locale";
+import {
+  legacyEnglishTranslation,
+  legacySpanishTranslation,
+  type TranslationRowData,
+} from "../src/lib/blog/legacy-translation-mapping";
 import { CONTENT_LOCALES } from "../src/lib/blog/locales";
-import { isBlogTranslationComplete } from "../src/lib/blog/translation-completeness";
-import { blogBlockSchema } from "../src/lib/blog/translation-schema";
 import { resolveUniqueSlug, slugForTitle } from "../src/lib/blog/translation-slug";
-import type { BlogBlock, ContentLocale } from "../src/types/blog";
+import type { ContentLocale } from "../src/types/blog";
+
+export type { TranslationRowData };
 
 const LOG_PREFIX = "[backfill-blog-translations]";
-const MEDIA_TYPES = new Set(["image", "video", "embed"]);
 
 export type BackfillMode = "dry-run" | "apply" | "diff-only";
 
@@ -54,18 +57,6 @@ export interface LegacyBlogPostRow {
   publishedAt: Date | null;
   isReviewCopy: boolean;
   createdAt: Date;
-}
-
-/** Localized content written to one translation row (slug planned separately). */
-export interface TranslationRowData {
-  title: string;
-  subtitle: string | null;
-  tagline: string | null;
-  content: string | null;
-  blocks: unknown[];
-  faq: unknown;
-  seo: unknown;
-  isComplete: boolean;
 }
 
 export interface ExistingTranslationRow {
@@ -167,81 +158,6 @@ export function diffTranslationFields(
   );
 }
 
-function asBlocks(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
-}
-
-function isMediaBlock(block: unknown): boolean {
-  return (
-    !!block &&
-    typeof block === "object" &&
-    MEDIA_TYPES.has((block as { type?: unknown }).type as string) &&
-    typeof (block as { url?: unknown }).url === "string"
-  );
-}
-
-function computeIsComplete(data: Omit<TranslationRowData, "isComplete">): boolean {
-  // Legacy JSON is untyped: only schema-valid blocks feed completeness.
-  const blocks = data.blocks.filter(
-    (block) => blogBlockSchema.safeParse(block).success,
-  ) as BlogBlock[];
-  return isBlogTranslationComplete({
-    title: data.title,
-    content: data.content,
-    blocks,
-  });
-}
-
-function withCompleteness(
-  data: Omit<TranslationRowData, "isComplete">,
-): TranslationRowData {
-  return { ...data, isComplete: computeIsComplete(data) };
-}
-
-function spanishData(post: LegacyBlogPostRow): TranslationRowData {
-  return withCompleteness({
-    title: post.title,
-    subtitle: post.subtitle ?? null,
-    tagline: post.tagline ?? null,
-    content: post.content ?? null,
-    blocks: asBlocks(post.blocks),
-    faq: post.faq ?? null,
-    seo: post.seo ?? null,
-  });
-}
-
-type EnglishResult =
-  | { kind: "none" }
-  | { kind: "invalid"; error: string }
-  | { kind: "valid"; data: TranslationRowData };
-
-function englishData(post: LegacyBlogPostRow): EnglishResult {
-  let normalized: ReturnType<typeof normalizeBlogTranslations>;
-  try {
-    normalized = normalizeBlogTranslations(post.translations);
-  } catch (error) {
-    return {
-      kind: "invalid",
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
-  const en = normalized?.en;
-  if (!en) return { kind: "none" };
-  const spanishMedia = asBlocks(post.blocks).filter(isMediaBlock);
-  return {
-    kind: "valid",
-    data: withCompleteness({
-      title: en.title ?? "",
-      subtitle: en.subtitle ?? null,
-      tagline: en.tagline ?? null,
-      content: en.content ?? null,
-      blocks: [...(en.blocks ?? []), ...spanishMedia],
-      faq: en.faq ?? null,
-      seo: en.seo ?? null,
-    }),
-  };
-}
-
 function byCreatedAtThenId(a: LegacyBlogPostRow, b: LegacyBlogPostRow): number {
   const time = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
   if (time !== 0) return time;
@@ -287,12 +203,12 @@ export async function planBlogTranslationBackfill(
   let slugCollisionsResolved = 0;
 
   for (const post of ordered) {
-    const english = englishData(post);
+    const english = legacyEnglishTranslation(post);
     if (english.kind === "invalid")
       invalidEnJson.push({ postId: post.id, error: english.error });
 
     const byLocale: Partial<Record<ContentLocale, TranslationRowData>> = {
-      es: spanishData(post),
+      es: legacySpanishTranslation(post),
       ...(english.kind === "valid" ? { en: english.data } : {}),
     };
 

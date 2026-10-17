@@ -8,8 +8,8 @@ vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/randomtrip-user", () => ({
   getRandomtripUserId: vi.fn(async () => "owner"),
 }));
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: {
       findFirst: vi.fn(),
@@ -19,9 +19,16 @@ vi.mock("@/lib/prisma", () => ({
       create: vi.fn(),
       update: vi.fn(),
     },
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsFromLegacy: vi.fn(),
 }));
 import { prisma } from "@/lib/prisma";
+import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
 import { POST, GET as getManagementList } from "@/app/api/tripper/blogs/route";
 import {
   PATCH,
@@ -91,6 +98,51 @@ beforeEach(() => {
 });
 
 describe("localized write boundary", () => {
+  it("dual-writes: every write route keeps the legacy columns and syncs rows in the same transaction", async () => {
+    const translations = { en: { ...en, ready: true } };
+    await POST(
+      request("/api/tripper/blogs", { title: "Español", translations: { en } }, "POST"),
+    );
+    vi.mocked(prisma.blogPost.findFirst).mockResolvedValue({
+      ...base,
+      status: "DRAFT",
+    } as never);
+    await PATCH(request("/api/tripper/blogs/post", { translations: { en } }), params);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: "owner",
+      roles: ["ADMIN"],
+    } as never);
+    vi.mocked(prisma.blogPost.findUnique).mockResolvedValue({
+      ...base,
+      isReviewCopy: true,
+    } as never);
+    vi.mocked(prisma.blogPost.update).mockImplementationOnce(
+      ({ data }) => Promise.resolve({ ...base, isReviewCopy: true, ...data }) as never,
+    );
+    await patchCopy(
+      request("/api/admin/blogs/post/edit-copy", { translations: { en } }),
+      params,
+    );
+
+    expect(vi.mocked(prisma.blogPost.create).mock.calls[0][0].data).toMatchObject({
+      title: "Español",
+      translations,
+    });
+    expect(vi.mocked(prisma.blogPost.update).mock.calls[0][0].data).toMatchObject({
+      translations,
+    });
+    expect(vi.mocked(prisma.blogPost.update).mock.calls[1][0].data).toMatchObject({
+      translations,
+    });
+    expect(prisma.$transaction).toHaveBeenCalledTimes(3);
+    const synced = vi.mocked(syncTranslationsFromLegacy).mock.calls;
+    expect(synced).toHaveLength(3);
+    for (const [tx, post] of synced) {
+      expect(tx).toBe(prisma);
+      expect(post).toMatchObject({ translations });
+    }
+    expect(synced[2][1]).toMatchObject({ isReviewCopy: true });
+  });
   it("saves partial translation drafts but ignores forged readiness", async () => {
     const response = await POST(
       request(
