@@ -85,6 +85,12 @@ export interface ContactUpdateInput {
 }
 
 /** Contact operation failures the admin API maps to 409 / 404 / 400. */
+/**
+ * Outcome of a recipient unsubscribe. `unchanged` covers contacts already
+ * UNSUBSCRIBED or BOUNCED; neither is an error for the recipient.
+ */
+export type UnsubscribeResult = "unsubscribed" | "unchanged" | "not_found";
+
 export type ContactErrorCode =
   | "duplicate_email"
   | "not_found"

@@ -8,6 +8,7 @@ vi.mock("@/lib/prisma", () => ({
       findMany: vi.fn(),
       findUnique: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     user: { findFirst: vi.fn() },
   },
@@ -18,13 +19,14 @@ import {
   ContactError,
   createFriendsFamilyContact,
   listContacts,
+  unsubscribeContact,
   updateContact,
   upsertWaitlistContact,
 } from "../contacts";
 
 const mocked = prisma as unknown as {
   contact: Record<
-    "count" | "create" | "findMany" | "findUnique" | "update",
+    "count" | "create" | "findMany" | "findUnique" | "update" | "updateMany",
     ReturnType<typeof vi.fn>
   >;
   user: { findFirst: ReturnType<typeof vi.fn> };
@@ -255,5 +257,46 @@ describe("updateContact", () => {
       where: { id: "c1" },
       data: { name: "Ana", locale: "en", tags: ["vip"] },
     });
+  });
+});
+
+describe("unsubscribeContact", () => {
+  it("moves a SUBSCRIBED contact to UNSUBSCRIBED with a timestamp", async () => {
+    mocked.contact.updateMany.mockResolvedValue({ count: 1 });
+
+    await expect(unsubscribeContact("c1")).resolves.toBe("unsubscribed");
+
+    expect(mocked.contact.updateMany).toHaveBeenCalledWith({
+      where: { id: "c1", status: "SUBSCRIBED" },
+      data: { status: "UNSUBSCRIBED", unsubscribedAt: expect.any(Date) },
+    });
+    expect(mocked.contact.findUnique).not.toHaveBeenCalled();
+  });
+
+  it("leaves a BOUNCED contact unchanged", async () => {
+    mocked.contact.updateMany.mockResolvedValue({ count: 0 });
+    mocked.contact.findUnique.mockResolvedValue(
+      contactRow({ status: "BOUNCED" }),
+    );
+
+    await expect(unsubscribeContact("c1")).resolves.toBe("unchanged");
+    expect(mocked.contact.update).not.toHaveBeenCalled();
+  });
+
+  it("is idempotent for an already UNSUBSCRIBED contact", async () => {
+    mocked.contact.updateMany.mockResolvedValue({ count: 0 });
+    mocked.contact.findUnique.mockResolvedValue(
+      contactRow({ status: "UNSUBSCRIBED", unsubscribedAt: new Date() }),
+    );
+
+    await expect(unsubscribeContact("c1")).resolves.toBe("unchanged");
+    expect(mocked.contact.update).not.toHaveBeenCalled();
+  });
+
+  it("reports an unknown id as not_found without throwing", async () => {
+    mocked.contact.updateMany.mockResolvedValue({ count: 0 });
+    mocked.contact.findUnique.mockResolvedValue(null);
+
+    await expect(unsubscribeContact("missing")).resolves.toBe("not_found");
   });
 });

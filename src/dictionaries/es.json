@@ -1672,6 +1672,19 @@
     "reasonUsed": "Este enlace ya fue utilizado.",
     "reasonMissing": "No se encontró un token de verificación."
   },
+  "emailUnsubscribe": {
+    "eyebrow": "Preferencias de email",
+    "title": "Darte de baja de nuestros emails",
+    "body": "Confirmá abajo y dejaremos de enviarte newsletters y campañas de GetRandomTrip. Los emails sobre tus viajes y tu cuenta no se ven afectados.",
+    "confirmCta": "Darme de baja",
+    "pending": "Procesando baja…",
+    "successTitle": "Te diste de baja",
+    "successBody": "No vas a recibir más emails de campañas de nuestra parte.",
+    "invalidTitle": "Este enlace no es válido",
+    "invalidBody": "Usá el enlace de baja de tu último email de GetRandomTrip.",
+    "error": "No pudimos procesar tu solicitud. Intentá de nuevo.",
+    "homeCta": "Volver al inicio"
+  },
   "resetPasswordPage": {
     "title": "Restablecer contraseña",
     "subtitle": "Elige una nueva contraseña para tu cuenta.",

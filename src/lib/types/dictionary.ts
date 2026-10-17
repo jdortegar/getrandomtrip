@@ -2622,6 +2622,21 @@ export interface VerifyEmailPageDict {
   reasonMissing: string;
 }
 
+/** Public campaign unsubscribe page (`/{locale}/unsubscribe`). */
+export interface EmailUnsubscribeDict {
+  eyebrow: string;
+  title: string;
+  body: string;
+  confirmCta: string;
+  pending: string;
+  successTitle: string;
+  successBody: string;
+  invalidTitle: string;
+  invalidBody: string;
+  error: string;
+  homeCta: string;
+}
+
 export interface ResetPasswordPageDict {
   title: string;
   subtitle: string;
@@ -3279,6 +3294,7 @@ export interface MarketingDictionary {
     referredByRequired: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
+  emailUnsubscribe: EmailUnsubscribeDict;
   resetPasswordPage: ResetPasswordPageDict;
   tripperInviteAccept: TripperInviteAcceptDict;
   home: {

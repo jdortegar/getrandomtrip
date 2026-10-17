@@ -20,6 +20,7 @@ import type {
   ContactListResult,
   ContactUpdateInput,
   FriendsFamilyContactInput,
+  UnsubscribeResult,
   WaitlistContactInput,
 } from "@/types/emailCampaign";
 
@@ -183,4 +184,26 @@ export async function updateContact(
 
   const updated = await prisma.contact.update({ where: { id }, data });
   return toContact(updated);
+}
+
+/**
+ * Recipient unsubscribe (decision 6). Idempotent: only a SUBSCRIBED contact
+ * changes; BOUNCED stays BOUNCED and an already UNSUBSCRIBED contact keeps
+ * its original `unsubscribedAt`. The conditional update makes concurrent
+ * clicks safe without a read-then-write race.
+ */
+export async function unsubscribeContact(
+  id: string,
+): Promise<UnsubscribeResult> {
+  const { count } = await prisma.contact.updateMany({
+    where: { id, status: "SUBSCRIBED" },
+    data: { status: "UNSUBSCRIBED", unsubscribedAt: new Date() },
+  });
+  if (count > 0) return "unsubscribed";
+
+  const existing = await prisma.contact.findUnique({
+    select: { id: true },
+    where: { id },
+  });
+  return existing ? "unchanged" : "not_found";
 }

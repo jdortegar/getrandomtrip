@@ -91,4 +91,12 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 
 - `src/app/api/stripe/confirm-payment/route.ts` sets `promoCode` / `stripePromotionCodeId` from verified intent metadata (empty → unset), so fallback-settled payments count immediately.
 - RED: "stores the checkout promo code from the verified intent metadata" failed. GREEN: stripe + db 418/418, typecheck, eslint pass.
+- Commit: `b5d13987`. Paging bound fix: `295996cd`.
+
+### T4 — Unsubscribe (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `src/lib/email-campaigns/unsubscribeToken.ts` (HMAC-SHA256 `EMAIL_UNSUBSCRIBE_SECRET`, `buildUnsubscribeUrl(contactId, locale)` via `canonicalUrl`, `buildUnsubscribeHeaders(contactId)` → API URL + one-click), `unsubscribeContact` in `contacts.ts` (conditional `updateMany`, BOUNCED untouched), `src/app/api/email/unsubscribe/route.ts` (POST, token from query or JSON), `src/app/[locale]/unsubscribe/page.tsx` (noindex), `src/components/app/email-campaigns/UnsubscribeClient.tsx` (moved by parent from `src/components/email-campaigns/` per component-patterns), `sendMail` `headers` passthrough, `emailUnsubscribe` dictionary section es/en + type, `env.example`.
+- Parent addition: `/unsubscribe` in `GATE_EXEMPT_ROUTES` (`src/components/waitlist/GateAwareChrome.tsx`) — the marketing gate is client-side; middleware is `src/proxy.ts` and skips `/api`. RED: 2 new gate tests failed, then GREEN.
+- RED (writer): 5 test files failed before implementation. GREEN: 52/52 across gate, email-campaigns, unsubscribe API, sendMail (parent re-run); typecheck + lint pass.
+- Notes: rotating `EMAIL_UNSUBSCRIBE_SECRET` invalidates sent links; ~820 authored lines (mostly tests) — over the advisory heuristic, kept as one coherent unit.
 - Status: uncommitted, awaiting user approval.

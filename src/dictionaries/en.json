@@ -1672,6 +1672,19 @@
     "reasonUsed": "This link was already used.",
     "reasonMissing": "No verification token found."
   },
+  "emailUnsubscribe": {
+    "eyebrow": "Email preferences",
+    "title": "Unsubscribe from our emails",
+    "body": "Confirm below and we will stop sending you GetRandomTrip newsletters and campaigns. Emails about your trips and account are not affected.",
+    "confirmCta": "Unsubscribe",
+    "pending": "Unsubscribing…",
+    "successTitle": "You have been unsubscribed",
+    "successBody": "You will not receive any more campaign emails from us.",
+    "invalidTitle": "This link is not valid",
+    "invalidBody": "Use the unsubscribe link from your latest email from GetRandomTrip.",
+    "error": "We could not process your request. Please try again.",
+    "homeCta": "Back to home"
+  },
   "resetPasswordPage": {
     "title": "Reset password",
     "subtitle": "Choose a new password for your account.",

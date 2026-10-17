@@ -25,6 +25,7 @@ const GATE_EXEMPT_ROUTES = [
   "/reset-password",
   "/tripper-invite",
   "/invite",
+  "/unsubscribe",
 ];
 
 function isGateExemptRoute(pathname: string | null, locale: Locale): boolean {

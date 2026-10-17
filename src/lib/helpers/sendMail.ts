@@ -19,6 +19,8 @@ interface SendMailParams {
     | { html: string; react?: never; text?: string }
     | { text: string; react?: never; html?: never };
   from?: string;
+  /** Extra provider headers, e.g. `List-Unsubscribe` for campaign mail. */
+  headers?: Record<string, string>;
   idempotencyKey?: string;
   replyTo?: string;
   subject: string;
@@ -66,6 +68,7 @@ export async function sendMail(params: SendMailParams) {
       ...content,
       attachments: params.attachments,
       from,
+      headers: params.headers,
       replyTo: params.replyTo,
       subject,
       to: params.to,
