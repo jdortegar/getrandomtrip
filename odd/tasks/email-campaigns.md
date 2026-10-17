@@ -129,5 +129,18 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Rules: delivered SENT→DELIVERED; bounced SENT|DELIVERED→BOUNCED and `Permanent` bounce → contact BOUNCED; complained → contact UNSUBSCRIBED; opened/clicked event only; duplicate svix-id → no repeated effects; non-campaign emails ignored. Metadata minimal (link, bounce type/subType).
 - RED: both new test files failed (modules missing). GREEN: 177/177 email-campaigns + webhook + admin API (parent re-run); tsc + eslint clean (writer).
 - Risks: hard bounce detection relies on the SES value `Permanent`; signature tests self-sign (no real Resend delivery verified yet).
-- Status: uncommitted, awaiting user approval.
-- Remaining: T8 metrics, T9 admin UI, T10 ops docs.
+- Commit: `99a3bd72`. Assessment: high risk, RDD off → independent verifier: PASS (raw body, svix via standardwebhooks ±300s, atomic P2002 dedupe, guarded transitions; 126 tests + tsc). Finding (low–medium): an event arriving before `sending.ts` persists `resendMessageId` is dropped with 200 → follow-up T7b. Lows: malformed secret logged as invalid signature; Svix retries any non-2xx.
+
+### T8 — Metrics (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `src/lib/email-campaigns/metrics.ts` (`getCampaignReport`/`Metrics`/`Recipients`/`Summaries`, `readDiscountAmountUsd`), `campaigns/[id]/metrics` route (GET `{ metrics, recipients }`), list route items gain `summary`, types with money-unit JSDoc, tests (in-memory fake applying real where filters).
+- Rules: conversion = settled payment with the campaign's `stripePromotionCodeId` and `paidAt >= sentAt`; attributed by userId or case-insensitive payer email vs send/contact email, else shared; revenue = USD `Payment.amount` (non-USD counted in `otherCurrencyConversions`); discount from stored PaymentIntent metadata, null when absent; a code shared by two campaigns counts for both.
+- RED: metrics test + metrics route failed (missing modules); 2 list-route tests failed. GREEN: 208/208 email-campaigns + admin API + webhooks (parent re-run); tsc + eslint clean.
+- Risks: nested select/groupBy relation filters only exercised via fake; confirm-payment-settled payments carry no discount JSON; buyer with a different account/email counts as shared.
+
+### T7b — Early webhook events (pending; after T8 to avoid overlapping `src/types/emailCampaign.ts`)
+
+- Webhook falls back to `data.tags.send_id` (Resend includes tags in events) when `email_id` is unknown, backfilling `resendMessageId`; send transitions accept QUEUED (delivered from QUEUED|SENT, bounced from QUEUED|SENT|DELIVERED).
+- `sending.ts` success write must not downgrade a row a webhook already moved (guarded update on pending statuses; still set `resendMessageId`/`sentAt`).
+
+- Remaining: T8 metrics, T7b, T9 admin UI, T10 ops docs.

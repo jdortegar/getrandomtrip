@@ -221,6 +221,82 @@ export interface RenderedCampaignEmail {
   text: string;
 }
 
+/**
+ * Settled payments made with a campaign's promotion code on or after its send.
+ * `attributed` = the payer matches a recipient of the campaign (contact user
+ * or email); `shared` = the code reached someone else.
+ */
+export interface CampaignConversionCounts {
+  attributed: number;
+  shared: number;
+}
+
+/** Campaign detail metrics. Counts are recipients (send rows), never raw events. */
+export interface CampaignMetrics {
+  /** Rows accepted by the provider (SENT, DELIVERED or BOUNCED). */
+  sent: number;
+  /** Rows DELIVERED, or with a DELIVERED event recorded before a later bounce. */
+  delivered: number;
+  bounced: number;
+  /** Rows never accepted by the provider (FAILED or still QUEUED). */
+  failed: number;
+  /** Recipients with at least one OPENED event (inflated by Apple MPP). */
+  uniqueOpens: number;
+  /** Recipients with at least one CLICKED event. */
+  uniqueClicks: number;
+  conversions: CampaignConversionCounts;
+  /**
+   * Sum of `Payment.amount` (amount actually charged, after discount) of all
+   * conversions in `currency`, in major units (e.g. `129.5` = USD 129.50).
+   */
+  revenue: number;
+  /**
+   * Sum of the checkout discount (`discountAmountUsd` PaymentIntent metadata)
+   * over all conversions, in major USD units. `null` when no conversion has
+   * that metadata stored.
+   */
+  discountTotal: number | null;
+  /** Uppercase ISO 4217 code of `revenue`. Checkout charges USD only. */
+  currency: string;
+  /** Conversions paid in another currency: counted, but left out of `revenue`. */
+  otherCurrencyConversions: number;
+}
+
+/** One recipient row of a campaign detail. */
+export interface CampaignRecipient {
+  sendId: string;
+  email: string;
+  name: string | null;
+  status: CampaignSendStatus;
+  opened: boolean;
+  clicked: boolean;
+  /** True when the recipient has an attributed conversion. */
+  purchased: boolean;
+  /** ISO 8601 timestamp. */
+  sentAt: string | null;
+}
+
+export interface CampaignReport {
+  metrics: CampaignMetrics;
+  /** Ordered by email. */
+  recipients: CampaignRecipient[];
+}
+
+/** Per-campaign figures for the list / comparison view. */
+export interface CampaignSummary {
+  id: string;
+  /** Rows accepted by the provider (SENT, DELIVERED or BOUNCED). */
+  sent: number;
+  uniqueOpens: number;
+  uniqueClicks: number;
+  /** Attributed + shared conversions. */
+  conversions: number;
+  /** Charged amount of conversions in `CampaignMetrics.currency` (USD), major units. */
+  revenue: number;
+}
+
+export type CampaignListItem = Campaign & { summary: CampaignSummary };
+
 // Event metadata uses type aliases, not interfaces, so the values stay
 // assignable to Prisma JSON input (interfaces lack an index signature).
 

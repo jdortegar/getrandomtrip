@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin/requireAdmin";
 import { createCampaign, listCampaigns } from "@/lib/email-campaigns/campaigns";
+import { getCampaignSummaries } from "@/lib/email-campaigns/metrics";
 import { createCampaignSchema } from "@/lib/validation/emailCampaigns";
+import type { CampaignListItem } from "@/types/emailCampaign";
 import { campaignErrorResponse, internalError } from "./campaignErrorResponse";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +14,24 @@ export async function GET() {
     const auth = await requireAdmin();
     if (!auth.ok) return auth.errorResponse;
 
-    return NextResponse.json({ campaigns: await listCampaigns() });
+    const [campaigns, summaries] = await Promise.all([
+      listCampaigns(),
+      getCampaignSummaries(),
+    ]);
+    const summaryById = new Map(summaries.map((summary) => [summary.id, summary]));
+    const items: CampaignListItem[] = campaigns.map((campaign) => ({
+      ...campaign,
+      // A campaign created between the two reads has no figures yet.
+      summary: summaryById.get(campaign.id) ?? {
+        id: campaign.id,
+        sent: 0,
+        uniqueOpens: 0,
+        uniqueClicks: 0,
+        conversions: 0,
+        revenue: 0,
+      },
+    }));
+    return NextResponse.json({ campaigns: items });
   } catch (error) {
     console.error("[admin/email-campaigns/campaigns] GET", error);
     return internalError();

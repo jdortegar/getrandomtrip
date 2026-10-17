@@ -12,6 +12,9 @@ vi.mock("@/lib/email-campaigns/campaigns", async (importOriginal) => {
     await importOriginal<typeof import("@/lib/email-campaigns/campaigns")>();
   return { ...original, createCampaign: vi.fn(), listCampaigns: vi.fn() };
 });
+vi.mock("@/lib/email-campaigns/metrics", () => ({
+  getCampaignSummaries: vi.fn(),
+}));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
@@ -20,6 +23,7 @@ import {
   createCampaign,
   listCampaigns,
 } from "@/lib/email-campaigns/campaigns";
+import { getCampaignSummaries } from "@/lib/email-campaigns/metrics";
 import { GET, POST } from "../route";
 
 const BASE = "http://localhost/api/admin/email-campaigns/campaigns";
@@ -79,13 +83,51 @@ describe("auth", () => {
 });
 
 describe("GET", () => {
-  it("returns the campaign list", async () => {
-    vi.mocked(listCampaigns).mockResolvedValue([{ id: "c1" }] as never);
+  it("returns the campaign list with each campaign's summary", async () => {
+    vi.mocked(listCampaigns).mockResolvedValue([
+      { id: "c1", name: "Founders" },
+      { id: "c2", name: "Friends" },
+    ] as never);
+    const summary = {
+      id: "c1",
+      sent: 10,
+      uniqueOpens: 6,
+      uniqueClicks: 3,
+      conversions: 2,
+      revenue: 400,
+    };
+    vi.mocked(getCampaignSummaries).mockResolvedValue([summary]);
 
     const res = await GET();
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ campaigns: [{ id: "c1" }] });
+    expect(await res.json()).toEqual({
+      campaigns: [
+        { id: "c1", name: "Founders", summary },
+        {
+          id: "c2",
+          name: "Friends",
+          summary: {
+            id: "c2",
+            sent: 0,
+            uniqueOpens: 0,
+            uniqueClicks: 0,
+            conversions: 0,
+            revenue: 0,
+          },
+        },
+      ],
+    });
+  });
+
+  it("returns 500 when summaries fail", async () => {
+    vi.mocked(listCampaigns).mockResolvedValue([{ id: "c1" }] as never);
+    vi.mocked(getCampaignSummaries).mockRejectedValue(new Error("db down"));
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const res = await GET();
+
+    expect(res.status).toBe(500);
   });
 });
 
