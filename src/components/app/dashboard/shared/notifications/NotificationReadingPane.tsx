@@ -92,7 +92,7 @@ export function NotificationReadingPane({
       </div>
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 p-6 pt-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             onClick={onToggleRead}
             size="sm"
