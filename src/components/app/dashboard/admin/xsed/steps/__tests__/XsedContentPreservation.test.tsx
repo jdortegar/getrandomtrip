@@ -78,7 +78,6 @@ describe("lossless shared experience → drop editor", () => {
             contactCopy={fields.contact}
             copy={fields.activities}
             form={form}
-            imageCopy={fields}
             onChange={onChange}
             sectionsCopy={fields.sections}
           />,

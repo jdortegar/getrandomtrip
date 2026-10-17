@@ -13,6 +13,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { getBlogCompleteness } from "@/lib/helpers/blog-form";
 import { sendBlogSubmitted } from "@/lib/email";
+import { resolveSourceLocale } from "@/lib/blog/legacy-translation-mapping";
 
 export async function POST(
   _request: Request,
@@ -41,14 +42,24 @@ export async function POST(
 
     const blog = await (prisma.blogPost.findFirst as any)({
       where: { id: params.id, isReviewCopy: false },
+      include: {
+        translationRows: {
+          select: { locale: true, isComplete: true, title: true, content: true },
+        },
+      },
     }) as {
       id: string;
       authorId: string;
       status: string;
-      title: string;
       coverUrl: string | null;
-      content: string | null;
+      sourceLocale?: string | null;
       source: "TRIPPER" | "RANDOMTRIP";
+      translationRows?: Array<{
+        locale: string;
+        isComplete: boolean;
+        title: string;
+        content: string | null;
+      }>;
     } | null;
 
     // Owner may always submit their own post. An admin may additionally
@@ -71,16 +82,32 @@ export async function POST(
       );
     }
 
+    const sourceLocale = resolveSourceLocale(blog.sourceLocale);
+    const storedRows = blog.translationRows ?? [];
+    const sourceRow = storedRows.find((row) => row.locale === sourceLocale);
     const { complete, missing } = getBlogCompleteness({
-      title: blog.title ?? "",
+      title: sourceRow?.title ?? "",
       coverUrl: blog.coverUrl ?? "",
-      content: blog.content ?? "",
+      content: sourceRow?.content ?? "",
     });
 
     if (!complete) {
       return NextResponse.json(
         { error: "incomplete", missing },
         { status: 422 },
+      );
+    }
+
+    // Submitting (or auto-publishing) requires a complete source translation.
+    const sourceComplete = !!storedRows.find((row) => row.locale === sourceLocale)?.isComplete;
+    if (!sourceComplete) {
+      return NextResponse.json(
+        {
+          error: "source_translation_incomplete",
+          locale: sourceLocale,
+          message: "The source translation must be complete to submit.",
+        },
+        { status: 400 },
       );
     }
 
@@ -109,7 +136,7 @@ export async function POST(
       }
 
 
-      return (tx.blogPost.update as any)({
+      const result = await (tx.blogPost.update as any)({
         where: { id: params.id },
         data: {
           status: targetStatus,
@@ -118,6 +145,7 @@ export async function POST(
         },
         select: { id: true, status: true },
       });
+      return result;
     }) as { id: string; status: string };
 
     if (targetStatus === "PENDING_REVIEW") {

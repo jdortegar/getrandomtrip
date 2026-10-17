@@ -13,6 +13,7 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
 import { sendBlogCopyApproved } from "@/lib/email";
+import { SourceTranslationIncompleteError } from "@/lib/blog/legacy-translation-mapping";
 
 export async function POST(
   _request: Request,
@@ -78,6 +79,8 @@ export async function POST(
     // Transactionally overwrite the original with the copy's data + delete copy
 
     await (prisma.$transaction as any)(async (tx: any) => {
+      // Overwrites legacy columns + translation rows from the copy; an
+      // incomplete source translation throws and rolls everything back.
       await overwriteOriginalWithCopy(tx, params.id, copy.id);
 
       await (tx.blogPost.delete as any)({ where: { id: copy.id } });
@@ -88,6 +91,16 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof SourceTranslationIncompleteError) {
+      return NextResponse.json(
+        {
+          error: error.code,
+          locale: error.locale,
+          message: "The source translation must be complete to publish.",
+        },
+        { status: 400 },
+      );
+    }
     console.error("[tripper/blogs/approve-copy] POST", error);
     return NextResponse.json(
       { error: "Internal server error" },

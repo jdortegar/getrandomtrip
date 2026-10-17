@@ -49,7 +49,7 @@ export function TripCostSummary({ copy, price }: TripCostSummaryProps) {
               </span>
             )}
           </span>
-          <span className="text-xl font-bold text-secondary">
+          <span className="font-bold text-primary text-xl">
             {amount(price.total)}
           </span>
         </div>

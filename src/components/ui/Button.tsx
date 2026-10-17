@@ -34,7 +34,7 @@ const buttonVariants = cva(
         pill: "border-2 border-feature bg-feature text-ink hover:bg-feature hover:border-feature rounded-full",
         white:
           "border-2 border-white bg-white hover:bg-white/90 hover:text-ink",
-        feature: "border-2 border-feature bg-feature text-white hover:bg-feature/90 hover:border-feature/90",
+        feature: "border-2 border-feature bg-feature text-ink hover:bg-feature/90 hover:border-feature/90",
       },
       size: {
         default:

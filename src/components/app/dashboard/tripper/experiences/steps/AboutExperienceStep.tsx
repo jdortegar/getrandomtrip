@@ -191,13 +191,10 @@ export function AboutExperienceStep({ copy, form, onChange, imageState, changedF
         <ImageUploadTile
           alt="Hero"
           className={ch("heroImage")}
-          copyrightHint={copy.fields.copyrightHint}
           minHeight={720}
           minWidth={1280}
           onRemove={onHeroRemove}
           onSelect={onHeroSelect}
-          sizeHint={copy.fields.heroImageSizeHint}
-          tooSmallLabel={copy.fields.imageTooSmall}
           uploadLabel={copy.fields.uploadImage}
           value={form.heroImage}
         />

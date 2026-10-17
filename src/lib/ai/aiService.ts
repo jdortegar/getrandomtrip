@@ -1,3 +1,4 @@
+import { withTranslationCache, writeCachedTranslation } from "@/lib/ai/translationCache";
 import {
   parseTranslationTexts,
   translationMessages,
@@ -19,7 +20,10 @@ export class AiServiceError extends Error {
 }
 
 interface ChatCompletion {
-  choices?: Array<{ message?: { content?: string | null } }>;
+  choices?: Array<{
+    finish_reason?: string | null;
+    message?: { content?: string | null };
+  }>;
 }
 
 /**
@@ -36,6 +40,7 @@ async function completeJson(system: string, user: string): Promise<string> {
         { content: system, role: "system" },
         { content: user, role: "user" },
       ],
+      max_completion_tokens: 16_384,
       model: process.env.OPENAI_TRANSLATION_MODEL || DEFAULT_MODEL,
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -47,19 +52,69 @@ async function completeJson(system: string, user: string): Promise<string> {
     method: "POST",
   });
 
-  if (!response.ok) throw new AiServiceError("AI request failed", 502);
+  const payloadText = await response.text();
+  if (!response.ok) {
+    console.error(`OpenAI translation HTTP ${response.status}`, payloadText.slice(0, 400));
+    throw new AiServiceError("AI request failed", 502);
+  }
 
-  const payload = (await response.json()) as ChatCompletion;
-  const content = payload.choices?.[0]?.message?.content;
+  let payload: ChatCompletion;
+  try {
+    payload = JSON.parse(payloadText) as ChatCompletion;
+  } catch {
+    throw new AiServiceError("AI request failed", 502);
+  }
+  const choice = payload.choices?.[0];
+  const content = choice?.message?.content;
   if (!content) throw new AiServiceError("AI request failed", 502);
+  if (choice.finish_reason && choice.finish_reason !== "stop") {
+    console.error(
+      `OpenAI translation finish_reason=${choice.finish_reason} chars=${content.length}`,
+      content.slice(-200),
+    );
+    throw new AiServiceError("AI request failed", 502);
+  }
   return content;
+}
+
+async function translateBatch(
+  batch: TranslationPiece[],
+  target: TranslationLocale,
+): Promise<string[]> {
+  const messages = translationMessages({ pieces: batch, target });
+  const raw = await completeJson(messages.system, messages.user);
+  try {
+    const translated = parseTranslationTexts(raw, batch.length);
+    return translated.map((text, index) => {
+      const piece = batch[index];
+      const next = text.trim() ? text : piece.text;
+      writeCachedTranslation(piece, target, next);
+      return next;
+    });
+  } catch (error) {
+    let detail = "unparseable";
+    try {
+      const parsed = JSON.parse(raw) as { texts?: unknown };
+      detail = Array.isArray(parsed.texts)
+        ? `len=${parsed.texts.length} types=${parsed.texts.map((text) => typeof text).join(",")}`
+        : `texts=${typeof parsed.texts}`;
+    } catch (parseError) {
+      detail = `json:${(parseError as Error).message}`;
+    }
+    console.error(
+      `OpenAI translation JSON invalid pieces=${batch.length} chars=${raw.length} ${detail}`,
+    );
+    if (batch.length === 1) throw error;
+    const texts: string[] = [];
+    for (const piece of batch) {
+      texts.push(...(await translateBatch([piece], target)));
+    }
+    return texts;
+  }
 }
 
 export const aiService = {
   async translate(pieces: TranslationPiece[], target: TranslationLocale): Promise<string[]> {
-    const messages = translationMessages({ pieces, target });
-    const raw = await completeJson(messages.system, messages.user);
-    const texts = parseTranslationTexts(raw, pieces.length);
-    return texts.map((text, index) => (text.trim() ? text : pieces[index].text));
+    return withTranslationCache(pieces, target, (batch) => translateBatch(batch, target));
   },
 };

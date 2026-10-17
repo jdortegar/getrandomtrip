@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  batchTranslationPieces,
   parseTranslationRequest,
   parseTranslationTexts,
+  TRANSLATION_BATCH_CHAR_LIMIT,
+  TRANSLATION_BATCH_PIECE_LIMIT,
   translationMessages,
   TranslationRequestError,
 } from "@/lib/ai/translationRequest";
@@ -33,6 +36,23 @@ describe("parseTranslationRequest", () => {
   });
 });
 
+describe("batchTranslationPieces", () => {
+  it("keeps a short list in one batch and splits by piece and character limits", () => {
+    expect(batchTranslationPieces([{ html: false, text: "Hola" }])).toHaveLength(1);
+    const many = Array.from({ length: TRANSLATION_BATCH_PIECE_LIMIT + 1 }, (_, index) => ({
+      html: false,
+      text: `Piece ${index}`,
+    }));
+    expect(batchTranslationPieces(many)).toHaveLength(2);
+    expect(
+      batchTranslationPieces([
+        { html: true, text: "a".repeat(TRANSLATION_BATCH_CHAR_LIMIT - 10) },
+        { html: true, text: "b".repeat(20) },
+      ]),
+    ).toHaveLength(2);
+  });
+});
+
 describe("translation response", () => {
   it("asks the model to preserve HTML and returns one string per piece", () => {
     const messages = translationMessages({
@@ -42,6 +62,9 @@ describe("translation response", () => {
     expect(messages.system).toContain("English");
     expect(messages.system).toContain("html is true");
     expect(parseTranslationTexts('{"texts":["<p>Hello</p>"]}', 1)).toEqual(["<p>Hello</p>"]);
-    expect(() => parseTranslationTexts('{"texts":["Hello","extra"]}', 1)).toThrow(TranslationRequestError);
+    expect(parseTranslationTexts('{"texts":["<p>Hello</p>","<p>There</p>"]}', 1)).toEqual([
+      "<p>Hello</p><p>There</p>",
+    ]);
+    expect(() => parseTranslationTexts('{"texts":["Hello"]}', 2)).toThrow(TranslationRequestError);
   });
 });

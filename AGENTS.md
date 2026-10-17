@@ -315,3 +315,9 @@ npm run db:seed         # Seed database
   [`.agents/skills/recap/SKILL.md`](.agents/skills/recap/SKILL.md). Respect its
   recording-capability and publishing-authorization gates; preview requests stay
   local, and authoring or reviewing the skill never records or posts.
+
+- **Worktree:** Before creating, running, listing, or cleaning up a Git
+  worktree — or when the main checkout is busy with another session's work —
+  read [`.agents/skills/worktree/SKILL.md`](.agents/skills/worktree/SKILL.md).
+  Work in place unless the checkout is busy; never copy `.env` or remove a
+  worktree with real changes.

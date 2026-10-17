@@ -1,5 +1,9 @@
 import { describe, it, expect, vi } from "vitest";
-import { resolveBlogFieldPeek, resolveBlogEntryPeek } from "../blog-form-peek";
+import {
+  resolveBlogChangedFieldsForLocale,
+  resolveBlogEntryPeek,
+  resolveBlogFieldPeek,
+} from "../blog-form-peek";
 import type { BlogFormDraft } from "@/types/blog";
 
 const baseDraft: BlogFormDraft = {
@@ -207,5 +211,48 @@ describe("resolveBlogEntryPeek", () => {
       copy,
     });
     expect(result?.active).toBe(true);
+  });
+});
+
+describe("resolveBlogChangedFieldsForLocale", () => {
+  const all = ["title", "subtitle", "tagline", "content", "blocks", "faq", "seo"];
+
+  it("maps <locale>.<field> tokens to editor fields of the displayed language only", () => {
+    const tokens = ["coverUrl", "es.title", "en.blocks", "en.faq"];
+    expect(resolveBlogChangedFieldsForLocale(tokens, "es")).toEqual(["coverUrl", "title"]);
+    expect(resolveBlogChangedFieldsForLocale(tokens, "en")).toEqual([
+      "coverUrl",
+      "blocks",
+      "faq",
+    ]);
+  });
+
+  it("expands <locale>.* to every localized field of that language", () => {
+    expect(resolveBlogChangedFieldsForLocale(["en.*"], "en")).toEqual(all);
+    expect(resolveBlogChangedFieldsForLocale(["en.*"], "es")).toEqual([]);
+  });
+
+  it("passes shared tokens (incl. sourceLocale) through in both languages", () => {
+    expect(resolveBlogChangedFieldsForLocale(["sourceLocale", "tags"], "en")).toEqual([
+      "sourceLocale",
+      "tags",
+    ]);
+  });
+
+  it("keeps legacy column tokens as Spanish fields and legacy translations as all English fields", () => {
+    const legacy = ["title", "blocks", "translations", "coverUrl"];
+    expect(resolveBlogChangedFieldsForLocale(legacy, "es")).toEqual([
+      "title",
+      "blocks",
+      "coverUrl",
+    ]);
+    expect(resolveBlogChangedFieldsForLocale(legacy, "en")).toEqual([
+      ...all,
+      "coverUrl",
+    ]);
+  });
+
+  it("deduplicates fields flagged by both legacy and per-locale tokens", () => {
+    expect(resolveBlogChangedFieldsForLocale(["es.title", "title"], "es")).toEqual(["title"]);
   });
 });

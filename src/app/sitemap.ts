@@ -1,12 +1,13 @@
 import { travelerStorySlugs } from "@/lib/blog/travelerStories";
-import { availableBlogLocales } from "@/lib/seo/blogLocales";
+import { availableBlogLocales, blogLocalePaths } from "@/lib/seo/blogLocales";
+import { listPublishedLocaleSlugs } from "@/lib/blog/blogRepository";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
 import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
 
-import { buildAlternates, canonicalUrl } from "@/lib/seo/urls";
+import { buildAlternates } from "@/lib/seo/urls";
 import { isGateEnabled } from "@/lib/siteSettings";
 
 export const dynamic = "force-dynamic";
@@ -41,21 +42,23 @@ const STATIC_PATHS: (PathConfig & { path: string })[] = [
   { path: "xsed/drops", changeFrequency: "weekly", priority: 0.7 },
 ];
 
+/** `path` may differ per locale (blog translations own their slugs). */
 function toSitemapEntries(
-  path: string,
+  path: string | Partial<Record<Locale, string>>,
   config: PathConfig,
   lastModified?: Date,
   available: readonly Locale[] = LOCALES,
 ): MetadataRoute.Sitemap {
-  return available.map((locale) => ({
-    alternates: {
-      languages: buildAlternates(locale, path, available).languages,
-    },
-    changeFrequency: config.changeFrequency,
-    ...(lastModified ? { lastModified } : {}),
-    priority: config.priority,
-    url: canonicalUrl(locale, path),
-  }));
+  return available.map((locale) => {
+    const alternates = buildAlternates(locale, path, available);
+    return {
+      alternates: { languages: alternates.languages },
+      changeFrequency: config.changeFrequency,
+      ...(lastModified ? { lastModified } : {}),
+      priority: config.priority,
+      url: alternates.canonical,
+    };
+  });
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -79,10 +82,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic: published blog posts
   const [blogPosts, trippers, tripperTimestamps] = await Promise.all([
-    prisma.blogPost.findMany({
-      where: { isActive: true, isReviewCopy: false, status: "PUBLISHED" },
-      select: { slug: true, id: true, updatedAt: true, translations: true },
-    }),
+    listPublishedLocaleSlugs(),
     getAllTrippers(),
     prisma.user.findMany({
       where: {
@@ -111,16 +111,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   }
 
+  // One entry per complete translation, each at its own locale slug.
   for (const post of blogPosts) {
-    const slug = post.slug ?? post.id;
-    const available = availableBlogLocales(post);
-    const localizedEntries = toSitemapEntries(
-      `blog/${slug}`,
-      { changeFrequency: "monthly", priority: 0.7 },
-      post.updatedAt,
-      available,
+    entries.push(
+      ...toSitemapEntries(
+        blogLocalePaths(post.localeSlugs),
+        { changeFrequency: "monthly", priority: 0.7 },
+        post.updatedAt,
+        availableBlogLocales(post.localeSlugs),
+      ),
     );
-    entries.push(...localizedEntries);
   }
 
   // Dynamic: active tripper profiles + their experience pages

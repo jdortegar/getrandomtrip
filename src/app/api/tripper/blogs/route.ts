@@ -1,5 +1,4 @@
 import { ZodError } from "zod";
-import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
 // ============================================================================
 // GET /api/tripper/blogs - Get all blogs for tripper
 // POST /api/tripper/blogs - Create a new blog post (tripper only)
@@ -9,12 +8,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
-import { slugify } from "@/lib/helpers/slugify";
 import { prisma } from "@/lib/prisma";
 import { getAppRoles, hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getRandomtripUserId } from "@/lib/randomtrip-user";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
+import {
+  flattenSourceCopy,
+  LIST_TRANSLATION_SELECT,
+  titleSearchWhere,
+} from "@/lib/blog/source-copy";
+import {
+  EditorWriteError,
+  editorWriteErrorBody,
+  parseEditorWriteRequest,
+} from "@/lib/blog/editor-write";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
 function normalizeStringArray(value: unknown): string[] {
@@ -82,7 +91,7 @@ export async function GET(request: NextRequest) {
       where.travelType = { has: travelTypeParam };
     }
     if (searchParam) {
-      where.title = { contains: searchParam, mode: "insensitive" };
+      Object.assign(where, titleSearchWhere(searchParam));
     }
 
     const [blogs, total] = await Promise.all([
@@ -94,14 +103,8 @@ export async function GET(request: NextRequest) {
         select: {
           id: true,
           authorId: true,
-          title: true,
-          subtitle: true,
-          tagline: true,
+          sourceLocale: true,
           coverUrl: true,
-          content: true,
-          blocks: true,
-          translations: true,
-          faq: true,
           tags: true,
           travelType: true,
           excuseKey: true,
@@ -110,24 +113,29 @@ export async function GET(request: NextRequest) {
           format: true,
           status: true,
           isActive: true,
-          seo: true,
           createdAt: true,
           updatedAt: true,
           publishedAt: true,
+          translationRows: { select: LIST_TRANSLATION_SELECT },
         },
       }),
       prisma.blogPost.count({ where }),
     ]);
 
     // Transform to match frontend type (convert enum to lowercase)
-    const transformedBlogs = blogs.map((blog) => ({
-      ...blog,
-      status: blog.status.toLowerCase(),
-      format: blog.format.toLowerCase(),
-      createdAt: blog.createdAt.toISOString(),
-      updatedAt: blog.updatedAt.toISOString(),
-      publishedAt: blog.publishedAt?.toISOString(),
-    }));
+    const transformedBlogs = blogs.map((blog) => {
+      const { translationRows, sourceLocale, ...shared } = blog;
+      return {
+        ...shared,
+        ...flattenSourceCopy(sourceLocale, translationRows),
+        sourceLocale,
+        status: blog.status.toLowerCase(),
+        format: blog.format.toLowerCase(),
+        createdAt: blog.createdAt.toISOString(),
+        updatedAt: blog.updatedAt.toISOString(),
+        publishedAt: blog.publishedAt?.toISOString(),
+      };
+    });
 
     return NextResponse.json({ blogs: transformedBlogs, total, page, limit });
   } catch (error) {
@@ -164,31 +172,30 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const translations = normalizeBlogTranslations(body.translations);
+    const parsed = parseEditorWriteRequest(body, {
+      sourceLocale: "es",
+      rows: [],
+      isCreate: true,
+    });
+    const translations = parsed.translations ?? {};
+    const sourceLocale = parsed.sourceLocale;
+    const sourceTitle = translations[sourceLocale]?.title?.trim();
+    if (!sourceTitle) {
+      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    }
+
     const {
-      title,
-      subtitle,
-      tagline,
-      content,
-      blocks,
-      faq,
       tags,
       format,
       // status is intentionally NOT accepted from the client — every new post
       // starts DRAFT and only transitions via the guarded submit/approve
       // endpoints, same as PATCH.
       coverUrl,
-      seo,
       travelType,
       excuseKey,
       level,
       label,
     } = body;
-
-    // Validate required fields
-    if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
-    }
 
     const levelValue: string | null = level && level !== "" ? level : null;
     if (levelValue !== null && !isValidExperienceLevel(levelValue)) {
@@ -224,62 +231,52 @@ export async function POST(request: NextRequest) {
     // admin clicked create — createdById keeps the real creator for audit.
     const authorId = isAdmin ? await getRandomtripUserId() : user.id;
 
-    const baseSlug = slugify(title) || "post";
-    let slug = baseSlug;
-    let suffix = 0;
-    while (true) {
-      const existing = await prisma.blogPost.findUnique({ where: { slug } });
-      if (!existing) break;
-      suffix += 1;
-      slug = `${baseSlug}-${suffix}`;
-    }
-
-    const blog = await prisma.blogPost.create({
-      data: {
-        authorId,
-        createdById: user.id,
-        title,
-        slug,
-        subtitle: subtitle || null,
-        tagline: tagline || null,
-        content: content ?? null,
-        blocks: blocks || [],
-        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
-        faq: faq ?? null,
-        tags: tags || [],
-        excuseKey: excuseKeyValue,
-        travelType: travelTypeValue,
-        level: levelValue,
-        label: normalizeBlogLabel(label) ?? null,
-        format: prismaFormat,
-        coverUrl: coverUrl || null,
-        seo: seo || null,
-        source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
-      },
-      select: {
-        id: true,
-        authorId: true,
-        title: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        translations: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        excuseKey: true,
-        level: true,
-        label: true,
-        format: true,
-        status: true,
-        isActive: true,
-        seo: true,
-        createdAt: true,
-        updatedAt: true,
-        publishedAt: true,
-      },
+    const blog = await prisma.$transaction(async (tx) => {
+      const created = await tx.blogPost.create({
+        data: {
+          authorId,
+          createdById: user.id,
+          tags: tags || [],
+          excuseKey: excuseKeyValue,
+          travelType: travelTypeValue,
+          level: levelValue,
+          label: normalizeBlogLabel(label) ?? null,
+          format: prismaFormat,
+          coverUrl: coverUrl || null,
+          source: isAdmin ? "RANDOMTRIP" : "TRIPPER",
+          sourceLocale,
+        },
+        select: {
+          id: true,
+          authorId: true,
+          sourceLocale: true,
+          coverUrl: true,
+          tags: true,
+          travelType: true,
+          excuseKey: true,
+          level: true,
+          label: true,
+          format: true,
+          status: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+          publishedAt: true,
+        },
+      });
+      const written = await writeTranslationsFromEditor(
+        tx,
+        { id: created.id, isReviewCopy: false, publishedAt: created.publishedAt, sourceLocale },
+        translations,
+      );
+      return {
+        ...created,
+        ...flattenSourceCopy(sourceLocale, Object.entries(written).map(([locale, row]) => ({
+          locale,
+          ...row,
+        }))),
+        translations: written,
+      };
     });
 
     // Transform to match frontend type
@@ -294,6 +291,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ blog: transformedBlog }, { status: 201 });
   } catch (error) {
+    if (error instanceof EditorWriteError) {
+      return NextResponse.json(editorWriteErrorBody(error), { status: 400 });
+    }
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
     }

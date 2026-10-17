@@ -14,27 +14,30 @@ import { FaqStep } from "./steps/FaqStep";
 import { GalleryStep } from "./steps/GalleryStep";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { ExperienceCopyLocale } from "@/lib/ai/translateExperienceCopy";
-import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
+import type { BlogEditorDraft, BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 import { getMissingBlogFields, isBlogTabEligible } from "@/lib/helpers/blog-form";
 import { resolveBlogFieldPeek, resolveBlogEntryPeek } from "@/lib/blog/blog-form-peek";
 import type { FieldPeek } from "@/components/ui/field-peek";
-import type { BlogImageState, SaveStatus } from "./NewBlogPostShell";
+import type { SaveStatus } from "./NewBlogPostShell";
+import type { BlogImageState } from "./useBlogEditorImages";
 
 interface BlogFormContentProps {
   optionalContent?: boolean;
   validationDraft?: BlogFormDraft;
   activeTab: string;
+  canSaveCopy?: boolean;
   contentLanguageSlot?: React.ReactNode;
   contentLocale?: ExperienceCopyLocale;
   copy: TripperBlogFormDict;
   draft: BlogFormDraft;
   isSavingCopy?: boolean;
   isTranslating?: boolean;
-  onApplyTranslatedCopy?: (update: (current: BlogFormDraft) => BlogFormDraft) => void;
+  localeToolsSlot?: React.ReactNode;
+  onApplyTranslatedCopy?: (update: (current: BlogEditorDraft) => BlogEditorDraft) => void;
   onSaveCopy?: () => void;
   onContentLocaleChange?: (locale: ExperienceCopyLocale) => void;
   onTranslatingChange?: (busy: boolean) => void;
-  sourceDraft?: BlogFormDraft;
+  sourceDraft?: BlogEditorDraft;
   imageState: BlogImageState;
   isFinishing: boolean;
   saveStatus: SaveStatus;
@@ -161,12 +164,14 @@ export function BlogFormContent({
   optionalContent = false,
   validationDraft,
   activeTab,
+  canSaveCopy = false,
   contentLanguageSlot,
   contentLocale = "es",
   copy,
   draft,
   isSavingCopy = false,
   isTranslating = false,
+  localeToolsSlot,
   onApplyTranslatedCopy,
   onSaveCopy,
   onContentLocaleChange,
@@ -274,8 +279,9 @@ export function BlogFormContent({
     <div className="flex flex-col gap-4" data-component="BlogFormContent">
       {contentLanguageSlot || canTranslate ? (
         <TranslateBlogCopy
+          canSave={canSaveCopy}
           copy={copy.translate}
-          draft={sourceDraft ?? draft}
+          draft={sourceDraft ?? { sourceLocale: contentLocale ?? "es", translations: {}, status: draft.status, coverUrl: draft.coverUrl, gallery: draft.gallery, travelType: draft.travelType, excuseKey: draft.excuseKey, level: draft.level, label: draft.label }}
           isSaving={isSavingCopy}
           languageSlot={contentLanguageSlot}
           locale={contentLocale}
@@ -283,11 +289,14 @@ export function BlogFormContent({
           onBusyChange={onTranslatingChange ?? (() => undefined)}
           onSave={canTranslate ? onSaveCopy : undefined}
           onTranslated={onContentLocaleChange ?? (() => undefined)}
+          savedLabel={copy.saved}
           saveLabel={copy.editSubmit}
+          saveStatus={saveStatus}
           savingLabel={copy.saving}
           showActions={Boolean(canTranslate)}
         />
       ) : null}
+      {localeToolsSlot}
       <Accordion
         type="single"
         collapsible

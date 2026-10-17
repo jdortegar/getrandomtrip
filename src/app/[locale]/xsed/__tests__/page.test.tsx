@@ -99,6 +99,33 @@ describe("campaign counter page wiring", () => {
   });
 });
 
+describe("XSED FAQ tripper description", () => {
+  it("hides the tripper count in production", async () => {
+    const { container } = await renderPage();
+
+    expect(container.textContent).not.toContain(
+      dictionary.xsedPage.faq.description,
+    );
+    expect(container.textContent).toContain(dictionary.xsedPage.faq.title);
+    expect(container.textContent).toContain(
+      dictionary.xsedPage.faq.items[0].question,
+    );
+  });
+
+  it("shows the tripper count outside production", async () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
+    try {
+      const { container } = await renderPage();
+
+      expect(container.textContent).toContain(
+        dictionary.xsedPage.faq.description,
+      );
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+});
+
 describe("XSED FAQ spacing", () => {
   it("restores standard FAQ padding when Previous Drops is omitted", async () => {
     vi.mocked(getXsedBlogDropsForGrid).mockResolvedValue([]);

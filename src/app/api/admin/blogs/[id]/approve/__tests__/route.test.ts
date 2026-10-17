@@ -10,13 +10,20 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn(), delete: vi.fn() },
     notification: { create: vi.fn() },
-    $transaction: vi.fn(),
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsForPost: vi.fn(),
+  sourceTitleForPost: vi.fn().mockResolvedValue("My Trip"),
 }));
 
 vi.mock("@/lib/helpers/sendMail", () => ({
@@ -31,6 +38,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/helpers/sendMail";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
+import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "admin@example.com" } });
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
@@ -163,6 +171,9 @@ describe("POST /api/admin/blogs/[id]/approve", () => {
     expect(res.status).toBe(200);
     expect(overwriteOriginalWithCopy).toHaveBeenCalledWith(expect.anything(), "blog-1", "copy-1");
     expect(mockDelete).toHaveBeenCalledWith({ where: { id: "copy-1" } });
+    // The overwrite owns the original's rows (cloned from the copy, slugs
+    // preserved); re-deriving them from legacy columns would clobber them.
+    expect(syncTranslationsForPost).not.toHaveBeenCalled();
   });
 
   it("sends an approval email + notification to the author", async () => {
@@ -194,4 +205,80 @@ describe("POST /api/admin/blogs/[id]/approve", () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(sendMail).toHaveBeenCalled();
   });
+});
+
+describe("POST /api/admin/blogs/[id]/approve — source translation rules", () => {
+  const pending = {
+    id: "blog-1",
+    status: "PENDING_REVIEW",
+    authorId: "tripper-1",
+    title: "My Trip",
+    publishedAt: null,
+  };
+  const published = { ...pending, status: "PUBLISHED" };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(pending);
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("publishes and syncs translation rows (source-checked) in the same transaction", async () => {
+    (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+    const txUpdate = vi.fn().mockResolvedValue(published);
+    const tx = { blogPost: { update: txUpdate } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      (fn: (client: unknown) => unknown) => fn(tx),
+    );
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(makePostRequest("blog-1"), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+
+    expect(res.status).toBe(200);
+    expect(txUpdate.mock.calls[0][0].data).toMatchObject({ status: "PUBLISHED" });
+    expect(syncTranslationsForPost).toHaveBeenCalledWith(tx, "blog-1", {
+      requireCompleteSource: true,
+    });
+  });
+
+  it.each([
+    ["direct", null],
+    ["copy-based", { id: "copy-1" }],
+  ])(
+    "rejects a %s approve with 400 when the source translation is incomplete",
+    async (_path, copy) => {
+      (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(copy);
+      (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockResolvedValue(published);
+      const mod = (await import("../route")) as RouteModule;
+      // Same module graph as the route (modules are reset between tests).
+      const { SourceTranslationIncompleteError } = await import(
+        "@/lib/blog/legacy-translation-mapping"
+      );
+      // Direct path: the legacy sync guards; copy path: the row overwrite guards.
+      const guard = copy ? overwriteOriginalWithCopy : syncTranslationsForPost;
+      (guard as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new SourceTranslationIncompleteError("en"),
+      );
+      const res = await mod.POST(makePostRequest("blog-1"), {
+        params: Promise.resolve({ id: "blog-1" }),
+      });
+
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({
+        error: "source_translation_incomplete",
+        locale: "en",
+      });
+      await new Promise((r) => setTimeout(r, 0));
+      expect(sendMail).not.toHaveBeenCalled();
+    },
+  );
 });

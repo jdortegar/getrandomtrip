@@ -480,12 +480,22 @@ export interface TripperBlogFormDict {
     canonicalLabel: string;
     unavailable: string;
   };
+  mediaMismatch: {
+    title: string;
+    missing: string;
+    extra: string;
+  };
+  errors: {
+    invalidSourceLocale: string;
+    sourceLocaleIncomplete: string;
+    sourceTranslationIncomplete: string;
+  };
   translate: {
     error: string;
+    fromEnglish: string;
+    fromSpanish: string;
     hint: string;
     label: string;
-    toEnglish: string;
-    toSpanish: string;
     translating: string;
   };
   nav: {
@@ -511,6 +521,25 @@ export interface TripperBlogFormDict {
     peekShowOriginal: string;
     peekShowSuggestion: string;
     noContent: string;
+    all: string;
+    locale: { es: string; en: string };
+    fields: {
+      title: string;
+      subtitle: string;
+      tagline: string;
+      content: string;
+      blocks: string;
+      faq: string;
+      seo: string;
+      sourceLocale: string;
+      coverUrl: string;
+      tags: string;
+      travelType: string;
+      excuseKey: string;
+      level: string;
+      label: string;
+      translations: string;
+    };
   };
   review: {
     pendingTitle: string;
@@ -540,9 +569,6 @@ export interface TripperBlogFormDict {
     subtitlePlaceholder: string;
     coverImage: string;
     coverImageHint: string;
-    coverImageSizeHint: string;
-    copyrightHint: string;
-    imageTooSmall: string;
     uploadImage: string;
     uploading: string;
     removeImage: string;
@@ -572,7 +598,7 @@ export interface TripperBlogFormDict {
     faqLabel: string;
     addFaq: string;
     removeFaq: string;
-    galleryHint: string;
+    galleryAlt: string;
     addImage: string;
     removeImageAria: string;
     imageTooLarge: string;
@@ -582,6 +608,7 @@ export interface TripperBlogFormDict {
     uploadError: string;
     fileTooLarge: string;
     saveError: string;
+    saveSuccess: string;
   };
 }
 
@@ -1257,15 +1284,11 @@ export interface TripperExperiencesDict {
       tagInput: string;
       heroImage: string;
       heroImageHint: string;
-      heroImageSizeHint: string;
       activityImageLabel: string;
       dayImageLabel: string;
-      entryImageSizeHint: string;
-      imageTooSmall: string;
       uploadImage: string;
       uploading: string;
       removeImage: string;
-      copyrightHint: string;
       isActive: string;
       isActiveHint: string;
       isFeatured: string;
@@ -1747,9 +1770,6 @@ export interface AdminXsedDict {
       slug: string;
       slugHint: string;
       heroImage: string;
-      heroImageSizeHint: string;
-      copyrightHint: string;
-      imageTooSmall: string;
       uploadImage: string;
       destinationCity: string;
       destinationCityPlaceholder: string;
@@ -2768,6 +2788,7 @@ export interface InviteTravelersDict {
   subtitle: string;
   notifTitle: string;
   deadlineLabel: string;
+  deadlineTitle: string;
   progressLabel: string;
   lockedBanner: string;
   supportLinkLabel: string;
@@ -2884,6 +2905,15 @@ export interface TripperAttributionDict {
  * every call site (tripper hero, avatar) regardless of mask shape, since the
  * upload/crop/zoom/save flow language is identical across both.
  */
+/** Shared hint and error copy rendered by ImageUploadTile / ImageUploadTileGroup. */
+export interface ImageUploadDict {
+  formats: string;
+  /** Interpolated with {width} and {height} (px). */
+  minSize: string;
+  copyright: string;
+  tooSmall: string;
+}
+
 export interface ImageEditorDict {
   title: string;
   dropHint: string;
@@ -3102,6 +3132,7 @@ export interface MarketingDictionary {
      */
     countries: Record<string, string>;
     backToTop: string;
+    imageUpload: ImageUploadDict;
   };
   imageEditor: ImageEditorDict;
   adminXsed: AdminXsedDict;

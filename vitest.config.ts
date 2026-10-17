@@ -1,5 +1,5 @@
 import path from "path";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
@@ -9,6 +9,8 @@ export default defineConfig({
     },
   },
   test: {
+    // Playwright owns e2e/; keep Vitest from collecting its *.spec.ts files.
+    exclude: [...configDefaults.exclude, "e2e/**"],
     // Existing behavior suites exercise production; isolation suites explicitly
     // cover nonproduction, unknown and absent deployment identity.
     env: {

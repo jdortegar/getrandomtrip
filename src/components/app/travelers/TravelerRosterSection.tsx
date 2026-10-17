@@ -14,6 +14,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
 import { isTravelerRosterComplete } from "@/lib/travelers/travelerPolicy";
+import { cn } from "@/lib/utils";
 import type { TravelerDTO, TravelerRoster } from "@/types/traveler";
 import { TravelerRow, type TravelerRowHandle } from "./TravelerRow";
 import { TravelerReadOnlyRow } from "./TravelerReadOnlyRow";
@@ -60,7 +61,13 @@ export const TravelerRosterSection = forwardRef<
   const submitted = travelers.filter(isTravelerRosterComplete).length;
   const supportHref = pathForLocale(locale, SUPPORT_HREF);
   const supportLink = (
-    <Link className="text-secondary underline" href={supportHref}>
+    <Link
+      className={cn(
+        "text-secondary transition-colors underline",
+        "hover:text-primary",
+      )}
+      href={supportHref}
+    >
       {copy.supportLinkLabel}
     </Link>
   );
@@ -123,22 +130,32 @@ export const TravelerRosterSection = forwardRef<
           </span>
         </div>
       ) : (
-        <div className="mt-6 flex flex-wrap items-center gap-2.5 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
-          <Clock aria-hidden className="h-4 w-4 shrink-0" />
-          <span>
-            {deadlineDate
-              ? copy.deadlineLabel
-                  .replace("{date}", deadlineDate)
-                  .replace("{hours}", String(roster.startDate && roster.deadline
-                    ? (new Date(roster.startDate).getTime() - new Date(roster.deadline).getTime()) / 3_600_000
-                    : 168))
-              : null}
-          </span>
-          <span className="ml-auto whitespace-nowrap font-semibold text-ink">
-            {copy.progressLabel
-              .replace("{submitted}", String(submitted))
-              .replace("{cap}", String(roster.cap))}
-          </span>
+        <div className="mt-6 rounded-md border border-sky-200 bg-sky-50 px-4 py-3 text-sky-800">
+          <div className="mb-1 flex items-center gap-2">
+            <Clock aria-hidden className="h-4 w-4 shrink-0" />
+            <span className="text-xs">{copy.deadlineTitle}</span>
+            <span className="font-semibold ml-auto text-ink text-sm whitespace-nowrap">
+              {copy.progressLabel
+                .replace("{submitted}", String(submitted))
+                .replace("{cap}", String(roster.cap))}
+            </span>
+          </div>
+          {deadlineDate ? (
+            <p className="text-sm">
+              {copy.deadlineLabel
+                .replace("{date}", deadlineDate)
+                .replace(
+                  "{hours}",
+                  String(
+                    roster.startDate && roster.deadline
+                      ? (new Date(roster.startDate).getTime() -
+                          new Date(roster.deadline).getTime()) /
+                        3_600_000
+                      : 168,
+                  ),
+                )}
+            </p>
+          ) : null}
         </div>
       )}
 

@@ -18,6 +18,60 @@ independent of the dashboard language and opens in Spanish.
 4. In the blog editor, switch to English, author copy, then save. Check both
    public locales, list pagination, detail metadata, and review approval.
 
+## Rollout: translation table
+
+The symmetric `blog_post_translations` model (see
+`odd/tasks/blog-translations.md`) rolls out in this order. Every database step
+needs explicit approval of the target database; dev goes first.
+
+1. Approve the target database.
+2. Apply `prisma/rollouts/blog-post-translations.sql` (additive, idempotent).
+3. `npm run db:backfill-blog-translations` — dry run (default): prints counts
+   (posts, `es`/`en` rows planned vs existing, invalid `en` JSON, slug history,
+   slug collisions, incomplete rows per locale) and writes nothing.
+4. `npm run db:backfill-blog-translations -- --apply` — creates missing rows,
+   one transaction per post. Re-runnable: existing rows and their slugs are
+   never modified. Exits non-zero unless `es` rows equal posts.
+5. `npm run db:backfill-blog-translations -- --diff-only` — compares legacy
+   columns/JSON with stored rows field by field and prints drift. Run it again
+   during the dual-write verification phase.
+6. Deploy the code that reads the new tables (later slices).
+
+English rows get the Spanish post's media blocks appended in order with their
+Spanish captions, matching today's public English rendering; editors translate
+those captions later.
+
+## Editor writes (T6)
+
+The tripper/admin editor reads and writes `draft.translations[locale]` (full
+blocks per locale) plus shared fields and `sourceLocale`. GET routes used by
+the editor and review return `getForEditor`: translations keyed by locale with
+read-only `slug` and `isComplete`. On save, each locale's slug is derived from
+that locale's title (review copies stay slug-less); a published slug that
+changes is retired for redirects. POST/PATCH/edit-copy accept that by-locale
+shape and call `writeTranslationsFromEditor`.
+
+## Contract (T7)
+
+`prisma/rollouts/blog-post-translations-contract.sql` is written and **not
+applied**. It drops BlogPost localized columns (`title`, `subtitle`, `tagline`,
+`content`, `blocks`, `faq`, `seo`, `translations`, `slug`) after code that no
+longer reads or writes them is deployed, and only on an explicitly approved
+database. Translation rows are the only localized store. Dual-write
+(`legacyColumnsFromRows`) is removed. Creates against a DEV database that still
+has a NOT NULL `title` column will fail until that SQL is applied — expected.
+
+Apply only after this code is deployed and the target database is approved. Do
+not run `db push` / `db migrate` for this drop.
+
+`NewExperienceShell` POSTs the by-locale editor payload (`translations` +
+`sourceLocale`). A request without `translations` still maps a flat body to
+`es` on create (PATCH overlays `es` and keeps other locales) so older clients
+do not write dropped columns. Existing rows are authoritative —
+`syncTranslationsForPost` does not re-derive from legacy (that would wipe
+captions). Preview and review clients render the selected locale's row; they
+do not call `resolveBlogContent`.
+
 ## Content contract
 
 | Concern               | Behavior                                                                                                                                                                              |

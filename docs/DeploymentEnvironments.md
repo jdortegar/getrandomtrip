@@ -112,9 +112,14 @@ Provider discovery alone is not an end-to-end OAuth success check.
   **approved, verified test account**. The empty database's site gate defaults to enabled; keep it
   enabled through the first deployment and account bootstrap below. Never copy
   production users or weaken verification.
-- No schema changes or automatic seed are included. `npm run db:seed` is currently
-  a no-op; `npm run db:migrate` actually runs `prisma db push`. Do not run either as
-  an environment-setup shortcut.
+- Nonproduction setup does not apply schema changes or seed data.
+  `npm run db:seed` is a no-op, and `npm run db:migrate` runs `prisma db push`.
+  Do not use either as an environment-setup shortcut. A merge to `main` is the
+  production deploy: that build runs `npx tsx scripts/migrate-if-outdated.ts`
+  before `npm run build`, and applies pending files in `prisma/migrations` only
+  when the production database is behind. A current database is left unchanged.
+  Drift, a failed migration, or a database Prisma Migrate does not manage fails
+  the deploy.
 
 ## Verification and first gated deployment
 

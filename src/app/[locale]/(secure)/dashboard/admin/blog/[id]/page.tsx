@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale } from "@/lib/i18n/config";
-import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
+import { getForEditor } from "@/lib/blog/blogRepository";
+import { mapEditorPostToDraft } from "@/lib/helpers/blog-form";
 import { AdminBlogReviewClient } from "./AdminBlogReviewClient";
 import type { BlogPost } from "@/types/blog";
 import { dashboardPageMetadata } from "@/lib/dashboard/pageMetadata";
@@ -68,8 +69,9 @@ export default async function AdminBlogReviewPage(props: {
   }
 
   // When a copy exists, load its content so the admin resumes their edits.
-  const source = existingCopy ?? post;
-  const initialDraft = mapBlogPostToDraft(source);
+  const editor = await getForEditor((existingCopy ?? post).id as string);
+  if (!editor) notFound();
+  const initialDraft = mapEditorPostToDraft(editor);
 
   const dict = await getDictionary(locale);
 
@@ -85,7 +87,7 @@ export default async function AdminBlogReviewPage(props: {
       reviewLockedBy={post.reviewLockedBy ?? null}
       reviewLockedByName={reviewLockedByName}
       adminCopyId={existingCopy?.id ?? null}
-      tripperNote={source.tripperNote ?? null}
+      tripperNote={post.tripperNote ?? null}
     />
   );
 }

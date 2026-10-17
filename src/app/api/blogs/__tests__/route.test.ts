@@ -1,10 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
-    blogPost: { findMany: vi.fn().mockResolvedValue([]), count: vi.fn().mockResolvedValue(0) },
-  },
+vi.mock("@/lib/blog/blogRepository", () => ({
+  listPublished: vi.fn().mockResolvedValue([]),
 }));
 
 vi.mock("@/lib/media/upload-url", () => ({
@@ -12,97 +10,120 @@ vi.mock("@/lib/media/upload-url", () => ({
 }));
 
 import { GET } from "../route";
-import { prisma } from "@/lib/prisma";
+import { listPublished } from "@/lib/blog/blogRepository";
 
-describe("GET /api/blogs (public list) — visibility guard", () => {
+const listMock = vi.mocked(listPublished);
+
+function summary(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "blog-1",
+    authorId: "tripper-1",
+    slug: "my-trip",
+    locale: "es",
+    availableLocales: ["es"],
+    localeSlugs: { es: "my-trip" },
+    title: "My Trip",
+    subtitle: null,
+    tagline: null,
+    coverUrl: "https://example.com/cover.jpg",
+    tags: [],
+    format: "ARTICLE",
+    source: "TRIPPER",
+    level: null,
+    label: null,
+    publishedAt: new Date("2020-01-01"),
+    createdAt: new Date("2020-01-01"),
+    updatedAt: new Date("2020-01-01"),
+    travelType: ["solo", "couple"],
+    excuseKey: ["solo-adventure"],
+    author: {
+      id: "tripper-1",
+      name: "Trip A",
+      tripperSlug: "trip-a",
+      avatarUrl: null,
+      bio: null,
+      location: null,
+      motto: null,
+      specialization: null,
+    },
+    ...overrides,
+  };
+}
+
+describe("GET /api/blogs (public list)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
-    (prisma.blogPost.count as ReturnType<typeof vi.fn>).mockResolvedValue(0);
+    listMock.mockResolvedValue([]);
   });
 
-  it("excludes review-copy rows and unpublished posts via isReviewCopy: false + isActive: true alongside status: PUBLISHED", async () => {
-    const req = new NextRequest("http://localhost/api/blogs");
-    await GET(req);
+  it("lists through the translation repository in the requested locale (Spanish by default)", async () => {
+    await GET(new NextRequest("http://localhost/api/blogs?locale=en"));
+    expect(listMock.mock.calls[0][0]).toBe("en");
 
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(findManyArgs.where).toMatchObject({
-      status: "PUBLISHED",
-      isReviewCopy: false,
-      isActive: true,
+    await GET(new NextRequest("http://localhost/api/blogs"));
+    expect(listMock.mock.calls[1][0]).toBe("es");
+  });
+
+  it("forwards travelType/excuseKey and tripper filters", async () => {
+    await GET(
+      new NextRequest(
+        "http://localhost/api/blogs?travelType=solo&excuseKey=solo-adventure&tripperIds=a,%20b",
+      ),
+    );
+    expect(listMock.mock.calls[0][1]).toMatchObject({
+      travelType: "solo",
+      excuseKey: "solo-adventure",
+      authorId: ["a", "b"],
     });
   });
 
-  it("asks for ready English copy on the English list and keeps Spanish rows for later copy checks", async () => {
-    const english = new NextRequest("http://localhost/api/blogs?locale=en");
-    await GET(english);
-    const englishWhere = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0].where;
-    expect(englishWhere.translations).toEqual({
-      path: ["en", "ready"],
-      equals: true,
+  it("filters by a valid level, combinable with travelType", async () => {
+    await GET(new NextRequest("http://localhost/api/blogs?level=xsed&travelType=solo"));
+    expect(listMock.mock.calls[0][1]).toMatchObject({
+      level: "xsed",
+      travelType: "solo",
     });
-
-    const spanish = new NextRequest("http://localhost/api/blogs?locale=es");
-    await GET(spanish);
-    const spanishWhere = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[1][0].where;
-    expect(spanishWhere.translations).toBeUndefined();
-    expect(spanishWhere.status).toBe("PUBLISHED");
-  });
-
-  it("filters by travelType/excuseKey using Prisma's { has } array operator, not exact string match", async () => {
-    const req = new NextRequest(
-      "http://localhost/api/blogs?travelType=solo&excuseKey=solo-adventure",
-    );
-    await GET(req);
-
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
-    expect(findManyArgs.where.excuseKey).toEqual({ has: "solo-adventure" });
-  });
-
-  it("filters by level using the dedicated BlogPost.level column, combinable with travelType", async () => {
-    const req = new NextRequest(
-      "http://localhost/api/blogs?level=xsed&travelType=solo",
-    );
-    await GET(req);
-
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(findManyArgs.where.level).toBe("xsed");
-    expect(findManyArgs.where.travelType).toEqual({ has: "solo" });
   });
 
   it("ignores an invalid level value instead of filtering by it", async () => {
-    const req = new NextRequest("http://localhost/api/blogs?level=not-a-real-level");
-    await GET(req);
-
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock.calls[0][0];
-    expect(findManyArgs.where.level).toBeUndefined();
+    await GET(new NextRequest("http://localhost/api/blogs?level=not-a-real-level"));
+    expect(listMock.mock.calls[0][1]?.level).toBeUndefined();
   });
 
-  it("returns travelType/excuseKey as arrays in the response, not scalar-coerced values", async () => {
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      {
-        id: "blog-1",
-        slug: "my-trip",
-        title: "My Trip",
-        subtitle: null,
-        tagline: null,
-        coverUrl: "https://example.com/cover.jpg",
-        tags: [],
-        format: "ARTICLE",
-        publishedAt: new Date("2020-01-01"),
-        travelType: ["solo", "couple"],
-        excuseKey: ["solo-adventure"],
-        author: { id: "tripper-1", name: "Trip A", tripperSlug: "trip-a", avatarUrl: null },
-      },
-    ]);
-    (prisma.blogPost.count as ReturnType<typeof vi.fn>).mockResolvedValue(1);
+  it("paginates after filtering so totals only count posts public in this locale", async () => {
+    listMock.mockResolvedValue([
+      summary(),
+      summary({ id: "blog-2", slug: "second", authorId: "tripper-2" }),
+    ] as never);
+    const res = await GET(new NextRequest("http://localhost/api/blogs?limit=1"));
+    const body = await res.json();
+    expect(body.blogs).toHaveLength(1);
+    expect(body.pagination).toMatchObject({ total: 2, hasMore: true, totalPages: 2 });
+  });
 
-    const req = new NextRequest("http://localhost/api/blogs");
-    const res = await GET(req);
+  it("keeps the public response shape, with the translation's slug and arrays intact", async () => {
+    listMock.mockResolvedValue([summary()] as never);
+    const res = await GET(new NextRequest("http://localhost/api/blogs"));
     const body = await res.json();
 
-    expect(body.blogs[0].travelType).toEqual(["solo", "couple"]);
-    expect(body.blogs[0].excuseKey).toEqual(["solo-adventure"]);
+    expect(body.blogs[0]).toEqual({
+      author: {
+        avatarUrl: "",
+        id: "tripper-1",
+        name: "Trip A",
+        slug: "trip-a",
+      },
+      coverUrl: "https://example.com/cover.jpg",
+      excuseKey: ["solo-adventure"],
+      format: "article",
+      id: "blog-1",
+      publishedAt: "2020-01-01T00:00:00.000Z",
+      slug: "my-trip",
+      subtitle: "",
+      tagline: "",
+      tags: [],
+      title: "My Trip",
+      travelType: ["solo", "couple"],
+    });
   });
 });

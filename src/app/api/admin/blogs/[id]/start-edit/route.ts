@@ -1,7 +1,8 @@
 // ============================================================================
 // POST /api/admin/blogs/[id]/start-edit
-// Creates a lazy review copy of a PENDING_REVIEW blog post and sets a soft
-// lock on the original. Idempotent: if the same admin already holds the lock
+// Creates a lazy review copy of a PENDING_REVIEW blog post (shared fields +
+// cloned translation rows, slug null) and sets a soft lock on the original.
+// Idempotent: if the same admin already holds the lock
 // and a copy exists, returns the existing copy id.
 // Auth: admin role only
 // ============================================================================
@@ -11,6 +12,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { cloneTranslationsToCopy } from "@/lib/blog/blogRepository";
 
 export async function POST(
   _request: Request,
@@ -69,23 +71,25 @@ export async function POST(
         return { copyId: existingCopy.id, created: false };
       }
 
-      // Create the review copy — omit identity fields: id, authorId, createdAt, slug
+      // Create the review copy — omit identity fields: id, authorId, createdAt
       const {
         id: _id,
         authorId: _authorId,
         createdAt: _createdAt,
         slug: _slug,
-
+        title: _title,
+        subtitle: _subtitle,
+        tagline: _tagline,
+        content: _content,
+        blocks: _blocks,
+        faq: _faq,
+        seo: _seo,
+        translations: _translations,
         isReviewCopy: _irc,
-
         parentId: _pid,
-
         reviewLockedBy: _rlb,
-
         changedFields: _cf,
-
         isDiscarded: _isDiscarded,
-
         updatedAt: _updatedAt,
         ...copyableFields
       } = original;
@@ -98,7 +102,6 @@ export async function POST(
           isReviewCopy: true,
           parentId: params.id,
           status: "DRAFT",
-          slug: null,
           isDiscarded: false,
           changedFields: [],
           reviewLockedBy: null,
@@ -106,6 +109,10 @@ export async function POST(
         },
         select: { id: true },
       }) as { id: string };
+
+      // Clone the original's translation rows (slug null) — `sourceLocale`
+      // is copied with the other scalar columns above.
+      await cloneTranslationsToCopy(tx, params.id, copy.id);
 
       // Set the soft lock on the original
 

@@ -1,15 +1,17 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { NextRequest } from "next/server";
 
 vi.mock("next-auth", () => ({ getServerSession: vi.fn() }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 
-const { getWithMetadataMock } = vi.hoisted(() => ({
-  getWithMetadataMock: vi.fn(),
-}));
-vi.mock("@netlify/blobs", () => ({
-  getStore: vi.fn(() => ({ getWithMetadata: getWithMetadataMock })),
-}));
+const { getWithMetadataMock, getStoreMock } = vi.hoisted(() => {
+  const getWithMetadataMock = vi.fn();
+  const getStoreMock = vi.fn((_name: string, _options?: unknown) => ({
+    getWithMetadata: getWithMetadataMock,
+  }));
+  return { getWithMetadataMock, getStoreMock };
+});
+vi.mock("@netlify/blobs", () => ({ getStore: getStoreMock }));
 
 const PARAMS = { path: ["user123", "avatar", "photo-1700000000000.webp"] };
 
@@ -82,5 +84,62 @@ describe("GET /api/upload/[...path]", () => {
     const res = await GET(makeRequest(), { params: Promise.resolve(PARAMS) });
     expect(res.status).toBe(404);
     expect(res.headers.get("Cache-Control") ?? "").not.toContain("immutable");
+  });
+});
+
+describe("GET /api/upload/[...path] store fallback", () => {
+  const storeNames = () => getStoreMock.mock.calls.map(([name]) => name);
+
+  beforeEach(() => vi.clearAllMocks());
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("non-production reads the shared store, then the legacy store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    getWithMetadataMock
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(blob("blob-etag-1"));
+    const { GET } = await import("../[...path]/route");
+
+    const res = await GET(makeRequest(), { params: Promise.resolve(PARAMS) });
+
+    expect(res.status).toBe(200);
+    expect(storeNames()).toEqual(["user-avatars", "nonproduction-user-avatars"]);
+  });
+
+  it("non-production walks shared, legacy, shared default, legacy default before 404", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    getWithMetadataMock.mockResolvedValue(null);
+    const { GET } = await import("../[...path]/route");
+
+    const res = await GET(makeRequest(), { params: Promise.resolve(PARAMS) });
+
+    expect(res.status).toBe(404);
+    expect(storeNames()).toEqual([
+      "user-avatars",
+      "nonproduction-user-avatars",
+      "user-media",
+      "nonproduction-user-media",
+    ]);
+  });
+
+  it("production never consults a legacy nonproduction- store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    getWithMetadataMock.mockResolvedValue(null);
+    const { GET } = await import("../[...path]/route");
+
+    const res = await GET(makeRequest(), { params: Promise.resolve(PARAMS) });
+
+    expect(res.status).toBe(404);
+    expect(storeNames()).toEqual(["user-avatars", "user-media"]);
+  });
+
+  it("returns 503 when the blob store throws", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    getWithMetadataMock.mockRejectedValue(new Error("down"));
+    const { GET } = await import("../[...path]/route");
+
+    const res = await GET(makeRequest(), { params: Promise.resolve(PARAMS) });
+
+    expect(res.status).toBe(503);
   });
 });

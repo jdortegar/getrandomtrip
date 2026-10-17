@@ -3,6 +3,7 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { FormField } from "@/components/ui/FormField";
+import { formLabelClass } from "@/components/ui/formControlClass";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import { TravelerStatusBadge } from "@/components/common/TravelerStatusBadge";
 import {
@@ -15,6 +16,7 @@ import {
   travelerCodesEqual,
 } from "@/lib/travelers/travelerPolicy";
 import type { InviteTravelersDict } from "@/lib/types/dictionary";
+import { cn } from "@/lib/utils";
 import type { TravelerDocuments, TravelerDTO } from "@/types/traveler";
 import { TravelerDocumentsFields } from "./TravelerDocumentsFields";
 
@@ -62,10 +64,10 @@ function inviteStateOf(traveler: TravelerDTO): InviteState {
 }
 
 const INVITE_BADGE_STYLE: Record<Exclude<InviteState, "none">, string> = {
-  noEmail: "bg-gray-100 text-gray-600",
-  notSent: "bg-amber-100 text-amber-800",
-  sent: "bg-sky-100 text-sky-800",
-  joined: "bg-green-100 text-green-800",
+  noEmail: "bg-gray-100 border-gray-200 text-gray-600",
+  notSent: "bg-amber-100 border-amber-200 text-amber-800",
+  sent: "bg-sky-100 border-sky-200 text-sky-800",
+  joined: "bg-green-100 border-green-200 text-green-800",
 };
 
 function inviteBadgeLabel(
@@ -295,7 +297,10 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           <div className="flex items-center gap-2">
             {inviteState !== "none" && (
               <span
-                className={`rounded-[6px] px-2 py-0.5 text-[11px] font-semibold ${INVITE_BADGE_STYLE[inviteState]}`}
+                className={cn(
+                  "border font-semibold inline-flex items-center px-2.5 py-1 rounded-[6px] text-[11px] tracking-[0.08em] uppercase",
+                  INVITE_BADGE_STYLE[inviteState],
+                )}
                 data-invite-state={inviteState}
               >
                 {inviteBadgeLabel(copy, inviteState, traveler.invitedAt)}
@@ -309,11 +314,12 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
         </div>
 
         <div
-          className={`grid grid-cols-1 gap-2.5 sm:items-end ${
+          className={cn(
+            "gap-2.5 grid grid-cols-1",
             isAdult
               ? "sm:grid-cols-[1.2fr_1.2fr_1fr_auto]"
-              : "sm:grid-cols-[1.4fr_1fr_1fr_auto]"
-          }`}
+              : "sm:grid-cols-[1.4fr_1fr_1fr_auto]",
+          )}
         >
           <FormField
             disabled={fieldLocked("fullName")}
@@ -357,19 +363,29 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
           />
 
           {canEdit && isAdult && !isSelf && inviteState !== "joined" && (
-            <TableIconButton
-              aria-busy={saving}
-              danger={false}
-              disabled={!email.trim() || saving}
-              onClick={() => void handleSendInvite()}
-              title={copy.resendInviteAction}
-            >
-              {saving ? (
-                <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </TableIconButton>
+            <div className="flex flex-col gap-2 h-full">
+              <span
+                aria-hidden
+                className={cn(formLabelClass, "hidden", "sm:block")}
+              >
+                &nbsp;
+              </span>
+              <div className="flex flex-1 items-center">
+                <TableIconButton
+                  aria-busy={saving}
+                  danger={false}
+                  disabled={!email.trim() || saving}
+                  onClick={() => void handleSendInvite()}
+                  title={copy.resendInviteAction}
+                >
+                  {saving ? (
+                    <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                </TableIconButton>
+              </div>
+            </div>
           )}
         </div>
 
