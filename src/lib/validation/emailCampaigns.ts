@@ -21,7 +21,10 @@ const positiveInt = (fallback: number) =>
   z
     .string()
     .nullish()
-    .transform((value) => Math.max(1, Math.trunc(Number(value)) || fallback));
+    .transform((value) => {
+      const parsed = Math.trunc(Number(value));
+      return Number.isFinite(parsed) && parsed >= 1 ? parsed : fallback;
+    });
 
 export const contactListQuerySchema = z.object({
   page: positiveInt(1),
