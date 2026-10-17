@@ -14,6 +14,7 @@ import {
   type BatchMailMessage,
   type BatchMailResult,
 } from "@/lib/helpers/sendMail";
+import { isProductionDeployment } from "@/lib/deployment";
 import { prisma } from "@/lib/prisma";
 import { CampaignError, toCampaign } from "@/lib/email-campaigns/campaigns";
 import { lookupPromotionCode, toEmailPromo } from "@/lib/email-campaigns/promo";
@@ -38,14 +39,39 @@ const MAX_ERROR_LENGTH = 500;
 
 type PendingSend = { id: string; contactId: string; email: string };
 
+/**
+ * Develop and previews share a database that can hold real addresses, and
+ * `sendMail` does not restrict recipients there. Outside production a campaign
+ * only reaches `EMAIL_TEST_RECIPIENTS` (comma-separated); unset reaches nobody.
+ * Returns `null` in production, where no address filter applies.
+ */
+function nonproductionRecipients(): string[] | null {
+  if (isProductionDeployment()) return null;
+  return (process.env.EMAIL_TEST_RECIPIENTS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 function audienceWhere(
   campaign: Pick<Campaign, "segmentSources" | "locale">,
 ): Prisma.ContactWhereInput {
+  const allowed = nonproductionRecipients();
   return {
     source: { in: campaign.segmentSources },
     locale: campaign.locale,
     status: "SUBSCRIBED",
+    ...(allowed ? { email: { in: allowed } } : {}),
   };
+}
+
+/** Pending rows that must not be sent: unsubscribed, or outside the test allowlist. */
+function unsendableWhere(): Prisma.CampaignSendWhereInput {
+  const unsubscribed = { contact: { status: { not: "SUBSCRIBED" as const } } };
+  const allowed = nonproductionRecipients();
+  return allowed
+    ? { OR: [unsubscribed, { email: { notIn: allowed } }] }
+    : unsubscribed;
 }
 
 /** Subscribed contacts the campaign would reach, for the confirm dialog. */
@@ -241,7 +267,7 @@ export async function sendCampaign(campaignId: string): Promise<CampaignSendSumm
       where: {
         campaignId,
         status: { in: PENDING_STATUSES },
-        contact: { status: { not: "SUBSCRIBED" } },
+        ...unsendableWhere(),
       },
     });
     const pending = await prisma.campaignSend.findMany({

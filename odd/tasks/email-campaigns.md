@@ -116,5 +116,11 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - RED: sendMailBatch, sending module and routes failed before implementation. GREEN: 151/151 email-campaigns + admin API + sendMail (parent re-run incl. promo fix); eslint clean; tsc clean except an unrelated in-progress file from another session (`DashboardRoleShell.tsx`).
 - Safety finding: `sendMail` has NO nonproduction recipient restriction (only a `[TEST]` subject prefix) → a campaign sent from develop/preview reaches real subscribed contacts. Proposed guard pending user decision.
 - Risks: synchronous send inside the request (fine at ~10 contacts; Netlify timeout for large audiences); a batch is all-or-nothing per chunk; relation filter in `deleteMany` only exercised against mocks.
+- Commit: `0908aef9` (includes the promo lookup `active` preference fix).
+
+### T6b — Nonproduction recipient guard (route: inline; one file + test, user-approved)
+
+- `sending.ts`: outside production the audience is limited to `EMAIL_TEST_RECIPIENTS` (comma-separated, lowercased; empty → nobody), and pending rows for other addresses are deleted before sending. Production unchanged. Documented in `env.example`.
+- RED: 3 nonproduction guard tests failed. GREEN: 155/155 email-campaigns + admin API + sendMail; eslint clean; tsc clean except the other session's in-progress file.
 - Status: uncommitted, awaiting user approval.
-- Remaining after T6: T7 webhook, T8 metrics, T9 admin UI, T10 ops docs.
+- Remaining: T7 webhook, T8 metrics, T9 admin UI, T10 ops docs.

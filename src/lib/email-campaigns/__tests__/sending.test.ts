@@ -569,3 +569,51 @@ describe("sendCampaign failures and retry", () => {
     expect(state.campaign.status).toBe("PARTIAL");
   });
 });
+
+describe("nonproduction recipient guard", () => {
+  beforeEach(() => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  });
+
+  it("limits the audience to EMAIL_TEST_RECIPIENTS outside production", async () => {
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", " QA@Example.invalid , dev@example.invalid ");
+    await getCampaignAudienceCount("c1");
+    expect(prisma.contact.count).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        email: { in: ["qa@example.invalid", "dev@example.invalid"] },
+      }),
+    });
+  });
+
+  it("reaches nobody outside production when no test recipients are configured", async () => {
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", "");
+    await getCampaignAudienceCount("c1");
+    expect(prisma.contact.count).toHaveBeenCalledWith({
+      where: expect.objectContaining({ email: { in: [] } }),
+    });
+  });
+
+  it("drops pending rows for addresses outside the allowlist before sending", async () => {
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", "qa@example.invalid");
+    state.campaign = campaignRow({ status: "PARTIAL" });
+    state.sends = [sendRow("k1", "FAILED")];
+    acceptAll();
+    await sendCampaign("c1");
+    expect(prisma.campaignSend.deleteMany).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        OR: [
+          { contact: { status: { not: "SUBSCRIBED" } } },
+          { email: { notIn: ["qa@example.invalid"] } },
+        ],
+      }),
+    });
+  });
+
+  it("applies no address filter in production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", "qa@example.invalid");
+    await getCampaignAudienceCount("c1");
+    const where = vi.mocked(prisma.contact.count).mock.calls[0][0]?.where;
+    expect(where).not.toHaveProperty("email");
+  });
+});
