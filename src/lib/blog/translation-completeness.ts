@@ -1,8 +1,10 @@
 import type {
   BlogBlock,
+  BlogEditorDraft,
   BlogMediaBlock,
   BlogMediaMismatch,
   BlogTranslationContent,
+  ContentLocale,
 } from "@/types/blog";
 
 /** TinyMCE's empty paragraphs are not usable article content. HTML is kept
@@ -63,4 +65,26 @@ export function findMediaMismatch(
     missing: sourceUrls.filter((url) => !targetUrls.includes(url)),
     extra: targetUrls.filter((url) => !sourceUrls.includes(url)),
   };
+}
+
+/** Gallery is shared until a locale draft exists; only then can URLs diverge. */
+export function editorMediaMismatch(
+  draft: Pick<BlogEditorDraft, "sourceLocale" | "translations">,
+  contentLocale: ContentLocale,
+): BlogMediaMismatch {
+  const empty: BlogMediaMismatch = { extra: [], missing: [] };
+  if (contentLocale === draft.sourceLocale) return empty;
+  const target = draft.translations[contentLocale];
+  if (!target) return empty;
+  return findMediaMismatch(
+    { blocks: draft.translations[draft.sourceLocale]?.media },
+    { blocks: target.media },
+  );
+}
+
+/** Filename for the mismatch warning; falls back to the URL. */
+export function mediaMismatchLabel(url: string): string {
+  const path = url.split("?")[0] ?? url;
+  const name = path.split("/").filter(Boolean).at(-1);
+  return name || url;
 }

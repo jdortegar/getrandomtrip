@@ -492,10 +492,10 @@ export interface TripperBlogFormDict {
   };
   translate: {
     error: string;
+    fromEnglish: string;
+    fromSpanish: string;
     hint: string;
     label: string;
-    toEnglish: string;
-    toSpanish: string;
     translating: string;
   };
   nav: {
@@ -608,6 +608,7 @@ export interface TripperBlogFormDict {
     uploadError: string;
     fileTooLarge: string;
     saveError: string;
+    saveSuccess: string;
   };
 }
 

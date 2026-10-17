@@ -17,15 +17,17 @@ import {
   persistBlogEditorDraft,
 } from "./persistBlogEditorDraft";
 import type { BlogEditorDraft, BlogFormDraft } from "@/types/blog";
-import { findMediaMismatch } from "@/lib/blog/translation-completeness";
+import { editorMediaMismatch } from "@/lib/blog/translation-completeness";
 import { labelBlogChangedFields } from "@/lib/blog/label-changed-fields";
 import { isContentLocale } from "@/lib/blog/locales";
 import { resolveBlogChangedFieldsForLocale } from "@/lib/blog/blog-form-peek";
 import {
   BLOG_LOCALIZED_DRAFT_FIELDS,
+  blogEditorDraftSignature,
   coerceEditorDraft,
   emptyBlogEditorDraft,
   emptyBlogLocaleDraft,
+  ensureLocaleGallery,
   getBlogLocaleView,
   isBlogTabComplete,
   isBlogTabEligible,
@@ -121,6 +123,14 @@ export function NewBlogPostShell({
       ? coerceEditorDraft(initialDraft, defaultSource)
       : emptyBlogEditorDraft(defaultSource),
   );
+  const [savedSignature, setSavedSignature] = useState(() =>
+    blogEditorDraftSignature(
+      initialDraft
+        ? coerceEditorDraft(initialDraft, defaultSource)
+        : emptyBlogEditorDraft(defaultSource),
+    ),
+  );
+  const isDirty = blogEditorDraftSignature(draft) !== savedSignature;
 
   useLayoutEffect(() => {
     if (restoreLanguageFocusRef.current) {
@@ -137,10 +147,7 @@ export function NewBlogPostShell({
     dict.changedFieldsBanner,
   );
   const sourceView = getBlogLocaleView(draft, draft.sourceLocale);
-  const mediaMismatch = findMediaMismatch(
-    { blocks: draft.translations[draft.sourceLocale]?.media },
-    { blocks: draft.translations[contentLocale]?.media },
-  );
+  const mediaMismatch = editorMediaMismatch(draft, contentLocale);
 
   // Derived read-only flag — controlled by mode and status, mirrors
   // NewExperienceShell's isReadOnly exactly. 'tripper': editable except
@@ -189,6 +196,7 @@ export function NewBlogPostShell({
           return false;
         }
         if (result.id) draftIdRef.current = result.id;
+        setSavedSignature(blogEditorDraftSignature(snapshot));
         setSaveStatus("saved");
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
         savedTimerRef.current = setTimeout(() => setSaveStatus("idle"), 3000);
@@ -366,10 +374,14 @@ export function NewBlogPostShell({
         const current = prev.translations[contentLocale] ?? emptyBlogLocaleDraft();
         return {
           ...prev,
-          translations: {
-            ...prev.translations,
-            [contentLocale]: { ...current, [key]: value },
-          },
+          translations: ensureLocaleGallery(
+            {
+              ...prev.translations,
+              [contentLocale]: { ...current, [key]: value },
+            },
+            contentLocale,
+            prev.gallery,
+          ),
         };
       }
       if (key === "gallery") {
@@ -389,6 +401,10 @@ export function NewBlogPostShell({
     // Native option menus can blur before change; this handler only serves the selector.
     restoreLanguageFocusRef.current = true;
     contentGenerationRef.current += 1;
+    setDraft((prev) => ({
+      ...prev,
+      translations: ensureLocaleGallery(prev.translations, language, prev.gallery),
+    }));
     setContentLocale(language);
   }
 
@@ -397,10 +413,11 @@ export function NewBlogPostShell({
   }
 
   async function handleSaveCopy() {
-    if (isReadOnly || isTranslating || isSavingCopy || isFinishing) return;
+    if (!isDirty || isReadOnly || isTranslating || isSavingCopy || isFinishing) return;
     setIsSavingCopy(true);
     try {
-      await persistDraft(draft);
+      const ok = await persistDraft(draft);
+      if (ok) toast.success(dict.toasts.saveSuccess);
     } finally {
       setIsSavingCopy(false);
     }
@@ -491,6 +508,7 @@ export function NewBlogPostShell({
           <div className="min-w-0 flex-1">
             <BlogFormContent
               activeTab={activeTab}
+              canSaveCopy={isDirty}
               changedFields={displayedChangedFields}
               contentLanguageSlot={
                 <BlogContentLanguage

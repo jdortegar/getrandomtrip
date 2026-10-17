@@ -35,16 +35,20 @@ describe("BlogEditorLocaleTools", () => {
 });
 
 describe("BlogMediaMismatchWarning", () => {
-  it("renders missing and extra media URLs", () => {
+  it("renders missing and extra media filenames", () => {
     harness.render(
       <BlogMediaMismatchWarning
         copy={form.mediaMismatch}
-        mismatch={{ extra: ["/b.jpg"], missing: ["/a.jpg"] }}
+        mismatch={{
+          extra: ["/api/upload/x/blog-gallery/b.jpg"],
+          missing: ["/api/upload/x/blog-gallery/a.jpg"],
+        }}
       />,
     );
     const text = harness.container.textContent ?? "";
     expect(text).toContain(form.mediaMismatch.title);
-    expect(text).toContain("/a.jpg");
-    expect(text).toContain("/b.jpg");
+    expect(text).toContain("a.jpg");
+    expect(text).toContain("b.jpg");
+    expect(text).not.toContain("/api/upload");
   });
 });

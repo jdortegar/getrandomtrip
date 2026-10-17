@@ -25,6 +25,7 @@ interface BlogFormContentProps {
   optionalContent?: boolean;
   validationDraft?: BlogFormDraft;
   activeTab: string;
+  canSaveCopy?: boolean;
   contentLanguageSlot?: React.ReactNode;
   contentLocale?: ExperienceCopyLocale;
   copy: TripperBlogFormDict;
@@ -163,6 +164,7 @@ export function BlogFormContent({
   optionalContent = false,
   validationDraft,
   activeTab,
+  canSaveCopy = false,
   contentLanguageSlot,
   contentLocale = "es",
   copy,
@@ -277,6 +279,7 @@ export function BlogFormContent({
     <div className="flex flex-col gap-4" data-component="BlogFormContent">
       {contentLanguageSlot || canTranslate ? (
         <TranslateBlogCopy
+          canSave={canSaveCopy}
           copy={copy.translate}
           draft={sourceDraft ?? { sourceLocale: contentLocale ?? "es", translations: {}, status: draft.status, coverUrl: draft.coverUrl, gallery: draft.gallery, travelType: draft.travelType, excuseKey: draft.excuseKey, level: draft.level, label: draft.label }}
           isSaving={isSavingCopy}
@@ -286,7 +289,9 @@ export function BlogFormContent({
           onBusyChange={onTranslatingChange ?? (() => undefined)}
           onSave={canTranslate ? onSaveCopy : undefined}
           onTranslated={onContentLocaleChange ?? (() => undefined)}
+          savedLabel={copy.saved}
           saveLabel={copy.editSubmit}
+          saveStatus={saveStatus}
           savingLabel={copy.saving}
           showActions={Boolean(canTranslate)}
         />

@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { applyBlogCopy, collectBlogCopy } from "@/lib/ai/translateBlogCopy";
+import {
+  applyBlogCopy,
+  collectBlogCopy,
+  copyBlogMediaFromLocale,
+} from "@/lib/ai/translateBlogCopy";
 import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
 import type { BlogEditorDraft } from "@/types/blog";
 
@@ -85,5 +89,18 @@ describe("applyBlogCopy", () => {
     expect(next.translations.es?.title).toBe("ES Sunrise");
     expect(next.translations.es?.sections[0]?.title).toBe("ES Morning");
     expect(next.translations.en?.title).toBe("Sunrise");
+  });
+});
+
+describe("copyBlogMediaFromLocale", () => {
+  it("copies source media into an empty target without replacing Spanish prose", () => {
+    const source = sourceDraft();
+    const next = copyBlogMediaFromLocale(source, "en", "es");
+
+    expect(next.translations.es?.title).toBe("Amanecer");
+    expect(next.translations.en?.title).toBe("");
+    expect(next.translations.en?.media).toEqual([
+      { type: "image", url: "/a.jpg", caption: "Lago" },
+    ]);
   });
 });

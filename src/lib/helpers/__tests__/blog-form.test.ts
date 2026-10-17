@@ -1,7 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
+  blogEditorDraftSignature,
   buildBlogSubmitPayload,
   emptyBlogEditorDraft,
+  ensureLocaleGallery,
   getBlogLocaleDraft,
   pickBlogContentDraft,
   getBlogCompleteness,
@@ -380,5 +382,53 @@ describe("editor draft ↔ payload", () => {
       translations: { es: { title: "Español" } },
     });
     expect(buildBlogSubmitPayload({ ...draft, translations: rest }).translations.en).toBeUndefined();
+  });
+});
+
+describe("blogEditorDraftSignature", () => {
+  it("ignores an empty non-source locale so a language switch is not dirty", () => {
+    const draft = mapBlogPostToDraft({
+      title: "Español",
+      content: "<p>Original</p>",
+      coverUrl: "/shared.jpg",
+    });
+    const withEmptyEnglish = {
+      ...draft,
+      translations: ensureLocaleGallery(draft.translations, "en", draft.gallery),
+    };
+    expect(blogEditorDraftSignature(withEmptyEnglish)).toBe(
+      blogEditorDraftSignature(draft),
+    );
+  });
+
+  it("changes when the other locale has copy to persist", () => {
+    const draft = mapBlogPostToDraft({ title: "Español" });
+    const withEnglish = {
+      ...draft,
+      translations: {
+        ...draft.translations,
+        en: { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English" },
+      },
+    };
+    expect(blogEditorDraftSignature(withEnglish)).not.toBe(
+      blogEditorDraftSignature(draft),
+    );
+  });
+});
+
+describe("ensureLocaleGallery", () => {
+  it("creates a missing locale with the shared gallery URLs", () => {
+    const translations = ensureLocaleGallery(
+      {
+        es: {
+          ...pickBlogContentDraft(baseDraft),
+          media: [{ type: "image", url: "/a.jpg" }],
+        },
+      },
+      "en",
+      ["/a.jpg"],
+    );
+    expect(translations.en?.media).toEqual([{ type: "image", url: "/a.jpg" }]);
+    expect(translations.es?.title).toBe("My Trip");
   });
 });

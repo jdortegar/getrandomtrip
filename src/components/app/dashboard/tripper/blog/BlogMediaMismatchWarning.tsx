@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+import { mediaMismatchLabel } from "@/lib/blog/translation-completeness";
 import type { BlogMediaMismatch } from "@/types/blog";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 
@@ -26,12 +27,12 @@ export function BlogMediaMismatchWarning({
         <p className="font-semibold">{copy.title}</p>
         {mismatch.missing.length ? (
           <p>
-            {copy.missing}: {mismatch.missing.join(", ")}
+            {copy.missing}: {mismatch.missing.map(mediaMismatchLabel).join(", ")}
           </p>
         ) : null}
         {mismatch.extra.length ? (
           <p>
-            {copy.extra}: {mismatch.extra.join(", ")}
+            {copy.extra}: {mismatch.extra.map(mediaMismatchLabel).join(", ")}
           </p>
         ) : null}
       </div>

@@ -4614,10 +4614,10 @@
       },
       "translate": {
         "error": "Could not translate this post. Try again.",
-        "hint": "Fills the other language from the title, subtitle, quote, sections, and FAQ.",
+        "fromEnglish": "Translate from English",
+        "fromSpanish": "Translate from Spanish",
+        "hint": "Fills this language from the title, subtitle, quote, sections, and FAQ of the other language.",
         "label": "AI translation",
-        "toEnglish": "Translate to English",
-        "toSpanish": "Translate to Spanish",
         "translating": "Translating..."
       },
       "nav": {
@@ -4774,7 +4774,8 @@
         "titleRequired": "Title is required",
         "uploadError": "Image upload failed",
         "fileTooLarge": "Image must be under 10 MB.",
-        "saveError": "Could not save"
+        "saveError": "Could not save",
+        "saveSuccess": "Changes saved"
       }
     },
     "title": "MY BLOG",

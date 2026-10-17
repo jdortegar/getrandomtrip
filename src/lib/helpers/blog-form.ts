@@ -267,7 +267,7 @@ export function mapEditorPostToDraft(post: BlogEditorPost): BlogEditorDraft {
     : [];
   return {
     sourceLocale: post.sourceLocale,
-    translations,
+    translations: syncGalleryAcrossLocales(translations, gallery),
     translationMeta,
     publishedAt: post.publishedAt,
     isReviewCopy: post.isReviewCopy,
@@ -424,6 +424,36 @@ export function buildBlogSubmitPayload(draft: BlogEditorDraft): BlogEditorPayloa
   };
 }
 
+function hasPersistableCopy(input: BlogTranslationInput): boolean {
+  if (input.title.trim()) return true;
+  if (input.subtitle?.trim()) return true;
+  if (input.tagline?.trim()) return true;
+  if (input.content?.trim()) return true;
+  if (input.seo) return true;
+  const faqItems =
+    input.faq && typeof input.faq === "object"
+      ? (input.faq as { items?: unknown }).items
+      : undefined;
+  if (Array.isArray(faqItems) && faqItems.length > 0) return true;
+  return input.blocks.some((block) => block.type !== "image");
+}
+
+/**
+ * Stable persist fingerprint. Empty non-source locales (language-switch gallery
+ * seeds with no copy) are omitted so switching language alone is not dirty.
+ */
+export function blogEditorDraftSignature(draft: BlogEditorDraft): string {
+  const payload = buildBlogSubmitPayload(draft);
+  const translations: BlogEditorPayload["translations"] = {};
+  for (const locale of CONTENT_LOCALES) {
+    const input = payload.translations[locale];
+    if (!input) continue;
+    if (locale !== payload.sourceLocale && !hasPersistableCopy(input)) continue;
+    translations[locale] = input;
+  }
+  return JSON.stringify({ ...payload, translations });
+}
+
 export function syncGalleryAcrossLocales(
   translations: BlogEditorDraft["translations"],
   gallery: string[],
@@ -441,6 +471,16 @@ export function syncGalleryAcrossLocales(
     next[locale] = { ...current, media: [...kept, ...added] };
   }
   return next;
+}
+
+/** Creates the locale draft if needed, then keeps its gallery URLs in sync. */
+export function ensureLocaleGallery(
+  translations: BlogEditorDraft["translations"],
+  locale: ContentLocale,
+  gallery: string[],
+): BlogEditorDraft["translations"] {
+  const current = translations[locale] ?? emptyBlogLocaleDraft();
+  return syncGalleryAcrossLocales({ ...translations, [locale]: current }, gallery);
 }
 
 export function editorTranslationToContent(

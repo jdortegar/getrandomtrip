@@ -189,6 +189,24 @@ function translatedMedia(
   return media;
 }
 
+/** Copies gallery/embed URLs into the target without replacing its prose. */
+export function copyBlogMediaFromLocale(
+  draft: BlogEditorDraft,
+  target: ExperienceCopyLocale,
+  from: ExperienceCopyLocale,
+): BlogEditorDraft {
+  return {
+    ...draft,
+    translations: {
+      ...draft.translations,
+      [target]: {
+        ...(draft.translations[target] ?? emptyBlogLocaleDraft()),
+        media: translatedMedia(draft.translations[from]?.media, []),
+      },
+    },
+  };
+}
+
 /** Writes the translation into the target locale, copying media with captions. */
 export function applyBlogCopy(
   draft: BlogEditorDraft,

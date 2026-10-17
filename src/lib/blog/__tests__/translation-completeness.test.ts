@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { isEnglishBlogReady } from "../content-locale";
+import { emptyBlogLocaleDraft } from "@/lib/helpers/blog-form";
 import {
+  editorMediaMismatch,
   findMediaMismatch,
   hasBlogArticleContent,
   isBlogTranslationComplete,
+  mediaMismatchLabel,
 } from "../translation-completeness";
 import type { BlogTranslationContent } from "@/types/blog";
 
@@ -144,5 +147,48 @@ describe("findMediaMismatch", () => {
       extra: [],
     });
     expect(findMediaMismatch(source, {}).missing).toHaveLength(3);
+  });
+});
+
+describe("editorMediaMismatch", () => {
+  const draft = {
+    sourceLocale: "es" as const,
+    translations: {
+      es: {
+        ...emptyBlogLocaleDraft(),
+        media: [{ type: "image" as const, url: "/a.jpg" }],
+        title: "Fuente",
+      },
+    },
+  };
+
+  it("does not warn when the other language has not been started", () => {
+    expect(editorMediaMismatch(draft, "en")).toEqual({ extra: [], missing: [] });
+    expect(editorMediaMismatch(draft, "es")).toEqual({ extra: [], missing: [] });
+  });
+
+  it("warns once the other language exists without the shared images", () => {
+    expect(
+      editorMediaMismatch(
+        {
+          ...draft,
+          translations: {
+            ...draft.translations,
+            en: { ...emptyBlogLocaleDraft(), media: [], title: "English" },
+          },
+        },
+        "en",
+      ),
+    ).toEqual({ extra: [], missing: ["/a.jpg"] });
+  });
+});
+
+describe("mediaMismatchLabel", () => {
+  it("uses the filename from an upload URL", () => {
+    expect(
+      mediaMismatchLabel(
+        "/api/upload/cmpiu9ddf000009jvd33le5y5/blog-gallery/la-rioja-1-1791003988091.jfif",
+      ),
+    ).toBe("la-rioja-1-1791003988091.jfif");
   });
 });

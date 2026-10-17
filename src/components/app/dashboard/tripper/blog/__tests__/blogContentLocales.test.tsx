@@ -10,17 +10,19 @@ import dictionary from "@/dictionaries/en.json";
 import { mapBlogPostToDraft } from "@/lib/helpers/blog-form";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
 
-const { callbacks, mounts, unmounts, push } = vi.hoisted(() => ({
+const { callbacks, mounts, unmounts, push, toast } = vi.hoisted(() => ({
   callbacks: [] as BlogFormDraftOnChange[],
   mounts: vi.fn(),
   unmounts: vi.fn(),
   push: vi.fn(),
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 vi.mock("next/navigation", () => ({
   useParams: () => ({ locale: "en" }),
   useRouter: () => ({ push }),
   useSearchParams: () => new URLSearchParams(),
 }));
+vi.mock("sonner", () => ({ toast }));
 vi.mock("../BlogFormContent", async (importOriginal) => {
   const { useEffect } = await import("react");
   const { BlogFormContent } =
@@ -83,6 +85,8 @@ function change<K extends keyof BlogFormDraft>(
 beforeEach(() => {
   callbacks.length = 0;
   vi.clearAllMocks();
+  toast.success.mockReset();
+  toast.error.mockReset();
   vi.useFakeTimers();
   harness = createDomHarness();
   vi.stubGlobal(
@@ -136,11 +140,11 @@ describe("content language editor", () => {
     expect(language.querySelector("label")?.textContent).toBe(
       copy.contentLanguage.label,
     );
-    expect(row.querySelector("button")?.textContent).toBe(copy.translate.toEnglish);
-    expect(button(copy.editSubmit)).toBeTruthy();
+    expect(row.querySelector("button")?.textContent).toBe(copy.translate.fromEnglish);
+    expect((button(copy.editSubmit) as HTMLButtonElement).disabled).toBe(true);
     expect(language.querySelector("button")).toBeNull();
-    expect(button(copy.translate.toSpanish)).toBeUndefined();
-    expect((button(copy.translate.toEnglish) as HTMLButtonElement).disabled).toBe(false);
+    expect(button(copy.translate.fromSpanish)).toBeUndefined();
+    expect((button(copy.translate.fromEnglish) as HTMLButtonElement).disabled).toBe(true);
     expect(
       harness.container.querySelector('[data-component="BlogSourceLocaleField"]'),
     ).toBeNull();
@@ -248,8 +252,8 @@ describe("content language editor", () => {
       { title: "", description: "<p>Original</p>" },
     ]);
     selectLanguage("en");
-    expect(button(copy.translate.toEnglish)).toBeUndefined();
-    expect((button(copy.translate.toSpanish) as HTMLButtonElement).disabled).toBe(false);
+    expect(button(copy.translate.fromEnglish)).toBeUndefined();
+    expect((button(copy.translate.fromSpanish) as HTMLButtonElement).disabled).toBe(false);
     expect(draft()).toMatchObject({
       title: "English draft",
       sections: [{ title: "Heading", description: "<p>Unsaved rich text</p>" }],
@@ -258,6 +262,29 @@ describe("content language editor", () => {
     });
     expect(fetch).not.toHaveBeenCalled();
   });
+
+  it("disables Save Changes until the draft has something to persist", () => {
+    render();
+    expect((button(copy.editSubmit) as HTMLButtonElement).disabled).toBe(true);
+    selectLanguage("en");
+    expect((button(copy.editSubmit) as HTMLButtonElement).disabled).toBe(true);
+    change("title", "English draft");
+    expect((button(copy.editSubmit) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("confirms Save Changes and disables the button after a successful persist", async () => {
+    render();
+    change("title", "Español editado");
+    await act(async () => harness.click(button(copy.editSubmit)));
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(fetch).mock.calls[0]?.[0]).toBe("/api/tripper/blogs/post-1");
+    expect(vi.mocked(fetch).mock.calls[0]?.[1]?.method).toBe("PATCH");
+    expect(toast.success).toHaveBeenCalledWith(copy.toasts.saveSuccess);
+    expect(button(copy.saved)).toBeTruthy();
+    expect((button(copy.saved) as HTMLButtonElement).disabled).toBe(true);
+    expect(button(copy.editSubmit)).toBeUndefined();
+  });
+
   it("remounts editors and ignores late callbacks even after switching back", () => {
     render();
     const stale = callbacks.at(-1)!;
