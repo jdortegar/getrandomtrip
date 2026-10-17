@@ -46,7 +46,7 @@ export function toContact(row: ContactRow): Contact {
   };
 }
 
-function isUniqueViolation(error: unknown): boolean {
+export function isUniqueViolation(error: unknown): boolean {
   return (
     !!error &&
     typeof error === "object" &&

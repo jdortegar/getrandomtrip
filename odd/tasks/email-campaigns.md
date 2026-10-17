@@ -122,5 +122,12 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 
 - `sending.ts`: outside production the audience is limited to `EMAIL_TEST_RECIPIENTS` (comma-separated, lowercased; empty → nobody), and pending rows for other addresses are deleted before sending. Production unchanged. Documented in `env.example`.
 - RED: 3 nonproduction guard tests failed. GREEN: 155/155 email-campaigns + admin API + sendMail; eslint clean; tsc clean except the other session's in-progress file.
+- Commit: `aebde1b2`. Assessment (range 82f982e4..aebde1b2): high risk, RDD off → independent verifier: PASS (claim race-safe via @updatedAt, rows once, allowlist fails closed for `in: []`/`notIn: []`, sendMail behaviour unchanged, Resend SDK types match; 155 tests + tsc clean). Lows accepted for ~10 contacts: idempotency key changes if chunk boundaries shift after a crash (possible double send of one chunk); live-run vs stale-reclaim overlap needs a >10 min stalled chunk; mid-run unsubscribes may still be mailed; finalize failure leaves SENDING until stale window.
+### T7 — Resend webhook (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `src/lib/email-campaigns/resendWebhook.ts` (`verifyResendWebhook` via SDK `resend.webhooks.verify` — svix is a resend dependency, no new deps; `parseResendEvent`; `handleResendEvent` in one `$transaction`: EmailEvent insert keyed by svix-id + conditional side effects), `src/app/api/webhooks/resend/route.ts` (POST, raw body; 400 bad signature/JSON, 500 missing secret or DB error so Resend retries, 200 otherwise), `contacts.ts` (export `isUniqueViolation`), types, `env.example` (`RESEND_WEBHOOK_SECRET`, endpoint, 5 events, enable tracking), tests.
+- Rules: delivered SENT→DELIVERED; bounced SENT|DELIVERED→BOUNCED and `Permanent` bounce → contact BOUNCED; complained → contact UNSUBSCRIBED; opened/clicked event only; duplicate svix-id → no repeated effects; non-campaign emails ignored. Metadata minimal (link, bounce type/subType).
+- RED: both new test files failed (modules missing). GREEN: 177/177 email-campaigns + webhook + admin API (parent re-run); tsc + eslint clean (writer).
+- Risks: hard bounce detection relies on the SES value `Permanent`; signature tests self-sign (no real Resend delivery verified yet).
 - Status: uncommitted, awaiting user approval.
-- Remaining: T7 webhook, T8 metrics, T9 admin UI, T10 ops docs.
+- Remaining: T8 metrics, T9 admin UI, T10 ops docs.

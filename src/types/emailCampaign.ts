@@ -220,3 +220,34 @@ export interface RenderedCampaignEmail {
   html: string;
   text: string;
 }
+
+// Event metadata uses type aliases, not interfaces, so the values stay
+// assignable to Prisma JSON input (interfaces lack an index signature).
+
+/** Minimal metadata stored on a CLICKED event. */
+export type ClickedEventMetadata = {
+  link: string;
+};
+
+/** Minimal metadata stored on a BOUNCED event (Resend/SES bounce fields). */
+export type BouncedEventMetadata = {
+  /** e.g. `Permanent`, `Transient`, `Undetermined`. */
+  bounceType: string | null;
+  bounceSubType: string | null;
+};
+
+/** A Resend webhook event relevant to campaign tracking, already validated. */
+export interface ResendTrackingEvent {
+  type: EmailEventType;
+  /** Resend message id (`data.email_id`), matched to `CampaignSend.resendMessageId`. */
+  emailId: string;
+  occurredAt: Date;
+  metadata: ClickedEventMetadata | BouncedEventMetadata | null;
+}
+
+/**
+ * Outcome of handling one webhook delivery. Every outcome is acknowledged
+ * with 200: `unknown_email` covers transactional emails sharing the endpoint,
+ * `duplicate` a redelivery of an already recorded event.
+ */
+export type ResendEventOutcome = "recorded" | "duplicate" | "unknown_email";
