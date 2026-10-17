@@ -1,10 +1,13 @@
 import {
-  sourceLocaleFor,
   visibleCopyText,
   type ExperienceCopyLocale,
 } from "@/lib/ai/translateExperienceCopy";
-import { getBlogLocaleDraft, pickBlogContentDraft } from "@/lib/helpers/blog-form";
-import type { BlogContentDraft, BlogFormDraft } from "@/types/blog";
+import {
+  emptyBlogLocaleDraft,
+  getBlogLocaleView,
+  pickBlogContentDraft,
+} from "@/lib/helpers/blog-form";
+import type { BlogEditorDraft, BlogLocaleDraft, BlogMediaBlock } from "@/types/blog";
 
 export type BlogCopyPiece =
   | {
@@ -31,6 +34,13 @@ export type BlogCopyPiece =
       id: "seo";
       key: "description" | "title";
       text: string;
+    }
+  | {
+      html: boolean;
+      id: "media";
+      index: number;
+      key: "caption" | "title";
+      text: string;
     };
 
 function isHtml(value: string): boolean {
@@ -41,12 +51,12 @@ function pushIfPresent(pieces: BlogCopyPiece[], piece: BlogCopyPiece) {
   if (visibleCopyText(piece.text)) pieces.push(piece);
 }
 
-/** Prose for one blog language. Images, categories, and workflow fields stay shared. */
+/** Prose for one blog language, including media captions. */
 export function collectBlogCopy(
-  draft: BlogFormDraft,
+  draft: BlogEditorDraft,
   locale: ExperienceCopyLocale,
 ): BlogCopyPiece[] {
-  const source = getBlogLocaleDraft(draft, locale);
+  const source = getBlogLocaleView(draft, locale);
   const pieces: BlogCopyPiece[] = [];
 
   pushIfPresent(pieces, { html: false, key: "title", text: source.title });
@@ -106,13 +116,33 @@ export function collectBlogCopy(
     text: source.seo?.description ?? "",
   });
 
+  (draft.translations[locale]?.media ?? []).forEach((block, index) => {
+    if (block.type === "embed") {
+      pushIfPresent(pieces, {
+        html: false,
+        id: "media",
+        index,
+        key: "title",
+        text: block.title ?? "",
+      });
+      return;
+    }
+    pushIfPresent(pieces, {
+      html: false,
+      id: "media",
+      index,
+      key: "caption",
+      text: block.caption ?? "",
+    });
+  });
+
   return pieces;
 }
 
 function translatedContent(
-  source: BlogFormDraft,
+  source: ReturnType<typeof getBlogLocaleView>,
   pieces: BlogCopyPiece[],
-): BlogContentDraft {
+): BlogLocaleDraft {
   const content = pickBlogContentDraft(source);
   content.sections = source.sections.map((section) => ({ ...section }));
   content.faq = source.faq.map((item) => ({ ...item }));
@@ -135,32 +165,68 @@ function translatedContent(
       content.seo = { ...content.seo, [piece.key]: piece.text };
       continue;
     }
+    if ("id" in piece && piece.id === "media") continue;
     if (!("id" in piece)) content[piece.key] = piece.text;
   }
 
   return content;
 }
 
-/** Writes the translation into Spanish canonical fields or the English draft. */
-export function applyBlogCopy(
-  draft: BlogFormDraft,
-  target: ExperienceCopyLocale,
+function translatedMedia(
+  source: BlogMediaBlock[] | undefined,
   pieces: BlogCopyPiece[],
-): BlogFormDraft {
-  const content = translatedContent(getBlogLocaleDraft(draft, sourceLocaleFor(target)), pieces);
-  const { originalPost: _originalPost, ...english } = content;
+): BlogMediaBlock[] {
+  const media = (source ?? []).map((block) => ({ ...block }));
+  for (const piece of pieces) {
+    if (!("id" in piece) || piece.id !== "media") continue;
+    const block = media[piece.index];
+    if (!block) continue;
+    if (block.type === "embed" && piece.key === "title")
+      media[piece.index] = { ...block, title: piece.text };
+    if ((block.type === "image" || block.type === "video") && piece.key === "caption")
+      media[piece.index] = { ...block, caption: piece.text };
+  }
+  return media;
+}
 
-  if (target === "en") return { ...draft, english };
-
+/** Copies gallery/embed URLs into the target without replacing its prose. */
+export function copyBlogMediaFromLocale(
+  draft: BlogEditorDraft,
+  target: ExperienceCopyLocale,
+  from: ExperienceCopyLocale,
+): BlogEditorDraft {
   return {
     ...draft,
-    faq: content.faq,
-    featureAttribution: content.featureAttribution,
-    featureText: content.featureText,
-    sections: content.sections,
-    seo: content.seo,
-    subtitle: content.subtitle,
-    tagline: content.tagline,
-    title: content.title,
+    translations: {
+      ...draft.translations,
+      [target]: {
+        ...(draft.translations[target] ?? emptyBlogLocaleDraft()),
+        media: translatedMedia(draft.translations[from]?.media, []),
+      },
+    },
+  };
+}
+
+/** Writes the translation into the target locale, copying media with captions. */
+export function applyBlogCopy(
+  draft: BlogEditorDraft,
+  target: ExperienceCopyLocale,
+  pieces: BlogCopyPiece[],
+  from: ExperienceCopyLocale = draft.sourceLocale,
+): BlogEditorDraft {
+  const sourceView = getBlogLocaleView(draft, from);
+  const content = translatedContent(sourceView, pieces);
+  const media = translatedMedia(draft.translations[from]?.media, pieces);
+  return {
+    ...draft,
+    translations: {
+      ...draft.translations,
+      [target]: {
+        ...(draft.translations[target] ?? emptyBlogLocaleDraft()),
+        ...content,
+        media,
+        original: undefined,
+      },
+    },
   };
 }

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { resolveBlogContent } from "@/lib/blog/content-locale";
 import { BlogContentLanguage } from "@/components/app/dashboard/tripper/blog/BlogContentLanguage";
 import BlogArticle from "@/components/blog/BlogArticle";
 import BlogPostHero from "@/components/blog/BlogPostHero";
@@ -16,20 +15,11 @@ import Breadcrumb from "@/components/navigation/Breadcrumb";
 import { Button } from "@/components/ui/Button";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
-import type { BlogPost } from "@/types/blog";
+import type { BlogEditorPost, BlogEditorTranslation } from "@/types/blog";
 import { useDictionary } from "@/hooks/useDictionary";
 
-interface PreviewBlogPost extends Partial<BlogPost> {
-  author?: {
-    id: string;
-    name: string;
-    tripperSlug: string | null;
-    avatarUrl: string | null;
-    bio?: string | null;
-    location?: string | null;
-    motto?: string | null;
-    specialization?: string | null;
-  };
+interface PreviewBlogPost extends Partial<BlogEditorPost> {
+  author?: BlogEditorPost["author"];
 }
 
 export function TripperBlogPreviewClient() {
@@ -94,7 +84,11 @@ export function TripperBlogPreviewClient() {
     tripperBlogs.previewPage.loadError,
   ]);
 
-  const post = rawPost && resolveBlogContent(rawPost, contentLocale);
+  const post = useMemo(() => {
+    const translation: BlogEditorTranslation | undefined =
+      rawPost?.translations?.[contentLocale];
+    return rawPost && translation ? { ...rawPost, ...translation } : null;
+  }, [contentLocale, rawPost]);
 
   const carouselImages = useMemo(() => {
     if (!post) return [];

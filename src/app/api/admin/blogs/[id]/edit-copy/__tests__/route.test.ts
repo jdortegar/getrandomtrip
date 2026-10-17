@@ -11,15 +11,24 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: { findUnique: vi.fn(), update: vi.fn() },
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "admin@example.com" } });
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
@@ -102,8 +111,9 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
     expect(res.status).toBe(200);
     const updateArgs = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0];
     expect(updateArgs.where).toEqual({ id: "copy-1" });
-    expect(updateArgs.data.title).toBe("New Title");
+    expect(updateArgs.data).not.toHaveProperty("title");
     expect(updateArgs.data.coverUrl).toBe("https://example.com/x.jpg");
+    expect(writeTranslationsFromEditor).toHaveBeenCalled();
     expect(updateArgs.data).not.toHaveProperty("slug");
   });
 
@@ -213,5 +223,125 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy", () => {
       params: Promise.resolve({ id: "copy-1" }),
     });
     expect(res.status).toBe(404);
+  });
+});
+
+describe("PATCH /api/admin/blogs/[id]/edit-copy — translation dual-write", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("writes translation rows and does not write dropped BlogPost columns", async () => {
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+      id: "copy-1",
+      isReviewCopy: true,
+      status: "PENDING_REVIEW",
+    });
+    const written = {
+      id: "copy-1",
+      isReviewCopy: true,
+      title: "Viaje",
+    };
+    const txUpdate = vi.fn().mockResolvedValue(written);
+    const tx = { blogPost: { update: txUpdate } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      (fn: (client: unknown) => unknown) => fn(tx),
+    );
+    const ES = { title: "Viaje", content: "<p>Hola</p>" };
+    const EN = { title: "Trip", content: "<p>Body</p>", blocks: [{ type: "image", url: "/a.jpg", caption: "Lake" }] };
+
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.PATCH(
+      makePatchRequest("copy-1", { sourceLocale: "es", translations: { es: ES, en: EN } }),
+      { params: Promise.resolve({ id: "copy-1" }) },
+    );
+
+    expect(res.status).toBe(200);
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("translations");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledWith(
+      tx,
+      expect.objectContaining({ id: "copy-1", isReviewCopy: true, sourceLocale: "es" }),
+      { es: ES, en: EN },
+    );
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("PATCH /api/admin/blogs/[id]/edit-copy — sourceLocale", () => {
+  const storedCopy = {
+    id: "copy-1",
+    isReviewCopy: true,
+    status: "DRAFT",
+    sourceLocale: "es",
+    title: "Mi viaje",
+    content: "<p>Cuerpo</p>",
+    blocks: [],
+    translations: null,
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(storedCopy);
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      (fn: (client: unknown) => unknown) => fn(prisma),
+    );
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ ...storedCopy, ...data }),
+    );
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  async function patch(body: Record<string, unknown>) {
+    const mod = (await import("../route")) as RouteModule;
+    return mod.PATCH(makePatchRequest("copy-1", body), {
+      params: Promise.resolve({ id: "copy-1" }),
+    });
+  }
+
+  it("changes the copy's sourceLocale when that translation is complete after the request", async () => {
+    const res = await patch({
+      sourceLocale: "en",
+      translations: { en: { title: "My trip", content: "<p>Body</p>" } },
+    });
+    expect(res.status).toBe(200);
+    const data = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(data.sourceLocale).toBe("en");
+  });
+
+  it("rejects a change to an incomplete translation with 400 source_locale_incomplete", async () => {
+    const res = await patch({ sourceLocale: "en" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "source_locale_incomplete", locale: "en" });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unsupported locale with 400 invalid_source_locale", async () => {
+    const res = await patch({ sourceLocale: "fr" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "invalid_source_locale" });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("does not write an unchanged sourceLocale", async () => {
+    const res = await patch({ sourceLocale: "es", title: "Otro" });
+    expect(res.status).toBe(200);
+    const data = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(data).not.toHaveProperty("sourceLocale");
   });
 });

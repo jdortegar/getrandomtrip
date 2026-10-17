@@ -5,7 +5,8 @@ import {
   type DomHarness,
 } from "@/components/ui/__tests__/test-dom-utils";
 import dictionary from "@/dictionaries/en.json";
-import type { BlogFormDraft } from "@/types/blog";
+import { editorDraftFromForm } from "@/lib/helpers/blog-form";
+import type { BlogEditorDraft, BlogFormDraft } from "@/types/blog";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
@@ -52,10 +53,11 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 function render(draft: BlogFormDraft) {
+  const initialDraft: BlogEditorDraft = editorDraftFromForm(draft);
   harness.render(
     <NewBlogPostShell
       dict={copy}
-      initialDraft={draft}
+      initialDraft={initialDraft}
       initialDraftId="blog-1"
       locale="en"
       userBadgeLabels={dictionary.journey.userBadge}

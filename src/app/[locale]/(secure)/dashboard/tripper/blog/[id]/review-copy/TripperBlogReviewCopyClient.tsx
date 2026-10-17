@@ -7,7 +7,7 @@ import { NewBlogPostShell } from "@/components/app/dashboard/tripper/blog/NewBlo
 import { Button } from "@/components/ui/Button";
 import esCopy from "@/dictionaries/es.json";
 import enCopy from "@/dictionaries/en.json";
-import type { BlogFormDraft } from "@/types/blog";
+import type { BlogEditorDraft } from "@/types/blog";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { JourneyUserBadgeLabels } from "@/components/journey/JourneyUserBadge";
 
@@ -19,8 +19,8 @@ interface TripperBlogReviewCopyClientProps {
   dict: TripperBlogFormDict;
   locale: string;
   userBadgeLabels: JourneyUserBadgeLabels;
-  copyDraft: BlogFormDraft;
-  originalDraft: BlogFormDraft;
+  copyDraft: BlogEditorDraft;
+  originalDraft: BlogEditorDraft;
   changedFields: string[];
   reviewNote: string | null;
   blogId: string;

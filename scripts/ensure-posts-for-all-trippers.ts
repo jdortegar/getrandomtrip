@@ -20,11 +20,10 @@ async function main() {
     });
     if (count > 0) continue;
 
+    const title = `Primer post de ${tripper.name}`;
     await prisma.blogPost.create({
       data: {
         authorId: tripper.id,
-        title: `Primer post de ${tripper.name}`,
-        subtitle: "Contenido increíble en camino.",
         coverUrl:
           "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80",
         travelType: ["solo"],
@@ -32,13 +31,23 @@ async function main() {
         tags: ["tripper", "inspiracion"],
         format: BlogFormat.ARTICLE,
         status: BlogStatus.PUBLISHED,
-        blocks: [
-          {
-            type: "paragraph",
-            text: `${tripper.name} está preparando historias y guías para vos. ¡Volvé pronto!`,
-          },
-        ],
         publishedAt: new Date(),
+        sourceLocale: "es",
+        translationRows: {
+          create: {
+            locale: "es",
+            title,
+            subtitle: "Contenido increíble en camino.",
+            blocks: [
+              {
+                type: "paragraph",
+                text: `${tripper.name} está preparando historias y guías para vos. ¡Volvé pronto!`,
+              },
+            ],
+            slug: null,
+            isComplete: true,
+          },
+        },
       },
     });
     console.log(`  ✅ Created 1 post for tripper: ${tripper.name}`);

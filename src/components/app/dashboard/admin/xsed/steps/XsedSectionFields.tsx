@@ -12,11 +12,6 @@ interface Props {
   entry: XsedSection;
   onChange: (patch: Partial<XsedSection>) => void;
   copy: AdminXsedDict["form"]["fields"]["sections"];
-  /** Shared hero-image copy (size/copyright/too-small) — same conditions as the experience form's image fields. */
-  imageCopy: Pick<
-    AdminXsedDict["form"]["fields"],
-    "heroImageSizeHint" | "copyrightHint" | "imageTooSmall"
-  >;
 }
 
 async function uploadImageFile(file: File): Promise<string> {
@@ -33,7 +28,7 @@ async function uploadImageFile(file: File): Promise<string> {
 // Title + rich-text content + multi-image uploader, shared by
 // XsedAccommodationStep, XsedDinnerStep, and XsedActivityStep — each bound
 // to its own slot in the `sections` array (see types/xsed.ts).
-export function XsedSectionFields({ idPrefix, entry, onChange, copy, imageCopy }: Props) {
+export function XsedSectionFields({ idPrefix, entry, onChange, copy }: Props) {
   const [uploading, setUploading] = useState(false);
 
   async function handleAdd(file: File) {
@@ -80,9 +75,6 @@ export function XsedSectionFields({ idPrefix, entry, onChange, copy, imageCopy }
           removeLabel={copy.removeImageAria}
           minWidth={1280}
           minHeight={720}
-          sizeHint={imageCopy.heroImageSizeHint}
-          copyrightHint={imageCopy.copyrightHint}
-          tooSmallLabel={imageCopy.imageTooSmall}
         />
       </div>
     </div>

@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { sourceTitleForPost } from "@/lib/blog/blogRepository";
 import { sendMail } from "@/lib/helpers/sendMail";
 import BlogRejected, { subjects as rejectedSubjects } from "@/emails/BlogRejected";
 
@@ -65,7 +66,7 @@ export async function POST(
     const updated = await (prisma.blogPost.update as any)({
       where: { id: params.id },
       data: { status: "DRAFT", isActive: false, reviewNote },
-    }) as { id: string; status: string; authorId: string; title: string };
+    }) as { id: string; status: string; authorId: string };
 
     // Fire-and-forget: send rejection notification email + in-app notification
     // to the author. This side effect MUST NOT affect the HTTP response —
@@ -74,10 +75,13 @@ export async function POST(
     const authorId = updated.authorId;
     if (authorId) {
       void (async () => {
-        const author = await prisma.user.findUnique({
-          where: { id: authorId },
-          select: { email: true, name: true, locale: true },
-        });
+        const [author, blogTitle] = await Promise.all([
+          prisma.user.findUnique({
+            where: { id: authorId },
+            select: { email: true, name: true, locale: true },
+          }),
+          sourceTitleForPost(prisma, updated.id),
+        ]);
         const locale = author?.locale === "en" ? "en" : "es";
 
         if (author?.email) {
@@ -89,7 +93,7 @@ export async function POST(
                 react: (
                   <BlogRejected
                     tripper={author.name ?? ""}
-                    blogTitle={updated.title ?? ""}
+                    blogTitle={blogTitle}
                     reviewNote={reviewNote}
                     locale={locale}
                   />

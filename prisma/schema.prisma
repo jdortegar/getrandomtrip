@@ -684,21 +684,13 @@ model BlogPost {
   format   BlogFormat @default(ARTICLE)
   source   BlogSource @default(TRIPPER) // immutable ownership signal, server-derived at create — mirrors Experience.source
 
-  // Basic info
-  title    String
-  slug     String? @unique // SEO-friendly URL (e.g. aventura-acuatica)
-  subtitle String?
-  tagline  String?
-  coverUrl String? // Hero/cover image URL
+  // Hero/cover image URL. Localized copy lives on translationRows only
+  // (contract: prisma/rollouts/blog-post-translations-contract.sql).
+  coverUrl String?
 
-  // Rich text body (HTML from editor)
-  content String? @db.Text
-
-  // Canonical copy remains Spanish; optional authored English includes server-derived readiness.
-  translations Json?
-
-  // Legacy content blocks (JSON); kept for backward compat / gallery extraction
-  blocks Json @default("[]")
+  // Locale the post was authored in (one of CONTENT_LOCALES; SQL CHECK constraint).
+  // Its translation row must be complete to submit/publish.
+  sourceLocale String @default("es")
 
   // Metadata
   tags       String[] @default([])
@@ -706,12 +698,6 @@ model BlogPost {
   excuseKey  String[] @default([]) // e.g. solo-adventure (from shared excuses)
   level      String? // one of EXPERIENCE_LEVELS values (src/lib/constants/packages.ts); XSED is a level, not a travelType
   label      String? // display ID shown on the XSED grid, e.g. "XSED Nº1 (AR)"
-
-  // SEO
-  seo Json? // { title?: string, description?: string, keywords?: string[] }
-
-  // FAQ (array of { question: string, answer: string })
-  faq Json?
 
   // Timestamps
   createdAt   DateTime  @default(now())
@@ -729,10 +715,54 @@ model BlogPost {
   createdById    String? // Real account that clicked "create" — distinct from authorId, which is the pseudo Randomtrip user for RANDOMTRIP-sourced posts
 
   // Relations
-  author    User  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
-  createdBy User? @relation("BlogCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  author          User                  @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  createdBy       User?                 @relation("BlogCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  translationRows BlogPostTranslation[]
 
   @@map("blog_posts")
+}
+
+// One row per locale (source included). Only src/lib/blog's repository module
+// may read or write it. Rollout: prisma/rollouts/blog-post-translations.sql.
+model BlogPostTranslation {
+  id         String  @id @default(cuid())
+  postId     String
+  locale     String // one of CONTENT_LOCALES (SQL CHECK constraint)
+  title      String
+  subtitle   String?
+  tagline    String?
+  content    String? @db.Text // rich text HTML
+  blocks     Json? // full ordered blocks; media URLs shared, captions/embed titles localized
+  faq        Json?
+  seo        Json?
+  slug       String? // null on review copies; follows the locale title on save
+  isComplete Boolean @default(false) // server-computed on every write
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post        BlogPost              @relation(fields: [postId], references: [id], onDelete: Cascade)
+  slugHistory BlogPostSlugHistory[]
+
+  @@unique([postId, locale])
+  @@unique([locale, slug])
+  @@index([locale, isComplete])
+  @@map("blog_post_translations")
+}
+
+// Retired slugs per locale, resolved to their translation for 301 redirects.
+model BlogPostSlugHistory {
+  id            String   @id @default(cuid())
+  locale        String // one of CONTENT_LOCALES (SQL CHECK constraint)
+  slug          String
+  translationId String
+  createdAt     DateTime @default(now())
+
+  translation BlogPostTranslation @relation(fields: [translationId], references: [id], onDelete: Cascade)
+
+  @@unique([locale, slug])
+  @@index([translationId])
+  @@map("blog_post_slug_history")
 }
 
 // ============================================================================

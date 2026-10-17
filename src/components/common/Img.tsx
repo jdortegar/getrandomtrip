@@ -50,7 +50,14 @@ export default function Img({
     return (
       <div
         className={`flex items-center justify-center bg-neutral-200 ${className ?? ""}`}
-        style={isAbsolutelyPositioned ? undefined : { width: w, height: h }}
+        // Cap at the container so a small wrapper (e.g. an upload tile with
+        // overflow-hidden) doesn't clip an oversized box and push the logo
+        // off-center.
+        style={
+          isAbsolutelyPositioned
+            ? undefined
+            : { width: w, height: h, maxWidth: "100%", maxHeight: "100%" }
+        }
         role="img"
         aria-label={alt}
         data-component="Img"
@@ -60,7 +67,8 @@ export default function Img({
           src="/assets/logos/iso-randomtrip.svg"
           alt=""
           style={{
-            maxHeight: 100,
+            maxHeight: "min(100px, 60%)",
+            maxWidth: "60%",
             width: "auto",
             filter: "brightness(0) saturate(0) invert(40%)",
           }}

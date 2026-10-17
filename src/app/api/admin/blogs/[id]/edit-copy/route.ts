@@ -1,6 +1,4 @@
 import { ZodError } from "zod";
-import { normalizeBlogTranslations } from "@/lib/blog/content-locale";
-import { Prisma } from "@prisma/client";
 // ============================================================================
 // PATCH /api/admin/blogs/[id]/edit-copy
 // Saves content edits to a review copy. Admin-only — no ownership check.
@@ -13,6 +11,14 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
+import {
+  EditorWriteError,
+  editorWriteErrorBody,
+  parseEditorWriteRequest,
+  resolveSourceLocale,
+  rowsFromLoadedPost,
+} from "@/lib/blog/editor-write";
 import { prisma } from "@/lib/prisma";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
@@ -51,8 +57,25 @@ export async function PATCH(
 
     const copy = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
-      select: { id: true, isReviewCopy: true, status: true },
-    }) as { id: string; isReviewCopy: boolean; status: string } | null;
+      include: { translationRows: true },
+    }) as {
+      id: string;
+      isReviewCopy: boolean;
+      status: string;
+      sourceLocale?: string | null;
+      publishedAt?: Date | string | null;
+      translationRows?: Array<{
+        locale: string;
+        title: string;
+        subtitle?: string | null;
+        tagline?: string | null;
+        content?: string | null;
+        blocks?: unknown;
+        faq?: unknown;
+        seo?: unknown;
+        isComplete?: boolean;
+      }>;
+    } | null;
 
     if (!copy) {
       return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
@@ -66,22 +89,21 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const translations = normalizeBlogTranslations(body.translations);
+    const currentRows = rowsFromLoadedPost({
+      translationRows: copy.translationRows,
+    });
+    const parsed = parseEditorWriteRequest(body, {
+      sourceLocale: resolveSourceLocale(copy.sourceLocale),
+      rows: currentRows,
+    });
     const {
-      title,
-      subtitle,
-      tagline,
       coverUrl,
-      content,
-      blocks,
-      faq,
       tags,
       travelType,
       excuseKey,
       level,
       label,
       format,
-      seo,
     } = body;
 
     const levelValue: string | null | undefined =
@@ -92,30 +114,43 @@ export async function PATCH(
     const labelValue = normalizeBlogLabel(label);
     // No XSED admin-gate here: this whole route is admin-only already.
 
-    const updated = await (prisma.blogPost.update as any)({
+    const sourceLocale = parsed.sourceLocale;
+    const sourceLocaleChanged = parsed.sourceLocaleChanged;
+
+    const updated = await prisma.$transaction(async (tx) => {
+      const written = await (tx.blogPost.update as any)({
       where: { id: params.id },
       data: {
-        ...(title !== undefined && { title }),
-        ...(subtitle !== undefined && { subtitle: subtitle || null }),
-        ...(tagline !== undefined && { tagline: tagline || null }),
         ...(coverUrl !== undefined && { coverUrl: coverUrl || null }),
-        ...(content !== undefined && { content: content ?? null }),
-        ...(blocks !== undefined && { blocks }),
-        ...(translations !== undefined && { translations: translations === null ? Prisma.DbNull : translations as Prisma.InputJsonValue }),
-        ...(faq !== undefined && { faq: faq ?? null }),
         ...(tags !== undefined && { tags }),
         ...(travelType !== undefined && { travelType: normalizeStringArray(travelType) }),
         ...(excuseKey !== undefined && { excuseKey: normalizeStringArray(excuseKey) }),
         ...(levelValue !== undefined && { level: levelValue }),
         ...(labelValue !== undefined && { label: labelValue }),
         ...(format !== undefined && { format: format.toUpperCase?.() ?? format }),
-        ...(seo !== undefined && { seo: seo || null }),
-        // slug is intentionally never written here — copies have no public slug.
+        ...(sourceLocaleChanged && { sourceLocale }),
       },
+      });
+      const rows = parsed.translations
+        ? await writeTranslationsFromEditor(
+            tx,
+            {
+              id: params.id,
+              isReviewCopy: true,
+              publishedAt: copy.publishedAt ?? null,
+              sourceLocale,
+            },
+            parsed.translations,
+          )
+        : undefined;
+      return rows ? { ...written, translations: rows } : written;
     });
 
     return NextResponse.json({ blog: updated });
   } catch (error) {
+    if (error instanceof EditorWriteError) {
+      return NextResponse.json(editorWriteErrorBody(error), { status: 400 });
+    }
     if (error instanceof ZodError) {
       return NextResponse.json({ error: "Invalid blog translations" }, { status: 400 });
     }

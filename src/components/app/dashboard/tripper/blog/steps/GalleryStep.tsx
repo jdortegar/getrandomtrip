@@ -3,7 +3,7 @@
 import { ImageUploadTileGroup } from "@/components/ui/ImageUploadTileGroup";
 import type { TripperBlogFormDict } from "@/lib/types/dictionary";
 import type { BlogFormDraft, BlogFormDraftOnChange } from "@/types/blog";
-import type { BlogImageState } from "../NewBlogPostShell";
+import type { BlogImageState } from "../useBlogEditorImages";
 
 interface Props {
   copy: TripperBlogFormDict;
@@ -25,10 +25,11 @@ export function GalleryStep({ copy, draft, imageState, changedFieldSet }: Props)
       <p className="text-sm text-ink -mt-1">
         {copy.contentTabs[3]?.substeps[0]?.description}
       </p>
-      <p className="text-sm text-neutral-600">{fields.galleryHint}</p>
 
       <ImageUploadTileGroup
-        alt={fields.galleryHint}
+        alt={fields.galleryAlt}
+        minHeight={720}
+        minWidth={1280}
         onAdd={(file) => onGalleryFilesSelect([file])}
         onRemove={onGalleryImageRemove}
         removeLabel={fields.removeImageAria}

@@ -55,13 +55,10 @@ export function XsedIdentityStep({ copy, form, onChange }: Props) {
         </label>
         <ImageUploadTile
           alt={copy.heroImage}
-          copyrightHint={copy.copyrightHint}
           minHeight={720}
           minWidth={1280}
           onRemove={() => onChange({ heroImage: "" })}
           onSelect={handleHeroSelect}
-          sizeHint={copy.heroImageSizeHint}
-          tooSmallLabel={copy.imageTooSmall}
           uploadLabel={copy.uploadImage}
           uploading={heroUploading}
           value={form.heroImage}

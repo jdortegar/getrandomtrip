@@ -1,13 +1,12 @@
-import { availableBlogLocales } from "@/lib/seo/blogLocales";
 import { cache } from "react";
 import { buildAlternates } from "@/lib/seo/urls";
+import { blogLocalePaths } from "@/lib/seo/blogLocales";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Locale } from "@/lib/i18n/config";
-import { blogLocaleWhere, resolveBlogContent } from "@/lib/blog/content-locale";
+import { findPublishedBySlug } from "@/lib/blog/blogRepository";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound, permanentRedirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 import { hasLocale } from "@/lib/i18n/config";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -17,17 +16,18 @@ import BlogPostClient, {
   BlogPostLoading,
 } from "@/components/app/blog/BlogPostClient";
 import { getTravelerStoryArticle } from "@/lib/blog/travelerStories";
+import type { BlogLocaleSlugs } from "@/types/blog";
 
-function isCuid(param: string): boolean {
-  return (
-    param.length === 25 && param.startsWith("c") && /^c[a-z0-9]+$/.test(param)
-  );
-}
+type BlogPageData = BlogPost & {
+  availableLocales: Locale[];
+  /** Per-locale paths for hreflang; absent when every locale shares `slug`. */
+  localePaths?: Partial<Record<Locale, string>>;
+};
 
 function travelerStoryPost(
   slug: string,
   locale: string,
-): (BlogPost & { availableLocales: Locale[] }) | null {
+): BlogPageData | null {
   const story = getTravelerStoryArticle(slug, locale);
   if (!story) return null;
 
@@ -66,72 +66,33 @@ function travelerStoryPost(
   };
 }
 
-const getBlogPost = cache(
+const lookupBlogPost = cache(
   async (
     slugOrId: string,
-    locale: string,
-  ): Promise<(BlogPost & { availableLocales: Locale[] }) | null> => {
-    const rawBlog = await prisma.blogPost.findFirst({
-      where: {
-        ...blogLocaleWhere(locale),
-        isActive: true,
-        isReviewCopy: false,
-        status: "PUBLISHED",
-        ...(isCuid(slugOrId) ? { id: slugOrId } : { slug: slugOrId }),
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        translations: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        faq: true,
-        tags: true,
-        travelType: true,
-        format: true,
-        source: true,
-        seo: true,
-        publishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-            avatarUrl: true,
-            bio: true,
-            location: true,
-            motto: true,
-            specialization: true,
-          },
-        },
-      },
-    });
-
-    const blog = rawBlog && resolveBlogContent(rawBlog, locale);
-    if (!blog) return travelerStoryPost(slugOrId, locale);
+    locale: Locale,
+  ): Promise<{ kind: "redirect"; slug: string } | BlogPageData | null> => {
+    const lookup = await findPublishedBySlug(locale, slugOrId);
+    if (lookup.kind === "redirect") return lookup;
+    if (lookup.kind === "not_found") return travelerStoryPost(slugOrId, locale);
+    const blog = lookup.post;
 
     return {
-      availableLocales: availableBlogLocales(rawBlog!),
+      availableLocales: blog.availableLocales,
+      localePaths: blogLocalePaths(blog.localeSlugs),
       id: blog.id,
-      slug: blog.slug ?? blog.id,
+      slug: blog.slug,
       title: blog.title,
       subtitle: blog.subtitle ?? "",
       tagline: blog.tagline ?? "",
       coverUrl: blog.coverUrl,
       content: blog.content ?? "",
-      blocks: blog.blocks as unknown as BlogPost["blocks"],
-      faq: blog.faq as unknown as BlogPost["faq"],
+      blocks: blog.blocks as BlogPost["blocks"],
+      faq: blog.faq as BlogPost["faq"],
       tags: blog.tags,
       travelType: blog.travelType,
       format: blog.format.toLowerCase(),
       source: blog.source,
-      seo: blog.seo as BlogPost["seo"],
+      seo: blog.seo ?? undefined,
       publishedAt: blog.publishedAt?.toISOString() ?? null,
       createdAt: blog.createdAt.toISOString(),
       updatedAt: blog.updatedAt.toISOString(),
@@ -149,20 +110,30 @@ const getBlogPost = cache(
   },
 );
 
+/** 301s retired, other-locale and legacy-id params to the locale's slug;
+ * 404s posts that are not public in this locale (no cross-locale fallback). */
+async function getBlogPost(slugOrId: string, locale: Locale): Promise<BlogPageData> {
+  const result = await lookupBlogPost(slugOrId, locale);
+  if (!result) notFound();
+  if ("kind" in result)
+    permanentRedirect(pathForLocale(locale, `/blog/${result.slug}`));
+  return result;
+}
+
 export async function generateMetadata(props: {
   params: Promise<{ locale?: string; slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const blog = await getBlogPost(params.slug, params.locale ?? "es");
-  if (!blog) notFound();
+  const locale = hasLocale(params.locale) ? params.locale! : "es";
+  const blog = await getBlogPost(params.slug, locale);
 
   const seoTitle = blog.seo?.title ?? `${blog.title} | Randomtrip`;
   const seoDescription = blog.seo?.description ?? blog.subtitle ?? undefined;
 
   return {
     alternates: buildAlternates(
-      hasLocale(params.locale) ? params.locale : "es",
-      `/blog/${blog.slug}`,
+      locale,
+      blog.localePaths ?? `/blog/${blog.slug}`,
       blog.availableLocales,
     ),
     description: seoDescription,
@@ -181,12 +152,7 @@ export default async function BlogDetailPage(props: {
 }) {
   const params = await props.params;
   const locale = hasLocale(params.locale) ? params.locale! : "es";
-  const blog = await getBlogPost(params.slug, params.locale ?? "es");
-
-  if (!blog) notFound();
-
-  if (params.slug !== blog.slug)
-    permanentRedirect(pathForLocale(locale, `/blog/${blog.slug}`));
+  const blog = await getBlogPost(params.slug, locale);
 
   const jsonLdSchema = buildBlogPostingSchema({
     authorName: blog.author.name,

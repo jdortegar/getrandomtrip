@@ -10,6 +10,11 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { prisma } from "@/lib/prisma";
+import {
+  ADMIN_LIST_TRANSLATION_SELECT,
+  flattenSourceCopy,
+  titleSearchWhere,
+} from "@/lib/blog/source-copy";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +66,7 @@ export async function GET(request: NextRequest) {
       where.travelType = { has: filterTravelType };
     }
     if (filterSearch) {
-      where.title = { contains: filterSearch, mode: "insensitive" };
+      Object.assign(where, titleSearchWhere(filterSearch));
     }
 
     const [blogs, total, pendingCount] = await Promise.all([
@@ -73,10 +78,7 @@ export async function GET(request: NextRequest) {
         take: limit,
         select: {
           id: true,
-          title: true,
-          slug: true,
-          subtitle: true,
-          tagline: true,
+          sourceLocale: true,
           coverUrl: true,
           status: true,
           format: true,
@@ -102,6 +104,7 @@ export async function GET(request: NextRequest) {
           parentId: true,
           changedFields: true,
           reviewLockedBy: true,
+          translationRows: { select: ADMIN_LIST_TRANSLATION_SELECT },
         },
       }),
 
@@ -116,7 +119,29 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    return NextResponse.json({ blogs, total, page, limit, pendingCount });
+    const flattened = (blogs as Array<{
+      sourceLocale: string;
+      translationRows: Array<{
+        locale: string;
+        title: string;
+        subtitle?: string | null;
+        tagline?: string | null;
+        slug?: string | null;
+      }>;
+    }>).map((blog) => {
+      const { translationRows, sourceLocale, ...shared } = blog;
+      const copy = flattenSourceCopy(sourceLocale, translationRows);
+      return {
+        ...shared,
+        sourceLocale,
+        title: copy.title,
+        subtitle: copy.subtitle,
+        tagline: copy.tagline,
+        slug: copy.slug,
+      };
+    });
+
+    return NextResponse.json({ blogs: flattened, total, page, limit, pendingCount });
   } catch (error) {
     console.error("[admin/blogs] GET", error);
     return NextResponse.json(

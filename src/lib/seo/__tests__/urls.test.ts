@@ -1,4 +1,4 @@
-import { availableBlogLocales } from "../blogLocales";
+import { availableBlogLocales, blogLocalePaths } from "../blogLocales";
 import { describe, expect, it } from "vitest";
 import { buildAlternates, canonicalUrl, isIndexablePath } from "../urls";
 
@@ -47,26 +47,26 @@ describe("public URL identity", () => {
   });
 });
 
-it("advertises only translations reachable through the English public query", () => {
+it("advertises only complete translations, each at its own slug", () => {
+  expect(availableBlogLocales({ es: "viaje" })).toEqual(["es"]);
+  expect(availableBlogLocales({ en: "trip", es: "viaje" })).toEqual([
+    "es",
+    "en",
+  ]);
+  expect(blogLocalePaths({ es: "viaje", en: "trip" })).toEqual({
+    es: "/blog/viaje",
+    en: "/blog/trip",
+  });
+});
+
+it("builds per-locale alternates when each locale has its own path", () => {
   expect(
-    availableBlogLocales({
-      translations: {
-        en: { title: "English", content: "<p>English</p>", ready: false },
-      },
-    }),
-  ).toEqual(["es"]);
-  expect(
-    availableBlogLocales({
-      translations: {
-        en: { title: "English", content: "<p></p>", ready: true },
-      },
-    }),
-  ).toEqual(["es"]);
-  expect(
-    availableBlogLocales({
-      translations: {
-        en: { title: "English", content: "<p>English</p>", ready: true },
-      },
-    }),
-  ).toEqual(["es", "en"]);
+    buildAlternates("en", { es: "/blog/viaje", en: "/blog/trip" }),
+  ).toEqual({
+    canonical: "https://getrandomtrip.com/en/blog/trip",
+    languages: {
+      es: "https://getrandomtrip.com/blog/viaje",
+      en: "https://getrandomtrip.com/en/blog/trip",
+    },
+  });
 });

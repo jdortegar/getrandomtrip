@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { resolveBlogChangedFieldsForLocale } from "@/lib/blog/blog-form-peek";
 import {
   isEditingExisting,
   resolveBlogPersistTarget,
@@ -119,5 +120,48 @@ describe("resolveBlogPersistTarget", () => {
       kind: "updateDraft",
       id: "draft-1",
     });
+  });
+});
+
+// NewBlogPostShell highlights fields of the displayed content language by
+// mapping the stored changedFields tokens through this resolver.
+describe("displayed changed fields (shell token mapping)", () => {
+  const highlighted = (tokens: string[] | undefined, locale: "es" | "en") =>
+    new Set(resolveBlogChangedFieldsForLocale(tokens ?? [], locale));
+
+  it("highlights a per-locale change only in its own language", () => {
+    const tokens = ["es.title", "en.blocks"];
+    expect(highlighted(tokens, "es").has("title")).toBe(true);
+    expect(highlighted(tokens, "es").has("blocks")).toBe(false);
+    expect(highlighted(tokens, "en").has("blocks")).toBe(true);
+    expect(highlighted(tokens, "en").has("title")).toBe(false);
+  });
+
+  it("highlights every localized step of a locale added or removed by the admin", () => {
+    const en = highlighted(["en.*"], "en");
+    for (const field of ["title", "subtitle", "tagline", "blocks", "faq", "seo"])
+      expect(en.has(field)).toBe(true);
+    expect(highlighted(["en.*"], "es").size).toBe(0);
+  });
+
+  it("highlights shared fields (cover, tags, sourceLocale) in both languages", () => {
+    for (const locale of ["es", "en"] as const)
+      expect([...highlighted(["coverUrl", "sourceLocale"], locale)]).toEqual([
+        "coverUrl",
+        "sourceLocale",
+      ]);
+  });
+
+  it("keeps copies stored before T5 working: legacy columns are Spanish, `translations` is English", () => {
+    const legacy = ["title", "faq", "translations"];
+    expect([...highlighted(legacy, "es")]).toEqual(["title", "faq"]);
+    const en = highlighted(legacy, "en");
+    expect(en.has("title")).toBe(true);
+    expect(en.has("blocks")).toBe(true);
+    expect(en.has("translations")).toBe(false);
+  });
+
+  it("treats missing changedFields as no highlights", () => {
+    expect(highlighted(undefined, "es").size).toBe(0);
   });
 });

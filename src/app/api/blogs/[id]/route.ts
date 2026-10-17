@@ -1,20 +1,12 @@
-import { blogLocaleWhere, resolveBlogContent } from "@/lib/blog/content-locale";
 // ============================================================================
 // GET /api/blogs/[id] - Get a single published blog post by ID or slug (public)
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { findPublishedBySlug } from "@/lib/blog/blogRepository";
 import { normalizeUploadUrl } from "@/lib/media/upload-url";
 
 export const dynamic = "force-dynamic";
-
-/** CUIDs start with 'c' and are 25 chars; slug is lowercase with dashes */
-function isCuid(param: string): boolean {
-  return (
-    param.length === 25 && param.startsWith("c") && /^c[a-z0-9]+$/.test(param)
-  );
-}
 
 export async function GET(
   request: NextRequest,
@@ -25,67 +17,28 @@ export async function GET(
     const idOrSlug = params.id;
     const locale = request.nextUrl.searchParams.get("locale") === "en" ? "en" : "es";
 
-    const rawBlog = await prisma.blogPost.findFirst({
-      where: {
-        ...blogLocaleWhere(locale),
-        status: "PUBLISHED",
-        // Review copies (isReviewCopy: true) share id/authorId patterns with
-        // the original and must never leak into public detail lookups.
-        isReviewCopy: false,
-        // Tripper-unpublished posts stay PUBLISHED (approval history) but
-        // must not be publicly reachable.
-        isActive: true,
-        ...(isCuid(idOrSlug) ? { id: idOrSlug } : { slug: idOrSlug }),
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        translations: true,
-        subtitle: true,
-        tagline: true,
-        coverUrl: true,
-        content: true,
-        blocks: true,
-        faq: true,
-        tags: true,
-        format: true,
-        seo: true,
-        publishedAt: true,
-        createdAt: true,
-        updatedAt: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            tripperSlug: true,
-            avatarUrl: true,
-            bio: true,
-            location: true,
-            motto: true,
-            specialization: true,
-          },
-        },
-      },
-    });
-
-    const blog = rawBlog && resolveBlogContent(rawBlog, locale);
-    if (!blog) {
+    // Retired / other-locale slugs and legacy ids resolve to the locale's
+    // canonical slug; follow that once and return the canonical post.
+    let lookup = await findPublishedBySlug(locale, idOrSlug);
+    if (lookup.kind === "redirect")
+      lookup = await findPublishedBySlug(locale, lookup.slug);
+    if (lookup.kind !== "found") {
       return NextResponse.json(
         { error: "Blog post not found" },
         { status: 404 },
       );
     }
+    const blog = lookup.post;
 
     const transformedBlog = {
       id: blog.id,
-      slug: blog.slug ?? blog.id,
+      slug: blog.slug,
       title: blog.title,
       subtitle: blog.subtitle ?? "",
       tagline: blog.tagline ?? "",
       coverUrl: blog.coverUrl,
       content: blog.content ?? "",
-      blocks: blog.blocks as any,
+      blocks: blog.blocks,
       faq: blog.faq as
         | { items?: { question: string; answer: string }[] }
         | { question: string; answer: string }[]

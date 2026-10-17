@@ -23,9 +23,14 @@ vi.mock("@/lib/email", () => ({
   sendBlogSubmitted: vi.fn(),
 }));
 
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsForPost: vi.fn(),
+}));
+
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { sendBlogSubmitted } from "@/lib/email";
+import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({
   user: { id: userId, email: "tripper@example.com" },
@@ -38,10 +43,17 @@ const completeDraftBlog = (authorId: string, overrides: Record<string, unknown> 
   id: "blog-1",
   authorId,
   status: "DRAFT",
-  title: "Mi aventura",
+  sourceLocale: "es",
   coverUrl: "https://example.com/cover.jpg",
-  content: "<p>Contenido</p>",
   reviewNote: null,
+  translationRows: [
+    {
+      locale: "es",
+      title: "Mi aventura",
+      content: "<p>Contenido</p>",
+      isComplete: true,
+    },
+  ],
   ...overrides,
 });
 
@@ -207,5 +219,78 @@ describe("POST /api/tripper/blogs/[id]/submit", () => {
     });
     expect(res.status).toBe(200);
     expect(mockDelete).toHaveBeenCalledWith({ where: { id: "tombstone-1" } });
+  });
+});
+
+describe("POST /api/tripper/blogs/[id]/submit — source translation rules", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it.each(["TRIPPER", "RANDOMTRIP"])(
+    "rejects a %s submit when the source translation is incomplete",
+    async (source) => {
+      (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
+        id: "tripper-1",
+        roles: ["TRIPPER", "ADMIN"],
+      });
+      (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+        completeDraftBlog("tripper-1", {
+          source,
+          sourceLocale: "en",
+          translationRows: [
+            {
+              locale: "en",
+              title: "Trip",
+              content: "<p>Body</p>",
+              isComplete: false,
+            },
+          ],
+        }),
+      );
+      const mod = (await import("../route")) as RouteModule;
+      const res = await mod.POST(makePostRequest("blog-1"), {
+        params: Promise.resolve({ id: "blog-1" }),
+      });
+      expect(res.status).toBe(400);
+      expect(await res.json()).toMatchObject({
+        error: "source_translation_incomplete",
+        locale: "en",
+      });
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    },
+  );
+
+  it("does not re-derive translation rows on submit", async () => {
+    (prisma.blogPost.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(
+      completeDraftBlog("tripper-1"),
+    );
+    const tx = {
+      blogPost: {
+        findFirst: vi.fn().mockResolvedValue(null),
+        update: vi.fn().mockResolvedValue({ id: "blog-1", status: "PENDING_REVIEW" }),
+        delete: vi.fn(),
+      },
+    };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      async (cb: (client: unknown) => unknown) => cb(tx),
+    );
+    const mod = (await import("../route")) as RouteModule;
+    const res = await mod.POST(makePostRequest("blog-1"), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({
+      blog: { id: "blog-1", status: "PENDING_REVIEW" },
+    });
+    expect(syncTranslationsForPost).not.toHaveBeenCalled();
   });
 });

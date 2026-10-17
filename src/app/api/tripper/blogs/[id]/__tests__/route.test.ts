@@ -11,15 +11,25 @@ vi.mock("@/lib/auth", () => ({
   authOptions: {},
 }));
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
+vi.mock("@/lib/prisma", () => {
+  const prisma = {
     user: { findUnique: vi.fn() },
     blogPost: { findFirst: vi.fn(), update: vi.fn() },
-  },
+    // Interactive transaction: runs the callback against the same mock client.
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
+
+vi.mock("@/lib/blog/blogRepository", () => ({
+  syncTranslationsFromLegacy: vi.fn(),
+  writeTranslationsFromEditor: vi.fn().mockResolvedValue({}),
+  getForEditor: vi.fn().mockResolvedValue({ id: "blog-1", translations: {} }),
 }));
 
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { writeTranslationsFromEditor } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "user@example.com" } });
 const mockTripperUser = (id: string) => ({ id, roles: ["TRIPPER"] });
@@ -29,12 +39,24 @@ const baseBlog = (authorId: string, overrides: Record<string, unknown> = {}) => 
   authorId,
   source: "TRIPPER",
   status: "DRAFT",
+  sourceLocale: "es",
   title: "My Trip",
   subtitle: "A subtitle",
   tagline: "A tagline",
   coverUrl: "https://example.com/cover.jpg",
   content: "<p>Body</p>",
   blocks: [],
+  translationRows: [
+    {
+      locale: "es",
+      title: "My Trip",
+      subtitle: "A subtitle",
+      tagline: "A tagline",
+      content: "<p>Body</p>",
+      blocks: [],
+      isComplete: true,
+    },
+  ],
   tags: ["adventure"],
   travelType: ["solo"],
   excuseKey: ["solo-adventure"],
@@ -400,9 +422,10 @@ describe("PATCH /api/tripper/blogs/[id]", () => {
         });
         expect(prisma.blogPost.update).not.toHaveBeenCalled();
       } else {
+        expect(vi.mocked(prisma.blogPost.update)).toHaveBeenCalled();
         expect(
           vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
-        ).toMatchObject({ title: "Changed" });
+        ).not.toHaveProperty("title");
         expect(
           vi.mocked(prisma.blogPost.update).mock.calls[0][0].data.status,
         ).toBeUndefined();
@@ -695,5 +718,127 @@ describe("DELETE /api/tripper/blogs/[id]", () => {
 
     expect(res.status).toBe(204);
     expect(prisma.blogPost.delete).toHaveBeenCalledWith({ where: { id: "blog-1" } });
+  });
+});
+
+describe("PATCH /api/tripper/blogs/[id] — editor translations and sourceLocale", () => {
+  const completeEn = { title: "Trip", content: "<p>English</p>" };
+  const ES = { title: "Viaje", content: "<p>Hola</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lago" }] };
+  const EN = { title: "Trip", content: "<p>English</p>", blocks: [{ type: "image" as const, url: "/a.jpg", caption: "Lake" }] };
+  const patch = async (body: Record<string, unknown>) => {
+    const mod = (await import("../route")) as RouteModule;
+    return mod.PATCH(makePatchRequest(body), {
+      params: Promise.resolve({ id: "blog-1" }),
+    });
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("tripper-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockTripperUser("tripper-1"),
+    );
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({
+        ...baseBlog("tripper-1"),
+        ...data,
+      }),
+    );
+    vi.mocked(writeTranslationsFromEditor).mockResolvedValue({
+      es: { ...ES, slug: "viaje", isComplete: true },
+    });
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  it("writes rows from the request and derives the legacy columns from them in one transaction", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const txUpdate = vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({
+      ...baseBlog("tripper-1"),
+      ...data,
+    }));
+    const tx = { blogPost: { update: txUpdate } };
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      (fn: (client: unknown) => unknown) => fn(tx),
+    );
+
+    const res = await patch({
+      sourceLocale: "es",
+      translations: { es: ES, en: EN },
+    });
+
+    expect(res.status).toBe(200);
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("title");
+    expect(txUpdate.mock.calls[0][0].data).not.toHaveProperty("translations");
+    expect(writeTranslationsFromEditor).toHaveBeenCalledWith(
+      tx,
+      expect.objectContaining({ id: "blog-1", isReviewCopy: false, sourceLocale: "es" }),
+      { es: ES, en: EN },
+    );
+  });
+
+  it("overlays a legacy flat body on the current es row and keeps other locales", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", {
+        translationRows: [
+          { locale: "es", title: "Viaje", content: "<p>Hola</p>", blocks: [], isComplete: true },
+          { locale: "en", title: "Trip", content: "<p>English</p>", blocks: [], isComplete: true },
+        ],
+      }),
+    );
+    await patch({ title: "Nuevo" });
+    expect(vi.mocked(writeTranslationsFromEditor).mock.calls[0][2]).toMatchObject({
+      es: { title: "Nuevo", content: "<p>Hola</p>" },
+      en: { title: "Trip", content: "<p>English</p>" },
+    });
+  });
+
+  it("leaves rows untouched when neither translations nor localized fields are sent", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const res = await patch({ isActive: false });
+    expect(res.status).toBe(200);
+    expect(writeTranslationsFromEditor).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unsupported sourceLocale with 400", async () => {
+    mockOwnershipAndSlugLookup(baseBlog("tripper-1"));
+    const res = await patch({ sourceLocale: "fr" });
+    expect(res.status).toBe(400);
+    expect((await res.json()).error).toBe("invalid_source_locale");
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects changing sourceLocale to a locale whose translation is incomplete", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "es", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({
+      error: "source_locale_incomplete",
+      locale: "en",
+    });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("accepts changing sourceLocale to a locale completed in the same request", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "es", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en", translations: { en: completeEn } });
+    expect(res.status).toBe(200);
+    expect(
+      (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data,
+    ).toMatchObject({ sourceLocale: "en" });
+  });
+
+  it("does not re-check an unchanged sourceLocale", async () => {
+    mockOwnershipAndSlugLookup(
+      baseBlog("tripper-1", { sourceLocale: "en", translations: null }),
+    );
+    const res = await patch({ sourceLocale: "en", subtitle: "Otro" });
+    expect(res.status).toBe(200);
   });
 });

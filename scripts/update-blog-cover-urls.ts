@@ -35,10 +35,11 @@ async function main() {
     orderBy: [{ publishedAt: "asc" }, { createdAt: "asc" }],
     select: {
       id: true,
-      title: true,
+      sourceLocale: true,
       coverUrl: true,
       travelType: true,
       excuseKey: true,
+      translationRows: { select: { locale: true, title: true } },
     },
   });
 
@@ -80,7 +81,12 @@ async function main() {
         travelType && "travelType",
         excuseKey && "excuseKey",
       ].filter(Boolean);
-      console.log(`  ✅ ${post.title} → ${parts.join(", ")}`);
+      const title =
+        post.translationRows.find((row) => row.locale === post.sourceLocale)
+          ?.title ??
+        post.translationRows[0]?.title ??
+        post.id;
+      console.log(`  ✅ ${title} → ${parts.join(", ")}`);
     }
   }
 

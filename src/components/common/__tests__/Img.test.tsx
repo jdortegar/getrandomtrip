@@ -70,6 +70,17 @@ describe("Img", () => {
     expect(image.getAttribute("draggable")).toBe("false");
   });
 
+  it("keeps a sized fallback within its container so the logo stays centered", () => {
+    render({ width: 320, height: 180, className: "h-full w-full object-cover" });
+    failImage();
+    const fallback = container.querySelector('[role="img"]') as HTMLElement;
+    expect(fallback.style.maxWidth).toBe("100%");
+    expect(fallback.style.maxHeight).toBe("100%");
+    const logo = fallback.querySelector("img") as HTMLImageElement;
+    expect(logo.style.maxWidth).toBe("60%");
+    expect(logo.style.maxHeight).toBe("min(100px, 60%)");
+  });
+
   it("shows the labeled fallback and notifies the caller when an image fails", () => {
     const onError = vi.fn();
     render({ onError });

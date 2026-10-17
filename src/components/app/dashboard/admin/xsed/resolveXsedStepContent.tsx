@@ -25,7 +25,6 @@ export function resolveXsedStepContent(
           contactCopy={dict.fields.contact}
           copy={dict.fields.accommodation}
           form={form}
-          imageCopy={dict.fields}
           onChange={onChange}
           sectionsCopy={dict.fields.sections}
         />
@@ -37,7 +36,6 @@ export function resolveXsedStepContent(
           contactCopy={dict.fields.contact}
           copy={dict.fields.activities}
           form={form}
-          imageCopy={dict.fields}
           onChange={onChange}
           sectionsCopy={dict.fields.sections}
         />
@@ -49,7 +47,6 @@ export function resolveXsedStepContent(
           contactCopy={dict.fields.contact}
           copy={dict.fields.activities}
           form={form}
-          imageCopy={dict.fields}
           onChange={onChange}
           sectionsCopy={dict.fields.sections}
         />

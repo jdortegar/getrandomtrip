@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { NextRequest } from "next/server";
 
 const { sharpMock, callOrder, metadataMock, toBufferMock } = vi.hoisted(() => {
@@ -35,25 +35,33 @@ const { getServerSessionMock } = vi.hoisted(() => ({
 vi.mock("next-auth", () => ({ getServerSession: getServerSessionMock }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 
-const { storeSetMock, storeGetMock, storeGetWithMetadataMock, getStoreMock } =
-  vi.hoisted(() => {
-    const storeSetMock = vi.fn().mockResolvedValue(undefined);
-    const storeGetMock = vi
-      .fn()
-      .mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
-    const storeGetWithMetadataMock = vi.fn();
-    const getStoreMock = vi.fn(() => ({
-      set: storeSetMock,
-      get: storeGetMock,
-      getWithMetadata: storeGetWithMetadataMock,
-    }));
-    return {
-      storeSetMock,
-      storeGetMock,
-      storeGetWithMetadataMock,
-      getStoreMock,
-    };
-  });
+const {
+  storeSetMock,
+  storeGetMock,
+  storeGetWithMetadataMock,
+  storeDeleteMock,
+  getStoreMock,
+} = vi.hoisted(() => {
+  const storeSetMock = vi.fn().mockResolvedValue(undefined);
+  const storeGetMock = vi
+    .fn()
+    .mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
+  const storeGetWithMetadataMock = vi.fn();
+  const storeDeleteMock = vi.fn().mockResolvedValue(undefined);
+  const getStoreMock = vi.fn((_name: string, _options?: unknown) => ({
+    set: storeSetMock,
+    get: storeGetMock,
+    getWithMetadata: storeGetWithMetadataMock,
+    delete: storeDeleteMock,
+  }));
+  return {
+    storeSetMock,
+    storeGetMock,
+    storeGetWithMetadataMock,
+    storeDeleteMock,
+    getStoreMock,
+  };
+});
 vi.mock("@netlify/blobs", () => ({ getStore: getStoreMock }));
 
 function makeFormRequest(fields: Record<string, string | File>): NextRequest {
@@ -216,5 +224,151 @@ describe("GET /api/upload?key=", () => {
     expect(res.status).toBe(304);
     expect(await res.text()).toBe("");
     expect(res.headers.get("Cache-Control")).toBe("private, max-age=86400");
+  });
+});
+
+describe("environment-scoped media naming", () => {
+  const storeNames = () => getStoreMock.mock.calls.map(([name]) => name);
+  const setKeys = () => storeSetMock.mock.calls.map(([key]) => key as string);
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    metadataMock.mockResolvedValue({ width: 1000, height: 1000 });
+    toBufferMock.mockResolvedValue(Buffer.from("output-bytes"));
+    storeSetMock.mockResolvedValue(undefined);
+    storeGetMock.mockResolvedValue(new Uint8Array([1, 2, 3]).buffer);
+    getServerSessionMock.mockResolvedValue({ user: { id: "user123" } });
+  });
+
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("non-production POST writes to the shared store with a dev- filename", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { POST } = await import("../route");
+    const file = new File(["abc"], "photo.png", { type: "image/png" });
+
+    const response = await POST(makeFormRequest({ file, feature: "experience" }));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(storeNames()).toEqual(["experience-media"]);
+    expect(setKeys()[0]).toMatch(/^user123\/experience\/dev-photo-\d+\.png$/);
+    expect(body.url).toBe(`/api/upload/${setKeys()[0]}`);
+  });
+
+  it("production POST keeps the store name and filename unprefixed", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    const { POST } = await import("../route");
+    const file = new File(["abc"], "photo.png", { type: "image/png" });
+
+    await POST(makeFormRequest({ file, feature: "experience" }));
+
+    expect(storeNames()).toEqual(["experience-media"]);
+    expect(setKeys()[0]).toMatch(/^user123\/experience\/photo-\d+\.png$/);
+  });
+
+  it("non-production crop + file prefixes both the original and the baked filename", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { POST } = await import("../route");
+    const file = new File(["abc"], "photo.png", { type: "image/png" });
+
+    await POST(
+      makeFormRequest({ file, feature: "avatar", crop: VALID_CROP }),
+    );
+
+    expect(storeNames()).toEqual(["user-avatars", "user-avatars"]);
+    const [originalKey, bakedKey] = setKeys();
+    expect(originalKey).toMatch(/^user123\/avatar-original\/dev-photo-\d+\.webp$/);
+    expect(bakedKey).toMatch(/^user123\/avatar\/dev-photo-\d+\.webp$/);
+  });
+
+  it("re-crop from a dev- original yields a single dev- prefix", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { POST } = await import("../route");
+
+    const response = await POST(
+      makeFormRequest({
+        feature: "tripper-hero",
+        crop: VALID_CROP,
+        originalKey: "user123/tripper-hero-original/dev-photo-1700000000000.webp",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const [bakedKey] = setKeys();
+    expect(bakedKey).toMatch(/^user123\/tripper-hero\/dev-photo-/);
+    expect(bakedKey).not.toContain("dev-dev-");
+  });
+
+  it("non-production GET falls back to the legacy nonproduction- store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    storeGetWithMetadataMock.mockResolvedValueOnce(null).mockResolvedValueOnce({
+      data: new Blob([new Uint8Array([1, 2, 3])]),
+      etag: "blob-etag-1",
+      metadata: { contentType: "image/webp" },
+    });
+    const { GET } = await import("../route");
+
+    const res = await GET({
+      headers: new Headers(),
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(200);
+    expect(storeNames()).toEqual(["user-avatars", "nonproduction-user-avatars"]);
+  });
+
+  it("production GET never consults a legacy nonproduction- store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    storeGetWithMetadataMock.mockResolvedValue(null);
+    const { GET } = await import("../route");
+
+    const res = await GET({
+      headers: new Headers(),
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(404);
+    expect(storeNames()).toEqual(["user-avatars", "user-media"]);
+  });
+
+  it("non-production DELETE removes a dev- key from the shared and legacy stores", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { DELETE } = await import("../route");
+
+    const res = await DELETE({
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/dev-a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(204);
+    expect(storeNames()).toEqual(["user-avatars", "nonproduction-user-avatars"]);
+    expect(storeDeleteMock).toHaveBeenCalledTimes(2);
+    expect(storeDeleteMock).toHaveBeenCalledWith("user123/avatar/dev-a.webp");
+  });
+
+  it("non-production DELETE never removes a non-dev- key from the shared (production) store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    const { DELETE } = await import("../route");
+
+    const res = await DELETE({
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(204);
+    expect(storeNames()).toEqual(["nonproduction-user-avatars"]);
+    expect(storeDeleteMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("production DELETE removes any key from the shared store", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    const { DELETE } = await import("../route");
+
+    const res = await DELETE({
+      nextUrl: new URL("http://localhost/api/upload?key=user123/avatar/a.webp"),
+    } as unknown as NextRequest);
+
+    expect(res.status).toBe(204);
+    expect(storeNames()).toEqual(["user-avatars"]);
+    expect(storeDeleteMock).toHaveBeenCalledWith("user123/avatar/a.webp");
   });
 });

@@ -12,10 +12,6 @@ interface Props {
   onChange: (patch: Partial<XsedDropDraft>) => void;
   copy: AdminXsedDict["form"]["fields"]["accommodation"];
   sectionsCopy: AdminXsedDict["form"]["fields"]["sections"];
-  imageCopy: Pick<
-    AdminXsedDict["form"]["fields"],
-    "heroImageSizeHint" | "copyrightHint" | "imageTooSmall"
-  >;
   contactCopy: AdminXsedDict["form"]["fields"]["contact"];
 }
 
@@ -29,7 +25,6 @@ export function XsedAccommodationStep({
   onChange,
   copy,
   sectionsCopy,
-  imageCopy,
   contactCopy,
 }: Props) {
   function updateEntry(index: number, key: keyof AccommodationEntry, value: string) {
@@ -79,7 +74,6 @@ export function XsedAccommodationStep({
           entry={form.sections[0] ?? EMPTY_XSED_SECTION}
           onChange={updateSection}
           copy={sectionsCopy}
-          imageCopy={imageCopy}
         />
       </div>
     </div>

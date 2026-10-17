@@ -70,9 +70,10 @@ describe("GET /api/admin/blogs", () => {
     expect(findManyArgs.where).toMatchObject({ isReviewCopy: false });
     expect(findManyArgs.select).toMatchObject({
       id: true,
-      title: true,
+      sourceLocale: true,
       status: true,
       author: { select: { id: true, name: true, email: true } },
+      translationRows: { select: expect.any(Object) },
     });
   });
 

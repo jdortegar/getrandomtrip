@@ -1,59 +1,57 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/prisma", () => ({
-  prisma: {
-    blogPost: { findMany: vi.fn().mockResolvedValue([]) },
-  },
+vi.mock("@/lib/prisma", () => ({ prisma: {} }));
+vi.mock("@/lib/blog/blogRepository", () => ({
+  listPublished: vi.fn().mockResolvedValue([]),
 }));
 
 import {
+  getBlogTeaserPosts,
   getPublishedBlogsForTravelType,
   getRecentPublishedBlogs,
 } from "../tripper-queries";
-import { prisma } from "@/lib/prisma";
+import { listPublished } from "@/lib/blog/blogRepository";
 
-describe("getRecentPublishedBlogs — visibility guard", () => {
+const listMock = vi.mocked(listPublished);
+
+function summary(overrides: Record<string, unknown> = {}) {
+  return {
+    id: "post-1",
+    slug: "post-1-slug",
+    title: "Post One",
+    subtitle: null,
+    coverUrl: "/covers/one.jpg",
+    tags: ["Aventura"],
+    author: {
+      id: "tripper-1",
+      name: "Alex",
+      tripperSlug: "alex",
+      avatarUrl: null,
+      location: null,
+    },
+    ...overrides,
+  };
+}
+
+describe("getRecentPublishedBlogs — public translation reads", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([]);
+    listMock.mockResolvedValue([]);
   });
 
-  it("queries across all authors (no authorId filter) with status: PUBLISHED, isReviewCopy: false, isActive: true, coverUrl: { not: null }", async () => {
+  it("lists across all authors in the locale, requiring a cover at query level so `take` isn't shrunk", async () => {
     await getRecentPublishedBlogs(5);
 
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock
-      .calls[0][0];
-    expect(findManyArgs.where).not.toHaveProperty("authorId");
-    expect(findManyArgs.where).toMatchObject({
-      status: "PUBLISHED",
-      isReviewCopy: false,
-      isActive: true,
-      coverUrl: { not: null },
+    expect(listMock).toHaveBeenCalledWith("es", {
+      requireCover: true,
+      take: 5,
     });
-    expect(findManyArgs.orderBy).toEqual({ publishedAt: "desc" });
-    expect(findManyArgs.take).toBe(5);
   });
 
-  it("filters cover-less posts at the query level, so `take` isn't shrunk by a post-fetch JS filter", async () => {
-    // The DB is trusted to only return posts matching `coverUrl: { not: null }`
-    // (asserted above) — this test locks in that the function no longer
-    // re-filters in JS after `take`, which previously could return fewer
-    // than `limit` results if some of the `take`d rows lacked a cover.
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      {
-        id: "post-1",
-        slug: "post-1-slug",
-        title: "Post One",
-        subtitle: null,
-        coverUrl: "/covers/one.jpg",
-        tags: ["Aventura"],
-        publishedAt: new Date(),
-      },
-    ]);
+  it("maps translations to cards using the translation's slug", async () => {
+    listMock.mockResolvedValue([summary()] as never);
 
-    const result = await getRecentPublishedBlogs(5);
-
-    expect(result).toEqual([
+    expect(await getRecentPublishedBlogs(5)).toEqual([
       {
         category: "Aventura",
         href: "/blog/post-1-slug",
@@ -63,52 +61,57 @@ describe("getRecentPublishedBlogs — visibility guard", () => {
     ]);
   });
 
-  it("falls back to the locale-appropriate category and post id when tags/slug are missing", async () => {
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
-      {
-        id: "post-3",
-        slug: null,
-        title: "Post Three",
-        translations: { en: { title: "English Three", content: "<p>English body</p>", ready: true } },
-        subtitle: null,
-        coverUrl: "/covers/three.jpg",
-        tags: [],
-        publishedAt: new Date(),
-      },
-    ]);
-
-    const resultEs = await getRecentPublishedBlogs(5);
-    expect(resultEs).toEqual([
-      {
-        category: "Viajes",
-        href: "/blog/post-3",
-        image: "/covers/three.jpg",
-        title: "Post Three",
-      },
-    ]);
+  it("reads the requested locale and falls back to the locale-appropriate category", async () => {
+    listMock.mockResolvedValue([
+      summary({ title: "English Three", slug: "english-three", tags: [] }),
+    ] as never);
 
     const resultEn = await getRecentPublishedBlogs(5, "en");
-    expect(resultEn[0]).toMatchObject({ category: "Travel", title: "English Three" });
-    expect(vi.mocked(prisma.blogPost.findMany).mock.calls.at(-1)?.[0]?.where?.translations).toEqual({ path: ["en", "ready"], equals: true });
+    expect(listMock).toHaveBeenLastCalledWith("en", expect.anything());
+    expect(resultEn[0]).toEqual({
+      category: "Travel",
+      href: "/blog/english-three",
+      image: "/covers/one.jpg",
+      title: "English Three",
+    });
+
+    const resultEs = await getRecentPublishedBlogs(5);
+    expect(resultEs[0].category).toBe("Viajes");
   });
 
   it("returns an empty array on query failure instead of throwing", async () => {
-    (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mockRejectedValue(
-      new Error("DB error"),
-    );
+    listMock.mockRejectedValue(new Error("DB error"));
 
-    const result = await getRecentPublishedBlogs(5);
-
-    expect(result).toEqual([]);
+    expect(await getRecentPublishedBlogs(5)).toEqual([]);
   });
 
   it("loads every published post tagged with a travel type", async () => {
     await getPublishedBlogsForTravelType("group", "es");
 
-    const findManyArgs = (prisma.blogPost.findMany as ReturnType<typeof vi.fn>).mock
-      .calls[0][0];
-    expect(findManyArgs.where.travelType).toEqual({ has: "group" });
-    expect(findManyArgs.take).toBeUndefined();
-    expect(findManyArgs.select.content).toBe(true);
+    expect(listMock).toHaveBeenCalledWith("es", {
+      requireCover: true,
+      travelType: "group",
+    });
+  });
+
+  it("round-robins teaser posts across authors from a wider locale pool", async () => {
+    listMock.mockResolvedValue([
+      summary({ id: "a1" }),
+      summary({ id: "a2" }),
+      summary({
+        id: "b1",
+        author: { ...summary().author, id: "tripper-2" },
+      }),
+    ] as never);
+
+    const teaser = await getBlogTeaserPosts(2, "en");
+    expect(listMock).toHaveBeenCalledWith("en", {
+      requireCover: true,
+      take: 20,
+    });
+    expect(teaser.map((post) => post.author.id)).toEqual([
+      "tripper-1",
+      "tripper-2",
+    ]);
   });
 });

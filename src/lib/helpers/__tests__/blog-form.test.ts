@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import {
+  blogEditorDraftSignature,
   buildBlogSubmitPayload,
+  emptyBlogEditorDraft,
+  ensureLocaleGallery,
   getBlogLocaleDraft,
   pickBlogContentDraft,
   getBlogCompleteness,
@@ -8,7 +11,7 @@ import {
   isBlogTabEligible,
   mapBlogPostToDraft,
 } from "../blog-form";
-import type { BlogFormDraft, BlogPost } from "@/types/blog";
+import type { BlogEditorDraft, BlogFormDraft, BlogPost } from "@/types/blog";
 
 const baseDraft: BlogFormDraft = {
   status: "draft",
@@ -26,6 +29,21 @@ const baseDraft: BlogFormDraft = {
   label: "",
   tripperNote: null,
 };
+
+function editorFromForm(form: BlogFormDraft): BlogEditorDraft {
+  return {
+    ...emptyBlogEditorDraft("es"),
+    translations: { es: pickBlogContentDraft(form) },
+    status: form.status,
+    coverUrl: form.coverUrl,
+    gallery: form.gallery,
+    travelType: form.travelType,
+    excuseKey: form.excuseKey,
+    level: form.level,
+    label: form.label,
+    tripperNote: form.tripperNote,
+  };
+}
 
 describe("getBlogCompleteness", () => {
   const complete = {
@@ -186,7 +204,7 @@ describe("mapBlogPostToDraft", () => {
       blocks: [{ type: "quote", text: "The road less traveled.", cite: "Frost" }],
       content: "<blockquote>The road less traveled.<cite>— Frost</cite></blockquote>",
     };
-    const draft = mapBlogPostToDraft(post);
+    const draft = getBlogLocaleDraft(mapBlogPostToDraft(post), "es");
     expect(draft.featureText).toBe("The road less traveled.");
     expect(draft.sections).toEqual([]);
   });
@@ -198,7 +216,7 @@ describe("mapBlogPostToDraft", () => {
       blocks: [],
       content: "<p>Legacy free-text body</p>",
     };
-    const draft = mapBlogPostToDraft(post);
+    const draft = getBlogLocaleDraft(mapBlogPostToDraft(post), "es");
     expect(draft.featureText).toBe("");
     expect(draft.sections).toEqual([
       { title: "", description: "<p>Legacy free-text body</p>" },
@@ -212,7 +230,7 @@ describe("mapBlogPostToDraft", () => {
       blocks: [{ type: "section", title: "Day 1", description: "<p>Arrival</p>" }],
       content: "<h2>Day 1</h2><p>Arrival</p>",
     };
-    const draft = mapBlogPostToDraft(post);
+    const draft = getBlogLocaleDraft(mapBlogPostToDraft(post), "es");
     expect(draft.sections).toEqual([{ title: "Day 1", description: "<p>Arrival</p>" }]);
   });
 
@@ -261,7 +279,7 @@ describe("buildBlogSubmitPayload", () => {
       travelType: ["solo", "couple"],
       excuseKey: ["x", "y"],
     };
-    const payload = buildBlogSubmitPayload(draft);
+    const payload = buildBlogSubmitPayload(editorFromForm(draft));
     expect(payload.travelType).toEqual(["solo", "couple"]);
     expect(payload.excuseKey).toEqual(["x", "y"]);
   });
@@ -272,7 +290,7 @@ describe("buildBlogSubmitPayload", () => {
       travelType: ["solo", "couple"],
       excuseKey: ["x", "y"],
     };
-    const payload = buildBlogSubmitPayload(draft);
+    const payload = buildBlogSubmitPayload(editorFromForm(draft));
     const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
     expect(roundTripped.travelType).toEqual(["solo", "couple"]);
     expect(roundTripped.excuseKey).toEqual(["x", "y"]);
@@ -287,25 +305,25 @@ describe("buildBlogSubmitPayload", () => {
     const post: Partial<BlogPost> = { status: "draft", title: "T", blocks: [], label: "XSED Nº1 (AR)" };
     expect(mapBlogPostToDraft(post).label).toBe("XSED Nº1 (AR)");
     expect(mapBlogPostToDraft({ ...post, label: null }).label).toBe("");
-    expect(buildBlogSubmitPayload({ ...baseDraft, label: "XSED Nº1 (AR)" }).label).toBe("XSED Nº1 (AR)");
-    expect(buildBlogSubmitPayload({ ...baseDraft, label: "" }).label).toBeNull();
+    expect(buildBlogSubmitPayload(editorFromForm({ ...baseDraft, label: "XSED Nº1 (AR)" })).label).toBe("XSED Nº1 (AR)");
+    expect(buildBlogSubmitPayload(editorFromForm({ ...baseDraft, label: "" })).label).toBeNull();
   });
 
   it("converts a set level to its string value, and an empty level to null", () => {
-    expect(buildBlogSubmitPayload({ ...baseDraft, level: "xsed" }).level).toBe("xsed");
-    expect(buildBlogSubmitPayload({ ...baseDraft, level: "" }).level).toBeNull();
+    expect(buildBlogSubmitPayload(editorFromForm({ ...baseDraft, level: "xsed" })).level).toBe("xsed");
+    expect(buildBlogSubmitPayload(editorFromForm({ ...baseDraft, level: "" })).level).toBeNull();
   });
 
   it("round-trips level through buildBlogSubmitPayload -> mapBlogPostToDraft", () => {
     const draft: BlogFormDraft = { ...baseDraft, level: "essenza" };
-    const payload = buildBlogSubmitPayload(draft);
+    const payload = buildBlogSubmitPayload(editorFromForm(draft));
     const roundTripped = mapBlogPostToDraft(payload as unknown as Partial<BlogPost>);
     expect(roundTripped.level).toBe("essenza");
   });
 });
 
 
-describe("bilingual blog round-trip", () => {
+describe("editor draft ↔ payload", () => {
   it("does not copy Spanish into an empty English draft and shares media", () => {
     const draft = mapBlogPostToDraft({ title: "Español", content: "<p>Hola</p>", coverUrl: "/cover.jpg", blocks: [{ type: "image", url: "/shared.jpg", caption: "Español" }] });
     expect(getBlogLocaleDraft(draft, "en")).toMatchObject({ title: "", subtitle: "", coverUrl: "/cover.jpg", gallery: ["/shared.jpg"] });
@@ -314,11 +332,28 @@ describe("bilingual blog round-trip", () => {
   it("preserves exact legacy Spanish HTML, FAQ, SEO and captions when saving English", () => {
     const post: Partial<BlogPost> = { title: "Español", tagline: "Bajada", content: "  <p>Contenido legacy</p>  ", blocks: [{ type: "paragraph", text: "Legacy" }, { type: "image", url: "/shared.jpg", caption: "Español" }], faq: { items: [{ question: "¿Qué?", answer: "Viajar" }] }, seo: { title: "SEO español" } };
     const draft = mapBlogPostToDraft(post);
-    draft.english = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English", sections: [{ title: "Heading", description: "<p>English</p>" }] };
+    draft.translations.en = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English", sections: [{ title: "Heading", description: "<p>English</p>" }] };
     const payload = buildBlogSubmitPayload(draft);
-    expect(payload).toMatchObject(post);
-    expect(payload).toMatchObject({ translations: { en: { title: "English", blocks: [{ type: "section", title: "Heading", description: "<p>English</p>" }] } } });
-    expect(mapBlogPostToDraft(payload as Partial<BlogPost>).english?.title).toBe("English");
+    expect(payload.sourceLocale).toBe("es");
+    expect(payload.translations.es).toMatchObject({
+      title: "Español",
+      content: post.content,
+      blocks: post.blocks,
+      faq: post.faq,
+      seo: post.seo,
+    });
+    expect(payload.translations.en).toMatchObject({
+      title: "English",
+    });
+    expect(payload.translations.en?.blocks).toEqual(
+      expect.arrayContaining([
+        { type: "section", title: "Heading", description: "<p>English</p>" },
+      ]),
+    );
+    expect(getBlogLocaleDraft(mapBlogPostToDraft({
+      title: payload.translations.es?.title,
+      translations: { en: payload.translations.en },
+    } as Partial<BlogPost>), "en").title).toBe("English");
   });
   it("preserves Spanish block ordering and duplicate URLs with distinct captions verbatim", () => {
     const post: Partial<BlogPost> = { title: "Español", subtitle: "  Subtítulo  ", content: "<p>Texto original</p>", blocks: [
@@ -327,15 +362,73 @@ describe("bilingual blog round-trip", () => {
       { type: "image", url: "/same.jpg", caption: "Segunda" },
     ] };
     const draft = mapBlogPostToDraft(post);
-    draft.english = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English" };
+    draft.translations.en = { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English" };
     const payload = buildBlogSubmitPayload(draft);
-    expect(payload.blocks).toEqual(post.blocks);
-    expect(payload.content).toBe(post.content);
-    expect(payload.subtitle).toBe(post.subtitle);
+    expect(payload.translations.es?.blocks).toEqual(post.blocks);
+    expect(payload.translations.es?.content).toBe(post.content);
+    expect(payload.translations.es?.subtitle).toBe(post.subtitle);
   });
   it("round-trips partial English and clears without changing Spanish", () => {
     const draft = mapBlogPostToDraft({ title: "Español", translations: { en: { title: "Work in progress" } } });
-    expect(buildBlogSubmitPayload(draft)).toMatchObject({ title: "Español", translations: { en: { title: "Work in progress", content: null } } });
-    expect(buildBlogSubmitPayload({ ...draft, english: null })).toMatchObject({ title: "Español", translations: null });
+    expect(buildBlogSubmitPayload(draft)).toMatchObject({
+      sourceLocale: "es",
+      translations: {
+        es: { title: "Español" },
+        en: { title: "Work in progress", content: null },
+      },
+    });
+    const { en: _en, ...rest } = draft.translations;
+    expect(buildBlogSubmitPayload({ ...draft, translations: rest })).toMatchObject({
+      translations: { es: { title: "Español" } },
+    });
+    expect(buildBlogSubmitPayload({ ...draft, translations: rest }).translations.en).toBeUndefined();
+  });
+});
+
+describe("blogEditorDraftSignature", () => {
+  it("ignores an empty non-source locale so a language switch is not dirty", () => {
+    const draft = mapBlogPostToDraft({
+      title: "Español",
+      content: "<p>Original</p>",
+      coverUrl: "/shared.jpg",
+    });
+    const withEmptyEnglish = {
+      ...draft,
+      translations: ensureLocaleGallery(draft.translations, "en", draft.gallery),
+    };
+    expect(blogEditorDraftSignature(withEmptyEnglish)).toBe(
+      blogEditorDraftSignature(draft),
+    );
+  });
+
+  it("changes when the other locale has copy to persist", () => {
+    const draft = mapBlogPostToDraft({ title: "Español" });
+    const withEnglish = {
+      ...draft,
+      translations: {
+        ...draft.translations,
+        en: { ...pickBlogContentDraft(getBlogLocaleDraft(draft, "en")), title: "English" },
+      },
+    };
+    expect(blogEditorDraftSignature(withEnglish)).not.toBe(
+      blogEditorDraftSignature(draft),
+    );
+  });
+});
+
+describe("ensureLocaleGallery", () => {
+  it("creates a missing locale with the shared gallery URLs", () => {
+    const translations = ensureLocaleGallery(
+      {
+        es: {
+          ...pickBlogContentDraft(baseDraft),
+          media: [{ type: "image", url: "/a.jpg" }],
+        },
+      },
+      "en",
+      ["/a.jpg"],
+    );
+    expect(translations.en?.media).toEqual([{ type: "image", url: "/a.jpg" }]);
+    expect(translations.es?.title).toBe("My Trip");
   });
 });

@@ -558,7 +558,13 @@
       "JM": "Jamaica",
       "TT": "Trinidad and Tobago"
     },
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "imageUpload": {
+      "formats": "JPG, PNG or WebP.",
+      "minSize": "Minimum {width} × {height} px recommended",
+      "copyright": "Only use images you own or are licensed to use.",
+      "tooSmall": "Image too small"
+    }
   },
   "imageEditor": {
     "title": "Edit image",
@@ -783,9 +789,6 @@
         "slug": "Slug",
         "slugHint": "URL-friendly identifier, e.g. patagonia-2026",
         "heroImage": "Hero image",
-        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "copyrightHint": "Only use images you own or are licensed to use.",
-        "imageTooSmall": "Image too small",
         "uploadImage": "Upload image",
         "destinationCity": "Destination city",
         "destinationCityPlaceholder": "Search city...",
@@ -4599,12 +4602,22 @@
         "canonicalLabel": "Original content: Spanish",
         "unavailable": "This article does not have an English version yet."
       },
+      "mediaMismatch": {
+        "title": "Images do not match the original language",
+        "missing": "Missing in this translation",
+        "extra": "Only in this translation"
+      },
+      "errors": {
+        "invalidSourceLocale": "That original language is not supported.",
+        "sourceLocaleIncomplete": "Finish the original-language translation before changing it.",
+        "sourceTranslationIncomplete": "Finish the original language before submitting."
+      },
       "translate": {
         "error": "Could not translate this post. Try again.",
-        "hint": "Fills the other language from the title, subtitle, quote, sections, and FAQ.",
+        "fromEnglish": "Translate from English",
+        "fromSpanish": "Translate from Spanish",
+        "hint": "Fills this language from the title, subtitle, quote, sections, and FAQ of the other language.",
         "label": "AI translation",
-        "toEnglish": "Translate to English",
-        "toSpanish": "Translate to Spanish",
         "translating": "Translating..."
       },
       "nav": {
@@ -4629,7 +4642,26 @@
         "prefix": "Admin proposed changes to: ",
         "peekShowOriginal": "Click to see original content",
         "peekShowSuggestion": "Click to see admin's suggestion",
-        "noContent": "(no content)"
+        "noContent": "(no content)",
+        "all": "All content",
+        "locale": { "es": "ES", "en": "EN" },
+        "fields": {
+          "title": "Title",
+          "subtitle": "Subtitle",
+          "tagline": "Tagline",
+          "content": "Article",
+          "blocks": "Sections",
+          "faq": "FAQ",
+          "seo": "SEO",
+          "sourceLocale": "Original language",
+          "coverUrl": "Cover image",
+          "tags": "Tags",
+          "travelType": "Traveler type",
+          "excuseKey": "Excuse",
+          "level": "Level",
+          "label": "Label",
+          "translations": "English"
+        }
       },
       "review": {
         "pendingTitle": "Pending review",
@@ -4700,10 +4732,7 @@
         "subtitle": "Subtitle",
         "subtitlePlaceholder": "Subtitle (optional)",
         "coverImage": "Cover image",
-        "coverImageHint": "JPG, PNG or WebP. Shown as the post's main image.",
-        "coverImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "copyrightHint": "Only use images you own or are licensed to use.",
-        "imageTooSmall": "Image too small",
+        "coverImageHint": "Shown as the post's main image.",
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove image",
@@ -4736,7 +4765,7 @@
         "faqLabel": "Question",
         "addFaq": "Add question",
         "removeFaq": "Remove question",
-        "galleryHint": "Add photos for your post's carousel.",
+        "galleryAlt": "Post gallery photo",
         "addImage": "Upload photos",
         "removeImageAria": "Remove image",
         "imageTooLarge": "Image must be under 10 MB."
@@ -4745,7 +4774,8 @@
         "titleRequired": "Title is required",
         "uploadError": "Image upload failed",
         "fileTooLarge": "Image must be under 10 MB.",
-        "saveError": "Could not save"
+        "saveError": "Could not save",
+        "saveSuccess": "Changes saved"
       }
     },
     "title": "MY BLOG",
@@ -5484,10 +5514,6 @@
         "uploadImage": "Upload image",
         "uploading": "Uploading…",
         "removeImage": "Remove",
-        "heroImageSizeHint": "Minimum 1280 × 720 px recommended",
-        "entryImageSizeHint": "Minimum 800 × 600 px recommended",
-        "imageTooSmall": "Image too small",
-        "copyrightHint": "Only use images you own or are licensed to use.",
         "isActive": "Experience active",
         "isActiveHint": "Visible for matching with clients",
         "isFeatured": "Featured",

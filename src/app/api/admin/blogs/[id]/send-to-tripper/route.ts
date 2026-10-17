@@ -11,6 +11,11 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { computeChangedFields } from "@/lib/blog/changed-fields";
+import {
+  loadTranslationsForReview,
+  type ReviewPostSnapshot,
+} from "@/lib/blog/blogRepository";
+import { pickSourceRow } from "@/lib/blog/source-copy";
 import { sendBlogPendingTripperReview } from "@/lib/email";
 
 export async function POST(
@@ -62,7 +67,14 @@ export async function POST(
       );
     }
 
-    const changedFields = computeChangedFields(copy, original);
+    const [copyRows, originalRows] = await Promise.all([
+      loadTranslationsForReview(prisma, copy as unknown as ReviewPostSnapshot),
+      loadTranslationsForReview(prisma, original as unknown as ReviewPostSnapshot),
+    ]);
+    const changedFields = computeChangedFields(copy, original, {
+      copy: copyRows,
+      original: originalRows,
+    });
 
     if (changedFields.length === 0) {
       return NextResponse.json(
@@ -100,7 +112,9 @@ export async function POST(
           select: { locale: true },
         });
         const locale = author?.locale === "en" ? "en" : "es";
-        const title = original.title as string;
+        const title =
+          pickSourceRow(String(original.sourceLocale ?? "es"), originalRows)?.title ??
+          "";
         const notifCopy = locale === "en"
           ? { title: "Admin proposed changes to your article", body: `The Randomtrip team has proposed changes to "${title}".` }
           : { title: "El admin propuso cambios en tu artículo", body: `El equipo de Randomtrip propuso cambios para "${title}".` };

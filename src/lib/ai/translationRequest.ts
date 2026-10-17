@@ -13,6 +13,8 @@ export interface TranslationRequest {
 const MAX_PIECES = 80;
 const MAX_PIECE_CHARS = 20_000;
 const MAX_TOTAL_CHARS = 80_000;
+export const TRANSLATION_BATCH_PIECE_LIMIT = 4;
+export const TRANSLATION_BATCH_CHAR_LIMIT = 3_000;
 
 export class TranslationRequestError extends Error {
   constructor(message: string) {
@@ -55,6 +57,28 @@ export function parseTranslationRequest(value: unknown): TranslationRequest {
   };
 }
 
+/** Splits copy so each model call stays small enough to return valid JSON. */
+export function batchTranslationPieces(pieces: TranslationPiece[]): TranslationPiece[][] {
+  const batches: TranslationPiece[][] = [];
+  let current: TranslationPiece[] = [];
+  let chars = 0;
+  for (const piece of pieces) {
+    const overflows =
+      current.length > 0 &&
+      (current.length >= TRANSLATION_BATCH_PIECE_LIMIT ||
+        chars + piece.text.length > TRANSLATION_BATCH_CHAR_LIMIT);
+    if (overflows) {
+      batches.push(current);
+      current = [];
+      chars = 0;
+    }
+    current.push(piece);
+    chars += piece.text.length;
+  }
+  if (current.length) batches.push(current);
+  return batches;
+}
+
 export function translationMessages(request: TranslationRequest): { system: string; user: string } {
   const target = request.target === "en" ? "English" : "Spanish";
   const source = request.target === "en" ? "Spanish" : "English";
@@ -83,9 +107,13 @@ export function parseTranslationTexts(raw: string, count: number): string[] {
   }
 
   const texts = parsed && typeof parsed === "object" ? (parsed as { texts?: unknown }).texts : undefined;
-  if (!Array.isArray(texts) || texts.length !== count || texts.some((text) => typeof text !== "string")) {
+  if (!Array.isArray(texts) || texts.length === 0 || texts.some((text) => typeof text !== "string")) {
     throw new TranslationRequestError("Translation response is invalid");
   }
+  if (texts.length === count) return texts;
+  if (texts.length > count) {
+    return [...texts.slice(0, count - 1), texts.slice(count - 1).join("")];
+  }
 
-  return texts;
+  throw new TranslationRequestError("Translation response is invalid");
 }

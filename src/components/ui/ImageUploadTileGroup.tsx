@@ -1,6 +1,9 @@
 "use client";
 
-import { ImageUploadTile } from "@/components/ui/ImageUploadTile";
+import {
+  ImageUploadHints,
+  ImageUploadTileBody,
+} from "@/components/ui/ImageUploadTile";
 
 interface ImageUploadTileGroupProps {
   values: string[];
@@ -15,9 +18,6 @@ interface ImageUploadTileGroupProps {
   removeLabel?: string;
   minWidth?: number;
   minHeight?: number;
-  tooSmallLabel?: string;
-  sizeHint?: string;
-  copyrightHint?: string;
 }
 
 const noop = () => {};
@@ -34,9 +34,6 @@ export function ImageUploadTileGroup({
   removeLabel,
   minWidth,
   minHeight,
-  tooSmallLabel,
-  sizeHint,
-  copyrightHint,
 }: ImageUploadTileGroupProps) {
   const canAddMore = max == null || values.length < max;
 
@@ -44,7 +41,7 @@ export function ImageUploadTileGroup({
     <div className="space-y-1.5" data-component="ImageUploadTileGroup">
       <div className="flex flex-wrap gap-3">
         {values.map((value, index) => (
-          <ImageUploadTile
+          <ImageUploadTileBody
             alt={alt ? `${alt} ${index + 1}` : ""}
             key={`${value}-${index}`}
             onRemove={() => onRemove(index)}
@@ -55,13 +52,12 @@ export function ImageUploadTileGroup({
           />
         ))}
         {canAddMore && (
-          <ImageUploadTile
+          <ImageUploadTileBody
             alt={alt}
             minHeight={minHeight}
             minWidth={minWidth}
             onRemove={noop}
             onSelect={onAdd}
-            tooSmallLabel={tooSmallLabel}
             uploadLabel={uploadLabel}
             uploading={uploading}
             uploadingLabel={uploadingLabel}
@@ -69,10 +65,7 @@ export function ImageUploadTileGroup({
           />
         )}
       </div>
-      {sizeHint && <p className="text-xs text-neutral-400">{sizeHint}</p>}
-      {copyrightHint && (
-        <p className="text-xs text-neutral-400">{copyrightHint}</p>
-      )}
+      <ImageUploadHints minHeight={minHeight} minWidth={minWidth} />
     </div>
   );
 }

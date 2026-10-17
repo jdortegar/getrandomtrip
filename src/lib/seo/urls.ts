@@ -11,15 +11,25 @@ export function canonicalUrl(locale: Locale, path = "/"): string {
   return `${SITE_URL}${localized}`;
 }
 
+/** `path` is either shared by every locale or per-locale (e.g. a blog post
+ * whose translations own different slugs); per-locale paths default
+ * `available` to the locales they cover. */
 export function buildAlternates(
   locale: Locale,
-  path: string,
-  available: readonly Locale[] = LOCALES,
+  path: string | Partial<Record<Locale, string>>,
+  available: readonly Locale[] = typeof path === "string"
+    ? LOCALES
+    : LOCALES.filter((language) => path[language] !== undefined),
 ) {
+  const pathFor = (language: Locale) =>
+    typeof path === "string" ? path : (path[language] ?? "/");
   return {
-    canonical: canonicalUrl(locale, path),
+    canonical: canonicalUrl(locale, pathFor(locale)),
     languages: Object.fromEntries(
-      available.map((language) => [language, canonicalUrl(language, path)]),
+      available.map((language) => [
+        language,
+        canonicalUrl(language, pathFor(language)),
+      ]),
     ),
   };
 }

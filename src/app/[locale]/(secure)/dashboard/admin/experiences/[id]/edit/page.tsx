@@ -106,7 +106,6 @@ export default async function AdminEditExperiencePage(props: {
     <NewExperienceShell
       dict={dict.tripperExperiences.form}
       editModeCopy={dict.adminDashboard.editExperience}
-      enableCopyTranslation
       finalizeCopy={dict.adminDashboard.newExperience}
       initialDraft={initialDraft}
       initialDraftId={pkg.id}

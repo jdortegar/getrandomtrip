@@ -12,10 +12,6 @@ interface Props {
   onChange: (patch: Partial<XsedDropDraft>) => void;
   copy: AdminXsedDict["form"]["fields"]["activities"];
   sectionsCopy: AdminXsedDict["form"]["fields"]["sections"];
-  imageCopy: Pick<
-    AdminXsedDict["form"]["fields"],
-    "heroImageSizeHint" | "copyrightHint" | "imageTooSmall"
-  >;
   contactCopy: AdminXsedDict["form"]["fields"]["contact"];
 }
 
@@ -35,7 +31,6 @@ export function XsedDinnerStep({
   onChange,
   copy,
   sectionsCopy,
-  imageCopy,
   contactCopy,
 }: Props) {
   const dinner = form.activities[0] ?? EMPTY_ENTRY;
@@ -80,7 +75,6 @@ export function XsedDinnerStep({
           entry={form.sections[1] ?? EMPTY_XSED_SECTION}
           onChange={updateSection}
           copy={sectionsCopy}
-          imageCopy={imageCopy}
         />
       </div>
     </div>

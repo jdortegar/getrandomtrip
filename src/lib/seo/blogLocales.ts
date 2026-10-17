@@ -1,14 +1,19 @@
-import { resolveBlogContent } from "@/lib/blog/content-locale";
-import type { Locale } from "@/lib/i18n/config";
+import { LOCALES, type Locale } from "@/lib/i18n/config";
+import type { BlogLocaleSlugs } from "@/types/blog";
 
-/** Match both the public English query's persisted readiness and usable copy. */
-export function availableBlogLocales(post: {
-  translations?: unknown;
-}): Locale[] {
-  const translations = post.translations as
-    | { en?: { ready?: boolean } }
-    | undefined;
-  return translations?.en?.ready === true && resolveBlogContent(post, "en")
-    ? ["es", "en"]
-    : ["es"];
+/** Locales with a complete public translation, in LOCALES order. */
+export function availableBlogLocales(localeSlugs: BlogLocaleSlugs): Locale[] {
+  return LOCALES.filter((locale) => localeSlugs[locale] !== undefined);
+}
+
+/** Each complete locale's own blog path (`/blog/<that locale's slug>`). */
+export function blogLocalePaths(
+  localeSlugs: BlogLocaleSlugs,
+): Partial<Record<Locale, string>> {
+  return Object.fromEntries(
+    availableBlogLocales(localeSlugs).map((locale) => [
+      locale,
+      `/blog/${localeSlugs[locale]}`,
+    ]),
+  );
 }

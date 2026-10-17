@@ -80,7 +80,7 @@ const STATUS_FILTER_VALUES: readonly StatusFilter[] = [
 function parseStatusFilter(value: string | null): StatusFilter {
   return (STATUS_FILTER_VALUES as readonly string[]).includes(value ?? "")
     ? (value as StatusFilter)
-    : "PENDING";
+    : "ALL";
 }
 
 function parseTypeFilter(value: string | null): string {
@@ -196,7 +196,7 @@ export function AdminExperiencesPageClient() {
     setSelectedIds(new Set());
     setPage(1);
     updateQuery({
-      status: next === "PENDING" ? undefined : next,
+      status: next === "ALL" ? undefined : next,
       page: undefined,
     });
   }
@@ -235,7 +235,7 @@ export function AdminExperiencesPageClient() {
   }
 
   function clearFilters() {
-    setStatusFilter("PENDING");
+    setStatusFilter("ALL");
     setTypeFilter("ALL");
     setLevelFilter("ALL");
     setSearchQuery("");
@@ -431,7 +431,7 @@ export function AdminExperiencesPageClient() {
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const experienceTypes = getExperienceTypes(locale);
   const hasActiveFilters =
-    statusFilter !== "PENDING" ||
+    statusFilter !== "ALL" ||
     typeFilter !== "ALL" ||
     levelFilter !== "ALL" ||
     searchQuery !== "";
