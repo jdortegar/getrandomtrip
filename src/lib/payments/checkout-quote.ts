@@ -14,9 +14,9 @@ import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
 import { evaluatePromoRules, promoErrorCode } from "@/lib/payments/promo-rules";
+import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 import type { PromoRejectionReason } from "@/types/payments";
-import type { PaymentStatus } from "@prisma/client";
 
 const fail = (error: string, status: number, errorCode?: string) =>
   NextResponse.json({ error, ...(errorCode ? { errorCode } : {}) }, { status });
@@ -29,9 +29,6 @@ const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
   max_redemptions_reached: "This promo code has reached its usage limit",
   minimum_amount: "Your trip does not reach this promo code's minimum amount",
 };
-
-/** Payment statuses that mean the charge settled (see the Stripe webhook). */
-const SETTLED_PAYMENT_STATUSES: PaymentStatus[] = ["APPROVED", "COMPLETED"];
 
 /** Enforces the promotion code rules Stripe would apply on redemption. Counts
  * exclude this trip so re-quoting a code already applied here never rejects it.

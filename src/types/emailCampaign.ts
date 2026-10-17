@@ -133,3 +133,79 @@ export interface CampaignSend {
   /** ISO 8601 timestamp. */
   sentAt?: string | null;
 }
+
+/** Admin create payload. Empty optional strings are normalized to `null`. */
+export interface CampaignInput {
+  name: string;
+  subject: string;
+  preheader: string | null;
+  title: string;
+  bodyMarkdown: string;
+  ctaLabel: string | null;
+  /** Absolute https URL; present iff `ctaLabel` is. */
+  ctaUrl: string | null;
+  locale: CampaignLocale;
+  segmentSources: ContactSource[];
+  /** Customer-facing code typed by the admin; `null` means no promo. */
+  promoCode: string | null;
+}
+
+/** Admin edit of a DRAFT. `promoCode: null` clears the promo. */
+export type CampaignUpdateInput = Partial<CampaignInput>;
+
+/** Campaign operation failures the admin API maps to 404 / 409 / 400. */
+export type CampaignErrorCode =
+  | "not_found"
+  | "campaign_not_editable"
+  | "invalid_promo_code"
+  | "admin_email_missing";
+
+/** Admin-facing view of a Stripe promotion code and its redemption rules. */
+export interface PromotionCodeSummary {
+  /** Stripe promotion code id (`promo_...`). */
+  id: string;
+  code: string;
+  /** False when the promotion code or its coupon can no longer be redeemed. */
+  active: boolean;
+  /** Percentage, e.g. `30` for 30% off. */
+  percentOff: number | null;
+  /** Fixed discount in minor units of `currency`. */
+  amountOffCents: number | null;
+  /** Lowercase ISO 4217 code of `amountOffCents`. */
+  currency: string | null;
+  /** ISO 8601; earliest of the code expiry and the coupon `redeem_by`. */
+  expiresAt: string | null;
+  maxRedemptions: number | null;
+  /** Settled payments on our side that used this promotion code. */
+  redemptionsUsed: number;
+  firstTimeOnly: boolean;
+  /** Minimum order amount in minor units (USD checkout). */
+  minimumAmountCents: number | null;
+}
+
+/** Promo block props for the campaign email template. */
+export interface CampaignEmailPromo {
+  code: string;
+  /** Localized, e.g. `30% off` / `30% de descuento`. */
+  discountLabel: string;
+  /** ISO 8601. */
+  expiresAt?: string | null;
+}
+
+/** Fields the campaign email template is rendered from. */
+export type CampaignEmailContent = Pick<
+  Campaign,
+  | "subject"
+  | "preheader"
+  | "title"
+  | "bodyMarkdown"
+  | "ctaLabel"
+  | "ctaUrl"
+  | "locale"
+>;
+
+export interface RenderedCampaignEmail {
+  subject: string;
+  html: string;
+  text: string;
+}

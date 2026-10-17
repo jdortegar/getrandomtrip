@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildUnsubscribeHeaders,
+  buildUnsubscribePageUrl,
   buildUnsubscribeUrl,
   createUnsubscribeToken,
   verifyUnsubscribeToken,
@@ -66,6 +67,11 @@ describe("unsubscribe links", () => {
     expect(verifyUnsubscribeToken(es.searchParams.get("token")!)).toBe(
       "ckcontact123",
     );
+  });
+
+  it("builds the token-less page URL for previews", () => {
+    expect(buildUnsubscribePageUrl("es")).toBe(`${SITE_URL}/unsubscribe`);
+    expect(buildUnsubscribePageUrl("en")).toBe(`${SITE_URL}/en/unsubscribe`);
   });
 
   it("builds RFC 8058 one-click headers pointing at the API endpoint", () => {

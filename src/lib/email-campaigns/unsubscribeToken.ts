@@ -46,10 +46,18 @@ export function verifyUnsubscribeToken(token: string): string | null {
   return contactId || null;
 }
 
+/**
+ * Token-less confirmation page, for admin previews and test sends where no
+ * contact exists. The page shows its invalid-link state if opened.
+ */
+export function buildUnsubscribePageUrl(locale: Locale): string {
+  return canonicalUrl(locale, "/unsubscribe");
+}
+
 /** Absolute link to the localized confirmation page, for email bodies. */
 export function buildUnsubscribeUrl(contactId: string, locale: Locale): string {
   const token = encodeURIComponent(createUnsubscribeToken(contactId));
-  return `${canonicalUrl(locale, "/unsubscribe")}?token=${token}`;
+  return `${buildUnsubscribePageUrl(locale)}?token=${token}`;
 }
 
 /**

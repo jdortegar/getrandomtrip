@@ -99,4 +99,12 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - Parent addition: `/unsubscribe` in `GATE_EXEMPT_ROUTES` (`src/components/waitlist/GateAwareChrome.tsx`) — the marketing gate is client-side; middleware is `src/proxy.ts` and skips `/api`. RED: 2 new gate tests failed, then GREEN.
 - RED (writer): 5 test files failed before implementation. GREEN: 52/52 across gate, email-campaigns, unsubscribe API, sendMail (parent re-run); typecheck + lint pass.
 - Notes: rotating `EMAIL_UNSUBSCRIBE_SECRET` invalidates sent links; ~820 authored lines (mostly tests) — over the advisory heuristic, kept as one coherent unit.
+- Commit: `27e03f22`. Assessment: high risk, RDD off → independent verifier: PASS (forgery-proof tokens, RFC 8058 POST unblocked, atomic transitions, exact gate exemption; 52 tests + typecheck). Lows: secret length not enforced; base64url-leniency makes one tamper test incidental.
+
+### T5 — Campaign template, CRUD, promo lookup, preview, test send (route: delegated writer; trigger: 2+ non-trivial files)
+
+- Files: `src/lib/email-campaigns/markdown.ts` (in-house subset parser → tree, React-escaped, only http(s)/mailto links; no new deps), `src/emails/CampaignEmail.tsx` (on `EmailLayout`, es/en fixed copy), `render.ts` (`renderCampaignEmail` → subject/html/text), `promo.ts` (`lookupPromotionCode`, `discountLabel`, `toEmailPromo`), `campaigns.ts` (repository + `CampaignError`), `unsubscribeToken.ts` (`buildUnsubscribePageUrl`), validation schemas, routes `promo-lookup`, `campaigns` (GET/POST), `campaigns/[id]` (GET/PATCH/DELETE, DRAFT-only via conditional write), `[id]/preview` (`text/html`, CSP sandbox), `[id]/test-send` (admin's own email, `[TEST]` prefix only in production since sendMail adds it elsewhere), tests.
+- Parent cleanup: shared `SETTLED_PAYMENT_STATUSES` in `src/lib/payments/settledStatuses.ts`, used by `checkout-quote.ts` and `promo.ts`.
+- RED: 8 test files failed on missing modules. GREEN: 274/274 across email-campaigns, templates, validation, admin API, payments, stripe, checkout (parent re-run); typecheck + lint pass.
+- Notes for later tasks: PATCH must send `ctaLabel` + `ctaUrl` together (T9); preview/test send reload the promo from Stripe per render — T6 must load once per campaign; preview must be shown in an iframe (T9). ~2,500 lines, mostly tests — kept as one coherent unit.
 - Status: uncommitted, awaiting user approval.
