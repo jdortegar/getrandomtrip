@@ -118,8 +118,11 @@ Provider discovery alone is not an end-to-end OAuth success check.
   production deploy: that build runs `npx tsx scripts/migrate-if-outdated.ts`
   before `npm run build`, and applies pending files in `prisma/migrations` only
   when the production database is behind. A current database is left unchanged.
-  Drift, a failed migration, or a database Prisma Migrate does not manage fails
-  the deploy.
+  A database built with `prisma db push` has no migration history; the script
+  baselines it (records every migration as applied) only when the database
+  already holds everything in `prisma/schema.prisma`. Extra legacy columns are
+  kept. If anything is missing, the deploy fails and needs a manual baseline.
+  Drift or a failed migration also fails the deploy.
 
 ## Verification and first gated deployment
 
