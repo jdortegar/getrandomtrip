@@ -6095,6 +6095,7 @@
     "subtitle": "You booked for {count} travelers. Add each companion's details now, or send them an invite so they fill it in themselves — either way, we need this before we can confirm your itinerary.",
     "notifTitle": "A companion completed their travel details",
     "deadlineLabel": "Complete by {date} — {hours} hours before departure. After that, saved details are protected; empty fields remain editable.",
+    "deadlineTitle": "Deadline",
     "progressLabel": "{submitted} of {cap} travelers submitted",
     "lockedBanner": "Saved traveler details are protected. You can still fill empty fields and invite companions with missing details. Departure is in {days} days — need to change saved details? {supportLink}",
     "supportLinkLabel": "Contact support",

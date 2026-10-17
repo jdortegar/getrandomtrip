@@ -15,6 +15,7 @@ const copy: InviteTravelersDict = {
   subtitle: "",
   notifTitle: "",
   deadlineLabel: "",
+  deadlineTitle: "",
   progressLabel: "",
   lockedBanner: "",
   supportLinkLabel: "",
@@ -331,6 +332,11 @@ describe("TravelerRow — buyer invite badge (T8)", () => {
   it("says 'No email' for an adult without a saved email", () => {
     renderBadge(baseTraveler({ email: null }));
     expect(container.textContent).toContain("Sin email");
+    const inviteBadge = container.querySelector("[data-invite-state]");
+    expect(inviteBadge?.className).toContain("uppercase");
+    expect(inviteBadge?.className).toContain("px-2.5");
+    expect(inviteBadge?.className).toContain("py-1");
+    expect(inviteBadge?.className).toContain("border");
   });
 
   it("shows 'Invitation sent' with the sent date and keeps Resend invite", () => {
@@ -338,6 +344,8 @@ describe("TravelerRow — buyer invite badge (T8)", () => {
     expect(container.textContent).toContain("Enviada ");
     expect(container.textContent).not.toContain("{date}");
     expect(resend()).not.toBeNull();
+    expect(resend()?.parentElement?.parentElement?.classList.contains("items-center")).toBe(true);
+    expect(resend()?.closest(".grid")?.className).not.toContain("items-end");
   });
 
   it("shows 'Joined' and hides Resend invite once the companion linked an account", () => {
