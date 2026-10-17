@@ -33,6 +33,12 @@ export function resolveAdminPageHeading(
   if (pathname.startsWith(base("/email-campaigns/contacts"))) {
     return headings.emailCampaignContacts;
   }
+  if (pathname.startsWith(base("/email-campaigns/new"))) {
+    return headings.emailCampaignsNew;
+  }
+  if (pathname.match(new RegExp(`^${base("/email-campaigns/")}.+`))) {
+    return headings.emailCampaignDetail;
+  }
   if (pathname.startsWith(base("/email-campaigns"))) {
     return headings.emailCampaigns;
   }

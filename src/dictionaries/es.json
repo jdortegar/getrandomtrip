@@ -646,6 +646,14 @@
         "title": "Contactos de email",
         "description": "Gestiona los contactos que reciben campañas."
       },
+      "emailCampaignsNew": {
+        "title": "Nueva campaña de email",
+        "description": "Redacta la campaña, elige el segmento y vincula un código promocional."
+      },
+      "emailCampaignDetail": {
+        "title": "Campaña de email",
+        "description": "Previsualiza, envía y mide los resultados de la campaña."
+      },
       "xsedNew": {
         "title": "Nuevo XSED drop",
         "description": "Crea o editá un XSED drop."
@@ -1287,6 +1295,150 @@
             "invalidEmail": "Ingresa un email válido."
           }
         }
+      },
+      "editor": {
+        "newEyebrow": "Nueva campaña",
+        "newHeading": "Crear campaña",
+        "editEyebrow": "Borrador",
+        "contentHeading": "Contenido del email",
+        "audienceHeading": "Audiencia y promoción",
+        "fields": {
+          "name": "Nombre interno",
+          "subject": "Asunto",
+          "preheader": "Preencabezado (opcional)",
+          "title": "Título",
+          "body": "Cuerpo (markdown)",
+          "bodyHint": "Formato: **negrita**, [texto](https://enlace) y listas con \"- \". Deja una línea en blanco entre párrafos.",
+          "ctaLabel": "Texto del botón (opcional)",
+          "ctaUrl": "URL del botón (opcional)",
+          "ctaUrlPlaceholder": "https://",
+          "locale": "Idioma",
+          "segment": "Segmento",
+          "segmentHint": "Solo reciben la campaña los contactos suscritos de este idioma."
+        },
+        "create": "Crear campaña",
+        "creating": "Creando…",
+        "save": "Guardar cambios",
+        "saving": "Guardando…",
+        "saved": "Cambios guardados.",
+        "validation": {
+          "required": "Este campo es obligatorio.",
+          "tooLong": "Usa como máximo {max} caracteres.",
+          "ctaUrl": "Ingresa una URL completa que empiece con https://.",
+          "ctaPair": "Completa el texto y la URL del botón, o deja ambos vacíos.",
+          "segment": "Elige al menos un segmento.",
+          "summary": "Revisa los campos marcados."
+        },
+        "promo": {
+          "label": "Código promocional (opcional)",
+          "placeholder": "FUNDADOR30",
+          "hint": "Debe existir en Stripe. Déjalo vacío para enviar sin código.",
+          "lookup": "Buscar",
+          "lookingUp": "Buscando…",
+          "notFound": "No existe un código promocional con ese nombre en Stripe.",
+          "inactive": "Este código está inactivo: no se podrá guardar ni enviar con él.",
+          "error": "No se pudo consultar el código. Intenta de nuevo.",
+          "rulesTitle": "Reglas de {code}",
+          "percentOff": "{n}% de descuento",
+          "amountOff": "{amount} de descuento",
+          "expires": "Vence el {date}",
+          "noExpiry": "Sin vencimiento",
+          "uses": "{used} de {max} usos",
+          "usesUnlimited": "{used} usos, sin límite",
+          "firstTimeOnly": "Solo primera compra",
+          "anyCustomer": "Cualquier cliente",
+          "minimum": "Compra mínima de {amount}",
+          "noMinimum": "Sin compra mínima"
+        },
+        "delete": {
+          "button": "Eliminar borrador",
+          "confirmBody": "¿Eliminar este borrador? Esta acción no se puede deshacer.",
+          "confirm": "Sí, eliminar",
+          "deleting": "Eliminando…",
+          "cancel": "Cancelar"
+        }
+      },
+      "detail": {
+        "eyebrow": "Campaña",
+        "errorLoad": "No se pudo cargar la campaña. Intenta de nuevo.",
+        "notFound": "Esta campaña no existe o fue eliminada.",
+        "backToList": "Volver a campañas",
+        "sentOn": "Enviada el {date}"
+      },
+      "preview": {
+        "heading": "Vista previa",
+        "frameTitle": "Vista previa del email de la campaña",
+        "unsubscribeNote": "El enlace para darse de baja de la vista previa no lleva token: en los envíos reales cada contacto recibe el suyo.",
+        "testSend": "Enviarme una prueba",
+        "testSending": "Enviando prueba…",
+        "testSent": "Prueba enviada a {email}."
+      },
+      "send": {
+        "heading": "Envío",
+        "description": "Se envía la última versión guardada a los contactos suscritos del segmento.",
+        "sendNow": "Enviar ahora",
+        "retry": "Reintentar envíos fallidos",
+        "checking": "Contando destinatarios…",
+        "confirmBody": "La campaña se enviará a {count} destinatarios. El envío es irreversible: no se puede cancelar ni deshacer.",
+        "retryBody": "Se reintentará solo a los destinatarios cuyo envío falló. El envío es irreversible: no se puede cancelar ni deshacer.",
+        "emptyAudience": "Ningún contacto suscrito coincide con este segmento, así que nadie la recibiría.",
+        "confirm": "Confirmar envío",
+        "sending": "Enviando…",
+        "cancel": "Cancelar",
+        "inProgress": "La campaña se está enviando. Recarga en unos minutos para ver el resultado.",
+        "summaryTitle": "Envío terminado: {status}",
+        "summary": "Enviados: {sent} · Fallidos: {failed} · Total: {total}"
+      },
+      "metrics": {
+        "eyebrow": "Resultados",
+        "heading": "Rendimiento",
+        "errorLoad": "No se pudieron cargar las métricas. Intenta de nuevo.",
+        "kpis": {
+          "sent": "Enviados",
+          "delivered": "Entregados",
+          "opens": "Aperturas únicas",
+          "clicks": "Clics únicos",
+          "conversions": "Conversiones atribuidas",
+          "revenue": "Ingresos",
+          "discount": "Descuento total"
+        },
+        "rateHint": "{count} destinatarios",
+        "conversionsHint": "+ {shared} con código compartido",
+        "bounced": "Rebotados",
+        "failed": "Fallidos",
+        "opensNote": "Las aperturas están infladas por Apple Mail (Protección de privacidad de Mail): los clics y las conversiones son las métricas confiables.",
+        "otherCurrency": "{count} conversiones en otra moneda no están incluidas en los ingresos."
+      },
+      "recipients": {
+        "heading": "Destinatarios",
+        "empty": "Todavía no hay destinatarios para esta campaña.",
+        "columns": {
+          "email": "Email",
+          "name": "Nombre",
+          "status": "Estado",
+          "opened": "Abrió",
+          "clicked": "Hizo clic",
+          "purchased": "Compró"
+        },
+        "yes": "Sí",
+        "no": "No",
+        "status": {
+          "BOUNCED": "Rebotado",
+          "DELIVERED": "Entregado",
+          "FAILED": "Fallido",
+          "QUEUED": "En cola",
+          "SENT": "Enviado"
+        }
+      },
+      "errors": {
+        "generic": "Algo salió mal. Intenta de nuevo.",
+        "validation": "Hay datos inválidos. Revisa los campos e intenta de nuevo.",
+        "notFound": "La campaña no existe o fue eliminada.",
+        "notEditable": "La campaña ya no es un borrador, así que no se puede editar ni eliminar.",
+        "invalidPromo": "El código promocional no existe o está inactivo en Stripe.",
+        "adminEmailMissing": "Tu cuenta no tiene un email para recibir la prueba.",
+        "notSendable": "La campaña ya se está enviando o ya fue enviada.",
+        "emptyAudience": "No hay contactos suscritos en este segmento."
       }
     },
     "waitlist": {

@@ -336,3 +336,45 @@ export interface ResendTrackingEvent {
  * `duplicate` a redelivery of an already recorded event.
  */
 export type ResendEventOutcome = "recorded" | "duplicate" | "unknown_email";
+
+/**
+ * Admin campaign editor state. Text fields hold the raw input; they are
+ * trimmed and blank optionals become `null` when building `CampaignInput`.
+ */
+export interface CampaignFormValues {
+  name: string;
+  subject: string;
+  preheader: string;
+  title: string;
+  bodyMarkdown: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  locale: CampaignLocale;
+  segmentSources: ContactSource[];
+  promoCode: string;
+}
+
+export type CampaignFormField = keyof CampaignFormValues;
+
+/** Client-side validation failure for one editor field. */
+export type CampaignFormIssue =
+  | { kind: "required" }
+  | { kind: "tooLong"; max: number }
+  | { kind: "ctaUrl" }
+  | { kind: "ctaPair" }
+  | { kind: "segment" };
+
+export type CampaignFormIssues = Partial<Record<CampaignFormField, CampaignFormIssue>>;
+
+/**
+ * A failed admin campaign API call as the UI reports it: a known domain code,
+ * a 400 payload validation failure, or anything else (`generic`).
+ */
+export type CampaignApiFailure = CampaignErrorCode | "validation" | "generic";
+
+/** Result of the editor's promo code lookup. */
+export type PromoLookupState =
+  | { status: "idle" }
+  | { status: "found"; promo: PromotionCodeSummary }
+  | { status: "notFound" }
+  | { status: "error" };

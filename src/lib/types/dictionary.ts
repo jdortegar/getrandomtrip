@@ -1655,6 +1655,8 @@ export interface AdminDashboardDict {
     blogNew: { description: string; title: string };
     emailCampaignContacts: { description: string; title: string };
     emailCampaigns: { description: string; title: string };
+    emailCampaignsNew: { description: string; title: string };
+    emailCampaignDetail: { description: string; title: string };
     experiences: { description: string; title: string };
     experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
@@ -1950,6 +1952,160 @@ export interface EmailCampaignsAdminDict {
         invalidEmail: string;
       };
     };
+  };
+  editor: {
+    newEyebrow: string;
+    newHeading: string;
+    editEyebrow: string;
+    contentHeading: string;
+    audienceHeading: string;
+    fields: {
+      name: string;
+      subject: string;
+      preheader: string;
+      title: string;
+      body: string;
+      bodyHint: string;
+      ctaLabel: string;
+      ctaUrl: string;
+      ctaUrlPlaceholder: string;
+      locale: string;
+      segment: string;
+      segmentHint: string;
+    };
+    create: string;
+    creating: string;
+    save: string;
+    saving: string;
+    saved: string;
+    /** `tooLong` interpolates `{max}`. */
+    validation: {
+      required: string;
+      tooLong: string;
+      ctaUrl: string;
+      ctaPair: string;
+      segment: string;
+      summary: string;
+    };
+    /** Templates interpolate `{code}`, `{n}`, `{amount}`, `{date}`, `{used}`, `{max}`. */
+    promo: {
+      label: string;
+      placeholder: string;
+      hint: string;
+      lookup: string;
+      lookingUp: string;
+      notFound: string;
+      inactive: string;
+      error: string;
+      rulesTitle: string;
+      percentOff: string;
+      amountOff: string;
+      expires: string;
+      noExpiry: string;
+      uses: string;
+      usesUnlimited: string;
+      firstTimeOnly: string;
+      anyCustomer: string;
+      minimum: string;
+      noMinimum: string;
+    };
+    delete: {
+      button: string;
+      confirmBody: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
+    };
+  };
+  detail: {
+    eyebrow: string;
+    errorLoad: string;
+    notFound: string;
+    backToList: string;
+    /** Interpolates `{date}`. */
+    sentOn: string;
+  };
+  preview: {
+    heading: string;
+    frameTitle: string;
+    unsubscribeNote: string;
+    testSend: string;
+    testSending: string;
+    /** Interpolates `{email}`. */
+    testSent: string;
+  };
+  /** `confirmBody` interpolates `{count}`; summary templates `{status}`, `{sent}`, `{failed}`, `{total}`. */
+  send: {
+    heading: string;
+    description: string;
+    sendNow: string;
+    retry: string;
+    checking: string;
+    confirmBody: string;
+    retryBody: string;
+    emptyAudience: string;
+    confirm: string;
+    sending: string;
+    cancel: string;
+    inProgress: string;
+    summaryTitle: string;
+    summary: string;
+  };
+  metrics: {
+    eyebrow: string;
+    heading: string;
+    errorLoad: string;
+    kpis: {
+      sent: string;
+      delivered: string;
+      opens: string;
+      clicks: string;
+      conversions: string;
+      revenue: string;
+      discount: string;
+    };
+    /** Interpolates `{count}`. */
+    rateHint: string;
+    /** Interpolates `{shared}`. */
+    conversionsHint: string;
+    bounced: string;
+    failed: string;
+    opensNote: string;
+    /** Interpolates `{count}`. */
+    otherCurrency: string;
+  };
+  recipients: {
+    heading: string;
+    empty: string;
+    columns: {
+      email: string;
+      name: string;
+      status: string;
+      opened: string;
+      clicked: string;
+      purchased: string;
+    };
+    yes: string;
+    no: string;
+    /** Keyed by `CampaignSendStatus`. */
+    status: {
+      BOUNCED: string;
+      DELIVERED: string;
+      FAILED: string;
+      QUEUED: string;
+      SENT: string;
+    };
+  };
+  /** Localized admin campaign API failures. */
+  errors: {
+    generic: string;
+    validation: string;
+    notFound: string;
+    notEditable: string;
+    invalidPromo: string;
+    adminEmailMissing: string;
+    notSendable: string;
+    emptyAudience: string;
   };
 }
 

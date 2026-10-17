@@ -30,6 +30,17 @@ describe("dashboardPageMetadata", () => {
     expect(contacts.title).toBe(es.adminDashboard.pageHeadings.emailCampaignContacts.title);
   });
 
+  it("resolves the new campaign and campaign detail routes", async () => {
+    const created = await dashboardPageMetadata("/dashboard/admin/email-campaigns/new")(
+      params("es"),
+    );
+    const detail = await dashboardPageMetadata("/dashboard/admin/email-campaigns/x")(
+      params("en"),
+    );
+    expect(created.title).toBe(es.adminDashboard.pageHeadings.emailCampaignsNew.title);
+    expect(detail.title).toBe(en.adminDashboard.pageHeadings.emailCampaignDetail.title);
+  });
+
   it("gives different routes different titles", async () => {
     const a = await dashboardPageMetadata("/dashboard/tripper/blog")(params("en"));
     const b = await dashboardPageMetadata("/dashboard/tripper/experiences")(params("en"));

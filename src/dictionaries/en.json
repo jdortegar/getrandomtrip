@@ -646,6 +646,14 @@
         "title": "Email contacts",
         "description": "Manage the contacts who receive campaigns."
       },
+      "emailCampaignsNew": {
+        "title": "New email campaign",
+        "description": "Write the campaign, choose its segment and link a promo code."
+      },
+      "emailCampaignDetail": {
+        "title": "Email campaign",
+        "description": "Preview, send and measure the campaign results."
+      },
       "xsedNew": {
         "title": "New TGIS Drop",
         "description": "Create or edit a TGIS drop."
@@ -1287,6 +1295,150 @@
             "invalidEmail": "Enter a valid email."
           }
         }
+      },
+      "editor": {
+        "newEyebrow": "New campaign",
+        "newHeading": "Create campaign",
+        "editEyebrow": "Draft",
+        "contentHeading": "Email content",
+        "audienceHeading": "Audience and promo",
+        "fields": {
+          "name": "Internal name",
+          "subject": "Subject",
+          "preheader": "Preheader (optional)",
+          "title": "Title",
+          "body": "Body (markdown)",
+          "bodyHint": "Formatting: **bold**, [text](https://link) and lists with \"- \". Leave a blank line between paragraphs.",
+          "ctaLabel": "Button text (optional)",
+          "ctaUrl": "Button URL (optional)",
+          "ctaUrlPlaceholder": "https://",
+          "locale": "Language",
+          "segment": "Segment",
+          "segmentHint": "Only subscribed contacts in this language receive the campaign."
+        },
+        "create": "Create campaign",
+        "creating": "Creating…",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saved": "Changes saved.",
+        "validation": {
+          "required": "This field is required.",
+          "tooLong": "Use at most {max} characters.",
+          "ctaUrl": "Enter a full URL starting with https://.",
+          "ctaPair": "Fill in both the button text and URL, or leave both empty.",
+          "segment": "Choose at least one segment.",
+          "summary": "Check the highlighted fields."
+        },
+        "promo": {
+          "label": "Promo code (optional)",
+          "placeholder": "FUNDADOR30",
+          "hint": "It must exist in Stripe. Leave it empty to send without a code.",
+          "lookup": "Look up",
+          "lookingUp": "Looking up…",
+          "notFound": "No promotion code with that name exists in Stripe.",
+          "inactive": "This code is inactive: the campaign cannot be saved or sent with it.",
+          "error": "The code could not be checked. Please try again.",
+          "rulesTitle": "{code} rules",
+          "percentOff": "{n}% off",
+          "amountOff": "{amount} off",
+          "expires": "Expires {date}",
+          "noExpiry": "No expiry",
+          "uses": "{used} of {max} uses",
+          "usesUnlimited": "{used} uses, no limit",
+          "firstTimeOnly": "First purchase only",
+          "anyCustomer": "Any customer",
+          "minimum": "Minimum order {amount}",
+          "noMinimum": "No minimum order"
+        },
+        "delete": {
+          "button": "Delete draft",
+          "confirmBody": "Delete this draft? This cannot be undone.",
+          "confirm": "Yes, delete",
+          "deleting": "Deleting…",
+          "cancel": "Cancel"
+        }
+      },
+      "detail": {
+        "eyebrow": "Campaign",
+        "errorLoad": "The campaign could not be loaded. Please try again.",
+        "notFound": "This campaign does not exist or was deleted.",
+        "backToList": "Back to campaigns",
+        "sentOn": "Sent {date}"
+      },
+      "preview": {
+        "heading": "Preview",
+        "frameTitle": "Campaign email preview",
+        "unsubscribeNote": "The preview's unsubscribe link carries no token: in real sends every contact gets their own.",
+        "testSend": "Send test to me",
+        "testSending": "Sending test…",
+        "testSent": "Test sent to {email}."
+      },
+      "send": {
+        "heading": "Sending",
+        "description": "Sends the last saved version to the segment's subscribed contacts.",
+        "sendNow": "Send now",
+        "retry": "Retry failed sends",
+        "checking": "Counting recipients…",
+        "confirmBody": "This campaign will be sent to {count} recipients. Sending is irreversible: it cannot be cancelled or undone.",
+        "retryBody": "Only recipients whose send failed will be retried. Sending is irreversible: it cannot be cancelled or undone.",
+        "emptyAudience": "No subscribed contact matches this segment, so nobody would receive it.",
+        "confirm": "Confirm send",
+        "sending": "Sending…",
+        "cancel": "Cancel",
+        "inProgress": "This campaign is being sent. Reload in a few minutes to see the result.",
+        "summaryTitle": "Send finished: {status}",
+        "summary": "Sent: {sent} · Failed: {failed} · Total: {total}"
+      },
+      "metrics": {
+        "eyebrow": "Results",
+        "heading": "Performance",
+        "errorLoad": "The metrics could not be loaded. Please try again.",
+        "kpis": {
+          "sent": "Sent",
+          "delivered": "Delivered",
+          "opens": "Unique opens",
+          "clicks": "Unique clicks",
+          "conversions": "Attributed conversions",
+          "revenue": "Revenue",
+          "discount": "Total discount"
+        },
+        "rateHint": "{count} recipients",
+        "conversionsHint": "+ {shared} via shared code",
+        "bounced": "Bounced",
+        "failed": "Failed",
+        "opensNote": "Opens are inflated by Apple Mail Privacy Protection: clicks and conversions are the reliable metrics.",
+        "otherCurrency": "{count} conversions in another currency are not included in revenue."
+      },
+      "recipients": {
+        "heading": "Recipients",
+        "empty": "This campaign has no recipients yet.",
+        "columns": {
+          "email": "Email",
+          "name": "Name",
+          "status": "Status",
+          "opened": "Opened",
+          "clicked": "Clicked",
+          "purchased": "Purchased"
+        },
+        "yes": "Yes",
+        "no": "No",
+        "status": {
+          "BOUNCED": "Bounced",
+          "DELIVERED": "Delivered",
+          "FAILED": "Failed",
+          "QUEUED": "Queued",
+          "SENT": "Sent"
+        }
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "validation": "Some data is invalid. Check the fields and try again.",
+        "notFound": "The campaign does not exist or was deleted.",
+        "notEditable": "The campaign is no longer a draft, so it cannot be edited or deleted.",
+        "invalidPromo": "The promo code does not exist or is inactive in Stripe.",
+        "adminEmailMissing": "Your account has no email to receive the test.",
+        "notSendable": "The campaign is already being sent or was already sent.",
+        "emptyAudience": "There are no subscribed contacts in this segment."
       }
     },
     "waitlist": {
