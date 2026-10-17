@@ -13,9 +13,14 @@ export interface FaqBlockDict {
 interface FaqBlockProps {
   className?: string;
   copy: FaqBlockDict;
+  showDescription?: boolean;
 }
 
-export function FaqBlock({ className = "pt-0!", copy }: FaqBlockProps) {
+export function FaqBlock({
+  className = "pt-0!",
+  copy,
+  showDescription = true,
+}: FaqBlockProps) {
   const items: FaqItem[] = copy.items.map((item) => ({
     answer: item.answer,
     question: item.question,
@@ -32,9 +37,11 @@ export function FaqBlock({ className = "pt-0!", copy }: FaqBlockProps) {
             {copy.title}
           </h2>
         </div>
-        <p className="max-w-sm text-sm leading-relaxed text-ink">
-          {copy.description}
-        </p>
+        {showDescription ? (
+          <p className="max-w-sm text-sm leading-relaxed text-ink">
+            {copy.description}
+          </p>
+        ) : null}
       </div>
       <FaqSection items={items} />
     </Section>
