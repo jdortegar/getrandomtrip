@@ -94,6 +94,7 @@ export default function TypePlanner({
           return (
             <div className="w-full min-w-0 pb-3 pt-4" key={level.id}>
               <LevelCard
+                ctaSelects={Boolean(onSelect) && !navigateOnCardClick}
                 featured={isFeatured}
                 level={level}
                 navigateOnCardClick={navigateOnCardClick}

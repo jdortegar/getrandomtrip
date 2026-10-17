@@ -101,10 +101,9 @@ function expectWhiteAndOffWhitePalette() {
     ).toBe(true);
     expect(card.querySelector("h3")?.classList.contains("text-ink")).toBe(true);
     expect(card.querySelector(".text-ground")).toBeNull();
-    expect(card.querySelector("a")?.classList.contains("text-ink")).toBe(true);
-    expect(card.querySelector("a")?.classList.contains("text-white")).toBe(
-      false,
-    );
+    const cta = card.querySelector("a, button");
+    expect(cta?.classList.contains("text-ink")).toBe(true);
+    expect(cta?.classList.contains("text-white")).toBe(false);
   }
 }
 
@@ -224,7 +223,12 @@ it("keeps default planner levels, tripper badges, selection and ordinary card na
     false,
   ]);
   expectWhiteAndOffWhitePalette();
-  expect(cards()[0].querySelector("a")?.dataset.scroll).toBe("true");
+  expect(cards()[0].querySelector("a")).toBeNull();
+  const selectCta = cards()[0].querySelector("button");
+  act(() => selectCta?.click());
+  expect(onSelect).toHaveBeenCalledWith("essenza");
+  expect(navigation.push).not.toHaveBeenCalled();
+  onSelect.mockClear();
   expect(cards()[0].textContent).toContain(
     en.journey.tripperBadge.byRandomtrip,
   );

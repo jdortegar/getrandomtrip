@@ -21,6 +21,52 @@ beforeEach(() => {
 });
 afterEach(() => act(() => root.unmount()));
 
+it("places the selected check inside the card above the pretitle", () => {
+  act(() => root.render(<LevelCard level={level} selected />));
+  const card = container.querySelector('[data-component="LevelCard"]')!;
+  const check = card.querySelector(".absolute.right-2.top-2");
+  expect(check).not.toBeNull();
+  expect(card.classList.contains("pt-[22px]")).toBe(true);
+  expect(card.className).not.toContain("pt-14");
+});
+
+it("selects the level from the CTA instead of opening the journey", () => {
+  const onSelect = vi.fn();
+  act(() =>
+    root.render(
+      <LevelCard
+        ctaSelects
+        level={level}
+        onSelect={onSelect}
+        travelerType="couple"
+      />,
+    ),
+  );
+  expect(container.querySelector("a")).toBeNull();
+  act(() => container.querySelector("button")?.click());
+  expect(onSelect).toHaveBeenCalledWith(level.id);
+});
+
+it("keeps the journey link when the card navigates on click", () => {
+  const onSelect = vi.fn();
+  act(() =>
+    root.render(
+      <LevelCard
+        level={level}
+        navigateOnCardClick
+        onSelect={onSelect}
+        travelerType="couple"
+      />,
+    ),
+  );
+  const link = container.querySelector("a")!;
+  expect(link.getAttribute("href")).toContain(
+    `/journey?travelType=couple&experience=${level.id}`,
+  );
+  act(() => link.click());
+  expect(onSelect).not.toHaveBeenCalled();
+});
+
 it("keeps an XSED level title as plain text with the regular card palette", () => {
   act(() => root.render(<LevelCard level={{ ...level, id: "xsed", name: "XSED" }} />));
   const title = container.querySelector("h3");
