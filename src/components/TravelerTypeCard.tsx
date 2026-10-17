@@ -92,14 +92,6 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
       {...(isButton ? { disabled, type: "button" as const } : { href })}
       data-component="TravelerTypeCard"
     >
-      {selected && (
-        <div className="absolute right-[-14px] top-0 z-30">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
-            <Check className="h-5 w-5 text-white" strokeWidth={3} />
-          </div>
-        </div>
-      )}
-
       <div
         className={cn(
           "relative rounded-2xl overflow-hidden transition-all duration-300",
@@ -107,6 +99,13 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
           selected && "ring-4 ring-primary",
         )}
       >
+        {selected && (
+          <div className="absolute right-2 top-2 z-30">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+              <Check className="h-5 w-5 text-white" strokeWidth={3} />
+            </div>
+          </div>
+        )}
         <Image
           alt={title}
           className="transition-transform duration-300 group-hover:scale-110"
@@ -119,7 +118,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
         />
         <div className="absolute inset-0 z-10 rounded-2xl bg-linear-to-t from-black/75 to-transparent" />
 
-        <ReviewBadge rating="4.6" />
+        <ReviewBadge
+          className={selected ? "right-14" : undefined}
+          rating="4.6"
+        />
 
         <div className="absolute inset-x-0 bottom-0 z-20 w-full p-5 text-left text-white">
           {tripperBadge ? (

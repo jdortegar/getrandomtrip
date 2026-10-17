@@ -17,6 +17,7 @@ const copy: InviteTravelersDict = {
   subtitle: "{count} viajeros",
   notifTitle: "",
   deadlineLabel: "Antes del {date}",
+  deadlineTitle: "Plazo",
   progressLabel: "{submitted} de {cap} viajeros completados",
   lockedBanner: "Bloqueado hace {days} días {supportLink}",
   supportLinkLabel: "soporte",
@@ -209,8 +210,12 @@ describe("TravelerRosterSection — saveAll() result", () => {
 describe("TravelerRosterSection — locked banner days", () => {
   it("formats the seven-calendar-day deadline in UTC rather than the preceding local day", () => {
     render(roster([traveler()], { startDate: "2026-10-09T00:00:00.000Z", deadline: "2026-10-02T00:00:00.000Z" }));
+    expect(container.textContent).toContain("Plazo");
     expect(container.textContent).toContain("Antes del 2 oct");
     expect(container.textContent).not.toContain("Antes del 1 oct");
+    const support = container.querySelector("a");
+    expect(support?.className).toContain("text-secondary");
+    expect(support?.className).toContain("hover:text-primary");
   });
 
   it("shows real days-until-departure, not days since the roster deadline", () => {

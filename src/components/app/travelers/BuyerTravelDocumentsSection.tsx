@@ -130,7 +130,7 @@ export function BuyerTravelDocumentsSection({
             aria-busy={saving}
             disabled={saving}
             onClick={() => void handleSave()}
-            size="lg"
+            size="sm"
             variant="default"
           >
             {saving && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}

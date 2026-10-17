@@ -2788,6 +2788,7 @@ export interface InviteTravelersDict {
   subtitle: string;
   notifTitle: string;
   deadlineLabel: string;
+  deadlineTitle: string;
   progressLabel: string;
   lockedBanner: string;
   supportLinkLabel: string;

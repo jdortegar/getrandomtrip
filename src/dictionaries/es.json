@@ -6121,6 +6121,7 @@
     "subtitle": "Reservaste para {count} viajeros. Carga los datos de cada acompañante ahora, o enviales una invitación para que los completen ellos mismos — de cualquier forma, los necesitamos antes de poder confirmar el itinerario.",
     "notifTitle": "Un acompañante completó sus datos de viaje",
     "deadlineLabel": "Completá antes del {date}, {hours} horas antes de la salida. Después, los datos guardados quedan protegidos; los campos vacíos siguen disponibles.",
+    "deadlineTitle": "Fecha límite",
     "progressLabel": "{submitted} de {cap} viajeros completados",
     "lockedBanner": "Los datos guardados están protegidos. Podés completar campos vacíos e invitar acompañantes con datos pendientes. Faltan {days} días para la salida. ¿Necesitás cambiar datos guardados? {supportLink}",
     "supportLinkLabel": "Contacta a soporte",

@@ -31,4 +31,15 @@ describe("FaqBlock spacing", () => {
     expect(classes).toContain("md:py-32");
     expect(container.textContent).toContain(copy.items[0].question);
   });
+
+  it("omits the description when tripper copy is hidden", () => {
+    const container = document.createElement("div");
+    container.innerHTML = renderToStaticMarkup(
+      <FaqBlock copy={copy} showDescription={false} />,
+    );
+
+    expect(container.textContent).not.toContain(copy.description);
+    expect(container.textContent).toContain(copy.title);
+    expect(container.textContent).toContain(copy.items[0].question);
+  });
 });

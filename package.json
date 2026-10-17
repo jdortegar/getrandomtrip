@@ -16,6 +16,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma db push",
+    "db:migrate-if-outdated": "tsx scripts/migrate-if-outdated.ts",
     "db:studio": "prisma studio",
     "db:grant-all-roles": "npx tsx scripts/grant-all-roles-to-all-users.ts",
     "db:backfill-source": "npx tsx scripts/backfill-experience-source.ts",

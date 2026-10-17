@@ -25,6 +25,8 @@ interface LevelCardProps {
   /** Custom text for the top-edge badge; overrides the featured "most chosen" badge. */
   badgeLabel?: string;
   ctaClassName?: string;
+  /** When true, the CTA selects the level instead of linking to the journey. */
+  ctaSelects?: boolean;
   featured?: boolean;
   /** Explicit destination for a standalone product; regular levels keep their default route. */
   href?: string;
@@ -64,6 +66,7 @@ const FEATURE_ICONS: Record<
 export default function LevelCard({
   badgeLabel,
   ctaClassName,
+  ctaSelects = false,
   featured = false,
   href,
   level,
@@ -99,6 +102,7 @@ export default function LevelCard({
   const dividerColor = "border-gray-200";
   const priceDividerColor = "bg-feature";
   const secondaryTextColor = "text-gray-600";
+  const selectsInPlace = ctaSelects && Boolean(onSelect);
 
   const handleClick = () => {
     if (navigateOnCardClick) {
@@ -111,7 +115,8 @@ export default function LevelCard({
   return (
     <div
       className={cn(
-        "relative flex h-full w-full flex-col rounded-xl border-4 px-5 pb-5 pt-[22px] transition-all duration-300 @[250px]:px-6 @[250px]:pb-6 @[250px]:pt-[26px]",
+        "relative flex h-full w-full flex-col rounded-xl border-4 px-5 pb-5 pt-[22px] transition-all duration-300",
+        "@[250px]:px-6 @[250px]:pb-6 @[250px]:pt-[26px]",
         bgColor,
         borderColor,
         featured && "shadow-lg",
@@ -130,9 +135,8 @@ export default function LevelCard({
         />
       )}
 
-      {/* Selected Checkmark - Top Right */}
       {selected && (
-        <div className="absolute right-[-9.8px] -top-2 z-10 @[250px]:right-[-14px] @[250px]:-top-3">
+        <div className="absolute right-2 top-2 z-30">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
             <Check className="h-5 w-5 text-white" strokeWidth={3} />
           </div>
@@ -253,20 +257,34 @@ export default function LevelCard({
       </div>
 
       <div className="mt-3">
-        <Button
-          asChild
-          className={cn("w-full", ctaClassName)}
-          variant="feature"
-        >
-          <Link
-            className="uppercase"
-            href={ctaHref}
-            onClick={(e) => e.stopPropagation()}
-            scroll={href !== undefined || !navigateOnCardClick}
+        {selectsInPlace ? (
+          <Button
+            className={cn("w-full text-ink", ctaClassName)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect?.(level.id);
+            }}
+            type="button"
+            variant="feature"
           >
             {level.ctaLabel}
-          </Link>
-        </Button>
+          </Button>
+        ) : (
+          <Button
+            asChild
+            className={cn("w-full text-ink", ctaClassName)}
+            variant="feature"
+          >
+            <Link
+              className="uppercase"
+              href={ctaHref}
+              onClick={(event) => event.stopPropagation()}
+              scroll={href !== undefined || !navigateOnCardClick}
+            >
+              {level.ctaLabel}
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );
