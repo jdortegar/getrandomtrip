@@ -120,6 +120,8 @@ model User {
   tripTravelers           TripTraveler[]
   tripDocumentsUploaded   TripDocument[]       @relation("TripDocumentsUploaded")
   tripContactMessagesSent TripContactMessage[] @relation("TripContactMessagesSent")
+  contacts                Contact[]
+  campaignsCreated        Campaign[]           @relation("CampaignCreatedBy")
 
   @@map("users")
 }
@@ -554,6 +556,11 @@ model Payment {
   paidAt    DateTime? // When payment was completed
   expiresAt DateTime? // When payment preference expires
 
+  // Promo attribution, copied from PaymentIntent metadata on settlement
+  promoCode             String? // Code the buyer typed, uppercased (e.g. 'FUNDADOR30')
+  stripePromotionCodeId String? // Stripe promotion code id ('promo_...')
+
+  @@index([stripePromotionCodeId])
   @@map("payments")
 }
 
@@ -977,4 +984,121 @@ model XsedNotificationSignup {
   @@index([createdAt])
   @@index([lastNotifiedAt])
   @@map("xsed_notification_signups")
+}
+
+// ============================================================================
+// EMAIL CAMPAIGNS (admin marketing email)
+// ============================================================================
+
+enum ContactSource {
+  WAITLIST
+  FRIENDS_FAMILY
+}
+
+enum ContactStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+  BOUNCED
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENDING
+  SENT
+  PARTIAL
+}
+
+enum CampaignSendStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+}
+
+enum EmailEventType {
+  DELIVERED
+  BOUNCED
+  COMPLAINED
+  OPENED
+  CLICKED
+}
+
+model Contact {
+  id             String        @id @default(cuid())
+  email          String        @unique // Always stored lowercase
+  name           String?
+  source         ContactSource
+  status         ContactStatus @default(SUBSCRIBED)
+  locale         String        @default("es") // "es" | "en"; campaign segment filter
+  tags           String[]      @default([])
+  userId         String? // Linked by email when a matching account exists
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  unsubscribedAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  sends CampaignSend[]
+
+  @@index([source, status])
+  @@map("contacts")
+}
+
+model Campaign {
+  id                    String          @id @default(cuid())
+  name                  String // Internal admin label
+  subject               String
+  preheader             String?
+  title                 String
+  bodyMarkdown          String          @db.Text
+  ctaLabel              String?
+  ctaUrl                String?
+  locale                String // "es" | "en"; one locale per campaign
+  segmentSources        ContactSource[]
+  stripePromotionCodeId String? // Optional Stripe promotion code ('promo_...')
+  promoCode             String? // Its customer-facing code, e.g. 'FUNDADOR30'
+  status                CampaignStatus  @default(DRAFT)
+  sentAt                DateTime?
+  createdById           String?
+  createdBy             User?           @relation("CampaignCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  sends CampaignSend[]
+
+  @@map("campaigns")
+}
+
+model CampaignSend {
+  id              String             @id @default(cuid())
+  campaignId      String
+  campaign        Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contactId       String
+  contact         Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  email           String // Recipient snapshot at send time
+  resendMessageId String?            @unique
+  status          CampaignSendStatus @default(QUEUED)
+  error           String?
+  sentAt          DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  events EmailEvent[]
+
+  @@unique([campaignId, contactId])
+  @@map("campaign_sends")
+}
+
+model EmailEvent {
+  id              String         @id @default(cuid())
+  sendId          String
+  send            CampaignSend   @relation(fields: [sendId], references: [id], onDelete: Cascade)
+  type            EmailEventType
+  metadata        Json?
+  providerEventId String?        @unique // Webhook delivery id, for idempotency
+  occurredAt      DateTime
+  createdAt       DateTime       @default(now())
+
+  @@index([sendId, type])
+  @@map("email_events")
 }

@@ -370,4 +370,37 @@ describe("Stripe webhook payment identity", () => {
     expect(sales).toHaveLength(0);
     expect(runSaleNotificationBatch).not.toHaveBeenCalled();
   });
+
+  describe("promo code attribution", () => {
+    const promo = { promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123" };
+
+    it("stores the promo code with the settlement", async () => {
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ status: "APPROVED", ...promo });
+    });
+
+    it("backfills the promo code when the client fallback settled first", async () => {
+      Object.assign(row, { status: "APPROVED", stripePromotionCodeId: null, promoCode: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ status: "APPROVED", ...promo });
+      expect(sendBookingConfirmed).not.toHaveBeenCalled();
+      expect(sales).toHaveLength(0);
+    });
+
+    it("never backfills a promo code onto a replaced intent", async () => {
+      Object.assign(row, { status: "APPROVED", stripePaymentIntentId: "pi_new", stripePromotionCodeId: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row.stripePromotionCodeId).toBeNull();
+      expect(db.payment.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("does not touch a settled payment when the event carries no promo", async () => {
+      Object.assign(row, { status: "APPROVED", stripePromotionCodeId: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(db.payment.updateMany).not.toHaveBeenCalled();
+    });
+  });
 });

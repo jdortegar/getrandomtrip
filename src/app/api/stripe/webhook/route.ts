@@ -59,7 +59,12 @@ export async function POST(request: NextRequest) {
       case "payment_intent.canceled": {
         const intent = event.data.object as Stripe.PaymentIntent;
         const newStatus = STRIPE_STATUS_MAP[intent.status] ?? "PENDING";
+        // Checkout writes "" when no promo applies; only a settled intent is attributed.
+        const succeeded = intent.status === "succeeded";
         const updateData: UpdatePaymentData = {
+          promoCode: (succeeded && intent.metadata?.promoCode) || undefined,
+          stripePromotionCodeId:
+            (succeeded && intent.metadata?.promoCodeId) || undefined,
           status: newStatus,
           providerPaymentId: intent.id,
           stripePaymentIntentId: intent.id,

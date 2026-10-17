@@ -32,6 +32,10 @@ export interface UpdatePaymentData {
   feeAmount?: number;
   taxAmount?: number;
   paidAt?: Date;
+  /** Checkout promo code from PaymentIntent metadata, for campaign attribution. */
+  promoCode?: string;
+  /** Stripe promotion code id (`promo_...`) from PaymentIntent metadata. */
+  stripePromotionCodeId?: string;
   providerResponse?: any;
   webhookData?: any;
 }
@@ -215,6 +219,21 @@ export async function updatePaymentFromStripeWebhook(
     (!repairsApprovedBooking && payment.status === updateData.status) ||
     (payment.stripePaymentIntentId !== null && payment.stripePaymentIntentId !== stripePaymentIntentId)
   ) {
+    // The client confirm-payment fallback often settles first without promo
+    // metadata; the later webhook still attributes the code to the same intent.
+    if (
+      updateData.stripePromotionCodeId &&
+      payment.stripePromotionCodeId == null &&
+      payment.stripePaymentIntentId === stripePaymentIntentId
+    ) {
+      await prisma.payment.updateMany({
+        where: { id: payment.id, stripePaymentIntentId, stripePromotionCodeId: null },
+        data: {
+          promoCode: updateData.promoCode,
+          stripePromotionCodeId: updateData.stripePromotionCodeId,
+        },
+      });
+    }
     return payment;
   }
 
