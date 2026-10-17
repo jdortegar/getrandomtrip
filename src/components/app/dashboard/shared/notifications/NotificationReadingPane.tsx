@@ -51,7 +51,7 @@ export function NotificationReadingPane({
 
   return (
     <div
-      className="flex min-h-0 flex-1 flex-col"
+      className="flex min-h-0 flex-1 flex-col text-left"
       data-component="NotificationReadingPane"
     >
       <div className="p-6 pb-4">
@@ -74,7 +74,7 @@ export function NotificationReadingPane({
         one-line message leaves the action buttons crammed right under the
         text on desktop.
       */}
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 sm:min-h-56">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 sm:min-h-56">
         {body && <p className="text-sm leading-relaxed text-ink">{body}</p>}
 
         {href && (
@@ -112,7 +112,7 @@ export function NotificationReadingPane({
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-center gap-2">
           <Button
             disabled={!canPrev || busy}
             onClick={onPrev}
