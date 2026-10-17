@@ -1,5 +1,39 @@
-import type { BlogFormDraft } from "@/types/blog";
+import type { BlogFormDraft, ContentLocale } from "@/types/blog";
 import type { FieldPeek } from "@/components/ui/field-peek";
+import { isContentLocale } from "./locales";
+import {
+  LEGACY_TRANSLATIONS_TOKEN,
+  LOCALIZED_BLOG_FIELDS,
+  isLocalizedBlogField,
+} from "./review-fields";
+
+/** Editor fields flagged by one stored changedFields token in `locale`. */
+function fieldsForToken(token: string, locale: ContentLocale): readonly string[] {
+  const separator = token.indexOf(".");
+  if (separator > 0 && isContentLocale(token.slice(0, separator))) {
+    if (token.slice(0, separator) !== locale) return [];
+    const field = token.slice(separator + 1);
+    return field === "*" ? LOCALIZED_BLOG_FIELDS : [field];
+  }
+  // Tokens stored before per-locale diffs: the whole English JSON, or a
+  // Spanish column.
+  if (token === LEGACY_TRANSLATIONS_TOKEN)
+    return locale === "en" ? LOCALIZED_BLOG_FIELDS : [];
+  if (isLocalizedBlogField(token)) return locale === "es" ? [token] : [];
+  return [token];
+}
+
+/**
+ * Maps stored `changedFields` tokens (`<locale>.<field>`, `<locale>.*`,
+ * shared field names, and legacy tokens) to the editor field names changed
+ * in the displayed `locale`, deduplicated in token order.
+ */
+export function resolveBlogChangedFieldsForLocale(
+  tokens: readonly string[],
+  locale: ContentLocale,
+): string[] {
+  return [...new Set(tokens.flatMap((token) => fieldsForToken(token, locale)))];
+}
 
 export interface ResolveBlogFieldPeekArgs {
   field: keyof BlogFormDraft;

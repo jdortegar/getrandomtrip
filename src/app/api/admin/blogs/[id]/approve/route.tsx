@@ -72,15 +72,14 @@ export async function POST(
       // Copy-based approve: overwrite + delete copy in transaction
 
       updated = await (prisma.$transaction as any)(async (tx: any) => {
+        // Overwrites legacy columns + translation rows from the copy; an
+        // incomplete source translation throws and rolls everything back.
         const result = await overwriteOriginalWithCopy(tx, params.id, existingCopy.id);
 
         const finalResult = await (tx.blogPost.update as any)({
           where: { id: params.id },
           data: { reviewNote },
         });
-        // Publishing requires a complete source translation; throwing here
-        // rolls the overwrite back. Full review-row cloning lands with T5.
-        await syncTranslationsForPost(tx, params.id, { requireCompleteSource: true });
 
         await (tx.blogPost.delete as any)({ where: { id: existingCopy.id } });
         return finalResult ?? result;

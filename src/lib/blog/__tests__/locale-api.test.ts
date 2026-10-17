@@ -26,9 +26,13 @@ vi.mock("@/lib/prisma", () => {
 });
 vi.mock("@/lib/blog/blogRepository", () => ({
   syncTranslationsFromLegacy: vi.fn(),
+  overwriteTranslationsFromCopy: vi.fn(),
 }));
 import { prisma } from "@/lib/prisma";
-import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import {
+  overwriteTranslationsFromCopy,
+  syncTranslationsFromLegacy,
+} from "@/lib/blog/blogRepository";
 import { POST, GET as getManagementList } from "@/app/api/tripper/blogs/route";
 import {
   PATCH,
@@ -223,12 +227,6 @@ describe("localized write boundary", () => {
     expect(
       vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
     ).not.toHaveProperty("status");
-    expect(
-      computeChangedFields(
-        { translations: stored },
-        { translations: { en: { ...en, ready: true } } },
-      ),
-    ).toEqual([]);
   });
   it("rejects malformed translated values before writing", async () => {
     const response = await PATCH(
@@ -258,14 +256,30 @@ describe("localized write boundary", () => {
     expect(
       vi.mocked(prisma.blogPost.update).mock.calls[0][0].data,
     ).toMatchObject({ translations });
-    expect(computeChangedFields({ ...base, translations }, base)).toEqual([
-      "translations",
-    ]);
+    const esRow = {
+      locale: "es",
+      title: base.title,
+      subtitle: base.subtitle,
+      tagline: base.tagline,
+      content: base.content,
+      blocks: [],
+      faq: null,
+      seo: base.seo,
+      isComplete: true,
+    };
+    const enRow = { ...esRow, locale: "en", ...en, subtitle: null, tagline: null, seo: null };
+    expect(
+      computeChangedFields({ ...base, translations }, base, {
+        copy: [esRow, enRow],
+        original: [esRow],
+      }),
+    ).toEqual(["en.*"]);
+    const copy = { ...base, id: "copy", translations };
     const tx = {
       blogPost: {
         findUnique: vi
           .fn()
-          .mockResolvedValueOnce({ ...base, translations })
+          .mockResolvedValueOnce(copy)
           .mockResolvedValueOnce(base),
         update: vi.fn(),
       },
@@ -275,6 +289,10 @@ describe("localized write boundary", () => {
       title: "Español",
       translations,
       status: "PUBLISHED",
+    });
+    // Both languages' rows are upserted from the copy in the same transaction.
+    expect(overwriteTranslationsFromCopy).toHaveBeenCalledWith(tx, "original", copy, {
+      requireCompleteSource: true,
     });
   });
 });

@@ -14,6 +14,11 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { isValidExperienceLevel } from "@/lib/constants/packages";
 import { normalizeBlogLabel } from "@/lib/blog/label";
 import { syncTranslationsFromLegacy } from "@/lib/blog/blogRepository";
+import {
+  isLegacyLocaleComplete,
+  resolveSourceLocale,
+} from "@/lib/blog/legacy-translation-mapping";
+import { contentLocaleSchema } from "@/lib/blog/locales";
 import { prisma } from "@/lib/prisma";
 
 /** Normalizes an incoming value into a deduped array of non-empty trimmed strings. */
@@ -52,8 +57,26 @@ export async function PATCH(
 
     const copy = await (prisma.blogPost.findUnique as any)({
       where: { id: params.id },
-      select: { id: true, isReviewCopy: true, status: true },
-    }) as { id: string; isReviewCopy: boolean; status: string } | null;
+      select: {
+        id: true,
+        isReviewCopy: true,
+        status: true,
+        sourceLocale: true,
+        title: true,
+        content: true,
+        blocks: true,
+        translations: true,
+      },
+    }) as {
+      id: string;
+      isReviewCopy: boolean;
+      status: string;
+      sourceLocale?: string | null;
+      title?: string;
+      content?: string | null;
+      blocks?: unknown;
+      translations?: unknown;
+    } | null;
 
     if (!copy) {
       return NextResponse.json({ error: "Blog post not found" }, { status: 404 });
@@ -93,6 +116,41 @@ export async function PATCH(
     const labelValue = normalizeBlogLabel(label);
     // No XSED admin-gate here: this whole route is admin-only already.
 
+    // sourceLocale may only change to a locale whose translation is complete
+    // once this request is applied (same rule as the tripper PATCH).
+    const sourceLocaleInput = contentLocaleSchema.optional().safeParse(body.sourceLocale);
+    if (!sourceLocaleInput.success) {
+      return NextResponse.json(
+        { error: "invalid_source_locale", message: "Unsupported source locale." },
+        { status: 400 },
+      );
+    }
+    const sourceLocale = sourceLocaleInput.data;
+    const sourceLocaleChanged =
+      sourceLocale !== undefined &&
+      sourceLocale !== resolveSourceLocale(copy.sourceLocale);
+    if (
+      sourceLocaleChanged &&
+      !isLegacyLocaleComplete(
+        {
+          title: title ?? copy.title ?? "",
+          content: content !== undefined ? (content ?? null) : copy.content,
+          blocks: blocks !== undefined ? blocks : copy.blocks,
+          translations: translations !== undefined ? translations : copy.translations,
+        },
+        sourceLocale,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error: "source_locale_incomplete",
+          locale: sourceLocale,
+          message: "The source locale must have a complete translation.",
+        },
+        { status: 400 },
+      );
+    }
+
     // Dual-write: the copy's legacy columns + its translation rows (slug null)
     // in one transaction so they never diverge.
     const updated = await prisma.$transaction(async (tx) => {
@@ -114,6 +172,7 @@ export async function PATCH(
         ...(labelValue !== undefined && { label: labelValue }),
         ...(format !== undefined && { format: format.toUpperCase?.() ?? format }),
         ...(seo !== undefined && { seo: seo || null }),
+        ...(sourceLocaleChanged && { sourceLocale }),
         // slug is intentionally never written here — copies have no public slug.
       },
       });

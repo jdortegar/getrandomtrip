@@ -18,6 +18,7 @@ import { BlogContentLanguage } from "./BlogContentLanguage";
 import { BlogFormContent } from "./BlogFormContent";
 import { BlogReviewActionsBar } from "./BlogReviewActionsBar";
 import type { BlogFormDraft } from "@/types/blog";
+import { resolveBlogChangedFieldsForLocale } from "@/lib/blog/blog-form-peek";
 import {
   BLOG_LOCALIZED_DRAFT_FIELDS,
   getBlogLocaleDraft,
@@ -168,11 +169,7 @@ export function NewBlogPostShell({
 
   const displayedDraft = getBlogLocaleDraft(draft, contentLocale);
   const displayedOriginal = originalDraft && getBlogLocaleDraft(originalDraft, contentLocale);
-  const displayedChangedFields = contentLocale === "en"
-    ? (changedFields ?? []).filter((field) => !["title", "subtitle", "tagline", "blocks", "faq", "seo"].includes(field)).concat(
-        changedFields?.includes("translations") ? ["title", "subtitle", "tagline", "blocks", "faq", "seo"] : [],
-      )
-    : changedFields;
+  const displayedChangedFields = resolveBlogChangedFieldsForLocale(changedFields ?? [], contentLocale);
 
   // Derived read-only flag — controlled by mode and status, mirrors
   // NewExperienceShell's isReadOnly exactly. 'tripper': editable except

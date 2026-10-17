@@ -106,6 +106,12 @@ describe("POST /api/tripper/blogs/[id]/reject-copy", () => {
 
     const mockCopyUpdate = vi.fn();
     const mockOriginalUpdate = vi.fn();
+    const translationRows = {
+      deleteMany: vi.fn(),
+      upsert: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
+    };
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
       async (cb: (tx: unknown) => unknown) => {
         let call = 0;
@@ -117,6 +123,7 @@ describe("POST /api/tripper/blogs/[id]/reject-copy", () => {
               return mockOriginalUpdate(args);
             }),
           },
+          blogPostTranslation: translationRows,
         });
       },
     );
@@ -135,6 +142,8 @@ describe("POST /api/tripper/blogs/[id]/reject-copy", () => {
       where: { id: "blog-1" },
       data: { status: "DRAFT" },
     });
+    // A soft-discarded copy keeps its translation rows (cascade only on hard delete).
+    for (const method of Object.values(translationRows)) expect(method).not.toHaveBeenCalled();
     expect(sendBlogCopyRejected).toHaveBeenCalledWith("blog-1", "tripper-1");
   });
 

@@ -1,7 +1,8 @@
 // ============================================================================
 // POST /api/admin/blogs/[id]/start-edit
-// Creates a lazy review copy of a PENDING_REVIEW blog post and sets a soft
-// lock on the original. Idempotent: if the same admin already holds the lock
+// Creates a lazy review copy of a PENDING_REVIEW blog post (legacy columns +
+// cloned translation rows, slug null) and sets a soft lock on the original.
+// Idempotent: if the same admin already holds the lock
 // and a copy exists, returns the existing copy id.
 // Auth: admin role only
 // ============================================================================
@@ -11,6 +12,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
+import { cloneTranslationsToCopy } from "@/lib/blog/blogRepository";
 
 export async function POST(
   _request: Request,
@@ -106,6 +108,10 @@ export async function POST(
         },
         select: { id: true },
       }) as { id: string };
+
+      // Clone the original's translation rows (slug null) — `sourceLocale`
+      // is copied with the other scalar columns above.
+      await cloneTranslationsToCopy(tx, params.id, copy.id);
 
       // Set the soft lock on the original
 

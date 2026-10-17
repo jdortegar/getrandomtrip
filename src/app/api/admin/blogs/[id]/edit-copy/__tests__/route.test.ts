@@ -273,3 +273,73 @@ describe("PATCH /api/admin/blogs/[id]/edit-copy — translation dual-write", () 
     expect(syncTranslationsFromLegacy).toHaveBeenCalledWith(tx, written);
   });
 });
+
+describe("PATCH /api/admin/blogs/[id]/edit-copy — sourceLocale", () => {
+  const storedCopy = {
+    id: "copy-1",
+    isReviewCopy: true,
+    status: "DRAFT",
+    sourceLocale: "es",
+    title: "Mi viaje",
+    content: "<p>Cuerpo</p>",
+    blocks: [],
+    translations: null,
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    (getServerSession as ReturnType<typeof vi.fn>).mockResolvedValue(mockSession("admin-1"));
+    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockAdminUser("admin-1"),
+    );
+    (prisma.blogPost.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(storedCopy);
+    (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
+      (fn: (client: unknown) => unknown) => fn(prisma),
+    );
+    (prisma.blogPost.update as ReturnType<typeof vi.fn>).mockImplementation(
+      async ({ data }: { data: Record<string, unknown> }) => ({ ...storedCopy, ...data }),
+    );
+  });
+
+  afterEach(() => {
+    vi.resetModules();
+  });
+
+  async function patch(body: Record<string, unknown>) {
+    const mod = (await import("../route")) as RouteModule;
+    return mod.PATCH(makePatchRequest("copy-1", body), {
+      params: Promise.resolve({ id: "copy-1" }),
+    });
+  }
+
+  it("changes the copy's sourceLocale when that translation is complete after the request", async () => {
+    const res = await patch({
+      sourceLocale: "en",
+      translations: { en: { title: "My trip", content: "<p>Body</p>" } },
+    });
+    expect(res.status).toBe(200);
+    const data = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(data.sourceLocale).toBe("en");
+  });
+
+  it("rejects a change to an incomplete translation with 400 source_locale_incomplete", async () => {
+    const res = await patch({ sourceLocale: "en" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "source_locale_incomplete", locale: "en" });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unsupported locale with 400 invalid_source_locale", async () => {
+    const res = await patch({ sourceLocale: "fr" });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "invalid_source_locale" });
+    expect(prisma.blogPost.update).not.toHaveBeenCalled();
+  });
+
+  it("does not write an unchanged sourceLocale", async () => {
+    const res = await patch({ sourceLocale: "es", title: "Otro" });
+    expect(res.status).toBe(200);
+    const data = (prisma.blogPost.update as ReturnType<typeof vi.fn>).mock.calls[0][0].data;
+    expect(data).not.toHaveProperty("sourceLocale");
+  });
+});

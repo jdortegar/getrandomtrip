@@ -170,6 +170,9 @@ describe("POST /api/admin/blogs/[id]/approve", () => {
     expect(res.status).toBe(200);
     expect(overwriteOriginalWithCopy).toHaveBeenCalledWith(expect.anything(), "blog-1", "copy-1");
     expect(mockDelete).toHaveBeenCalledWith({ where: { id: "copy-1" } });
+    // The overwrite owns the original's rows (cloned from the copy, slugs
+    // preserved); re-deriving them from legacy columns would clobber them.
+    expect(syncTranslationsForPost).not.toHaveBeenCalled();
   });
 
   it("sends an approval email + notification to the author", async () => {
@@ -259,7 +262,9 @@ describe("POST /api/admin/blogs/[id]/approve — source translation rules", () =
       const { SourceTranslationIncompleteError } = await import(
         "@/lib/blog/legacy-translation-mapping"
       );
-      (syncTranslationsForPost as ReturnType<typeof vi.fn>).mockRejectedValue(
+      // Direct path: the legacy sync guards; copy path: the row overwrite guards.
+      const guard = copy ? overwriteOriginalWithCopy : syncTranslationsForPost;
+      (guard as ReturnType<typeof vi.fn>).mockRejectedValue(
         new SourceTranslationIncompleteError("en"),
       );
       const res = await mod.POST(makePostRequest("blog-1"), {

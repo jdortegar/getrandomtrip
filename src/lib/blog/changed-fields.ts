@@ -1,17 +1,29 @@
 import { equalBlogJson } from "./equal-json";
+import { CONTENT_LOCALES } from "./locales";
+import { LOCALIZED_BLOG_FIELDS, type LocalizedBlogField } from "./review-fields";
+import {
+  overwriteTranslationsFromCopy,
+  type ReviewPostSnapshot,
+} from "./blogRepository";
 // ============================================================================
 // Blog changed-fields utility
-// Computes the set of mutable fields that differ between a review copy and
-// the original BlogPost. Used at send-to-tripper time to communicate what
-// the admin changed. The blog analogue of src/lib/experiences/changed-fields.ts
+// Computes the set of fields that differ between a review copy and the
+// original BlogPost. Used at send-to-tripper time to communicate what the
+// admin changed. The blog analogue of src/lib/experiences/changed-fields.ts
 // (a dedicated parallel implementation — field sets differ entirely).
+//
+// Tokens: shared post fields keep their bare name (`coverUrl`,
+// `sourceLocale`); localized fields are compared per translation row and
+// emitted as `<locale>.<field>` (`es.title`, `en.blocks`), or `<locale>.*`
+// when the locale exists on only one side.
 // ============================================================================
 
 /**
- * All mutable fields that are compared when computing changedFields.
- * Identity fields (id, authorId, createdAt, slug) are intentionally excluded,
- * as are review-mechanism fields (reviewNote, tripperNote, reviewLockedBy,
- * changedFields, isReviewCopy, parentId, isDiscarded, publishedAt).
+ * Legacy BlogPost columns copied onto the original on approval (dual-write
+ * until the contract rollout). Identity fields (id, authorId, createdAt,
+ * slug) are intentionally excluded, as are review-mechanism fields
+ * (reviewNote, tripperNote, reviewLockedBy, changedFields, isReviewCopy,
+ * parentId, isDiscarded, publishedAt).
  */
 export const MUTABLE_BLOG_FIELDS = [
   "title",
@@ -29,51 +41,88 @@ export const MUTABLE_BLOG_FIELDS = [
   "format",
   "seo",
   "faq",
+  "sourceLocale",
 ] as const;
 
 export type MutableBlogField = (typeof MUTABLE_BLOG_FIELDS)[number];
 
-/**
- * JSON-serializable fields — compared via JSON.stringify for deep equality.
- */
-const JSON_FIELDS = new Set<string>(["blocks", "translations", "seo", "faq"]);
+/** Post-level fields shared by every locale, diffed on the BlogPost itself. */
+export const SHARED_BLOG_FIELDS = [
+  "coverUrl",
+  "tags",
+  "travelType",
+  "excuseKey",
+  "level",
+  "label",
+  "format",
+  "sourceLocale",
+] as const;
 
-/**
- * Array fields (scalar arrays) — compared by serializing to JSON.
- */
-const ARRAY_FIELDS = new Set<string>(["tags", "travelType", "excuseKey"]);
+/** Compared canonically: key-order-insensitive (JSONB reorders keys). */
+const JSON_FIELDS = new Set<string>([
+  "blocks",
+  "seo",
+  "faq",
+  "tags",
+  "travelType",
+  "excuseKey",
+]);
 
 type FieldRecord = Record<string, unknown>;
 
+type LocaleRow = { locale: string } & Partial<Record<LocalizedBlogField, unknown>>;
+
+export interface ReviewTranslationRows {
+  copy: LocaleRow[];
+  original: LocaleRow[];
+}
+
 function fieldEqual(field: string, a: unknown, b: unknown): boolean {
-  if (JSON_FIELDS.has(field) || ARRAY_FIELDS.has(field)) {
-    return equalBlogJson(a, b);
-  }
+  if (JSON_FIELDS.has(field)) return equalBlogJson(a, b);
   // Scalar comparison — treat null and undefined as equivalent nullish
   if (a == null && b == null) return true;
   return a === b;
 }
 
+function localizedTokens(rows: ReviewTranslationRows): string[] {
+  return CONTENT_LOCALES.flatMap((locale) => {
+    const copy = rows.copy.find((row) => row.locale === locale);
+    const original = rows.original.find((row) => row.locale === locale);
+    if (!copy && !original) return [];
+    if (!copy || !original) return [`${locale}.*`];
+    return LOCALIZED_BLOG_FIELDS.filter(
+      (field) => !fieldEqual(field, copy[field], original[field]),
+    ).map((field) => `${locale}.${field}`);
+  });
+}
+
 /**
- * Computes which mutable fields differ between `copy` and `original`.
+ * Computes the changedFields tokens between `copy` and `original`: shared
+ * fields first, then `<locale>.<field>` tokens in `CONTENT_LOCALES` order.
  *
- * @param copy    - The review copy BlogPost record
+ * @param copy     - The review copy BlogPost record
  * @param original - The original BlogPost record
- * @returns       Array of field names that differ; empty array means no changes
+ * @param rows     - Translation rows of both posts (`loadTranslationsForReview`)
+ * @returns        Tokens that differ; empty array means no changes
  */
 export function computeChangedFields(
   copy: FieldRecord,
   original: FieldRecord,
+  rows: ReviewTranslationRows,
 ): string[] {
-  return MUTABLE_BLOG_FIELDS.filter(
+  const shared = SHARED_BLOG_FIELDS.filter(
     (field) => !fieldEqual(field, copy[field], original[field]),
   );
+  return [...shared, ...localizedTokens(rows)];
 }
 
 /**
- * Overwrites the original BlogPost with the copy's mutable fields inside a
- * Prisma transaction. Preserves the original's `slug` (avoids @unique churn)
- * and `publishedAt` (keeps prior publish history if this is a re-publish).
+ * Overwrites the original BlogPost with the copy inside a Prisma
+ * transaction: the legacy columns (incl. `sourceLocale`) first, then the
+ * translation rows per locale (original slugs kept, source translation
+ * required to be complete — throwing rolls the caller's transaction back).
+ * Preserves the original's `slug` (avoids @unique churn) and `publishedAt`
+ * (keeps prior publish history if this is a re-publish).
  *
  * Preserved fields: id, authorId, createdAt, slug, isReviewCopy, parentId,
  *                    reviewLockedBy, reviewNote, changedFields.
@@ -114,7 +163,7 @@ export async function overwriteOriginalWithCopy(
   }
 
 
-  return (tx.blogPost.update as any)({
+  const updated = await (tx.blogPost.update as any)({
     where: { id: originalId },
     data: {
       ...overwriteData,
@@ -128,4 +177,13 @@ export async function overwriteOriginalWithCopy(
       changedFields: [],
     },
   });
+
+  await overwriteTranslationsFromCopy(
+    tx,
+    originalId,
+    copy as unknown as ReviewPostSnapshot,
+    { requireCompleteSource: true },
+  );
+
+  return updated;
 }

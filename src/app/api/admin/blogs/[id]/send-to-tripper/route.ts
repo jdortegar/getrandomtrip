@@ -11,6 +11,10 @@ import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { computeChangedFields } from "@/lib/blog/changed-fields";
+import {
+  loadTranslationsForReview,
+  type ReviewPostSnapshot,
+} from "@/lib/blog/blogRepository";
 import { sendBlogPendingTripperReview } from "@/lib/email";
 
 export async function POST(
@@ -62,7 +66,14 @@ export async function POST(
       );
     }
 
-    const changedFields = computeChangedFields(copy, original);
+    const [copyRows, originalRows] = await Promise.all([
+      loadTranslationsForReview(prisma, copy as unknown as ReviewPostSnapshot),
+      loadTranslationsForReview(prisma, original as unknown as ReviewPostSnapshot),
+    ]);
+    const changedFields = computeChangedFields(copy, original, {
+      copy: copyRows,
+      original: originalRows,
+    });
 
     if (changedFields.length === 0) {
       return NextResponse.json(

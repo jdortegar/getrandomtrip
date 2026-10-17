@@ -17,8 +17,13 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/blog/blogRepository", () => ({
+  cloneTranslationsToCopy: vi.fn(),
+}));
+
 import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
+import { cloneTranslationsToCopy } from "@/lib/blog/blogRepository";
 
 const mockSession = (userId: string) => ({ user: { id: userId, email: "admin@example.com" } });
 const mockAdminUser = (id: string) => ({ id, roles: ["ADMIN"] });
@@ -43,6 +48,7 @@ const baseOriginal = (overrides: Record<string, unknown> = {}) => ({
   changedFields: [],
   updatedAt: new Date(),
   title: "My Trip",
+  sourceLocale: "en",
   ...overrides,
 });
 
@@ -139,6 +145,7 @@ describe("POST /api/admin/blogs/[id]/start-edit", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.copyId).toBe("copy-1");
+    expect(cloneTranslationsToCopy).not.toHaveBeenCalled();
   });
 
   it("creates a review copy stripped of identity fields and sets the soft lock", async () => {
@@ -148,16 +155,16 @@ describe("POST /api/admin/blogs/[id]/start-edit", () => {
     );
     const mockCreate = vi.fn().mockResolvedValue({ id: "new-copy-1" });
     const mockUpdate = vi.fn().mockResolvedValue({});
+    const tx = {
+      blogPost: {
+        findUnique: vi.fn().mockResolvedValue(baseOriginal()),
+        findFirst: vi.fn().mockResolvedValue(null), // no existing copy
+        create: mockCreate,
+        update: mockUpdate,
+      },
+    };
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
-      async (cb: (tx: unknown) => unknown) =>
-        cb({
-          blogPost: {
-            findUnique: vi.fn().mockResolvedValue(baseOriginal()),
-            findFirst: vi.fn().mockResolvedValue(null), // no existing copy
-            create: mockCreate,
-            update: mockUpdate,
-          },
-        }),
+      async (cb: (client: unknown) => unknown) => cb(tx),
     );
     const mod = (await import("../route")) as RouteModule;
     const res = await mod.POST(makePostRequest("blog-1"), {
@@ -174,6 +181,10 @@ describe("POST /api/admin/blogs/[id]/start-edit", () => {
     expect(createArgs.data.isDiscarded).toBe(false);
     expect(createArgs.data.parentId).toBe("blog-1");
     expect(createArgs.data.status).toBe("DRAFT");
+    expect(createArgs.data.sourceLocale).toBe("en");
+
+    // Translation rows are cloned (slug null) inside the same transaction.
+    expect(cloneTranslationsToCopy).toHaveBeenCalledWith(tx, "blog-1", "new-copy-1");
 
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: "blog-1" },

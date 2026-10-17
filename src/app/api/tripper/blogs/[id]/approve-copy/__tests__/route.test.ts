@@ -178,8 +178,14 @@ describe("POST /api/tripper/blogs/[id]/approve-copy — source translation rules
     vi.resetModules();
   });
 
-  it("syncs the published original's translation rows inside the approve transaction", async () => {
-    const tx = { blogPost: { delete: vi.fn() } };
+  it("overwrites the original's translation rows from the copy inside the approve transaction", async () => {
+    const order: string[] = [];
+    const tx = {
+      blogPost: { delete: vi.fn(async () => order.push("delete-copy")) },
+    };
+    (overwriteOriginalWithCopy as ReturnType<typeof vi.fn>).mockImplementation(async () => {
+      order.push("overwrite");
+    });
     (prisma.$transaction as ReturnType<typeof vi.fn>).mockImplementation(
       async (cb: (client: unknown) => unknown) => cb(tx),
     );
@@ -188,9 +194,11 @@ describe("POST /api/tripper/blogs/[id]/approve-copy — source translation rules
       params: Promise.resolve({ id: "blog-1" }),
     });
     expect(res.status).toBe(200);
-    expect(syncTranslationsForPost).toHaveBeenCalledWith(tx, "blog-1", {
-      requireCompleteSource: true,
-    });
+    expect(overwriteOriginalWithCopy).toHaveBeenCalledWith(tx, "blog-1", "copy-1");
+    // Rows come from the copy (slugs preserved), not re-derived from legacy columns.
+    expect(syncTranslationsForPost).not.toHaveBeenCalled();
+    // The copy (and, by cascade, its rows) is deleted only after the overwrite read them.
+    expect(order).toEqual(["overwrite", "delete-copy"]);
   });
 
   it("returns 400 and sends no email when the source translation is incomplete", async () => {
@@ -202,7 +210,7 @@ describe("POST /api/tripper/blogs/[id]/approve-copy — source translation rules
     const { SourceTranslationIncompleteError } = await import(
       "@/lib/blog/legacy-translation-mapping"
     );
-    (syncTranslationsForPost as ReturnType<typeof vi.fn>).mockRejectedValue(
+    (overwriteOriginalWithCopy as ReturnType<typeof vi.fn>).mockRejectedValue(
       new SourceTranslationIncompleteError("es"),
     );
     const res = await mod.POST(makePostRequest("blog-1"), {

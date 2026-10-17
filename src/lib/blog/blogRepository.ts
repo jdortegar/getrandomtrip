@@ -13,9 +13,12 @@ import type {
 import { CONTENT_LOCALES, isContentLocale } from "./locales";
 import {
   LEGACY_MAPPED_LOCALES,
+  SourceTranslationIncompleteError,
   assertLegacySourceComplete,
+  computeTranslationIsComplete,
   legacyEnglishTranslation,
   legacySpanishTranslation,
+  resolveSourceLocale,
   type LegacyBlogContent,
   type TranslationRowData,
 } from "./legacy-translation-mapping";
@@ -495,4 +498,154 @@ export async function syncTranslationsForPost(
   await syncTranslationsFromLegacy(tx, post, {
     regenerateSlug: options.regenerateSlug,
   });
+}
+
+// ── Review copies: rows are cloned with a null slug; approval overwrites the
+// original per locale, keeping its slugs and slug history (slugs are out of
+// review). ──
+
+/** One locale's localized content as compared and copied during review. */
+export interface ReviewTranslationRow extends TranslationRowData {
+  locale: string;
+}
+
+/** A review-flow post: its id plus the legacy content used when it has no rows yet. */
+export interface ReviewPostSnapshot extends LegacyBlogContent {
+  id: string;
+  sourceLocale?: unknown;
+}
+
+type ReviewClient = Pick<Prisma.TransactionClient, "blogPostTranslation">;
+
+const REVIEW_ROW_SELECT = {
+  locale: true,
+  title: true,
+  subtitle: true,
+  tagline: true,
+  content: true,
+  blocks: true,
+  faq: true,
+  seo: true,
+  isComplete: true,
+} satisfies Prisma.BlogPostTranslationSelect;
+
+type ReviewRowRecord = Prisma.BlogPostTranslationGetPayload<{
+  select: typeof REVIEW_ROW_SELECT;
+}>;
+
+function localeRank(locale: string): number {
+  const index = CONTENT_LOCALES.indexOf(locale as ContentLocale);
+  return index === -1 ? CONTENT_LOCALES.length : index;
+}
+
+function toReviewRow(row: ReviewRowRecord): ReviewTranslationRow {
+  return {
+    locale: row.locale,
+    title: row.title,
+    subtitle: row.subtitle ?? null,
+    tagline: row.tagline ?? null,
+    content: row.content ?? null,
+    blocks: Array.isArray(row.blocks) ? row.blocks : [],
+    faq: row.faq ?? null,
+    seo: row.seo ?? null,
+    isComplete: row.isComplete,
+  };
+}
+
+/** The post's translation rows in `CONTENT_LOCALES` order; posts written
+ * before the backfill fall back to rows derived from the legacy columns. */
+export async function loadTranslationsForReview(
+  client: ReviewClient,
+  post: ReviewPostSnapshot,
+): Promise<ReviewTranslationRow[]> {
+  const rows = await client.blogPostTranslation.findMany({
+    where: { postId: post.id },
+    select: REVIEW_ROW_SELECT,
+  });
+  if (rows.length)
+    return rows
+      .map(toReviewRow)
+      .sort((a, b) => localeRank(a.locale) - localeRank(b.locale));
+
+  const english = legacyEnglishTranslation(post);
+  return [
+    { locale: "es", ...legacySpanishTranslation(post) },
+    ...(english.kind === "valid" ? [{ locale: "en", ...english.data }] : []),
+  ];
+}
+
+/** Clones every translation row of the original into its new review copy
+ * (same locale, content and completeness; slug null). */
+export async function cloneTranslationsToCopy(
+  tx: Prisma.TransactionClient,
+  originalId: string,
+  copyId: string,
+): Promise<void> {
+  const rows = await tx.blogPostTranslation.findMany({
+    where: { postId: originalId },
+    select: REVIEW_ROW_SELECT,
+  });
+  if (!rows.length) return;
+  await tx.blogPostTranslation.createMany({
+    data: rows.map((row) => ({
+      postId: copyId,
+      locale: row.locale,
+      title: row.title,
+      subtitle: row.subtitle,
+      tagline: row.tagline,
+      content: row.content,
+      blocks: jsonInput(row.blocks),
+      faq: jsonInput(row.faq),
+      seo: jsonInput(row.seo),
+      isComplete: row.isComplete,
+      slug: null,
+    })),
+  });
+}
+
+/** Overwrites the original's rows from the approved copy inside the caller's
+ * transaction: upserts each copy locale (keeping the original's slug; a new
+ * locale gets one from its title), deletes locales the copy removed, and
+ * recomputes `isComplete`. With `requireCompleteSource` it throws
+ * `SourceTranslationIncompleteError` before writing anything. */
+export async function overwriteTranslationsFromCopy(
+  tx: Prisma.TransactionClient,
+  originalId: string,
+  copy: ReviewPostSnapshot,
+  options: { requireCompleteSource?: boolean } = {},
+): Promise<void> {
+  const copyRows = (await loadTranslationsForReview(tx, copy)).map((row) => ({
+    ...row,
+    isComplete: computeTranslationIsComplete(row),
+  }));
+  if (options.requireCompleteSource) {
+    const source = resolveSourceLocale(copy.sourceLocale);
+    if (!copyRows.find((row) => row.locale === source)?.isComplete)
+      throw new SourceTranslationIncompleteError(source);
+  }
+
+  const currentRows: CurrentRow[] = await tx.blogPostTranslation.findMany({
+    where: { postId: originalId },
+    select: { id: true, locale: true, title: true, slug: true },
+  });
+  const removed = currentRows
+    .filter((row) => !copyRows.some((candidate) => candidate.locale === row.locale))
+    .map((row) => row.locale);
+  if (removed.length)
+    await tx.blogPostTranslation.deleteMany({
+      where: { postId: originalId, locale: { in: removed } },
+    });
+
+  for (const row of copyRows) {
+    const current = currentRows.find((candidate) => candidate.locale === row.locale);
+    const slug =
+      current?.slug ?? (await uniqueSlugFor(tx, row.locale, row.title, current?.id));
+    const content = rowContent(row);
+    await tx.blogPostTranslation.upsert({
+      where: { postId_locale: { postId: originalId, locale: row.locale } },
+      create: { postId: originalId, locale: row.locale, ...content, slug },
+      update: { ...content, slug },
+      select: { id: true },
+    });
+  }
 }

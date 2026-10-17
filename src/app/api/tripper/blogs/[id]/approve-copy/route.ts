@@ -13,7 +13,6 @@ import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
 import { overwriteOriginalWithCopy } from "@/lib/blog/changed-fields";
 import { sendBlogCopyApproved } from "@/lib/email";
-import { syncTranslationsForPost } from "@/lib/blog/blogRepository";
 import { SourceTranslationIncompleteError } from "@/lib/blog/legacy-translation-mapping";
 
 export async function POST(
@@ -80,10 +79,9 @@ export async function POST(
     // Transactionally overwrite the original with the copy's data + delete copy
 
     await (prisma.$transaction as any)(async (tx: any) => {
+      // Overwrites legacy columns + translation rows from the copy; an
+      // incomplete source translation throws and rolls everything back.
       await overwriteOriginalWithCopy(tx, params.id, copy.id);
-      // Publishing requires a complete source translation; throwing here rolls
-      // the overwrite back. Full review-row cloning lands with T5.
-      await syncTranslationsForPost(tx, params.id, { requireCompleteSource: true });
 
       await (tx.blogPost.delete as any)({ where: { id: copy.id } });
     });

@@ -1,5 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+vi.mock("../blogRepository", () => ({
+  overwriteTranslationsFromCopy: vi.fn(),
+}));
+
 import { computeChangedFields, overwriteOriginalWithCopy } from "../changed-fields";
+import { overwriteTranslationsFromCopy } from "../blogRepository";
 
 describe("computeChangedFields (blog)", () => {
   const base = {
@@ -16,120 +22,142 @@ describe("computeChangedFields (blog)", () => {
     format: "ARTICLE",
     seo: { title: "SEO title" },
     faq: { items: [{ question: "Q1", answer: "A1" }] },
+    sourceLocale: "es",
   };
 
+  const esRow = {
+    locale: "es",
+    title: "Mi viaje",
+    subtitle: "Bajada",
+    tagline: null,
+    content: "<p>Cuerpo</p>",
+    blocks: [{ type: "image", url: "https://example.com/1.jpg", caption: "Foto" }],
+    faq: [{ question: "P1", answer: "R1" }],
+    seo: { title: "SEO es", description: "Desc" },
+    isComplete: true,
+  };
+  const enRow = {
+    ...esRow,
+    locale: "en",
+    title: "My trip",
+    blocks: [{ type: "image", url: "https://example.com/1.jpg", caption: "Photo" }],
+    seo: { title: "SEO en", description: "Desc" },
+  };
+  const rows = { copy: [esRow, enRow], original: [esRow, enRow] };
+
   it("returns empty array when copy and original are identical", () => {
-    expect(computeChangedFields({ ...base }, { ...base })).toEqual([]);
+    expect(computeChangedFields({ ...base }, { ...base }, rows)).toEqual([]);
   });
 
-  it("detects scalar field change (title)", () => {
-    const copy = { ...base, title: "New Title" };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("title");
-    expect(result).not.toContain("subtitle");
+  it("emits <locale>.<field> tokens for localized changes, per locale", () => {
+    const result = computeChangedFields(base, base, {
+      copy: [{ ...esRow, title: "Otro" }, { ...enRow, subtitle: "New sub" }],
+      original: [esRow, enRow],
+    });
+    expect(result).toEqual(["es.title", "en.subtitle"]);
   });
 
-  it("detects JSON field change (blocks)", () => {
-    const copy = { ...base, blocks: [{ type: "image", url: "https://example.com/2.jpg" }] };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("blocks");
+  it("detects JSON changes per locale (blocks, faq, seo)", () => {
+    const result = computeChangedFields(base, base, {
+      copy: [
+        esRow,
+        {
+          ...enRow,
+          blocks: [{ type: "image", url: "https://example.com/2.jpg", caption: "Photo" }],
+          faq: [],
+          seo: { title: "Other" },
+        },
+      ],
+      original: [esRow, enRow],
+    });
+    expect(result).toEqual(["en.blocks", "en.faq", "en.seo"]);
   });
 
-  it("does NOT flag JSON field as changed when content is deeply equal", () => {
-    const copy = { ...base, blocks: [{ type: "image", url: "https://example.com/1.jpg" }] };
-    const result = computeChangedFields(copy, base);
-    expect(result).not.toContain("blocks");
-  });
-
-  it("detects array field change (tags)", () => {
-    const copy = { ...base, tags: ["adventure", "family"] };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("tags");
-  });
-
-  it("does NOT flag array field as changed when arrays are equal", () => {
-    const copy = { ...base, tags: ["adventure"] };
-    const result = computeChangedFields(copy, base);
-    expect(result).not.toContain("tags");
-  });
-
-  it("detects travelType array field change", () => {
-    const original = { ...base, travelType: ["solo"] };
-    const copy = { ...base, travelType: ["solo", "couple"] };
-    const result = computeChangedFields(copy, original);
-    expect(result).toContain("travelType");
-  });
-
-  it("does NOT flag travelType as changed when arrays are identical", () => {
-    const original = { ...base, travelType: ["solo", "couple"] };
-    const copy = { ...base, travelType: ["solo", "couple"] };
-    const result = computeChangedFields(copy, original);
-    expect(result).not.toContain("travelType");
-  });
-
-  it("detects excuseKey array field change", () => {
-    const original = { ...base, excuseKey: ["solo-adventure"] };
-    const copy = { ...base, excuseKey: ["solo-adventure", "escapada-romantica"] };
-    const result = computeChangedFields(copy, original);
-    expect(result).toContain("excuseKey");
-  });
-
-  it("does NOT flag excuseKey as changed when arrays are identical", () => {
-    const original = { ...base, excuseKey: ["solo-adventure"] };
-    const copy = { ...base, excuseKey: ["solo-adventure"] };
-    const result = computeChangedFields(copy, original);
-    expect(result).not.toContain("excuseKey");
-  });
-
-  it("detects level scalar field change", () => {
-    const copy = { ...base, level: "xsed" };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("level");
-  });
-
-  it("detects label scalar field change", () => {
-    const copy = { ...base, label: "XSED Nº2 (AR)" };
-    const result = computeChangedFields(copy, { ...base, label: "XSED Nº1 (AR)" });
-    expect(result).toContain("label");
-  });
-
-  it("does NOT flag level as changed when both are null", () => {
-    const original = { ...base, level: null };
-    const copy = { ...base, level: null };
-    const result = computeChangedFields(copy, original);
-    expect(result).not.toContain("level");
-  });
-
-  it("detects seo JSON change", () => {
-    const copy = { ...base, seo: { title: "Different SEO" } };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("seo");
-  });
-
-  it("detects faq JSON change", () => {
-    const copy = { ...base, faq: { items: [{ question: "Q2", answer: "A2" }] } };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("faq");
-  });
-
-  it("treats null and undefined as equivalent (no false positive)", () => {
-    const copy = { ...base, tagline: undefined };
-    const original = { ...base, tagline: null };
-    const result = computeChangedFields(copy, original);
-    expect(result).not.toContain("tagline");
-  });
-
-  it("detects multiple fields changed simultaneously", () => {
-    const copy = {
-      ...base,
-      title: "Changed",
-      subtitle: "Changed subtitle",
-      coverUrl: "https://example.com/new.jpg",
+  it("compares JSON fields key-order-insensitively (JSONB reorders keys)", () => {
+    const reordered = {
+      ...esRow,
+      blocks: [{ caption: "Foto", url: "https://example.com/1.jpg", type: "image" }],
+      seo: { description: "Desc", title: "SEO es" },
     };
-    const result = computeChangedFields(copy, base);
-    expect(result).toContain("title");
-    expect(result).toContain("subtitle");
-    expect(result).toContain("coverUrl");
+    expect(
+      computeChangedFields(base, base, { copy: [reordered, enRow], original: [esRow, enRow] }),
+    ).toEqual([]);
+  });
+
+  it("emits <locale>.* for a locale present on only one side", () => {
+    expect(
+      computeChangedFields(base, base, { copy: [esRow, enRow], original: [esRow] }),
+    ).toEqual(["en.*"]);
+    expect(
+      computeChangedFields(base, base, { copy: [esRow], original: [esRow, enRow] }),
+    ).toEqual(["en.*"]);
+  });
+
+  it("never emits the legacy translations token or legacy Spanish column tokens", () => {
+    const result = computeChangedFields(
+      { ...base, title: "Changed", translations: { en: { title: "X" } } },
+      { ...base, translations: null },
+      rows,
+    );
+    expect(result).toEqual([]);
+  });
+
+  it("emits sourceLocale as a shared token", () => {
+    expect(
+      computeChangedFields({ ...base, sourceLocale: "en" }, base, rows),
+    ).toEqual(["sourceLocale"]);
+  });
+
+  it("treats null and undefined as equivalent in localized scalars", () => {
+    expect(
+      computeChangedFields(base, base, {
+        copy: [{ ...esRow, tagline: undefined }, enRow],
+        original: [esRow, enRow],
+      }),
+    ).toEqual([]);
+  });
+
+  it("detects shared scalar and array changes", () => {
+    const result = computeChangedFields(
+      {
+        ...base,
+        coverUrl: "https://example.com/new.jpg",
+        tags: ["adventure", "family"],
+        travelType: ["solo", "couple"],
+        excuseKey: ["solo-adventure"],
+        level: "xsed",
+        label: "XSED Nº2 (AR)",
+      },
+      { ...base, travelType: ["solo"], label: "XSED Nº1 (AR)" },
+      rows,
+    );
+    expect(result).toEqual([
+      "coverUrl",
+      "tags",
+      "travelType",
+      "excuseKey",
+      "level",
+      "label",
+    ]);
+  });
+
+  it("does NOT flag equal arrays or both-null scalars", () => {
+    expect(
+      computeChangedFields(
+        { ...base, tags: ["adventure"], level: null },
+        { ...base, tags: ["adventure"], level: null },
+        rows,
+      ),
+    ).toEqual([]);
+  });
+
+  it("lists shared tokens first, then locales in CONTENT_LOCALES order", () => {
+    expect(
+      computeChangedFields({ ...base, format: "GUIDE" }, base, {
+        copy: [{ ...enRow, title: "T" }, { ...esRow, content: "<p>x</p>" }],
+        original: [esRow, enRow],
+      }),
+    ).toEqual(["format", "es.content", "en.title"]);
   });
 });
 
@@ -168,7 +196,40 @@ describe("overwriteOriginalWithCopy (blog)", () => {
     seo: null,
     faq: null,
     slug: null,
+    sourceLocale: "en",
   };
+
+  beforeEach(() => {
+    vi.mocked(overwriteTranslationsFromCopy).mockReset();
+  });
+
+  it("copies sourceLocale and overwrites translation rows from the copy (source-checked) after the legacy columns", async () => {
+    const tx = makeTx({ copy: copyRow, originalPublishedAt: null });
+    const order: string[] = [];
+    tx.blogPost.update.mockImplementation(({ data }) => {
+      order.push("legacy");
+      return { id: "original-1", ...data };
+    });
+    vi.mocked(overwriteTranslationsFromCopy).mockImplementation(async () => {
+      order.push("rows");
+    });
+
+    await overwriteOriginalWithCopy(tx, "original-1", "copy-1");
+
+    expect(tx.blogPost.update.mock.calls[0][0].data.sourceLocale).toBe("en");
+    expect(overwriteTranslationsFromCopy).toHaveBeenCalledWith(tx, "original-1", copyRow, {
+      requireCompleteSource: true,
+    });
+    expect(order).toEqual(["legacy", "rows"]);
+  });
+
+  it("propagates the source guard error so the caller's transaction rolls back", async () => {
+    const tx = makeTx({ copy: copyRow, originalPublishedAt: null });
+    vi.mocked(overwriteTranslationsFromCopy).mockRejectedValue(new Error("source incomplete"));
+    await expect(overwriteOriginalWithCopy(tx, "original-1", "copy-1")).rejects.toThrow(
+      "source incomplete",
+    );
+  });
 
   it("copies mutable fields from copy to original, sets PUBLISHED, preserves original slug", async () => {
     const tx = makeTx({ copy: copyRow, originalPublishedAt: new Date("2020-01-01T00:00:00.000Z") });
