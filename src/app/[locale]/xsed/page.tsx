@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { SecondaryHero } from "@/components/app/xsed/SecondaryHero";
 import { CountDown } from "@/components/app/xsed/CountDown";
 import { hasLocale } from "@/lib/i18n/config";
+import { showTripperDiscovery } from "@/lib/deployment";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
 import { MultiColumnIconText } from "@/components/app/xsed/MultiColumnIconText";
@@ -50,6 +51,7 @@ export default async function XsedPage(props: LocaleParams) {
   const allGridDrops = await getXsedBlogDropsForGrid(normalizedLocale);
   const gridDrops = allGridDrops.slice(0, 5);
   const xsedTestimonials = await getAllXsedTestimonials();
+  const showTrippers = showTripperDiscovery();
 
   return (
     <>
@@ -76,6 +78,7 @@ export default async function XsedPage(props: LocaleParams) {
       <FaqBlock
         className={gridDrops.length > 0 ? "pt-0!" : ""}
         copy={dict.xsedPage.faq}
+        showDescription={showTrippers}
       />
 
       <XsedHero content={dict.xsedPage.xsedHero} />
