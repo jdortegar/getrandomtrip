@@ -405,6 +405,36 @@ describe("AuthModal Google sign-in — mandatory picker gates the OAuth redirect
     );
   });
 
+  it("puts Google below the create-account button, after the tripper choice", async () => {
+    mockFetchSequence(null);
+    render(
+      <AuthModal defaultMode="register" dict={en} isOpen onClose={() => {}} />,
+    );
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const submit = container.querySelector('button[type="submit"]')!;
+    const select = container.querySelector("#auth-referred-by-tripper")!;
+    const google = getGoogleButton();
+    expect(
+      submit.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(
+      select.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("keeps Google above the email field when signing in", () => {
+    mockFetchSequence(null);
+    render(
+      <AuthModal defaultMode="login" dict={en} isOpen onClose={() => {}} />,
+    );
+    const html = container.innerHTML;
+    expect(html.indexOf('fill="#4285F4"')).toBeLessThan(
+      html.indexOf('id="auth-email"'),
+    );
+  });
+
   it('does not gate login mode — signIn("google") fires immediately with no picker/sync involved', async () => {
     const fetchMock = mockFetchSequence(null);
 
@@ -467,14 +497,17 @@ describe("AuthModal Google callback translation capture", () => {
       <AuthModal defaultMode="register" dict={es} isOpen onClose={() => {}} />,
     );
     await clickNamedGoogle(es.auth.continueWithGoogle);
-    expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+    expect(getGoogleButton().nextElementSibling?.getAttribute("role")).toBe(
+      "alert",
+    );
+    expect(getGoogleButton().nextElementSibling?.textContent).toBe(
       es.auth.referredByRequired,
     );
     render(
       <AuthModal defaultMode="register" dict={en} isOpen onClose={() => {}} />,
     );
     await clickNamedGoogle(en.auth.continueWithGoogle);
-    expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+    expect(getGoogleButton().nextElementSibling?.textContent).toBe(
       en.auth.referredByRequired,
     );
     expect(
@@ -508,7 +541,7 @@ describe("AuthModal Google callback translation capture", () => {
       );
       setSelectValue(container.querySelector("select")!, "none");
       await clickNamedGoogle(es.auth.continueWithGoogle);
-      expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+      expect(getGoogleButton().nextElementSibling?.textContent).toBe(
         es.auth.loginFailed,
       );
       render(
@@ -520,7 +553,7 @@ describe("AuthModal Google callback translation capture", () => {
         />,
       );
       await clickNamedGoogle(en.auth.continueWithGoogle);
-      expect(container.querySelector('[role="alert"]')?.textContent).toBe(
+      expect(getGoogleButton().nextElementSibling?.textContent).toBe(
         en.auth.loginFailed,
       );
       expect(getRequestBody(fetchMock, "/api/attribution/mode")).toEqual({
