@@ -170,6 +170,19 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 
 - `docs/EmailCampaigns.md`: env vars, migration + backfill, Resend tracking/webhook setup, Stripe codes and enforced rules, running a campaign, reading metrics, checklist, limits. Check: structural readback (passive doc). Uncommitted, awaiting approval.
 
+## Environment setup (2026-10-17, user-authorized)
+
+- Netlify site `getrandomtrip-1`: `EMAIL_UNSUBSCRIBE_SECRET` set in production (own value) and deploy-preview/branch-deploy/dev (shared value); `EMAIL_TEST_RECIPIENTS=ortega.david.ar@gmail.com` in deploy-preview/branch-deploy/dev. Read back.
+- Stripe: test promo code `randomtrip-ff15` already existed (user); not verified (Stripe CLI login expired).
+- Dev DB (nonproduction Neon host, matches `RT_NONPRODUCTION_DATABASE_HOST`): DB is `db push`-managed (all 6 migrations "pending" in migrate status), so only `20261017120000_email_campaigns/migration.sql` was applied via `prisma db execute`; verified by introspection (4 tables, 5 enums, unique key, 3 payment columns). Backfill not run.
+- Resend (account jd.ortega83, domain contact.getrandomtrip.com): tracking subdomain `links.contact.getrandomtrip.com` created with click + open tracking — pending DNS CNAME `links.contact` → `links2.resend-dns.com` at Squarespace — CNAME added in Squarespace 2026-10-17 after the user completed account verification; resolves via 8.8.8.8. Resend shows the tracking record as "Failed" (checked before propagation) and the domain "Partially Verified" (DKIM/SPF still verified, sending on); re-check later — avoid "Restart" (re-verifies the whole domain). Webhook created for `https://develop--getrandomtrip-1.netlify.app/api/webhooks/resend` (5 events, enabled); its signing secret set by the user as `RESEND_WEBHOOK_SECRET` in deploy-preview/branch-deploy/dev (verified present, no placeholder; production unset until the production webhook exists). The secret was printed in the terminal — rotate if desired. Production webhook deferred to release.
+
+## Delivery (2026-10-18)
+
+- Merged `origin/develop` (40 commits) into the branch: `4e6407ff`, no conflicts, no new migrations from develop; `prisma validate` ok.
+- Checks on the merged tree: typecheck ok, lint ok, `next build` ok (new routes listed). Full Vitest: 59 failures in 12 files (PDF renders, AdminTableFilters, AboutUsLayout, eslintConfig, adminRecipients, TripItineraryContent) — same files fail on `origin/develop` alone (59 failed there in isolation); no import overlap with this branch → pre-existing, not caused here.
+- PR screenshots: editor desktop + mobile captured with the test admin on localhost:3010. The campaigns list shot showed a load error caused by the long-running local dev server's stale Prisma client (backend verified fresh: 0 campaigns, 0 summaries) → not published.
+
 ## Before merge (manual)
 
 - [ ] QA at 360px / 1280px and contrast on all email-campaign screens.
