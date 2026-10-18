@@ -15,6 +15,7 @@ interface StatusIndicatorBadgeProps {
     | "availability"
     | "email-contact"
     | "email-campaign"
+    | "email-send"
     | "tripper-booking"
     | "tripper-booking-summary"
     | "notification"
@@ -92,6 +93,16 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
       PARTIAL: "danger",
       SENDING: "info",
       SENT: "success",
+    },
+  },
+  "email-send": {
+    fallback: "inactive",
+    statuses: {
+      BOUNCED: "danger",
+      DELIVERED: "success",
+      FAILED: "danger",
+      QUEUED: "inactive",
+      SENT: "info",
     },
   },
   "email-contact": {

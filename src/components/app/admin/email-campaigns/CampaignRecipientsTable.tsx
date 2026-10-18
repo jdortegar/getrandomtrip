@@ -45,9 +45,8 @@ export function CampaignRecipientsTable({ copy, recipients }: CampaignRecipients
                     </td>
                     <td className={TD}>{recipient.name ?? "—"}</td>
                     <td className="px-5 py-4">
-                      {/* TODO: dedicated `email-send` badge family; `payment` maps FAILED to danger. */}
                       <StatusIndicatorBadge
-                        family="payment"
+                        family="email-send"
                         label={copy.status[recipient.status] ?? recipient.status}
                         status={recipient.status}
                       />
