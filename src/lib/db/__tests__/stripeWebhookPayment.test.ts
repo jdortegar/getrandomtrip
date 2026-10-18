@@ -82,9 +82,14 @@ describe("Stripe webhook payment identity", () => {
         typeof where.status === "string"
           ? where.status === row.status
           : !where.status?.notIn?.includes(row.status);
+      // Honor `column: null` guards (conditional backfills) like Postgres would.
+      const nullGuardsMatch = Object.entries(where).every(
+        ([key, value]) => value !== null || row[key] == null,
+      );
       if (
         !identityMatches ||
         !statusMatches ||
+        !nullGuardsMatch ||
         (where.updatedAt && where.updatedAt !== row.updatedAt)
       )
         return { count: 0 };
@@ -369,5 +374,66 @@ describe("Stripe webhook payment identity", () => {
     expect(sendBookingConfirmed).toHaveBeenCalledOnce();
     expect(sales).toHaveLength(0);
     expect(runSaleNotificationBatch).not.toHaveBeenCalled();
+  });
+
+  describe("promo code attribution", () => {
+    const promo = { promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123", promoDiscountUsd: 30 };
+
+    it("stores the promo code with the settlement", async () => {
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ status: "APPROVED", ...promo });
+    });
+
+    it("backfills the promo code when the client fallback settled first", async () => {
+      Object.assign(row, { status: "APPROVED", stripePromotionCodeId: null, promoCode: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ status: "APPROVED", ...promo });
+      expect(sendBookingConfirmed).not.toHaveBeenCalled();
+      expect(sales).toHaveLength(0);
+    });
+
+    it("backfills a missing discount on an already-attributed payment", async () => {
+      Object.assign(row, { status: "APPROVED", promoCode: "FUNDADOR30", stripePromotionCodeId: "promo_123", promoDiscountUsd: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ status: "APPROVED", ...promo });
+    });
+
+    it("never overwrites stored promo attribution or discount", async () => {
+      const stored = { promoCode: "OTHER10", stripePromotionCodeId: "promo_999", promoDiscountUsd: 10 };
+      Object.assign(row, { status: "APPROVED", ...stored });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject(stored);
+      expect(db.payment.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("keeps a concurrently stored discount when the backfill guard loses", async () => {
+      Object.assign(row, { status: "APPROVED", stripePromotionCodeId: null, promoCode: null, promoDiscountUsd: null });
+      trip.status = "CONFIRMED";
+      db.payment.findUnique.mockImplementationOnce(async () => {
+        const snapshot = { ...row, tripRequest: { ...trip } };
+        row.promoDiscountUsd = 12;
+        return snapshot;
+      });
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row).toMatchObject({ stripePromotionCodeId: "promo_123", promoDiscountUsd: 12 });
+    });
+
+    it("never backfills a promo code onto a replaced intent", async () => {
+      Object.assign(row, { status: "APPROVED", stripePaymentIntentId: "pi_new", stripePromotionCodeId: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED", ...promo });
+      expect(row.stripePromotionCodeId).toBeNull();
+      expect(db.payment.updateMany).not.toHaveBeenCalled();
+    });
+
+    it("does not touch a settled payment when the event carries no promo", async () => {
+      Object.assign(row, { status: "APPROVED", stripePromotionCodeId: null });
+      trip.status = "CONFIRMED";
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(db.payment.updateMany).not.toHaveBeenCalled();
+    });
   });
 });

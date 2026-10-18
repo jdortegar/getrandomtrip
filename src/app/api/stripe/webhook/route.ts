@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
-import { updatePaymentFromStripeWebhook } from "@/lib/db/payment";
+import { promoAttributionFromMetadata, updatePaymentFromStripeWebhook } from "@/lib/db/payment";
 import type { UpdatePaymentData } from "@/lib/db/payment";
 
 // Only maps statuses produced by the three events we handle.
@@ -59,7 +59,10 @@ export async function POST(request: NextRequest) {
       case "payment_intent.canceled": {
         const intent = event.data.object as Stripe.PaymentIntent;
         const newStatus = STRIPE_STATUS_MAP[intent.status] ?? "PENDING";
+        // Checkout writes "" when no promo applies; only a settled intent is attributed.
+        const succeeded = intent.status === "succeeded";
         const updateData: UpdatePaymentData = {
+          ...(succeeded ? promoAttributionFromMetadata(intent.metadata) : {}),
           status: newStatus,
           providerPaymentId: intent.id,
           stripePaymentIntentId: intent.id,
