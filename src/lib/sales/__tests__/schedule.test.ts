@@ -16,9 +16,9 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
-it("runs every five minutes with protected POST and bounded timeout", async () => {
+it("retries hourly, aligned with other jobs, with protected POST and bounded timeout", async () => {
   const timeout = vi.spyOn(AbortSignal, "timeout");
-  expect(config.schedule).toBe("*/5 * * * *");
+  expect(config.schedule).toBe("0 * * * *");
   expect((await handler()).status).toBe(200);
   expect(post).toHaveBeenCalledWith(
     "https://getrandomtrip.com/api/internal/sales-notifications",
