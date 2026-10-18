@@ -25,7 +25,8 @@ browser input; a shared development database cannot leak test sales into Slack.
    Netlify supplies `URL` (fallback: `NEXT_PUBLIC_SITE_URL`). Never enable the
    production webhook in previews/local development or print its URL in logs.
 3. Deploy. The application awaits one immediate bounded delivery attempt after
-   payment commit; the Netlify function retries due work every five minutes.
+   payment commit; the Netlify function retries due work hourly at :00,
+   sharing the wake-up with the other hourly jobs so Neon can scale to zero.
    Verify the scheduled function is enabled and review sanitized `[sales]` logs.
 4. With explicit approval, verify a controlled production sale and its outbox
    row's `sentAt`. No historical sales are backfilled; enabling the credential

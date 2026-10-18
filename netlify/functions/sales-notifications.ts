@@ -2,7 +2,10 @@ import { isProductionDeployment } from "../../src/lib/deployment";
 import type { Config } from "@netlify/functions";
 
 // Scheduled functions cannot be invoked publicly through their function URL.
-export const config: Config = { schedule: "*/5 * * * *" };
+// Delivery is event-driven (payment commit); this hourly sweep only retries
+// failures. It shares the :00 wake-up with the other hourly jobs so the
+// database can scale to zero between them.
+export const config: Config = { schedule: "0 * * * *" };
 
 export default async function handler(): Promise<Response> {
   if (!isProductionDeployment()) return new Response(null, { status: 204 });
