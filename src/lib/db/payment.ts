@@ -345,7 +345,7 @@ export async function updatePaymentFromStripeWebhook(
   }
   if (outcome.saleQueued) {
     // The durable event is already committed: Slack/worker failures must never
-    // undo a paid booking. A scheduled worker recovers interrupted delivery.
+    // undo a paid booking. An hourly worker retries interrupted delivery.
     await runSaleNotificationBatch(payment.id).catch(() => {
       console.error("[sales] immediate delivery unavailable; queued for retry");
     });
