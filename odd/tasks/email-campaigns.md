@@ -163,7 +163,18 @@ Per task: test-first Vitest where a deterministic unit exists (observe RED → G
 - T9b done (route: delegated writer): pages `email-campaigns/new` and `email-campaigns/[id]`; components `NewCampaignPageClient`, `CampaignDetailPageClient`, `CampaignEditorForm` (+ `CampaignContentFields`, `CampaignAudienceFields`, `campaignForm.ts`; PATCH sends only changed fields, CTA pair together), `PromoCodeLookup` + `PromoRulesSummary`, `CampaignPreviewPanel` (sandboxed iframe, test send), `CampaignSendPanel` (audience count → irreversible inline confirm → summary; retry PARTIAL), `CampaignMetricsPanel` + `CampaignKpiCard` + `CampaignRecipientsTable`, `CampaignDeleteControl` (inline confirm), `campaignApi.ts` error mapping; headings `emailCampaignsNew` / `emailCampaignDetail`; es/en copy + types. ~3,300 lines (≈1,060 tests, ≈300 copy) — one coherent unit.
 - RED: 5 new test files + 3 heading/metadata tests failed. GREEN: 79/79 (parent re-run); tsc + lint clean (parent re-run).
 - Gaps: recipient status badge uses the `payment` family (TODO) — proper `email-send` family needs `StatusIndicatorBadge.tsx`; preview iframe relies on the admin session cookie (manual check); manual QA (360/1280px, contrast, end-to-end create → promo → preview → test send → send → metrics) pending.
-- Status: uncommitted, awaiting user approval.
-- Remaining after T9: T10 ops docs.
+- T9b commit: `36e4c0fe`.
+- T9c (inline, user-approved): `email-send` badge family (QUEUED neutral, SENT sky, DELIVERED green, BOUNCED/FAILED red) in `StatusIndicatorBadge.tsx`, used by `CampaignRecipientsTable`. RED: 5 rows failed; GREEN: 83/83, tsc + eslint clean. Uncommitted, awaiting approval.
+
+### T10 — Ops docs (route: inline; passive doc)
+
+- `docs/EmailCampaigns.md`: env vars, migration + backfill, Resend tracking/webhook setup, Stripe codes and enforced rules, running a campaign, reading metrics, checklist, limits. Check: structural readback (passive doc). Uncommitted, awaiting approval.
+
+## Before merge (manual)
+
+- [ ] QA at 360px / 1280px and contrast on all email-campaign screens.
+- [ ] End-to-end on nonproduction with `EMAIL_TEST_RECIPIENTS`: create → promo lookup → preview (iframe loads with admin session) → test send → send → webhook events → metrics.
+- [ ] Unsubscribe link + one-click from a real inbox.
+- [ ] Apply migration to the target database (explicit approval) and run the backfill.
 
 - Remaining: T8 metrics, T7b, T9 admin UI, T10 ops docs.
