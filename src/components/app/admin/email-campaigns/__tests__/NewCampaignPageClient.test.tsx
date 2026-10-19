@@ -91,6 +91,12 @@ describe("NewCampaignPageClient", () => {
     expect(push).toHaveBeenCalledWith("/dashboard/admin/email-campaigns/camp-9");
   });
 
+  it("spaces its sections with flex gap, since the validation scope wrapper ignores margins", () => {
+    const form = view.container.querySelector('form[data-component="CampaignEditorForm"]');
+    expect(form?.className).toContain("gap-8");
+    expect(form?.className).not.toMatch(/\bspace-y-/);
+  });
+
   it("blocks submission and shows localized field errors", async () => {
     const { container } = view;
     setValue(field(container, "campaign-cta-label"), "Reservar");

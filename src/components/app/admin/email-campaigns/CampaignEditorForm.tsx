@@ -144,7 +144,7 @@ export function CampaignEditorForm({
 
   return (
     <form
-      className="space-y-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-8"
+      className="flex flex-col gap-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-8"
       data-component="CampaignEditorForm"
       noValidate
       onSubmit={(event) => void handleSubmit(event)}
