@@ -1222,18 +1222,38 @@
           "title": "Todavía no hay campañas",
           "body": "Crea tu primera campaña para enviarla a tus contactos y medir sus conversiones."
         },
+        "noMatches": "No hay campañas que coincidan con los filtros.",
+        "searchPlaceholder": "Buscar por nombre o asunto",
+        "filters": {
+          "status": "Estado",
+          "segment": "Segmento",
+          "allStatuses": "Todos los estados",
+          "allSegments": "Todos los segmentos"
+        },
+        "sort": {
+          "ariaSortBy": "Ordenar por {field}"
+        },
         "columns": {
           "campaign": "Campaña",
-          "locale": "Idioma",
-          "segment": "Segmento",
           "promoCode": "Código",
           "status": "Estado",
           "sentAt": "Enviada",
-          "sent": "Enviados",
-          "opens": "Aperturas únicas",
           "clicks": "Clics únicos",
           "conversions": "Conversiones",
-          "revenue": "Ingresos"
+          "revenue": "Ingresos",
+          "actions": "Acciones"
+        },
+        "actions": {
+          "view": "Ver campaña",
+          "edit": "Editar borrador",
+          "delete": "Eliminar borrador"
+        },
+        "delete": {
+          "title": "¿Eliminar borrador?",
+          "body": "Se eliminará «{name}». Esta acción no se puede deshacer.",
+          "confirm": "Sí, eliminar",
+          "deleting": "Eliminando…",
+          "cancel": "Cancelar"
         },
         "status": {
           "DRAFT": "Borrador",

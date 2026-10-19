@@ -1888,18 +1888,34 @@ export interface EmailCampaignsAdminDict {
     notSent: string;
     noPromo: string;
     empty: { title: string; body: string };
+    noMatches: string;
+    searchPlaceholder: string;
+    filters: {
+      status: string;
+      segment: string;
+      allStatuses: string;
+      allSegments: string;
+    };
+    /** `ariaSortBy` interpolates `{field}`. */
+    sort: { ariaSortBy: string };
     columns: {
       campaign: string;
-      locale: string;
-      segment: string;
       promoCode: string;
       status: string;
       sentAt: string;
-      sent: string;
-      opens: string;
       clicks: string;
       conversions: string;
       revenue: string;
+      actions: string;
+    };
+    actions: { view: string; edit: string; delete: string };
+    /** `body` interpolates `{name}`. */
+    delete: {
+      title: string;
+      body: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
     };
     /** Keyed by `CampaignStatus`. */
     status: { DRAFT: string; PARTIAL: string; SENDING: string; SENT: string };

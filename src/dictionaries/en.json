@@ -1222,18 +1222,38 @@
           "title": "No campaigns yet",
           "body": "Create your first campaign to send it to your contacts and measure its conversions."
         },
+        "noMatches": "No campaigns match the filters.",
+        "searchPlaceholder": "Search by name or subject",
+        "filters": {
+          "status": "Status",
+          "segment": "Segment",
+          "allStatuses": "All statuses",
+          "allSegments": "All segments"
+        },
+        "sort": {
+          "ariaSortBy": "Sort by {field}"
+        },
         "columns": {
           "campaign": "Campaign",
-          "locale": "Language",
-          "segment": "Segment",
           "promoCode": "Code",
           "status": "Status",
           "sentAt": "Sent on",
-          "sent": "Sent",
-          "opens": "Unique opens",
           "clicks": "Unique clicks",
           "conversions": "Conversions",
-          "revenue": "Revenue"
+          "revenue": "Revenue",
+          "actions": "Actions"
+        },
+        "actions": {
+          "view": "View campaign",
+          "edit": "Edit draft",
+          "delete": "Delete draft"
+        },
+        "delete": {
+          "title": "Delete draft?",
+          "body": "“{name}” will be deleted. This action cannot be undone.",
+          "confirm": "Yes, delete",
+          "deleting": "Deleting…",
+          "cancel": "Cancel"
         },
         "status": {
           "DRAFT": "Draft",

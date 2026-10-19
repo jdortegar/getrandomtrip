@@ -301,6 +301,20 @@ export interface CampaignSummary {
 
 export type CampaignListItem = Campaign & { summary: CampaignSummary };
 
+/** Sortable columns of the campaigns list. `sentAt` falls back to `createdAt` for drafts. */
+export type CampaignSortBy = "name" | "sentAt" | "conversions" | "revenue";
+
+export type CampaignSortOrder = "asc" | "desc";
+
+/** Client-side filters of the campaigns list; `""` means "all". */
+export interface CampaignListFilters {
+  /** Case-insensitive match over name and subject. */
+  search: string;
+  status: CampaignStatus | "";
+  /** Matches campaigns whose `segmentSources` include it. */
+  segment: ContactSource | "";
+}
+
 // Event metadata uses type aliases, not interfaces, so the values stay
 // assignable to Prisma JSON input (interfaces lack an index signature).
 
