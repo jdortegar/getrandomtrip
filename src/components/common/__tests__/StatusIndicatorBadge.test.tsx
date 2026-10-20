@@ -24,6 +24,18 @@ describe("component-owned status treatments", () => {
     ["tripper-booking", "unknown", "amber"],
     ["notification", "unread", "sky"],
     ["review", "submitted", "green"],
+    ["email-contact", "SUBSCRIBED", "green"],
+    ["email-contact", "UNSUBSCRIBED", "neutral"],
+    ["email-contact", "BOUNCED", "red"],
+    ["email-campaign", "DRAFT", "amber"],
+    ["email-campaign", "SENDING", "sky"],
+    ["email-campaign", "SENT", "green"],
+    ["email-campaign", "PARTIAL", "red"],
+    ["email-send", "QUEUED", "neutral"],
+    ["email-send", "SENT", "sky"],
+    ["email-send", "DELIVERED", "green"],
+    ["email-send", "BOUNCED", "red"],
+    ["email-send", "FAILED", "red"],
   ] as const)("preserves %s %s colors", (family, status, color) => {
     const html = renderToStaticMarkup(
       <StatusIndicatorBadge

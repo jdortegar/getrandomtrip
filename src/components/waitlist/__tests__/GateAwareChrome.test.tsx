@@ -146,6 +146,18 @@ it.each([
   expect(container.textContent?.includes("children")).toBe(!gated);
 });
 
+it.each(["/en/unsubscribe", "/unsubscribe"])(
+  "lets anonymous visitors reach the email unsubscribe page: %s",
+  async (pathname) => {
+    mockPathname = pathname;
+    mockSessionState = { data: null, status: "unauthenticated" };
+    render();
+    await flush();
+    expect(container.querySelector('[data-testid="waitlist-page"]')).toBeNull();
+    expect(container.textContent?.includes("children")).toBe(true);
+  },
+);
+
 describe("GateAwareChrome — session-status guard (ADR 7)", () => {
   it("given a browser with GATE_STORAGE_KEY set and a session still resolving (status === 'loading'), when the page mounts, then the key is NOT cleared and the gate is NOT shown", async () => {
     window.localStorage.setItem(GATE_STORAGE_KEY, "1");

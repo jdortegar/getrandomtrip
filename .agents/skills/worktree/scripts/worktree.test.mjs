@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyWorktree,
   devServersFor,
+  envCopyDecision,
   isCheckoutBusy,
   isLfsPhantom,
   parseLsofCwd,
@@ -333,6 +334,34 @@ describe("classifyWorktree", () => {
   it("cleans merged worktrees without real changes and keeps unmerged ones", () => {
     expect(classifyWorktree({ ...base, merged: true }).action).toBe("clean");
     expect(classifyWorktree(base).action).toBe("keep");
+  });
+});
+
+describe("envCopyDecision", () => {
+  const ok = {
+    isMain: false,
+    source: "file",
+    targetExists: false,
+    sourceIgnored: true,
+    targetIgnored: true,
+  };
+
+  it("copies a regular, Git-ignored file into a linked worktree", () => {
+    expect(envCopyDecision(ok)).toEqual({ action: "copy" });
+  });
+
+  it("skips when there is nothing to copy or the target already exists", () => {
+    expect(envCopyDecision({ ...ok, source: "missing" })).toEqual({ action: "skip" });
+    expect(envCopyDecision({ ...ok, targetExists: true })).toEqual({ action: "skip" });
+  });
+
+  it("refuses the main checkout, non-regular sources, and tracked files", () => {
+    expect(envCopyDecision({ ...ok, isMain: true }).reason).toMatch(/main checkout/);
+    expect(envCopyDecision({ ...ok, source: "symlink" }).reason).toMatch(/regular file/);
+    expect(envCopyDecision({ ...ok, source: "other" }).reason).toMatch(/regular file/);
+    expect(envCopyDecision({ ...ok, sourceIgnored: false }).reason).toMatch(/Git-ignored/);
+    expect(envCopyDecision({ ...ok, targetIgnored: false }).reason).toMatch(/Git-ignored/);
+    expect(envCopyDecision({ ...ok, isMain: true }).action).toBe("refuse");
   });
 });
 

@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 
+/** Max characters of review text quoted in the admin notification body. */
+const NOTIFICATION_EXCERPT_MAX = 140;
+
 // POST /api/reviews — public endpoint, token-based auth, no session required
 export async function POST(request: Request) {
   try {
@@ -100,14 +103,30 @@ export async function POST(request: Request) {
         })
       : null;
 
-    const notificationTitle = tripper?.name
-      ? `Nueva reseña para ${tripper.name}`
-      : "Nueva reseña (Randomtrip)";
+    const reviewText = title ?? content;
+    const excerpt =
+      reviewText.length > NOTIFICATION_EXCERPT_MAX
+        ? `${reviewText.slice(0, NOTIFICATION_EXCERPT_MAX)}…`
+        : reviewText;
+    const notificationCopy = (adminLocale: string | null) =>
+      adminLocale === "en"
+        ? {
+            title: tripper?.name
+              ? `New review for ${tripper.name}`
+              : "New review (Randomtrip)",
+            body: `Rating: ${rating}/5 — "${excerpt}"`,
+          }
+        : {
+            title: tripper?.name
+              ? `Nueva reseña para ${tripper.name}`
+              : "Nueva reseña (Randomtrip)",
+            body: `Calificación: ${rating}/5 — "${excerpt}"`,
+          };
 
-    // Fetch all admin user ids for notifications
+    // Fetch all admins (with their UI locale) for notifications
     const admins = await prisma.user.findMany({
       where: { roles: { has: "ADMIN" } },
-      select: { id: true },
+      select: { id: true, locale: true },
     });
 
     // Transactionally create Review + update TripRequest + notify admins
@@ -141,7 +160,7 @@ export async function POST(request: Request) {
             type: "REVIEW_SUBMITTED" as const,
             audience: "ADMIN" as const,
             isRead: false,
-            title: notificationTitle,
+            ...notificationCopy(admin.locale),
             metadata: { reviewId: review.id } as Prisma.InputJsonValue,
           }));
         await tx.notification.createMany({ data: notificationData });

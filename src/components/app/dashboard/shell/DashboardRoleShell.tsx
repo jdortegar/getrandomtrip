@@ -5,6 +5,7 @@ import { buildTravelerNavTabs } from "@/components/app/dashboard/config/traveler
 import { buildTripperNavTabs } from "@/components/app/dashboard/config/tripperNav";
 import { DashboardNavTabs } from "@/components/app/dashboard/shell/DashboardNavTabs";
 import { DashboardPageHeading } from "@/components/app/dashboard/shell/DashboardPageHeading";
+import { DashboardScrollReset } from "@/components/app/dashboard/shell/DashboardScrollReset";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -31,6 +32,7 @@ export function DashboardRoleShell({ role }: DashboardRoleShellProps) {
         <DashboardPageHeading role={role} />
       </div>
       <DashboardNavTabs tabs={tabs} />
+      <DashboardScrollReset />
     </div>
   );
 }

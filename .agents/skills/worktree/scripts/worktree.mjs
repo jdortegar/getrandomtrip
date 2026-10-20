@@ -3,7 +3,7 @@
 // at the bottom only wires them to git, lsof, npm, and next.
 // Usage: node .agents/skills/worktree/scripts/worktree.mjs <command> [args]
 import { execFileSync, spawn, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { closeSync, existsSync, lstatSync, openSync, readFileSync, writeSync } from "node:fs";
 import net from "node:net";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -197,6 +197,23 @@ export function classifyWorktree({
   if (recentlyActive) return { action: "keep", reason: "recent reflog activity" };
   if (merged) return { action: "clean", reason: `merged into ${MERGE_TARGET}` };
   return { action: "keep", reason: `not merged into ${MERGE_TARGET}` };
+}
+
+/**
+ * Whether to seed one env file from the main checkout into a worktree.
+ * `source` is "missing" | "file" | "symlink" | "other". Never overwrites, and
+ * only moves files Git ignores on both sides so a secret can't get committed.
+ */
+export function envCopyDecision({ isMain, source, targetExists, sourceIgnored, targetIgnored }) {
+  if (isMain) return { action: "refuse", reason: "target is the main checkout" };
+  if (source === "missing" || targetExists) return { action: "skip" };
+  if (source !== "file") {
+    return { action: "refuse", reason: "source must be a regular file, not a symlink" };
+  }
+  if (!sourceIgnored || !targetIgnored) {
+    return { action: "refuse", reason: "file must be Git-ignored in both checkouts" };
+  }
+  return { action: "copy" };
 }
 
 export function removeRefusal({ found, isMain, realChanges: changes, merged }) {
@@ -421,6 +438,51 @@ function busyCheck(root, branch, userSaysBusy) {
   });
 }
 
+function sourceKind(file) {
+  try {
+    const stat = lstatSync(file);
+    if (stat.isSymbolicLink()) return "symlink";
+    return stat.isFile() ? "file" : "other";
+  } catch {
+    return "missing";
+  }
+}
+
+function gitIgnores(dir, file) {
+  return spawnSync("git", ["check-ignore", "--quiet", "--", file], { cwd: dir }).status === 0;
+}
+
+/** Seed env files from the main checkout; contents are never printed. */
+function copyEnvFiles(root, target) {
+  for (const f of ENV_FILES) {
+    const source = path.join(root, f);
+    const dest = path.join(target, f);
+    const decision = envCopyDecision({
+      isMain: path.resolve(root) === path.resolve(target),
+      source: sourceKind(source),
+      targetExists: sourceKind(dest) !== "missing",
+      sourceIgnored: gitIgnores(root, f),
+      targetIgnored: gitIgnores(target, f),
+    });
+    if (decision.action === "refuse") {
+      console.log(`env: not copying ${f}: ${decision.reason}`);
+      continue;
+    }
+    if (decision.action === "skip") continue;
+    let fd;
+    try {
+      // `wx` fails if the file appeared meanwhile, so an existing one is never replaced.
+      fd = openSync(dest, "wx", 0o600);
+      writeSync(fd, readFileSync(source));
+      console.log(`env: copied ${f} from the main checkout`);
+    } catch (err) {
+      if (err.code !== "EEXIST") throw err;
+    } finally {
+      if (fd !== undefined) closeSync(fd);
+    }
+  }
+}
+
 function cmdCreate(root, branch, from, userSaysBusy) {
   const list = listWorktrees(root);
   const existing = findByBranch(list, branch);
@@ -462,15 +524,7 @@ function cmdCreate(root, branch, from, userSaysBusy) {
     const res = spawnSync("npm", ["ci"], { cwd: target, env, stdio: "inherit" });
     if (res.status !== 0) throw new Error("npm ci failed");
   }
-  const missing = ENV_FILES.filter(
-    (f) => existsSync(path.join(root, f)) && !existsSync(path.join(target, f)),
-  );
-  if (missing.length) {
-    console.log("\nAsk the user to run (agents never copy env files):");
-    for (const f of missing) {
-      console.log(`! cp '${path.join(root, f)}' '${path.join(target, f)}'`);
-    }
-  }
+  copyEnvFiles(root, target);
   console.log(`\nworktree ready: ${target}`);
 }
 

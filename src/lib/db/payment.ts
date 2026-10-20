@@ -32,8 +32,37 @@ export interface UpdatePaymentData {
   feeAmount?: number;
   taxAmount?: number;
   paidAt?: Date;
+  /** Checkout promo code from PaymentIntent metadata, for campaign attribution. */
+  promoCode?: string;
+  /** Stripe promotion code id (`promo_...`) from PaymentIntent metadata. */
+  stripePromotionCodeId?: string;
+  /** Promo discount in major USD units (e.g. `30.5` = USD 30.50), from PaymentIntent metadata. */
+  promoDiscountUsd?: number;
   providerResponse?: any;
   webhookData?: any;
+}
+
+/** Promo columns copied from a verified PaymentIntent's checkout metadata. */
+export type PromoAttribution = Pick<
+  UpdatePaymentData,
+  "promoCode" | "stripePromotionCodeId" | "promoDiscountUsd"
+>;
+
+/**
+ * Reads checkout promo attribution from PaymentIntent metadata. Checkout writes
+ * `""` / `"0"` when no promo applies, so empty or non-positive values stay
+ * unset; `discountAmountUsd` must be a finite positive number string.
+ */
+export function promoAttributionFromMetadata(
+  metadata: Record<string, string> | null | undefined,
+): PromoAttribution {
+  const raw = metadata?.discountAmountUsd;
+  const discount = typeof raw === "string" && raw.trim() !== "" ? Number(raw) : NaN;
+  return {
+    promoCode: metadata?.promoCode || undefined,
+    stripePromotionCodeId: metadata?.promoCodeId || undefined,
+    promoDiscountUsd: Number.isFinite(discount) && discount > 0 ? discount : undefined,
+  };
 }
 
 /**
@@ -215,6 +244,26 @@ export async function updatePaymentFromStripeWebhook(
     (!repairsApprovedBooking && payment.status === updateData.status) ||
     (payment.stripePaymentIntentId !== null && payment.stripePaymentIntentId !== stripePaymentIntentId)
   ) {
+    // Older settlements (or a fallback that predates promo persistence) may
+    // lack promo columns; the later webhook fills each one only while it is
+    // still null on the same intent, so stored values are never overwritten.
+    if (payment.stripePaymentIntentId === stripePaymentIntentId) {
+      if (updateData.stripePromotionCodeId && payment.stripePromotionCodeId == null) {
+        await prisma.payment.updateMany({
+          where: { id: payment.id, stripePaymentIntentId, stripePromotionCodeId: null },
+          data: {
+            promoCode: updateData.promoCode,
+            stripePromotionCodeId: updateData.stripePromotionCodeId,
+          },
+        });
+      }
+      if (updateData.promoDiscountUsd != null && payment.promoDiscountUsd == null) {
+        await prisma.payment.updateMany({
+          where: { id: payment.id, stripePaymentIntentId, promoDiscountUsd: null },
+          data: { promoDiscountUsd: updateData.promoDiscountUsd },
+        });
+      }
+    }
     return payment;
   }
 

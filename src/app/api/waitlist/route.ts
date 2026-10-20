@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { waitlistDisplayName } from "@/lib/email-campaigns/contactRules";
+import { upsertWaitlistContact } from "@/lib/email-campaigns/contacts";
 import { prisma } from "@/lib/prisma";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,6 +56,16 @@ export async function POST(request: Request) {
       update: { lastName, name },
       where: { email },
     });
+
+    // Marketing contact sync is best-effort: the signup already succeeded.
+    try {
+      await upsertWaitlistContact({
+        email,
+        name: waitlistDisplayName(name, lastName),
+      });
+    } catch (contactError) {
+      console.error("Waitlist contact sync error:", contactError);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
