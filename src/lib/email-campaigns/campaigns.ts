@@ -1,9 +1,11 @@
 /**
  * Server-only campaign repository (odd/tasks/email-campaigns.md, decisions
  * 3–5). Campaigns are editable only while DRAFT; the conditional writes keep
- * a campaign that started sending from being changed or deleted.
+ * a campaign that started sending from being changed or deleted. Campaigns
+ * target segments (odd/tasks/email-campaign-segments.md, decisions 4–5);
+ * `segmentSources` is only kept as a mirror of the targeted system segments.
  */
-import type { Campaign as CampaignRow } from "@prisma/client";
+import type { Campaign as CampaignRow, ContactSource } from "@prisma/client";
 
 import { isProductionDeployment } from "@/lib/deployment";
 import { sendMail } from "@/lib/helpers/sendMail";
@@ -12,12 +14,15 @@ import { lookupPromotionCode, toEmailPromo } from "@/lib/email-campaigns/promo";
 import { renderCampaignEmail } from "@/lib/email-campaigns/render";
 import { buildUnsubscribePageUrl } from "@/lib/email-campaigns/unsubscribeToken";
 import { toContactLocale } from "@/lib/email-campaigns/contactRules";
+import { normalizeSegmentIds } from "@/lib/email-campaigns/segmentRules";
+import { SEGMENT_REFS_INCLUDE, toSegmentRefs } from "@/lib/email-campaigns/segments";
 import type {
   Campaign,
   CampaignEmailPromo,
   CampaignErrorCode,
   CampaignInput,
   CampaignUpdateInput,
+  SegmentRef,
 } from "@/types/emailCampaign";
 
 export class CampaignError extends Error {
@@ -35,12 +40,20 @@ export const CAMPAIGN_ERROR_STATUS: Record<CampaignErrorCode, number> = {
   admin_email_missing: 400,
   campaign_not_sendable: 409,
   campaign_empty_audience: 400,
+  invalid_segment: 400,
+};
+
+/** Every query returning a `Campaign` loads its segments with this include. */
+export const CAMPAIGN_INCLUDE = { segments: SEGMENT_REFS_INCLUDE } as const;
+
+type CampaignRowWithSegments = CampaignRow & {
+  segments?: { segment: SegmentRef }[];
 };
 
 /** sendMail already prefixes this outside production. */
 const TEST_SUBJECT_PREFIX = "[TEST] ";
 
-export function toCampaign(row: CampaignRow): Campaign {
+export function toCampaign(row: CampaignRowWithSegments): Campaign {
   return {
     id: row.id,
     name: row.name,
@@ -51,7 +64,7 @@ export function toCampaign(row: CampaignRow): Campaign {
     ctaLabel: row.ctaLabel,
     ctaUrl: row.ctaUrl,
     locale: toContactLocale(row.locale),
-    segmentSources: row.segmentSources,
+    segments: toSegmentRefs(row.segments),
     stripePromotionCodeId: row.stripePromotionCodeId,
     promoCode: row.promoCode,
     status: row.status,
@@ -69,6 +82,24 @@ async function resolvePromo(code: string | null) {
   return { stripePromotionCodeId: summary.id, promoCode: summary.code };
 }
 
+/**
+ * De-duplicated segment ids plus the `segmentSources` mirror of the system
+ * ones, or `invalid_segment` when any id is unknown.
+ */
+async function resolveSegments(ids: string[]) {
+  const segmentIds = normalizeSegmentIds(ids);
+  if (segmentIds.length === 0) throw new CampaignError("invalid_segment");
+  const rows = await prisma.segment.findMany({
+    select: { id: true, systemKey: true },
+    where: { id: { in: segmentIds } },
+  });
+  if (rows.length !== segmentIds.length) throw new CampaignError("invalid_segment");
+  const segmentSources = rows
+    .map((row) => row.systemKey)
+    .filter((key): key is ContactSource => key !== null);
+  return { segmentIds, segmentSources };
+}
+
 /** Distinguishes a refused conditional write: missing vs no longer DRAFT. */
 async function refusalFor(id: string): Promise<CampaignError> {
   const existing = await prisma.campaign.findUnique({
@@ -79,12 +110,18 @@ async function refusalFor(id: string): Promise<CampaignError> {
 }
 
 export async function listCampaigns(): Promise<Campaign[]> {
-  const rows = await prisma.campaign.findMany({ orderBy: { createdAt: "desc" } });
+  const rows = await prisma.campaign.findMany({
+    orderBy: { createdAt: "desc" },
+    include: CAMPAIGN_INCLUDE,
+  });
   return rows.map(toCampaign);
 }
 
 export async function getCampaign(id: string): Promise<Campaign | null> {
-  const row = await prisma.campaign.findUnique({ where: { id } });
+  const row = await prisma.campaign.findUnique({
+    where: { id },
+    include: CAMPAIGN_INCLUDE,
+  });
   return row ? toCampaign(row) : null;
 }
 
@@ -92,10 +129,19 @@ export async function createCampaign(
   input: CampaignInput,
   adminId: string,
 ): Promise<Campaign> {
-  const { promoCode, ...fields } = input;
+  const { promoCode, segmentIds: requestedIds, ...fields } = input;
+  const { segmentIds, segmentSources } = await resolveSegments(requestedIds);
   const promo = await resolvePromo(promoCode);
   const row = await prisma.campaign.create({
-    data: { ...fields, ...promo, status: "DRAFT", createdById: adminId },
+    data: {
+      ...fields,
+      ...promo,
+      segmentSources,
+      segments: { create: segmentIds.map((segmentId) => ({ segmentId })) },
+      status: "DRAFT",
+      createdById: adminId,
+    },
+    include: CAMPAIGN_INCLUDE,
   });
   return toCampaign(row);
 }
@@ -104,19 +150,43 @@ export async function updateCampaign(
   id: string,
   input: CampaignUpdateInput,
 ): Promise<Campaign> {
-  const { promoCode, ...fields } = input;
-  const data =
+  const { promoCode, segmentIds: requestedIds, ...fields } = input;
+  const segments =
+    requestedIds === undefined ? null : await resolveSegments(requestedIds);
+  const withPromo =
     promoCode === undefined
       ? fields
       : { ...fields, ...(await resolvePromo(promoCode)) };
 
-  const { count } = await prisma.campaign.updateMany({
-    where: { id, status: "DRAFT" },
-    data,
-  });
-  if (count === 0) throw await refusalFor(id);
+  if (!segments) {
+    const { count } = await prisma.campaign.updateMany({
+      where: { id, status: "DRAFT" },
+      data: withPromo,
+    });
+    if (count === 0) throw await refusalFor(id);
+  } else {
+    // The DRAFT row lock taken by updateMany holds off a concurrent send
+    // claim until the new targets are committed.
+    await prisma.$transaction(async (tx) => {
+      const { count } = await tx.campaign.updateMany({
+        where: { id, status: "DRAFT" },
+        data: { ...withPromo, segmentSources: segments.segmentSources },
+      });
+      if (count === 0) throw await refusalFor(id);
+      await tx.campaignSegment.deleteMany({
+        where: { campaignId: id, segmentId: { notIn: segments.segmentIds } },
+      });
+      await tx.campaignSegment.createMany({
+        data: segments.segmentIds.map((segmentId) => ({ campaignId: id, segmentId })),
+        skipDuplicates: true,
+      });
+    });
+  }
 
-  const row = await prisma.campaign.findUnique({ where: { id } });
+  const row = await prisma.campaign.findUnique({
+    where: { id },
+    include: CAMPAIGN_INCLUDE,
+  });
   if (!row) throw new CampaignError("not_found");
   return toCampaign(row);
 }

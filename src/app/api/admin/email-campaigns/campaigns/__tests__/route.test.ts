@@ -34,7 +34,7 @@ const valid = {
   title: "Llegó el momento",
   bodyMarkdown: "Hola",
   locale: "es",
-  segmentSources: ["WAITLIST"],
+  segmentIds: ["seg_waitlist", "seg_waitlist", "s1"],
   promoCode: "fundador30",
 };
 
@@ -142,6 +142,7 @@ describe("POST", () => {
     expect(createCampaign).toHaveBeenCalledWith(
       expect.objectContaining({
         locale: "es",
+        segmentIds: ["seg_waitlist", "s1"],
         promoCode: "FUNDADOR30",
         preheader: null,
         ctaLabel: null,
@@ -151,11 +152,23 @@ describe("POST", () => {
     );
   });
 
-  it("returns 400 for invalid input", async () => {
-    const res = await POST(postRequest({ ...valid, segmentSources: [] }));
+  it.each([
+    ["no segments", { ...valid, segmentIds: [] }],
+    ["legacy segment sources", { ...valid, segmentIds: undefined, segmentSources: ["WAITLIST"] }],
+  ])("returns 400 for invalid input: %s", async (_label, body) => {
+    const res = await POST(postRequest(body));
 
     expect(res.status).toBe(400);
     expect(createCampaign).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 invalid_segment for unknown segment ids", async () => {
+    vi.mocked(createCampaign).mockRejectedValue(new CampaignError("invalid_segment"));
+
+    const res = await POST(postRequest(valid));
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "invalid_segment" });
   });
 
   it("returns 400 invalid_promo_code for unknown or inactive codes", async () => {

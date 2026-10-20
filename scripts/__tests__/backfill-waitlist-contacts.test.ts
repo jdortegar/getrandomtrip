@@ -81,8 +81,15 @@ describe("runWaitlistContactBackfill", () => {
     return {
       waitlistEntry: { findMany: vi.fn().mockResolvedValue([entry()]) },
       contact: {
-        findMany: vi.fn().mockResolvedValue([]),
+        // Contact emails for the planner, then WAITLIST contact ids for memberships.
+        findMany: vi
+          .fn()
+          .mockResolvedValueOnce([])
+          .mockResolvedValueOnce([{ id: "k1" }, { id: "k2" }]),
         createMany: vi.fn().mockResolvedValue({ count: 1 }),
+      },
+      contactSegment: {
+        createMany: vi.fn().mockResolvedValue({ count: 2 }),
       },
       user: { findMany: vi.fn().mockResolvedValue([]) },
     };
@@ -95,6 +102,7 @@ describe("runWaitlistContactBackfill", () => {
     const result = await runWaitlistContactBackfill(db, "dry-run", logger);
 
     expect(db.contact.createMany).not.toHaveBeenCalled();
+    expect(db.contactSegment.createMany).not.toHaveBeenCalled();
     expect(result.report).toEqual({ entries: 1, created: 1, skipped: 0 });
   });
 
@@ -118,5 +126,25 @@ describe("runWaitlistContactBackfill", () => {
       skipDuplicates: true,
     });
     expect(result.report.created).toBe(1);
+  });
+
+  it("adds every WAITLIST contact to the waitlist segment idempotently", async () => {
+    const db = client();
+    const logger = { log: vi.fn() };
+
+    const result = await runWaitlistContactBackfill(db, "apply", logger);
+
+    expect(db.contact.findMany).toHaveBeenCalledWith({
+      select: { id: true },
+      where: { source: "WAITLIST" },
+    });
+    expect(db.contactSegment.createMany).toHaveBeenCalledWith({
+      data: [
+        { contactId: "k1", segmentId: "seg_waitlist" },
+        { contactId: "k2", segmentId: "seg_waitlist" },
+      ],
+      skipDuplicates: true,
+    });
+    expect(result.report.memberships).toBe(2);
   });
 });

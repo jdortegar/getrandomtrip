@@ -1,16 +1,15 @@
 "use client";
 
-import Chip from "@/components/Chip";
 import { FormSelectField } from "@/components/ui/FormField";
 import type { EmailCampaignsAdminDict } from "@/lib/types/dictionary";
 import type {
   CampaignFormValues,
   CampaignLocale,
-  ContactSource,
+  SegmentSummary,
+  SegmentsLoadStatus,
 } from "@/types/emailCampaign";
 import { PromoCodeLookup } from "./PromoCodeLookup";
-
-const SOURCES: ContactSource[] = ["WAITLIST", "FRIENDS_FAMILY"];
+import { SegmentChipPicker } from "./SegmentChipPicker";
 
 interface CampaignAudienceFieldsProps {
   copy: EmailCampaignsAdminDict["editor"];
@@ -19,23 +18,29 @@ interface CampaignAudienceFieldsProps {
   localeLabels: EmailCampaignsAdminDict["locales"];
   onLocaleChange: (locale: CampaignLocale) => void;
   onPromoCodeChange: (value: string) => void;
-  onToggleSource: (source: ContactSource) => void;
+  onRetrySegments: () => void;
+  onToggleSegment: (id: string) => void;
   /** Localized segment error, shown under the chips. */
   segmentError?: string;
-  sourceLabels: EmailCampaignsAdminDict["contacts"]["source"];
+  segments: SegmentSummary[];
+  segmentsCopy: EmailCampaignsAdminDict["segments"]["picker"];
+  segmentsStatus: SegmentsLoadStatus;
   values: CampaignFormValues;
 }
 
-/** Audience inputs of the campaign editor: locale, segment sources and promo code. */
+/** Audience inputs of the campaign editor: locale, segments and promo code. */
 export function CampaignAudienceFields({
   copy,
   dateLocale,
   localeLabels,
   onLocaleChange,
   onPromoCodeChange,
-  onToggleSource,
+  onRetrySegments,
+  onToggleSegment,
   segmentError,
-  sourceLabels,
+  segments,
+  segmentsCopy,
+  segmentsStatus,
   values,
 }: CampaignAudienceFieldsProps) {
   return (
@@ -61,18 +66,15 @@ export function CampaignAudienceFields({
           <span className="text-base text-gray-600" id="campaign-segment-label">
             {copy.fields.segment}
           </span>
-          <div className="flex flex-wrap gap-2">
-            {SOURCES.map((source) => (
-              <Chip
-                active={values.segmentSources.includes(source)}
-                key={source}
-                onClick={() => onToggleSource(source)}
-                size="touch"
-              >
-                {sourceLabels[source]}
-              </Chip>
-            ))}
-          </div>
+          <SegmentChipPicker
+            copy={segmentsCopy}
+            onRetry={onRetrySegments}
+            onToggle={onToggleSegment}
+            segments={segments}
+            selectedIds={values.segmentIds}
+            showCounts
+            status={segmentsStatus}
+          />
           <p className="text-xs text-neutral-500" id="campaign-segment-hint">
             {copy.fields.segmentHint}
           </p>

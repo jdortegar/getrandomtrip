@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
       limit: searchParams.get("limit"),
       source: searchParams.get("source") ?? undefined,
       status: searchParams.get("status") ?? undefined,
+      segmentId: searchParams.get("segmentId") ?? undefined,
       q: searchParams.get("q") ?? undefined,
     });
     if (!parsed.success) {
@@ -56,6 +57,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof ContactError && error.code === "duplicate_email") {
       return NextResponse.json({ error: error.code }, { status: 409 });
+    }
+    if (error instanceof ContactError && error.code === "invalid_segment") {
+      return NextResponse.json({ error: error.code }, { status: 400 });
     }
     console.error("[admin/email-campaigns/contacts] POST", error);
     return NextResponse.json(

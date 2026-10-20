@@ -32,7 +32,7 @@ export function NewCampaignPageClient() {
         onSaved={(campaign) =>
           router.push(pathForLocale(safeLocale, `${CAMPAIGNS_PATH}/${campaign.id}`))
         }
-        sourceLabels={pageCopy.contacts.source}
+        segmentsCopy={pageCopy.segments.picker}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { Megaphone, Users } from "lucide-react";
+import { Layers, Megaphone, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TabSelector } from "@/components/ui/TabSelector";
 import { hasLocale } from "@/lib/i18n/config";
@@ -11,6 +11,7 @@ import type { EmailCampaignsAdminView } from "@/types/emailCampaign";
 const VIEW_PATHS: Record<EmailCampaignsAdminView, string> = {
   campaigns: "/dashboard/admin/email-campaigns",
   contacts: "/dashboard/admin/email-campaigns/contacts",
+  segments: "/dashboard/admin/email-campaigns/segments",
 };
 
 interface EmailCampaignsSubnavProps {
@@ -19,7 +20,7 @@ interface EmailCampaignsSubnavProps {
   locale: string;
 }
 
-/** Secondary navigation between the campaigns list and the contacts page. */
+/** Secondary navigation between the campaigns, contacts and segments pages. */
 export function EmailCampaignsSubnav({
   active,
   copy,
@@ -41,6 +42,7 @@ export function EmailCampaignsSubnav({
       tabs={[
         { icon: Megaphone, id: "campaigns", label: copy.campaigns },
         { icon: Users, id: "contacts", label: copy.contacts },
+        { icon: Layers, id: "segments", label: copy.segments },
       ]}
       variant="inline"
     />

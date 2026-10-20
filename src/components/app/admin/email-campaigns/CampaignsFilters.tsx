@@ -5,12 +5,11 @@ import type { EmailCampaignsAdminDict, MarketingDictionary } from "@/lib/types/d
 import type {
   CampaignListFilters,
   CampaignStatus,
-  ContactSource,
+  SegmentRef,
 } from "@/types/emailCampaign";
 import { EMPTY_CAMPAIGN_FILTERS } from "./campaignListSort";
 
 const STATUSES: CampaignStatus[] = ["DRAFT", "SENDING", "SENT", "PARTIAL"];
-const SEGMENTS: ContactSource[] = ["WAITLIST", "FRIENDS_FAMILY"];
 
 interface CampaignsFiltersProps {
   copy: EmailCampaignsAdminDict["campaigns"];
@@ -19,7 +18,8 @@ interface CampaignsFiltersProps {
   hasError: boolean;
   isLoading: boolean;
   onChange: (filters: CampaignListFilters) => void;
-  segmentLabels: EmailCampaignsAdminDict["contacts"]["source"];
+  /** Segment filter options, in the segments API order. */
+  segments: SegmentRef[];
   shown: number;
   total: number;
 }
@@ -32,7 +32,7 @@ export function CampaignsFilters({
   hasError,
   isLoading,
   onChange,
-  segmentLabels,
+  segments,
   shown,
   total,
 }: CampaignsFiltersProps) {
@@ -55,10 +55,10 @@ export function CampaignsFilters({
         {
           id: "email-campaigns-segment",
           label: copy.filters.segment,
-          onChange: (value) => onChange({ ...filters, segment: value as ContactSource | "" }),
+          onChange: (value) => onChange({ ...filters, segment: value }),
           options: [
             { label: copy.filters.allSegments, value: "" },
-            ...SEGMENTS.map((value) => ({ label: segmentLabels[value], value })),
+            ...segments.map((segment) => ({ label: segment.name, value: segment.id })),
           ],
           value: filters.segment,
         },

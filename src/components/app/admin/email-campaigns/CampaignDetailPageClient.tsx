@@ -147,7 +147,7 @@ export function CampaignDetailPageClient({ campaignId }: CampaignDetailPageClien
             errorsCopy={pageCopy.errors}
             localeLabels={pageCopy.locales}
             onSaved={setCampaign}
-            sourceLabels={pageCopy.contacts.source}
+            segmentsCopy={pageCopy.segments.picker}
           />
           <CampaignDeleteControl
             campaignId={campaign.id}

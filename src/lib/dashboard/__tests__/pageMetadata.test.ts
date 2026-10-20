@@ -30,6 +30,13 @@ describe("dashboardPageMetadata", () => {
     expect(contacts.title).toBe(es.adminDashboard.pageHeadings.emailCampaignContacts.title);
   });
 
+  it("resolves the email campaign segments route", async () => {
+    const segments = await dashboardPageMetadata(
+      "/dashboard/admin/email-campaigns/segments",
+    )(params("en"));
+    expect(segments.title).toBe(en.adminDashboard.pageHeadings.emailCampaignSegments.title);
+  });
+
   it("resolves the new campaign and campaign detail routes", async () => {
     const created = await dashboardPageMetadata("/dashboard/admin/email-campaigns/new")(
       params("es"),

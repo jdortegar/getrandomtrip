@@ -9,6 +9,9 @@
  * - `userId` links the account whose email matches case-insensitively.
  * - Idempotent: an existing contact is never modified (its source, status and
  *   locale stay as they are) and `createMany` skips duplicates.
+ * - Apply mode also adds every WAITLIST contact to the waitlist system segment
+ *   (odd/tasks/email-campaign-segments.md); existing memberships are skipped
+ *   and none are removed. Requires the segments migration.
  *
  * Modes (dry-run is the default; forgetting a flag never writes):
  *   npm run db:backfill-waitlist-contacts             # plan summary only
@@ -20,6 +23,7 @@ import {
   normalizeContactEmail,
   waitlistDisplayName,
 } from "../src/lib/email-campaigns/contactRules";
+import { SYSTEM_SEGMENT_IDS } from "../src/lib/email-campaigns/segmentRules";
 
 const LOG_PREFIX = "[backfill-waitlist-contacts]";
 
@@ -48,6 +52,8 @@ export interface WaitlistContactBackfillReport {
   entries: number;
   created: number;
   skipped: number;
+  /** Waitlist segment memberships added; apply mode only. */
+  memberships?: number;
 }
 
 export interface WaitlistContactBackfillPlan {
@@ -102,8 +108,18 @@ export interface BackfillClient {
   };
   contact: {
     findMany(args: { select: { email: true } }): Promise<{ email: string }[]>;
+    findMany(args: {
+      select: { id: true };
+      where: { source: "WAITLIST" };
+    }): Promise<{ id: string }[]>;
     createMany(args: {
       data: (PlannedContact & { source: "WAITLIST"; locale: string })[];
+      skipDuplicates: boolean;
+    }): Promise<{ count: number }>;
+  };
+  contactSegment: {
+    createMany(args: {
+      data: { contactId: string; segmentId: string }[];
       skipDuplicates: boolean;
     }): Promise<{ count: number }>;
   };
@@ -167,12 +183,29 @@ export async function runWaitlistContactBackfill(
         });
   logger.log(`${LOG_PREFIX} created: ${count}`);
 
+  const waitlistContacts = await client.contact.findMany({
+    select: { id: true },
+    where: { source: "WAITLIST" },
+  });
+  const { count: memberships } =
+    waitlistContacts.length === 0
+      ? { count: 0 }
+      : await client.contactSegment.createMany({
+          data: waitlistContacts.map((contact) => ({
+            contactId: contact.id,
+            segmentId: SYSTEM_SEGMENT_IDS.WAITLIST,
+          })),
+          skipDuplicates: true,
+        });
+  logger.log(`${LOG_PREFIX} waitlist segment memberships added: ${memberships}`);
+
   return {
     create: plan.create,
     report: {
       entries: plan.report.entries,
       created: count,
       skipped: plan.report.entries - count,
+      memberships,
     },
   };
 }

@@ -8,7 +8,7 @@ import { CAMPAIGN_FIELD_LIMITS } from "./campaignForm";
 
 type ContentField = Exclude<
   keyof CampaignFormValues,
-  "locale" | "segmentSources" | "promoCode"
+  "locale" | "segmentIds" | "promoCode"
 >;
 
 interface CampaignContentFieldsProps {

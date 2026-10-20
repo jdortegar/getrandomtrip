@@ -81,7 +81,7 @@ describe("GET", () => {
   it("passes parsed filters and clamps the limit", async () => {
     const res = await GET(
       new NextRequest(
-        `${BASE}?page=2&limit=500&source=FRIENDS_FAMILY&status=UNSUBSCRIBED&q=%20ana%20`,
+        `${BASE}?page=2&limit=500&source=FRIENDS_FAMILY&status=UNSUBSCRIBED&segmentId=s1&q=%20ana%20`,
       ),
     );
 
@@ -91,6 +91,7 @@ describe("GET", () => {
       limit: 100,
       source: "FRIENDS_FAMILY",
       status: "UNSUBSCRIBED",
+      segmentId: "s1",
       q: "ana",
     });
   });
@@ -117,11 +118,17 @@ describe("POST", () => {
       status: "SUBSCRIBED",
       locale: "en",
       tags: [],
+      segments: [],
       createdAt: "2026-10-01T00:00:00.000Z",
     });
 
     const res = await POST(
-      postRequest({ email: "tio@example.com", locale: "en", tags: ["vip"] }),
+      postRequest({
+        email: "tio@example.com",
+        locale: "en",
+        tags: ["vip"],
+        segmentIds: ["s1"],
+      }),
     );
 
     expect(res.status).toBe(201);
@@ -129,6 +136,7 @@ describe("POST", () => {
       email: "tio@example.com",
       locale: "en",
       tags: ["vip"],
+      segmentIds: ["s1"],
     });
     expect((await res.json()).contact.id).toBe("c1");
   });
@@ -142,6 +150,17 @@ describe("POST", () => {
 
     expect(res.status).toBe(409);
     expect(await res.json()).toEqual({ error: "duplicate_email" });
+  });
+
+  it("returns 400 for unknown segment ids", async () => {
+    vi.mocked(createFriendsFamilyContact).mockRejectedValue(
+      new ContactError("invalid_segment"),
+    );
+
+    const res = await POST(postRequest({ email: "tio@example.com", segmentIds: ["nope"] }));
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "invalid_segment" });
   });
 
   it.each([

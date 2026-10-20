@@ -43,7 +43,8 @@ export function filterCampaigns(
   return campaigns.filter(
     (campaign) =>
       (!filters.status || campaign.status === filters.status) &&
-      (!filters.segment || campaign.segmentSources.includes(filters.segment)) &&
+      (!filters.segment ||
+        campaign.segments.some((segment) => segment.id === filters.segment)) &&
       (!query ||
         campaign.name.toLocaleLowerCase().includes(query) ||
         campaign.subject.toLocaleLowerCase().includes(query)),

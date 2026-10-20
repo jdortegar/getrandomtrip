@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import es from "@/dictionaries/es.json";
 import { ContactsPageClient } from "@/components/app/admin/email-campaigns/ContactsPageClient";
 import type { Contact } from "@/types/emailCampaign";
+import { chipByLabel, stubFetchWithSegments } from "./emailCampaignsTestUtils";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -44,6 +45,7 @@ function contact(overrides: Partial<Contact> = {}): Contact {
     source: "FRIENDS_FAMILY",
     status: "SUBSCRIBED",
     tags: [],
+    segments: [],
     ...overrides,
   };
 }
@@ -109,7 +111,7 @@ beforeEach(() => {
   push.mockReset();
   fetchMock.mockReset();
   fetchMock.mockResolvedValue(listResponse([]));
-  vi.stubGlobal("fetch", fetchMock);
+  stubFetchWithSegments(fetchMock);
 });
 
 afterEach(() => {
@@ -168,6 +170,44 @@ describe("ContactsPageClient — list", () => {
     expect(lastUrl).toContain("page=1");
   });
 
+  it("shows each contact's segments and filters by segment id", async () => {
+    fetchMock.mockResolvedValue(
+      listResponse([
+        contact({
+          segments: [
+            { id: "seg_friends_family", name: "Amigos y familia", systemKey: "FRIENDS_FAMILY" },
+            { id: "seg-custom", name: "Viajeros frecuentes", systemKey: null },
+          ],
+        }),
+      ]),
+    );
+    render();
+    await flush();
+
+    const headers = Array.from(container.querySelectorAll("thead th")).map((th) => th.textContent);
+    expect(headers).toContain(copy.columns.segments);
+    const labels = Array.from(
+      container.querySelectorAll('tbody [data-component="SegmentLabel"]'),
+    ).map((label) => label.textContent);
+    expect(labels).toEqual(["Amigos y familia", "Viajeros frecuentes"]);
+
+    const select = field<HTMLSelectElement>("email-contacts-segment");
+    expect(Array.from(select.options).map((option) => option.textContent)).toEqual([
+      copy.filters.allSegments,
+      "Lista de espera",
+      "Amigos y familia",
+      "Viajeros frecuentes",
+    ]);
+    await act(async () => {
+      setValue(select, "seg-custom");
+    });
+    await flush();
+
+    const lastUrl = String(calls("GET").at(-1)?.[0]);
+    expect(lastUrl).toContain("segmentId=seg-custom");
+    expect(lastUrl).toContain("page=1");
+  });
+
   it("shows the empty state microcopy", async () => {
     render();
     await flush();
@@ -216,8 +256,30 @@ describe("ContactsPageClient — add friends & family", () => {
       tags: ["vip", "familia"],
     });
     expect(container.textContent).toContain(copy.form.success);
+    expect(container.textContent).toContain(copy.form.segmentsHint);
     expect(calls("GET").length).toBeGreaterThan(getsBefore);
     expect(field<HTMLInputElement>("email-contact-email").value).toBe("");
+  });
+
+  it("offers extra segments without the friends & family one and posts the picked ids", async () => {
+    fetchMock.mockImplementation(async (_url: string, init?: RequestInit) =>
+      init?.method === "POST"
+        ? jsonResponse({ contact: contact({ id: "c-9" }) }, 201)
+        : listResponse([]),
+    );
+    render();
+    await flush();
+
+    const form = container.querySelector('[data-component="AddContactForm"]') as HTMLElement;
+    expect(chipByLabel(form, "Amigos y familia")).toBeUndefined();
+    await act(async () => {
+      chipByLabel(form, "Viajeros frecuentes")?.click();
+    });
+    await fillAndSubmit("nuevo@example.com");
+
+    const [, init] = calls("POST")[0] ?? [];
+    expect(JSON.parse(String((init as RequestInit).body)).segmentIds).toEqual(["seg-custom"]);
+    expect(chipByLabel(form, "Viajeros frecuentes")?.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("shows the duplicate message on 409", async () => {
@@ -356,5 +418,111 @@ describe("ContactsPageClient — resubscribe", () => {
     expect(resubscribeButton()?.getAttribute("aria-label")).toBe(
       copy.actions.resubscribe,
     );
+  });
+});
+
+describe("ContactsPageClient — edit", () => {
+  function editButton(): HTMLButtonElement | null {
+    return container.querySelector(`button[aria-label="${copy.actions.edit}"]`);
+  }
+
+  function dialogButton(text: string): HTMLButtonElement | undefined {
+    return Array.from(document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')).find(
+      (button) => button.textContent?.trim() === text,
+    );
+  }
+
+  function dialogField<T extends HTMLElement>(id: string): T {
+    const found = document.querySelector(`[role="dialog"] #${id}`);
+    if (!found) throw new Error(`Dialog field #${id} not found`);
+    return found as T;
+  }
+
+  const editable = contact({
+    id: "c-5",
+    segments: [{ id: "seg_friends_family", name: "Amigos y familia", systemKey: "FRIENDS_FAMILY" }],
+  });
+
+  it("edits name, language and segments and updates the row", async () => {
+    const patch = deferred<ReturnType<typeof jsonResponse>>();
+    fetchMock.mockImplementation((_url: string, init?: RequestInit) =>
+      init?.method === "PATCH" ? patch.promise : Promise.resolve(listResponse([editable])),
+    );
+    render();
+    await flush();
+
+    await act(async () => {
+      editButton()?.click();
+    });
+    const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog.textContent).toContain(copy.edit.title);
+    expect(dialogField<HTMLInputElement>("email-contact-edit-name").value).toBe("Ana");
+    expect(chipByLabel(dialog, "Amigos y familia")?.getAttribute("aria-pressed")).toBe("true");
+
+    await act(async () => {
+      setValue(dialogField<HTMLInputElement>("email-contact-edit-name"), "  Ana María ");
+      setValue(dialogField<HTMLSelectElement>("email-contact-edit-locale"), "en");
+    });
+    await act(async () => {
+      chipByLabel(dialog, "Viajeros frecuentes")?.click();
+    });
+    await act(async () => {
+      dialogButton(copy.edit.save)?.click();
+    });
+    await act(async () => {
+      dialogButton(copy.edit.saving)?.click();
+    });
+
+    expect(calls("PATCH")).toHaveLength(1);
+    const [url, init] = calls("PATCH")[0] ?? [];
+    expect(url).toBe("/api/admin/email-campaigns/contacts/c-5");
+    expect(JSON.parse(String((init as RequestInit).body))).toEqual({
+      locale: "en",
+      name: "Ana María",
+      segmentIds: ["seg_friends_family", "seg-custom"],
+    });
+    expect(dialogButton(copy.edit.saving)?.getAttribute("aria-busy")).toBe("true");
+
+    patch.resolve(
+      jsonResponse({
+        contact: contact({
+          ...editable,
+          locale: "en",
+          name: "Ana María",
+          segments: [
+            { id: "seg_friends_family", name: "Amigos y familia", systemKey: "FRIENDS_FAMILY" },
+            { id: "seg-custom", name: "Viajeros frecuentes", systemKey: null },
+          ],
+        }),
+      }),
+    );
+    await flush();
+
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(container.textContent).toContain("Ana María");
+    expect(container.textContent).toContain("Viajeros frecuentes");
+    expect(container.textContent).toContain(copy.edit.saved);
+  });
+
+  it("shows a localized error for a stale segment and allows retry", async () => {
+    fetchMock.mockImplementation(async (_url: string, init?: RequestInit) =>
+      init?.method === "PATCH"
+        ? jsonResponse({ error: "invalid_segment" }, 400)
+        : listResponse([editable]),
+    );
+    render();
+    await flush();
+
+    await act(async () => {
+      editButton()?.click();
+    });
+    await act(async () => {
+      dialogButton(copy.edit.save)?.click();
+    });
+    await flush();
+
+    const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+    expect(dialog.textContent).toContain(copy.edit.errors.invalidSegment);
+    expect(dialogButton(copy.edit.save)?.disabled).toBe(false);
   });
 });

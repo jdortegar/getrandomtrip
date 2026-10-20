@@ -28,7 +28,10 @@ export async function PATCH(
       if (error.code === "not_found") {
         return NextResponse.json({ error: "Not found" }, { status: 404 });
       }
-      if (error.code === "invalid_status_change") {
+      if (
+        error.code === "invalid_status_change" ||
+        error.code === "invalid_segment"
+      ) {
         return NextResponse.json({ error: error.code }, { status: 400 });
       }
     }

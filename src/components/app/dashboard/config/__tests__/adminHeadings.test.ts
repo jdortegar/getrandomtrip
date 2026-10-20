@@ -18,6 +18,7 @@ const headings: AdminDashboardDict["pageHeadings"] = {
   blogNew: { title: "New Post", description: "New post desc" },
   emailCampaigns: { title: "Email campaigns", description: "Campaigns desc" },
   emailCampaignContacts: { title: "Contacts", description: "Contacts desc" },
+  emailCampaignSegments: { title: "Segments", description: "Segments desc" },
   emailCampaignsNew: { title: "New campaign", description: "New campaign desc" },
   emailCampaignDetail: { title: "Campaign", description: "Campaign desc" },
 };
@@ -132,5 +133,14 @@ describe("resolveAdminPageHeading", () => {
         headings,
       ),
     ).toEqual(headings.emailCampaignContacts);
+  });
+
+  it("resolves the email campaign segments page to its own heading", () => {
+    expect(
+      resolveAdminPageHeading(
+        "/dashboard/admin/email-campaigns/segments",
+        headings,
+      ),
+    ).toEqual(headings.emailCampaignSegments);
   });
 });

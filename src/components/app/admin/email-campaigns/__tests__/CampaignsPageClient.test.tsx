@@ -10,6 +10,7 @@ import {
   jsonResponse,
   mount,
   setValue,
+  stubFetchWithSegments,
   type Mounted,
 } from "./emailCampaignsTestUtils";
 
@@ -32,7 +33,7 @@ function campaign(overrides: Partial<CampaignListItem> = {}): CampaignListItem {
     locale: "es",
     name: "Fundadores",
     promoCode: "FUNDADOR30",
-    segmentSources: ["WAITLIST"],
+    segments: [{ id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" as const }],
     sentAt: "2026-06-18T12:00:00.000Z",
     status: "SENT",
     subject: "Tu descuento de fundador",
@@ -56,7 +57,7 @@ function draft(overrides: Partial<CampaignListItem> = {}): CampaignListItem {
     id: "camp-2",
     name: "Amigos",
     promoCode: null,
-    segmentSources: ["FRIENDS_FAMILY", "WAITLIST"],
+    segments: [{ id: "seg_friends_family", name: "Amigos y familia", systemKey: "FRIENDS_FAMILY" as const }, { id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" as const }],
     sentAt: null,
     status: "DRAFT",
     subject: "Para la familia",
@@ -77,7 +78,10 @@ function partial(): CampaignListItem {
     id: "camp-3",
     name: "Zafiro",
     promoCode: "ZAFIRO",
-    segmentSources: ["FRIENDS_FAMILY"],
+    segments: [
+      { id: "seg_friends_family", name: "Amigos y familia", systemKey: "FRIENDS_FAMILY" as const },
+      { id: "seg-custom", name: "Viajeros frecuentes", systemKey: null },
+    ],
     sentAt: "2026-07-01T12:00:00.000Z",
     status: "PARTIAL",
     subject: "Oferta especial",
@@ -145,7 +149,7 @@ function dialogButton(text: string): HTMLButtonElement | undefined {
 
 beforeEach(() => {
   fetchMock.mockReset();
-  vi.stubGlobal("fetch", fetchMock);
+  stubFetchWithSegments(fetchMock);
 });
 
 afterEach(() => {
@@ -266,10 +270,17 @@ describe("CampaignsPageClient", () => {
       expect(rowNames(container)).toEqual(["Amigos"]);
 
       setValue(field<HTMLSelectElement>(container, "email-campaigns-status"), "");
-      setValue(
-        field<HTMLSelectElement>(container, "email-campaigns-segment"),
-        "FRIENDS_FAMILY",
-      );
+      const segmentSelect = field<HTMLSelectElement>(container, "email-campaigns-segment");
+      expect(Array.from(segmentSelect.options).map((option) => option.textContent)).toEqual([
+        copy.filters.allSegments,
+        "Lista de espera",
+        "Amigos y familia",
+        "Viajeros frecuentes",
+      ]);
+      setValue(segmentSelect, "seg-custom");
+      expect(rowNames(container)).toEqual(["Zafiro"]);
+
+      setValue(segmentSelect, "seg_friends_family");
       expect(rowNames(container).sort()).toEqual(["Amigos", "Zafiro"]);
 
       setValue(field<HTMLSelectElement>(container, "email-campaigns-status"), "SENT");

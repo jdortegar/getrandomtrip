@@ -43,6 +43,8 @@ export function campaignFailureMessage(
     campaign_not_sendable: copy.notSendable,
     generic: copy.generic,
     invalid_promo_code: copy.invalidPromo,
+    // Only reachable with a stale segment id; reported as a validation failure.
+    invalid_segment: copy.validation,
     not_found: copy.notFound,
     validation: copy.validation,
   };

@@ -30,6 +30,7 @@ import { CampaignsFilters } from "./CampaignsFilters";
 import { CampaignsTable } from "./CampaignsTable";
 import { EmailCampaignsSectionHeader } from "./EmailCampaignsSectionHeader";
 import { EmailCampaignsSubnav } from "./EmailCampaignsSubnav";
+import { useSegments } from "./useSegments";
 
 const BASE_PATH = "/dashboard/admin/email-campaigns";
 const CTA_CLASS =
@@ -54,6 +55,7 @@ export function CampaignsPageClient() {
   const beginRequest = useTableRequestGuard("campaigns");
   const [filters, setFilters] = useState<CampaignListFilters>(EMPTY_CAMPAIGN_FILTERS);
   const [sort, setSort] = useState(CAMPAIGN_SORT_DEFAULT);
+  const { segments } = useSegments();
   const [deleteTarget, setDeleteTarget] = useState<CampaignListItem | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -175,7 +177,7 @@ export function CampaignsPageClient() {
                 hasError={!!error}
                 isLoading={loading}
                 onChange={setFilters}
-                segmentLabels={pageCopy.contacts.source}
+                segments={segments}
                 shown={visibleCampaigns.length}
                 total={campaigns.length}
               />
