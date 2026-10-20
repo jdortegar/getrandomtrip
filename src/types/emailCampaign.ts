@@ -228,6 +228,16 @@ export type CampaignErrorCode =
   | "campaign_empty_audience"
   | "invalid_segment";
 
+/** Audience shown before sending a campaign. */
+export interface CampaignAudience {
+  /** Subscribed contacts a send would reach right now. */
+  count: number;
+  /** Subscribed contacts in the segments, ignoring the nonproduction test allowlist. */
+  unrestrictedCount: number;
+  /** True outside production, where only configured test addresses receive campaigns. */
+  restricted: boolean;
+}
+
 /** Outcome of a send run. `failed` counts rows still QUEUED or FAILED. */
 export interface CampaignSendSummary {
   status: Extract<CampaignStatus, "SENT" | "PARTIAL">;

@@ -2134,7 +2134,10 @@ export interface EmailCampaignsAdminDict {
     /** Interpolates `{email}`. */
     testSent: string;
   };
-  /** `confirmBody` interpolates `{count}`; summary templates `{status}`, `{sent}`, `{failed}`, `{total}`. */
+  /**
+   * `confirmBody` (plural) interpolates `{count}`; `confirmBodyOne` is the single-recipient form.
+   * `restrictedNote` interpolates `{count}` and `{total}`; summary templates `{status}`, `{sent}`, `{failed}`, `{total}`.
+   */
   send: {
     heading: string;
     description: string;
@@ -2142,6 +2145,8 @@ export interface EmailCampaignsAdminDict {
     retry: string;
     checking: string;
     confirmBody: string;
+    confirmBodyOne: string;
+    restrictedNote: string;
     retryBody: string;
     emptyAudience: string;
     confirm: string;
