@@ -8,7 +8,7 @@ vi.mock("@/lib/prisma", () => ({
   prisma: { user: { findUnique: vi.fn() } },
 }));
 vi.mock("@/lib/email-campaigns/sending", () => ({
-  getCampaignAudienceCount: vi.fn(),
+  getCampaignAudienceBreakdown: vi.fn(),
   sendCampaign: vi.fn(),
 }));
 
@@ -16,7 +16,7 @@ import { getServerSession } from "next-auth";
 import { prisma } from "@/lib/prisma";
 import { CampaignError } from "@/lib/email-campaigns/campaigns";
 import {
-  getCampaignAudienceCount,
+  getCampaignAudienceBreakdown,
   sendCampaign,
 } from "@/lib/email-campaigns/sending";
 import { POST as SEND } from "../route";
@@ -47,7 +47,7 @@ describe("auth", () => {
 
     expect(responses.map((res) => res.status)).toEqual([401, 401]);
     expect(sendCampaign).not.toHaveBeenCalled();
-    expect(getCampaignAudienceCount).not.toHaveBeenCalled();
+    expect(getCampaignAudienceBreakdown).not.toHaveBeenCalled();
   });
 
   it("returns 403 for a non-admin", async () => {
@@ -67,18 +67,22 @@ describe("auth", () => {
 });
 
 describe("GET audience", () => {
-  it("returns the recipient count", async () => {
-    vi.mocked(getCampaignAudienceCount).mockResolvedValue(42);
+  it("returns the recipient count with the unrestricted audience", async () => {
+    vi.mocked(getCampaignAudienceBreakdown).mockResolvedValue({
+      count: 1,
+      unrestrictedCount: 4,
+      restricted: true,
+    });
 
     const res = await AUDIENCE(audienceRequest(), props);
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ count: 42 });
-    expect(getCampaignAudienceCount).toHaveBeenCalledWith("c1");
+    expect(await res.json()).toEqual({ count: 1, unrestrictedCount: 4, restricted: true });
+    expect(getCampaignAudienceBreakdown).toHaveBeenCalledWith("c1");
   });
 
   it("returns 404 for an unknown campaign", async () => {
-    vi.mocked(getCampaignAudienceCount).mockRejectedValue(
+    vi.mocked(getCampaignAudienceBreakdown).mockRejectedValue(
       new CampaignError("not_found"),
     );
 

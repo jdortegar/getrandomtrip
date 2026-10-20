@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 
 import { requireAdmin } from "@/lib/admin/requireAdmin";
-import { getCampaignAudienceCount } from "@/lib/email-campaigns/sending";
+import { getCampaignAudienceBreakdown } from "@/lib/email-campaigns/sending";
 import { campaignErrorResponse, internalError } from "../../campaignErrorResponse";
 
 export const dynamic = "force-dynamic";
 
-/** Subscribed recipients the campaign would reach, for the send confirm. */
+/** Recipients the campaign would reach (plus the pre-allowlist total), for the send confirm. */
 export async function GET(
   _request: Request,
   props: { params: Promise<{ id: string }> },
@@ -16,8 +16,8 @@ export async function GET(
     const auth = await requireAdmin();
     if (!auth.ok) return auth.errorResponse;
 
-    const count = await getCampaignAudienceCount(params.id);
-    return NextResponse.json({ count });
+    const audience = await getCampaignAudienceBreakdown(params.id);
+    return NextResponse.json(audience);
   } catch (error) {
     const mapped = campaignErrorResponse(error);
     if (mapped) return mapped;

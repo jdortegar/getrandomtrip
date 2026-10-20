@@ -90,6 +90,63 @@ describe("CampaignSendPanel", () => {
     expect(sendCalls()).toHaveLength(0);
   });
 
+  it("uses the singular confirmation for a single recipient", async () => {
+    const container = render("DRAFT");
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { count: 1, unrestrictedCount: 1, restricted: false }),
+    );
+
+    await click(buttonByText(container, copy.sendNow));
+    await flush();
+
+    expect(container.textContent).toContain(copy.confirmBodyOne);
+    expect(container.textContent).not.toContain(copy.confirmBody.replace("{count}", "1"));
+  });
+
+  it("explains the test-address restriction outside production", async () => {
+    const container = render("DRAFT");
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { count: 1, unrestrictedCount: 4, restricted: true }),
+    );
+
+    await click(buttonByText(container, copy.sendNow));
+    await flush();
+
+    expect(container.textContent).toContain(copy.confirmBodyOne);
+    expect(container.textContent).toContain(
+      copy.restrictedNote.replace("{count}", "1").replace("{total}", "4"),
+    );
+    expect(buttonByText(container, copy.confirm)).toBeDefined();
+  });
+
+  it("explains the restriction when no test address is in the segment", async () => {
+    const container = render("DRAFT");
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { count: 0, unrestrictedCount: 4, restricted: true }),
+    );
+
+    await click(buttonByText(container, copy.sendNow));
+    await flush();
+
+    expect(container.textContent).toContain(
+      copy.restrictedNote.replace("{count}", "0").replace("{total}", "4"),
+    );
+    expect(buttonByText(container, copy.confirm)).toBeUndefined();
+  });
+
+  it("shows no restriction note in production", async () => {
+    const container = render("DRAFT");
+    fetchMock.mockResolvedValueOnce(
+      jsonResponse(200, { count: 4, unrestrictedCount: 4, restricted: false }),
+    );
+
+    await click(buttonByText(container, copy.sendNow));
+    await flush();
+
+    expect(container.textContent).toContain(copy.confirmBody.replace("{count}", "4"));
+    expect(container.querySelector('[data-testid="restricted-audience-note"]')).toBeNull();
+  });
+
   it("notes an empty audience and does not offer to send", async () => {
     const container = render("DRAFT");
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { count: 0 }));

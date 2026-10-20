@@ -29,6 +29,7 @@ import {
 } from "@/lib/email-campaigns/unsubscribeToken";
 import type {
   Campaign,
+  CampaignAudience,
   CampaignEmailPromo,
   CampaignSendSummary,
 } from "@/types/emailCampaign";
@@ -57,11 +58,14 @@ function nonproductionRecipients(): string[] | null {
     .filter(Boolean);
 }
 
-/** Subscribed contacts in the campaign locale that belong to any of its segments. */
+/**
+ * Subscribed contacts in the campaign locale that belong to any of its segments,
+ * limited to `allowed` addresses unless it is `null`.
+ */
 function audienceWhere(
   campaign: Pick<Campaign, "segments" | "locale">,
+  allowed: string[] | null = nonproductionRecipients(),
 ): Prisma.ContactWhereInput {
-  const allowed = nonproductionRecipients();
   return {
     segments: {
       some: { segmentId: { in: campaign.segments.map((segment) => segment.id) } },
@@ -81,14 +85,37 @@ function unsendableWhere(): Prisma.CampaignSendWhereInput {
     : unsubscribed;
 }
 
-/** Subscribed contacts the campaign would reach, for the confirm dialog. */
-export async function getCampaignAudienceCount(campaignId: string): Promise<number> {
+async function loadCampaign(campaignId: string): Promise<Campaign> {
   const row = await prisma.campaign.findUnique({
     where: { id: campaignId },
     include: CAMPAIGN_INCLUDE,
   });
   if (!row) throw new CampaignError("not_found");
-  return prisma.contact.count({ where: audienceWhere(toCampaign(row)) });
+  return toCampaign(row);
+}
+
+/** Subscribed contacts the campaign would reach, honoring the nonproduction guard. */
+export async function getCampaignAudienceCount(campaignId: string): Promise<number> {
+  const campaign = await loadCampaign(campaignId);
+  return prisma.contact.count({ where: audienceWhere(campaign) });
+}
+
+/**
+ * Audience for the confirm dialog: the guarded `count` a send would reach, and
+ * outside production the `unrestrictedCount` the segment holds without the
+ * test-recipient allowlist, so the admin sees why the numbers differ.
+ */
+export async function getCampaignAudienceBreakdown(
+  campaignId: string,
+): Promise<CampaignAudience> {
+  const campaign = await loadCampaign(campaignId);
+  const allowed = nonproductionRecipients();
+  const count = await prisma.contact.count({ where: audienceWhere(campaign, allowed) });
+  if (!allowed) return { count, unrestrictedCount: count, restricted: false };
+  const unrestrictedCount = await prisma.contact.count({
+    where: audienceWhere(campaign, null),
+  });
+  return { count, unrestrictedCount, restricted: true };
 }
 
 /** Resend tag values allow only ASCII letters, digits, `_` and `-`. */

@@ -1494,6 +1494,8 @@
         "retry": "Retry failed sends",
         "checking": "Counting recipients…",
         "confirmBody": "This campaign will be sent to {count} recipients. Sending is irreversible: it cannot be cancelled or undone.",
+        "confirmBodyOne": "This campaign will be sent to 1 recipient. Sending is irreversible: it cannot be cancelled or undone.",
+        "restrictedNote": "Outside production only the configured test addresses receive campaigns. Subscribed contacts in the segment: {total}; with a test address: {count}.",
         "retryBody": "Only recipients whose send failed will be retried. Sending is irreversible: it cannot be cancelled or undone.",
         "emptyAudience": "No subscribed contact matches this segment, so nobody would receive it.",
         "confirm": "Confirm send",

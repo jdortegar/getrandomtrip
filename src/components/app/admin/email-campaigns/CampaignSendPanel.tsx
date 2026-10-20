@@ -4,7 +4,11 @@ import { useRef, useState } from "react";
 import { AlertTriangle, RotateCcw, Send } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { EmailCampaignsAdminDict } from "@/lib/types/dictionary";
-import type { CampaignSendSummary, CampaignStatus } from "@/types/emailCampaign";
+import type {
+  CampaignAudience,
+  CampaignSendSummary,
+  CampaignStatus,
+} from "@/types/emailCampaign";
 import {
   CAMPAIGNS_API,
   campaignFailureMessage,
@@ -41,7 +45,11 @@ export function CampaignSendPanel({
   statusCopy,
 }: CampaignSendPanelProps) {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [count, setCount] = useState(0);
+  const [audience, setAudience] = useState<CampaignAudience>({
+    count: 0,
+    unrestrictedCount: 0,
+    restricted: false,
+  });
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<CampaignSendSummary | null>(null);
   const inFlight = useRef(false);
@@ -72,8 +80,12 @@ export function CampaignSendPanel({
         setPhase("idle");
         return;
       }
-      const data = (await res.json()) as { count: number };
-      setCount(data.count);
+      const data = (await res.json()) as Partial<CampaignAudience> & { count: number };
+      setAudience({
+        count: data.count,
+        unrestrictedCount: data.unrestrictedCount ?? data.count,
+        restricted: data.restricted === true,
+      });
       setPhase("confirm");
     }, "idle");
 
@@ -93,6 +105,10 @@ export function CampaignSendPanel({
     }, "idle");
 
   if (!canSend && !summary && status !== "SENDING") return null;
+
+  const { count } = audience;
+  const confirmBody =
+    count === 1 ? copy.confirmBodyOne : fillTemplate(copy.confirmBody, { count });
 
   return (
     <section
@@ -131,8 +147,16 @@ export function CampaignSendPanel({
               ? copy.emptyAudience
               : isRetry
                 ? copy.retryBody
-                : fillTemplate(copy.confirmBody, { count })}
+                : confirmBody}
           </p>
+          {audience.restricted && (
+            <p className="text-xs text-amber-900" data-testid="restricted-audience-note">
+              {fillTemplate(copy.restrictedNote, {
+                count,
+                total: audience.unrestrictedCount,
+              })}
+            </p>
+          )}
           <div className="flex flex-wrap gap-3">
             {count > 0 && (
               <Button

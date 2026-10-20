@@ -44,7 +44,11 @@ import type { BatchMailMessage } from "@/lib/helpers/sendMail";
 import { lookupPromotionCode } from "../promo";
 import { renderCampaignEmail } from "../render";
 import { verifyUnsubscribeToken } from "../unsubscribeToken";
-import { getCampaignAudienceCount, sendCampaign } from "../sending";
+import {
+  getCampaignAudienceBreakdown,
+  getCampaignAudienceCount,
+  sendCampaign,
+} from "../sending";
 import type { PromotionCodeSummary } from "@/types/emailCampaign";
 
 type SendRow = {
@@ -719,5 +723,56 @@ describe("nonproduction recipient guard", () => {
     await getCampaignAudienceCount("c1");
     const where = vi.mocked(prisma.contact.count).mock.calls[0][0]?.where;
     expect(where).not.toHaveProperty("email");
+  });
+});
+
+describe("getCampaignAudienceBreakdown", () => {
+  beforeEach(() => {
+    state.contacts = [
+      { id: "k1", email: "qa@example.invalid", status: "SUBSCRIBED" },
+      ...contacts(3),
+      ...contacts(2, "UNSUBSCRIBED"),
+    ];
+    vi.mocked(prisma.contact.count).mockImplementation((async ({
+      where,
+    }: {
+      where: { email?: { in: string[] } };
+    }) =>
+      state.contacts.filter(
+        (contact) =>
+          contact.status === "SUBSCRIBED" &&
+          (!where.email || where.email.in.includes(contact.email)),
+      ).length) as never);
+  });
+
+  it("reports the guarded and unrestricted audience outside production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", "qa@example.invalid");
+
+    await expect(getCampaignAudienceBreakdown("c1")).resolves.toEqual({
+      count: 1,
+      unrestrictedCount: 4,
+      restricted: true,
+    });
+  });
+
+  it("reports one unrestricted audience in production", async () => {
+    vi.stubEnv("RT_DEPLOY_ENV", "production");
+    vi.stubEnv("EMAIL_TEST_RECIPIENTS", "qa@example.invalid");
+
+    await expect(getCampaignAudienceBreakdown("c1")).resolves.toEqual({
+      count: 4,
+      unrestrictedCount: 4,
+      restricted: false,
+    });
+    expect(prisma.contact.count).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws not_found for an unknown campaign", async () => {
+    vi.mocked(prisma.campaign.findUnique).mockResolvedValue(null);
+
+    await expect(getCampaignAudienceBreakdown("nope")).rejects.toMatchObject({
+      code: "not_found",
+    });
   });
 });

@@ -1494,6 +1494,8 @@
         "retry": "Reintentar envíos fallidos",
         "checking": "Contando destinatarios…",
         "confirmBody": "La campaña se enviará a {count} destinatarios. El envío es irreversible: no se puede cancelar ni deshacer.",
+        "confirmBodyOne": "La campaña se enviará a 1 destinatario. El envío es irreversible: no se puede cancelar ni deshacer.",
+        "restrictedNote": "Fuera de producción solo reciben campañas las direcciones de prueba configuradas. Contactos suscritos del segmento: {total}; con dirección de prueba: {count}.",
         "retryBody": "Se reintentará solo a los destinatarios cuyo envío falló. El envío es irreversible: no se puede cancelar ni deshacer.",
         "emptyAudience": "Ningún contacto suscrito coincide con este segmento, así que nadie la recibiría.",
         "confirm": "Confirmar envío",
