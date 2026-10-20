@@ -1,8 +1,9 @@
-import { Loader2, RotateCcw } from "lucide-react";
+import { Loader2, Pencil, RotateCcw } from "lucide-react";
 import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { TableIconButton } from "@/components/ui/TableIconButton";
 import type { EmailCampaignsAdminDict } from "@/lib/types/dictionary";
 import type { Contact } from "@/types/emailCampaign";
+import { SegmentLabel } from "./SegmentLabel";
 
 const TH =
   "px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-neutral-500 whitespace-nowrap";
@@ -14,6 +15,7 @@ interface ContactsTableProps {
   /** BCP 47 locale used for dates, e.g. `es-ES`. */
   dateLocale: string;
   localeLabels: EmailCampaignsAdminDict["locales"];
+  onEdit: (contact: Contact) => void;
   onResubscribe: (id: string) => void;
   resubscribingIds: ReadonlySet<string>;
 }
@@ -23,6 +25,7 @@ export function ContactsTable({
   copy,
   dateLocale,
   localeLabels,
+  onEdit,
   onResubscribe,
   resubscribingIds,
 }: ContactsTableProps) {
@@ -45,6 +48,7 @@ export function ContactsTable({
               <th className={TH}>{cols.email}</th>
               <th className={TH}>{cols.name}</th>
               <th className={TH}>{cols.source}</th>
+              <th className={TH}>{cols.segments}</th>
               <th className={TH}>{cols.status}</th>
               <th className={TH}>{cols.locale}</th>
               <th className={TH}>{cols.createdAt}</th>
@@ -55,7 +59,10 @@ export function ContactsTable({
             {contacts.map((contact) => {
               const pending = resubscribingIds.has(contact.id);
               return (
-                <tr className="transition-colors hover:bg-gray-50" key={contact.id}>
+                <tr
+                  className="transition-colors hover:bg-gray-50"
+                  key={contact.id}
+                >
                   <td className="px-5 py-4 text-sm font-semibold text-ink">
                     {contact.email}
                     {contact.tags.length > 0 && (
@@ -68,6 +75,19 @@ export function ContactsTable({
                   <td className={`${TD} whitespace-nowrap`}>
                     {copy.source[contact.source] ?? contact.source}
                   </td>
+                  <td className={TD}>
+                    {contact.segments.length > 0 ? (
+                      <div className="flex min-w-40 flex-wrap gap-1">
+                        {contact.segments.map((segment) => (
+                          <SegmentLabel key={segment.id}>
+                            {segment.name}
+                          </SegmentLabel>
+                        ))}
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="px-5 py-4">
                     <StatusIndicatorBadge
                       family="email-contact"
@@ -77,31 +97,45 @@ export function ContactsTable({
                   </td>
                   <td className={TD}>{localeLabels[contact.locale]}</td>
                   <td className="whitespace-nowrap px-5 py-4 text-sm text-neutral-500">
-                    {new Date(contact.createdAt).toLocaleDateString(dateLocale, {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {new Date(contact.createdAt).toLocaleDateString(
+                      dateLocale,
+                      {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}
                   </td>
                   <td className="px-5 py-4">
-                    {contact.status !== "SUBSCRIBED" && (
+                    <div className="flex items-center gap-2">
                       <TableIconButton
-                        aria-busy={pending}
-                        disabled={pending}
-                        onClick={() => onResubscribe(contact.id)}
-                        title={
-                          pending
-                            ? copy.actions.resubscribing
-                            : copy.actions.resubscribe
-                        }
+                        onClick={() => onEdit(contact)}
+                        title={copy.actions.edit}
                       >
-                        {pending ? (
-                          <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <RotateCcw aria-hidden className="h-4 w-4" />
-                        )}
+                        <Pencil aria-hidden className="h-4 w-4" />
                       </TableIconButton>
-                    )}
+                      {contact.status !== "SUBSCRIBED" && (
+                        <TableIconButton
+                          aria-busy={pending}
+                          disabled={pending}
+                          onClick={() => onResubscribe(contact.id)}
+                          title={
+                            pending
+                              ? copy.actions.resubscribing
+                              : copy.actions.resubscribe
+                          }
+                        >
+                          {pending ? (
+                            <Loader2
+                              aria-hidden
+                              className="h-4 w-4 animate-spin"
+                            />
+                          ) : (
+                            <RotateCcw aria-hidden className="h-4 w-4" />
+                          )}
+                        </TableIconButton>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

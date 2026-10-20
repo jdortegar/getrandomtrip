@@ -10,9 +10,12 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: vi.fn(),
       updateMany: vi.fn(),
     },
+    campaignSegment: { createMany: vi.fn(), deleteMany: vi.fn() },
     campaignSend: { create: vi.fn(), createMany: vi.fn() },
     contact: { create: vi.fn(), upsert: vi.fn() },
+    segment: { findMany: vi.fn() },
     user: { findUnique: vi.fn() },
+    $transaction: vi.fn(),
   },
 }));
 vi.mock("@/lib/helpers/sendMail", () => ({ sendMail: vi.fn() }));
@@ -53,6 +56,9 @@ function row(overrides: Record<string, unknown> = {}) {
     ctaUrl: null,
     locale: "es",
     segmentSources: ["WAITLIST"],
+    segments: [
+      { segment: { id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" } },
+    ],
     stripePromotionCodeId: null,
     promoCode: null,
     status: "DRAFT",
@@ -73,9 +79,22 @@ const input: CampaignInput = {
   ctaLabel: null,
   ctaUrl: null,
   locale: "es",
-  segmentSources: ["WAITLIST"],
+  segmentIds: ["seg_waitlist"],
   promoCode: null,
 };
+
+const include = {
+  segments: {
+    select: { segment: { select: { id: true, name: true, systemKey: true } } },
+    orderBy: { segment: { name: "asc" } },
+  },
+};
+
+const segmentRows = [
+  { id: "seg_waitlist", systemKey: "WAITLIST" },
+  { id: "seg_friends_family", systemKey: "FRIENDS_FAMILY" },
+  { id: "s1", systemKey: null },
+];
 
 const summary: PromotionCodeSummary = {
   id: "promo_1",
@@ -97,7 +116,18 @@ beforeEach(() => {
     data,
   }: {
     data: Record<string, unknown>;
-  }) => row(data)) as never);
+  }) => {
+    const { segments: _nested, ...fields } = data;
+    return row(fields);
+  }) as never);
+  vi.mocked(prisma.segment.findMany).mockImplementation((async ({
+    where,
+  }: {
+    where: { id: { in: string[] } };
+  }) => segmentRows.filter((segment) => where.id.in.includes(segment.id))) as never);
+  vi.mocked(prisma.$transaction).mockImplementation((async (
+    fn: (tx: typeof prisma) => unknown,
+  ) => fn(prisma)) as never);
 });
 
 describe("listCampaigns / getCampaign", () => {
@@ -110,14 +140,17 @@ describe("listCampaigns / getCampaign", () => {
 
     expect(prisma.campaign.findMany).toHaveBeenCalledWith({
       orderBy: { createdAt: "desc" },
+      include,
     });
     expect(campaigns[0]).toMatchObject({
       id: "c1",
       status: "SENT",
       sentAt: "2026-10-17T10:00:00.000Z",
       createdAt: "2026-10-17T10:00:00.000Z",
+      segments: [{ id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" }],
     });
     expect(campaigns[0]).not.toHaveProperty("createdById");
+    expect(campaigns[0]).not.toHaveProperty("segmentSources");
   });
 
   it("returns null for a missing campaign", async () => {
@@ -137,9 +170,32 @@ describe("createCampaign", () => {
         status: "DRAFT",
         stripePromotionCodeId: null,
         promoCode: null,
+        segmentSources: ["WAITLIST"],
+        segments: { create: [{ segmentId: "seg_waitlist" }] },
       }),
+      include,
     });
+    expect(vi.mocked(prisma.campaign.create).mock.calls[0][0].data).not.toHaveProperty("segmentIds");
     expect(campaign.status).toBe("DRAFT");
+  });
+
+  it("targets custom segments and mirrors only system keys into segmentSources", async () => {
+    await createCampaign({ ...input, segmentIds: ["s1", "seg_friends_family"] }, "a1");
+
+    expect(prisma.campaign.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        segmentSources: ["FRIENDS_FAMILY"],
+        segments: { create: [{ segmentId: "s1" }, { segmentId: "seg_friends_family" }] },
+      }),
+      include,
+    });
+  });
+
+  it("rejects unknown segment ids before writing", async () => {
+    await expect(
+      createCampaign({ ...input, segmentIds: ["seg_waitlist", "missing"] }, "a1"),
+    ).rejects.toEqual(new CampaignError("invalid_segment"));
+    expect(prisma.campaign.create).not.toHaveBeenCalled();
   });
 
   it("stores the Stripe id and canonical code of an active promo", async () => {
@@ -153,6 +209,7 @@ describe("createCampaign", () => {
         stripePromotionCodeId: "promo_1",
         promoCode: "FUNDADOR30",
       }),
+      include,
     });
   });
 
@@ -195,6 +252,52 @@ describe("updateCampaign", () => {
       where: { id: "c1", status: "DRAFT" },
       data: { subject: "S" },
     });
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+
+  it("replaces the targeted segments of a DRAFT in one transaction", async () => {
+    vi.mocked(prisma.campaign.updateMany).mockResolvedValue({ count: 1 });
+    vi.mocked(prisma.campaign.findUnique).mockResolvedValue(row() as never);
+
+    await updateCampaign("c1", { segmentIds: ["s1", "seg_waitlist"] });
+
+    expect(prisma.$transaction).toHaveBeenCalledTimes(1);
+    expect(prisma.campaign.updateMany).toHaveBeenCalledWith({
+      where: { id: "c1", status: "DRAFT" },
+      data: { segmentSources: ["WAITLIST"] },
+    });
+    expect(prisma.campaignSegment.deleteMany).toHaveBeenCalledWith({
+      where: { campaignId: "c1", segmentId: { notIn: ["s1", "seg_waitlist"] } },
+    });
+    expect(prisma.campaignSegment.createMany).toHaveBeenCalledWith({
+      data: [
+        { campaignId: "c1", segmentId: "s1" },
+        { campaignId: "c1", segmentId: "seg_waitlist" },
+      ],
+      skipDuplicates: true,
+    });
+    expect(prisma.campaign.findUnique).toHaveBeenLastCalledWith({
+      where: { id: "c1" },
+      include,
+    });
+  });
+
+  it("does not touch segments of a campaign that is no longer DRAFT", async () => {
+    vi.mocked(prisma.campaign.updateMany).mockResolvedValue({ count: 0 });
+    vi.mocked(prisma.campaign.findUnique).mockResolvedValue(row({ status: "SENT" }) as never);
+
+    await expect(updateCampaign("c1", { segmentIds: ["s1"] })).rejects.toEqual(
+      new CampaignError("campaign_not_editable"),
+    );
+    expect(prisma.campaignSegment.deleteMany).not.toHaveBeenCalled();
+    expect(prisma.campaignSegment.createMany).not.toHaveBeenCalled();
+  });
+
+  it("rejects unknown segment ids without writing", async () => {
+    await expect(updateCampaign("c1", { segmentIds: ["missing"] })).rejects.toEqual(
+      new CampaignError("invalid_segment"),
+    );
+    expect(prisma.campaign.updateMany).not.toHaveBeenCalled();
   });
 
   it("refuses non-DRAFT campaigns and missing ones", async () => {

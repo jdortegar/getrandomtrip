@@ -32,7 +32,49 @@ export type EmailEventType =
 export type CampaignLocale = "es" | "en";
 
 /** Admin email campaigns secondary navigation views. */
-export type EmailCampaignsAdminView = "campaigns" | "contacts";
+export type EmailCampaignsAdminView = "campaigns" | "contacts" | "segments";
+
+/** A segment as embedded in contacts and campaigns. */
+export interface SegmentRef {
+  id: string;
+  name: string;
+  /** Set on the two system segments (seeded, renamable, never deleted); `null` for custom ones. */
+  systemKey: ContactSource | null;
+}
+
+export interface Segment extends SegmentRef {
+  description: string | null;
+  /** ISO 8601 timestamp. */
+  createdAt: string;
+  /** ISO 8601 timestamp. */
+  updatedAt: string;
+}
+
+/** Admin segments list row. */
+export interface SegmentSummary extends Segment {
+  /** All member contacts, whatever their status. */
+  memberCount: number;
+  /** Members with status SUBSCRIBED. */
+  subscribedCount: number;
+}
+
+/** Admin create payload; `name` is trimmed, 1–60 chars, unique ignoring case. */
+export interface SegmentInput {
+  name: string;
+  description: string | null;
+}
+
+export type SegmentUpdateInput = Partial<SegmentInput>;
+
+/** Load state of the admin segments list fetched by the UI. */
+export type SegmentsLoadStatus = "loading" | "ready" | "error";
+
+/** Segment operation failures the admin API maps to 404 / 409. */
+export type SegmentErrorCode =
+  | "not_found"
+  | "duplicate_segment"
+  | "system_segment"
+  | "segment_in_use";
 
 export interface Contact {
   id: string;
@@ -43,6 +85,8 @@ export interface Contact {
   status: ContactStatus;
   locale: CampaignLocale;
   tags: string[];
+  /** Ordered by name. */
+  segments: SegmentRef[];
   userId?: string | null;
   /** ISO 8601 timestamp. */
   unsubscribedAt?: string | null;
@@ -56,8 +100,19 @@ export interface ContactListQuery {
   limit: number;
   source?: ContactSource;
   status?: ContactStatus;
+  /** Only members of this segment. */
+  segmentId?: string;
   /** Case-insensitive match on email or name. */
   q?: string;
+}
+
+/** Admin contacts toolbar state; `""` means "all". `search` is the raw, undebounced input. */
+export interface ContactListFilters {
+  search: string;
+  source: ContactSource | "";
+  status: ContactStatus | "";
+  /** Only members of this segment. */
+  segmentId: string;
 }
 
 export interface ContactListResult {
@@ -77,6 +132,8 @@ export interface FriendsFamilyContactInput {
   name?: string | null;
   locale?: CampaignLocale;
   tags?: string[];
+  /** Extra segments; the friends & family system segment is always joined. */
+  segmentIds?: string[];
 }
 
 /** Admin edit. `status` may only be `SUBSCRIBED` (manual resubscribe). */
@@ -85,6 +142,8 @@ export interface ContactUpdateInput {
   locale?: CampaignLocale;
   tags?: string[];
   status?: ContactStatus;
+  /** Replaces all of the contact's segment memberships. */
+  segmentIds?: string[];
 }
 
 /** Contact operation failures the admin API maps to 409 / 404 / 400. */
@@ -97,7 +156,8 @@ export type UnsubscribeResult = "unsubscribed" | "unchanged" | "not_found";
 export type ContactErrorCode =
   | "duplicate_email"
   | "not_found"
-  | "invalid_status_change";
+  | "invalid_status_change"
+  | "invalid_segment";
 
 export interface Campaign {
   id: string;
@@ -110,7 +170,8 @@ export interface Campaign {
   ctaLabel?: string | null;
   ctaUrl?: string | null;
   locale: CampaignLocale;
-  segmentSources: ContactSource[];
+  /** Targeted segments, ordered by name. The audience is subscribed contacts in any of them. */
+  segments: SegmentRef[];
   /** Stripe promotion code id (`promo_...`) used for conversion attribution. */
   stripePromotionCodeId?: string | null;
   /** Customer-facing code, e.g. `FUNDADOR30`. */
@@ -148,7 +209,8 @@ export interface CampaignInput {
   /** Absolute https URL; present iff `ctaLabel` is. */
   ctaUrl: string | null;
   locale: CampaignLocale;
-  segmentSources: ContactSource[];
+  /** Existing segment ids, at least one. */
+  segmentIds: string[];
   /** Customer-facing code typed by the admin; `null` means no promo. */
   promoCode: string | null;
 }
@@ -163,7 +225,8 @@ export type CampaignErrorCode =
   | "invalid_promo_code"
   | "admin_email_missing"
   | "campaign_not_sendable"
-  | "campaign_empty_audience";
+  | "campaign_empty_audience"
+  | "invalid_segment";
 
 /** Outcome of a send run. `failed` counts rows still QUEUED or FAILED. */
 export interface CampaignSendSummary {
@@ -301,6 +364,20 @@ export interface CampaignSummary {
 
 export type CampaignListItem = Campaign & { summary: CampaignSummary };
 
+/** Sortable columns of the campaigns list. `sentAt` falls back to `createdAt` for drafts. */
+export type CampaignSortBy = "name" | "sentAt" | "conversions" | "revenue";
+
+export type CampaignSortOrder = "asc" | "desc";
+
+/** Client-side filters of the campaigns list; `""` means "all". */
+export interface CampaignListFilters {
+  /** Case-insensitive match over name and subject. */
+  search: string;
+  status: CampaignStatus | "";
+  /** Segment id; matches campaigns targeting that segment. */
+  segment: string;
+}
+
 // Event metadata uses type aliases, not interfaces, so the values stay
 // assignable to Prisma JSON input (interfaces lack an index signature).
 
@@ -350,7 +427,8 @@ export interface CampaignFormValues {
   ctaLabel: string;
   ctaUrl: string;
   locale: CampaignLocale;
-  segmentSources: ContactSource[];
+  /** Targeted segment ids, in selection order. */
+  segmentIds: string[];
   promoCode: string;
 }
 

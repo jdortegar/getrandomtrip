@@ -90,6 +90,9 @@ function campaignRow(overrides: Record<string, unknown> = {}) {
     ctaUrl: null,
     locale: "es",
     segmentSources: ["WAITLIST"],
+    segments: [
+      { segment: { id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" } },
+    ],
     stripePromotionCodeId: null,
     promoCode: null,
     status: "DRAFT",
@@ -240,14 +243,31 @@ afterEach(() => {
 });
 
 describe("getCampaignAudienceCount", () => {
-  it("counts subscribed contacts in the campaign's sources and locale", async () => {
-    state.campaign = campaignRow({ segmentSources: ["WAITLIST", "FRIENDS_FAMILY"], locale: "en" });
+  it("counts subscribed contacts in any of the campaign's segments and its locale", async () => {
+    state.campaign = campaignRow({
+      // The deprecated mirror is ignored for targeting.
+      segmentSources: ["FRIENDS_FAMILY"],
+      segments: [
+        { segment: { id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" } },
+        { segment: { id: "s1", name: "VIP", systemKey: null } },
+      ],
+      locale: "en",
+    });
     state.contacts = [...contacts(3), ...contacts(2, "UNSUBSCRIBED")];
 
     await expect(getCampaignAudienceCount("c1")).resolves.toBe(3);
+    expect(prisma.campaign.findUnique).toHaveBeenCalledWith({
+      where: { id: "c1" },
+      include: {
+        segments: {
+          select: { segment: { select: { id: true, name: true, systemKey: true } } },
+          orderBy: { segment: { name: "asc" } },
+        },
+      },
+    });
     expect(prisma.contact.count).toHaveBeenCalledWith({
       where: {
-        source: { in: ["WAITLIST", "FRIENDS_FAMILY"] },
+        segments: { some: { segmentId: { in: ["seg_waitlist", "s1"] } } },
         locale: "en",
         status: "SUBSCRIBED",
       },
@@ -350,7 +370,11 @@ describe("sendCampaign first send", () => {
     });
     expect(prisma.contact.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { source: { in: ["WAITLIST"] }, locale: "es", status: "SUBSCRIBED" },
+        where: {
+          segments: { some: { segmentId: { in: ["seg_waitlist"] } } },
+          locale: "es",
+          status: "SUBSCRIBED",
+        },
       }),
     );
     expect(summary).toEqual({ status: "SENT", sent: 3, failed: 0, total: 3 });

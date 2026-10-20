@@ -3,6 +3,7 @@ import es from "@/dictionaries/es.json";
 import { NewCampaignPageClient } from "@/components/app/admin/email-campaigns/NewCampaignPageClient";
 import {
   buttonByText,
+  chipByLabel,
   click,
   deferred,
   draftCampaign,
@@ -10,7 +11,10 @@ import {
   flush,
   jsonResponse,
   mount,
+  SEGMENT_FIXTURES,
+  segmentSummary,
   setValue,
+  stubFetchWithSegments,
   type Mounted,
 } from "./emailCampaignsTestUtils";
 
@@ -32,11 +36,6 @@ function fillRequired(container: HTMLElement) {
   setValue(field(container, "campaign-body"), "Gracias por **esperar**.");
 }
 
-function sourceChip(container: HTMLElement, label: string) {
-  return Array.from(
-    container.querySelectorAll<HTMLButtonElement>('[data-component="Chip"]'),
-  ).find((chip) => chip.textContent === label);
-}
 
 function postCalls() {
   return fetchMock.mock.calls.filter(
@@ -44,11 +43,12 @@ function postCalls() {
   );
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   push.mockReset();
   fetchMock.mockReset();
-  vi.stubGlobal("fetch", fetchMock);
+  stubFetchWithSegments(fetchMock);
   view = mount(<NewCampaignPageClient />);
+  await flush();
 });
 
 afterEach(() => {
@@ -67,7 +67,8 @@ describe("NewCampaignPageClient", () => {
     setValue(field(container, "campaign-cta-label"), " Reservar ");
     setValue(field(container, "campaign-cta-url"), "https://getrandomtrip.com");
     setValue(field(container, "campaign-locale"), "en");
-    await click(sourceChip(container, pageCopy.contacts.source.FRIENDS_FAMILY));
+    await click(chipByLabel(container, "Amigos y familia"));
+    await click(chipByLabel(container, "Viajeros frecuentes"));
     setValue(field(container, "campaign-promo-code"), " fundador30 ");
 
     await click(buttonByText(container, copy.create));
@@ -84,18 +85,63 @@ describe("NewCampaignPageClient", () => {
       name: "Fundadores",
       preheader: null,
       promoCode: "FUNDADOR30",
-      segmentSources: ["WAITLIST", "FRIENDS_FAMILY"],
+      segmentIds: ["seg_waitlist", "seg_friends_family", "seg-custom"],
       subject: "Tu descuento",
       title: "Hola",
     });
     expect(push).toHaveBeenCalledWith("/dashboard/admin/email-campaigns/camp-9");
   });
 
+  it("loads segment chips from the API, system first, with subscribed counts", () => {
+    const chips = Array.from(
+      view.container.querySelectorAll('[data-component="Chip"]'),
+    ).map((chip) => chip.textContent);
+    expect(chips).toEqual(
+      SEGMENT_FIXTURES.map((segment) =>
+        pageCopy.segments.picker.count
+          .replace("{name}", segment.name)
+          .replace("{count}", String(segment.subscribedCount)),
+      ),
+    );
+    expect(chipByLabel(view.container, "Lista de espera")?.getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(chipByLabel(view.container, "Amigos y familia")?.getAttribute("aria-pressed")).toBe(
+      "false",
+    );
+  });
+
+  it("shows a retryable error when the segments cannot be loaded", async () => {
+    view.unmount();
+    let fail = true;
+    vi.stubGlobal("fetch", (url: string) =>
+      Promise.resolve(
+        url.endsWith("/segments") && fail
+          ? jsonResponse(500, { error: "boom" })
+          : jsonResponse(200, { segments: [segmentSummary({ id: "seg-x", name: "Nuevo" })] }),
+      ),
+    );
+    view = mount(<NewCampaignPageClient />);
+    await flush();
+
+    expect(view.container.textContent).toContain(pageCopy.segments.picker.error);
+    fail = false;
+    await click(buttonByText(view.container, pageCopy.segments.picker.retry));
+    await flush();
+    expect(chipByLabel(view.container, "Nuevo")).toBeDefined();
+  });
+
+  it("spaces its sections with flex gap, since the validation scope wrapper ignores margins", () => {
+    const form = view.container.querySelector('form[data-component="CampaignEditorForm"]');
+    expect(form?.className).toContain("gap-8");
+    expect(form?.className).not.toMatch(/\bspace-y-/);
+  });
+
   it("blocks submission and shows localized field errors", async () => {
     const { container } = view;
     setValue(field(container, "campaign-cta-label"), "Reservar");
     setValue(field(container, "campaign-cta-url"), "http://insecure.example");
-    await click(sourceChip(container, pageCopy.contacts.source.WAITLIST));
+    await click(chipByLabel(container, "Lista de espera"));
 
     await click(buttonByText(container, copy.create));
     await flush();

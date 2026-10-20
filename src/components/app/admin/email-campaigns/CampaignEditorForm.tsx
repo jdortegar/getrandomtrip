@@ -28,6 +28,8 @@ import {
   validateCampaignForm,
 } from "./campaignForm";
 import { PendingButtonContent } from "./PendingButtonContent";
+import { toggleSegmentId } from "./segmentApi";
+import { useSegments } from "./useSegments";
 
 const CTA_CLASS =
   "h-11 rounded-sm border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-[1.5px] text-white hover:bg-primary-800";
@@ -44,7 +46,7 @@ interface CampaignEditorFormProps {
   errorsCopy: EmailCampaignsAdminDict["errors"];
   localeLabels: EmailCampaignsAdminDict["locales"];
   onSaved: (campaign: Campaign) => void;
-  sourceLabels: EmailCampaignsAdminDict["contacts"]["source"];
+  segmentsCopy: EmailCampaignsAdminDict["segments"]["picker"];
 }
 
 const issueCode = (issue: CampaignFormIssue) =>
@@ -59,8 +61,9 @@ export function CampaignEditorForm({
   errorsCopy,
   localeLabels,
   onSaved,
-  sourceLabels,
+  segmentsCopy,
 }: CampaignEditorFormProps) {
+  const segmentList = useSegments();
   const [values, setValues] = useState<CampaignFormValues>(() =>
     campaign ? campaignToForm(campaign) : emptyCampaignForm(defaultLocale),
   );
@@ -140,11 +143,11 @@ export function CampaignEditorForm({
     }
   }
 
-  const segmentIssue = issues.segmentSources;
+  const segmentIssue = issues.segmentIds;
 
   return (
     <form
-      className="space-y-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-8"
+      className="flex flex-col gap-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm md:p-8"
       data-component="CampaignEditorForm"
       noValidate
       onSubmit={(event) => void handleSubmit(event)}
@@ -165,15 +168,12 @@ export function CampaignEditorForm({
           localeLabels={localeLabels}
           onLocaleChange={(locale) => update({ locale })}
           onPromoCodeChange={(promoCode) => update({ promoCode })}
-          onToggleSource={(source) =>
-            update({
-              segmentSources: values.segmentSources.includes(source)
-                ? values.segmentSources.filter((s) => s !== source)
-                : [...values.segmentSources, source],
-            })
-          }
+          onRetrySegments={segmentList.reload}
+          onToggleSegment={(id) => update({ segmentIds: toggleSegmentId(values.segmentIds, id) })}
           segmentError={segmentIssue ? copy.validation.segment : undefined}
-          sourceLabels={sourceLabels}
+          segments={segmentList.segments}
+          segmentsCopy={segmentsCopy}
+          segmentsStatus={segmentList.status}
           values={values}
         />
       </FormValidationScope>

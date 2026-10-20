@@ -34,6 +34,7 @@ const CONTACT = {
   status: "SUBSCRIBED" as const,
   locale: "es" as const,
   tags: [],
+  segments: [],
   createdAt: "2026-10-01T00:00:00.000Z",
 };
 
@@ -86,6 +87,30 @@ describe("PATCH /api/admin/email-campaigns/contacts/[id]", () => {
 
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: "invalid_status_change" });
+  });
+
+  it("replaces the contact's segments", async () => {
+    vi.mocked(updateContact).mockResolvedValue({
+      ...CONTACT,
+      segments: [{ id: "s1", name: "VIP", systemKey: null }],
+    });
+
+    const res = await patch({ segmentIds: ["s1", "s1"] });
+
+    expect(res.status).toBe(200);
+    expect(updateContact).toHaveBeenCalledWith("c1", { segmentIds: ["s1"] });
+    expect((await res.json()).contact.segments).toEqual([
+      { id: "s1", name: "VIP", systemKey: null },
+    ]);
+  });
+
+  it("returns 400 for unknown segment ids", async () => {
+    vi.mocked(updateContact).mockRejectedValue(new ContactError("invalid_segment"));
+
+    const res = await patch({ segmentIds: ["nope"] });
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "invalid_segment" });
   });
 
   it("returns 400 for an unknown status value", async () => {

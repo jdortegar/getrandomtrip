@@ -646,6 +646,10 @@
         "title": "Contactos de email",
         "description": "Gestiona los contactos que reciben campañas."
       },
+      "emailCampaignSegments": {
+        "title": "Segmentos de email",
+        "description": "Agrupa contactos en segmentos para dirigir tus campañas."
+      },
       "emailCampaignsNew": {
         "title": "Nueva campaña de email",
         "description": "Redacta la campaña, elige el segmento y vincula un código promocional."
@@ -1205,7 +1209,8 @@
     "emailCampaigns": {
       "tabs": {
         "campaigns": "Campañas",
-        "contacts": "Contactos"
+        "contacts": "Contactos",
+        "segments": "Segmentos"
       },
       "locales": {
         "en": "Inglés",
@@ -1222,18 +1227,38 @@
           "title": "Todavía no hay campañas",
           "body": "Crea tu primera campaña para enviarla a tus contactos y medir sus conversiones."
         },
+        "noMatches": "No hay campañas que coincidan con los filtros.",
+        "searchPlaceholder": "Buscar por nombre o asunto",
+        "filters": {
+          "status": "Estado",
+          "segment": "Segmento",
+          "allStatuses": "Todos los estados",
+          "allSegments": "Todos los segmentos"
+        },
+        "sort": {
+          "ariaSortBy": "Ordenar por {field}"
+        },
         "columns": {
           "campaign": "Campaña",
-          "locale": "Idioma",
-          "segment": "Segmento",
           "promoCode": "Código",
           "status": "Estado",
           "sentAt": "Enviada",
-          "sent": "Enviados",
-          "opens": "Aperturas únicas",
           "clicks": "Clics únicos",
           "conversions": "Conversiones",
-          "revenue": "Ingresos"
+          "revenue": "Ingresos",
+          "actions": "Acciones"
+        },
+        "actions": {
+          "view": "Ver campaña",
+          "edit": "Editar borrador",
+          "delete": "Eliminar borrador"
+        },
+        "delete": {
+          "title": "¿Eliminar borrador?",
+          "body": "Se eliminará «{name}». Esta acción no se puede deshacer.",
+          "confirm": "Sí, eliminar",
+          "deleting": "Eliminando…",
+          "cancel": "Cancelar"
         },
         "status": {
           "DRAFT": "Borrador",
@@ -1251,13 +1276,16 @@
         "filters": {
           "source": "Origen",
           "status": "Estado",
+          "segment": "Segmento",
           "allSources": "Todos los orígenes",
-          "allStatuses": "Todos los estados"
+          "allStatuses": "Todos los estados",
+          "allSegments": "Todos los segmentos"
         },
         "columns": {
           "email": "Email",
           "name": "Nombre",
           "source": "Origen",
+          "segments": "Segmentos",
           "status": "Estado",
           "locale": "Idioma",
           "createdAt": "Alta",
@@ -1273,9 +1301,27 @@
           "UNSUBSCRIBED": "Desuscrito"
         },
         "actions": {
+          "edit": "Editar contacto",
           "resubscribe": "Volver a suscribir",
           "resubscribing": "Suscribiendo…",
           "resubscribeError": "No se pudo volver a suscribir el contacto. Intenta de nuevo."
+        },
+        "edit": {
+          "title": "Editar contacto",
+          "name": "Nombre (opcional)",
+          "locale": "Idioma",
+          "segments": "Segmentos",
+          "segmentsHint": "El contacto recibe las campañas de cualquiera de estos segmentos.",
+          "cancel": "Cancelar",
+          "save": "Guardar cambios",
+          "saving": "Guardando…",
+          "saved": "Contacto actualizado.",
+          "errors": {
+            "generic": "No se pudo guardar el contacto. Intenta de nuevo.",
+            "invalid": "Revisa los datos: nombre de hasta 120 caracteres.",
+            "invalidSegment": "Uno de los segmentos ya no existe. Recarga la página e intenta de nuevo.",
+            "notFound": "El contacto ya no existe."
+          }
         },
         "form": {
           "title": "Agregar amigos y familia",
@@ -1285,6 +1331,8 @@
           "locale": "Idioma",
           "tags": "Etiquetas (opcional)",
           "tagsPlaceholder": "Separadas por comas",
+          "segments": "Segmentos adicionales (opcional)",
+          "segmentsHint": "Amigos y familia se agrega siempre.",
           "submit": "Agregar contacto",
           "submitting": "Agregando…",
           "success": "Contacto agregado.",
@@ -1292,8 +1340,74 @@
             "duplicate": "Ya existe un contacto con este email.",
             "generic": "No se pudo agregar el contacto. Intenta de nuevo.",
             "invalid": "Revisa los datos: nombre de hasta 120 caracteres y hasta 20 etiquetas de 50 caracteres.",
-            "invalidEmail": "Ingresa un email válido."
+            "invalidEmail": "Ingresa un email válido.",
+            "invalidSegment": "Uno de los segmentos ya no existe. Recarga la página e intenta de nuevo."
           }
+        }
+      },
+      "segments": {
+        "eyebrow": "Audiencia",
+        "heading": "Segmentos",
+        "newSegment": "Nuevo segmento",
+        "errorLoad": "No se pudieron cargar los segmentos. Intenta de nuevo.",
+        "empty": {
+          "title": "Todavía no hay segmentos",
+          "body": "Crea un segmento para agrupar contactos y enviarles campañas."
+        },
+        "systemLabel": "Sistema",
+        "columns": {
+          "name": "Segmento",
+          "members": "Contactos",
+          "subscribed": "Suscritos",
+          "actions": "Acciones"
+        },
+        "actions": {
+          "edit": "Editar segmento",
+          "delete": "Eliminar segmento"
+        },
+        "feedback": {
+          "created": "Segmento creado.",
+          "saved": "Segmento guardado.",
+          "deleted": "Segmento eliminado."
+        },
+        "form": {
+          "createTitle": "Nuevo segmento",
+          "editTitle": "Editar segmento",
+          "systemHint": "Es un segmento del sistema: puedes renombrarlo, pero no eliminarlo.",
+          "name": "Nombre",
+          "description": "Descripción (opcional)",
+          "cancel": "Cancelar",
+          "create": "Crear segmento",
+          "creating": "Creando…",
+          "save": "Guardar cambios",
+          "saving": "Guardando…",
+          "errors": {
+            "nameRequired": "Ingresa un nombre.",
+            "duplicate": "Ya existe un segmento con este nombre.",
+            "invalid": "Revisa los datos: nombre de hasta 60 caracteres y descripción de hasta 300.",
+            "notFound": "El segmento ya no existe.",
+            "generic": "No se pudo guardar el segmento. Intenta de nuevo."
+          }
+        },
+        "delete": {
+          "title": "¿Eliminar segmento?",
+          "body": "Se eliminará «{name}». Sus contactos no se borran. Esta acción no se puede deshacer.",
+          "confirm": "Sí, eliminar",
+          "deleting": "Eliminando…",
+          "cancel": "Cancelar",
+          "errors": {
+            "inUse": "No se puede eliminar: hay campañas dirigidas a este segmento.",
+            "system": "Los segmentos del sistema no se pueden eliminar.",
+            "notFound": "El segmento ya no existe.",
+            "generic": "No se pudo eliminar el segmento. Intenta de nuevo."
+          }
+        },
+        "picker": {
+          "loading": "Cargando segmentos…",
+          "error": "No se pudieron cargar los segmentos.",
+          "retry": "Reintentar",
+          "empty": "No hay segmentos disponibles.",
+          "count": "{name} ({count})"
         }
       },
       "editor": {
@@ -1313,8 +1427,8 @@
           "ctaUrl": "URL del botón (opcional)",
           "ctaUrlPlaceholder": "https://",
           "locale": "Idioma",
-          "segment": "Segmento",
-          "segmentHint": "Solo reciben la campaña los contactos suscritos de este idioma."
+          "segment": "Segmentos",
+          "segmentHint": "Reciben la campaña los contactos suscritos de este idioma en cualquiera de los segmentos elegidos. Entre paréntesis, los suscritos de cada segmento."
         },
         "create": "Crear campaña",
         "creating": "Creando…",

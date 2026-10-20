@@ -4,12 +4,15 @@ import { CampaignDetailPageClient } from "@/components/app/admin/email-campaigns
 import type { Campaign } from "@/types/emailCampaign";
 import {
   buttonByText,
+  chipByLabel,
   click,
   draftCampaign,
   field,
   flush,
   jsonResponse,
   mount,
+  SEGMENT_FIXTURES,
+  SEGMENTS_URL,
   setValue,
   type Mounted,
 } from "./emailCampaignsTestUtils";
@@ -43,7 +46,11 @@ function callsTo(key: string) {
 }
 
 async function open(campaign: Campaign, extra: Record<string, Handler> = {}) {
-  routes({ [`GET ${API}`]: () => jsonResponse(200, { campaign }), ...extra });
+  routes({
+    [`GET ${API}`]: () => jsonResponse(200, { campaign }),
+    [`GET ${SEGMENTS_URL}`]: () => jsonResponse(200, { segments: SEGMENT_FIXTURES }),
+    ...extra,
+  });
   view = mount(<CampaignDetailPageClient campaignId="camp-1" />);
   await flush();
   return view.container;
@@ -93,6 +100,30 @@ describe("CampaignDetailPageClient", () => {
       ctaUrl: "https://getrandomtrip.com/en",
     });
     expect(container.textContent).toContain(pageCopy.editor.saved);
+  });
+
+  it("preselects the saved segments and sends the new segment ids on change", async () => {
+    const container = await open(
+      draftCampaign({
+        segments: [{ id: "seg-custom", name: "Viajeros frecuentes", systemKey: null }],
+      }),
+      {
+        [`PATCH ${API}`]: () => jsonResponse(200, { campaign: draftCampaign() }),
+      },
+    );
+    expect(chipByLabel(container, "Viajeros frecuentes")?.getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(chipByLabel(container, "Lista de espera")?.getAttribute("aria-pressed")).toBe("false");
+
+    await click(chipByLabel(container, "Amigos y familia"));
+    await click(buttonByText(container, pageCopy.editor.save));
+    await flush();
+
+    const [, init] = callsTo(`PATCH ${API}`)[0] as [string, RequestInit];
+    expect(JSON.parse(init.body as string)).toEqual({
+      segmentIds: ["seg-custom", "seg_friends_family"],
+    });
   });
 
   it("maps campaign_not_editable on save", async () => {

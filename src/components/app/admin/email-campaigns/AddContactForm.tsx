@@ -9,7 +9,11 @@ import { isValidEmail } from "@/lib/validation/email";
 import type {
   CampaignLocale,
   FriendsFamilyContactInput,
+  SegmentSummary,
+  SegmentsLoadStatus,
 } from "@/types/emailCampaign";
+import { SegmentChipPicker } from "./SegmentChipPicker";
+import { readApiErrorCode, toggleSegmentId } from "./segmentApi";
 
 type Feedback = { kind: "error" | "success"; message: string } | null;
 
@@ -19,6 +23,11 @@ interface AddContactFormProps {
   localeLabels: EmailCampaignsAdminDict["locales"];
   /** Called after the contact was created so the list can refresh. */
   onCreated: () => void;
+  onRetrySegments: () => void;
+  pickerCopy: EmailCampaignsAdminDict["segments"]["picker"];
+  /** Every segment; the friends & family one is left out since the API always adds it. */
+  segments: SegmentSummary[];
+  segmentsStatus: SegmentsLoadStatus;
 }
 
 function parseTags(raw: string): string[] {
@@ -34,11 +43,17 @@ export function AddContactForm({
   defaultLocale,
   localeLabels,
   onCreated,
+  onRetrySegments,
+  pickerCopy,
+  segments,
+  segmentsStatus,
 }: AddContactFormProps) {
+  const extraSegments = segments.filter((segment) => segment.systemKey !== "FRIENDS_FAMILY");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [locale, setLocale] = useState<CampaignLocale>(defaultLocale);
   const [tags, setTags] = useState("");
+  const [segmentIds, setSegmentIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const inFlight = useRef(false);
@@ -57,6 +72,7 @@ export function AddContactForm({
       locale,
       name: name.trim() || null,
       tags: parseTags(tags),
+      ...(segmentIds.length > 0 ? { segmentIds } : {}),
     };
     inFlight.current = true;
     setSubmitting(true);
@@ -71,18 +87,22 @@ export function AddContactForm({
         setEmail("");
         setName("");
         setTags("");
+        setSegmentIds([]);
         setFeedback({ kind: "success", message: copy.success });
         onCreated();
         return;
       }
+      const code = await readApiErrorCode(res);
       setFeedback({
         kind: "error",
         message:
           res.status === 409
             ? copy.errors.duplicate
-            : res.status === 400
-              ? copy.errors.invalid
-              : copy.errors.generic,
+            : code === "invalid_segment"
+              ? copy.errors.invalidSegment
+              : res.status === 400
+                ? copy.errors.invalid
+                : copy.errors.generic,
       });
     } catch {
       setFeedback({ kind: "error", message: copy.errors.generic });
@@ -138,6 +158,27 @@ export function AddContactForm({
           placeholder={copy.tagsPlaceholder}
           value={tags}
         />
+      </div>
+      <div
+        aria-describedby="email-contact-segments-hint"
+        aria-labelledby="email-contact-segments-label"
+        className="flex flex-col gap-2"
+        role="group"
+      >
+        <span className="text-base text-gray-600" id="email-contact-segments-label">
+          {copy.segments}
+        </span>
+        <SegmentChipPicker
+          copy={pickerCopy}
+          onRetry={onRetrySegments}
+          onToggle={(id) => setSegmentIds((ids) => toggleSegmentId(ids, id))}
+          segments={extraSegments}
+          selectedIds={segmentIds}
+          status={segmentsStatus}
+        />
+        <p className="text-xs text-neutral-500" id="email-contact-segments-hint">
+          {copy.segmentsHint}
+        </p>
       </div>
       <div className="flex flex-wrap items-center gap-4">
         <Button

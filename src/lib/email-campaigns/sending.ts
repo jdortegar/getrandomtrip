@@ -16,7 +16,11 @@ import {
 } from "@/lib/helpers/sendMail";
 import { isProductionDeployment } from "@/lib/deployment";
 import { prisma } from "@/lib/prisma";
-import { CampaignError, toCampaign } from "@/lib/email-campaigns/campaigns";
+import {
+  CAMPAIGN_INCLUDE,
+  CampaignError,
+  toCampaign,
+} from "@/lib/email-campaigns/campaigns";
 import { lookupPromotionCode, toEmailPromo } from "@/lib/email-campaigns/promo";
 import { renderCampaignEmail } from "@/lib/email-campaigns/render";
 import {
@@ -53,12 +57,15 @@ function nonproductionRecipients(): string[] | null {
     .filter(Boolean);
 }
 
+/** Subscribed contacts in the campaign locale that belong to any of its segments. */
 function audienceWhere(
-  campaign: Pick<Campaign, "segmentSources" | "locale">,
+  campaign: Pick<Campaign, "segments" | "locale">,
 ): Prisma.ContactWhereInput {
   const allowed = nonproductionRecipients();
   return {
-    source: { in: campaign.segmentSources },
+    segments: {
+      some: { segmentId: { in: campaign.segments.map((segment) => segment.id) } },
+    },
     locale: campaign.locale,
     status: "SUBSCRIBED",
     ...(allowed ? { email: { in: allowed } } : {}),
@@ -76,7 +83,10 @@ function unsendableWhere(): Prisma.CampaignSendWhereInput {
 
 /** Subscribed contacts the campaign would reach, for the confirm dialog. */
 export async function getCampaignAudienceCount(campaignId: string): Promise<number> {
-  const row = await prisma.campaign.findUnique({ where: { id: campaignId } });
+  const row = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+    include: CAMPAIGN_INCLUDE,
+  });
   if (!row) throw new CampaignError("not_found");
   return prisma.contact.count({ where: audienceWhere(toCampaign(row)) });
 }
@@ -267,7 +277,10 @@ async function finalizeCampaign(campaignId: string): Promise<CampaignSendSummary
 }
 
 export async function sendCampaign(campaignId: string): Promise<CampaignSendSummary> {
-  const row = await prisma.campaign.findUnique({ where: { id: campaignId } });
+  const row = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+    include: CAMPAIGN_INCLUDE,
+  });
   if (!row) throw new CampaignError("not_found");
   const campaign = toCampaign(row);
   const promo = await loadSendablePromo(campaign);

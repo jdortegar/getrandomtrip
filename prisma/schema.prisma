@@ -1041,7 +1041,8 @@ model Contact {
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  sends CampaignSend[]
+  sends    CampaignSend[]
+  segments ContactSegment[]
 
   @@index([source, status])
   @@map("contacts")
@@ -1057,7 +1058,7 @@ model Campaign {
   ctaLabel              String?
   ctaUrl                String?
   locale                String // "es" | "en"; one locale per campaign
-  segmentSources        ContactSource[]
+  segmentSources        ContactSource[] // Deprecated mirror of system segments; targeting reads `segments`
   stripePromotionCodeId String? // Optional Stripe promotion code ('promo_...')
   promoCode             String? // Its customer-facing code, e.g. 'FUNDADOR30'
   status                CampaignStatus  @default(DRAFT)
@@ -1067,9 +1068,49 @@ model Campaign {
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
 
-  sends CampaignSend[]
+  sends    CampaignSend[]
+  segments CampaignSegment[]
 
   @@map("campaigns")
+}
+
+/// Admin-managed contact group a campaign can target. The two system segments
+/// (`systemKey` set) are seeded by migration and can be renamed, never deleted.
+model Segment {
+  id          String         @id @default(cuid())
+  name        String         @unique // Case-insensitive uniqueness is enforced by the app
+  description String?
+  systemKey   ContactSource? @unique // WAITLIST / FRIENDS_FAMILY system segments; null for custom
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  contacts  ContactSegment[]
+  campaigns CampaignSegment[]
+
+  @@map("segments")
+}
+
+model ContactSegment {
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  segmentId String
+  segment   Segment  @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([contactId, segmentId])
+  @@index([segmentId])
+  @@map("contact_segments")
+}
+
+/// A segment targeted by a campaign cannot be deleted (Restrict).
+model CampaignSegment {
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  segmentId  String
+  segment    Segment  @relation(fields: [segmentId], references: [id], onDelete: Restrict)
+
+  @@id([campaignId, segmentId])
+  @@map("campaign_segments")
 }
 
 model CampaignSend {

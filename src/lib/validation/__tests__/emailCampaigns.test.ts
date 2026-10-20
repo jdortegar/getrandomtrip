@@ -3,8 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   contactListQuerySchema,
   createCampaignSchema,
+  createContactSchema,
+  createSegmentSchema,
   promoLookupQuerySchema,
   updateCampaignSchema,
+  updateContactSchema,
+  updateSegmentSchema,
 } from "../emailCampaigns";
 
 describe("contactListQuerySchema paging", () => {
@@ -19,6 +23,61 @@ describe("contactListQuerySchema paging", () => {
     expect(parsed.page).toBe(3);
     expect(parsed.limit).toBe(100);
   });
+
+  it("accepts a segment filter and drops a blank one", () => {
+    expect(contactListQuerySchema.parse({ segmentId: "s1" }).segmentId).toBe("s1");
+    expect(contactListQuerySchema.parse({ segmentId: " " }).segmentId).toBeUndefined();
+  });
+});
+
+describe("contact segment ids", () => {
+  it("de-duplicates segment ids on create and update", () => {
+    expect(
+      createContactSchema.parse({ email: "a@example.com", segmentIds: ["s1", " s1 ", "s2"] })
+        .segmentIds,
+    ).toEqual(["s1", "s2"]);
+    expect(updateContactSchema.parse({ segmentIds: ["s2", "s2"] })).toEqual({
+      segmentIds: ["s2"],
+    });
+  });
+
+  it("allows clearing every membership", () => {
+    expect(updateContactSchema.parse({ segmentIds: [] })).toEqual({ segmentIds: [] });
+  });
+
+  it("rejects non-string or blank ids", () => {
+    expect(updateContactSchema.safeParse({ segmentIds: [1] }).success).toBe(false);
+    expect(updateContactSchema.safeParse({ segmentIds: [" "] }).success).toBe(false);
+  });
+});
+
+describe("segment schemas", () => {
+  it("trims the name and normalizes a blank description to null", () => {
+    expect(createSegmentSchema.parse({ name: "  VIP  ", description: " " })).toEqual({
+      name: "VIP",
+      description: null,
+    });
+    expect(createSegmentSchema.parse({ name: "VIP" })).toEqual({
+      name: "VIP",
+      description: null,
+    });
+  });
+
+  it.each([
+    ["blank name", { name: "   " }],
+    ["long name", { name: "x".repeat(61) }],
+    ["long description", { name: "VIP", description: "x".repeat(301) }],
+    ["unknown key", { name: "VIP", systemKey: "WAITLIST" }],
+  ])("rejects %s", (_label, body) => {
+    expect(createSegmentSchema.safeParse(body).success).toBe(false);
+  });
+
+  it("accepts partial updates and rejects empty ones", () => {
+    expect(updateSegmentSchema.parse({ name: " Espera " })).toEqual({ name: "Espera" });
+    expect(updateSegmentSchema.parse({ description: null })).toEqual({ description: null });
+    expect(updateSegmentSchema.safeParse({}).success).toBe(false);
+    expect(updateSegmentSchema.safeParse({ name: "" }).success).toBe(false);
+  });
 });
 
 describe("createCampaignSchema", () => {
@@ -31,14 +90,14 @@ describe("createCampaignSchema", () => {
     ctaLabel: "Reservar",
     ctaUrl: "https://getrandomtrip.com/es",
     locale: "es",
-    segmentSources: ["WAITLIST", "WAITLIST", "FRIENDS_FAMILY"],
+    segmentIds: ["seg_waitlist", "seg_waitlist", "s1"],
     promoCode: " fundador30 ",
   };
 
   it("accepts a full campaign and normalizes optional fields", () => {
     const parsed = createCampaignSchema.parse(valid);
     expect(parsed.preheader).toBeNull();
-    expect(parsed.segmentSources).toEqual(["WAITLIST", "FRIENDS_FAMILY"]);
+    expect(parsed.segmentIds).toEqual(["seg_waitlist", "s1"]);
     expect(parsed.promoCode).toBe("FUNDADOR30");
   });
 
@@ -48,8 +107,9 @@ describe("createCampaignSchema", () => {
 
   it.each([
     ["locale", { locale: "pt" }],
-    ["empty segments", { segmentSources: [] }],
-    ["unknown segment", { segmentSources: ["USERS"] }],
+    ["empty segments", { segmentIds: [] }],
+    ["blank segment id", { segmentIds: [" "] }],
+    ["legacy segment sources", { segmentSources: ["WAITLIST"] }],
     ["long subject", { subject: "x".repeat(151) }],
     ["long preheader", { preheader: "x".repeat(201) }],
     ["long title", { title: "x".repeat(151) }],

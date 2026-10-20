@@ -646,6 +646,10 @@
         "title": "Email contacts",
         "description": "Manage the contacts who receive campaigns."
       },
+      "emailCampaignSegments": {
+        "title": "Email segments",
+        "description": "Group contacts into segments to target your campaigns."
+      },
       "emailCampaignsNew": {
         "title": "New email campaign",
         "description": "Write the campaign, choose its segment and link a promo code."
@@ -1205,7 +1209,8 @@
     "emailCampaigns": {
       "tabs": {
         "campaigns": "Campaigns",
-        "contacts": "Contacts"
+        "contacts": "Contacts",
+        "segments": "Segments"
       },
       "locales": {
         "en": "English",
@@ -1222,18 +1227,38 @@
           "title": "No campaigns yet",
           "body": "Create your first campaign to send it to your contacts and measure its conversions."
         },
+        "noMatches": "No campaigns match the filters.",
+        "searchPlaceholder": "Search by name or subject",
+        "filters": {
+          "status": "Status",
+          "segment": "Segment",
+          "allStatuses": "All statuses",
+          "allSegments": "All segments"
+        },
+        "sort": {
+          "ariaSortBy": "Sort by {field}"
+        },
         "columns": {
           "campaign": "Campaign",
-          "locale": "Language",
-          "segment": "Segment",
           "promoCode": "Code",
           "status": "Status",
           "sentAt": "Sent on",
-          "sent": "Sent",
-          "opens": "Unique opens",
           "clicks": "Unique clicks",
           "conversions": "Conversions",
-          "revenue": "Revenue"
+          "revenue": "Revenue",
+          "actions": "Actions"
+        },
+        "actions": {
+          "view": "View campaign",
+          "edit": "Edit draft",
+          "delete": "Delete draft"
+        },
+        "delete": {
+          "title": "Delete draft?",
+          "body": "“{name}” will be deleted. This action cannot be undone.",
+          "confirm": "Yes, delete",
+          "deleting": "Deleting…",
+          "cancel": "Cancel"
         },
         "status": {
           "DRAFT": "Draft",
@@ -1251,13 +1276,16 @@
         "filters": {
           "source": "Source",
           "status": "Status",
+          "segment": "Segment",
           "allSources": "All sources",
-          "allStatuses": "All statuses"
+          "allStatuses": "All statuses",
+          "allSegments": "All segments"
         },
         "columns": {
           "email": "Email",
           "name": "Name",
           "source": "Source",
+          "segments": "Segments",
           "status": "Status",
           "locale": "Language",
           "createdAt": "Added",
@@ -1273,9 +1301,27 @@
           "UNSUBSCRIBED": "Unsubscribed"
         },
         "actions": {
+          "edit": "Edit contact",
           "resubscribe": "Resubscribe",
           "resubscribing": "Resubscribing…",
           "resubscribeError": "The contact could not be resubscribed. Please try again."
+        },
+        "edit": {
+          "title": "Edit contact",
+          "name": "Name (optional)",
+          "locale": "Language",
+          "segments": "Segments",
+          "segmentsHint": "The contact receives campaigns sent to any of these segments.",
+          "cancel": "Cancel",
+          "save": "Save changes",
+          "saving": "Saving…",
+          "saved": "Contact updated.",
+          "errors": {
+            "generic": "The contact could not be saved. Please try again.",
+            "invalid": "Check the details: name up to 120 characters.",
+            "invalidSegment": "One of the segments no longer exists. Reload the page and try again.",
+            "notFound": "This contact no longer exists."
+          }
         },
         "form": {
           "title": "Add friends & family",
@@ -1285,6 +1331,8 @@
           "locale": "Language",
           "tags": "Tags (optional)",
           "tagsPlaceholder": "Comma separated",
+          "segments": "Extra segments (optional)",
+          "segmentsHint": "Friends & family is always added.",
           "submit": "Add contact",
           "submitting": "Adding…",
           "success": "Contact added.",
@@ -1292,8 +1340,74 @@
             "duplicate": "A contact with this email already exists.",
             "generic": "The contact could not be added. Please try again.",
             "invalid": "Check the details: name up to 120 characters and up to 20 tags of 50 characters.",
-            "invalidEmail": "Enter a valid email."
+            "invalidEmail": "Enter a valid email.",
+            "invalidSegment": "One of the segments no longer exists. Reload the page and try again."
           }
+        }
+      },
+      "segments": {
+        "eyebrow": "Audience",
+        "heading": "Segments",
+        "newSegment": "New segment",
+        "errorLoad": "Segments could not be loaded. Please try again.",
+        "empty": {
+          "title": "No segments yet",
+          "body": "Create a segment to group contacts and send them campaigns."
+        },
+        "systemLabel": "System",
+        "columns": {
+          "name": "Segment",
+          "members": "Contacts",
+          "subscribed": "Subscribed",
+          "actions": "Actions"
+        },
+        "actions": {
+          "edit": "Edit segment",
+          "delete": "Delete segment"
+        },
+        "feedback": {
+          "created": "Segment created.",
+          "saved": "Segment saved.",
+          "deleted": "Segment deleted."
+        },
+        "form": {
+          "createTitle": "New segment",
+          "editTitle": "Edit segment",
+          "systemHint": "This is a system segment: you can rename it, but not delete it.",
+          "name": "Name",
+          "description": "Description (optional)",
+          "cancel": "Cancel",
+          "create": "Create segment",
+          "creating": "Creating…",
+          "save": "Save changes",
+          "saving": "Saving…",
+          "errors": {
+            "nameRequired": "Enter a name.",
+            "duplicate": "A segment with this name already exists.",
+            "invalid": "Check the details: name up to 60 characters and description up to 300.",
+            "notFound": "This segment no longer exists.",
+            "generic": "The segment could not be saved. Please try again."
+          }
+        },
+        "delete": {
+          "title": "Delete segment?",
+          "body": "“{name}” will be deleted. Its contacts are kept. This action cannot be undone.",
+          "confirm": "Yes, delete",
+          "deleting": "Deleting…",
+          "cancel": "Cancel",
+          "errors": {
+            "inUse": "It cannot be deleted: some campaigns target this segment.",
+            "system": "System segments cannot be deleted.",
+            "notFound": "This segment no longer exists.",
+            "generic": "The segment could not be deleted. Please try again."
+          }
+        },
+        "picker": {
+          "loading": "Loading segments…",
+          "error": "Segments could not be loaded.",
+          "retry": "Retry",
+          "empty": "No segments available.",
+          "count": "{name} ({count})"
         }
       },
       "editor": {
@@ -1313,8 +1427,8 @@
           "ctaUrl": "Button URL (optional)",
           "ctaUrlPlaceholder": "https://",
           "locale": "Language",
-          "segment": "Segment",
-          "segmentHint": "Only subscribed contacts in this language receive the campaign."
+          "segment": "Segments",
+          "segmentHint": "Subscribed contacts in this language in any of the selected segments receive the campaign. In brackets, each segment's subscribed contacts."
         },
         "create": "Create campaign",
         "creating": "Creating…",

@@ -1654,6 +1654,7 @@ export interface AdminDashboardDict {
     blogDetail: { description: string; title: string };
     blogNew: { description: string; title: string };
     emailCampaignContacts: { description: string; title: string };
+    emailCampaignSegments: { description: string; title: string };
     emailCampaigns: { description: string; title: string };
     emailCampaignsNew: { description: string; title: string };
     emailCampaignDetail: { description: string; title: string };
@@ -1877,7 +1878,7 @@ export interface AdminXsedDict {
 
 /** Admin email campaigns: campaigns list (comparison view) and contacts. */
 export interface EmailCampaignsAdminDict {
-  tabs: { campaigns: string; contacts: string };
+  tabs: { campaigns: string; contacts: string; segments: string };
   /** Keyed by `CampaignLocale`. */
   locales: { en: string; es: string };
   campaigns: {
@@ -1888,18 +1889,34 @@ export interface EmailCampaignsAdminDict {
     notSent: string;
     noPromo: string;
     empty: { title: string; body: string };
+    noMatches: string;
+    searchPlaceholder: string;
+    filters: {
+      status: string;
+      segment: string;
+      allStatuses: string;
+      allSegments: string;
+    };
+    /** `ariaSortBy` interpolates `{field}`. */
+    sort: { ariaSortBy: string };
     columns: {
       campaign: string;
-      locale: string;
-      segment: string;
       promoCode: string;
       status: string;
       sentAt: string;
-      sent: string;
-      opens: string;
       clicks: string;
       conversions: string;
       revenue: string;
+      actions: string;
+    };
+    actions: { view: string; edit: string; delete: string };
+    /** `body` interpolates `{name}`. */
+    delete: {
+      title: string;
+      body: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
     };
     /** Keyed by `CampaignStatus`. */
     status: { DRAFT: string; PARTIAL: string; SENDING: string; SENT: string };
@@ -1913,13 +1930,16 @@ export interface EmailCampaignsAdminDict {
     filters: {
       source: string;
       status: string;
+      segment: string;
       allSources: string;
       allStatuses: string;
+      allSegments: string;
     };
     columns: {
       email: string;
       name: string;
       source: string;
+      segments: string;
       status: string;
       locale: string;
       createdAt: string;
@@ -1930,9 +1950,28 @@ export interface EmailCampaignsAdminDict {
     /** Keyed by `ContactStatus`. */
     status: { BOUNCED: string; SUBSCRIBED: string; UNSUBSCRIBED: string };
     actions: {
+      edit: string;
       resubscribe: string;
       resubscribing: string;
       resubscribeError: string;
+    };
+    /** Edit contact modal (name, language, segments). */
+    edit: {
+      title: string;
+      name: string;
+      locale: string;
+      segments: string;
+      segmentsHint: string;
+      cancel: string;
+      save: string;
+      saving: string;
+      saved: string;
+      errors: {
+        generic: string;
+        invalid: string;
+        invalidSegment: string;
+        notFound: string;
+      };
     };
     form: {
       title: string;
@@ -1942,6 +1981,8 @@ export interface EmailCampaignsAdminDict {
       locale: string;
       tags: string;
       tagsPlaceholder: string;
+      segments: string;
+      segmentsHint: string;
       submit: string;
       submitting: string;
       success: string;
@@ -1950,7 +1991,66 @@ export interface EmailCampaignsAdminDict {
         generic: string;
         invalid: string;
         invalidEmail: string;
+        invalidSegment: string;
       };
+    };
+  };
+  segments: {
+    eyebrow: string;
+    heading: string;
+    newSegment: string;
+    errorLoad: string;
+    empty: { title: string; body: string };
+    /** Category label of the seeded, non-deletable segments. */
+    systemLabel: string;
+    columns: {
+      name: string;
+      members: string;
+      subscribed: string;
+      actions: string;
+    };
+    actions: { edit: string; delete: string };
+    feedback: { created: string; saved: string; deleted: string };
+    form: {
+      createTitle: string;
+      editTitle: string;
+      systemHint: string;
+      name: string;
+      description: string;
+      cancel: string;
+      create: string;
+      creating: string;
+      save: string;
+      saving: string;
+      errors: {
+        nameRequired: string;
+        duplicate: string;
+        invalid: string;
+        notFound: string;
+        generic: string;
+      };
+    };
+    /** `body` interpolates `{name}`. */
+    delete: {
+      title: string;
+      body: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
+      errors: {
+        inUse: string;
+        system: string;
+        notFound: string;
+        generic: string;
+      };
+    };
+    /** Segment multi-select chips; `count` interpolates `{name}` and `{count}`. */
+    picker: {
+      loading: string;
+      error: string;
+      retry: string;
+      empty: string;
+      count: string;
     };
   };
   editor: {

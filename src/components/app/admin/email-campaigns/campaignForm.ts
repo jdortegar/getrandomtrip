@@ -1,3 +1,4 @@
+import { SYSTEM_SEGMENT_IDS } from "@/lib/email-campaigns/segmentRules";
 import type {
   Campaign,
   CampaignFormField,
@@ -33,7 +34,8 @@ export function emptyCampaignForm(locale: CampaignLocale): CampaignFormValues {
     name: "",
     preheader: "",
     promoCode: "",
-    segmentSources: ["WAITLIST"],
+    // New campaigns start targeting the waitlist, as before segments existed.
+    segmentIds: [SYSTEM_SEGMENT_IDS.WAITLIST],
     subject: "",
     title: "",
   };
@@ -48,7 +50,7 @@ export function campaignToForm(campaign: Campaign): CampaignFormValues {
     name: campaign.name,
     preheader: campaign.preheader ?? "",
     promoCode: campaign.promoCode ?? "",
-    segmentSources: campaign.segmentSources,
+    segmentIds: campaign.segments.map((segment) => segment.id),
     subject: campaign.subject,
     title: campaign.title,
   };
@@ -83,8 +85,8 @@ export function validateCampaignForm(values: CampaignFormValues): CampaignFormIs
   if (!issues.ctaLabel && !issues.ctaUrl && Boolean(ctaLabel) !== Boolean(ctaUrl)) {
     issues[ctaLabel ? "ctaUrl" : "ctaLabel"] = { kind: "ctaPair" };
   }
-  if (values.segmentSources.length === 0) {
-    issues.segmentSources = { kind: "segment" };
+  if (values.segmentIds.length === 0) {
+    issues.segmentIds = { kind: "segment" };
   }
   return issues;
 }
@@ -101,14 +103,14 @@ export function formToCampaignInput(values: CampaignFormValues): CampaignInput {
     name: values.name.trim(),
     preheader: optional(values.preheader),
     promoCode: optional(values.promoCode)?.toUpperCase() ?? null,
-    segmentSources: values.segmentSources,
+    segmentIds: values.segmentIds,
     subject: values.subject.trim(),
     title: values.title.trim(),
   };
 }
 
-function sameSources(a: Campaign["segmentSources"], b: Campaign["segmentSources"]) {
-  return a.length === b.length && a.every((source) => b.includes(source));
+function sameIds(a: string[], b: string[]) {
+  return a.length === b.length && a.every((id) => b.includes(id));
 }
 
 /**
@@ -142,8 +144,9 @@ export function campaignChanges(
     changes.ctaLabel = input.ctaLabel;
     changes.ctaUrl = input.ctaUrl;
   }
-  if (!sameSources(campaign.segmentSources, input.segmentSources)) {
-    changes.segmentSources = input.segmentSources;
+  const savedIds = campaign.segments.map((segment) => segment.id);
+  if (!sameIds(savedIds, input.segmentIds)) {
+    changes.segmentIds = input.segmentIds;
   }
   return changes;
 }

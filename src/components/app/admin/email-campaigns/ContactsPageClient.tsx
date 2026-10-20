@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import { TableFilterToolbar } from "@/components/ui/TableFilterToolbar";
 import { TableQueryBoundary } from "@/components/ui/TableQueryBoundary";
 import { useCurrentTableRefresh } from "@/hooks/useCurrentTableRefresh";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
@@ -11,21 +10,23 @@ import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import { useTableRequestGuard } from "@/hooks/useTableRequestGuard";
 import type {
   Contact,
+  ContactListFilters,
   ContactListResult,
-  ContactSource,
-  ContactStatus,
 } from "@/types/emailCampaign";
 import { AddContactForm } from "./AddContactForm";
+import { ContactEditModal } from "./ContactEditModal";
+import { ContactsFilters } from "./ContactsFilters";
 import { ContactsTable } from "./ContactsTable";
 import { EmailCampaignsSectionHeader } from "./EmailCampaignsSectionHeader";
 import { EmailCampaignsSubnav } from "./EmailCampaignsSubnav";
+import { CONTACTS_API } from "./segmentApi";
+import { useSegments } from "./useSegments";
 
 const PAGE_SIZE = 20;
 const SEARCH_DEBOUNCE_MS = 350;
-const SOURCES: ContactSource[] = ["WAITLIST", "FRIENDS_FAMILY"];
-const STATUSES: ContactStatus[] = ["SUBSCRIBED", "UNSUBSCRIBED", "BOUNCED"];
+const EMPTY_FILTERS: ContactListFilters = { search: "", segmentId: "", source: "", status: "" };
 
-/** Admin contacts: filterable list, friends & family form, resubscribe. */
+/** Admin contacts: filterable list, friends & family form, edit and resubscribe. */
 export function ContactsPageClient() {
   const pageCopy = useDictionary((d) => d.adminPages.emailCampaigns);
   const filterCopy = useDictionary((d) => d.common.tableFilters);
@@ -34,13 +35,12 @@ export function ContactsPageClient() {
   const isEnglish = locale.startsWith("en");
   const dateLocale = isEnglish ? "en-US" : "es-ES";
   const copy = pageCopy.contacts;
+  const segmentList = useSegments();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [source, setSource] = useState<ContactSource | "">("");
-  const [status, setStatus] = useState<ContactStatus | "">("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState<ContactListFilters>(EMPTY_FILTERS);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,31 +50,35 @@ export function ContactsPageClient() {
   );
   const resubscribeInFlight = useRef(new Set<string>());
   const [rowError, setRowError] = useState<string | null>(null);
+  const [editTarget, setEditTarget] = useState<Contact | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  const queryKey = JSON.stringify([page, source, status, searchQuery, debouncedSearch]);
+  const { search, segmentId, source, status } = filters;
+  const queryKey = JSON.stringify([page, source, status, segmentId, search, debouncedSearch]);
   const [previousQuery, setPreviousQuery] = useState(queryKey);
   if (previousQuery !== queryKey) {
     setPreviousQuery(queryKey);
     setLoading(true);
   }
-  const queryPending = loading || searchQuery !== debouncedSearch;
+  const queryPending = loading || search !== debouncedSearch;
   const beginRequest = useTableRequestGuard(queryKey);
 
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(searchQuery), SEARCH_DEBOUNCE_MS);
+    const timer = setTimeout(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [search]);
 
   const fetchContacts = useCallback(() => {
-    if (searchQuery !== debouncedSearch) return;
+    if (search !== debouncedSearch) return;
     const isCurrent = beginRequest();
     if (!isCurrent()) return;
     const params = new URLSearchParams({ limit: String(PAGE_SIZE), page: String(page) });
     if (source) params.set("source", source);
     if (status) params.set("status", status);
+    if (segmentId) params.set("segmentId", segmentId);
     if (debouncedSearch) params.set("q", debouncedSearch);
 
-    return fetch(`/api/admin/email-campaigns/contacts?${params.toString()}`)
+    return fetch(`${CONTACTS_API}?${params.toString()}`)
       .then(async (res) => ({
         data: (await res.json()) as Partial<ContactListResult>,
         res,
@@ -95,9 +99,9 @@ export function ContactsPageClient() {
       .finally(() => {
         if (isCurrent()) setLoading(false);
       });
-  }, [beginRequest, searchQuery, debouncedSearch, page, source, status, copy.errorLoad]);
+  }, [beginRequest, search, debouncedSearch, page, source, status, segmentId, copy.errorLoad]);
   const refreshCurrentQuery = useCurrentTableRefresh(async () => {
-    if (searchQuery !== debouncedSearch) return;
+    if (search !== debouncedSearch) return;
     setLoading(true);
     await fetchContacts();
   });
@@ -112,7 +116,7 @@ export function ContactsPageClient() {
     setResubscribingIds(new Set(resubscribeInFlight.current));
     setRowError(null);
     try {
-      const res = await fetch(`/api/admin/email-campaigns/contacts/${id}`, {
+      const res = await fetch(`${CONTACTS_API}/${id}`, {
         body: JSON.stringify({ status: "SUBSCRIBED" }),
         headers: { "Content-Type": "application/json" },
         method: "PATCH",
@@ -132,19 +136,23 @@ export function ContactsPageClient() {
     }
   }
 
-  function changeFilter(apply: () => void) {
-    apply();
+  function changeFilters(patch: Partial<ContactListFilters>) {
+    setFilters((current) => ({ ...current, ...patch }));
     setPage(1);
     setRowError(null);
+    setNotice(null);
   }
 
-  const hasActiveFilters = source !== "" || status !== "" || searchQuery !== "";
   function clearFilters() {
-    setSource("");
-    setStatus("");
-    setSearchQuery("");
+    setFilters(EMPTY_FILTERS);
     setDebouncedSearch("");
     setPage(1);
+  }
+
+  function handleSaved(updated: Contact) {
+    setContacts((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
+    setEditTarget(null);
+    setNotice(copy.edit.saved);
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -159,47 +167,25 @@ export function ContactsPageClient() {
         defaultLocale={isEnglish ? "en" : "es"}
         localeLabels={pageCopy.locales}
         onCreated={() => void refreshCurrentQuery()}
+        onRetrySegments={segmentList.reload}
+        pickerCopy={pageCopy.segments.picker}
+        segments={segmentList.segments}
+        segmentsStatus={segmentList.status}
       />
 
       {loading && !hasLoadedOnce ? (
         <LoadingSpinner />
       ) : (
         <>
-          <TableFilterToolbar
-            copy={filterCopy}
-            filters={[
-              {
-                id: "email-contacts-source",
-                label: copy.filters.source,
-                onChange: (value) => changeFilter(() => setSource(value as ContactSource | "")),
-                options: [
-                  { label: copy.filters.allSources, value: "" },
-                  ...SOURCES.map((value) => ({ label: copy.source[value], value })),
-                ],
-                value: source,
-              },
-              {
-                id: "email-contacts-status",
-                label: copy.filters.status,
-                onChange: (value) => changeFilter(() => setStatus(value as ContactStatus | "")),
-                options: [
-                  { label: copy.filters.allStatuses, value: "" },
-                  ...STATUSES.map((value) => ({ label: copy.status[value], value })),
-                ],
-                value: status,
-              },
-            ]}
-            hasActiveFilters={hasActiveFilters}
+          <ContactsFilters
+            copy={copy}
+            filterCopy={filterCopy}
+            filters={filters}
             hasError={!!error}
             isLoading={queryPending}
+            onChange={changeFilters}
             onClear={clearFilters}
-            search={{
-              id: "email-contacts-search",
-              label: filterCopy.searchLabel,
-              onChange: (value) => changeFilter(() => setSearchQuery(value)),
-              placeholder: copy.searchPlaceholder,
-              value: searchQuery,
-            }}
+            segments={segmentList.segments}
             shown={contacts.length}
             total={total}
           />
@@ -207,6 +193,11 @@ export function ContactsPageClient() {
           {rowError && (
             <p className="text-sm text-red-600" role="alert">
               {rowError}
+            </p>
+          )}
+          {notice && (
+            <p className="text-sm text-green-700" role="status">
+              {notice}
             </p>
           )}
 
@@ -223,6 +214,10 @@ export function ContactsPageClient() {
               copy={copy}
               dateLocale={dateLocale}
               localeLabels={pageCopy.locales}
+              onEdit={(contact) => {
+                setNotice(null);
+                setEditTarget(contact);
+              }}
               onResubscribe={(id) => void resubscribe(id)}
               resubscribingIds={resubscribingIds}
             />
@@ -241,6 +236,21 @@ export function ContactsPageClient() {
             />
           </div>
         </>
+      )}
+
+      {editTarget && (
+        <ContactEditModal
+          contact={editTarget}
+          copy={copy.edit}
+          key={editTarget.id}
+          localeLabels={pageCopy.locales}
+          onClose={() => setEditTarget(null)}
+          onRetrySegments={segmentList.reload}
+          onSaved={handleSaved}
+          pickerCopy={pageCopy.segments.picker}
+          segments={segmentList.segments}
+          segmentsStatus={segmentList.status}
+        />
       )}
     </div>
   );

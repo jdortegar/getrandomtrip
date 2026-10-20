@@ -1,6 +1,7 @@
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import type { Campaign } from "@/types/emailCampaign";
+import { vi, type Mock } from "vitest";
+import type { Campaign, SegmentSummary } from "@/types/emailCampaign";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -111,7 +112,7 @@ export function draftCampaign(overrides: Partial<Campaign> = {}): Campaign {
     name: "Fundadores",
     preheader: null,
     promoCode: "FUNDADOR30",
-    segmentSources: ["WAITLIST"],
+    segments: [{ id: "seg_waitlist", name: "Lista de espera", systemKey: "WAITLIST" as const }],
     sentAt: null,
     status: "DRAFT",
     stripePromotionCodeId: "promo_1",
@@ -120,4 +121,65 @@ export function draftCampaign(overrides: Partial<Campaign> = {}): Campaign {
     updatedAt: "2026-06-02T00:00:00.000Z",
     ...overrides,
   };
+}
+
+export const SEGMENTS_URL = "/api/admin/email-campaigns/segments";
+
+export function segmentSummary(overrides: Partial<SegmentSummary> = {}): SegmentSummary {
+  return {
+    createdAt: "2026-06-01T00:00:00.000Z",
+    description: null,
+    id: "seg-custom",
+    memberCount: 4,
+    name: "Viajeros frecuentes",
+    subscribedCount: 3,
+    systemKey: null,
+    updatedAt: "2026-06-01T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+/** System segments first, then custom ones by name — the order the API returns. */
+export const SEGMENT_FIXTURES: SegmentSummary[] = [
+  segmentSummary({
+    id: "seg_waitlist",
+    memberCount: 120,
+    name: "Lista de espera",
+    subscribedCount: 110,
+    systemKey: "WAITLIST",
+  }),
+  segmentSummary({
+    id: "seg_friends_family",
+    memberCount: 12,
+    name: "Amigos y familia",
+    subscribedCount: 10,
+    systemKey: "FRIENDS_FAMILY",
+  }),
+  segmentSummary(),
+];
+
+/**
+ * Stubs global `fetch`: `GET` of the segments list answers with `segments`;
+ * every other request goes to `fallback`, so tests keep asserting on it alone.
+ */
+export function stubFetchWithSegments(
+  fallback: Mock,
+  segments: SegmentSummary[] = SEGMENT_FIXTURES,
+) {
+  // Forward the original arguments untouched so call assertions on `fallback` hold.
+  vi.stubGlobal("fetch", (...args: [string, RequestInit?]) =>
+    args[0] === SEGMENTS_URL && (args[1]?.method ?? "GET") === "GET"
+      ? Promise.resolve(jsonResponse(200, { segments }))
+      : fallback(...args),
+  );
+}
+
+/** The toggle chip whose label starts with `label` (chips may append a count). */
+export function chipByLabel(
+  container: ParentNode,
+  label: string,
+): HTMLButtonElement | undefined {
+  return Array.from(
+    container.querySelectorAll<HTMLButtonElement>('[data-component="Chip"]'),
+  ).find((chip) => chip.textContent?.startsWith(label));
 }
