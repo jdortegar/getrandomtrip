@@ -5,6 +5,10 @@ import { expect, it, vi } from "vitest";
 import type { XsedRoadmapDocument } from "@/lib/types/XsedRoadmap";
 import { renderXsedRoadmap } from "../renderXsedRoadmap";
 import { XsedRoadmapPdf } from "../XsedRoadmapPdf";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const document: XsedRoadmapDocument = {
   template: "xsed-roadmap",
   templateVersion: 1,
@@ -189,9 +193,12 @@ it.each(["en", "es"] as const)(
   },
 );
 
-it("embeds licensed reference-compatible fonts in actual PDF bytes", async () => {
+it("embeds only the approved Barlow font in actual PDF bytes", async () => {
   const result = await renderXsedRoadmap(document);
   if (!result.ok) throw new Error("invalid fixture");
-  expect(result.buffer.toString("latin1")).toContain("Arimo-Regular");
-  expect(result.buffer.toString("latin1")).toContain("Barlow-Bold");
+  const pdf = result.buffer.toString("latin1");
+  expect(pdf).toContain("Barlow-Regular");
+  expect(pdf).toContain("Barlow-Bold");
+  expect(pdf).not.toContain("Arimo");
+  expect(pdf).not.toContain("Inter-");
 });

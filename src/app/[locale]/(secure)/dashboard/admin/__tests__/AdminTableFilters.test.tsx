@@ -62,7 +62,8 @@ const cases = [
     component: <AdminExperiencesPageClient />,
     count: 3,
     status: "ACTIVE",
-    clearStatus: "PENDING_REVIEW,PENDING_TRIPPER_REVIEW",
+    // The experiences filter defaults to "ALL" (no status param) since 8accc6fc.
+    clearStatus: null,
   },
   {
     name: "reviews",
