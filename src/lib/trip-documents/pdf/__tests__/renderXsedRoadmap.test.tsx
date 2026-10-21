@@ -5,6 +5,10 @@ import { expect, it, vi } from "vitest";
 import type { XsedRoadmapDocument } from "@/lib/types/XsedRoadmap";
 import { renderXsedRoadmap } from "../renderXsedRoadmap";
 import { XsedRoadmapPdf } from "../XsedRoadmapPdf";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const document: XsedRoadmapDocument = {
   template: "xsed-roadmap",
   templateVersion: 1,

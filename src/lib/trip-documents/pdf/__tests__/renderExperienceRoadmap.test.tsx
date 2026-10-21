@@ -5,6 +5,10 @@ import { expect, it, vi } from "vitest";
 import type { ExperienceRoadmapDocument } from "@/lib/types/ExperienceRoadmap";
 import { renderExperienceRoadmap } from "../renderExperienceRoadmap";
 import { ExperienceRoadmapPdf } from "../ExperienceRoadmapPdf";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const document: ExperienceRoadmapDocument = {
   template: "experience-roadmap",
   templateVersion: 1,

@@ -5,6 +5,10 @@ import { expect, it, vi } from "vitest";
 import type { ActivityVoucherDocument } from "@/lib/types/ActivityVoucher";
 import { renderActivityVoucher } from "../renderActivityVoucher";
 import { ActivityVoucherPdf } from "../ActivityVoucherPdf";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const document: ActivityVoucherDocument = {
   template: "activity-voucher",
   templateVersion: 1,
@@ -194,6 +198,9 @@ it.each(["en", "es"] as const)(
 it("embeds licensed reference-compatible fonts in actual PDF bytes", async () => {
   const result = await renderActivityVoucher(document);
   if (!result.ok) throw new Error("invalid fixture");
-  expect(result.buffer.toString("latin1")).toContain("Arimo-Regular");
-  expect(result.buffer.toString("latin1")).toContain("Arimo-Bold");
+  const pdf = result.buffer.toString("latin1");
+  expect(pdf).toContain("Arimo-Regular");
+  // Arimo is a variable font: Chromium embeds the 700 instance as a separate
+  // subset that keeps the "Arimo-Regular" PostScript name, never "Arimo-Bold".
+  expect(new Set(pdf.match(/[A-Z]{6}\+Arimo-Regular/g)).size).toBeGreaterThan(1);
 });

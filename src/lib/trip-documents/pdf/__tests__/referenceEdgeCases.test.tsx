@@ -2,13 +2,17 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { experienceFixture, referenceFixtures } from "./referenceFixtures";
 import { renderHotelVoucher } from "../renderHotelVoucher";
 import { renderDinnerVoucher } from "../renderDinnerVoucher";
 import { renderActivityVoucher } from "../renderActivityVoucher";
 import { renderXsedRoadmap } from "../renderXsedRoadmap";
 import { renderExperienceRoadmap } from "../renderExperienceRoadmap";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const renderers = {
   "hotel-voucher": renderHotelVoucher,
   "dinner-voucher": renderDinnerVoucher,
@@ -140,6 +144,8 @@ for (const fixture of referenceFixtures) {
       ).toContain("TEST / NOT FOR TRAVEL");
     });
   }
+  // Roadmaps intentionally omit the reservation reference since 151561f7.
+  if (!fixture.template.endsWith("voucher")) continue;
   it(`flows multiline reference before the summary in ${fixture.template}`, async () => {
     const input = structuredClone(fixture);
     input.data.reservationReference = Array.from(
