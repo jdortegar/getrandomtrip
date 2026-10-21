@@ -52,6 +52,7 @@ const feedback = {
   user: "U",
   feedback: "Change title",
   target: "image" as const,
+  slides: [2],
 };
 beforeEach(() => {
   vi.resetAllMocks();
@@ -68,6 +69,7 @@ it("queues feedback and decision atomically while holding source and daily-budge
       actor: "U",
       feedback: feedback.feedback,
       target: "image",
+      slides: [2],
     },
   });
   expect(m.approvalUpdate).toHaveBeenCalledWith(
@@ -124,10 +126,10 @@ it("cannot create a generated revision for a replaced source or lost lease", asy
     leaseToken: "lease",
   });
   expect(
-    await finishGeneratedSocialRevision("job", "other", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "other", "caption", ["url"]),
   ).toBeNull();
   expect(
-    await finishGeneratedSocialRevision("job", "lease", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "lease", "caption", ["url"]),
   ).toBeNull();
   expect(m.approvalCreate).not.toHaveBeenCalled();
 });
@@ -146,7 +148,7 @@ it("fences ownership after the review lock before creating a generated revision"
     m.jobUpdateMany.mockResolvedValue({ count: 0 });
   });
   expect(
-    await finishGeneratedSocialRevision("job", "lease", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "lease", "caption", ["url"]),
   ).toBeNull();
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -160,4 +162,29 @@ it("fences ownership after the review lock before creating a generated revision"
   );
   expect(m.approvalCreate).not.toHaveBeenCalled();
   expect(m.approvalUpdate).not.toHaveBeenCalled();
+});
+
+it("creates the next revision with every slide and keeps the source link", async () => {
+  m.jobFind.mockResolvedValue({
+    id: "job",
+    reviewId: "review",
+    review: source,
+    status: "RUNNING",
+    leaseToken: "lease",
+  });
+  m.approvalFind.mockResolvedValue({
+    ...source,
+    status: "CHANGES_REQUESTED",
+    sourceId: "src",
+  });
+  m.approvalCreate.mockResolvedValue({ id: "new" });
+  await finishGeneratedSocialRevision("job", "lease", "caption", ["a", "b"]);
+  expect(m.approvalCreate).toHaveBeenCalledWith({
+    data: expect.objectContaining({
+      revision: 2,
+      imageUrl: "a",
+      imageUrls: ["a", "b"],
+      sourceId: "src",
+    }),
+  });
 });

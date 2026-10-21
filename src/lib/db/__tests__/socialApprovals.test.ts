@@ -104,3 +104,15 @@ it("does not reactivate an already superseded revision after delivery", async ()
     data: { messageTs: row.messageTs, status: "PENDING" },
   });
 });
+it("treats a single-image retry and its one-slide form as the same content", async () => {
+  mocks.findUnique.mockResolvedValue({ ...row, imageUrls: [] });
+  expect(
+    await createSocialApproval({ ...input, imageUrls: [input.imageUrl] }),
+  ).toMatchObject({ created: false });
+  await expect(
+    createSocialApproval({
+      ...input,
+      imageUrls: [input.imageUrl, "https://other.test/2.png"],
+    }),
+  ).rejects.toThrow("REQUEST_ID_CONFLICT");
+});

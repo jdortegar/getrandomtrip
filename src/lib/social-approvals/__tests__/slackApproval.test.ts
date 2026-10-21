@@ -100,3 +100,31 @@ it("renders exactly two review buttons only while pending, never publishing", ()
     approvalMessage({ ...row, status: "CHANGES_REQUESTED" }).text,
   ).toContain("thread");
 });
+it("shows every slide of a carousel review in order", () => {
+  const message = approvalMessage({
+    id: "review",
+    revision: 1,
+    caption: "Caption",
+    imageUrl: "https://a.test/1.png",
+    imageUrls: ["https://a.test/1.png", "https://a.test/2.png"],
+    status: "PENDING",
+    decidedBy: null,
+  });
+  const images = message.blocks.filter((b) => b.type === "image");
+  expect(images.map((b) => (b as { image_url: string }).image_url)).toEqual([
+    "https://a.test/1.png",
+    "https://a.test/2.png",
+  ]);
+});
+it("falls back to the single image for reviews without slides", () => {
+  const message = approvalMessage({
+    id: "review",
+    revision: 1,
+    caption: "Caption",
+    imageUrl: "https://a.test/only.png",
+    imageUrls: [],
+    status: "PENDING",
+    decidedBy: null,
+  });
+  expect(message.blocks.filter((b) => b.type === "image")).toHaveLength(1);
+});

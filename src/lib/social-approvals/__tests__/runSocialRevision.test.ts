@@ -48,7 +48,8 @@ const job = {
   feedback: "Change this caption",
   leaseToken: "lease",
   generatedCaption: null,
-  generatedImageUrl: null,
+  generatedImageUrls: [] as string[],
+  slides: [] as number[],
 };
 beforeEach(() => {
   vi.resetAllMocks();
@@ -89,7 +90,7 @@ it("caption-only edits never spend on images and post a fresh approval", async (
     "job",
     "lease",
     "Edited caption",
-    review.imageUrl,
+    [review.imageUrl],
   );
   expect(mocks.record).toHaveBeenCalledWith("new", "123");
   expect(mocks.update).toHaveBeenLastCalledWith(
@@ -107,7 +108,7 @@ it("artwork-only edits preserve caption and use original image as edit input", a
     "job",
     "lease",
     review.caption,
-    "https://assets.test/v2.png",
+    ["https://assets.test/v2.png"],
   );
 });
 it("resumes checkpoints without repeating successful paid calls", async () => {
@@ -115,7 +116,7 @@ it("resumes checkpoints without repeating successful paid calls", async () => {
     ...job,
     target: "both",
     generatedCaption: "Stored caption",
-    generatedImageUrl: "https://assets.test/stored.png",
+    generatedImageUrls: ["https://assets.test/stored.png"],
   });
   await runSocialRevision();
   expect(mocks.caption).not.toHaveBeenCalled();
@@ -140,4 +141,73 @@ it("uncertain paid calls and uncertain Slack delivery require manual recovery", 
   );
   expect(mocks.finish).not.toHaveBeenCalled();
   expect(mocks.caption).toHaveBeenCalledOnce();
+});
+
+const carousel = {
+  ...review,
+  imageUrls: [
+    "https://assets.test/1.png",
+    "https://assets.test/2.png",
+    "https://assets.test/3.png",
+  ],
+};
+it("edits only the requested slides and keeps the others", async () => {
+  mocks.claim.mockResolvedValue({
+    ...job,
+    review: carousel,
+    target: "image",
+    slides: [2],
+  });
+  await runSocialRevision();
+  expect(mocks.image).toHaveBeenCalledOnce();
+  expect(mocks.load).toHaveBeenCalledWith("https://assets.test/2.png");
+  expect(mocks.save).toHaveBeenCalledWith("job", new Uint8Array([2]), 2);
+  expect(mocks.finish).toHaveBeenCalledWith("job", "lease", review.caption, [
+    "https://assets.test/1.png",
+    "https://assets.test/v2.png",
+    "https://assets.test/3.png",
+  ]);
+});
+it("edits every slide when none are named and resumes after finished slides", async () => {
+  mocks.claim.mockResolvedValue({
+    ...job,
+    review: carousel,
+    target: "image",
+    generatedImageUrls: ["https://assets.test/done-1.png"],
+  });
+  await runSocialRevision();
+  expect(mocks.image).toHaveBeenCalledTimes(2);
+  expect(mocks.update).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: {
+        generatedImageUrls: [
+          "https://assets.test/done-1.png",
+          "https://assets.test/v2.png",
+        ],
+      },
+    }),
+  );
+  expect(mocks.finish).toHaveBeenCalledWith("job", "lease", review.caption, [
+    "https://assets.test/done-1.png",
+    "https://assets.test/v2.png",
+    "https://assets.test/v2.png",
+  ]);
+});
+it("rejects slide numbers that do not exist without spending", async () => {
+  mocks.claim.mockResolvedValue({
+    ...job,
+    review: carousel,
+    target: "image",
+    slides: [7],
+  });
+  await runSocialRevision();
+  expect(mocks.image).not.toHaveBeenCalled();
+  expect(mocks.update).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({
+        status: "MANUAL_RECOVERY",
+        errorCode: "SLIDES_INVALID",
+      }),
+    }),
+  );
 });

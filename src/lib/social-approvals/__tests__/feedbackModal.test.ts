@@ -74,3 +74,37 @@ it("does not accept absent or oversize feedback or unrecognized targets", () => 
   p.view.state.values.target.target.selected_option.value = "publish";
   expect(parseSocialFeedback(p, config)).toBeNull();
 });
+function withSlides(target: string, slides?: string) {
+  const p = payload();
+  return {
+    ...p,
+    view: {
+      ...p.view,
+      state: {
+        values: {
+          ...p.view.state.values,
+          target: { target: { selected_option: { value: target } } },
+          slides: { slides: { value: slides } },
+        },
+      },
+    },
+  };
+}
+it("binds artwork feedback to the named slides, deduplicated and sorted", () => {
+  expect(
+    parseSocialFeedback(withSlides("image", "3, 1 3"), config),
+  ).toMatchObject({ target: "image", slides: [1, 3] });
+});
+it("treats an empty slide list as every slide and ignores slides for caption-only", () => {
+  expect(parseSocialFeedback(withSlides("both", ""), config)).toMatchObject({
+    slides: [],
+  });
+  expect(parseSocialFeedback(withSlides("caption", "2"), config)).toMatchObject(
+    { slides: [] },
+  );
+});
+it("rejects slide entries that are not slide numbers", () => {
+  expect(parseSocialFeedback(withSlides("image", "0"), config)).toBeNull();
+  expect(parseSocialFeedback(withSlides("image", "two"), config)).toBeNull();
+  expect(parseSocialFeedback(withSlides("image", "11"), config)).toBeNull();
+});

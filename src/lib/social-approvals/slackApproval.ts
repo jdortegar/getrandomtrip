@@ -5,8 +5,15 @@ export interface ApprovalContent {
   revision: number;
   caption: string;
   imageUrl: string;
+  /** Every slide in order; empty for reviews created before multi-slide support. */
+  imageUrls?: string[];
   status: string;
   decidedBy: string | null;
+}
+
+/** Slides of a review in order, falling back to the single legacy image. */
+export function slideUrls(row: Pick<ApprovalContent, "imageUrl" | "imageUrls">) {
+  return row.imageUrls?.length ? row.imageUrls : [row.imageUrl];
 }
 
 export function approvalConfig() {
@@ -69,11 +76,14 @@ export function approvalMessage(row: ApprovalContent) {
           text: `TEST ONLY · @getrandomtrip.en · Revision ${row.revision}\n${status}${row.decidedBy ? ` (${row.decidedBy})` : ""}\nNo Instagram publication.`,
         },
       },
-      {
+      ...slideUrls(row).map((url, index, all) => ({
         type: "image",
-        image_url: row.imageUrl,
-        alt_text: `English artwork, revision ${row.revision}`,
-      },
+        image_url: url,
+        alt_text:
+          all.length > 1
+            ? `English artwork, slide ${index + 1} of ${all.length}, revision ${row.revision}`
+            : `English artwork, revision ${row.revision}`,
+      })),
       { type: "section", text: { type: "plain_text", text: row.caption } },
       ...(pending
         ? [

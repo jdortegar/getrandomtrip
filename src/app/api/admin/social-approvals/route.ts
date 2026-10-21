@@ -3,14 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
-import {
-  createSocialApproval,
-  recordSocialMessage,
-} from "@/lib/db/socialApprovals";
-import {
-  approvalConfig,
-  approvalMessage,
-} from "@/lib/social-approvals/slackApproval";
+import { createSocialApproval } from "@/lib/db/socialApprovals";
+import { approvalConfig } from "@/lib/social-approvals/slackApproval";
+import { postSocialReview } from "@/lib/social-approvals/postSocialReview";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -39,7 +34,11 @@ export async function POST(request: NextRequest) {
     if (raw.length > 12000)
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
     const body = JSON.parse(raw) as Record<string, unknown>;
-    const { reviewKey, requestId, caption, imageUrl } = body;
+    const { reviewKey, requestId, caption } = body;
+    // imageUrls (1-10 slides, in order) supersedes the single imageUrl field.
+    const imageUrls = Array.isArray(body.imageUrls)
+      ? body.imageUrls
+      : [body.imageUrl];
     if (
       typeof reviewKey !== "string" ||
       !/^[a-zA-Z0-9_-]{1,100}$/.test(reviewKey) ||
@@ -48,17 +47,21 @@ export async function POST(request: NextRequest) {
       typeof caption !== "string" ||
       !caption.trim() ||
       caption.length > 2800 ||
-      typeof imageUrl !== "string" ||
-      imageUrl.length > 2000
+      imageUrls.length < 1 ||
+      imageUrls.length > 10 ||
+      imageUrls.some((u) => typeof u !== "string" || u.length > 2000)
     )
       return NextResponse.json({ error: "Invalid review" }, { status: 400 });
-    const url = new URL(imageUrl);
+    const urls = (imageUrls as string[]).map((u) => new URL(u));
     if (
-      url.protocol !== "https:" ||
-      url.username ||
-      url.password ||
-      !process.env.SLACK_SOCIAL_IMAGE_ORIGIN ||
-      url.origin !== process.env.SLACK_SOCIAL_IMAGE_ORIGIN
+      urls.some(
+        (url) =>
+          url.protocol !== "https:" ||
+          url.username ||
+          url.password ||
+          !process.env.SLACK_SOCIAL_IMAGE_ORIGIN ||
+          url.origin !== process.env.SLACK_SOCIAL_IMAGE_ORIGIN,
+      )
     )
       return NextResponse.json(
         { error: "Image must use the configured public asset origin" },
@@ -68,28 +71,16 @@ export async function POST(request: NextRequest) {
       reviewKey,
       requestId,
       caption,
-      imageUrl,
+      imageUrl: imageUrls[0] as string,
+      imageUrls: imageUrls as string[],
       createdBy: session.user.id,
     });
     if (!created) return NextResponse.json({ review: row, testOnly: true });
     // Never automatically repeat an ambiguous external post. Retry of requestId
     // returns the durable row, not a second Slack message.
-    const response = await fetch("https://slack.com/api/chat.postMessage", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        channel: config.channel,
-        ...approvalMessage({ ...row, status: "PENDING" }),
-        unfurl_links: false,
-        unfurl_media: false,
-      }),
-      signal: AbortSignal.timeout(5000),
-    });
-    const result = (await response.json()) as { ok?: boolean; ts?: string };
-    if (!response.ok || !result.ok || !result.ts)
+    try {
+      await postSocialReview(config, row);
+    } catch {
       return NextResponse.json(
         {
           error:
@@ -99,7 +90,7 @@ export async function POST(request: NextRequest) {
         },
         { status: 502 },
       );
-    await recordSocialMessage(row.id, result.ts);
+    }
     return NextResponse.json(
       { reviewId: row.id, revision: row.revision, testOnly: true },
       { status: 201 },

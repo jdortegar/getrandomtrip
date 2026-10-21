@@ -41,7 +41,12 @@ export async function loadSocialArtwork(imageUrl: string) {
   }
   return { bytes: Buffer.concat(parts), type };
 }
-export async function saveSocialArtwork(jobId: string, image: Uint8Array) {
+/** Stores one generated slide under a job-specific key that is never reused. */
+export async function saveSocialArtwork(
+  jobId: string,
+  image: Uint8Array,
+  slide?: number,
+) {
   const origin = process.env.SLACK_SOCIAL_IMAGE_ORIGIN;
   if (
     !origin ||
@@ -49,7 +54,8 @@ export async function saveSocialArtwork(jobId: string, image: Uint8Array) {
     new URL(origin).protocol !== "https:"
   )
     throw new Error("ASSET_ORIGIN_UNCONFIGURED");
-  const key = `social/social-artwork/${withEnvironmentUploadPrefix(jobId)}.png`;
+  const name = slide === undefined ? jobId : `${jobId}-${slide}`;
+  const key = `social/social-artwork/${withEnvironmentUploadPrefix(name)}.png`;
   // One paid image call per job; content-addressed job key is never reused by another revision.
   await getMediaWriteStore().set(key, new Uint8Array(image).buffer, {
     metadata: { contentType: "image/png" },

@@ -1,0 +1,38 @@
+# Social translation flow — @getrandomtrip.es → @getrandomtrip.en
+
+Objective: detect new Spanish Instagram posts daily, translate caption + artwork with OpenAI on demand from Slack, review/revise, then publish to @getrandomtrip.en through the Meta Graph API.
+Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `single-pr` (one coherent feature; work-unit commits) · Test runner: `npx jest <path>`.
+
+## Specs
+
+- **S1 — Detection card.** "when the Spanish account publishes a post, I receive a message in my Slack channel ("translations") to start the flow. The button could say "Translate this post."" Detection frequency: "run daily". Each Spanish post is announced once. Channel: existing #social-media-translations (`C0CAQS7HNH4`) — assumption: this is the "translations" channel.
+- **S2 — Translate.** "That action hits OpenAI to translate the images and the caption." Caption and on-image copy follow the `randomtrip-en-social-transcreator` skill ("use this skill for the caption"). Carousels translate every image slide; a carousel is one review.
+- **S3 — Review.** "We wait for a human to review or request changes." Existing Approve / Request changes loop, applied to the whole post; feedback can target caption, artwork, or both, and specific slides.
+- **S4 — Publish button.** "Once changes are approved, another button will ask to publish."
+- **S5 — Publish.** "The app connects with the Facebook Business API to publish it." Publishes to @getrandomtrip.en only (Instagram content publishing API). Assumption: Instagram only, no Facebook Page crosspost. Gated by an explicit flag and a target-username guard; uncertain publish attempts are never retried automatically.
+
+## Tasks
+
+| ID | Specs | Route | Status | Commit |
+|----|-------|-------|--------|--------|
+| T1 | S2, S3 | inline | pending | |
+| T2 | S1 | inline | pending | |
+| T3 | S2 | inline | pending | |
+| T4 | S4, S5 | inline | pending | |
+| T5 | S1–S5 docs/env | inline | pending | |
+
+- T1 — Multi-image reviews: schema (`imageUrls`, job `kind`, nullable `reviewId`, `sourceId`), migration, Slack card renders all slides, feedback modal accepts slide numbers. Risk: item 1 (persisted format change on existing tables).
+- T2 — `SocialSource` model, source Graph client (media + children), daily scheduled function (production only) + internal route + admin "check now", Slack "Translate this post" card.
+- T3 — TRANSLATE job: download source media, vision transcreation with the skill, per-slide image edits with exact copy, create review revision 1, post review card.
+- T4 — "Publish to @getrandomtrip.en" button on approved reviews, PUBLISH job, JPEG conversion, carousel/single container + publish, card status. Risk: item 1 (irreversible external effect).
+- T5 — `docs/SlackSocialApprovals.md`, `env.example`.
+
+Route evidence: all units share `slackApproval.ts`, the Slack route, the worker and the schema, so no disjoint parallel units exist (Writer trigger not fired); inline.
+
+## Log
+
+- L1 (2026-10-21, user, verbatim): "I found some issues in this flow. First of all, I like that when the Spanish account publishes a post, I receive a message in my Slack channel ("translations") to start the flow. The button could say "Translate this post." From there, the flow should work like this: 1. That action hits OpenAI to translate the images and the caption. 2. We wait for a human to review or request changes. 3. Once changes are approved, another button will ask to publish. 4. The app connects with the Facebook Business API to publish it."
+- L2 (2026-10-21, user, verbatim): "i dont want to waste resources every 10 min, what could be the best strategy ?" → "run daily"
+- L3 (2026-10-21, user, verbatim, earlier): "so use this skill for the caption and lets post the 4 images"
+- L4 Findings: Meta has no webhook for own-account new media (polling required). Netlify scheduled functions run only on production deploys, and reviews/buttons/DB must share one environment → production after release; develop testing via admin "check now". Existing `INSTAGRAM_PAGE_ACCESS_TOKEN` is read-only (instagram_basic, instagram_manage_insights); publishing needs `instagram_content_publish` + a Page token for the Page linked to getrandomtrip.en. Instagram publishing requires public JPEG URLs; uploads are converted to WebP today.
+- L5 Engram mirror: pending (Engram tools unavailable in this session).

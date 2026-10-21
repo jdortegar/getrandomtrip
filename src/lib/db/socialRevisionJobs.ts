@@ -43,6 +43,7 @@ export async function queueSocialRevision(input: SocialFeedback) {
           actor: input.user,
           feedback: input.feedback,
           target: input.target,
+          slides: input.slides,
         },
       });
       return "queued";
@@ -76,7 +77,7 @@ export async function claimSocialRevision() {
     if (!result.count) return null;
     return tx.socialRevisionJob.findUnique({
       where: { id: candidate.id },
-      include: { review: true },
+      include: { review: true, source: true },
     });
   });
 }
@@ -85,14 +86,19 @@ export async function finishGeneratedSocialRevision(
   jobId: string,
   leaseToken: string,
   caption: string,
-  imageUrl: string,
+  imageUrls: string[],
 ) {
   return prisma.$transaction(async (tx) => {
     const job = await tx.socialRevisionJob.findUnique({
       where: { id: jobId },
       include: { review: true },
     });
-    if (!job || job.status !== "RUNNING" || job.leaseToken !== leaseToken)
+    if (
+      !job?.review ||
+      job.status !== "RUNNING" ||
+      job.leaseToken !== leaseToken ||
+      !imageUrls.length
+    )
       return null;
     await lockSocialApproval(tx, job.review.reviewKey);
     // Fence after the potentially blocking source lock. Conditional UPDATE also
@@ -104,11 +110,11 @@ export async function finishGeneratedSocialRevision(
         leaseToken,
         leaseUntil: { gt: new Date() },
       },
-      data: { generatedCaption: caption, generatedImageUrl: imageUrl },
+      data: { generatedCaption: caption, generatedImageUrls: imageUrls },
     });
     if (!owned.count) return null;
     const source = await tx.socialApproval.findUnique({
-      where: { id: job.reviewId },
+      where: { id: job.review.id },
     });
     if (source?.status !== "CHANGES_REQUESTED") return null;
     await tx.socialApproval.update({
@@ -121,7 +127,9 @@ export async function finishGeneratedSocialRevision(
         revision: source.revision + 1,
         requestId: `generated-${job.id}`,
         caption,
-        imageUrl,
+        imageUrl: imageUrls[0],
+        imageUrls,
+        sourceId: source.sourceId,
         createdBy: source.createdBy,
       },
     });

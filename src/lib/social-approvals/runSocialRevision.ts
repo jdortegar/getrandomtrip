@@ -4,12 +4,12 @@ import {
   claimSocialRevision,
   finishGeneratedSocialRevision,
 } from "@/lib/db/socialRevisionJobs";
-import { recordSocialMessage } from "@/lib/db/socialApprovals";
 import {
   reviseSocialCaption,
   reviseSocialArtwork,
 } from "@/lib/ai/socialRevision";
-import { approvalConfig, approvalMessage } from "./slackApproval";
+import { approvalConfig, slideUrls } from "./slackApproval";
+import { postSocialReview } from "./postSocialReview";
 import { loadSocialArtwork, saveSocialArtwork } from "./socialAssets";
 
 export async function runSocialRevision() {
@@ -26,7 +26,7 @@ export async function runSocialRevision() {
   const where = { id: job.id, status: "RUNNING", leaseToken };
   async function checkpoint(data: {
     generatedCaption?: string;
-    generatedImageUrl?: string;
+    generatedImageUrls?: string[];
   }) {
     const result = await prisma.socialRevisionJob.updateMany({
       where: { ...where, leaseUntil: { gt: new Date() } },
@@ -35,55 +35,56 @@ export async function runSocialRevision() {
     if (!result.count) throw new Error("LEASE_LOST");
   }
   try {
+    const review = job.review;
+    if (!review) throw new Error("STALE_SOURCE");
     const current = await prisma.socialApproval.findUnique({
-      where: { id: job.reviewId },
+      where: { id: review.id },
     });
     if (current?.status !== "CHANGES_REQUESTED")
       throw new Error("STALE_SOURCE");
     if (job.target !== "caption" && !process.env.OPENAI_SOCIAL_IMAGE_MODEL)
       throw new Error("AI_IMAGE_UNCONFIGURED");
-    let caption = job.generatedCaption ?? job.review.caption;
-    let imageUrl = job.generatedImageUrl ?? job.review.imageUrl;
+    let caption = job.generatedCaption ?? review.caption;
+    const slides = [...slideUrls(review)];
+    const targets =
+      job.target === "caption"
+        ? []
+        : job.slides.length
+          ? job.slides.filter((n) => n <= slides.length).map((n) => n - 1)
+          : slides.map((_, index) => index);
+    if (job.target !== "caption" && !targets.length)
+      throw new Error("SLIDES_INVALID");
     if (!job.generatedCaption && job.target !== "image") {
       caption = await reviseSocialCaption(caption, job.feedback);
       await checkpoint({ generatedCaption: caption });
     }
-    if (!job.generatedImageUrl && job.target !== "caption") {
-      const source = await loadSocialArtwork(job.review.imageUrl);
+    // generatedImageUrls holds finished targets in order, so a resumed claim
+    // continues after the last paid edit instead of repeating it.
+    const done = [...job.generatedImageUrls];
+    for (const [position, index] of targets.entries()) {
+      if (position < done.length) {
+        slides[index] = done[position];
+        continue;
+      }
+      const source = await loadSocialArtwork(slides[index]);
       const bytes = await reviseSocialArtwork(
         source.bytes,
         source.type,
         job.feedback,
       );
-      imageUrl = await saveSocialArtwork(job.id, bytes);
-      await checkpoint({ generatedImageUrl: imageUrl });
+      slides[index] = await saveSocialArtwork(job.id, bytes, index + 1);
+      done.push(slides[index]);
+      await checkpoint({ generatedImageUrls: [...done] });
     }
     const row = await finishGeneratedSocialRevision(
       job.id,
       leaseToken,
       caption,
-      imageUrl,
+      slides,
     );
     if (!row) throw new Error("STALE_SOURCE");
-    const response = await fetch("https://slack.com/api/chat.postMessage", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        channel: config.channel,
-        ...approvalMessage({ ...row, status: "PENDING" }),
-        unfurl_links: false,
-        unfurl_media: false,
-      }),
-      signal: AbortSignal.timeout(5000),
-    });
-    const result = (await response.json()) as { ok?: boolean; ts?: string };
-    if (!response.ok || !result.ok || !result.ts)
-      throw new Error("SLACK_DELIVERY_UNCONFIRMED");
-    await recordSocialMessage(row.id, result.ts);
-    await refreshSocialMessage(job.review, "SUPERSEDED");
+    await postSocialReview(config, row);
+    await refreshSocialMessage(review, "SUPERSEDED");
     await prisma.socialRevisionJob.updateMany({
       where,
       data: { status: "COMPLETE", leaseToken: null, leaseUntil: null },
@@ -95,6 +96,7 @@ export async function runSocialRevision() {
       "LEASE_LOST",
       "AI_IMAGE_UNCONFIGURED",
       "SLACK_DELIVERY_UNCONFIRMED",
+      "SLIDES_INVALID",
     ]);
     const code =
       error instanceof Error && allowed.has(error.message)
@@ -109,7 +111,7 @@ export async function runSocialRevision() {
         leaseUntil: null,
       },
     });
-    if (code !== "STALE_SOURCE")
+    if (code !== "STALE_SOURCE" && job.review)
       await refreshSocialMessage(job.review, "REVISION_FAILED");
   }
 }
