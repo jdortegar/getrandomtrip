@@ -1536,6 +1536,13 @@ export type XsedNotifyFormCopy = Pick<
   | "successMessage"
 >;
 
+export interface ExperienceCardDict {
+  /** Price footnote fallback when the level has none. */
+  perPerson: string;
+  /** Accessible label of the selected-state check. */
+  selected: string;
+}
+
 export interface XsedLevelCardDict {
   /** Badge shown on the top edge of the XSED card. */
   badge: string;
@@ -3577,6 +3584,7 @@ export interface MarketingDictionary {
     errorApprove: string;
     errorReject: string;
   };
+  experienceCard: ExperienceCardDict;
   xsedLevelCard: XsedLevelCardDict;
   xsedPage: XsedPageDict;
   xsedUnavailable: {

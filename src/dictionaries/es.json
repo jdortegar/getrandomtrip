@@ -1808,6 +1808,10 @@
     "filterOrderBy": "Ordenar por",
     "loadMore": "Ver más"
   },
+  "experienceCard": {
+    "perPerson": "por persona",
+    "selected": "Seleccionado"
+  },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
