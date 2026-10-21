@@ -15,11 +15,11 @@ Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `s
 
 | ID | Specs | Route | Status | Commit |
 |----|-------|-------|--------|--------|
-| T1 | S2, S3 | inline | pending | |
-| T2 | S1 | inline | pending | |
-| T3 | S2 | inline | pending | |
-| T4 | S4, S5 | inline | pending | |
-| T5 | S1–S5 docs/env | inline | pending | |
+| T1 | S2, S3 | inline | done | 9d352ff9, 0625cf34 |
+| T2 | S1 | inline | done | 70f0886d |
+| T3 | S2 | inline | done | fef528b2 |
+| T4 | S4, S5 | inline | done | d09d4a46 |
+| T5 | S1–S5 docs/env | inline | done | docs commit |
 
 - T1 — Multi-image reviews: schema (`imageUrls`, job `kind`, nullable `reviewId`, `sourceId`), migration, Slack card renders all slides, feedback modal accepts slide numbers. Risk: item 1 (persisted format change on existing tables).
 - T2 — `SocialSource` model, source Graph client (media + children), daily scheduled function (production only) + internal route + admin "check now", Slack "Translate this post" card.
@@ -36,3 +36,4 @@ Route evidence: all units share `slackApproval.ts`, the Slack route, the worker 
 - L3 (2026-10-21, user, verbatim, earlier): "so use this skill for the caption and lets post the 4 images"
 - L4 Findings: Meta has no webhook for own-account new media (polling required). Netlify scheduled functions run only on production deploys, and reviews/buttons/DB must share one environment → production after release; develop testing via admin "check now". Existing `INSTAGRAM_PAGE_ACCESS_TOKEN` is read-only (instagram_basic, instagram_manage_insights); publishing needs `instagram_content_publish` + a Page token for the Page linked to getrandomtrip.en. Instagram publishing requires public JPEG URLs; uploads are converted to WebP today.
 - L5 Engram mirror: pending (Engram tools unavailable in this session).
+- L6 (2026-10-21) Evidence: social/AI/recap suites 127 tests pass (baseline 56); eslint + prettier clean on feature files; no social type errors. Test-first deviation: tests were written alongside each unit rather than observed RED first. Live Slack/Meta/OpenAI calls not exercised; publishing needs SOCIAL_TARGET_PAGE_TOKEN with instagram_content_publish.
