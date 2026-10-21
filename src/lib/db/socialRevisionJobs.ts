@@ -104,15 +104,71 @@ export async function queueSocialTranslation(input: {
   );
 }
 
-export async function claimSocialRevision() {
+/**
+ * Queues publication of an approved review. One PUBLISH job per review, so a
+ * repeated click can never publish twice.
+ */
+export async function queueSocialPublish(input: {
+  reviewId: string;
+  user: string;
+  messageTs: string;
+}) {
+  return prisma.$transaction(
+    async (tx) => {
+      const ref = await tx.socialApproval.findUnique({
+        where: { id: input.reviewId },
+      });
+      if (!ref || ref.messageTs !== input.messageTs) return "stale";
+      await lockSocialApproval(tx, ref.reviewKey);
+      if (
+        await tx.socialRevisionJob.findUnique({
+          where: { reviewId: ref.id },
+        })
+      )
+        return "queued";
+      const row = await tx.socialApproval.findUnique({
+        where: { id: ref.id },
+      });
+      if (row?.status !== "APPROVED") return "stale";
+      await tx.socialApproval.update({
+        where: { id: row.id },
+        data: { status: "PUBLISHING" },
+      });
+      await tx.socialRevisionJob.create({
+        data: {
+          kind: "PUBLISH",
+          reviewId: row.id,
+          actor: input.user,
+          feedback: "",
+          target: "both",
+        },
+      });
+      return "queued";
+    },
+    { maxWait: 500, timeout: 1500 },
+  );
+}
+
+/** Job kinds the worker may run with the current flags. */
+export function enabledJobKinds() {
+  return [
+    ...(process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+      ? ["TRANSLATE", "REVISE"]
+      : []),
+    ...(process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true" ? ["PUBLISH"] : []),
+  ];
+}
+
+export async function claimSocialRevision(kinds = enabledJobKinds()) {
   return prisma.$transaction(async (tx) => {
     // Crashed/expired paid work is not replayed automatically: avoid duplicate spend.
     await tx.socialRevisionJob.updateMany({
       where: { status: "RUNNING", leaseUntil: { lt: new Date() } },
       data: { status: "MANUAL_RECOVERY", errorCode: "LEASE_EXPIRED" },
     });
+    if (!kinds.length) return null;
     const candidate = await tx.socialRevisionJob.findFirst({
-      where: { status: "QUEUED", attempts: { lt: 2 } },
+      where: { status: "QUEUED", attempts: { lt: 2 }, kind: { in: kinds } },
       orderBy: { createdAt: "asc" },
     });
     if (!candidate) return null;

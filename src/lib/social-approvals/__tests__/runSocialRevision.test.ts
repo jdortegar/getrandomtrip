@@ -19,6 +19,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
+  enabledJobKinds: () =>
+    process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+      ? ["TRANSLATE", "REVISE"]
+      : [],
   claimSocialRevision: mocks.claim,
   finishGeneratedSocialRevision: mocks.finish,
 }));

@@ -39,6 +39,8 @@ vi.mock("../socialApprovals", () => ({ lockSocialApproval: m.lock }));
 import {
   claimSocialRevision,
   finishGeneratedSocialRevision,
+  enabledJobKinds,
+  queueSocialPublish,
   queueSocialRevision,
   queueSocialTranslation,
 } from "../socialRevisionJobs";
@@ -99,7 +101,7 @@ it("rejects daily cost cap, terminal revisions and stale messages", async () => 
 it("claims with compare-and-swap and moves expired paid work to manual recovery", async () => {
   m.jobFirst.mockResolvedValue({ id: "job" });
   m.jobUpdateMany.mockResolvedValue({ count: 1 });
-  await claimSocialRevision();
+  await claimSocialRevision(["REVISE"]);
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
     expect.objectContaining({
       where: expect.objectContaining({ status: "RUNNING" }),
@@ -108,7 +110,11 @@ it("claims with compare-and-swap and moves expired paid work to manual recovery"
   );
   expect(m.jobFirst).toHaveBeenCalledWith(
     expect.objectContaining({
-      where: { status: "QUEUED", attempts: { lt: 2 } },
+      where: {
+        status: "QUEUED",
+        attempts: { lt: 2 },
+        kind: { in: ["REVISE"] },
+      },
     }),
   );
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
@@ -229,6 +235,47 @@ describe("queueSocialTranslation", () => {
     expect(await queueSocialTranslation(input)).toBe("budget");
     m.sourceFind.mockResolvedValue({ ...announced, messageTs: "other" });
     expect(await queueSocialTranslation(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+});
+
+it("claims only job kinds whose flag is on", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "false");
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  expect(enabledJobKinds()).toEqual(["PUBLISH"]);
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "false");
+  expect(await claimSocialRevision()).toBeNull();
+  expect(m.jobFirst).not.toHaveBeenCalled();
+  vi.unstubAllEnvs();
+});
+describe("queueSocialPublish", () => {
+  const approved = { ...source, status: "APPROVED" };
+  const input = { reviewId: "review", user: "U2", messageTs: "123" };
+  it("queues one PUBLISH job for an approved review and marks it publishing", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue(null);
+    expect(await queueSocialPublish(input)).toBe("queued");
+    expect(m.approvalUpdate).toHaveBeenCalledWith({
+      where: { id: "review" },
+      data: { status: "PUBLISHING" },
+    });
+    expect(m.jobCreate).toHaveBeenCalledWith({
+      data: {
+        kind: "PUBLISH",
+        reviewId: "review",
+        actor: "U2",
+        feedback: "",
+        target: "both",
+      },
+    });
+  });
+  it("never queues a second publish or publishes an unapproved review", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue({ id: "existing" });
+    expect(await queueSocialPublish(input)).toBe("queued");
+    m.jobFind.mockResolvedValue(null);
+    m.approvalFind.mockResolvedValue(source);
+    expect(await queueSocialPublish(input)).toBe("stale");
     expect(m.jobCreate).not.toHaveBeenCalled();
   });
 });

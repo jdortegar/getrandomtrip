@@ -7,8 +7,10 @@ import {
 import { prisma } from "@/lib/prisma";
 import {
   claimSocialRevision,
+  enabledJobKinds,
   finishGeneratedSocialRevision,
 } from "@/lib/db/socialRevisionJobs";
+import { getProfile } from "@/lib/instagram-recap/instagramClient";
 import { createSocialApproval } from "@/lib/db/socialApprovals";
 import {
   reviseSocialCaption,
@@ -22,7 +24,13 @@ import {
 import { approvalConfig, slideUrls } from "./slackApproval";
 import { postSocialReview } from "./postSocialReview";
 import { loadSocialArtwork, saveSocialArtwork } from "./socialAssets";
-import { socialSourceConfig } from "./socialAccounts";
+import { socialSourceConfig, socialTargetConfig } from "./socialAccounts";
+import {
+  createMediaContainer,
+  getPermalink,
+  publishContainer,
+  waitForContainer,
+} from "./instagramPublish";
 import {
   downloadSourceImage,
   getSourceSlides,
@@ -47,17 +55,20 @@ const ERROR_CODES = new Set([
   "SOURCE_VIDEO_UNSUPPORTED",
   "SOURCE_MEDIA_INVALID",
   "AI_TRANSCREATION_INVALID",
+  "PUBLISH_DISABLED",
+  "TARGET_ACCOUNT_MISMATCH",
+  "PUBLISH_FAILED",
+  "PUBLISH_UNCONFIRMED",
 ]);
 
 export async function runSocialRevision() {
   const config = approvalConfig();
-  if (
-    !config ||
-    process.env.SLACK_SOCIAL_AI_ENABLED !== "true" ||
-    !process.env.OPENAI_API_KEY
-  )
-    return;
-  const job = await claimSocialRevision();
+  // AI jobs also need the OpenAI key; publishing does not.
+  const kinds = enabledJobKinds().filter(
+    (kind) => kind === "PUBLISH" || !!process.env.OPENAI_API_KEY,
+  );
+  if (!config || !kinds.length) return;
+  const job = await claimSocialRevision(kinds);
   if (!job?.leaseToken) return;
   const leaseToken = job.leaseToken;
   const where = { id: job.id, status: "RUNNING", leaseToken };
@@ -71,6 +82,7 @@ export async function runSocialRevision() {
   try {
     if (job.kind === "TRANSLATE")
       await translateJob(job, config, checkpoint, leaseToken);
+    else if (job.kind === "PUBLISH") await publishJob(job, checkpoint);
     else await reviseJob(job, config, checkpoint, leaseToken);
     await prisma.socialRevisionJob.updateMany({
       where,
@@ -92,7 +104,13 @@ export async function runSocialRevision() {
       },
     });
     if (code === "STALE_SOURCE") return;
-    if (job.kind === "TRANSLATE" && job.source) {
+    if (job.kind === "PUBLISH" && job.review) {
+      await prisma.socialApproval.updateMany({
+        where: { id: job.review.id, status: "PUBLISHING" },
+        data: { status: "PUBLISH_FAILED" },
+      });
+      await refreshSocialMessage(job.review, "PUBLISH_FAILED");
+    } else if (job.kind === "TRANSLATE" && job.source) {
       await prisma.socialSource.updateMany({
         where: { id: job.source.id, status: "TRANSLATION_QUEUED" },
         data: { status: "TRANSLATION_FAILED" },
@@ -259,5 +277,95 @@ async function postReviewNotes(
     });
   } catch {
     console.error("[social-approvals] review notes not posted");
+  }
+}
+
+/**
+ * Publishes an approved review on @getrandomtrip.en. Failures before
+ * media_publish leave nothing public (PUBLISH_FAILED, safe to retry); any
+ * doubt after it is PUBLISH_UNCONFIRMED and is never retried automatically.
+ */
+async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
+  const review = job.review;
+  if (!review) throw new Error("STALE_SOURCE");
+  const target = socialTargetConfig();
+  if (!target) throw new Error("PUBLISH_DISABLED");
+  const current = await prisma.socialApproval.findUnique({
+    where: { id: review.id },
+  });
+  if (current?.status !== "PUBLISHING") throw new Error("STALE_SOURCE");
+  let mediaId = job.publishedMediaId;
+  if (!mediaId) {
+    let containerId: string;
+    try {
+      const profile = await getProfile(target.token);
+      if (profile.username !== target.username)
+        throw new Error("TARGET_ACCOUNT_MISMATCH");
+      // Instagram only accepts public JPEGs, at most 1440px wide.
+      const done = [...job.generatedImageUrls];
+      const slides = slideUrls(review);
+      for (let index = done.length; index < slides.length; index += 1) {
+        const slide = await loadSocialArtwork(slides[index]);
+        const jpeg = await sharp(slide.bytes)
+          .resize({ width: 1440, withoutEnlargement: true })
+          .jpeg({ quality: 90 })
+          .toBuffer();
+        done.push(
+          await saveSocialArtwork(job.id, jpeg, index + 1, "image/jpeg"),
+        );
+        await checkpoint({ generatedImageUrls: [...done] });
+      }
+      containerId = await createMediaContainer(
+        target.token,
+        profile.userId,
+        done,
+        review.caption,
+      );
+      await waitForContainer(target.token, containerId);
+      // Fence the lease right before the irreversible call.
+      await checkpoint({});
+      try {
+        mediaId = await publishContainer(
+          target.token,
+          profile.userId,
+          containerId,
+        );
+      } catch {
+        throw new Error("PUBLISH_UNCONFIRMED");
+      }
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "";
+      throw new Error(
+        [
+          "TARGET_ACCOUNT_MISMATCH",
+          "LEASE_LOST",
+          "PUBLISH_UNCONFIRMED",
+        ].includes(code)
+          ? code
+          : "PUBLISH_FAILED",
+      );
+    }
+    // Recorded without the lease condition: the post is already public.
+    await prisma.socialRevisionJob.update({
+      where: { id: job.id },
+      data: { publishedMediaId: mediaId },
+    });
+  }
+  const permalink = await getPermalink(target.token, mediaId).catch(() => null);
+  await prisma.socialRevisionJob.update({
+    where: { id: job.id },
+    data: { publishedPermalink: permalink },
+  });
+  await prisma.socialApproval.update({
+    where: { id: review.id },
+    data: { status: "PUBLISHED" },
+  });
+  await refreshSocialMessage(review, "PUBLISHED", { permalink });
+  if (review.sourceId) {
+    const source = await prisma.socialSource.update({
+      where: { id: review.sourceId },
+      data: { status: "PUBLISHED" },
+    });
+    await refreshSourceMessage(source, "PUBLISHED");
   }
 }

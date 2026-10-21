@@ -7,6 +7,7 @@ import { sourceMessage, type SourceContent } from "./sourceMessage";
 export async function refreshSocialMessage(
   row: ApprovalContent & { messageTs: string | null },
   status = row.status,
+  options: { permalink?: string | null } = {},
 ) {
   const config = approvalConfig();
   if (!config || !row.messageTs) return;
@@ -20,7 +21,7 @@ export async function refreshSocialMessage(
       body: JSON.stringify({
         channel: config.channel,
         ts: row.messageTs,
-        ...approvalMessage({ ...row, status }),
+        ...approvalMessage({ ...row, status }, options),
       }),
       signal: AbortSignal.timeout(5000),
     });

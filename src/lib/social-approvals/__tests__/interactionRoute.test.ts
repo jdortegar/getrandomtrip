@@ -10,6 +10,7 @@ vi.mock("@/lib/prisma", () => ({
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
   queueSocialRevision: vi.fn(),
   queueSocialTranslation: vi.fn(),
+  queueSocialPublish: vi.fn(),
 }));
 vi.mock("@/lib/social-approvals/dispatchSocialWorker", () => ({
   dispatchSocialWorker: vi.fn(),
@@ -36,6 +37,7 @@ import {
 import { feedbackModal } from "../feedbackModal";
 import { prisma } from "@/lib/prisma";
 import {
+  queueSocialPublish,
   queueSocialRevision,
   queueSocialTranslation,
 } from "@/lib/db/socialRevisionJobs";
@@ -236,4 +238,37 @@ it("tells only the clicker when translation is over budget or disabled", async (
   vi.mocked(queueSocialTranslation).mockClear();
   await POST(request(translateClick));
   expect(queueSocialTranslation).not.toHaveBeenCalled();
+});
+
+const publishClick = {
+  ...payload,
+  actions: [{ action_id: "social_publish", value: "review" }],
+};
+it("Publish queues one publication of the approved review and dispatches the worker", async () => {
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  vi.mocked(queueSocialPublish).mockResolvedValue("queued");
+  vi.mocked(prisma.socialApproval.findUnique).mockResolvedValue({
+    id: "review",
+    status: "PUBLISHING",
+  } as never);
+  expect((await POST(request(publishClick))).status).toBe(200);
+  expect(queueSocialPublish).toHaveBeenCalledWith({
+    reviewId: "review",
+    user: "U1",
+    messageTs: "123.456",
+  });
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(refreshSocialMessage).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "review" }),
+    "PUBLISHING",
+  );
+  expect(dispatchSocialWorker).toHaveBeenCalledOnce();
+  expect(mocks.decide).not.toHaveBeenCalled();
+});
+it("never queues a publication while publishing is disabled", async () => {
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "false");
+  expect((await POST(request(publishClick))).status).toBe(200);
+  expect(queueSocialPublish).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(dispatchSocialWorker).not.toHaveBeenCalled();
 });

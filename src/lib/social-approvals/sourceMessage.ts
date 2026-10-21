@@ -15,6 +15,7 @@ const STATUS: Record<string, string> = {
   TRANSLATION_FAILED:
     "Translation needs admin attention. Nothing was published.",
   UNSUPPORTED: "Video posts can't be translated automatically.",
+  PUBLISHED: "Published in English on @getrandomtrip.en.",
 };
 
 function excerpt(caption: string) {

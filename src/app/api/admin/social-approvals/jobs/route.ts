@@ -24,7 +24,10 @@ export async function GET() {
     take: 50,
     select: {
       id: true,
+      kind: true,
       reviewId: true,
+      sourceId: true,
+      publishedMediaId: true,
       newReviewId: true,
       status: true,
       attempts: true,
@@ -44,9 +47,12 @@ export async function POST(request: NextRequest) {
     request.headers.get("origin") !== request.nextUrl.origin
   )
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  if (process.env.SLACK_SOCIAL_AI_ENABLED !== "true")
+  if (
+    process.env.SLACK_SOCIAL_AI_ENABLED !== "true" &&
+    process.env.SLACK_SOCIAL_PUBLISH_ENABLED !== "true"
+  )
     return NextResponse.json(
-      { error: "AI revisions disabled" },
+      { error: "AI revisions and publishing disabled" },
       { status: 503 },
     );
   try {
@@ -72,6 +78,9 @@ export async function POST(request: NextRequest) {
         status: "MANUAL_RECOVERY",
         attempts: { lt: 2 },
         newReviewId: null,
+        // A publish is retryable only if it failed before media_publish.
+        publishedMediaId: null,
+        OR: [{ kind: { not: "PUBLISH" } }, { errorCode: "PUBLISH_FAILED" }],
       },
       data: {
         status: "QUEUED",
@@ -88,6 +97,15 @@ export async function POST(request: NextRequest) {
         },
         { status: 409 },
       );
+    const job = await prisma.socialRevisionJob.findUnique({
+      where: { id: body.jobId },
+      select: { kind: true, reviewId: true },
+    });
+    if (job?.kind === "PUBLISH" && job.reviewId)
+      await prisma.socialApproval.updateMany({
+        where: { id: job.reviewId, status: "PUBLISH_FAILED" },
+        data: { status: "PUBLISHING" },
+      });
     after(async () => {
       try {
         await dispatchSocialWorker();

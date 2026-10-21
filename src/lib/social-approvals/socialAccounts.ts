@@ -17,3 +17,15 @@ export function socialSourceConfig() {
   );
   return token ? { token, username: "getrandomtrip.es" } : null;
 }
+
+/**
+ * Page token for the Facebook Page linked to @getrandomtrip.en, with
+ * instagram_content_publish. Publishing also needs the explicit flag; the
+ * username guard refuses a token for any other account.
+ */
+export function socialTargetConfig() {
+  const token = readToken(process.env.SOCIAL_TARGET_PAGE_TOKEN);
+  if (process.env.SLACK_SOCIAL_PUBLISH_ENABLED !== "true" || !token)
+    return null;
+  return { token, username: "getrandomtrip.en" };
+}

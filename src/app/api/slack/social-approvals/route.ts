@@ -5,6 +5,7 @@ import {
 } from "@/lib/social-approvals/refreshSocialMessage";
 import { prisma } from "@/lib/prisma";
 import {
+  queueSocialPublish,
   queueSocialRevision,
   queueSocialTranslation,
 } from "@/lib/db/socialRevisionJobs";
@@ -83,6 +84,7 @@ export async function POST(request: NextRequest) {
     const action = parseApprovalAction(payload, config);
     if (!action) return new NextResponse(null, { status: 400 });
     if (action.status === "TRANSLATE") return translate(action);
+    if (action.status === "PUBLISH") return publish(action);
     if (
       action.status === "CHANGES_REQUESTED" &&
       process.env.SLACK_SOCIAL_AI_ENABLED === "true"
@@ -151,6 +153,57 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/** "Publish to @getrandomtrip.en": queue one publication of an approved review. */
+async function publish(action: ApprovalAction) {
+  const result =
+    process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true"
+      ? await queueSocialPublish({
+          reviewId: action.id,
+          user: action.user,
+          messageTs: action.messageTs,
+        })
+      : "disabled";
+  after(async () => {
+    if (result === "queued") {
+      const review = await prisma.socialApproval.findUnique({
+        where: { id: action.id },
+      });
+      if (review?.status === "PUBLISHING")
+        await refreshSocialMessage(review, "PUBLISHING");
+      try {
+        await dispatchSocialWorker();
+      } catch {
+        console.error(
+          "[social-approvals] dispatch deferred to durable recovery",
+        );
+      }
+      return;
+    }
+    await notifyClicker(
+      action,
+      result === "disabled"
+        ? "Publishing is disabled. Contact an admin."
+        : "Only the latest approved revision can be published.",
+    );
+  });
+  return new NextResponse(null, { status: 200 });
+}
+
+/** Ephemeral notice to the person who clicked. Best effort. */
+async function notifyClicker(action: ApprovalAction, text: string) {
+  try {
+    await fetch(action.responseUrl, {
+      method: "POST",
+      redirect: "error",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ response_type: "ephemeral", text }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {
+    console.error("[social-approvals] notice not delivered");
+  }
+}
+
 /** "Translate this post": queue one paid translation, then hand off to the worker. */
 async function translate(action: ApprovalAction) {
   const result =
@@ -183,17 +236,7 @@ async function translate(action: ApprovalAction) {
         : result === "disabled"
           ? "AI translation is disabled. Contact an admin."
           : "This post was already handled or is unavailable.";
-    try {
-      await fetch(action.responseUrl, {
-        method: "POST",
-        redirect: "error",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ response_type: "ephemeral", text }),
-        signal: AbortSignal.timeout(5000),
-      });
-    } catch {
-      console.error("[social-approvals] translate notice not delivered");
-    }
+    await notifyClicker(action, text);
   });
   return new NextResponse(null, { status: 200 });
 }

@@ -55,27 +55,42 @@ export function validSlackSignature(
   return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
-export function approvalMessage(row: ApprovalContent) {
+const STATUS: Record<string, string> = {
+  PENDING: "Awaiting approval",
+  REVISION_QUEUED:
+    "Changes requested. AI revision queued; the new draft will need approval.",
+  REVISION_FAILED:
+    "Changes requested. Revision needs admin attention. Nothing published.",
+  APPROVED: "Approved. Not published yet.",
+  CHANGES_REQUESTED:
+    "Changes requested. Please describe the changes in this thread.",
+  PUBLISHING: "Publishing to @getrandomtrip.en…",
+  PUBLISHED: "Published on @getrandomtrip.en.",
+  PUBLISH_FAILED:
+    "Publishing needs admin attention. Check @getrandomtrip.en before retrying.",
+};
+
+export function approvalMessage(
+  row: ApprovalContent,
+  options: { permalink?: string | null } = {},
+) {
   const pending = row.status === "PENDING";
-  const status = pending
-    ? "Awaiting approval"
-    : row.status === "REVISION_QUEUED"
-      ? "Changes requested. AI revision queued; the new draft will need approval."
-      : row.status === "REVISION_FAILED"
-        ? "Changes requested. Revision needs admin attention. Nothing published."
-        : row.status === "APPROVED"
-          ? "Approved"
-          : row.status === "CHANGES_REQUESTED"
-            ? "Changes requested. Please describe the changes in this thread."
-            : "Superseded or unavailable";
+  const publishable =
+    row.status === "APPROVED" &&
+    process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true";
+  const status = `${STATUS[row.status] ?? "Superseded or unavailable"}${
+    row.status === "PUBLISHED" && options.permalink
+      ? ` <${options.permalink}|View post>`
+      : ""
+  }`;
   return {
-    text: `TEST ONLY: @getrandomtrip.en, revision ${row.revision}. ${status}. No Instagram publication.`,
+    text: `@getrandomtrip.en, revision ${row.revision}. ${status}`,
     blocks: [
       {
         type: "section",
         text: {
-          type: "plain_text",
-          text: `TEST ONLY · @getrandomtrip.en · Revision ${row.revision}\n${status}${row.decidedBy ? ` (${row.decidedBy})` : ""}\nNo Instagram publication.`,
+          type: "mrkdwn",
+          text: `*@getrandomtrip.en* · Revision ${row.revision}\n${status}${row.decidedBy ? ` (<@${row.decidedBy}>)` : ""}`,
         },
       },
       ...slideUrls(row).map((url, index, all) => ({
@@ -87,6 +102,34 @@ export function approvalMessage(row: ApprovalContent) {
             : `English artwork, revision ${row.revision}`,
       })),
       { type: "section", text: { type: "plain_text", text: row.caption } },
+      ...(publishable
+        ? [
+            {
+              type: "actions",
+              elements: [
+                {
+                  type: "button",
+                  action_id: "social_publish",
+                  text: {
+                    type: "plain_text",
+                    text: "Publish to @getrandomtrip.en",
+                  },
+                  style: "primary",
+                  value: row.id,
+                  confirm: {
+                    title: { type: "plain_text", text: "Publish now?" },
+                    text: {
+                      type: "plain_text",
+                      text: "This posts the approved caption and every slide publicly on @getrandomtrip.en. It can't be undone from Slack.",
+                    },
+                    confirm: { type: "plain_text", text: "Publish" },
+                    deny: { type: "plain_text", text: "Cancel" },
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
       ...(pending
         ? [
             {
@@ -118,7 +161,7 @@ export interface ApprovalAction {
   user: string;
   messageTs: string;
   /** TRANSLATE: "Translate this post" on a Spanish source card (id is the source id). */
-  status: "APPROVED" | "CHANGES_REQUESTED" | "TRANSLATE";
+  status: "APPROVED" | "CHANGES_REQUESTED" | "TRANSLATE" | "PUBLISH";
   responseUrl: string;
 }
 
@@ -126,6 +169,7 @@ const ACTIONS: Record<string, ApprovalAction["status"]> = {
   social_approve: "APPROVED",
   social_changes: "CHANGES_REQUESTED",
   social_translate: "TRANSLATE",
+  social_publish: "PUBLISH",
 };
 
 export function parseApprovalAction(
