@@ -16,7 +16,8 @@ const copy = {
     heading: "Cambios rechazados",
     body: (adminName: string, tripperName: string, title: string) =>
       `Hola ${adminName}, ${tripperName} rechazó los cambios que propusiste para el artículo "${title}". El artículo volvió al estado borrador y el tripper podrá editarlo y volver a enviarlo para revisión.`,
-    subtext: "Podés ponerte en contacto con el tripper para coordinar los cambios necesarios.",
+    subtext:
+      "Podés ponerte en contacto con el tripper para coordinar los cambios necesarios.",
   },
   en: {
     preview: (title: string) =>
@@ -24,7 +25,8 @@ const copy = {
     heading: "Changes Rejected",
     body: (adminName: string, tripperName: string, title: string) =>
       `Hi ${adminName}, ${tripperName} rejected the changes you proposed for the article "${title}". The article has returned to draft status and the tripper can edit and resubmit it for review.`,
-    subtext: "You can reach out to the tripper to coordinate the necessary changes.",
+    subtext:
+      "You can reach out to the tripper to coordinate the necessary changes.",
   },
 };
 
@@ -56,14 +58,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -74,7 +76,7 @@ const bodyText: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",

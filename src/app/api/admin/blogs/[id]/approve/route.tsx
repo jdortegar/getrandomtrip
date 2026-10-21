@@ -129,6 +129,7 @@ export async function POST(
               content: {
                 react: (
                   <BlogApproved
+                    blogId={params.id}
                     tripper={author.name ?? ""}
                     blogTitle={blogTitle}
                     locale={locale}

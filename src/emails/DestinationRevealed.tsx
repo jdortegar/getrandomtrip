@@ -1,4 +1,11 @@
-import { Button, Column, Heading, Row, Section, Text } from "@react-email/components";
+import {
+  Button,
+  Column,
+  Heading,
+  Row,
+  Section,
+  Text,
+} from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
 
@@ -115,14 +122,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "38px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -181,7 +188,7 @@ const dateCellBox: React.CSSProperties = {
 
 const dateCellLabel: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#9ca3af",
+  color: "#383838", // Ink
   fontSize: "10px",
   fontWeight: "700",
   letterSpacing: "1.5px",
@@ -191,7 +198,7 @@ const dateCellLabel: React.CSSProperties = {
 
 const dateCellValue: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  color: "#111827",
+  color: "#383838", // Ink
   fontSize: "20px",
   fontWeight: "700",
   lineHeight: "1",
@@ -199,7 +206,7 @@ const dateCellValue: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "12.5px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -210,8 +217,8 @@ const subtextStyle: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

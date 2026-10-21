@@ -92,6 +92,7 @@ export async function POST(
               content: {
                 react: (
                   <BlogRejected
+                    blogId={params.id}
                     tripper={author.name ?? ""}
                     blogTitle={blogTitle}
                     reviewNote={reviewNote}

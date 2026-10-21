@@ -16,8 +16,7 @@ const copy = {
     heading: "¡Cambios aprobados!",
     body: (adminName: string, tripperName: string, title: string) =>
       `Hola ${adminName}, ${tripperName} aprobó los cambios que propusiste para la experiencia "${title}". La experiencia ya está activa en Randomtrip.`,
-    subtext:
-      "Los clientes ya pueden descubrir y reservar esta experiencia.",
+    subtext: "Los clientes ya pueden descubrir y reservar esta experiencia.",
   },
   en: {
     preview: (title: string) =>
@@ -45,7 +44,9 @@ export default function ExperienceCopyApproved({
   return (
     <EmailLayout locale={locale} preview={c.preview(experienceTitle)}>
       <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(adminName, tripperName, experienceTitle)}</Text>
+      <Text style={bodyText}>
+        {c.body(adminName, tripperName, experienceTitle)}
+      </Text>
       <Text style={subtextStyle}>{c.subtext}</Text>
     </EmailLayout>
   );
@@ -57,14 +58,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -75,7 +76,7 @@ const bodyText: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
