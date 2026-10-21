@@ -5,8 +5,12 @@ import { socialSourceConfig } from "./socialAccounts";
 import { listSourceMedia, shortcodeOf } from "./sourceMedia";
 import { sourceMessage } from "./sourceMessage";
 
-/** The daily check only announces recent posts so older ones never flood Slack. */
-export const SOURCE_WINDOW_MS = 48 * 60 * 60 * 1000;
+/**
+ * The check runs with the weekday Instagram recap, so Monday must still see
+ * Friday-to-Sunday posts. Older posts never flood Slack; dedupe keeps the
+ * overlap from announcing anything twice.
+ */
+export const SOURCE_WINDOW_MS = 4 * 24 * 60 * 60 * 1000;
 
 /**
  * Announces new @getrandomtrip.es posts in Slack, at most once each. With a
@@ -52,4 +56,18 @@ export async function runSourceCheck(
     announced += 1;
   }
   return { announced, matched: candidates.length };
+}
+
+/**
+ * Called by the weekday Instagram recap job. Skips quietly while Slack
+ * approvals are disabled and never throws, so the recap is unaffected.
+ */
+export async function announceNewSourcePosts() {
+  if (!approvalConfig()) return;
+  try {
+    await runSourceCheck();
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "unknown";
+    console.error(`[social-sources] check failed: ${code.slice(0, 60)}`);
+  }
 }

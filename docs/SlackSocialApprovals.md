@@ -2,7 +2,7 @@
 
 The flow runs in **#social-media-translations** (`C0CAQS7HNH4`):
 
-1. **Detect.** Once a day (21:00 Argentina), the app posts each new @getrandomtrip.es post from the last 48 hours to Slack, once, with a **Translate this post** button.
+1. **Detect.** The weekday Instagram recap job (09:05 Argentina, `netlify/functions/instagram-recap.ts`) also posts each new @getrandomtrip.es post from the last 4 days to Slack, once, with a **Translate this post** button. Four days covers Friday to Sunday on Monday's run.
 2. **Translate.** The button queues one paid job. It transcreates the caption and on-image copy in one vision call, following the Randomtrip transcreation rules (`.claude/skills/randomtrip-en-social-transcreator`, condensed in `src/lib/ai/socialTranscreation.ts`). It then edits each slide that has Spanish text with the exact English copy and posts **one review** with every slide. Slides without text are kept. Reviewer notes, if any, appear in the review's thread.
 3. **Review.** **Approve** or **Request changes**. Changes target the caption, the artwork or both, and optionally specific slides (`1, 3`). Each request produces a new revision that needs a fresh approval.
 4. **Publish.** An approved review shows **Publish to @getrandomtrip.en**, with a confirmation dialog. The app publishes the caption and every slide through the Instagram content publishing API (single image or carousel) and links the live post on the card.
@@ -11,9 +11,9 @@ Each stage has its own flag, all off by default: `SLACK_SOCIAL_APPROVALS_ENABLED
 
 ## Where it runs
 
-Netlify runs scheduled functions on the **production** deploy only, and the Slack buttons, reviews and jobs must share one database. Run the full flow in production: point the Slack app's Interactivity Request URL at `https://<production-origin>/api/slack/social-approvals`, and set `SLACK_SOCIAL_IMAGE_ORIGIN` and `SLACK_SOCIAL_APP_ORIGIN` to the production origin. Instagram downloads published images from that origin, so it must be public.
+The recap job is a scheduled function, which Netlify runs on the **production** deploy only, and the Slack buttons, reviews and jobs must share one database. Run the full flow in production: point the Slack app's Interactivity Request URL at `https://<production-origin>/api/slack/social-approvals`, and set `SLACK_SOCIAL_IMAGE_ORIGIN` and `SLACK_SOCIAL_APP_ORIGIN` to the production origin. Instagram downloads published images from that origin, so it must be public.
 
-To test on a branch deploy, point the Request URL and both origins at that deploy and use **Check now** below instead of the daily schedule.
+To test on a branch deploy, point the Request URL and both origins at that deploy and use **Check now** below instead of the recap schedule.
 
 ## Setup
 
@@ -25,14 +25,14 @@ To test on a branch deploy, point the Request URL and both origins at that deplo
 
 ## Catching up on older posts
 
-The daily check never announces posts older than 48 hours, so the first run doesn't flood the channel. To bring one older post into the flow, a signed-in admin sends a same-origin request:
+The recap check never announces posts older than 4 days, so the first run doesn't flood the channel. To bring one older post into the flow, a signed-in admin sends a same-origin request:
 
 ```
 POST /api/admin/social-approvals/sources
 { "shortcode": "DXiYOKaFxwb" }
 ```
 
-The shortcode is the part after `/p/` in the post's link. Without a body, the request runs the normal 48-hour check immediately ("Check now"). Each post is announced at most once.
+The shortcode is the part after `/p/` in the post's link. Without a body, the request runs the normal 4-day check immediately ("Check now"). Each post is announced at most once.
 
 Reviews can still be created directly, without a Spanish source, with `POST /api/admin/social-approvals` and `{ reviewKey, requestId, caption, imageUrls: [...] }` (1–10 public HTTPS images on `SLACK_SOCIAL_IMAGE_ORIGIN`; `imageUrl` still works for a single image).
 
@@ -46,7 +46,7 @@ Reviews can still be created directly, without a Spanish source, with `POST /api
 
 ## Security
 
-Slack signatures cover the original bytes and expire after five minutes. App, workspace, channel and message timestamp must match, and feedback modals are HMAC-bound to the actor, revision and expiry. Any workspace member who can see the channel can translate, approve or publish; don't share the channel externally. Prompts treat captions, images and feedback as content, never instructions. Source images are downloaded only from Instagram's CDN, and Graph API tokens are sent in request bodies and never logged.
+Slack signatures cover the original bytes and expire after five minutes. App, workspace, channel and message timestamp must match, and feedback modals are HMAC-bound to the actor, revision and expiry. Any workspace member who can see the channel can translate, approve or publish; don't share the channel externally. Prompts treat captions, images and feedback as content, never instructions. Source images are downloaded only from Instagram's CDN. Graph API tokens are never logged; publishing calls send them in the request body.
 
 - [ ] Verify bad signatures, foreign identities and stale cards are rejected.
 - [ ] Translate one post end to end on a test deploy and check every slide's text, photo and crop.

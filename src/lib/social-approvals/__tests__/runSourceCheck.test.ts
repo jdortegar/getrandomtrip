@@ -17,7 +17,7 @@ vi.mock("@/lib/db/socialSources", () => ({
   recordNewSource: m.record,
   recordSourceMessage: m.recordTs,
 }));
-import { runSourceCheck } from "../runSourceCheck";
+import { announceNewSourcePosts, runSourceCheck } from "../runSourceCheck";
 
 const now = Date.parse("2026-10-21T12:00:00Z");
 const post = (id: string, hoursAgo: number, code = id) => ({
@@ -42,7 +42,7 @@ beforeEach(() => {
     userId: "ig-es",
     username: "getrandomtrip.es",
   });
-  m.list.mockResolvedValue([post("new", 3), post("old", 72)]);
+  m.list.mockResolvedValue([post("new", 70), post("old", 100)]);
   m.record.mockImplementation(async (media: { id: string }) => ({
     id: `row-${media.id}`,
     caption: "c",
@@ -58,7 +58,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("announces only posts from the last 48 hours with a Translate this post button", async () => {
+it("announces only posts from the last 4 days (covers weekends) with a Translate this post button", async () => {
   expect(await runSourceCheck({ now })).toEqual({ announced: 1, matched: 1 });
   expect(m.record).toHaveBeenCalledOnce();
   expect(m.record.mock.calls[0][0].id).toBe("new");
@@ -100,4 +100,18 @@ it("stops without recording the message when Slack does not confirm", async () =
     "SLACK_DELIVERY_UNCONFIRMED",
   );
   expect(m.recordTs).not.toHaveBeenCalled();
+});
+
+it("the recap hook skips while approvals are disabled and never throws", async () => {
+  vi.stubEnv("SLACK_SOCIAL_APPROVALS_ENABLED", "false");
+  await announceNewSourcePosts();
+  expect(m.profile).not.toHaveBeenCalled();
+  vi.stubEnv("SLACK_SOCIAL_APPROVALS_ENABLED", "true");
+  m.profile.mockRejectedValue(new Error("instagram_request_failed"));
+  const error = vi.spyOn(console, "error").mockImplementation(() => {});
+  await expect(announceNewSourcePosts()).resolves.toBeUndefined();
+  expect(error).toHaveBeenCalledWith(
+    "[social-sources] check failed: instagram_request_failed",
+  );
+  error.mockRestore();
 });

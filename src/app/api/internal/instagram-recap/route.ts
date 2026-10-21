@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { readInstagramRecapConfig } from "@/lib/instagram-recap/readInstagramRecapConfig";
 import { runInstagramRecap } from "@/lib/instagram-recap/runInstagramRecap";
+import { announceNewSourcePosts } from "@/lib/social-approvals/runSourceCheck";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -25,6 +26,9 @@ export async function POST(request: Request) {
       { error: "unauthorized" },
       { status: 401, headers },
     );
+  // New @getrandomtrip.es posts for the Slack translation flow. Independent of
+  // the recap below: neither failure affects the other.
+  await announceNewSourcePosts();
   const config = readInstagramRecapConfig();
   if (!config) {
     console.error("[instagram-recap] missing or invalid configuration");
