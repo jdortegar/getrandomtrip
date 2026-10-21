@@ -94,8 +94,10 @@ export default function EmailLayout({
           {/* ── Header ── */}
           <Section style={headerSection}>
             <Img
-              src={`${BASE_URL}/assets/logos/logo_white_no_tag.svg`}
+              // PNG, not SVG: Gmail and Outlook don't render SVG images.
+              src={`${BASE_URL}/assets/logos/logo_white_no_tag_email.png`}
               width={160}
+              height={40}
               alt="Randomtrip"
               style={{ display: "block", margin: "0 auto" }}
             />
@@ -143,12 +145,15 @@ export default function EmailLayout({
                     alt="Facebook"
                   />
                 </Link>
-                <Link href="https://x.com/getrandomtrip" style={socialLink}>
+                <Link
+                  href="https://www.linkedin.com/company/getrandomtrip"
+                  style={socialLink}
+                >
                   <Img
-                    src={`${BASE_URL}/images/newsletter/social-x.png`}
+                    src={`${BASE_URL}/images/newsletter/social-linkedin.png`}
                     width={24}
                     height={24}
-                    alt="X"
+                    alt="LinkedIn"
                   />
                 </Link>
               </Column>
