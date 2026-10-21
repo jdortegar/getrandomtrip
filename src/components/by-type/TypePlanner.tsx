@@ -10,7 +10,8 @@ import {
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
 
-/** Figma card width (300px) at every breakpoint; slides stretch so CTAs align. */
+/** Figma card width at every breakpoint; slides stretch so CTAs align. */
+const EXPERIENCE_CARD_WIDTH = 300;
 const EXPERIENCE_CARD_SLIDE =
   "self-stretch flex-[0_0_300px] sm:flex-[0_0_300px] @md:flex-[0_0_300px] @lg:flex-[0_0_300px]";
 
@@ -80,6 +81,7 @@ export default function TypePlanner({
       <EmblaCarousel
         overflow="both"
         slideClassName={EXPERIENCE_CARD_SLIDE}
+        slideWidth={EXPERIENCE_CARD_WIDTH}
         slidesPerView={itemsPerView}
       >
         {leadingCard && (

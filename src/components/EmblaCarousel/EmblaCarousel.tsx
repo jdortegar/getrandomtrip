@@ -21,6 +21,8 @@ type EmblaCarouselProps = {
   options?: EmblaOptionsType;
   overflow?: OverflowSide;
   slideClassName?: string;
+  /** Fixed slide width in px (set together with a matching `slideClassName`); drives the fits-without-scrolling check. */
+  slideWidth?: number;
   slidesPerView?: 2 | 3 | 4;
   arrowsClassName?: string;
   wrapperClassName?: string;
@@ -38,6 +40,7 @@ const EmblaCarousel = ({
   options,
   overflow,
   slideClassName,
+  slideWidth,
   slidesPerView = 3,
   arrowsClassName,
   wrapperClassName,
@@ -51,7 +54,7 @@ const EmblaCarousel = ({
   // Slide widths are responsive, so "fits" depends on the measured width;
   // until measured, fall back to the count-based guess (no desktop flash).
   const containerRef = useRef<HTMLDivElement>(null);
-  const capacity = useCarouselCapacity(containerRef, slidesPerView);
+  const capacity = useCarouselCapacity(containerRef, slidesPerView, slideWidth);
   const isStatic = slides.length <= (capacity ?? slidesPerView);
   const wheelGestures = useMemo(() => WheelGestures(), []);
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -102,10 +105,7 @@ const EmblaCarousel = ({
             "h-2 rounded-full transition-all",
             i === selectedIndex
               ? cn("w-8", !accentColor && "bg-primary")
-              : cn(
-                  "w-2",
-                  !accentColor && "bg-primary/30 hover:bg-primary/50",
-                ),
+              : cn("w-2", !accentColor && "bg-primary/30 hover:bg-primary/50"),
           )}
           style={
             accentColor
@@ -140,6 +140,7 @@ const EmblaCarousel = ({
       <div>
         <div
           ref={isStatic ? undefined : emblaRef}
+          data-carousel-viewport
           className={cn(
             "w-full",
             {
