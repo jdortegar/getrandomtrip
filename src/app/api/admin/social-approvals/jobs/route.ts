@@ -99,8 +99,13 @@ export async function POST(request: NextRequest) {
       );
     const job = await prisma.socialRevisionJob.findUnique({
       where: { id: body.jobId },
-      select: { kind: true, reviewId: true },
+      select: { kind: true, reviewId: true, sourceId: true },
     });
+    if (job?.kind === "TRANSLATE" && job.sourceId)
+      await prisma.socialSource.updateMany({
+        where: { id: job.sourceId, status: "TRANSLATION_FAILED" },
+        data: { status: "TRANSLATION_QUEUED" },
+      });
     if (job?.kind === "PUBLISH" && job.reviewId)
       await prisma.socialApproval.updateMany({
         where: { id: job.reviewId, status: "PUBLISH_FAILED" },

@@ -43,6 +43,8 @@ type Checkpoint = (data: {
   generatedCaption?: string;
   generatedImageUrls?: string[];
   transcreation?: Prisma.InputJsonValue;
+  /** Set explicitly by fences so the conditional update always writes a field. */
+  updatedAt?: Date;
 }) => Promise<void>;
 
 const ERROR_CODES = new Set([
@@ -232,7 +234,7 @@ async function translateJob(
     await checkpoint({ generatedImageUrls: [...done] });
   }
   // Fence the lease once more before creating the review.
-  await checkpoint({});
+  await checkpoint({ updatedAt: new Date() });
   const { row } = await createSocialApproval({
     reviewKey: `instagram-${shortcodeOf(source.permalink) ?? source.igMediaId}`,
     requestId: `translated-${job.id}`,
@@ -323,7 +325,7 @@ async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
       );
       await waitForContainer(target.token, containerId);
       // Fence the lease right before the irreversible call.
-      await checkpoint({});
+      await checkpoint({ updatedAt: new Date() });
       try {
         mediaId = await publishContainer(
           target.token,

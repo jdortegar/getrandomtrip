@@ -4,6 +4,7 @@ const m = vi.hoisted(() => ({
   updateMany: vi.fn(),
   findJob: vi.fn(),
   approvalUpdateMany: vi.fn(),
+  sourceUpdateMany: vi.fn(),
 }));
 vi.mock("next-auth", () => ({
   getServerSession: async () => ({ user: { id: "admin" } }),
@@ -22,6 +23,7 @@ vi.mock("@/lib/prisma", () => ({
     user: { findUnique: async () => ({ roles: ["admin"] }) },
     socialRevisionJob: { updateMany: m.updateMany, findUnique: m.findJob },
     socialApproval: { updateMany: m.approvalUpdateMany },
+    socialSource: { updateMany: m.sourceUpdateMany },
   },
 }));
 import { NextRequest } from "next/server";
@@ -64,4 +66,18 @@ it("refuses to retry an unconfirmed or completed publish", async () => {
   m.updateMany.mockResolvedValue({ count: 0 });
   expect((await POST(retry())).status).toBe(409);
   expect(m.approvalUpdateMany).not.toHaveBeenCalled();
+});
+
+it("a retried translation puts its Spanish post back in the queue", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  m.findJob.mockResolvedValue({
+    kind: "TRANSLATE",
+    reviewId: null,
+    sourceId: "src",
+  });
+  expect((await POST(retry())).status).toBe(200);
+  expect(m.sourceUpdateMany).toHaveBeenCalledWith({
+    where: { id: "src", status: "TRANSLATION_FAILED" },
+    data: { status: "TRANSLATION_QUEUED" },
+  });
 });
