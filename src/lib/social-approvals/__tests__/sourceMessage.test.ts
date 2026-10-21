@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { sourceMessage } from "../sourceMessage";
 import { shortcodeOf } from "../sourceMedia";
 
@@ -24,14 +24,27 @@ it("offers Translate this post only while the post is waiting", () => {
     ),
   ).toHaveLength(0);
 });
-it("explains that video posts cannot be translated and offers no button", () => {
+it("offers only Mark as posted manually for video posts", () => {
   const message = sourceMessage({
     ...source,
     mediaType: "VIDEO",
     status: "UNSUPPORTED",
   });
-  expect(buttons(message)).toHaveLength(0);
+  const ids = JSON.stringify(buttons(message));
+  expect(ids).not.toContain("social_translate");
+  expect(ids).toContain('"action_id":"social_mark_posted"');
+  expect(ids).toContain('"confirm"');
   expect(JSON.stringify(message.blocks)).toContain("Video posts");
+});
+it("shows the backlog when announcing and no buttons once mirrored", () => {
+  expect(JSON.stringify(sourceMessage(source, null, null, 1).blocks)).toContain(
+    "1 more Spanish post waiting after this one",
+  );
+  expect(JSON.stringify(sourceMessage(source, null, null, 0).blocks)).toContain(
+    "latest Spanish post",
+  );
+  for (const status of ["SYNCED", "PUBLISHED", "TRANSLATION_QUEUED"])
+    expect(buttons(sourceMessage({ ...source, status }))).toHaveLength(0);
 });
 it("reads shortcodes from post and reel permalinks", () => {
   expect(shortcodeOf(source.permalink)).toBe("DXiYOKaFxwb");
@@ -39,4 +52,32 @@ it("reads shortcodes from post and reel permalinks", () => {
     "Dbn0ubQNBT5",
   );
   expect(shortcodeOf("https://example.com/")).toBeNull();
+});
+it("pages through the whole Spanish feed and returns it oldest first", async () => {
+  const { listSourceMedia } = await import("../sourceMedia");
+  const row = (id: string, ts: string) => ({
+    id,
+    permalink: `https://www.instagram.com/p/${id}/`,
+    timestamp: ts,
+    media_type: "IMAGE",
+  });
+  const fetchMock = vi
+    .fn()
+    .mockResolvedValueOnce(
+      Response.json({
+        data: [
+          row("C", "2026-04-03T00:00:00Z"),
+          row("B", "2026-04-02T00:00:00Z"),
+        ],
+        paging: { cursors: { after: "cur" }, next: "https://graph/next" },
+      }),
+    )
+    .mockResolvedValueOnce(
+      Response.json({ data: [row("A", "2026-04-01T00:00:00Z")], paging: {} }),
+    );
+  vi.stubGlobal("fetch", fetchMock);
+  const media = await listSourceMedia("tok", "ig");
+  expect(media.map((m) => m.id)).toEqual(["A", "B", "C"]);
+  expect(String(fetchMock.mock.calls[1][0])).toContain("after=cur");
+  vi.unstubAllGlobals();
 });

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({ announce: vi.fn(), recap: vi.fn() }));
 vi.mock("@/lib/deployment", () => ({ isProductionDeployment: () => true }));
 vi.mock("@/lib/social-approvals/runSourceCheck", () => ({
-  announceNewSourcePosts: m.announce,
+  announceNextSourcePost: m.announce,
 }));
 vi.mock("@/lib/instagram-recap/runInstagramRecap", () => ({
   runInstagramRecap: m.recap,

@@ -161,7 +161,12 @@ export interface ApprovalAction {
   user: string;
   messageTs: string;
   /** TRANSLATE: "Translate this post" on a Spanish source card (id is the source id). */
-  status: "APPROVED" | "CHANGES_REQUESTED" | "TRANSLATE" | "PUBLISH";
+  status:
+    | "APPROVED"
+    | "CHANGES_REQUESTED"
+    | "TRANSLATE"
+    | "PUBLISH"
+    | "MARK_POSTED";
   responseUrl: string;
 }
 
@@ -170,6 +175,7 @@ const ACTIONS: Record<string, ApprovalAction["status"]> = {
   social_changes: "CHANGES_REQUESTED",
   social_translate: "TRANSLATE",
   social_publish: "PUBLISH",
+  social_mark_posted: "MARK_POSTED",
 };
 
 export function parseApprovalAction(

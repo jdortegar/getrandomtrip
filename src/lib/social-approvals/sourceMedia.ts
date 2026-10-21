@@ -22,36 +22,54 @@ interface MediaRow {
   thumbnail_url?: string;
 }
 
-/** Recent posts of the source account, newest first. */
+const PAGE_LIMIT = 10;
+
+/** Every post of the source account, oldest first (the order to mirror). */
 export async function listSourceMedia(
   token: string,
   userId: string,
 ): Promise<SourceMedia[]> {
-  const list = await graphGet<{ data?: MediaRow[] }>(
-    `/${encodeURIComponent(userId)}/media`,
-    {
-      fields:
-        "id,caption,media_type,permalink,timestamp,media_url,thumbnail_url",
-      limit: "50",
-    },
-    token,
-  );
-  return (list.data ?? []).flatMap((m) =>
-    m.id && m.permalink && m.timestamp && !Number.isNaN(Date.parse(m.timestamp))
-      ? [
-          {
-            id: m.id,
-            caption: m.caption ?? "",
-            mediaType: m.media_type ?? "IMAGE",
-            permalink: m.permalink,
-            postedAt: new Date(m.timestamp),
-            previewUrl:
-              (m.media_type === "VIDEO" ? m.thumbnail_url : m.media_url) ??
-              null,
-          },
-        ]
-      : [],
-  );
+  const rows: MediaRow[] = [];
+  let after: string | undefined;
+  for (let page = 0; page < PAGE_LIMIT; page += 1) {
+    const list = await graphGet<{
+      data?: MediaRow[];
+      paging?: { cursors?: { after?: string }; next?: string };
+    }>(
+      `/${encodeURIComponent(userId)}/media`,
+      {
+        fields:
+          "id,caption,media_type,permalink,timestamp,media_url,thumbnail_url",
+        limit: "50",
+        ...(after ? { after } : {}),
+      },
+      token,
+    );
+    rows.push(...(list.data ?? []));
+    after = list.paging?.next ? list.paging.cursors?.after : undefined;
+    if (!after) break;
+  }
+  return rows
+    .flatMap((m) =>
+      m.id &&
+      m.permalink &&
+      m.timestamp &&
+      !Number.isNaN(Date.parse(m.timestamp))
+        ? [
+            {
+              id: m.id,
+              caption: m.caption ?? "",
+              mediaType: m.media_type ?? "IMAGE",
+              permalink: m.permalink,
+              postedAt: new Date(m.timestamp),
+              previewUrl:
+                (m.media_type === "VIDEO" ? m.thumbnail_url : m.media_url) ??
+                null,
+            },
+          ]
+        : [],
+    )
+    .sort((x, y) => x.postedAt.getTime() - y.postedAt.getTime());
 }
 
 /** Instagram shortcode from a permalink such as https://www.instagram.com/p/ABC/. */

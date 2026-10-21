@@ -25,6 +25,7 @@ import { approvalConfig, slideUrls } from "./slackApproval";
 import { postSocialReview } from "./postSocialReview";
 import { loadSocialArtwork, saveSocialArtwork } from "./socialAssets";
 import { socialSourceConfig, socialTargetConfig } from "./socialAccounts";
+import { announceNextSourcePost } from "./runSourceCheck";
 import {
   createMediaContainer,
   getPermalink,
@@ -370,4 +371,6 @@ async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
     });
     await refreshSourceMessage(source, "PUBLISHED");
   }
+  // Keep the mirror moving: offer the next Spanish post in order.
+  await announceNextSourcePost();
 }

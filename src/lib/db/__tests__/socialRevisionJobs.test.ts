@@ -13,6 +13,7 @@ const m = vi.hoisted(() => ({
   lock: vi.fn(),
   sourceFind: vi.fn(),
   sourceUpdate: vi.fn(),
+  sourceCount: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -23,7 +24,11 @@ vi.mock("@/lib/prisma", () => ({
           update: m.approvalUpdate,
           create: m.approvalCreate,
         },
-        socialSource: { findUnique: m.sourceFind, update: m.sourceUpdate },
+        socialSource: {
+          findUnique: m.sourceFind,
+          update: m.sourceUpdate,
+          count: m.sourceCount,
+        },
         socialRevisionJob: {
           findUnique: m.jobFind,
           findFirst: m.jobFirst,
@@ -249,7 +254,15 @@ it("claims only job kinds whose flag is on", async () => {
   vi.unstubAllEnvs();
 });
 describe("queueSocialPublish", () => {
-  const approved = { ...source, status: "APPROVED" };
+  const approved = { ...source, status: "APPROVED", sourceId: "src" };
+  beforeEach(() => {
+    m.sourceFind.mockResolvedValue({
+      id: "src",
+      status: "TRANSLATED",
+      postedAt: new Date("2026-04-24T00:00:00Z"),
+    });
+    m.sourceCount.mockResolvedValue(0);
+  });
   const input = { reviewId: "review", user: "U2", messageTs: "123" };
   it("queues one PUBLISH job for an approved review and marks it publishing", async () => {
     m.approvalFind.mockResolvedValue(approved);
@@ -274,7 +287,30 @@ describe("queueSocialPublish", () => {
     m.jobFind.mockResolvedValue({ id: "existing" });
     expect(await queueSocialPublish(input)).toBe("queued");
     m.jobFind.mockResolvedValue(null);
-    m.approvalFind.mockResolvedValue(source);
+    m.approvalFind.mockResolvedValue({ ...source, sourceId: "src" });
+    expect(await queueSocialPublish(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+  it("refuses to publish out of order or without a Spanish post", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue(null);
+    m.sourceCount.mockResolvedValue(1);
+    expect(await queueSocialPublish(input)).toBe("out_of_order");
+    expect(m.sourceCount).toHaveBeenCalledWith({
+      where: {
+        postedAt: { lt: new Date("2026-04-24T00:00:00Z") },
+        status: { notIn: ["PUBLISHED", "SYNCED"] },
+      },
+    });
+    m.approvalFind.mockResolvedValue({ ...approved, sourceId: null });
+    expect(await queueSocialPublish(input)).toBe("unlinked");
+    m.approvalFind.mockResolvedValue(approved);
+    m.sourceCount.mockResolvedValue(0);
+    m.sourceFind.mockResolvedValue({
+      id: "src",
+      status: "SYNCED",
+      postedAt: new Date(),
+    });
     expect(await queueSocialPublish(input)).toBe("stale");
     expect(m.jobCreate).not.toHaveBeenCalled();
   });

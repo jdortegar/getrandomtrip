@@ -16,11 +16,19 @@ vi.mock("@/lib/social-approvals/dispatchSocialWorker", () => ({
   dispatchSocialWorker: vi.fn(),
 }));
 const mocks = vi.hoisted(() => ({
+  markPosted: vi.fn(),
+  announceNext: vi.fn(),
   decide: vi.fn(),
   tasks: [] as (() => Promise<void>)[],
 }));
 vi.mock("@/lib/db/socialApprovals", () => ({
   decideSocialApproval: mocks.decide,
+}));
+vi.mock("@/lib/db/socialSources", () => ({
+  markSourcePosted: mocks.markPosted,
+}));
+vi.mock("@/lib/social-approvals/runSourceCheck", () => ({
+  announceNextSourcePost: mocks.announceNext,
 }));
 vi.mock("next/server", async (original) => ({
   ...(await original<typeof import("next/server")>()),
@@ -270,5 +278,42 @@ it("never queues a publication while publishing is disabled", async () => {
   expect((await POST(request(publishClick))).status).toBe(200);
   expect(queueSocialPublish).not.toHaveBeenCalled();
   await Promise.all(mocks.tasks.map((task) => task()));
+  expect(dispatchSocialWorker).not.toHaveBeenCalled();
+});
+
+const markClick = {
+  ...payload,
+  actions: [{ action_id: "social_mark_posted", value: "src" }],
+};
+it("Mark as posted manually syncs the post and offers the next one in order", async () => {
+  mocks.markPosted.mockResolvedValue({ id: "src", status: "SYNCED" });
+  expect((await POST(request(markClick))).status).toBe(200);
+  expect(mocks.markPosted).toHaveBeenCalledWith({
+    sourceId: "src",
+    messageTs: "123.456",
+  });
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(refreshSourceMessage).toHaveBeenCalledWith(
+    { id: "src", status: "SYNCED" },
+    "SYNCED",
+    "U1",
+  );
+  expect(mocks.announceNext).toHaveBeenCalledOnce();
+});
+it("explains when a post can't be marked and does not advance", async () => {
+  mocks.markPosted.mockResolvedValue(null);
+  await POST(request(markClick));
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(mocks.announceNext).not.toHaveBeenCalled();
+  const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string);
+  expect(body).toMatchObject({ response_type: "ephemeral" });
+});
+it("explains an out-of-order publish to the clicker", async () => {
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  vi.mocked(queueSocialPublish).mockResolvedValue("out_of_order");
+  await POST(request(publishClick));
+  await Promise.all(mocks.tasks.map((task) => task()));
+  const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string);
+  expect(body.text).toContain("same order");
   expect(dispatchSocialWorker).not.toHaveBeenCalled();
 });

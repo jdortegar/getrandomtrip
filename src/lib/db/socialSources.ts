@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { lockSocialApproval } from "./socialApprovals";
 import type { SourceMedia } from "@/lib/social-approvals/sourceMedia";
 
 /**
@@ -35,3 +36,71 @@ export async function recordSourceMessage(id: string, messageTs: string) {
     data: { status: "ANNOUNCED" },
   });
 }
+
+/** A source is mirrored once published by the app or marked as posted manually. */
+export const MIRRORED_STATUSES = ["PUBLISHED", "SYNCED"];
+
+export async function listSourceRows() {
+  return prisma.socialSource.findMany({
+    select: { id: true, igMediaId: true, status: true, postedAt: true },
+  });
+}
+
+/** Records posts already on @getrandomtrip.en (the sync starting point). */
+export async function markSyncedThrough(media: SourceMedia[]) {
+  const result = await prisma.socialSource.createMany({
+    data: media.map((m) => ({
+      igMediaId: m.id,
+      permalink: m.permalink,
+      caption: m.caption,
+      mediaType: m.mediaType,
+      postedAt: m.postedAt,
+      status: "SYNCED",
+    })),
+    skipDuplicates: true,
+  });
+  return result.count;
+}
+
+/**
+ * "Mark as posted manually": the post is already on @getrandomtrip.en, so the
+ * queue may move on. Not allowed while the app itself is publishing it.
+ */
+export async function markSourcePosted(input: {
+  sourceId: string;
+  messageTs: string;
+}) {
+  return prisma.$transaction(
+    async (tx) => {
+      // Same lock as queueSocialPublish: never mark while the app publishes it.
+      await lockSocialApproval(tx, `source:${input.sourceId}`);
+      const source = await tx.socialSource.findUnique({
+        where: { id: input.sourceId },
+      });
+      if (
+        !source ||
+        source.messageTs !== input.messageTs ||
+        !MARKABLE.includes(source.status) ||
+        (await tx.socialApproval.count({
+          where: {
+            sourceId: source.id,
+            status: { in: ["PUBLISHING", "PUBLISHED", "PUBLISH_FAILED"] },
+          },
+        }))
+      )
+        return null;
+      return tx.socialSource.update({
+        where: { id: source.id },
+        data: { status: "SYNCED" },
+      });
+    },
+    { maxWait: 500, timeout: 1500 },
+  );
+}
+
+const MARKABLE = [
+  "ANNOUNCED",
+  "UNSUPPORTED",
+  "TRANSLATION_FAILED",
+  "TRANSLATED",
+];

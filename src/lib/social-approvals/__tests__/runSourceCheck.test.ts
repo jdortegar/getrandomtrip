@@ -3,8 +3,10 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   profile: vi.fn(),
   list: vi.fn(),
+  rows: vi.fn(),
   record: vi.fn(),
   recordTs: vi.fn(),
+  synced: vi.fn(),
 }));
 vi.mock("@/lib/instagram-recap/instagramClient", () => ({
   getProfile: m.profile,
@@ -14,19 +16,34 @@ vi.mock("../sourceMedia", async (original) => ({
   listSourceMedia: m.list,
 }));
 vi.mock("@/lib/db/socialSources", () => ({
+  MIRRORED_STATUSES: ["PUBLISHED", "SYNCED"],
+  listSourceRows: m.rows,
+  markSyncedThrough: m.synced,
   recordNewSource: m.record,
   recordSourceMessage: m.recordTs,
 }));
-import { announceNewSourcePosts, runSourceCheck } from "../runSourceCheck";
+import {
+  advanceSourceQueue,
+  announceNextSourcePost,
+  setSyncBaseline,
+} from "../runSourceCheck";
 
-const now = Date.parse("2026-10-21T12:00:00Z");
-const post = (id: string, hoursAgo: number, code = id) => ({
-  id,
-  caption: `Caption ${id}`,
+const day = (n: number) => new Date(Date.UTC(2026, 3, n));
+const post = (code: string, n: number) => ({
+  id: `ig-${code}`,
+  caption: `Caption ${code}`,
   mediaType: "CAROUSEL_ALBUM",
   permalink: `https://www.instagram.com/p/${code}/`,
-  postedAt: new Date(now - hoursAgo * 3_600_000),
+  postedAt: day(n),
   previewUrl: "https://cdn.test/1.jpg",
+});
+// Oldest first, as listSourceMedia returns them.
+const feed = [post("P1", 1), post("P2", 2), post("P3", 3), post("P4", 4)];
+const row = (code: string, n: number, status: string) => ({
+  id: `row-${code}`,
+  igMediaId: `ig-${code}`,
+  status,
+  postedAt: day(n),
 });
 let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
@@ -42,7 +59,8 @@ beforeEach(() => {
     userId: "ig-es",
     username: "getrandomtrip.es",
   });
-  m.list.mockResolvedValue([post("new", 70), post("old", 100)]);
+  m.list.mockResolvedValue(feed);
+  m.rows.mockResolvedValue([row("P1", 1, "SYNCED")]);
   m.record.mockImplementation(async (media: { id: string }) => ({
     id: `row-${media.id}`,
     caption: "c",
@@ -58,58 +76,83 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-it("announces only posts from the last 4 days (covers weekends) with a Translate this post button", async () => {
-  expect(await runSourceCheck({ now })).toEqual({ announced: 1, matched: 1 });
+it("offers only the next Spanish post after the last mirrored one, with the backlog count", async () => {
+  expect(await advanceSourceQueue()).toEqual({ announced: 1, behind: 2 });
   expect(m.record).toHaveBeenCalledOnce();
-  expect(m.record.mock.calls[0][0].id).toBe("new");
+  expect(m.record.mock.calls[0][0].id).toBe("ig-P2");
   const body = JSON.parse(fetchMock.mock.calls[0][1].body);
   expect(body.channel).toBe("C0CAQS7HNH4");
   expect(JSON.stringify(body.blocks)).toContain("Translate this post");
-  expect(m.recordTs).toHaveBeenCalledWith("row-new", "1.2");
+  expect(JSON.stringify(body.blocks)).toContain("2 more Spanish posts waiting");
+  expect(m.recordTs).toHaveBeenCalledWith("row-ig-P2", "1.2");
 });
-it("never announces an already recorded post again", async () => {
-  m.record.mockResolvedValue(null);
-  expect(await runSourceCheck({ now })).toEqual({ announced: 0, matched: 1 });
+it("never offers the next post while an earlier one is still in progress", async () => {
+  m.rows.mockResolvedValue([
+    row("P1", 1, "SYNCED"),
+    row("P2", 2, "TRANSLATED"),
+  ]);
+  expect(await advanceSourceQueue()).toEqual({
+    announced: 0,
+    reason: "IN_PROGRESS",
+  });
+  expect(m.record).not.toHaveBeenCalled();
   expect(fetchMock).not.toHaveBeenCalled();
 });
-it("announces one older post by shortcode for backlog catch-up", async () => {
-  expect(await runSourceCheck({ now, shortcode: "old" })).toEqual({
-    announced: 1,
-    matched: 1,
+it("waits for a sync starting point before offering anything", async () => {
+  m.rows.mockResolvedValue([]);
+  expect(await advanceSourceQueue()).toEqual({
+    announced: 0,
+    reason: "BASELINE_REQUIRED",
   });
-  expect(m.record.mock.calls[0][0].id).toBe("old");
+  expect(m.list).toHaveBeenCalled();
+  expect(m.record).not.toHaveBeenCalled();
+});
+it("never goes back before the newest mirrored post and stops when up to date", async () => {
+  m.rows.mockResolvedValue([row("P4", 4, "PUBLISHED")]);
+  expect(await advanceSourceQueue()).toEqual({
+    announced: 0,
+    reason: "UP_TO_DATE",
+  });
+  expect(m.record).not.toHaveBeenCalled();
+});
+it("sets the starting point through a shortcode, then offers the following post", async () => {
+  m.synced.mockResolvedValue(2);
+  m.rows.mockResolvedValue([row("P1", 1, "SYNCED"), row("P2", 2, "SYNCED")]);
+  expect(await setSyncBaseline("P2")).toEqual({
+    marked: 2,
+    announced: 1,
+    behind: 1,
+  });
+  expect(m.synced.mock.calls[0][0].map((p: { id: string }) => p.id)).toEqual([
+    "ig-P1",
+    "ig-P2",
+  ]);
+  expect(m.record.mock.calls[0][0].id).toBe("ig-P3");
+  await expect(setSyncBaseline("NOPE")).rejects.toThrow("BASELINE_NOT_FOUND");
 });
 it("refuses a token that belongs to another Instagram account", async () => {
   m.profile.mockResolvedValue({
     userId: "ig-en",
     username: "getrandomtrip.en",
   });
-  await expect(runSourceCheck({ now })).rejects.toThrow(
-    "SOURCE_ACCOUNT_MISMATCH",
-  );
+  await expect(advanceSourceQueue()).rejects.toThrow("SOURCE_ACCOUNT_MISMATCH");
   expect(m.list).not.toHaveBeenCalled();
-});
-it("fails closed without Slack or source configuration", async () => {
-  vi.stubEnv("INSTAGRAM_PAGE_ACCESS_TOKEN", "");
-  await expect(runSourceCheck({ now })).rejects.toThrow("SOURCE_UNCONFIGURED");
-  expect(m.profile).not.toHaveBeenCalled();
 });
 it("stops without recording the message when Slack does not confirm", async () => {
   fetchMock.mockResolvedValue(Response.json({ ok: false }));
-  await expect(runSourceCheck({ now })).rejects.toThrow(
+  await expect(advanceSourceQueue()).rejects.toThrow(
     "SLACK_DELIVERY_UNCONFIRMED",
   );
   expect(m.recordTs).not.toHaveBeenCalled();
 });
-
 it("the recap hook skips while approvals are disabled and never throws", async () => {
   vi.stubEnv("SLACK_SOCIAL_APPROVALS_ENABLED", "false");
-  await announceNewSourcePosts();
+  await announceNextSourcePost();
   expect(m.profile).not.toHaveBeenCalled();
   vi.stubEnv("SLACK_SOCIAL_APPROVALS_ENABLED", "true");
   m.profile.mockRejectedValue(new Error("instagram_request_failed"));
   const error = vi.spyOn(console, "error").mockImplementation(() => {});
-  await expect(announceNewSourcePosts()).resolves.toBeUndefined();
+  await expect(announceNextSourcePost()).resolves.toBeUndefined();
   expect(error).toHaveBeenCalledWith(
     "[social-sources] check failed: instagram_request_failed",
   );

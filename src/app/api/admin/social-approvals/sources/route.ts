@@ -3,14 +3,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { hasRoleAccess } from "@/lib/auth/roleAccess";
 import { prisma } from "@/lib/prisma";
-import { runSourceCheck } from "@/lib/social-approvals/runSourceCheck";
+import {
+  advanceSourceQueue,
+  setSyncBaseline,
+} from "@/lib/social-approvals/runSourceCheck";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 /**
- * Runs the source check now. Body `{ "shortcode": "DXiYOKaFxwb" }` announces
- * that one post regardless of age, for catching up on older posts.
+ * Body `{ "syncedThrough": "DXiKjIyj3Ik" }` sets the sync starting point: that
+ * Spanish post and every earlier one are already on @getrandomtrip.en. Without
+ * a body it offers the next Spanish post now, if none is in progress.
  */
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -28,29 +32,32 @@ export async function POST(request: NextRequest) {
   let shortcode: string | undefined;
   try {
     const raw = await request.text();
-    const body = raw ? (JSON.parse(raw) as { shortcode?: unknown }) : {};
-    if (body.shortcode !== undefined) {
+    const body = raw ? (JSON.parse(raw) as { syncedThrough?: unknown }) : {};
+    if (body.syncedThrough !== undefined) {
       if (
-        typeof body.shortcode !== "string" ||
-        !/^[A-Za-z0-9_-]{5,40}$/.test(body.shortcode)
+        typeof body.syncedThrough !== "string" ||
+        !/^[A-Za-z0-9_-]{5,40}$/.test(body.syncedThrough)
       )
         return NextResponse.json(
           { error: "Invalid shortcode" },
           { status: 400 },
         );
-      shortcode = body.shortcode;
+      shortcode = body.syncedThrough;
     }
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
   try {
-    return NextResponse.json(await runSourceCheck({ shortcode }));
+    return NextResponse.json(
+      shortcode ? await setSyncBaseline(shortcode) : await advanceSourceQueue(),
+    );
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
     const known = [
       "SOURCE_UNCONFIGURED",
       "SOURCE_ACCOUNT_MISMATCH",
       "SLACK_DELIVERY_UNCONFIRMED",
+      "BASELINE_NOT_FOUND",
     ];
     return NextResponse.json(
       { error: known.includes(code) ? code : "SOURCE_CHECK_FAILED" },

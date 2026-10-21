@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { lockSocialApproval } from "./socialApprovals";
+import { MIRRORED_STATUSES } from "./socialSources";
 import type { SocialFeedback } from "@/lib/social-approvals/feedbackModal";
 
 /** Accepted paid AI jobs (translations and revisions) per UTC day. */
@@ -119,7 +120,24 @@ export async function queueSocialPublish(input: {
         where: { id: input.reviewId },
       });
       if (!ref || ref.messageTs !== input.messageTs) return "stale";
+      // @getrandomtrip.en mirrors the Spanish feed in order: only reviews of a
+      // Spanish post can publish, and only after every earlier post is mirrored.
+      if (!ref.sourceId) return "unlinked";
+      await lockSocialApproval(tx, `source:${ref.sourceId}`);
       await lockSocialApproval(tx, ref.reviewKey);
+      const source = await tx.socialSource.findUnique({
+        where: { id: ref.sourceId },
+      });
+      if (!source || MIRRORED_STATUSES.includes(source.status)) return "stale";
+      if (
+        await tx.socialSource.count({
+          where: {
+            postedAt: { lt: source.postedAt },
+            status: { notIn: MIRRORED_STATUSES },
+          },
+        })
+      )
+        return "out_of_order";
       if (
         await tx.socialRevisionJob.findUnique({
           where: { reviewId: ref.id },

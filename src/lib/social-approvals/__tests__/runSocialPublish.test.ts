@@ -17,6 +17,10 @@ const m = vi.hoisted(() => ({
   wait: vi.fn(),
   publish: vi.fn(),
   permalink: vi.fn(),
+  announceNext: vi.fn(),
+}));
+vi.mock("../runSourceCheck", () => ({
+  announceNextSourcePost: m.announceNext,
 }));
 vi.mock("sharp", () => ({
   default: () => ({
@@ -137,6 +141,7 @@ it("publishes every slide as JPEG once and marks review and source published", a
     { id: "src", status: "PUBLISHED" },
     "PUBLISHED",
   );
+  expect(m.announceNext).toHaveBeenCalledOnce();
   expect(m.update).toHaveBeenLastCalledWith(
     expect.objectContaining({
       data: expect.objectContaining({ status: "COMPLETE" }),
