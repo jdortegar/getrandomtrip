@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
+import { getExperienceCard } from "@/lib/data/experience-cards";
 import { XSED_PRICE_PER_PERSON } from "@/lib/data/traveler-types";
 import { getPlannerContentForType } from "@/lib/utils/experiencesData";
 import ExperiencesPageClient from "@/app/[locale]/experiences/ExperiencesPageClient";
@@ -86,24 +87,22 @@ beforeEach(() => {
 afterEach(() => act(() => root.unmount()));
 const cards = () =>
   Array.from(
-    container.querySelectorAll<HTMLElement>('[data-component="LevelCard"]'),
+    container.querySelectorAll<HTMLElement>(
+      '[data-component="ExperienceCard"]',
+    ),
   );
 const names = () =>
   cards().map((card) => card.querySelector("h3")?.textContent);
 
-function expectWhiteAndOffWhitePalette() {
+function expectWhiteCardPalette() {
   for (const card of cards()) {
+    expect(card.classList.contains("bg-white")).toBe(true);
     expect(card.classList.contains("bg-primary")).toBe(false);
     expect(card.classList.contains("bg-secondary")).toBe(false);
-    expect(
-      card.classList.contains("bg-white") ||
-        card.classList.contains("bg-ground"),
-    ).toBe(true);
-    expect(card.querySelector("h3")?.classList.contains("text-ink")).toBe(true);
-    expect(card.querySelector(".text-ground")).toBeNull();
-    const cta = card.querySelector("a, button");
-    expect(cta?.classList.contains("text-ink")).toBe(true);
-    expect(cta?.classList.contains("text-white")).toBe(false);
+    expect(card.classList.contains("bg-ground")).toBe(false);
+    expect(card.querySelector("h3")?.classList.contains("text-primary")).toBe(
+      true,
+    );
   }
 }
 
@@ -115,6 +114,7 @@ it.each(["en", "es"])(
     const title = locale === "en" ? "TGIS" : "XSED";
     const href = locale === "en" ? "/en/xsed" : "/xsed";
     const regularLevels = getPlannerContentForType("couple", locale).levels;
+    const xsedCard = getExperienceCard("couple", "xsed", locale)!;
 
     for (const page of [
       <ExperiencesPageClient
@@ -129,34 +129,30 @@ it.each(["en", "es"])(
     ]) {
       act(() => root.render(page));
       expect(names()).toEqual([
-        title,
-        ...regularLevels.map((level) => level.name),
+        `${title}™`,
+        ...regularLevels.map((level) => level.card!.name),
       ]);
       const [xsed, ...regular] = cards();
-      expect(xsed.textContent).toContain(`${XSED_PRICE_PER_PERSON} USD`);
-      expect(xsed.textContent).toContain(dict.xsedLevelCard.subtitle);
-      expect(xsed.textContent).toContain(dict.xsedLevelCard.closingLine);
-      for (const feature of dict.xsedLevelCard.features) {
-        expect(xsed.textContent).toContain(feature.title);
-        expect(xsed.textContent).toContain(feature.description);
+      expect(xsed.textContent).toContain(`USD ${XSED_PRICE_PER_PERSON}`);
+      expect(xsed.textContent).toContain(xsedCard.tag);
+      expect(xsed.textContent).toContain(xsedCard.kicker);
+      expect(xsed.textContent).toContain(xsedCard.eyebrow);
+      expect(xsed.textContent).toContain(xsedCard.description);
+      for (const detail of xsedCard.details) {
+        expect(xsed.textContent).toContain(detail.label);
       }
       expect(xsed.textContent).toContain(
         locale === "en" ? "per person" : "por persona",
       );
       expect(xsed.textContent).toContain(
         locale === "en"
-          ? "1 night — Saturday to Sunday"
-          : "1 noche — de sábado a domingo",
+          ? "1 night · Saturday to Sunday"
+          : "1 noche · sábado a domingo",
       );
       expect(xsed.textContent).toContain(
         locale === "en"
-          ? "Your own car; transportation not included"
-          : "Tu propio auto; transporte no incluido",
-      );
-      expect(xsed.textContent).toContain(
-        locale === "en"
-          ? "Saturday dinner, Sunday breakfast, and a curated local experience"
-          : "Cena del sábado, desayuno del domingo y una experiencia local curada",
+          ? "Saturday dinner + a local experience"
+          : "Cena de sábado + una experiencia local",
       );
       expect(xsed.textContent).not.toContain(
         dict.journey.tripperBadge.byTripper,
@@ -169,28 +165,23 @@ it.each(["en", "es"])(
       expect(xsed.querySelector("a")?.classList.contains("text-white")).toBe(
         false,
       );
-      expect(xsed.querySelector("a")?.textContent).toBe(
-        locale === "en" ? "Discover TGIS" : "Descubre XSED",
+      expect(xsed.querySelector("a")?.textContent).toBe(xsedCard.ctaLabel);
+      expect(xsed.querySelector("a")?.classList.contains("bg-feature")).toBe(
+        true,
       );
-      expect(
-        cards().map((card) => card.classList.contains("bg-white")),
-      ).toEqual([true, false, true, false, true, false]);
-      expect(
-        cards().map((card) => card.classList.contains("bg-ground")),
-      ).toEqual([false, true, false, true, false, true]);
-      expectWhiteAndOffWhitePalette();
+      expectWhiteCardPalette();
       expect(
         cards()
           .filter((card) =>
             card.textContent?.includes(dict.journey.tripperBadge.mostChosen),
           )
           .map((card) => card.querySelector("h3")?.textContent),
-      ).toEqual(["Explora+"]);
+      ).toEqual(["EXPLORA+™"]);
       expect(regular[0].querySelector("a")?.getAttribute("href")).toBe(
         `${locale === "en" ? "/en" : ""}/journey?travelType=couple&experience=essenza`,
       );
       expect(
-        regular[0].querySelector("a")?.classList.contains("text-ink"),
+        regular[0].querySelector("a")?.classList.contains("bg-primary"),
       ).toBe(true);
       act(() => xsed.click());
       expect(navigation.push).toHaveBeenLastCalledWith(href);
@@ -214,15 +205,8 @@ it("keeps default planner levels, tripper badges, selection and ordinary card na
       />,
     ),
   );
-  expect(names()).toEqual(content.levels.map((level) => level.name));
-  expect(cards().map((card) => card.classList.contains("bg-ground"))).toEqual([
-    false,
-    true,
-    false,
-    true,
-    false,
-  ]);
-  expectWhiteAndOffWhitePalette();
+  expect(names()).toEqual(content.levels.map((level) => level.card!.name));
+  expectWhiteCardPalette();
   expect(cards()[0].querySelector("a")).toBeNull();
   const selectCta = cards()[0].querySelector("button");
   act(() => selectCta?.click());
@@ -306,38 +290,33 @@ it("does not add XSED to the real journey BudgetStep", () => {
     ),
   );
   expect(names()).toEqual(
-    getPlannerContentForType("couple", "en").levels.map((level) => level.name),
+    getPlannerContentForType("couple", "en").levels.map(
+      (level) => level.card!.name,
+    ),
   );
   expect(container.querySelector('a[href*="xsed"]')).toBeNull();
-  expect(cards().map((card) => card.classList.contains("bg-ground"))).toEqual([
-    false,
-    true,
-    false,
-    true,
-    false,
-  ]);
-  expectWhiteAndOffWhitePalette();
+  expectWhiteCardPalette();
 });
 
 it("reprices the XSED card at the solo rate when solo is selected on /experiences", () => {
   act(() =>
     root.render(<ExperiencesPageClient locale="en" tripperContext={null} />),
   );
-  expect(cards()[0].textContent).toContain("250 USD");
+  expect(cards()[0].textContent).toContain("USD 250");
 
   act(() =>
     container
       .querySelector<HTMLButtonElement>('[data-traveler-type="solo"]')
       ?.click(),
   );
-  expect(cards()[0].textContent).toContain("350 USD");
+  expect(cards()[0].textContent).toContain("USD 350");
 
   act(() =>
     container
       .querySelector<HTMLButtonElement>('[data-traveler-type="family"]')
       ?.click(),
   );
-  expect(cards()[0].textContent).toContain("250 USD");
+  expect(cards()[0].textContent).toContain("USD 250");
 });
 
 it("prices the XSED card at the solo rate on the solo traveler-type page", async () => {
@@ -346,14 +325,14 @@ it("prices the XSED card at the solo rate on the solo traveler-type page", async
     searchParams: Promise.resolve({}),
   });
   act(() => root.render(page));
-  expect(cards()[0].textContent).toContain("350 USD");
+  expect(cards()[0].textContent).toContain("USD 350");
 });
 
 it.each([
   ["en", "Most popular"],
   ["es", "Más elegido"],
 ])(
-  "labels the XSED and featured cards with localized badges (%s)",
+  "tags the XSED card and ribbons the featured card with localized labels (%s)",
   (locale, featured) => {
     navigation.locale = locale;
     const dict = locale === "en" ? en : es;
@@ -366,10 +345,12 @@ it.each([
       Array.from(container.querySelectorAll('[data-component="Label"]')).map(
         (badge) => badge.textContent,
       );
-    expect(cards()[0].textContent).toContain(dict.xsedLevelCard.badge);
-    expect(badges()).toContain(dict.xsedLevelCard.badge);
-    expect(badges()).toContain(featured);
+    expect(cards()[0].textContent).toContain(
+      getExperienceCard("couple", "xsed", locale)!.tag,
+    );
+    expect(badges()).toEqual([featured]);
+    expect(dict.journey.tripperBadge.mostChosen).toBe(featured);
     const badge = container.querySelector('[data-component="Label"]');
-    expect(badge?.classList.contains("-translate-y-1/2")).toBe(true);
+    expect(badge?.classList.contains("translate-y-1/2")).toBe(true);
   },
 );

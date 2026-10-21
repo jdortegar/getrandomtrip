@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Section from "@/components/layout/Section";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
-import LevelCard from "@/components/by-type/shared/LevelCard";
+import { ExperienceCard } from "@/components/by-type/shared/ExperienceCard";
 import type { TypePlannerContent } from "@/types/planner";
 import {
   normalizePriceLevelId,
@@ -93,7 +93,7 @@ export default function TypePlanner({
 
           return (
             <div className="w-full min-w-0 pb-3 pt-4" key={level.id}>
-              <LevelCard
+              <ExperienceCard
                 ctaSelects={Boolean(onSelect) && !navigateOnCardClick}
                 featured={isFeatured}
                 level={level}
