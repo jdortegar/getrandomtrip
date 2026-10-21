@@ -342,7 +342,7 @@ it.each([
       ),
     );
     const badges = () =>
-      Array.from(container.querySelectorAll('[data-component="Label"]')).map(
+      Array.from(container.querySelectorAll("[data-ribbon]")).map(
         (badge) => badge.textContent,
       );
     expect(cards()[0].textContent).toContain(
@@ -350,7 +350,7 @@ it.each([
     );
     expect(badges()).toEqual([featured]);
     expect(dict.journey.tripperBadge.mostChosen).toBe(featured);
-    const badge = container.querySelector('[data-component="Label"]');
+    const badge = container.querySelector("[data-ribbon]");
     expect(badge?.classList.contains("translate-y-1/2")).toBe(true);
   },
 );

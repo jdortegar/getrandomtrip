@@ -10,6 +10,10 @@ import {
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
 
+/** Figma card width (300px) at every breakpoint; slides stretch so CTAs align. */
+const EXPERIENCE_CARD_SLIDE =
+  "self-stretch flex-[0_0_300px] sm:flex-[0_0_300px] @md:flex-[0_0_300px] @lg:flex-[0_0_300px]";
+
 interface TypePlannerProps {
   /**
    * Badge signal only (curated journey) — level ids the tripper actually has
@@ -73,9 +77,13 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
+      <EmblaCarousel
+        overflow="both"
+        slideClassName={EXPERIENCE_CARD_SLIDE}
+        slidesPerView={itemsPerView}
+      >
         {leadingCard && (
-          <div className="min-w-0 w-full pb-3 pt-4" key="leading-card">
+          <div className="h-full w-full min-w-0 pb-3 pt-4" key="leading-card">
             {leadingCard}
           </div>
         )}
@@ -92,7 +100,7 @@ export default function TypePlanner({
             false;
 
           return (
-            <div className="w-full min-w-0 pb-3 pt-4" key={level.id}>
+            <div className="h-full w-full min-w-0 pb-3 pt-4" key={level.id}>
               <ExperienceCard
                 ctaSelects={Boolean(onSelect) && !navigateOnCardClick}
                 featured={isFeatured}

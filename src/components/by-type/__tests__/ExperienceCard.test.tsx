@@ -72,9 +72,9 @@ it("renders the photo header, card copy, detail rows and price", () => {
 
 it("shows the most-chosen ribbon only when featured, or a custom badge", () => {
   act(() => root.render(<ExperienceCard level={explora} />));
-  expect(card().querySelector('[data-component="Label"]')).toBeNull();
+  expect(card().querySelector("[data-ribbon]")).toBeNull();
   act(() => root.render(<ExperienceCard featured level={explora} />));
-  expect(card().querySelector('[data-component="Label"]')?.textContent).toBe(
+  expect(card().querySelector("[data-ribbon]")?.textContent).toBe(
     en.journey.tripperBadge.mostChosen,
   );
   act(() =>
@@ -82,9 +82,7 @@ it("shows the most-chosen ribbon only when featured, or a custom badge", () => {
       <ExperienceCard badgeLabel="Custom" featured level={explora} />,
     ),
   );
-  expect(card().querySelector('[data-component="Label"]')?.textContent).toBe(
-    "Custom",
-  );
+  expect(card().querySelector("[data-ribbon]")?.textContent).toBe("Custom");
 });
 
 it("links the CTA to the journey with the card's CTA label and style", () => {

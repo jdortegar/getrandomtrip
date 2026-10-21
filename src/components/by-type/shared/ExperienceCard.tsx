@@ -99,9 +99,7 @@ function TransportIcons({
 }) {
   const icon = (mode: ExperienceCardTransportMode) => {
     const Icon = TRANSPORT_ICONS[mode];
-    return (
-      <Icon aria-hidden className="h-[18px] w-[18px] text-primary" key={mode} />
-    );
+    return <Icon aria-hidden className="h-4 w-4 text-primary" key={mode} />;
   };
   return (
     <span
@@ -113,7 +111,7 @@ function TransportIcons({
       {modes.map(icon)}
       {optionalModes?.length ? (
         <>
-          <Plus aria-hidden className="h-3 w-3 text-neutral-500" />
+          <Plus aria-hidden className="h-2.5 w-2.5 text-neutral-500" />
           {optionalModes.map(icon)}
         </>
       ) : null}
@@ -163,7 +161,8 @@ export function ExperienceCard({
     }));
   const footnotes = card?.footnotes ?? [];
   const ctaClasses = cn(
-    "h-12 w-full rounded-[4px] text-[15px] tracking-[0.12em]",
+    // Figma CTA is 265px on a 300px card: 6.5px wider than the 24px text gutter on each side.
+    "-mx-[6.5px] h-[46px] w-[calc(100%+13px)] rounded-[3px] px-2.5 py-[3px] text-sm font-semibold leading-tight tracking-[0.12em]",
     CTA_TEXT[ctaStyle],
     ctaClassName,
   );
@@ -179,7 +178,7 @@ export function ExperienceCard({
   return (
     <div
       className={cn(
-        "@container relative flex h-full w-full flex-col overflow-hidden rounded-[7px] bg-white transition-shadow duration-300",
+        "@container relative flex h-full min-h-[561px] w-full max-w-[300px] flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
         "shadow-[0_4px_23.9px_0_rgba(0,0,0,0.13)]",
         (onSelect || navigateOnCardClick) &&
           "cursor-pointer hover:shadow-[0_6px_28px_0_rgba(0,0,0,0.2)]",
@@ -210,32 +209,38 @@ export function ExperienceCard({
       {/* Photo header — tag chip top-left, ribbon straddling the bottom edge */}
       {card ? (
         <div className="relative shrink-0">
-          <div className="relative aspect-[5/2] w-full overflow-hidden">
+          <div className="relative h-[128px] w-full overflow-hidden">
             <Img
               alt={card.photoAlt}
               className="absolute inset-0 h-full w-full object-cover"
-              height={400}
-              sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
+              height={256}
+              sizes="300px"
               src={card.photoSrc}
               style={{ objectPosition: card.photoPosition }}
-              width={1000}
+              width={600}
             />
-            <span className="absolute left-3 top-3 rounded-sm bg-ground px-[11px] py-1.5 text-[11px] font-semibold uppercase leading-none tracking-wide text-primary">
+            <span className="absolute left-4 top-[13px] flex h-5 min-w-[96px] items-center justify-center whitespace-nowrap rounded-[2px] bg-ground px-3 text-[8.5px] font-semibold uppercase leading-none text-primary">
               {card.tag}
             </span>
           </div>
           {ribbon && (
-            <Label
-              className="absolute bottom-0 right-4 z-10 translate-y-1/2 whitespace-nowrap"
-              text={ribbon}
-            />
+            <span
+              data-ribbon
+              className="absolute bottom-0 right-[27px] z-10 flex h-5 min-w-[92px] translate-y-1/2 items-center justify-center whitespace-nowrap rounded-[2px] bg-feature px-3 text-[8.5px] font-semibold uppercase leading-none text-ink"
+            >
+              {ribbon}
+            </span>
           )}
         </div>
       ) : (
-        ribbon && <Label className="px-4 pt-4 @[280px]:px-5" text={ribbon} />
+        ribbon && (
+          <div data-ribbon>
+            <Label className="px-6 pt-4" text={ribbon} />
+          </div>
+        )
       )}
 
-      <div className="flex flex-1 flex-col px-4 pb-4 pt-5 @[280px]:px-5 @[280px]:pb-5">
+      <div className="flex flex-1 flex-col px-6 pb-8 pt-4">
         {(tripperBadge || showRandomtripBadge) && (
           <p className="mb-1.5 font-barlow-condensed text-[0.65rem] font-extrabold uppercase leading-tight text-neutral-600 @[280px]:text-xs">
             {tripperBadge
@@ -244,45 +249,49 @@ export function ExperienceCard({
           </p>
         )}
 
-        <p className="font-barlow text-xs text-neutral-600">{kicker}</p>
+        <p className="font-barlow text-[9.5px] leading-none text-neutral-600">
+          {kicker}
+        </p>
 
-        {/* Name | price */}
-        <div className="mt-1 flex items-stretch gap-3">
-          <h3 className="min-w-0 flex-1 font-barlow-condensed text-[1.6rem] font-extrabold uppercase leading-[0.95] text-primary @[280px]:text-[1.75rem]">
+        {/* Name | price — price sits right after the divider, not pushed to the edge */}
+        <div className="mt-1.5 flex flex-wrap items-stretch gap-x-2 gap-y-1">
+          <h3 className="min-w-0 font-barlow-condensed text-[25.5px] font-extrabold uppercase leading-[27px] text-primary">
             {renderName(name)}
           </h3>
-          <div className="w-px shrink-0 bg-neutral-300" />
-          <div className="flex shrink-0 flex-col justify-center">
-            {level.priceLabel ? (
-              <span className="text-[11px] leading-none text-neutral-600">
-                {level.priceLabel}
+          <div className="flex items-stretch gap-2">
+            <div className="w-px shrink-0 bg-neutral-300" />
+            <div className="flex shrink-0 flex-col justify-center">
+              {level.priceLabel ? (
+                <span className="text-[9px] leading-none text-neutral-600">
+                  {level.priceLabel}
+                </span>
+              ) : null}
+              <span className="whitespace-nowrap font-barlow-condensed text-[20px] font-bold leading-none text-primary">
+                {`USD ${level.price}`}
               </span>
-            ) : null}
-            <span className="whitespace-nowrap font-barlow-condensed text-xl font-bold leading-tight text-primary">
-              {`USD ${level.price}`}
-            </span>
-            <span className="max-w-[8rem] whitespace-pre-line text-[11px] leading-tight text-neutral-600">
-              {level.priceFootnote || copy.perPerson}
-            </span>
+              <span className="max-w-[8rem] whitespace-pre-line text-[9px] leading-tight text-neutral-600">
+                {level.priceFootnote || copy.perPerson}
+              </span>
+            </div>
           </div>
         </div>
 
         {card?.eyebrow ? (
-          <p className="mt-3 font-barlow text-base font-semibold leading-snug text-primary">
+          <p className="mt-3 font-barlow text-[13px] font-semibold leading-tight text-primary">
             {card.eyebrow}
           </p>
         ) : null}
 
-        <p className="mt-2 text-pretty text-[13px] leading-relaxed text-neutral-600">
+        <p className="mt-1 text-[10.5px] leading-[15px] text-neutral-600">
           {description}
         </p>
 
-        <div className="my-4 border-t border-gray-200" />
+        <div className="mt-5 border-t border-gray-200" />
 
-        <dl className="grid grid-cols-[84px_1fr] gap-x-3 gap-y-2 text-xs text-primary @[280px]:grid-cols-[90px_1fr]">
+        <dl className="mt-5 grid grid-cols-[minmax(62px,max-content)_1fr] items-center gap-x-0 gap-y-1 text-[9px] leading-[11px] text-primary">
           {details.map((detail) => (
             <React.Fragment key={detail.label}>
-              <dt className="leading-snug">{detail.label}</dt>
+              <dt className="pr-2 leading-snug">{detail.label}</dt>
               <dd className="font-semibold leading-snug">
                 {detail.kind === "transport" && card?.transport ? (
                   <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -292,7 +301,7 @@ export function ExperienceCard({
                       optionalModes={card.transport.optionalModes}
                     />
                     {card.transportNote ? (
-                      <span className="text-[10px] font-normal text-neutral-600">
+                      <span className="text-[6.5px] font-normal text-neutral-600">
                         {card.transportNote}
                       </span>
                     ) : null}
@@ -309,7 +318,7 @@ export function ExperienceCard({
           <div className="mt-3 space-y-1">
             {footnotes.map((note) => (
               <p
-                className="text-[11px] leading-snug text-neutral-500"
+                className="text-[7px] leading-snug text-neutral-500"
                 key={note}
               >
                 {note}
@@ -320,8 +329,8 @@ export function ExperienceCard({
 
         <div className="mt-auto pt-4">
           {card?.revealNote ? (
-            <p className="mb-2.5 flex items-center gap-1.5 text-[11px] text-neutral-600">
-              <Clock aria-hidden className="h-3 w-3 shrink-0" />
+            <p className="mb-2.5 flex items-center gap-1 text-[7px] leading-none text-neutral-600">
+              <Clock aria-hidden className="h-2 w-2 shrink-0" />
               {card.revealNote}
             </p>
           ) : null}
