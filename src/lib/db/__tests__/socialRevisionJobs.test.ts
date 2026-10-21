@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   approvalFind: vi.fn(),
   approvalUpdate: vi.fn(),
@@ -11,6 +11,8 @@ const m = vi.hoisted(() => ({
   jobUpdate: vi.fn(),
   jobUpdateMany: vi.fn(),
   lock: vi.fn(),
+  sourceFind: vi.fn(),
+  sourceUpdate: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -21,6 +23,7 @@ vi.mock("@/lib/prisma", () => ({
           update: m.approvalUpdate,
           create: m.approvalCreate,
         },
+        socialSource: { findUnique: m.sourceFind, update: m.sourceUpdate },
         socialRevisionJob: {
           findUnique: m.jobFind,
           findFirst: m.jobFirst,
@@ -37,6 +40,7 @@ import {
   claimSocialRevision,
   finishGeneratedSocialRevision,
   queueSocialRevision,
+  queueSocialTranslation,
 } from "../socialRevisionJobs";
 const source = {
   id: "review",
@@ -186,5 +190,45 @@ it("creates the next revision with every slide and keeps the source link", async
       imageUrls: ["a", "b"],
       sourceId: "src",
     }),
+  });
+});
+describe("queueSocialTranslation", () => {
+  const announced = {
+    id: "src",
+    status: "ANNOUNCED",
+    messageTs: "9.9",
+  };
+  const input = { sourceId: "src", user: "U1", messageTs: "9.9" };
+  beforeEach(() => {
+    m.sourceFind.mockResolvedValue(announced);
+    m.jobFind.mockResolvedValue(null);
+  });
+  it("queues one TRANSLATE job and marks the source queued", async () => {
+    expect(await queueSocialTranslation(input)).toBe("queued");
+    expect(m.jobCreate).toHaveBeenCalledWith({
+      data: {
+        kind: "TRANSLATE",
+        sourceId: "src",
+        actor: "U1",
+        feedback: "",
+        target: "both",
+      },
+    });
+    expect(m.sourceUpdate).toHaveBeenCalledWith({
+      where: { id: "src" },
+      data: { status: "TRANSLATION_QUEUED" },
+    });
+  });
+  it("replays repeated clicks without another paid job", async () => {
+    m.jobFind.mockResolvedValue({ id: "existing" });
+    expect(await queueSocialTranslation(input)).toBe("queued");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+  it("shares the daily AI budget and rejects stale cards", async () => {
+    m.count.mockResolvedValue(10);
+    expect(await queueSocialTranslation(input)).toBe("budget");
+    m.sourceFind.mockResolvedValue({ ...announced, messageTs: "other" });
+    expect(await queueSocialTranslation(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
   });
 });

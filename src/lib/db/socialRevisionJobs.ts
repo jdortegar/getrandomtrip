@@ -1,7 +1,22 @@
 import { randomUUID } from "node:crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { lockSocialApproval } from "./socialApprovals";
 import type { SocialFeedback } from "@/lib/social-approvals/feedbackModal";
+
+/** Accepted paid AI jobs (translations and revisions) per UTC day. */
+export const DAILY_AI_JOBS = 10;
+
+/** Call while holding the "daily-ai-budget" lock. */
+async function dailyBudgetLeft(tx: Prisma.TransactionClient) {
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  return (
+    (await tx.socialRevisionJob.count({
+      where: { createdAt: { gte: since }, kind: { not: "PUBLISH" } },
+    })) < DAILY_AI_JOBS
+  );
+}
 
 export async function queueSocialRevision(input: SocialFeedback) {
   return prisma.$transaction(
@@ -20,14 +35,7 @@ export async function queueSocialRevision(input: SocialFeedback) {
       });
       if (existing) return "queued"; // Retry cannot create another paid job.
       if (!row || row.status !== "PENDING" || row.revision >= 5) return "stale";
-      const since = new Date();
-      since.setUTCHours(0, 0, 0, 0);
-      if (
-        (await tx.socialRevisionJob.count({
-          where: { createdAt: { gte: since } },
-        })) >= 10
-      )
-        return "budget";
+      if (!(await dailyBudgetLeft(tx))) return "budget";
       await tx.socialApproval.update({
         where: { id: row.id },
         data: {
@@ -44,6 +52,50 @@ export async function queueSocialRevision(input: SocialFeedback) {
           feedback: input.feedback,
           target: input.target,
           slides: input.slides,
+        },
+      });
+      return "queued";
+    },
+    { maxWait: 500, timeout: 1500 },
+  );
+}
+
+/**
+ * Queues the first translation of an announced Spanish post. One TRANSLATE job
+ * per source: repeated clicks replay "queued" without another paid job.
+ */
+export async function queueSocialTranslation(input: {
+  sourceId: string;
+  user: string;
+  messageTs: string;
+}) {
+  return prisma.$transaction(
+    async (tx) => {
+      await lockSocialApproval(tx, `source:${input.sourceId}`);
+      await lockSocialApproval(tx, "daily-ai-budget");
+      const source = await tx.socialSource.findUnique({
+        where: { id: input.sourceId },
+      });
+      if (!source || source.messageTs !== input.messageTs) return "stale";
+      if (
+        await tx.socialRevisionJob.findUnique({
+          where: { sourceId: source.id },
+        })
+      )
+        return "queued";
+      if (source.status !== "ANNOUNCED") return "stale";
+      if (!(await dailyBudgetLeft(tx))) return "budget";
+      await tx.socialSource.update({
+        where: { id: source.id },
+        data: { status: "TRANSLATION_QUEUED" },
+      });
+      await tx.socialRevisionJob.create({
+        data: {
+          kind: "TRANSLATE",
+          sourceId: source.id,
+          actor: input.user,
+          feedback: "",
+          target: "both",
         },
       });
       return "queued";

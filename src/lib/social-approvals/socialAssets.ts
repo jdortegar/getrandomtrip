@@ -13,10 +13,16 @@ export async function loadSocialArtwork(imageUrl: string) {
     url.password
   )
     throw new Error("UNTRUSTED_ASSET");
-  const response = await fetch(url, {
-    redirect: "error",
-    signal: AbortSignal.timeout(15_000),
-  });
+  return readBoundedImage(
+    await fetch(url, {
+      redirect: "error",
+      signal: AbortSignal.timeout(15_000),
+    }),
+  );
+}
+
+/** Reads an image response up to 18 MB, rejecting other content types. */
+export async function readBoundedImage(response: Response) {
   const type = (response.headers.get("content-type") ?? "").split(";")[0];
   if (
     !response.ok ||
@@ -46,6 +52,7 @@ export async function saveSocialArtwork(
   jobId: string,
   image: Uint8Array,
   slide?: number,
+  contentType: "image/png" | "image/jpeg" = "image/png",
 ) {
   const origin = process.env.SLACK_SOCIAL_IMAGE_ORIGIN;
   if (
@@ -55,10 +62,11 @@ export async function saveSocialArtwork(
   )
     throw new Error("ASSET_ORIGIN_UNCONFIGURED");
   const name = slide === undefined ? jobId : `${jobId}-${slide}`;
-  const key = `social/social-artwork/${withEnvironmentUploadPrefix(name)}.png`;
+  const ext = contentType === "image/jpeg" ? "jpg" : "png";
+  const key = `social/social-artwork/${withEnvironmentUploadPrefix(name)}.${ext}`;
   // One paid image call per job; content-addressed job key is never reused by another revision.
   await getMediaWriteStore().set(key, new Uint8Array(image).buffer, {
-    metadata: { contentType: "image/png" },
+    metadata: { contentType },
     onlyIfNew: true,
   });
   return new URL(`/api/upload?key=${encodeURIComponent(key)}`, origin).href;

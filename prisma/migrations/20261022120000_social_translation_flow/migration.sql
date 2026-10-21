@@ -10,6 +10,7 @@ ADD COLUMN     "publishedMediaId" TEXT,
 ADD COLUMN     "publishedPermalink" TEXT,
 ADD COLUMN     "slides" INTEGER[] DEFAULT ARRAY[]::INTEGER[],
 ADD COLUMN     "sourceId" TEXT,
+ADD COLUMN     "transcreation" JSONB,
 ALTER COLUMN "reviewId" DROP NOT NULL;
 -- CreateTable
 CREATE TABLE "social_sources" (

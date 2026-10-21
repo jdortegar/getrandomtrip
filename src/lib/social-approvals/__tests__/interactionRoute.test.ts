@@ -2,10 +2,14 @@
 import { createHmac } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 vi.mock("@/lib/prisma", () => ({
-  prisma: { socialApproval: { findUnique: vi.fn() } },
+  prisma: {
+    socialApproval: { findUnique: vi.fn() },
+    socialSource: { findUnique: vi.fn() },
+  },
 }));
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
   queueSocialRevision: vi.fn(),
+  queueSocialTranslation: vi.fn(),
 }));
 vi.mock("@/lib/social-approvals/dispatchSocialWorker", () => ({
   dispatchSocialWorker: vi.fn(),
@@ -21,11 +25,20 @@ vi.mock("next/server", async (original) => ({
   ...(await original<typeof import("next/server")>()),
   after: (task: () => Promise<void>) => mocks.tasks.push(task),
 }));
-vi.mock("../refreshSocialMessage", () => ({ refreshSocialMessage: vi.fn() }));
-import { refreshSocialMessage } from "../refreshSocialMessage";
+vi.mock("../refreshSocialMessage", () => ({
+  refreshSocialMessage: vi.fn(),
+  refreshSourceMessage: vi.fn(),
+}));
+import {
+  refreshSocialMessage,
+  refreshSourceMessage,
+} from "../refreshSocialMessage";
 import { feedbackModal } from "../feedbackModal";
 import { prisma } from "@/lib/prisma";
-import { queueSocialRevision } from "@/lib/db/socialRevisionJobs";
+import {
+  queueSocialRevision,
+  queueSocialTranslation,
+} from "@/lib/db/socialRevisionJobs";
 import { dispatchSocialWorker } from "../dispatchSocialWorker";
 import { NextRequest } from "next/server";
 import { POST } from "@/app/api/slack/social-approvals/route";
@@ -182,4 +195,45 @@ it("accepted modal feedback removes old buttons after ACK and dispatches durable
   await mocks.tasks[0]();
   expect(refreshSocialMessage).toHaveBeenCalledWith(row, "REVISION_QUEUED");
   expect(dispatchSocialWorker).toHaveBeenCalledOnce();
+});
+
+const translateClick = {
+  ...payload,
+  actions: [{ action_id: "social_translate", value: "src" }],
+};
+it("Translate this post queues one translation, marks the card and dispatches the worker", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  vi.mocked(queueSocialTranslation).mockResolvedValue("queued");
+  vi.mocked(prisma.socialSource.findUnique).mockResolvedValue({
+    id: "src",
+    status: "TRANSLATION_QUEUED",
+  } as never);
+  expect((await POST(request(translateClick))).status).toBe(200);
+  expect(queueSocialTranslation).toHaveBeenCalledWith({
+    sourceId: "src",
+    user: "U1",
+    messageTs: "123.456",
+  });
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(refreshSourceMessage).toHaveBeenCalledWith(
+    expect.objectContaining({ id: "src" }),
+    "TRANSLATION_QUEUED",
+    "U1",
+  );
+  expect(dispatchSocialWorker).toHaveBeenCalledOnce();
+  expect(mocks.decide).not.toHaveBeenCalled();
+});
+it("tells only the clicker when translation is over budget or disabled", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  vi.mocked(queueSocialTranslation).mockResolvedValue("budget");
+  expect((await POST(request(translateClick))).status).toBe(200);
+  await Promise.all(mocks.tasks.map((task) => task()));
+  const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string);
+  expect(body).toMatchObject({ response_type: "ephemeral" });
+  expect(body.text).toContain("Daily AI limit");
+  expect(dispatchSocialWorker).not.toHaveBeenCalled();
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "false");
+  vi.mocked(queueSocialTranslation).mockClear();
+  await POST(request(translateClick));
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
 });

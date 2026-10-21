@@ -1193,6 +1193,9 @@ model SocialRevisionJob {
   generatedCaption   String?
   generatedImageUrl  String?
   generatedImageUrls String[]        @default([])
+  /// TRANSLATE only: { slides: [{ replacements: [{ from, to }] }], notes: [] }
+  /// from the paid transcreation, reused when a claim resumes.
+  transcreation      Json?
   newReviewId        String?
   publishedMediaId   String?
   publishedPermalink String?

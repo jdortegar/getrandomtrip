@@ -117,9 +117,16 @@ export interface ApprovalAction {
   id: string;
   user: string;
   messageTs: string;
-  status: "APPROVED" | "CHANGES_REQUESTED";
+  /** TRANSLATE: "Translate this post" on a Spanish source card (id is the source id). */
+  status: "APPROVED" | "CHANGES_REQUESTED" | "TRANSLATE";
   responseUrl: string;
 }
+
+const ACTIONS: Record<string, ApprovalAction["status"]> = {
+  social_approve: "APPROVED",
+  social_changes: "CHANGES_REQUESTED",
+  social_translate: "TRANSLATE",
+};
 
 export function parseApprovalAction(
   payload: unknown,
@@ -153,8 +160,8 @@ export function parseApprovalAction(
     p.message.ts !== p.container.message_ts
   )
     return null;
-  if (a.action_id !== "social_approve" && a.action_id !== "social_changes")
-    return null;
+  const status = ACTIONS[a.action_id ?? ""];
+  if (!status) return null;
   if (
     typeof p.response_url !== "string" ||
     !/^https:\/\/hooks\.slack\.com\/actions\/[A-Za-z0-9_/-]+$/.test(
@@ -167,6 +174,6 @@ export function parseApprovalAction(
     id: a.value,
     user: p.user.id,
     messageTs: p.message.ts,
-    status: a.action_id === "social_approve" ? "APPROVED" : "CHANGES_REQUESTED",
+    status,
   };
 }
