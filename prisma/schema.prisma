@@ -1146,3 +1146,47 @@ model EmailEvent {
   @@index([sendId, type])
   @@map("email_events")
 }
+
+// Test-only Slack reviews. No Instagram publication state or credentials.
+model SocialApproval {
+  id          String   @id @default(cuid())
+  reviewKey   String
+  revision    Int
+  requestId   String   @unique
+  caption     String
+  imageUrl    String
+  status      String   @default("POSTING")
+  messageTs   String?
+  decidedBy   String?
+  decidedAt   DateTime?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  decision    String?
+  revisionJob SocialRevisionJob?
+
+  @@unique([reviewKey, revision])
+  @@map("social_approvals")
+}
+
+
+// Durable feedback and bounded AI work; one accepted request per source revision.
+model SocialRevisionJob {
+  id               String @id @default(cuid())
+  reviewId         String @unique
+  review           SocialApproval @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  actor            String
+  feedback         String
+  target           String
+  status           String @default("QUEUED")
+  leaseToken       String?
+  leaseUntil       DateTime?
+  attempts         Int @default(0)
+  generatedCaption String?
+  generatedImageUrl String?
+  newReviewId      String?
+  errorCode        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  @@index([status, createdAt])
+  @@map("social_revision_jobs")
+}
