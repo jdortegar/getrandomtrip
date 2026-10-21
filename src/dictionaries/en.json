@@ -1808,6 +1808,10 @@
     "filterOrderBy": "Order by",
     "loadMore": "Load more"
   },
+  "experienceCard": {
+    "perPerson": "per person",
+    "selected": "Selected"
+  },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
     "closingLine": "One night, one dinner, and one surprise local experience close to home.",

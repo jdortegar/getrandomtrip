@@ -16,14 +16,42 @@ export function slidesThatFit(
   return wideViewport ? 2 : 1;
 }
 
+/** Mirrors the `gap-3` between slides in EmblaCarousel. */
+const SLIDE_GAP = 12;
+
+/** Whole fixed-width slides that fit in `viewportWidth` (never less than one). */
+export function fixedSlidesThatFit(
+  viewportWidth: number,
+  slideWidth: number,
+): number {
+  return Math.max(
+    1,
+    Math.floor((viewportWidth + SLIDE_GAP) / (slideWidth + SLIDE_GAP)),
+  );
+}
+
+/** Content width of the slide viewport (marked `data-carousel-viewport`), padding excluded. */
+function viewportContentWidth(node: HTMLElement, fallback: number): number {
+  const viewport = node.querySelector<HTMLElement>("[data-carousel-viewport]");
+  if (!viewport) return fallback;
+  const style = window.getComputedStyle(viewport);
+  return (
+    viewport.clientWidth -
+    (parseFloat(style.paddingLeft) || 0) -
+    (parseFloat(style.paddingRight) || 0)
+  );
+}
+
 /**
  * How many slides are fully visible at once at the current width, or `null`
  * until the first measurement (SSR, no ResizeObserver) so callers can fall
- * back to a count-based guess.
+ * back to a count-based guess. Pass `slideWidth` (px) when slides have a
+ * fixed width instead of the percentage breakpoints.
  */
 export function useCarouselCapacity(
   ref: RefObject<HTMLElement | null>,
   slidesPerView: 2 | 3 | 4,
+  slideWidth?: number,
 ): number | null {
   const [capacity, setCapacity] = useState<number | null>(null);
 
@@ -41,7 +69,11 @@ export function useCarouselCapacity(
 
     const update = () => {
       if (width === null) return;
-      setCapacity(slidesThatFit(width, media?.matches ?? true, slidesPerView));
+      setCapacity(
+        slideWidth
+          ? fixedSlidesThatFit(viewportContentWidth(node, width), slideWidth)
+          : slidesThatFit(width, media?.matches ?? true, slidesPerView),
+      );
     };
     update();
 
@@ -56,7 +88,7 @@ export function useCarouselCapacity(
       observer.disconnect();
       media?.removeEventListener("change", update);
     };
-  }, [ref, slidesPerView]);
+  }, [ref, slidesPerView, slideWidth]);
 
   return capacity;
 }

@@ -3,12 +3,17 @@
 import { useState, type ReactNode } from "react";
 import Section from "@/components/layout/Section";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
-import LevelCard from "@/components/by-type/shared/LevelCard";
+import { ExperienceCard } from "@/components/by-type/shared/ExperienceCard";
 import type { TypePlannerContent } from "@/types/planner";
 import {
   normalizePriceLevelId,
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
+
+/** Figma card width at every breakpoint; slides stretch so CTAs align. */
+const EXPERIENCE_CARD_WIDTH = 300;
+const EXPERIENCE_CARD_SLIDE =
+  "self-stretch flex-[0_0_300px] sm:flex-[0_0_300px] @md:flex-[0_0_300px] @lg:flex-[0_0_300px]";
 
 interface TypePlannerProps {
   /**
@@ -73,9 +78,14 @@ export default function TypePlanner({
 
   const contentElement = (
     <div className="relative flex w-full flex-col">
-      <EmblaCarousel slidesPerView={itemsPerView} overflow="both">
+      <EmblaCarousel
+        overflow="both"
+        slideClassName={EXPERIENCE_CARD_SLIDE}
+        slideWidth={EXPERIENCE_CARD_WIDTH}
+        slidesPerView={itemsPerView}
+      >
         {leadingCard && (
-          <div className="min-w-0 w-full pb-3 pt-4" key="leading-card">
+          <div className="h-full w-full min-w-0 pb-3 pt-4" key="leading-card">
             {leadingCard}
           </div>
         )}
@@ -92,8 +102,8 @@ export default function TypePlanner({
             false;
 
           return (
-            <div className="w-full min-w-0 pb-3 pt-4" key={level.id}>
-              <LevelCard
+            <div className="h-full w-full min-w-0 pb-3 pt-4" key={level.id}>
+              <ExperienceCard
                 ctaSelects={Boolean(onSelect) && !navigateOnCardClick}
                 featured={isFeatured}
                 level={level}
