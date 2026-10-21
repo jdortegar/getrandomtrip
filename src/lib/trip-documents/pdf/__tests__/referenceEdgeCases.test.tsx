@@ -148,16 +148,18 @@ for (const fixture of referenceFixtures) {
   if (!fixture.template.endsWith("voucher")) continue;
   it(`flows multiline reference before the summary in ${fixture.template}`, async () => {
     const input = structuredClone(fixture);
+    // Barlow shapes "fi" as a ligature that pdf.js extracts as a separate
+    // text item, so the probe text avoids ligature pairs.
     input.data.reservationReference = Array.from(
       { length: 20 },
-      (_, index) => `Confirmation ref ${index}`,
+      (_, index) => `Booking ref ${index}`,
     ).join("\n");
     const pages = await render(input, "reference");
     const items = pages.flatMap((page, pageIndex) =>
       page.map((item) => ({ ...item, pageIndex })),
     );
     const finalReference = items.find((item) =>
-      item.text.includes("Confirmation ref 19"),
+      item.text.includes("Booking ref 19"),
     );
     const firstDate = items.find((item) => /agosto/i.test(item.text));
     expect(finalReference).toBeDefined();

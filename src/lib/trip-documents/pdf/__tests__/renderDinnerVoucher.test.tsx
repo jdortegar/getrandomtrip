@@ -217,12 +217,12 @@ it.each(["en", "es"] as const)(
   },
 );
 
-it("embeds licensed reference-compatible fonts in actual PDF bytes", async () => {
+it("embeds only the approved Barlow font in actual PDF bytes", async () => {
   const result = await renderDinnerVoucher(document);
   if (!result.ok) throw new Error("invalid fixture");
   const pdf = result.buffer.toString("latin1");
-  expect(pdf).toContain("Arimo-Regular");
-  // Arimo is a variable font: Chromium embeds the 700 instance as a separate
-  // subset that keeps the "Arimo-Regular" PostScript name, never "Arimo-Bold".
-  expect(new Set(pdf.match(/[A-Z]{6}\+Arimo-Regular/g)).size).toBeGreaterThan(1);
+  expect(pdf).toContain("Barlow-Regular");
+  expect(pdf).toContain("Barlow-Bold");
+  expect(pdf).not.toContain("Arimo");
+  expect(pdf).not.toContain("Inter-");
 });
