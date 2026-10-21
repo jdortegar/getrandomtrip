@@ -149,6 +149,7 @@ export async function POST(
               content: {
                 react: (
                   <ExperienceApproved
+                    experienceId={params.id}
                     tripper={owner.name ?? ""}
                     experienceTitle={(updated as { title?: string }).title ?? ""}
                     locale={locale}

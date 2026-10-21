@@ -34,7 +34,7 @@ const BASE_URL = "https://getrandomtrip.com";
 const WHATSAPP_HREF = "https://wa.me/526241928208";
 const INSTAGRAM_HREF = "https://www.instagram.com/getrandomtrip";
 const FACEBOOK_HREF = "https://www.facebook.com/getrandomtrip";
-const X_HREF = "https://x.com/getrandomtrip";
+const LINKEDIN_HREF = "https://www.linkedin.com/company/getrandomtrip";
 
 // ── Design tokens (resolved to literal hex per handoff) ─────────────────────────
 
@@ -97,7 +97,8 @@ const copy = {
         : `${count} documentos no pudieron adjuntarse por su tamaño — podés descargarlos desde tu panel.`,
     cta: "Abrir mi viaje",
     ctaSubtext: "También los vas a encontrar siempre en tu panel.",
-    support: "¿Algo cambia en el camino? Escribinos por WhatsApp — te responde una persona.",
+    support:
+      "¿Algo cambia en el camino? Escribinos por WhatsApp — te responde una persona.",
     footerBrand: "Vive lo inesperado sin improvisar",
     designedSerendipity: "SERENDIPIA DISEÑADA",
     preferences: "Preferencias",
@@ -125,7 +126,8 @@ const copy = {
         : `${count} documents couldn't be attached due to their size — you can download them from your dashboard.`,
     cta: "Open my trip",
     ctaSubtext: "They also live in your dashboard, always.",
-    support: "Something shifts on the road? Write us on WhatsApp — a human answers.",
+    support:
+      "Something shifts on the road? Write us on WhatsApp — a human answers.",
     footerBrand: "Live the unexpected without improvising",
     designedSerendipity: "DESIGNED SERENDIPITY",
     preferences: "Preferences",
@@ -158,8 +160,14 @@ function formatEyebrow(date: Date, locale: "es" | "en"): string {
 
 function formatDateRange(start: Date, end: Date, locale: "es" | "en"): string {
   const intlLocale = locale === "en" ? "en-US" : "es-AR";
-  const dayFmt = new Intl.DateTimeFormat(intlLocale, { day: "numeric", timeZone: "UTC" });
-  const monthFmt = new Intl.DateTimeFormat(intlLocale, { month: "short", timeZone: "UTC" });
+  const dayFmt = new Intl.DateTimeFormat(intlLocale, {
+    day: "numeric",
+    timeZone: "UTC",
+  });
+  const monthFmt = new Intl.DateTimeFormat(intlLocale, {
+    month: "short",
+    timeZone: "UTC",
+  });
   const startDay = dayFmt.format(start);
   const endDay = dayFmt.format(end);
   const startMonth = monthFmt.format(start).replace(/\.$/, "");
@@ -184,7 +192,12 @@ function IconPuck({
   size?: number;
 }) {
   return (
-    <table role="presentation" cellPadding={0} cellSpacing={0} style={{ width: size, height: size }}>
+    <table
+      role="presentation"
+      cellPadding={0}
+      cellSpacing={0}
+      style={{ width: size, height: size }}
+    >
       <tbody>
         <tr>
           <td
@@ -209,7 +222,15 @@ function IconPuck({
   );
 }
 
-function SocialLink({ href, src, alt }: { href: string; src: string; alt: string }) {
+function SocialLink({
+  href,
+  src,
+  alt,
+}: {
+  href: string;
+  src: string;
+  alt: string;
+}) {
   return (
     <Link href={href} className="rt-social" style={{ display: "inline-block" }}>
       <IconPuck
@@ -270,7 +291,9 @@ export default function TripStartVouchers({
   const travelerTypeLabel = travelerTypeLabels[locale][tripType] ?? tripType;
   const travelersValue = `${pax} · ${travelerTypeLabel}`;
 
-  const allPdf = documents.length > 0 && documents.every((d) => d.mimeType === "application/pdf");
+  const allPdf =
+    documents.length > 0 &&
+    documents.every((d) => d.mimeType === "application/pdf");
   const filesWord = documents.length === 1 ? c.file : c.files;
   const attachedCountText = allPdf
     ? `${documents.length} ${filesWord} · PDF`
@@ -348,7 +371,14 @@ export default function TripStartVouchers({
         `}</style>
       </Head>
       <Preview>{c.preview}</Preview>
-      <Body style={{ margin: 0, padding: 0, backgroundColor: desk, colorScheme: "light" }}>
+      <Body
+        style={{
+          margin: 0,
+          padding: 0,
+          backgroundColor: desk,
+          colorScheme: "light",
+        }}
+      >
         <Section style={{ backgroundColor: desk, padding: "48px 0" }}>
           <Section
             width={600}
@@ -374,7 +404,14 @@ export default function TripStartVouchers({
                     style={{ display: "block" }}
                   />
                 </Column>
-                <Column align="right" style={{ padding: "20px 32px 20px 0", width: "50%", textAlign: "right" }}>
+                <Column
+                  align="right"
+                  style={{
+                    padding: "20px 32px 20px 0",
+                    width: "50%",
+                    textAlign: "right",
+                  }}
+                >
                   <Text style={taglineStyle}>{c.tagline}</Text>
                 </Column>
               </Row>
@@ -386,7 +423,12 @@ export default function TripStartVouchers({
               width={600}
               height={260}
               alt={c.heroAlt}
-              style={{ display: "block", width: "100%", maxWidth: 600, height: 260 }}
+              style={{
+                display: "block",
+                width: "100%",
+                maxWidth: 600,
+                height: 260,
+              }}
             />
 
             {/* ── Title panel ── */}
@@ -426,19 +468,29 @@ export default function TripStartVouchers({
                   <tbody>
                     <tr>
                       <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>{c.snapshotDates}</Text>
+                        <Text style={snapshotLabelStyle}>
+                          {c.snapshotDates}
+                        </Text>
                         <Text style={snapshotValueStyle}>
-                          {formatDateRange(startDate as Date, endDate as Date, locale)}
+                          {formatDateRange(
+                            startDate as Date,
+                            endDate as Date,
+                            locale,
+                          )}
                         </Text>
                       </td>
                       <td style={{ width: 1, backgroundColor: ink100 }} />
                       <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>{c.snapshotNights}</Text>
+                        <Text style={snapshotLabelStyle}>
+                          {c.snapshotNights}
+                        </Text>
                         <Text style={snapshotValueStyle}>{nightsValue}</Text>
                       </td>
                       <td style={{ width: 1, backgroundColor: ink100 }} />
                       <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>{c.snapshotTravelers}</Text>
+                        <Text style={snapshotLabelStyle}>
+                          {c.snapshotTravelers}
+                        </Text>
                         <Text style={snapshotValueStyle}>{travelersValue}</Text>
                       </td>
                     </tr>
@@ -471,7 +523,8 @@ export default function TripStartVouchers({
                         <td
                           style={{
                             ...docNameCellStyle,
-                            borderTop: i > 0 ? `1px solid ${neutral100}` : "none",
+                            borderTop:
+                              i > 0 ? `1px solid ${neutral100}` : "none",
                           }}
                         >
                           {doc.label}
@@ -484,7 +537,9 @@ export default function TripStartVouchers({
             )}
 
             {skippedCount > 0 && (
-              <Text style={skippedNoticeStyle}>{c.skippedNotice(skippedCount)}</Text>
+              <Text style={skippedNoticeStyle}>
+                {c.skippedNotice(skippedCount)}
+              </Text>
             )}
 
             {/* ── CTA ── */}
@@ -496,7 +551,13 @@ export default function TripStartVouchers({
             </Section>
 
             {/* ── Support band ── */}
-            <Section style={{ backgroundColor: ink50, borderTop: `1px solid ${neutral200}`, padding: "22px 32px" }}>
+            <Section
+              style={{
+                backgroundColor: ink50,
+                borderTop: `1px solid ${neutral200}`,
+                padding: "22px 32px",
+              }}
+            >
               <Row>
                 <Column style={{ width: 34, verticalAlign: "middle" }}>
                   <WhatsAppIcon />
@@ -510,9 +571,21 @@ export default function TripStartVouchers({
             </Section>
 
             {/* ── Footer ── */}
-            <Section style={{ backgroundColor: ink, padding: "32px", textAlign: "center" }}>
+            <Section
+              style={{
+                backgroundColor: ink,
+                padding: "32px",
+                textAlign: "center",
+              }}
+            >
               <Text style={footerBrandStyle}>{c.footerBrand}</Text>
-              <table role="presentation" align="center" cellPadding={0} cellSpacing={0} style={{ margin: "0 auto" }}>
+              <table
+                role="presentation"
+                align="center"
+                cellPadding={0}
+                cellSpacing={0}
+                style={{ margin: "0 auto" }}
+              >
                 <tbody>
                   <tr>
                     <td style={{ padding: "0 6px" }}>
@@ -531,18 +604,31 @@ export default function TripStartVouchers({
                     </td>
                     <td style={{ padding: "0 6px" }}>
                       <SocialLink
-                        href={X_HREF}
-                        src={`${BASE_URL}/images/newsletter/social-x.png`}
-                        alt="X"
+                        href={LINKEDIN_HREF}
+                        src={`${BASE_URL}/images/newsletter/social-linkedin.png`}
+                        alt="LinkedIn"
                       />
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <table role="presentation" width="100%" cellPadding={0} cellSpacing={0} style={{ margin: "16px 0" }}>
+              <table
+                role="presentation"
+                width="100%"
+                cellPadding={0}
+                cellSpacing={0}
+                style={{ margin: "16px 0" }}
+              >
                 <tbody>
                   <tr>
-                    <td style={{ height: 1, backgroundColor: "rgba(255,255,255,0.12)", fontSize: 1, lineHeight: "1px" }}>
+                    <td
+                      style={{
+                        height: 1,
+                        backgroundColor: "rgba(255,255,255,0.12)",
+                        fontSize: 1,
+                        lineHeight: "1px",
+                      }}
+                    >
                       &nbsp;
                     </td>
                   </tr>
@@ -551,11 +637,19 @@ export default function TripStartVouchers({
               <Text style={legalStyle}>
                 © {year} RANDOMTRIP · {c.designedSerendipity}
                 <br />
-                <Link href={settingsHref} className="rt-legal-link" style={legalLinkStyle}>
+                <Link
+                  href={settingsHref}
+                  className="rt-legal-link"
+                  style={legalLinkStyle}
+                >
                   {c.preferences}
                 </Link>{" "}
-                · {" "}
-                <Link href={settingsHref} className="rt-legal-link" style={legalLinkStyle}>
+                ·{" "}
+                <Link
+                  href={settingsHref}
+                  className="rt-legal-link"
+                  style={legalLinkStyle}
+                >
                   {c.unsubscribe}
                 </Link>
               </Text>

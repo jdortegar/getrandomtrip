@@ -40,6 +40,24 @@
       best-practices = 0.9
       seo = 0.9
 
+# Static files in public/ aren't content-hashed, so a deploy can replace them
+# at the same URL. Browsers reuse them for a day, then serve the cached copy
+# while revalidating for up to a week. Netlify's own CDN still purges on deploy.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/videos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
