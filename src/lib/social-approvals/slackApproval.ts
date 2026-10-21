@@ -12,7 +12,9 @@ export interface ApprovalContent {
 }
 
 /** Slides of a review in order, falling back to the single legacy image. */
-export function slideUrls(row: Pick<ApprovalContent, "imageUrl" | "imageUrls">) {
+export function slideUrls(
+  row: Pick<ApprovalContent, "imageUrl" | "imageUrls">,
+) {
   return row.imageUrls?.length ? row.imageUrls : [row.imageUrl];
 }
 

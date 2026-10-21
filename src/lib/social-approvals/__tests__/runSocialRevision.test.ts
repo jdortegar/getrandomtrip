@@ -86,12 +86,9 @@ it("caption-only edits never spend on images and post a fresh approval", async (
   await runSocialRevision();
   expect(mocks.caption).toHaveBeenCalledOnce();
   expect(mocks.image).not.toHaveBeenCalled();
-  expect(mocks.finish).toHaveBeenCalledWith(
-    "job",
-    "lease",
-    "Edited caption",
-    [review.imageUrl],
-  );
+  expect(mocks.finish).toHaveBeenCalledWith("job", "lease", "Edited caption", [
+    review.imageUrl,
+  ]);
   expect(mocks.record).toHaveBeenCalledWith("new", "123");
   expect(mocks.update).toHaveBeenLastCalledWith(
     expect.objectContaining({
@@ -104,12 +101,9 @@ it("artwork-only edits preserve caption and use original image as edit input", a
   await runSocialRevision();
   expect(mocks.caption).not.toHaveBeenCalled();
   expect(mocks.load).toHaveBeenCalledWith(review.imageUrl);
-  expect(mocks.finish).toHaveBeenCalledWith(
-    "job",
-    "lease",
-    review.caption,
-    ["https://assets.test/v2.png"],
-  );
+  expect(mocks.finish).toHaveBeenCalledWith("job", "lease", review.caption, [
+    "https://assets.test/v2.png",
+  ]);
 });
 it("resumes checkpoints without repeating successful paid calls", async () => {
   mocks.claim.mockResolvedValue({
