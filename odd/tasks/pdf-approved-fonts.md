@@ -37,11 +37,12 @@ use Barlow.
     changed from "Confirmation ref N" to "Booking ref N" because Barlow's "fi"
     ligature splits pdf.js text items; layout was verified intact (reference
     block ends above the summary dates, 2 pages as before).
-- [ ] T1b Remove `public/assets/fonts/arimo/` and `public/assets/fonts/inter/`.
-  - Blocked: `next.config.js:7-8` traces both directories in `pdfAssets` and
-    `pdfFonts.test.tsx:88-89` asserts that list; `next.config.js` was outside the
-    T1a edit surface. Needs: drop both globs from `next.config.js` and the test,
-    then `git rm -r` the directories.
+- [x] T1b Remove `public/assets/fonts/arimo/` and `public/assets/fonts/inter/`.
+  - Route: inline (two mechanical list edits plus `git rm`).
+  - Dropped both globs from `next.config.js` `pdfAssets` and the
+    `pdfFonts.test.tsx` expectation, then removed the directories.
+  - Checks: `npx vitest run src/lib/trip-documents/pdf` 15 files / 151 tests pass;
+    `npm run typecheck` pass; `npm run lint` pass.
 
 ## Acceptance criteria
 
@@ -55,4 +56,4 @@ use Barlow.
 
 ## Next step
 
-T1b.
+Open the pull request.
