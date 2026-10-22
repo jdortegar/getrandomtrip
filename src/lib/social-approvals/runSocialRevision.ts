@@ -46,6 +46,7 @@ type Checkpoint = (data: {
   transcreation?: Prisma.InputJsonValue;
   /** Set explicitly by fences so the conditional update always writes a field. */
   updatedAt?: Date;
+  publishAttemptedAt?: Date;
 }) => Promise<void>;
 
 const ERROR_CODES = new Set([
@@ -298,6 +299,9 @@ async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
   });
   if (current?.status !== "PUBLISHING") throw new Error("STALE_SOURCE");
   let mediaId = job.publishedMediaId;
+  // A previous claim reached media_publish without recording a result.
+  if (!mediaId && job.publishAttemptedAt)
+    throw new Error("PUBLISH_UNCONFIRMED");
   if (!mediaId) {
     let containerId: string;
     try {
@@ -325,8 +329,12 @@ async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
         review.caption,
       );
       await waitForContainer(target.token, containerId);
-      // Fence the lease right before the irreversible call.
-      await checkpoint({ updatedAt: new Date() });
+      // Fence the lease and record the attempt right before the irreversible
+      // call; from here on the job is never retried.
+      await checkpoint({
+        updatedAt: new Date(),
+        publishAttemptedAt: new Date(),
+      });
       try {
         mediaId = await publishContainer(
           target.token,

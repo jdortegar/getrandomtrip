@@ -25,6 +25,7 @@ export async function GET() {
     select: {
       id: true,
       kind: true,
+      publishAttemptedAt: true,
       reviewId: true,
       sourceId: true,
       publishedMediaId: true,
@@ -78,9 +79,10 @@ export async function POST(request: NextRequest) {
         status: "MANUAL_RECOVERY",
         attempts: { lt: 2 },
         newReviewId: null,
-        // A publish is retryable only if it failed before media_publish.
+        // A publish is retryable only if it never reached media_publish
+        // (failures, timeouts or lost leases before that call).
         publishedMediaId: null,
-        OR: [{ kind: { not: "PUBLISH" } }, { errorCode: "PUBLISH_FAILED" }],
+        OR: [{ kind: { not: "PUBLISH" } }, { publishAttemptedAt: null }],
       },
       data: {
         status: "QUEUED",
@@ -108,7 +110,11 @@ export async function POST(request: NextRequest) {
       });
     if (job?.kind === "PUBLISH" && job.reviewId)
       await prisma.socialApproval.updateMany({
-        where: { id: job.reviewId, status: "PUBLISH_FAILED" },
+        // PUBLISHING when the lease expired mid-run.
+        where: {
+          id: job.reviewId,
+          status: { in: ["PUBLISH_FAILED", "PUBLISHING"] },
+        },
         data: { status: "PUBLISHING" },
       });
     after(async () => {

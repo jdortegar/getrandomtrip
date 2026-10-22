@@ -1198,6 +1198,9 @@ model SocialRevisionJob {
   transcreation      Json?
   newReviewId        String?
   publishedMediaId   String?
+  /// Set immediately before media_publish. A PUBLISH job without it never
+  /// reached Instagram's publish call, so it is safe to retry.
+  publishAttemptedAt DateTime?
   publishedPermalink String?
   errorCode          String?
   createdAt          DateTime        @default(now())

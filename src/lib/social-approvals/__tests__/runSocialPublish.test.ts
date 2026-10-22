@@ -86,6 +86,7 @@ const job = {
   leaseToken: "lease",
   generatedImageUrls: [] as string[],
   publishedMediaId: null as string | null,
+  publishAttemptedAt: null as Date | null,
 };
 beforeEach(() => {
   vi.resetAllMocks();
@@ -208,6 +209,31 @@ it("does nothing without the publish flag or target token", async () => {
   expect(m.update).toHaveBeenLastCalledWith(
     expect.objectContaining({
       data: expect.objectContaining({ errorCode: "PUBLISH_DISABLED" }),
+    }),
+  );
+});
+
+it("records the attempt right before media_publish", async () => {
+  await runSocialRevision();
+  const fence = m.update.mock.calls.find(
+    (call) => call[0].data.publishAttemptedAt,
+  );
+  expect(fence?.[0]).toMatchObject({
+    where: { id: "job", status: "RUNNING", leaseToken: "lease" },
+    data: { publishAttemptedAt: expect.any(Date) },
+  });
+  expect(
+    m.update.mock.invocationCallOrder[m.update.mock.calls.indexOf(fence!)],
+  ).toBeLessThan(m.publish.mock.invocationCallOrder[0]);
+});
+it("never resumes a publish that already reached media_publish without a result", async () => {
+  m.claim.mockResolvedValue({ ...job, publishAttemptedAt: new Date() });
+  await runSocialRevision();
+  expect(m.container).not.toHaveBeenCalled();
+  expect(m.publish).not.toHaveBeenCalled();
+  expect(m.update).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({ errorCode: "PUBLISH_UNCONFIRMED" }),
     }),
   );
 });

@@ -21,13 +21,15 @@ Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `s
 | T3 | S2 | inline | done | fef528b2 |
 | T4 | S4, S5 | inline | done | d09d4a46 |
 | T5 | S1–S5 docs/env | inline | done | a552f920 |
-| T6 | S6 | inline | done | ordered-sync commit |
+| T6 | S6 | inline | done | d7a81283 |
+| T7 | S5 | inline | done | retry before media_publish |
 
 - T1 — Multi-image reviews: schema (`imageUrls`, job `kind`, nullable `reviewId`, `sourceId`), migration, Slack card renders all slides, feedback modal accepts slide numbers. Risk: item 1 (persisted format change on existing tables).
 - T2 — `SocialSource` model, source Graph client (media + children), daily scheduled function (production only) + internal route + admin "check now", Slack "Translate this post" card.
 - T3 — TRANSLATE job: download source media, vision transcreation with the skill, per-slide image edits with exact copy, create review revision 1, post review card.
 - T4 — "Publish to @getrandomtrip.en" button on approved reviews, PUBLISH job, JPEG conversion, carousel/single container + publish, card status. Risk: item 1 (irreversible external effect).
 - T5 — `docs/SlackSocialApprovals.md`, `env.example`.
+- T7 — Retry a publish that never reached `media_publish` (timeouts and lost leases). `publishAttemptedAt` on the same unapplied migration. Risk: item 1.
 
 Route evidence: all units share `slackApproval.ts`, the Slack route, the worker and the schema, so no disjoint parallel units exist (Writer trigger not fired); inline.
 
@@ -43,3 +45,5 @@ Route evidence: all units share `slackApproval.ts`, the Slack route, the worker 
 - L8 Independent verifier: no blockers; S1–S5 met; invariants (migration additive, no double media_publish, account/flag guard, no repeat paid calls, legacy reviews, no flood) hold. Fixed advisories 5 (TRANSLATE retry resets source status) and 6 (fences write updatedAt explicitly). Open advisories: legacy generatedImageUrl checkpoint ignored on retry; lease-expired publishes have no in-app retry; 10-minute lease not renewed for long carousels; slide numbers validated only in the worker; card header now mrkdwn with user mention.
 - L9 (2026-10-21, user, verbatim): "also add a verification to not jump posts, en account should be sync in the same order as the english one, so at the beggining we will have a delay of maybe 30 posts" → S6/T6: sequential queue replaces the 4-day window and shortcode announce; publish order guard; Mark as posted manually; syncedThrough baseline. Social suites 141 tests pass, tsc 0 errors.
 - L10 (2026-10-22): fixed queue stall — a source card Slack never confirmed (no messageTs, ANNOUNCING/UNSUPPORTED, older than 10 min) is re-posted by the next advance. Social suites 143 tests pass, tsc 0 errors.
+- L11 (2026-10-22, user, verbatim): "yes" to adding an in-app retry for a publish that times out before posting anything. Resume after Claude session `getrandomtrip-6e` hit the weekly limit mid-change. T7: record `publishAttemptedAt` immediately before `media_publish`; retry only when that field is still empty (timeouts and lost leases included). Same unapplied migration. Risk: item 1 (migration + irreversible Instagram publish).
+- L12 (2026-10-22): writer checks: social suites 105 pass; focused publish/jobs tests 11 pass; `tsc --noEmit` 0 errors; eslint clean on touched files. Independent verifier unavailable (subagent model limit). Parent spot-check: focused vitest 11 pass.

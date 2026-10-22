@@ -6,6 +6,7 @@ ADD COLUMN     "sourceId" TEXT;
 -- AlterTable
 ALTER TABLE "social_revision_jobs" ADD COLUMN     "generatedImageUrls" TEXT[] DEFAULT ARRAY[]::TEXT[],
 ADD COLUMN     "kind" TEXT NOT NULL DEFAULT 'REVISE',
+ADD COLUMN     "publishAttemptedAt" TIMESTAMP(3),
 ADD COLUMN     "publishedMediaId" TEXT,
 ADD COLUMN     "publishedPermalink" TEXT,
 ADD COLUMN     "slides" INTEGER[] DEFAULT ARRAY[]::INTEGER[],

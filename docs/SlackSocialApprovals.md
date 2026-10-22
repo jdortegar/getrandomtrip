@@ -46,7 +46,7 @@ Reviews can still be created directly, without a Spanish source (they can be rev
 - One TRANSLATE job per Spanish post, one REVISE or PUBLISH job per review. Repeated clicks replay the existing job.
 - A Netlify background function runs the jobs. A five-minute scheduled dispatcher recovers missed dispatches. Database leases prevent duplicate claims, and checkpoints (transcreation, finished slides, published media id) keep a resumed job from paying or publishing twice.
 - Uncertain paid calls or Slack deliveries move the job to `MANUAL_RECOVERY`; nothing is retried blindly. `GET /api/admin/social-approvals/jobs` lists jobs; a same-origin admin can retry one with `{ "jobId": "...", "confirmPossibleAdditionalCharge": true }`.
-- **Publishing is never retried after `media_publish`.** Failures before it (`PUBLISH_FAILED`) leave nothing public and can be retried. A failed or unconfirmed `media_publish` call (`PUBLISH_UNCONFIRMED`), or a job with a recorded media id, can't be retried: check @getrandomtrip.en first.
+- **Publishing is never retried after `media_publish`.** The worker records `publishAttemptedAt` immediately before that call. Failures before it (`PUBLISH_FAILED`, a timeout, or a lost lease) leave that field empty, so an admin can retry. Once `publishAttemptedAt` is set, or the job has a recorded media id, retry is refused (`PUBLISH_UNCONFIRMED`): check @getrandomtrip.en first.
 
 ## Security
 

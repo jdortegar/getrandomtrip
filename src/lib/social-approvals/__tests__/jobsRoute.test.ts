@@ -45,7 +45,7 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllEnvs());
 
-it("retries a publish only when it failed before media_publish", async () => {
+it("retries a publish that never reached media_publish, including timeouts", async () => {
   m.findJob.mockResolvedValue({ kind: "PUBLISH", reviewId: "review" });
   expect((await POST(retry())).status).toBe(200);
   expect(m.updateMany).toHaveBeenCalledWith(
@@ -53,12 +53,15 @@ it("retries a publish only when it failed before media_publish", async () => {
       where: expect.objectContaining({
         status: "MANUAL_RECOVERY",
         publishedMediaId: null,
-        OR: [{ kind: { not: "PUBLISH" } }, { errorCode: "PUBLISH_FAILED" }],
+        OR: [{ kind: { not: "PUBLISH" } }, { publishAttemptedAt: null }],
       }),
     }),
   );
   expect(m.approvalUpdateMany).toHaveBeenCalledWith({
-    where: { id: "review", status: "PUBLISH_FAILED" },
+    where: {
+      id: "review",
+      status: { in: ["PUBLISH_FAILED", "PUBLISHING"] },
+    },
     data: { status: "PUBLISHING" },
   });
 });
