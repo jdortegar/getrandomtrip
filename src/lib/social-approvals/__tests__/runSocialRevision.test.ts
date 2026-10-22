@@ -19,6 +19,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
+  SOCIAL_JOB_LEASE_MS: 10 * 60_000,
   enabledJobKinds: () =>
     process.env.SLACK_SOCIAL_AI_ENABLED === "true"
       ? ["TRANSLATE", "REVISE"]
@@ -177,12 +178,12 @@ it("edits every slide when none are named and resumes after finished slides", as
   expect(mocks.image).toHaveBeenCalledTimes(2);
   expect(mocks.update).toHaveBeenCalledWith(
     expect.objectContaining({
-      data: {
+      data: expect.objectContaining({
         generatedImageUrls: [
           "https://assets.test/done-1.png",
           "https://assets.test/v2.png",
         ],
-      },
+      }),
     }),
   );
   expect(mocks.finish).toHaveBeenCalledWith("job", "lease", review.caption, [

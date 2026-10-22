@@ -45,6 +45,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
+  SOCIAL_JOB_LEASE_MS: 10 * 60_000,
   enabledJobKinds: () =>
     process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true" ? ["PUBLISH"] : [],
   claimSocialRevision: m.claim,

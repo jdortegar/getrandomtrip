@@ -167,6 +167,9 @@ export async function queueSocialPublish(input: {
   );
 }
 
+/** How long a claimed job stays exclusive. Checkpoints renew this window. */
+export const SOCIAL_JOB_LEASE_MS = 10 * 60_000;
+
 /** Job kinds the worker may run with the current flags. */
 export function enabledJobKinds() {
   return [
@@ -196,7 +199,7 @@ export async function claimSocialRevision(kinds = enabledJobKinds()) {
       data: {
         status: "RUNNING",
         leaseToken,
-        leaseUntil: new Date(Date.now() + 10 * 60_000),
+        leaseUntil: new Date(Date.now() + SOCIAL_JOB_LEASE_MS),
         attempts: { increment: 1 },
       },
     });

@@ -9,6 +9,7 @@ import {
   claimSocialRevision,
   enabledJobKinds,
   finishGeneratedSocialRevision,
+  SOCIAL_JOB_LEASE_MS,
 } from "@/lib/db/socialRevisionJobs";
 import { getProfile } from "@/lib/instagram-recap/instagramClient";
 import { createSocialApproval } from "@/lib/db/socialApprovals";
@@ -79,7 +80,10 @@ export async function runSocialRevision() {
   const checkpoint: Checkpoint = async (data) => {
     const result = await prisma.socialRevisionJob.updateMany({
       where: { ...where, leaseUntil: { gt: new Date() } },
-      data,
+      data: {
+        ...data,
+        leaseUntil: new Date(Date.now() + SOCIAL_JOB_LEASE_MS),
+      },
     });
     if (!result.count) throw new Error("LEASE_LOST");
   };
@@ -322,6 +326,7 @@ async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
         );
         await checkpoint({ generatedImageUrls: [...done] });
       }
+      await checkpoint({ updatedAt: new Date() });
       containerId = await createMediaContainer(
         target.token,
         profile.userId,

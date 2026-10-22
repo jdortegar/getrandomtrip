@@ -30,6 +30,7 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/db/socialRevisionJobs", () => ({
+  SOCIAL_JOB_LEASE_MS: 10 * 60_000,
   enabledJobKinds: () =>
     process.env.SLACK_SOCIAL_AI_ENABLED === "true"
       ? ["TRANSLATE", "REVISE"]
@@ -210,4 +211,22 @@ it("never posts a review when the image model is not configured", async () => {
   await runSocialRevision();
   expect(m.transcreate).not.toHaveBeenCalled();
   expect(m.post).not.toHaveBeenCalled();
+});
+it("renews the 10-minute lease on every checkpoint so a carousel cannot expire mid-run", async () => {
+  await runSocialRevision();
+  const checkpoints = m.update.mock.calls.filter(
+    ([args]) =>
+      args.where?.leaseUntil?.gt instanceof Date &&
+      args.data?.status !== "COMPLETE",
+  );
+  expect(checkpoints.length).toBeGreaterThan(1);
+  for (const [args] of checkpoints) {
+    expect(args.data.leaseUntil).toBeInstanceOf(Date);
+    expect(args.data.leaseUntil.getTime()).toBeGreaterThan(
+      Date.now() + 9 * 60_000,
+    );
+    expect(args.data.leaseUntil.getTime()).toBeLessThan(
+      Date.now() + 11 * 60_000,
+    );
+  }
 });

@@ -23,6 +23,7 @@ Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `s
 | T5 | S1–S5 docs/env | inline | done | a552f920 |
 | T6 | S6 | inline | done | d7a81283 |
 | T7 | S5 | inline | done | 79d0d88a |
+| T8 | S2, S5 | inline | in progress | renew lease per checkpoint |
 
 - T1 — Multi-image reviews: schema (`imageUrls`, job `kind`, nullable `reviewId`, `sourceId`), migration, Slack card renders all slides, feedback modal accepts slide numbers. Risk: item 1 (persisted format change on existing tables).
 - T2 — `SocialSource` model, source Graph client (media + children), daily scheduled function (production only) + internal route + admin "check now", Slack "Translate this post" card.
@@ -30,6 +31,7 @@ Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `s
 - T4 — "Publish to @getrandomtrip.en" button on approved reviews, PUBLISH job, JPEG conversion, carousel/single container + publish, card status. Risk: item 1 (irreversible external effect).
 - T5 — `docs/SlackSocialApprovals.md`, `env.example`.
 - T7 — Retry a publish that never reached `media_publish` (timeouts and lost leases). `publishAttemptedAt` on the same unapplied migration. Risk: item 1.
+- T8 — Renew the 10-minute job lease on every checkpoint so a carousel cannot expire mid-run. Risk: item 4 (leases).
 
 Route evidence: all units share `slackApproval.ts`, the Slack route, the worker and the schema, so no disjoint parallel units exist (Writer trigger not fired); inline.
 
@@ -47,3 +49,4 @@ Route evidence: all units share `slackApproval.ts`, the Slack route, the worker 
 - L10 (2026-10-22): fixed queue stall — a source card Slack never confirmed (no messageTs, ANNOUNCING/UNSUPPORTED, older than 10 min) is re-posted by the next advance. Social suites 143 tests pass, tsc 0 errors.
 - L11 (2026-10-22, user, verbatim): "yes" to adding an in-app retry for a publish that times out before posting anything. Resume after Claude session `getrandomtrip-6e` hit the weekly limit mid-change. T7: record `publishAttemptedAt` immediately before `media_publish`; retry only when that field is still empty (timeouts and lost leases included). Same unapplied migration. Risk: item 1 (migration + irreversible Instagram publish).
 - L12 (2026-10-22): writer checks: social suites 105 pass; focused publish/jobs tests 11 pass; `tsc --noEmit` 0 errors; eslint clean on touched files. Independent verifier unavailable (subagent model limit). Parent spot-check: focused vitest 11 pass.
+- L13 (2026-10-22, user, verbatim): "do both" — renew the 10-minute lease on carousel checkpoints, then rebase onto develop and open the PR. T8: each checkpoint writes `leaseUntil = now + SOCIAL_JOB_LEASE_MS`. RED then GREEN on the translation lease test. Social suites 106 pass, tsc 0 errors, eslint clean. Risk: item 4 (leases). Independent verifier unavailable (subagent model limit).
