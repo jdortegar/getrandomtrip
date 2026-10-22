@@ -34,6 +34,8 @@ POST /api/admin/social-approvals/sources
 
 That post and every earlier one count as synced, and the next Spanish post is offered immediately. From there the backlog (around 30 posts at the start) goes one post at a time, in order. Without a body, the request offers the next post now if none is in progress ("Check now").
 
+If Slack never confirms a post's card, the next check (recap run, publication, manual mark or Check now) posts it again after 10 minutes, so the queue can't stall. A rare duplicate card is possible; only the latest one's buttons work.
+
 If someone posts a Spanish post's English version by hand, use **Mark as posted manually** on its card so the order stays intact. A post can't be marked while the app is publishing it.
 
 Reviews can still be created directly, without a Spanish source (they can be reviewed but never published, to keep the feeds in order), with `POST /api/admin/social-approvals` and `{ reviewKey, requestId, caption, imageUrls: [...] }` (1–10 public HTTPS images on `SLACK_SOCIAL_IMAGE_ORIGIN`; `imageUrl` still works for a single image).

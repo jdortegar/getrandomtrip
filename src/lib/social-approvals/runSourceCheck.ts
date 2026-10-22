@@ -9,7 +9,10 @@ import {
 import { approvalConfig } from "./slackApproval";
 import { socialSourceConfig } from "./socialAccounts";
 import { listSourceMedia, shortcodeOf, type SourceMedia } from "./sourceMedia";
-import { sourceMessage } from "./sourceMessage";
+import { sourceMessage, type SourceContent } from "./sourceMessage";
+
+/** A card still unconfirmed after this long is posted again. */
+export const STUCK_ANNOUNCE_MS = 10 * 60 * 1000;
 
 async function readSourceFeed() {
   const config = approvalConfig();
@@ -30,13 +33,29 @@ async function readSourceFeed() {
  * no earlier post is still in progress. Nothing happens until a sync starting
  * point exists (setSyncBaseline).
  */
-export async function advanceSourceQueue() {
+export async function advanceSourceQueue(now = Date.now()) {
   const { config, media } = await readSourceFeed();
   const rows = await listSourceRows();
   if (!rows.length) return { announced: 0, reason: "BASELINE_REQUIRED" };
-  if (rows.some((r) => !MIRRORED_STATUSES.includes(r.status)))
-    return { announced: 0, reason: "IN_PROGRESS" };
   const known = new Set(rows.map((r) => r.igMediaId));
+  const pending = rows.filter((r) => !MIRRORED_STATUSES.includes(r.status));
+  if (pending.length) {
+    // A card Slack never confirmed has no buttons and would block the queue
+    // forever: post it again once it is clearly stuck.
+    const stuck = pending.find(
+      (r) =>
+        !r.messageTs &&
+        ["ANNOUNCING", "UNSUPPORTED"].includes(r.status) &&
+        now - r.createdAt.getTime() > STUCK_ANNOUNCE_MS,
+    );
+    const item = stuck && media.find((m) => m.id === stuck.igMediaId);
+    if (!stuck || !item) return { announced: 0, reason: "IN_PROGRESS" };
+    const behind = media.filter(
+      (m) => !known.has(m.id) && m.postedAt > item.postedAt,
+    ).length;
+    await announce(config, stuck, item, behind);
+    return { announced: 1, reason: "REANNOUNCED", behind };
+  }
   // Never go back before the newest mirrored post.
   const latest = Math.max(...rows.map((r) => r.postedAt.getTime()));
   const waiting = media.filter(
@@ -53,11 +72,12 @@ export async function advanceSourceQueue() {
 
 async function announce(
   config: NonNullable<ReturnType<typeof approvalConfig>>,
-  row: NonNullable<Awaited<ReturnType<typeof recordNewSource>>>,
+  row: SourceContent,
   media: SourceMedia,
   behind: number,
 ) {
-  // A failed post leaves the row ANNOUNCING; it is never re-posted automatically.
+  // An unconfirmed post leaves no messageTs; advanceSourceQueue re-posts it
+  // once stuck. Only the recorded card's buttons are accepted.
   const response = await fetch("https://slack.com/api/chat.postMessage", {
     method: "POST",
     headers: {

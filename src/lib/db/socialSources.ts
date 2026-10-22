@@ -42,7 +42,17 @@ export const MIRRORED_STATUSES = ["PUBLISHED", "SYNCED"];
 
 export async function listSourceRows() {
   return prisma.socialSource.findMany({
-    select: { id: true, igMediaId: true, status: true, postedAt: true },
+    select: {
+      id: true,
+      igMediaId: true,
+      status: true,
+      postedAt: true,
+      caption: true,
+      permalink: true,
+      mediaType: true,
+      messageTs: true,
+      createdAt: true,
+    },
   });
 }
 

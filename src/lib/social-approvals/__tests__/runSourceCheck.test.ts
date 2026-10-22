@@ -39,11 +39,21 @@ const post = (code: string, n: number) => ({
 });
 // Oldest first, as listSourceMedia returns them.
 const feed = [post("P1", 1), post("P2", 2), post("P3", 3), post("P4", 4)];
-const row = (code: string, n: number, status: string) => ({
+const row = (
+  code: string,
+  n: number,
+  status: string,
+  extra: { messageTs?: string | null; createdAt?: Date } = {},
+) => ({
   id: `row-${code}`,
   igMediaId: `ig-${code}`,
   status,
   postedAt: day(n),
+  caption: `Caption ${code}`,
+  permalink: `https://www.instagram.com/p/${code}/`,
+  mediaType: "CAROUSEL_ALBUM",
+  messageTs: "messageTs" in extra ? extra.messageTs : "1.1",
+  createdAt: extra.createdAt ?? day(n),
 });
 let fetchMock: ReturnType<typeof vi.fn>;
 beforeEach(() => {
@@ -157,4 +167,45 @@ it("the recap hook skips while approvals are disabled and never throws", async (
     "[social-sources] check failed: instagram_request_failed",
   );
   error.mockRestore();
+});
+
+const now = day(10).getTime();
+it("re-posts a card Slack never confirmed once it is stuck, so the queue can't block", async () => {
+  m.rows.mockResolvedValue([
+    row("P1", 1, "SYNCED"),
+    row("P2", 2, "ANNOUNCING", {
+      messageTs: null,
+      createdAt: new Date(now - 11 * 60_000),
+    }),
+  ]);
+  expect(await advanceSourceQueue(now)).toEqual({
+    announced: 1,
+    reason: "REANNOUNCED",
+    behind: 2,
+  });
+  expect(m.record).not.toHaveBeenCalled();
+  expect(
+    JSON.stringify(JSON.parse(fetchMock.mock.calls[0][1].body).blocks),
+  ).toContain("Translate this post");
+  expect(m.recordTs).toHaveBeenCalledWith("row-P2", "1.2");
+});
+it("leaves a fresh or confirmed card alone", async () => {
+  m.rows.mockResolvedValue([
+    row("P1", 1, "SYNCED"),
+    row("P2", 2, "ANNOUNCING", {
+      messageTs: null,
+      createdAt: new Date(now - 60_000),
+    }),
+  ]);
+  expect(await advanceSourceQueue(now)).toMatchObject({
+    reason: "IN_PROGRESS",
+  });
+  m.rows.mockResolvedValue([
+    row("P1", 1, "SYNCED"),
+    row("P2", 2, "UNSUPPORTED", { createdAt: new Date(0) }),
+  ]);
+  expect(await advanceSourceQueue(now)).toMatchObject({
+    reason: "IN_PROGRESS",
+  });
+  expect(fetchMock).not.toHaveBeenCalled();
 });
