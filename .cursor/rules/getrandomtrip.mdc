@@ -70,6 +70,7 @@ if (!hasRoleAccess(session.user.role, ['ADMIN'])) return forbidden();
 - Remote hostnames must be added to `next.config.js` `remotePatterns`.
 
 ## Design system constraints
+- Live galleries: `/[locale]/design-system` (Brand Book), `/[locale]/design-system/components` (UI kit). Update demos when shared components change.
 - No dark mode. Never add `dark:` Tailwind variants.
 - Color tokens: gray-900 (ink), text-light-blue (cyan), yellow-400 (sun), white
   (surface), gray-50 (ground), gray-200 (border).

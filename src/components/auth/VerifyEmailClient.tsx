@@ -90,7 +90,7 @@ export default function VerifyEmailClient({
               aria-hidden
               className="mx-auto mb-4 h-10 w-10 animate-spin text-secondary"
             />
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
+            <h1 className="font-barlow-condensed text-2xl font-bold uppercase text-ink">
               {copy.verifyingTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">
@@ -105,7 +105,7 @@ export default function VerifyEmailClient({
               aria-hidden
               className="mx-auto mb-4 h-10 w-10 text-green-600"
             />
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
+            <h1 className="font-barlow-condensed text-2xl font-bold uppercase text-ink">
               {copy.successTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">
@@ -123,7 +123,7 @@ export default function VerifyEmailClient({
               aria-hidden
               className="mx-auto mb-4 h-10 w-10 text-red-600"
             />
-            <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
+            <h1 className="font-barlow-condensed text-2xl font-bold uppercase text-ink">
               {copy.errorTitle}
             </h1>
             <p className="mt-2 text-sm text-neutral-600">

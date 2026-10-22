@@ -4,37 +4,54 @@
   },
   "designSystem": {
     "skip": "Skip to the gallery",
-    "navigation": "Component sections",
+    "navigation": "Design system sections",
     "usage": "Usage example",
     "backToTop": "Back to top ↑",
     "footer": "Randomtrip / A shared visual language",
+    "agentDocs": "AI rules (markdown, no repository needed)",
+    "agentDocsBody": "If you are an AI building UI from this page, fetch this URL and follow it.",
     "hero": {
-      "eyebrow": "Randomtrip / The component library",
+      "eyebrow": "Randomtrip / Brand",
       "title": "Designed for the unexpected.",
-      "description": "One visual language for every journey. Explore the foundations and real, interactive components behind Randomtrip.",
-      "explore": "Explore the system",
-      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved.",
-      "overview": "The foundation",
-      "facts": [
-        {
-          "label": "Typefaces",
-          "value": "Barlow + Barlow Condensed"
-        },
-        {
-          "label": "Appearance",
-          "value": "Light, naturally"
-        },
-        {
-          "label": "Approach",
-          "value": "Responsive by design"
-        }
-      ]
+      "description": "The Randomtrip brand guide: essence, logo, color, type, voice, and photography.",
+      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved."
+    },
+    "componentsHero": {
+      "eyebrow": "Randomtrip / Components",
+      "title": "Real pieces, ready to use.",
+      "description": "From headings to dashboards. The same components the product uses, here to try.",
+      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved."
     },
     "sections": {
-      "foundations": {
-        "nav": "Foundations",
-        "title": "Color & typography",
-        "description": "A warm canvas. Confident type. Ground and Mineral Sage make room for the journey; Deep Teal and Ochre guide the eye."
+      "essence": {
+        "nav": "Essence",
+        "title": "Essence & North Star",
+        "description": "Why we exist, what we believe, and the one idea behind every brand decision."
+      },
+      "logo": {
+        "nav": "Logo",
+        "title": "The logo",
+        "description": "Isologo, lockup, and lockup with tagline — then the four approved color pairs. Always on a palette color, never on an improvised background."
+      },
+      "color": {
+        "nav": "Color",
+        "title": "Color palette",
+        "description": "Clarity, character, and a touch of wonder. Brand names, tokens, and the ratio that keeps them in balance."
+      },
+      "typography": {
+        "nav": "Typography",
+        "title": "Type that tells the story",
+        "description": "Three type voices: editorial, human, and documentary. And how they behave on images."
+      },
+      "voice": {
+        "nav": "Voice & payoffs",
+        "title": "Tone of voice & payoffs",
+        "description": "Don't explain the magic. Leave just enough curiosity that people want to find it."
+      },
+      "photography": {
+        "nav": "Photography",
+        "title": "Photography & Trippers",
+        "description": "Real moments. A little more magic. And the collection frame that introduces every Tripper."
       },
       "buttons": {
         "nav": "Buttons & links",
@@ -51,6 +68,41 @@
         "title": "Small signals, clear meaning",
         "description": "Status badges report a state. Rounded chips invite a choice. Different roles, different treatments."
       },
+      "headings": {
+        "nav": "Section titles",
+        "title": "Titles that set the scene",
+        "description": "The real page heading and section heading. Use them; do not restyle a parallel title."
+      },
+      "tabs": {
+        "nav": "Tabs",
+        "title": "One row, one place",
+        "description": "The shared TabSelector. Inline for product screens, marketing for editorial pages."
+      },
+      "icons": {
+        "nav": "Icons",
+        "title": "Small, consistent marks",
+        "description": "Lucide icons. Inline actions are h-4 w-4. KPI pucks are h-9 w-9."
+      },
+      "avatar": {
+        "nav": "Avatar",
+        "title": "A face, or a fallback",
+        "description": "AvatarWithFallback with a photo and without one. Sizes from the shared component."
+      },
+      "cards": {
+        "nav": "Cards",
+        "title": "Surfaces with a job",
+        "description": "Experience, tripper, traveler type, blog, and drop cards. Use the real component; do not restyle a copy."
+      },
+      "journey": {
+        "nav": "Journey",
+        "title": "The path, step by step",
+        "description": "Progress, dropdowns, pills, excuse cards, and section cards from the real journey. Do not restyle a copy."
+      },
+      "dashboard": {
+        "nav": "Dashboards",
+        "title": "Shared shell, distinct controls",
+        "description": "Nav tabs and KPI cards used across dashboards, plus role-specific controls like the view toggle. Use the real component."
+      },
       "layout": {
         "nav": "Layout & rhythm",
         "title": "Space to discover",
@@ -62,50 +114,575 @@
         "description": "Search, filter, sort, and paginate a small set of fictional experiences. All interactions stay on this page."
       }
     },
-    "foundations": {
+    "groups": {
+      "brand": "Brand",
+      "components": "Components"
+    },
+    "essence": {
+      "foundationsTitle": "The foundations",
+      "positioningTitle": "Brand positioning",
+      "northStar": {
+        "label": "North Star",
+        "value": "Wonder begins where certainty ends."
+      },
+      "context": {
+        "label": "The context",
+        "title": "Travel got over-planned.",
+        "body": "People spend hours comparing destinations, hotels, reviews, and itineraries for short getaways that were supposed to help them switch off.",
+        "question": "What if, just once, you didn't have to choose anything?"
+      },
+      "purpose": {
+        "label": "Our purpose",
+        "hint": "Why we exist",
+        "title": "Make travel feel magical again.",
+        "body": "Help people discover trips they'd never have chosen, and end up loving."
+      },
+      "vision": {
+        "label": "Our vision",
+        "hint": "Where we're going",
+        "body": "A world where people travel with more curiosity and fewer assumptions."
+      },
+      "belief": {
+        "label": "What we believe",
+        "title": "The best experiences aren't always the ones we choose.",
+        "body": [
+          "When we optimize every decision, we often end up repeating ourselves.",
+          "The places we search for are usually places we've already imagined.",
+          "The experiences we remember are usually the ones we never saw coming."
+        ]
+      },
+      "essence": {
+        "label": "Brand essence",
+        "value": "Serendipity by design"
+      },
+      "values": {
+        "label": "Core values",
+        "items": [
+          {
+            "name": "Curiosity",
+            "description": "It pushes us past the familiar, toward the unexpected."
+          },
+          {
+            "name": "Trust",
+            "description": "It lets us let go, knowing everything has been carefully designed."
+          },
+          {
+            "name": "Ease",
+            "description": "We remove decisions and planning to leave more room for serendipity."
+          }
+        ]
+      },
+      "character": {
+        "label": "Brand character",
+        "items": ["Curious", "Human", "Light", "Unexpected"]
+      },
+      "promise": {
+        "label": "Brand promise",
+        "value": "Rediscover the wonder of travel"
+      },
+      "valueProposition": {
+        "label": "Value proposition",
+        "value": "Trips you'd never have chosen, that you end up loving."
+      },
+      "insight": {
+        "label": "Consumer insight",
+        "value": "I want to travel and discover something new, but I'm tired of spending hours researching, comparing, and planning without finding places that truly surprise me."
+      },
+      "consumer": {
+        "label": "Consumer description",
+        "value": "Curious travelers, driven by experiences, digitally savvy, culturally curious, and open to trying things outside their usual preferences."
+      }
+    },
+    "logo": {
+      "lockups": {
+        "original": {
+          "name": "Original on Off White",
+          "description": "The primary version. Ochre icon, Deep Teal wordmark.",
+          "alt": "Two-color Randomtrip logo on Off White"
+        },
+        "teal": {
+          "name": "Ochre on Deep Teal",
+          "description": "For dark brand backgrounds. Full logo in Ochre.",
+          "alt": "Randomtrip logo in Ochre on Deep Teal"
+        },
+        "sage": {
+          "name": "Deep Teal on Mineral Sage",
+          "description": "For Mineral Sage sections and blocks. Full logo in Deep Teal.",
+          "alt": "Randomtrip logo in Deep Teal on Mineral Sage"
+        },
+        "ochre": {
+          "name": "White on Ochre",
+          "description": "For high-energy moments. Full logo in white.",
+          "alt": "Randomtrip logo in white on Ochre"
+        }
+      },
+      "iso": {
+        "name": "Isologo",
+        "description": "The symbol on its own. For favicons, avatars, and tight spaces.",
+        "alt": "Randomtrip isologo"
+      },
+      "noTagline": {
+        "name": "Without tagline",
+        "description": "The everyday lockup. Icon and wordmark, nothing else.",
+        "alt": "Randomtrip logo without tagline"
+      },
+      "tagline": {
+        "name": "With tagline",
+        "description": "The tagline version, for pieces where the logo stands on its own.",
+        "alt": "Randomtrip logo with tagline"
+      },
+      "note": "Single-color versions use the same SVG file as a mask, so the artwork always matches the original."
+    },
+    "color": {
+      "intro": {
+        "title": "Our palette comes from nature, open roads, and the discoveries that matter.",
+        "body": "Calm and confidence, with a spark of unexpected energy. A world of its own: contemporary, warm, and full of possibility."
+      },
+      "signal": {
+        "title": "Color is a brand signal",
+        "body": "Using our colors consistently builds recognition and makes Randomtrip feel seamless at every touchpoint."
+      },
       "clipboard": {
         "action": "Copy color",
         "pending": "Copying…",
         "success": "Color copied",
         "failure": "Could not copy. Select the displayed value and copy it manually."
       },
-      "colors": {
-        "primary": {
-          "name": "Deep Teal",
-          "usage": "Actions, text, focus · 5–10%"
+      "rgbLabel": "RGB",
+      "tiers": {
+        "core": "Core palette",
+        "dark": "Dark tones",
+        "secondary": "Secondary palette",
+        "ui": "UI neutrals"
+      },
+      "swatches": {
+        "offWhite": {
+          "name": "Off White",
+          "traits": "Light | Serene | Clean",
+          "usage": "Our main background. It brings space, clarity, and a modern, light feel."
         },
-        "secondary": {
+        "mineralSage": {
           "name": "Mineral Sage",
-          "usage": "Supporting surfaces · 30%"
+          "traits": "Curious | Natural | Human",
+          "usage": "Our signature secondary color. Nature, calm, and discovery. Use it for sections, blocks, and layered backgrounds."
         },
-        "feature": {
+        "deepTeal": {
+          "name": "Deep Teal",
+          "traits": "Reliable | Confident | Bold",
+          "usage": "Our main color for text, navigation, and solid elements. It anchors the brand with depth and trust."
+        },
+        "ochre": {
           "name": "Ochre",
-          "usage": "Small moments of emphasis · 0–5%"
+          "traits": "Unexpected | Energetic | Optimistic",
+          "usage": "Our signature accent. It adds energy, highlights key moments, and brings the spirit of surprise to life."
         },
-        "ground": {
-          "name": "Ground",
-          "usage": "The main canvas · 60%"
+        "deepTealDark": {
+          "name": "Deep Teal Dark",
+          "traits": "",
+          "usage": "Text over images only."
         },
-        "surface": {
-          "name": "Surface",
-          "usage": "Cards and panels"
+        "sageDark": {
+          "name": "Sage Dark",
+          "traits": "",
+          "usage": "Text over images only."
+        },
+        "canyonClay": {
+          "name": "Canyon Clay",
+          "traits": "",
+          "usage": "Reserved for XSED."
+        },
+        "skyDrift": {
+          "name": "Sky Drift",
+          "traits": "",
+          "usage": "Reference only. No UI role yet."
         },
         "ink": {
           "name": "Ink",
-          "usage": "Headings and body text"
+          "traits": "",
+          "usage": "UI headings and body text."
+        },
+        "surface": {
+          "name": "Surface",
+          "traits": "",
+          "usage": "Cards and panels."
         }
       },
-      "paletteNote": "Select a swatch to copy its current CSS value. Color shares are guidelines for the whole view. XSED Orange is reserved for the XSED sub-brand, not general UI.",
-      "typography": "Two typefaces. One voice.",
-      "typeNote": "Barlow for reading. Barlow Condensed for headings and numbers.",
-      "displayLabel": "Display / Barlow Condensed · 36–60 px",
-      "displaySample": "Go beyond the familiar.",
-      "headingLabel": "Section / Barlow Condensed · 30 px",
-      "headingSample": "Every journey starts somewhere.",
-      "bodyLabel": "Body / Barlow · 16 px",
-      "bodySample": "Leave room for the unexpected. Thoughtful details and a little curiosity turn a trip into something worth remembering.",
-      "captionLabel": "Caption / Barlow · 12 px",
-      "captionSample": "A little detail. A clearer experience."
+      "ratio": {
+        "title": "How to use it",
+        "description": "The share of each full view. Deep Teal is the one most often overdone: it's for text and details, not large areas.",
+        "items": {
+          "offWhite": {
+            "share": "60%",
+            "label": "Neutral",
+            "usage": "Use Off White as the main canvas for clarity and air. Together with photography, it should own the background."
+          },
+          "mineralSage": {
+            "share": "30%",
+            "label": "Secondary",
+            "usage": "Use Mineral Sage for some areas, sections, containers, and subtle backgrounds."
+          },
+          "deepTeal": {
+            "share": "5–10%",
+            "label": "Accent",
+            "usage": "Use Deep Teal for text, headlines, navigation, icons, and key elements."
+          },
+          "ochre": {
+            "share": "0–5%",
+            "label": "Unexpected",
+            "usage": "Use Ochre for calls to action, highlights, and moments that need energy."
+          }
+        }
+      },
+      "mapping": {
+        "title": "From brand to code",
+        "description": "Every brand color has a palette token. UI uses the role tokens; roleless colors go by their palette name, or not at all.",
+        "brand": "Brand color",
+        "palette": "Palette token",
+        "role": "Role token",
+        "none": "—"
+      }
+    },
+    "typography": {
+      "intro": {
+        "title": "Our type is editorial, human, and unexpected, just like the trips we create.",
+        "body": "Type is one of the strongest ways to give our voice a life. It shapes how people feel, read, and connect. It brings together trust and curiosity, structure and soul, clarity and a touch of surprise."
+      },
+      "voices": {
+        "editorial": {
+          "title": "1. The editorial voice",
+          "traits": "Bold. Provocative. Confident.",
+          "purpose": "For strong lines that spark curiosity.",
+          "sample": "Trips you'd never have chosen",
+          "font": "Barlow Condensed Bold · 700"
+        },
+        "human": {
+          "title": "2. The human voice",
+          "traits": "Personal. Intimate. Warm.",
+          "purpose": "For emotional turns, reflections, and fragments of a story.",
+          "sample": "That you end up loving.",
+          "font": "Nothing You Could Do"
+        },
+        "documentary": {
+          "title": "3. The documentary voice and brand text",
+          "traits": "Real. Clear. Reliable.",
+          "purpose": "For concrete information that grounds the story in reality.",
+          "sample": "The best stories are the ones that really happened.",
+          "font": "Barlow Regular · 400"
+        }
+      },
+      "images": {
+        "title": "Type on images",
+        "lead": "Words travel too.",
+        "body": "Type on images is part of how we tell stories. It should feel built into the image, create hierarchy, and leave room for the photo to speak too.",
+        "worksLabel": "Works",
+        "failsLabel": "Doesn't work",
+        "rules": [
+          {
+            "title": "01 | One main idea",
+            "body": "Use Barlow Condensed in Medium Bold, always uppercase, with the reference tracking and leading. A direct voice that's easy to read.",
+            "alt": "A person sitting on rocks looking out at a mountain coast",
+            "works": {
+              "primary": "Fewer\nchoices —\nmore\npossibilities."
+            },
+            "fails": {
+              "primary": "Fewer\nchoices\nmore\npossibilities."
+            }
+          },
+          {
+            "title": "02 | Emotional turns",
+            "body": "For the most human or emotional moments, use Nothing You Could Do. It works best 1 or 2 points smaller than the main idea.",
+            "alt": "A person in the water watching the sun set over the sea",
+            "works": {
+              "primary": "There's a trip\nyou'll take\nthis year",
+              "secondary": "and you're not going to plan it."
+            },
+            "fails": {
+              "primary": "There's a trip\nyou'll take\nthis year",
+              "secondary": "and you're not going to plan it."
+            }
+          },
+          {
+            "title": "03 | Pairing typefaces",
+            "body": "Pair two typefaces only as an exception, when the line splits naturally and you want to stress its more emotional half.",
+            "alt": "Sneakers resting on a car window above a mountain lake",
+            "works": {
+              "primary": "Your next\nweekend —",
+              "secondary": "starts this Sunday."
+            },
+            "fails": {
+              "primary": "Leave room\nfor the\nunexpected."
+            }
+          },
+          {
+            "title": "04 | Message hierarchy",
+            "body": "For two different messages, use Barlow Condensed or Nothing You Could Do for the main one and lowercase Barlow Regular for the second.",
+            "alt": "A stone alley opening onto a bay with boats",
+            "works": {
+              "primary": "Travel filled up\nwith decisions.",
+              "caption": "Compare, choose,\nplan every detail."
+            },
+            "fails": {
+              "primary": "Travel filled up\nwith decisions.",
+              "caption": "Compare.\nChoose.\nPlan every detail."
+            }
+          },
+          {
+            "title": "05 | Composition and alignment",
+            "body": "Align text left or right. Center only for emphasis. Leave margin around the text so it can breathe, and keep it away from the edges.",
+            "alt": "A traveler looking out from a van at a coastal road",
+            "works": {
+              "primary": "You know\nthe price,\nwhat's included,\nand when you go.",
+              "caption": "The destination?\nYou find out 48 hours before."
+            },
+            "fails": {
+              "primary": "Luckily,\nit's Sunday!",
+              "caption": "Join the waitlist. We'll tell you when the next Sunday Drop opens."
+            }
+          },
+          {
+            "title": "06 | Text color",
+            "body": "Use white on dark images. Use Deep Teal Dark and Sage Dark on light images, always putting contrast and legibility first.",
+            "alt": "A camera and an open map on a sunlit stone wall",
+            "works": {
+              "primary": "Every Sunday —\na new\npossibility."
+            },
+            "fails": {
+              "primary": "More possibility.",
+              "caption": "Limited spots for an escape next weekend."
+            }
+          }
+        ],
+        "principles": {
+          "title": "Key type principles",
+          "body": "Text is part of the story, not a layer on top. Use contrast, scale, and placement to build intrigue. Leave space. Not every image needs words."
+        },
+        "decorative": {
+          "title": "Clear before decorative",
+          "body": "Reading always comes first. Type should go with the image, never compete with it."
+        }
+      }
+    },
+    "voice": {
+      "intro": {
+        "title": "Talk like someone you'd want to travel with",
+        "body": "Don't explain the magic. Leave just enough curiosity that people want to find it."
+      },
+      "characterLabel": "From our brand character…",
+      "toneLabel": "…to our tone of voice",
+      "worksLabel": "Works",
+      "failsLabel": "Doesn't work",
+      "cards": [
+        {
+          "trait": "Curious",
+          "description": "We look past the obvious and always ask what else could happen.",
+          "voice": "Open possibilities instead of selling destinations",
+          "works": "What if you didn't pick where to go?",
+          "fails": "Discover our wide selection of exciting trips."
+        },
+        {
+          "trait": "Human",
+          "description": "We're close, real, and imperfect. We celebrate the bonds between people, and the details.",
+          "voice": "Talk like a person, not a travel platform",
+          "works": "You weren't looking for this place. Even better.",
+          "fails": "Our platforms offer unique, personalized experiences."
+        },
+        {
+          "trait": "Light",
+          "description": "We make discovery simple and intuitive. No friction. Only room for what matters.",
+          "voice": "Say less, make every word count",
+          "works": "Pack your bag. We'll take it from here.",
+          "fails": "Complete your preferences and we'll build a tailor-made surprise trip."
+        },
+        {
+          "trait": "Unexpected",
+          "description": "We love a twist. One small surprise turns any trip into one you won't forget.",
+          "voice": "Spark curiosity, don't reveal everything",
+          "works": "Your best story might be where you never looked.",
+          "fails": "Book a surprise trip and find out your destination 48 hours before you leave."
+        }
+      ],
+      "stories": {
+        "title": "We collect stories",
+        "body": "We talk about possibilities, stories, and letting go. Not mystery, surprise destinations, or mechanics."
+      },
+      "payoffs": {
+        "title": "One signature. Five messages.",
+        "subtitle": "Each one has a different job.",
+        "body": "Randomtrip speaks through a simple, consistent system of payoffs, built to tell the same idea for each message's goal and context.",
+        "purposeLabel": "Purpose",
+        "useLabel": "Recommended use",
+        "items": {
+          "philosophy": {
+            "label": "01 | The philosophy",
+            "text": "Wonder\nbegins\nwhere certainty\nends.",
+            "purpose": "The brand at its highest. It defines how we see travel: the magic happens when we let go.",
+            "use": "Social media, website hero, covers, institutional branding pieces, and brand manifestos."
+          },
+          "benefit": {
+            "label": "02 | The benefit",
+            "text": "Fewer\nchoices.\nMore\npossibilities.",
+            "purpose": "Turns what Randomtrip offers into an immediate benefit. It answers decision fatigue and planning stress head-on.",
+            "use": "Social media, \"How it works\" sections, product emails, and key benefits on the landing page."
+          },
+          "promise": {
+            "label": "03 | The promise",
+            "text": "Some trips\nyou'd never\nchoose.",
+            "accent": "Until you live them.",
+            "purpose": "Turns Randomtrip's central tension into curiosity. It breaks down the distrust of the unknown.",
+            "use": "Social media, near testimonials, UGC, Instagram carousels of real trips, and checkout."
+          },
+          "emotion": {
+            "label": "04 | The emotion",
+            "text": "Feel the magic\nof travel\nagain.",
+            "purpose": "The most direct expression of our purpose, and the most emotional and human line in the system. It speaks to the wish to feel real discovery again.",
+            "use": "Social media, emotional Brand Story content, website footers, and post-trip thank-yous."
+          },
+          "differentiator": {
+            "label": "05 | The differentiator",
+            "text": "Don't chase\ndestinations.\nFind\nstories.",
+            "purpose": "Reframes what people come to Randomtrip for. The value isn't in collecting places, but in living something that becomes a story.",
+            "use": "Social bios, the Trippers section, and emotional and community branding campaigns."
+          }
+        },
+        "rule": {
+          "title": "One main idea",
+          "body": "Every piece needs one main line, chosen for its goal. A second can join as backup when it helps finish the story."
+        },
+        "signature": {
+          "label": "The brand signature",
+          "words": "Wonder • Wander",
+          "accent": "Repeat",
+          "purpose": "Institutional signature and recognition device.",
+          "use": "Next to the logo, or closing brand pieces, campaigns, video, social, packaging, and institutional communications."
+        }
+      }
+    },
+    "photography": {
+      "philosophy": {
+        "title": "Photo philosophy",
+        "lead": "We don't look for destinations. We look for stories.",
+        "body": "Randomtrip photography isn't about proving where you went. It's about catching the moments that made the trip worth remembering. Our photos should always leave a little room for imagination.",
+        "items": [
+          {
+            "title": "Real, not perfect",
+            "body": "Natural light. Imperfect framing. Movement. Grain. Shadows. Unexpected crops. Real people, not posing. Life happening, not performing.",
+            "alt": "A blue door and a straw hat in afternoon shade"
+          },
+          {
+            "title": "Attitude over destination",
+            "body": "A small detail can say more than a landmark. We photograph the feeling of discovery, not just the place. The image should make you wonder: what happened here?",
+            "alt": "A hand resting on a train window above a green valley"
+          },
+          {
+            "title": "Stories, not postcards",
+            "body": "Doors. Tables after a meal. A view from the train. Something left behind. Someone turning a corner. Moments with a story, even when we don't know all of it.",
+            "alt": "A table after lunch, still in the sun"
+          },
+          {
+            "title": "Collected",
+            "body": "Every photo should feel like something found along the way, not something made for the camera.",
+            "alt": "A stone street dropping toward the water"
+          },
+          {
+            "title": "Consistent color treatment",
+            "body": "Every image carries a subtle pigment from our palette for a recognizable look. Variety with an identity of its own.",
+            "alt": "A hillside town above a bright sea"
+          }
+        ]
+      },
+      "treatment": {
+        "title": "Photo treatment",
+        "lead": "Real moments. A little more magic.",
+        "body": "We show places as they are and gently lift their atmosphere so the everyday feels a little more extraordinary: Sage depth, Ochre warmth, and natural color.",
+        "items": [
+          {
+            "title": "Balanced and natural",
+            "body": "Reality comes first. Colors stay believable and places feel real. The magic is in how we look at them.",
+            "alt": "A traveler looking out from a van at the coast"
+          },
+          {
+            "title": "Sage in the shadows",
+            "body": "A touch of curiosity: Mineral Sage lives quietly in shadows, foliage, and neutral tones, giving every image our point of view.",
+            "alt": "A treated alley of stone houses toward the sea"
+          },
+          {
+            "title": "Ochre in the light",
+            "body": "Where magic catches the light. Ochre warms sun, skin, stone, and wood, with energy and wonder.",
+            "alt": "A person in the water at sunset"
+          },
+          {
+            "title": "Real first, then magic",
+            "body": "We start from an honest, believable photo. The treatment supports the moment, never invents it.",
+            "alt": "A woman in a hat facing a beach sunset"
+          },
+          {
+            "title": "Collected, not produced",
+            "body": "Subtle grain, soft blacks, and natural texture make every photo feel like a moment worth keeping.",
+            "alt": "A camera and a map on a sunlit stone wall"
+          }
+        ]
+      },
+      "trippers": {
+        "title": "Tripper treatment",
+        "lead": "Real people. Unexpected stories.",
+        "body": "Our Trippers bring Randomtrip to life. The treatment is warm, imperfect, and authentic. Never too polished. We let the moment speak, and just frame it with curiosity.",
+        "examplesLabel": "Treatment example",
+        "principlesLabel": "Treatment principles",
+        "principles": [
+          {
+            "title": "Real, personal photos",
+            "body": "Real people, moments, and stories, told in their own words."
+          },
+          {
+            "title": "Curious text",
+            "body": "Handwritten details and organic touches that invite imagination."
+          },
+          {
+            "title": "Collection frame",
+            "body": "Always with the vertical notebook strip, so it reads as a collection. Name and social handle, so every Tripper is recognizable."
+          }
+        ],
+        "note": {
+          "title": "Trippers tell stories",
+          "body": "Their moments inspire others to leave room for the unexpected and collect stories of their own."
+        },
+        "sampleNote": "Sample names and handles.",
+        "collection": {
+          "number": "Col. #0007",
+          "role": "Randomtripper",
+          "location": "Buenos Aires, Argentina"
+        },
+        "examples": [
+          {
+            "handle": "@mateo.explora",
+            "name": "Mateo",
+            "subtitle": "The explorer",
+            "quote": "Seeks quiet places, real encounters, and roads less traveled.",
+            "alt": "Mateo sitting on a rock at sunset"
+          },
+          {
+            "handle": "@lucia.captura",
+            "name": "Lucía",
+            "subtitle": "The culture seeker",
+            "quote": "Always finds the table where locals eat.",
+            "alt": "Lucía sitting against a sunlit wall"
+          },
+          {
+            "handle": "@caro.tripper",
+            "name": "Caro",
+            "subtitle": "The family Tripper",
+            "quote": "More time together. Better stories.",
+            "alt": "Caro walking a path with her children"
+          },
+          {
+            "handle": "@tomas.reset",
+            "name": "Tomás",
+            "subtitle": "The reset seeker",
+            "quote": "Less rush. More presence.",
+            "alt": "Tomás sitting by the water at dusk"
+          }
+        ]
+      }
     },
     "buttons": {
       "variants": "One hierarchy, many actions",
@@ -167,6 +744,90 @@
         "INACTIVE": "Inactive",
         "ARCHIVED": "Archived"
       }
+    },
+    "headings": {
+      "page": "Page heading",
+      "section": "Section heading",
+      "sectionLeft": "Section heading, left aligned",
+      "pageEyebrow": "Randomtrip / Example",
+      "pageTitle": "A title for the whole page.",
+      "pageDescription": "PageHeading is the top of a screen: eyebrow, condensed title, and a short lead.",
+      "sectionEyebrow": "A quiet start",
+      "sectionTitle": "This is a section heading",
+      "sectionSubtitle": "SectionHeading introduces a block inside the page, not the page itself."
+    },
+    "tabs": {
+      "inline": "Inline tabs",
+      "marketing": "Marketing tabs",
+      "overview": "Overview",
+      "details": "Details",
+      "reviews": "Reviews",
+      "selected": "Selected: {tab}"
+    },
+    "icons": {
+      "inline": "Inline (h-4 w-4)",
+      "puck": "KPI puck (h-9 w-9)",
+      "hint": "All icons from lucide-react. Do not mix sizes inside the same row of actions."
+    },
+    "avatar": {
+      "photo": "With photo",
+      "fallback": "Fallback",
+      "photoAlt": "Sample traveler portrait"
+    },
+    "cards": {
+      "body": "White surface, light border, room for a title and a short thought.",
+      "experience": "Experience card",
+      "level": "Level card",
+      "tripper": "Tripper card",
+      "tripperCarousel": "Tripper carousel card",
+      "travelerType": "Traveler type card",
+      "blog": "Blog card",
+      "drop": "Drop card",
+      "closing": "Wonder begins where certainty ends.",
+      "tripperName": "Lucía",
+      "travelerTypeTitle": "Slow coast",
+      "blogCategory": "Journal",
+      "blogTitle": "Lunch that lasted until dusk",
+      "dropLabel": "Nº1",
+      "dropTitle": "A table by the water",
+      "featureDuration": "Duration",
+      "featureDurationValue": "4 nights"
+    },
+    "journey": {
+      "progress": "Progress",
+      "progressLabel": "Progress",
+      "dropdowns": "Dropdowns",
+      "dropdownLabel": "Who is travelling",
+      "dropdownContent": "2 travelers",
+      "dropdownBody": "Adults and dates stay in this panel, the same way the journey keeps them.",
+      "pills": "Pills",
+      "pillOrigin": "Origin",
+      "pillDates": "Dates",
+      "pillTransport": "Transport",
+      "pillRemove": "Remove {label}",
+      "excuse": "Excuse card",
+      "excuseTitle": "A long lunch by the water",
+      "excuseDescription": "You needed a reason. This one will do.",
+      "excuseCta": "Choose and continue",
+      "section": "Section card",
+      "sectionTitle": "Preferences",
+      "sectionDescription": "Filters and add-ons live in this panel.",
+      "sectionAction": "Edit",
+      "sectionBody": "Keep the journey in one place. Open a section when you need it.",
+      "comingSoon": "Coming soon",
+      "completed": "Completed",
+      "incomplete": "Incomplete",
+      "tabBudget": "Budget",
+      "tabDetails": "Details",
+      "tabPreferences": "Preferences",
+      "subOrigin": "Origin",
+      "subDates": "Dates",
+      "subFilters": "Filters"
+    },
+    "dashboard": {
+      "nav": "Nav tabs",
+      "kpis": "KPI cards",
+      "toggle": "View toggle"
     },
     "layout": {
       "eyebrow": "The composition",
@@ -1794,7 +2455,20 @@
         "You will be redirected to checkout to complete payment."
       ],
       "days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      "months": [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ]
     }
   },
   "xsedDropsPage": {
@@ -4079,7 +4753,7 @@
     "ariaTwitter": "Twitter",
     "entityAddress": "251 Little Falls Dr, Wilmington, DE 19808, USA.",
     "entityNotice": "Randomtrip and getrandomtrip.com are brands operated by Randomtrip Inc.",
-    "tagline": "Wander begin where certainty ends",
+    "tagline": "Wonder begins where certainty ends",
     "copyright": "All rights reserved."
   },
   "legalCookies": {

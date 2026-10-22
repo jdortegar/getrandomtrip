@@ -94,7 +94,7 @@ export function BuyerTravelDocumentsSection({
       data-component="BuyerTravelDocumentsSection"
     >
       <div className="flex flex-col gap-2">
-        <h3 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h3 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.title}
         </h3>
         <p className="text-sm text-neutral-500">{copy.description}</p>

@@ -86,7 +86,7 @@ export default function TripperHeroContent({
 
         <h1
           className={cn(
-            "mb-4 font-barlow-condensed font-extrabold uppercase leading-none text-white",
+            "mb-4 font-barlow-condensed font-bold uppercase leading-none text-white",
             variant === "overlay"
               ? "text-4xl sm:text-5xl md:text-7xl"
               : "text-3xl",

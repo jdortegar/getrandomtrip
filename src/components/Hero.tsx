@@ -90,7 +90,7 @@ const Hero: React.FC<HeroProps> = ({
           <motion.h1
             animate={{ y: 0, opacity: 1 }}
             className={cn(
-              "font-barlow-condensed font-extrabold mb-6 text-center text-white z-10 [&_sup]:text-[0.6em]",
+              "font-barlow-condensed font-bold mb-6 text-center text-white z-10 [&_sup]:text-[0.6em]",
               "md:text-left",
               isHome ? "text-[44px] uppercase whitespace-pre-line" : "text-[60px]",
               isHome

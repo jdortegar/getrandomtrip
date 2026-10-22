@@ -11,22 +11,26 @@ const TAB_WIDTH = "w-[5.75rem] sm:w-24";
 const TAB_MIN_HEIGHT = "min-h-[7.5rem] sm:min-h-[8.75rem]";
 
 interface DashboardNavTabsProps {
+  activeHref?: string;
   tabs: DashboardNavTabItem[];
 }
 
-export function DashboardNavTabs({ tabs }: DashboardNavTabsProps) {
+export function DashboardNavTabs({
+  activeHref,
+  tabs,
+}: DashboardNavTabsProps) {
   const rawPathname = usePathname();
   const locale = useLocale();
-  const pathname = rawPathname.startsWith(`/${locale}/`)
-    ? rawPathname.slice(locale.length + 1)
-    : rawPathname === `/${locale}`
-      ? "/"
-      : rawPathname;
+  const stripLocale = (path: string) =>
+    path.startsWith(`/${locale}/`)
+      ? path.slice(locale.length + 1)
+      : path === `/${locale}`
+        ? "/"
+        : path;
+  const pathname = stripLocale(activeHref ?? rawPathname);
 
   function isActive(href: string, exact = false) {
-    const slug = href.startsWith(`/${locale}`)
-      ? href.slice(locale.length + 1)
-      : href;
+    const slug = stripLocale(href);
     if (exact) return pathname === slug;
     return pathname === slug || pathname.startsWith(`${slug}/`);
   }

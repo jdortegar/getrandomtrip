@@ -1,100 +1,328 @@
 import type { PromoRejectionReason } from "@/types/payments";
 
+export interface DesignSystemSectionDict {
+  nav: string;
+  title: string;
+  description: string;
+}
+
+export interface DesignSystemLabeledTextDict {
+  label: string;
+  value: string;
+}
+
+export interface DesignSystemTitledTextDict {
+  title: string;
+  body: string;
+}
+
+export interface DesignSystemEssenceDict {
+  foundationsTitle: string;
+  positioningTitle: string;
+  northStar: DesignSystemLabeledTextDict;
+  context: {
+    label: string;
+    title: string;
+    body: string;
+    question: string;
+  };
+  purpose: {
+    label: string;
+    hint: string;
+    title: string;
+    body: string;
+  };
+  vision: {
+    label: string;
+    hint: string;
+    body: string;
+  };
+  belief: {
+    label: string;
+    title: string;
+    body: string[];
+  };
+  essence: DesignSystemLabeledTextDict;
+  values: {
+    label: string;
+    items: {
+      name: string;
+      description: string;
+    }[];
+  };
+  character: {
+    label: string;
+    items: string[];
+  };
+  promise: DesignSystemLabeledTextDict;
+  valueProposition: DesignSystemLabeledTextDict;
+  insight: DesignSystemLabeledTextDict;
+  consumer: DesignSystemLabeledTextDict;
+}
+
+export interface DesignSystemLogoLockupDict {
+  name: string;
+  description: string;
+  alt: string;
+}
+
+export interface DesignSystemLogoDict {
+  lockups: {
+    original: DesignSystemLogoLockupDict;
+    teal: DesignSystemLogoLockupDict;
+    sage: DesignSystemLogoLockupDict;
+    ochre: DesignSystemLogoLockupDict;
+  };
+  iso: DesignSystemLogoLockupDict;
+  noTagline: DesignSystemLogoLockupDict;
+  tagline: DesignSystemLogoLockupDict;
+  note: string;
+}
+
+export interface DesignSystemSwatchDict {
+  name: string;
+  /** The Brand Book's three adjectives; empty for colors without them. */
+  traits: string;
+  usage: string;
+}
+
+export type DesignSystemSwatchKey =
+  | "offWhite"
+  | "mineralSage"
+  | "deepTeal"
+  | "ochre"
+  | "deepTealDark"
+  | "sageDark"
+  | "canyonClay"
+  | "skyDrift"
+  | "ink"
+  | "surface";
+
+export type DesignSystemRatioKey =
+  | "offWhite"
+  | "mineralSage"
+  | "deepTeal"
+  | "ochre";
+
+export interface DesignSystemColorDict {
+  intro: DesignSystemTitledTextDict;
+  signal: DesignSystemTitledTextDict;
+  clipboard: {
+    action: string;
+    pending: string;
+    success: string;
+    failure: string;
+  };
+  rgbLabel: string;
+  tiers: {
+    core: string;
+    dark: string;
+    secondary: string;
+    ui: string;
+  };
+  swatches: Record<DesignSystemSwatchKey, DesignSystemSwatchDict>;
+  ratio: {
+    title: string;
+    description: string;
+    items: Record<
+      DesignSystemRatioKey,
+      {
+        share: string;
+        label: string;
+        usage: string;
+      }
+    >;
+  };
+  mapping: {
+    title: string;
+    description: string;
+    brand: string;
+    palette: string;
+    role: string;
+    none: string;
+  };
+}
+
+export interface DesignSystemTypeVoiceDict {
+  title: string;
+  traits: string;
+  purpose: string;
+  sample: string;
+  font: string;
+}
+
+export interface DesignSystemTypeOnImageLinesDict {
+  primary: string;
+  secondary?: string;
+  caption?: string;
+}
+
+export interface DesignSystemTypeOnImageRuleDict {
+  title: string;
+  body: string;
+  alt: string;
+  works: DesignSystemTypeOnImageLinesDict;
+  fails: DesignSystemTypeOnImageLinesDict;
+}
+
+export interface DesignSystemTypographyDict {
+  intro: DesignSystemTitledTextDict;
+  voices: {
+    editorial: DesignSystemTypeVoiceDict;
+    human: DesignSystemTypeVoiceDict;
+    documentary: DesignSystemTypeVoiceDict;
+  };
+  images: {
+    title: string;
+    lead: string;
+    body: string;
+    worksLabel: string;
+    failsLabel: string;
+    rules: DesignSystemTypeOnImageRuleDict[];
+    principles: DesignSystemTitledTextDict;
+    decorative: DesignSystemTitledTextDict;
+  };
+}
+
+export interface DesignSystemPayoffDict {
+  label: string;
+  text: string;
+  purpose: string;
+  use: string;
+}
+
+export interface DesignSystemVoiceDict {
+  intro: DesignSystemTitledTextDict;
+  characterLabel: string;
+  toneLabel: string;
+  worksLabel: string;
+  failsLabel: string;
+  cards: {
+    trait: string;
+    description: string;
+    voice: string;
+    works: string;
+    fails: string;
+  }[];
+  stories: DesignSystemTitledTextDict;
+  payoffs: {
+    title: string;
+    subtitle: string;
+    body: string;
+    purposeLabel: string;
+    useLabel: string;
+    items: {
+      philosophy: DesignSystemPayoffDict;
+      benefit: DesignSystemPayoffDict;
+      promise: DesignSystemPayoffDict & { accent: string };
+      emotion: DesignSystemPayoffDict;
+      differentiator: DesignSystemPayoffDict;
+    };
+    rule: DesignSystemTitledTextDict;
+    signature: {
+      label: string;
+      words: string;
+      accent: string;
+      purpose: string;
+      use: string;
+    };
+  };
+}
+
+export interface DesignSystemPhotoPrincipleDict {
+  title: string;
+  body: string;
+  alt: string;
+}
+
+export interface DesignSystemTripperSampleDict {
+  handle: string;
+  name: string;
+  subtitle: string;
+  quote: string;
+  alt: string;
+}
+
+export interface DesignSystemTripperCollectionDict {
+  number: string;
+  role: string;
+  location: string;
+}
+
+export interface DesignSystemPhotographyDict {
+  philosophy: {
+    title: string;
+    lead: string;
+    body: string;
+    items: DesignSystemPhotoPrincipleDict[];
+  };
+  treatment: {
+    title: string;
+    lead: string;
+    body: string;
+    items: DesignSystemPhotoPrincipleDict[];
+  };
+  trippers: {
+    title: string;
+    lead: string;
+    body: string;
+    examplesLabel: string;
+    principlesLabel: string;
+    principles: DesignSystemTitledTextDict[];
+    note: DesignSystemTitledTextDict;
+    sampleNote: string;
+    collection: DesignSystemTripperCollectionDict;
+    examples: DesignSystemTripperSampleDict[];
+  };
+}
+
+export interface DesignSystemHeroDict {
+  eyebrow: string;
+  title: string;
+  description: string;
+  localOnly: string;
+}
+
 export interface DesignSystemDict {
   skip: string;
   navigation: string;
   usage: string;
   backToTop: string;
   footer: string;
-  hero: {
-    eyebrow: string;
-    title: string;
-    description: string;
-    explore: string;
-    localOnly: string;
-    overview: string;
-    facts: {
-      label: string;
-      value: string;
-    }[];
+  agentDocs: string;
+  agentDocsBody: string;
+  hero: DesignSystemHeroDict;
+  componentsHero: DesignSystemHeroDict;
+  groups: {
+    brand: string;
+    components: string;
   };
   sections: {
-    foundations: {
-      nav: string;
-      title: string;
-      description: string;
-    };
-    buttons: {
-      nav: string;
-      title: string;
-      description: string;
-    };
-    controls: {
-      nav: string;
-      title: string;
-      description: string;
-    };
-    badges: {
-      nav: string;
-      title: string;
-      description: string;
-    };
-    layout: {
-      nav: string;
-      title: string;
-      description: string;
-    };
-    tables: {
-      nav: string;
-      title: string;
-      description: string;
-    };
+    essence: DesignSystemSectionDict;
+    logo: DesignSystemSectionDict;
+    color: DesignSystemSectionDict;
+    typography: DesignSystemSectionDict;
+    voice: DesignSystemSectionDict;
+    photography: DesignSystemSectionDict;
+    buttons: DesignSystemSectionDict;
+    controls: DesignSystemSectionDict;
+    badges: DesignSystemSectionDict;
+    headings: DesignSystemSectionDict;
+    tabs: DesignSystemSectionDict;
+    icons: DesignSystemSectionDict;
+    avatar: DesignSystemSectionDict;
+    cards: DesignSystemSectionDict;
+    journey: DesignSystemSectionDict;
+    dashboard: DesignSystemSectionDict;
+    layout: DesignSystemSectionDict;
+    tables: DesignSystemSectionDict;
   };
-  foundations: {
-    clipboard: {
-      action: string;
-      pending: string;
-      success: string;
-      failure: string;
-    };
-    colors: {
-      primary: {
-        name: string;
-        usage: string;
-      };
-      secondary: {
-        name: string;
-        usage: string;
-      };
-      feature: {
-        name: string;
-        usage: string;
-      };
-      ground: {
-        name: string;
-        usage: string;
-      };
-      surface: {
-        name: string;
-        usage: string;
-      };
-      ink: {
-        name: string;
-        usage: string;
-      };
-    };
-    paletteNote: string;
-    typography: string;
-    typeNote: string;
-    displayLabel: string;
-    displaySample: string;
-    headingLabel: string;
-    headingSample: string;
-    bodyLabel: string;
-    bodySample: string;
-    captionLabel: string;
-    captionSample: string;
-  };
+  essence: DesignSystemEssenceDict;
+  logo: DesignSystemLogoDict;
+  color: DesignSystemColorDict;
+  typography: DesignSystemTypographyDict;
+  voice: DesignSystemVoiceDict;
+  photography: DesignSystemPhotographyDict;
   buttons: {
     variants: string;
     sizes: string;
@@ -153,8 +381,92 @@ export interface DesignSystemDict {
       PENDING_REVIEW: string;
       PENDING_TRIPPER_REVIEW: string;
       INACTIVE: string;
-      ARCHIVED: string;
+        ARCHIVED: string;
     };
+  };
+  headings: {
+    page: string;
+    section: string;
+    sectionLeft: string;
+    pageEyebrow: string;
+    pageTitle: string;
+    pageDescription: string;
+    sectionEyebrow: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  tabs: {
+    inline: string;
+    marketing: string;
+    overview: string;
+    details: string;
+    reviews: string;
+    selected: string;
+  };
+  icons: {
+    inline: string;
+    puck: string;
+    hint: string;
+  };
+  avatar: {
+    photo: string;
+    fallback: string;
+    photoAlt: string;
+  };
+  cards: {
+    body: string;
+    experience: string;
+    level: string;
+    tripper: string;
+    tripperCarousel: string;
+    travelerType: string;
+    blog: string;
+    drop: string;
+    closing: string;
+    tripperName: string;
+    travelerTypeTitle: string;
+    blogCategory: string;
+    blogTitle: string;
+    dropLabel: string;
+    dropTitle: string;
+    featureDuration: string;
+    featureDurationValue: string;
+  };
+  journey: {
+    progress: string;
+    progressLabel: string;
+    dropdowns: string;
+    dropdownLabel: string;
+    dropdownContent: string;
+    dropdownBody: string;
+    pills: string;
+    pillOrigin: string;
+    pillDates: string;
+    pillTransport: string;
+    pillRemove: string;
+    excuse: string;
+    excuseTitle: string;
+    excuseDescription: string;
+    excuseCta: string;
+    section: string;
+    sectionTitle: string;
+    sectionDescription: string;
+    sectionAction: string;
+    sectionBody: string;
+    comingSoon: string;
+    completed: string;
+    incomplete: string;
+    tabBudget: string;
+    tabDetails: string;
+    tabPreferences: string;
+    subOrigin: string;
+    subDates: string;
+    subFilters: string;
+  };
+  dashboard: {
+    nav: string;
+    kpis: string;
+    toggle: string;
   };
   layout: {
     eyebrow: string;

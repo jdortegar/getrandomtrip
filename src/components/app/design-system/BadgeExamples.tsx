@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ProductBadge } from "@/components/common/ProductBadge";
 import Chip from "@/components/Chip";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
+import { GalleryPanel } from "@/components/app/design-system/GalleryPanel";
 import { UsageExample } from "@/components/app/design-system/UsageExample";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
@@ -19,8 +20,7 @@ export function BadgeExamples({ copy }: BadgeExamplesProps) {
   return (
     <>
       <div className={cn("gap-6 grid", "lg:grid-cols-2")}>
-        <div className="bg-white border border-gray-200 p-6 rounded-xl">
-          <h3 className="font-semibold mb-5 text-xl">{labels.statusTitle}</h3>
+        <GalleryPanel title={labels.statusTitle}>
           <div className="flex flex-wrap gap-3">
             {Object.entries(labels.statuses).map(([status, label]) => (
               <ExperienceStatusBadge
@@ -37,9 +37,8 @@ export function BadgeExamples({ copy }: BadgeExamplesProps) {
             ))}
           </div>
           <p className="mt-5 text-neutral-600 text-sm">{labels.statusHint}</p>
-        </div>
-        <div className="bg-accent border border-gray-200 p-6 rounded-xl">
-          <h3 className="font-semibold mb-5 text-xl">{labels.chipTitle}</h3>
+        </GalleryPanel>
+        <GalleryPanel className="bg-accent" title={labels.chipTitle}>
           <div
             aria-label={labels.chipTitle}
             className="flex flex-wrap gap-3"
@@ -65,7 +64,7 @@ export function BadgeExamples({ copy }: BadgeExamplesProps) {
           <p className="mt-5 text-neutral-600 text-sm" role="status">
             {labels.selected.replace("{count}", String(selected.length))}
           </p>
-        </div>
+        </GalleryPanel>
       </div>
       <UsageExample
         code={`<ExperienceStatusBadge label={copy.status.ACTIVE} status="ACTIVE" />

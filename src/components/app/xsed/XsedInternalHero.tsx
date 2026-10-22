@@ -72,7 +72,7 @@ export function XsedInternalHero({
             ) : null}
             <div className="mb-3 flex flex-wrap items-end gap-x-3 gap-y-2">
               {hero.title ? (
-                <h2 className="font-barlow-condensed text-[52px] font-extrabold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]">
+                <h2 className="font-barlow-condensed text-[52px] font-bold leading-[0.8] z-10 sm:text-[80px] md:text-[130px] [&_sup]:text-[0.6em]">
                   {formatTitleWithCopyright(hero.title)}
                 </h2>
               ) : null}
@@ -105,7 +105,7 @@ export function XsedInternalHero({
             </div>
 
             {title ? (
-              <h1 className="font-barlow-condensed text-[38px] font-extrabold uppercase leading-[0.85] z-10 md:text-[60px] lg:text-[100px] [&_sup]:text-[0.6em]">
+              <h1 className="font-barlow-condensed text-[38px] font-bold uppercase leading-[0.85] z-10 md:text-[60px] lg:text-[100px] [&_sup]:text-[0.6em]">
                 {title}
               </h1>
             ) : null}
