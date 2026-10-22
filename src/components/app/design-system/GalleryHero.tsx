@@ -1,14 +1,15 @@
 import { ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { PageHeading } from "@/components/layout/PageHeading";
-import type { DesignSystemDict } from "@/lib/types/dictionary";
+import type { DesignSystemHeroDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 
 interface GalleryHeroProps {
-  copy: DesignSystemDict["hero"];
+  copy: DesignSystemHeroDict;
+  exploreHref: string;
 }
 
-export function GalleryHero({ copy }: GalleryHeroProps) {
+export function GalleryHero({ copy, exploreHref }: GalleryHeroProps) {
   return (
     <div
       className={cn("gap-10 grid py-12", "lg:grid-cols-[1.6fr_1fr] lg:py-20")}
@@ -20,7 +21,7 @@ export function GalleryHero({ copy }: GalleryHeroProps) {
           title={copy.title}
         />
         <Button asChild>
-          <a href="#essence">
+          <a href={exploreHref}>
             {copy.explore}
             <ArrowDownRight aria-hidden className="h-4 w-4" />
           </a>

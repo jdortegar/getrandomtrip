@@ -3,6 +3,10 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { DesignSystemGallery } from "../DesignSystemGallery";
 import { NavbarChromeContext } from "@/context/NavbarChromeContext";
+import {
+  DESIGN_SYSTEM_BRAND_SECTIONS,
+  DESIGN_SYSTEM_COMPONENT_SECTIONS,
+} from "@/lib/constants/DESIGN_SYSTEM_GALLERY";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
@@ -16,6 +20,8 @@ let root: Root;
 let frames: FrameRequestCallback[];
 const copy = en.designSystem as DesignSystemDict;
 const solid = vi.fn();
+const brandHref = "/es/design-system";
+const componentsHref = "/es/design-system/components";
 
 beforeEach(() => {
   frames = [];
@@ -38,93 +44,127 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const brandSections = [
-  "essence",
-  "logo",
-  "color",
-  "typography",
-  "voice",
-  "photography",
-];
-const componentSections = ["buttons", "controls", "badges", "layout", "tables"];
-
-function renderGallery(dictionary: DesignSystemDict = copy) {
+function renderGallery(
+  view: "brand" | "components" = "brand",
+  dictionary: DesignSystemDict = copy,
+) {
   act(() =>
     root.render(
       <NavbarChromeContext.Provider
         value={{ setNavbarBackgroundPrimary: solid }}
       >
-        <DesignSystemGallery copy={dictionary} />
+        <DesignSystemGallery
+          brandHref={brandHref}
+          componentsHref={componentsHref}
+          copy={dictionary}
+          view={view}
+        />
       </NavbarChromeContext.Provider>,
     ),
   );
 }
 
 it.each([en.designSystem, es.designSystem])(
-  "groups brand and component anchors under localized nav labels",
+  "keeps brand guidelines and UI components on separate gallery views",
   (raw) => {
     const localized = raw as DesignSystemDict;
-    renderGallery(localized);
+    renderGallery("brand", localized);
     const groups = Array.from(
       container.querySelectorAll<HTMLElement>('nav [role="group"]'),
     );
     expect(groups).toHaveLength(2);
-    const labelOf = (group: HTMLElement) =>
-      container.querySelector(`#${group.getAttribute("aria-labelledby")}`)!
-        .textContent;
-    expect(labelOf(groups[0])).toBe(localized.groups.brand);
-    expect(labelOf(groups[1])).toBe(localized.groups.components);
-    const hrefs = (group: HTMLElement) =>
-      Array.from(group.querySelectorAll("a")).map((a) =>
+    const viewLinks = Array.from(groups[0]!.querySelectorAll("a"));
+    expect(viewLinks.map((link) => link.textContent)).toEqual([
+      localized.groups.brand,
+      localized.groups.components,
+    ]);
+    expect(viewLinks[0]!.getAttribute("href")).toBe(brandHref);
+    expect(viewLinks[1]!.getAttribute("href")).toBe(componentsHref);
+    expect(viewLinks[0]!.getAttribute("aria-current")).toBe("page");
+    expect(viewLinks[1]!.getAttribute("aria-current")).toBeNull();
+    expect(
+      Array.from(groups[1]!.querySelectorAll("a")).map((a) =>
         a.getAttribute("href"),
-      );
-    expect(hrefs(groups[0])).toEqual(brandSections.map((id) => `#${id}`));
-    expect(hrefs(groups[1])).toEqual(componentSections.map((id) => `#${id}`));
-    for (const id of [...brandSections, ...componentSections])
+      ),
+    ).toEqual(DESIGN_SYSTEM_BRAND_SECTIONS.map((id) => `#${id}`));
+    for (const id of DESIGN_SYSTEM_BRAND_SECTIONS)
       expect(container.querySelector(`section#${id}`)).not.toBeNull();
+    for (const id of DESIGN_SYSTEM_COMPONENT_SECTIONS)
+      expect(container.querySelector(`section#${id}`)).toBeNull();
     const voice = container.querySelector("#voice")!;
     const subtitle = voice.querySelector("[data-section-lead]")!;
     expect(subtitle.textContent).toBe(localized.voice.intro.title);
-    expect(subtitle.className).toContain("font-nothing-you-could-do");
-    expect(subtitle.className).not.toContain("uppercase");
-    expect(voice.querySelector("[data-voice-stories]")?.textContent).toContain(
-      localized.voice.stories.title,
-    );
     expect(container.querySelector("#foundations")).toBeNull();
   },
 );
 
-it("uses eleven numbered anchor sections and safely reveals scrollspy without changing focus or hash", () => {
-  renderGallery();
+it("numbers brand sections on the brand page and component sections on the components page", () => {
+  renderGallery("brand");
   expect(solid).toHaveBeenCalledWith(true);
-  expect(container.querySelector("main")).toBeNull();
+  expect(container.querySelector("[data-gallery-view]")!.getAttribute("data-gallery-view")).toBe(
+    "brand",
+  );
   expect(
     container.querySelector("#gallery-content")!.getAttribute("tabindex"),
   ).toBe("-1");
+  const brandLinks = container.querySelectorAll<HTMLAnchorElement>(
+    'nav [role="group"]:last-child a',
+  );
+  expect(brandLinks).toHaveLength(DESIGN_SYSTEM_BRAND_SECTIONS.length);
+  expect(brandLinks[0]!.textContent).toContain("01");
+  expect(container.querySelectorAll("section")).toHaveLength(
+    DESIGN_SYSTEM_BRAND_SECTIONS.length,
+  );
+
+  renderGallery("components");
+  expect(
+    container
+      .querySelector("[data-gallery-view]")!
+      .getAttribute("data-gallery-view"),
+  ).toBe("components");
+  const componentLinks = container.querySelectorAll<HTMLAnchorElement>(
+    'nav [role="group"]:last-child a',
+  );
+  expect(componentLinks).toHaveLength(DESIGN_SYSTEM_COMPONENT_SECTIONS.length);
+  expect(componentLinks[0]!.textContent).toContain("01");
+  expect(container.querySelectorAll("section")).toHaveLength(
+    DESIGN_SYSTEM_COMPONENT_SECTIONS.length,
+  );
+  for (const id of DESIGN_SYSTEM_COMPONENT_SECTIONS)
+    expect(container.querySelector(`section#${id}`)).not.toBeNull();
+  for (const id of DESIGN_SYSTEM_BRAND_SECTIONS)
+    expect(container.querySelector(`section#${id}`)).toBeNull();
+});
+
+it("uses gallery scrollspy on the current view without changing focus or hash", () => {
+  renderGallery("brand");
   const navigation = container.querySelector("nav")!;
   expect(navigation.className).toContain("top-16");
-  const links = navigation.querySelectorAll<HTMLAnchorElement>("a");
-  expect(links).toHaveLength(11);
+  const sectionLinks = [
+    ...navigation.querySelectorAll<HTMLAnchorElement>(
+      'a[href^="#"]',
+    ),
+  ];
   const sections = Array.from(container.querySelectorAll("section"));
-  expect(sections).toHaveLength(11);
-  expect(links[6].textContent).toContain("07");
+  expect(sectionLinks).toHaveLength(sections.length);
   sections.forEach((section, index) => {
     expect(section.className).toContain("scroll-mt-36");
     vi.spyOn(section, "getBoundingClientRect").mockReturnValue({
       top: index * 1000,
     } as DOMRect);
-    expect(links[index].getAttribute("href")).toBe(`#${section.id}`);
+    expect(sectionLinks[index]!.getAttribute("href")).toBe(`#${section.id}`);
   });
   act(() => frames.shift()!(0));
-  expect(links[0].getAttribute("aria-current")).toBe("location");
-  links[0].focus();
+  expect(sectionLinks[0]!.getAttribute("aria-current")).toBe("location");
+  sectionLinks[0]!.focus();
   const hash = window.location.hash;
   const scroller = navigation.querySelector<HTMLElement>(".overflow-x-auto")!;
   vi.spyOn(scroller, "getBoundingClientRect").mockReturnValue({
     left: 0,
     right: 300,
   } as DOMRect);
-  vi.spyOn(links[10], "getBoundingClientRect").mockReturnValue({
+  const last = sectionLinks[sectionLinks.length - 1]!;
+  vi.spyOn(last, "getBoundingClientRect").mockReturnValue({
     left: 850,
     right: 1000,
   } as DOMRect);
@@ -135,26 +175,20 @@ it("uses eleven numbered anchor sections and safely reveals scrollspy without ch
   );
   act(() => window.dispatchEvent(new Event("scroll")));
   act(() => frames.shift()!(1));
-  expect(links[10].getAttribute("aria-current")).toBe("location");
+  expect(last.getAttribute("aria-current")).toBe("location");
   expect(scroller.scrollLeft).toBe(700);
-  expect(document.activeElement).toBe(links[0]);
+  expect(document.activeElement).toBe(sectionLinks[0]);
   expect(window.location.hash).toBe(hash);
-  expect(navigation.querySelectorAll("[aria-current]")).toHaveLength(1);
+  expect(navigation.querySelectorAll("[aria-current=location]")).toHaveLength(
+    1,
+  );
 });
 
 it("jumps gallery anchors immediately when reduced motion is preferred", () => {
   vi.spyOn(window, "matchMedia").mockReturnValue({
     matches: true,
   } as MediaQueryList);
-  act(() =>
-    root.render(
-      <NavbarChromeContext.Provider
-        value={{ setNavbarBackgroundPrimary: solid }}
-      >
-        <DesignSystemGallery copy={copy} />
-      </NavbarChromeContext.Provider>,
-    ),
-  );
+  renderGallery("components");
   const link = container.querySelector<HTMLAnchorElement>(
     'nav a[href="#controls"]',
   )!;

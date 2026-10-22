@@ -274,24 +274,27 @@ export interface DesignSystemPhotographyDict {
   };
 }
 
+export interface DesignSystemHeroDict {
+  eyebrow: string;
+  title: string;
+  description: string;
+  explore: string;
+  localOnly: string;
+  overview: string;
+  facts: {
+    label: string;
+    value: string;
+  }[];
+}
+
 export interface DesignSystemDict {
   skip: string;
   navigation: string;
   usage: string;
   backToTop: string;
   footer: string;
-  hero: {
-    eyebrow: string;
-    title: string;
-    description: string;
-    explore: string;
-    localOnly: string;
-    overview: string;
-    facts: {
-      label: string;
-      value: string;
-    }[];
-  };
+  hero: DesignSystemHeroDict;
+  componentsHero: DesignSystemHeroDict;
   groups: {
     brand: string;
     components: string;

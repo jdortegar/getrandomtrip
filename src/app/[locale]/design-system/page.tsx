@@ -14,5 +14,12 @@ export default async function DesignSystemPage({
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
   const { designSystem } = await getDictionary(locale);
-  return <DesignSystemGallery copy={designSystem} />;
+  return (
+    <DesignSystemGallery
+      brandHref={`/${locale}/design-system`}
+      componentsHref={`/${locale}/design-system/components`}
+      copy={designSystem}
+      view="brand"
+    />
+  );
 }

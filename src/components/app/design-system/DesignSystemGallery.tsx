@@ -7,6 +7,7 @@ import { BadgeExamples } from "@/components/app/design-system/BadgeExamples";
 import { ButtonExamples } from "@/components/app/design-system/ButtonExamples";
 import { ControlExamples } from "@/components/app/design-system/ControlExamples";
 import { GalleryHero } from "@/components/app/design-system/GalleryHero";
+import { GalleryNav } from "@/components/app/design-system/GalleryNav";
 import { GallerySection } from "@/components/app/design-system/GallerySection";
 import { LayoutExamples } from "@/components/app/design-system/LayoutExamples";
 import { TableExamples } from "@/components/app/design-system/TableExamples";
@@ -18,35 +19,28 @@ import { BrandTypography } from "@/components/app/design-system/brand/BrandTypog
 import { BrandVoice } from "@/components/app/design-system/brand/BrandVoice";
 import { VoiceStoriesCard } from "@/components/app/design-system/brand/VoiceStoriesCard";
 import { useNavbarChrome } from "@/context/NavbarChromeContext";
+import {
+  DESIGN_SYSTEM_SECTIONS,
+  type DesignSystemGalleryView,
+} from "@/lib/constants/DESIGN_SYSTEM_GALLERY";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 import styles from "@/components/app/design-system/DesignSystemGallery.module.css";
 
 interface DesignSystemGalleryProps {
+  brandHref: string;
+  componentsHref: string;
   copy: DesignSystemDict;
+  view: DesignSystemGalleryView;
 }
-const groups = [
-  {
-    id: "brand",
-    sections: [
-      "essence",
-      "logo",
-      "color",
-      "typography",
-      "voice",
-      "photography",
-    ],
-  },
-  {
-    id: "components",
-    sections: ["buttons", "controls", "badges", "layout", "tables"],
-  },
-] as const;
-const sections = groups.flatMap((group) => group.sections);
-const numberOf = (id: (typeof sections)[number]) =>
-  String(sections.indexOf(id) + 1).padStart(2, "0");
 
-export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
+export function DesignSystemGallery({
+  brandHref,
+  componentsHref,
+  copy,
+  view,
+}: DesignSystemGalleryProps) {
+  const sections = DESIGN_SYSTEM_SECTIONS[view];
   const [active, setActive] = useState<string>(sections[0]);
   const nav = useRef<HTMLDivElement>(null);
   const { setNavbarBackgroundPrimary } = useNavbarChrome();
@@ -84,16 +78,15 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, []);
+  }, [sections]);
 
   useEffect(() => {
     const container = nav.current;
     const current =
-      container?.querySelector<HTMLAnchorElement>("[aria-current]");
+      container?.querySelector<HTMLAnchorElement>("[aria-current=location]");
     if (!container || !current) return;
     const linkBox = current.getBoundingClientRect();
     const navBox = container.getBoundingClientRect();
-    // Reveal the active section horizontally without stealing focus or scrolling the page.
     if (linkBox.left < navBox.left)
       container.scrollLeft += Math.floor(linkBox.left - navBox.left);
     else if (linkBox.right > navBox.right)
@@ -116,7 +109,6 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
     if (!link || !event.currentTarget.contains(link)) return;
     const target = document.getElementById(link.hash.slice(1));
     if (!target) return;
-    // Keep the global Lenis anchor listener from animating this reduced-motion jump.
     event.preventDefault();
     event.stopPropagation();
     window.history.pushState(window.history.state, "", link.hash);
@@ -125,9 +117,13 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
     target.focus({ preventScroll: true });
   }
 
+  const numberOf = (id: (typeof sections)[number]) =>
+    String(sections.indexOf(id) + 1).padStart(2, "0");
+
   return (
     <div
       className={cn(styles.gallery, "bg-ground min-w-0 text-ink")}
+      data-gallery-view={view}
       onClickCapture={handleAnchor}
     >
       <Button
@@ -139,139 +135,108 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
       >
         <a href="#gallery-content">{copy.skip}</a>
       </Button>
-      <nav
-        aria-label={copy.navigation}
-        className="bg-ground border-b border-gray-200 sticky top-16 z-40"
-      >
-        <div className="rt-container">
-          <div className="flex min-w-0 overflow-x-auto" ref={nav}>
-            {groups.map((group, groupIndex) => (
-              <div
-                aria-labelledby={`nav-group-${group.id}`}
-                className={cn(
-                  "flex items-center shrink-0",
-                  groupIndex > 0 && "border-gray-300 border-l ml-2 pl-2",
-                )}
-                key={group.id}
-                role="group"
-              >
-                <span
-                  className="font-semibold pl-2 pr-1 shrink-0 text-[10px] text-neutral-500 tracking-[0.18em] uppercase"
-                  id={`nav-group-${group.id}`}
-                >
-                  {copy.groups[group.id]}
-                </span>
-                {group.sections.map((id) => (
-                  <Button
-                    asChild
-                    className={cn(
-                      "border-0 border-b-2 border-transparent gap-2 h-16 px-4 rounded-none shrink-0 text-neutral-600 text-xs",
-                      "hover:bg-accent",
-                      "aria-[current=location]:border-primary aria-[current=location]:text-primary",
-                    )}
-                    key={id}
-                    variant="ghost"
-                  >
-                    <a
-                      aria-current={active === id ? "location" : undefined}
-                      href={`#${id}`}
-                    >
-                      <span className="font-mono text-xs">{numberOf(id)}</span>
-                      {copy.sections[id].nav}
-                    </a>
-                  </Button>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      </nav>
+      <GalleryNav
+        active={active}
+        brandHref={brandHref}
+        componentsHref={componentsHref}
+        copy={copy}
+        navRef={nav}
+        view={view}
+      />
       <div
         className="rt-container min-w-0 scroll-mt-36"
         id="gallery-content"
         tabIndex={-1}
       >
-        <GalleryHero copy={copy.hero} />
-        <GallerySection
-          copy={copy.sections.essence}
-          id="essence"
-          number={numberOf("essence")}
-        >
-          <BrandEssence copy={copy.essence} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.logo}
-          id="logo"
-          number={numberOf("logo")}
-        >
-          <BrandLogo copy={copy.logo} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.color}
-          id="color"
-          number={numberOf("color")}
-        >
-          <BrandColor copy={copy.color} usageLabel={copy.usage} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.typography}
-          id="typography"
-          number={numberOf("typography")}
-        >
-          <BrandTypography copy={copy.typography} />
-        </GallerySection>
-        <GallerySection
-          aside={<VoiceStoriesCard copy={copy.voice.stories} />}
-          copy={copy.sections.voice}
-          id="voice"
-          lead="start"
-          number={numberOf("voice")}
-          subtitle={copy.voice.intro.title}
-        >
-          <BrandVoice copy={copy.voice} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.photography}
-          id="photography"
-          number={numberOf("photography")}
-        >
-          <BrandPhotography copy={copy.photography} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.buttons}
-          id="buttons"
-          number={numberOf("buttons")}
-        >
-          <ButtonExamples copy={copy} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.controls}
-          id="controls"
-          number={numberOf("controls")}
-        >
-          <ControlExamples copy={copy} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.badges}
-          id="badges"
-          number={numberOf("badges")}
-        >
-          <BadgeExamples copy={copy} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.layout}
-          id="layout"
-          number={numberOf("layout")}
-        >
-          <LayoutExamples copy={copy} />
-        </GallerySection>
-        <GallerySection
-          copy={copy.sections.tables}
-          id="tables"
-          number={numberOf("tables")}
-        >
-          <TableExamples copy={copy} />
-        </GallerySection>
+        {view === "brand" ? (
+          <>
+            <GalleryHero copy={copy.hero} exploreHref="#essence" />
+            <GallerySection
+              copy={copy.sections.essence}
+              id="essence"
+              number={numberOf("essence")}
+            >
+              <BrandEssence copy={copy.essence} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.logo}
+              id="logo"
+              number={numberOf("logo")}
+            >
+              <BrandLogo copy={copy.logo} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.color}
+              id="color"
+              number={numberOf("color")}
+            >
+              <BrandColor copy={copy.color} usageLabel={copy.usage} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.typography}
+              id="typography"
+              number={numberOf("typography")}
+            >
+              <BrandTypography copy={copy.typography} />
+            </GallerySection>
+            <GallerySection
+              aside={<VoiceStoriesCard copy={copy.voice.stories} />}
+              copy={copy.sections.voice}
+              id="voice"
+              lead="start"
+              number={numberOf("voice")}
+              subtitle={copy.voice.intro.title}
+            >
+              <BrandVoice copy={copy.voice} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.photography}
+              id="photography"
+              number={numberOf("photography")}
+            >
+              <BrandPhotography copy={copy.photography} />
+            </GallerySection>
+          </>
+        ) : (
+          <>
+            <GalleryHero copy={copy.componentsHero} exploreHref="#buttons" />
+            <GallerySection
+              copy={copy.sections.buttons}
+              id="buttons"
+              number={numberOf("buttons")}
+            >
+              <ButtonExamples copy={copy} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.controls}
+              id="controls"
+              number={numberOf("controls")}
+            >
+              <ControlExamples copy={copy} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.badges}
+              id="badges"
+              number={numberOf("badges")}
+            >
+              <BadgeExamples copy={copy} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.layout}
+              id="layout"
+              number={numberOf("layout")}
+            >
+              <LayoutExamples copy={copy} />
+            </GallerySection>
+            <GallerySection
+              copy={copy.sections.tables}
+              id="tables"
+              number={numberOf("tables")}
+            >
+              <TableExamples copy={copy} />
+            </GallerySection>
+          </>
+        )}
         <div className="border-gray-200 border-t flex flex-wrap gap-4 items-center justify-between py-8">
           <p className="text-neutral-600 text-sm">{copy.footer}</p>
           <Button asChild variant="link">

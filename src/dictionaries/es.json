@@ -9,10 +9,10 @@
     "backToTop": "Volver arriba ↑",
     "footer": "Randomtrip / Un lenguaje visual compartido",
     "hero": {
-      "eyebrow": "Randomtrip / Marca y componentes",
+      "eyebrow": "Randomtrip / Marca",
       "title": "Diseñado para lo inesperado.",
-      "description": "Un lenguaje visual para cada viaje. Explora la marca y los componentes reales e interactivos de Randomtrip.",
-      "explore": "Explorar el sistema",
+      "description": "La guía de marca Randomtrip: esencia, logo, color, tipografía, voz y fotografía.",
+      "explore": "Explorar la marca",
       "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
       "overview": "Las bases",
       "facts": [
@@ -27,6 +27,28 @@
         {
           "label": "Enfoque",
           "value": "Adaptable por diseño"
+        }
+      ]
+    },
+    "componentsHero": {
+      "eyebrow": "Randomtrip / Componentes",
+      "title": "Piezas reales, listas para usar.",
+      "description": "Botones, campos, estados, layout y tablas. Los mismos componentes que usa el producto, para probarlos aquí.",
+      "explore": "Explorar componentes",
+      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
+      "overview": "La librería",
+      "facts": [
+        {
+          "label": "Botones",
+          "value": "Jerarquía y estados"
+        },
+        {
+          "label": "Campos",
+          "value": "Nativos y accesibles"
+        },
+        {
+          "label": "Estados",
+          "value": "Insignias y chips"
         }
       ]
     },

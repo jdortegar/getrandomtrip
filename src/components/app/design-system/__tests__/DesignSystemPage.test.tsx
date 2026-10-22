@@ -1,5 +1,10 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import DesignSystemPage, { metadata } from "@/app/[locale]/design-system/page";
+import DesignSystemPage, {
+  metadata as brandMetadata,
+} from "@/app/[locale]/design-system/page";
+import DesignSystemComponentsPage, {
+  metadata as componentsMetadata,
+} from "@/app/[locale]/design-system/components/page";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 
@@ -17,21 +22,51 @@ it.each([
   ["en", en],
   ["es", es],
 ] as const)(
-  "loads only localized gallery copy for %s",
+  "loads the brand gallery for %s",
   async (locale, copy) => {
     dictionary.mockResolvedValue(copy);
     const result = await DesignSystemPage({
       params: Promise.resolve({ locale }),
     });
     expect(dictionary).toHaveBeenCalledExactlyOnceWith(locale);
-    expect(result.props).toEqual({ copy: copy.designSystem });
-    expect(metadata.robots).toEqual({ index: false, follow: false });
+    expect(result.props).toEqual({
+      brandHref: `/${locale}/design-system`,
+      componentsHref: `/${locale}/design-system/components`,
+      copy: copy.designSystem,
+      view: "brand",
+    });
+    expect(brandMetadata.robots).toEqual({ index: false, follow: false });
+  },
+);
+
+it.each([
+  ["en", en],
+  ["es", es],
+] as const)(
+  "loads the component gallery for %s",
+  async (locale, copy) => {
+    dictionary.mockResolvedValue(copy);
+    const result = await DesignSystemComponentsPage({
+      params: Promise.resolve({ locale }),
+    });
+    expect(result.props).toEqual({
+      brandHref: `/${locale}/design-system`,
+      componentsHref: `/${locale}/design-system/components`,
+      copy: copy.designSystem,
+      view: "components",
+    });
+    expect(componentsMetadata.robots).toEqual({ index: false, follow: false });
   },
 );
 
 it("rejects unsupported locales before loading copy", async () => {
   await expect(
     DesignSystemPage({ params: Promise.resolve({ locale: "unsupported" }) }),
+  ).rejects.toThrow("NOT_FOUND");
+  await expect(
+    DesignSystemComponentsPage({
+      params: Promise.resolve({ locale: "unsupported" }),
+    }),
   ).rejects.toThrow("NOT_FOUND");
   expect(dictionary).not.toHaveBeenCalled();
 });
