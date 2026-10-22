@@ -1,12 +1,18 @@
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import type { ApprovalAction } from "@/lib/social-approvals/slackApproval";
+import {
+  slideUrls,
+  type ApprovalAction,
+} from "@/lib/social-approvals/slackApproval";
 
 interface NewApproval {
   reviewKey: string;
   requestId: string;
   caption: string;
   imageUrl: string;
+  /** Every slide in order; imageUrl must equal the first entry when present. */
+  imageUrls?: string[];
+  sourceId?: string;
   createdBy: string;
 }
 
@@ -28,7 +34,8 @@ export async function createSocialApproval(input: NewApproval) {
       if (
         existing.reviewKey !== input.reviewKey ||
         existing.caption !== input.caption ||
-        existing.imageUrl !== input.imageUrl
+        existing.imageUrl !== input.imageUrl ||
+        slideUrls(existing).join("\n") !== slideUrls(input).join("\n")
       )
         throw new Error("REQUEST_ID_CONFLICT");
       return { row: existing, created: false };

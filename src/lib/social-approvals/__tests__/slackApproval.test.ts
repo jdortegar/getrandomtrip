@@ -100,3 +100,72 @@ it("renders exactly two review buttons only while pending, never publishing", ()
     approvalMessage({ ...row, status: "CHANGES_REQUESTED" }).text,
   ).toContain("thread");
 });
+it("shows every slide of a carousel review in order", () => {
+  const message = approvalMessage({
+    id: "review",
+    revision: 1,
+    caption: "Caption",
+    imageUrl: "https://a.test/1.png",
+    imageUrls: ["https://a.test/1.png", "https://a.test/2.png"],
+    status: "PENDING",
+    decidedBy: null,
+  });
+  const images = message.blocks.filter((b) => b.type === "image");
+  expect(images.map((b) => (b as { image_url: string }).image_url)).toEqual([
+    "https://a.test/1.png",
+    "https://a.test/2.png",
+  ]);
+});
+it("falls back to the single image for reviews without slides", () => {
+  const message = approvalMessage({
+    id: "review",
+    revision: 1,
+    caption: "Caption",
+    imageUrl: "https://a.test/only.png",
+    imageUrls: [],
+    status: "PENDING",
+    decidedBy: null,
+  });
+  expect(message.blocks.filter((b) => b.type === "image")).toHaveLength(1);
+});
+const approved = {
+  id: "review",
+  revision: 2,
+  caption: "Caption",
+  imageUrl: "https://a.test/1.png",
+  status: "APPROVED",
+  decidedBy: "U1",
+};
+const actionIds = (message: ReturnType<typeof approvalMessage>) =>
+  JSON.stringify(message.blocks.filter((b) => b.type === "actions"));
+it("asks to publish an approved review only when publishing is enabled", () => {
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "false");
+  expect(actionIds(approvalMessage(approved))).not.toContain("social_publish");
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  const ids = actionIds(approvalMessage(approved));
+  expect(ids).toContain('"action_id":"social_publish"');
+  expect(ids).toContain("Publish to @getrandomtrip.en");
+  expect(ids).toContain('"confirm"');
+  expect(
+    actionIds(approvalMessage({ ...approved, status: "PENDING" })),
+  ).not.toContain("social_publish");
+});
+it("links the live post once published", () => {
+  const message = approvalMessage(
+    { ...approved, status: "PUBLISHED" },
+    { permalink: "https://www.instagram.com/p/EN1/" },
+  );
+  expect(message.text).toContain(
+    "<https://www.instagram.com/p/EN1/|View post>",
+  );
+  expect(actionIds(message)).toBe("[]");
+});
+it("parses the Publish and Translate buttons", () => {
+  const publish = payload();
+  publish.actions = [{ action_id: "social_publish", value: "review" }];
+  expect(parseApprovalAction(publish, config)?.status).toBe("PUBLISH");
+  publish.actions = [{ action_id: "social_translate", value: "src" }];
+  expect(parseApprovalAction(publish, config)?.status).toBe("TRANSLATE");
+  publish.actions = [{ action_id: "social_other", value: "x" }];
+  expect(parseApprovalAction(publish, config)).toBeNull();
+});

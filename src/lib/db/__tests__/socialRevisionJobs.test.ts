@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { beforeEach, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   approvalFind: vi.fn(),
   approvalUpdate: vi.fn(),
@@ -11,6 +11,9 @@ const m = vi.hoisted(() => ({
   jobUpdate: vi.fn(),
   jobUpdateMany: vi.fn(),
   lock: vi.fn(),
+  sourceFind: vi.fn(),
+  sourceUpdate: vi.fn(),
+  sourceCount: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
@@ -20,6 +23,11 @@ vi.mock("@/lib/prisma", () => ({
           findUnique: m.approvalFind,
           update: m.approvalUpdate,
           create: m.approvalCreate,
+        },
+        socialSource: {
+          findUnique: m.sourceFind,
+          update: m.sourceUpdate,
+          count: m.sourceCount,
         },
         socialRevisionJob: {
           findUnique: m.jobFind,
@@ -36,7 +44,10 @@ vi.mock("../socialApprovals", () => ({ lockSocialApproval: m.lock }));
 import {
   claimSocialRevision,
   finishGeneratedSocialRevision,
+  enabledJobKinds,
+  queueSocialPublish,
   queueSocialRevision,
+  queueSocialTranslation,
 } from "../socialRevisionJobs";
 const source = {
   id: "review",
@@ -52,6 +63,7 @@ const feedback = {
   user: "U",
   feedback: "Change title",
   target: "image" as const,
+  slides: [2],
 };
 beforeEach(() => {
   vi.resetAllMocks();
@@ -68,6 +80,7 @@ it("queues feedback and decision atomically while holding source and daily-budge
       actor: "U",
       feedback: feedback.feedback,
       target: "image",
+      slides: [2],
     },
   });
   expect(m.approvalUpdate).toHaveBeenCalledWith(
@@ -93,7 +106,7 @@ it("rejects daily cost cap, terminal revisions and stale messages", async () => 
 it("claims with compare-and-swap and moves expired paid work to manual recovery", async () => {
   m.jobFirst.mockResolvedValue({ id: "job" });
   m.jobUpdateMany.mockResolvedValue({ count: 1 });
-  await claimSocialRevision();
+  await claimSocialRevision(["REVISE"]);
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
     expect.objectContaining({
       where: expect.objectContaining({ status: "RUNNING" }),
@@ -102,7 +115,11 @@ it("claims with compare-and-swap and moves expired paid work to manual recovery"
   );
   expect(m.jobFirst).toHaveBeenCalledWith(
     expect.objectContaining({
-      where: { status: "QUEUED", attempts: { lt: 2 } },
+      where: {
+        status: "QUEUED",
+        attempts: { lt: 2 },
+        kind: { in: ["REVISE"] },
+      },
     }),
   );
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
@@ -124,10 +141,10 @@ it("cannot create a generated revision for a replaced source or lost lease", asy
     leaseToken: "lease",
   });
   expect(
-    await finishGeneratedSocialRevision("job", "other", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "other", "caption", ["url"]),
   ).toBeNull();
   expect(
-    await finishGeneratedSocialRevision("job", "lease", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "lease", "caption", ["url"]),
   ).toBeNull();
   expect(m.approvalCreate).not.toHaveBeenCalled();
 });
@@ -146,7 +163,7 @@ it("fences ownership after the review lock before creating a generated revision"
     m.jobUpdateMany.mockResolvedValue({ count: 0 });
   });
   expect(
-    await finishGeneratedSocialRevision("job", "lease", "caption", "url"),
+    await finishGeneratedSocialRevision("job", "lease", "caption", ["url"]),
   ).toBeNull();
   expect(m.jobUpdateMany).toHaveBeenCalledWith(
     expect.objectContaining({
@@ -160,4 +177,141 @@ it("fences ownership after the review lock before creating a generated revision"
   );
   expect(m.approvalCreate).not.toHaveBeenCalled();
   expect(m.approvalUpdate).not.toHaveBeenCalled();
+});
+
+it("creates the next revision with every slide and keeps the source link", async () => {
+  m.jobFind.mockResolvedValue({
+    id: "job",
+    reviewId: "review",
+    review: source,
+    status: "RUNNING",
+    leaseToken: "lease",
+  });
+  m.approvalFind.mockResolvedValue({
+    ...source,
+    status: "CHANGES_REQUESTED",
+    sourceId: "src",
+  });
+  m.approvalCreate.mockResolvedValue({ id: "new" });
+  await finishGeneratedSocialRevision("job", "lease", "caption", ["a", "b"]);
+  expect(m.approvalCreate).toHaveBeenCalledWith({
+    data: expect.objectContaining({
+      revision: 2,
+      imageUrl: "a",
+      imageUrls: ["a", "b"],
+      sourceId: "src",
+    }),
+  });
+});
+describe("queueSocialTranslation", () => {
+  const announced = {
+    id: "src",
+    status: "ANNOUNCED",
+    messageTs: "9.9",
+  };
+  const input = { sourceId: "src", user: "U1", messageTs: "9.9" };
+  beforeEach(() => {
+    m.sourceFind.mockResolvedValue(announced);
+    m.jobFind.mockResolvedValue(null);
+  });
+  it("queues one TRANSLATE job and marks the source queued", async () => {
+    expect(await queueSocialTranslation(input)).toBe("queued");
+    expect(m.jobCreate).toHaveBeenCalledWith({
+      data: {
+        kind: "TRANSLATE",
+        sourceId: "src",
+        actor: "U1",
+        feedback: "",
+        target: "both",
+      },
+    });
+    expect(m.sourceUpdate).toHaveBeenCalledWith({
+      where: { id: "src" },
+      data: { status: "TRANSLATION_QUEUED" },
+    });
+  });
+  it("replays repeated clicks without another paid job", async () => {
+    m.jobFind.mockResolvedValue({ id: "existing" });
+    expect(await queueSocialTranslation(input)).toBe("queued");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+  it("shares the daily AI budget and rejects stale cards", async () => {
+    m.count.mockResolvedValue(10);
+    expect(await queueSocialTranslation(input)).toBe("budget");
+    m.sourceFind.mockResolvedValue({ ...announced, messageTs: "other" });
+    expect(await queueSocialTranslation(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+});
+
+it("claims only job kinds whose flag is on", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "false");
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  expect(enabledJobKinds()).toEqual(["PUBLISH"]);
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "false");
+  expect(await claimSocialRevision()).toBeNull();
+  expect(m.jobFirst).not.toHaveBeenCalled();
+  vi.unstubAllEnvs();
+});
+describe("queueSocialPublish", () => {
+  const approved = { ...source, status: "APPROVED", sourceId: "src" };
+  beforeEach(() => {
+    m.sourceFind.mockResolvedValue({
+      id: "src",
+      status: "TRANSLATED",
+      postedAt: new Date("2026-04-24T00:00:00Z"),
+    });
+    m.sourceCount.mockResolvedValue(0);
+  });
+  const input = { reviewId: "review", user: "U2", messageTs: "123" };
+  it("queues one PUBLISH job for an approved review and marks it publishing", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue(null);
+    expect(await queueSocialPublish(input)).toBe("queued");
+    expect(m.approvalUpdate).toHaveBeenCalledWith({
+      where: { id: "review" },
+      data: { status: "PUBLISHING" },
+    });
+    expect(m.jobCreate).toHaveBeenCalledWith({
+      data: {
+        kind: "PUBLISH",
+        reviewId: "review",
+        actor: "U2",
+        feedback: "",
+        target: "both",
+      },
+    });
+  });
+  it("never queues a second publish or publishes an unapproved review", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue({ id: "existing" });
+    expect(await queueSocialPublish(input)).toBe("queued");
+    m.jobFind.mockResolvedValue(null);
+    m.approvalFind.mockResolvedValue({ ...source, sourceId: "src" });
+    expect(await queueSocialPublish(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
+  it("refuses to publish out of order or without a Spanish post", async () => {
+    m.approvalFind.mockResolvedValue(approved);
+    m.jobFind.mockResolvedValue(null);
+    m.sourceCount.mockResolvedValue(1);
+    expect(await queueSocialPublish(input)).toBe("out_of_order");
+    expect(m.sourceCount).toHaveBeenCalledWith({
+      where: {
+        postedAt: { lt: new Date("2026-04-24T00:00:00Z") },
+        status: { notIn: ["PUBLISHED", "SYNCED"] },
+      },
+    });
+    m.approvalFind.mockResolvedValue({ ...approved, sourceId: null });
+    expect(await queueSocialPublish(input)).toBe("unlinked");
+    m.approvalFind.mockResolvedValue(approved);
+    m.sourceCount.mockResolvedValue(0);
+    m.sourceFind.mockResolvedValue({
+      id: "src",
+      status: "SYNCED",
+      postedAt: new Date(),
+    });
+    expect(await queueSocialPublish(input)).toBe("stale");
+    expect(m.jobCreate).not.toHaveBeenCalled();
+  });
 });

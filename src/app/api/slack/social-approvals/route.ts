@@ -1,18 +1,28 @@
 import { after, NextRequest, NextResponse } from "next/server";
-import { refreshSocialMessage } from "@/lib/social-approvals/refreshSocialMessage";
+import {
+  refreshSocialMessage,
+  refreshSourceMessage,
+} from "@/lib/social-approvals/refreshSocialMessage";
 import { prisma } from "@/lib/prisma";
-import { queueSocialRevision } from "@/lib/db/socialRevisionJobs";
+import {
+  queueSocialPublish,
+  queueSocialRevision,
+  queueSocialTranslation,
+} from "@/lib/db/socialRevisionJobs";
 import {
   feedbackModal,
   parseSocialFeedback,
 } from "@/lib/social-approvals/feedbackModal";
 import { dispatchSocialWorker } from "@/lib/social-approvals/dispatchSocialWorker";
 import { decideSocialApproval } from "@/lib/db/socialApprovals";
+import { markSourcePosted } from "@/lib/db/socialSources";
+import { announceNextSourcePost } from "@/lib/social-approvals/runSourceCheck";
 import {
   approvalConfig,
   approvalMessage,
   parseApprovalAction,
   validSlackSignature,
+  type ApprovalAction,
 } from "@/lib/social-approvals/slackApproval";
 
 export const dynamic = "force-dynamic";
@@ -75,6 +85,9 @@ export async function POST(request: NextRequest) {
     }
     const action = parseApprovalAction(payload, config);
     if (!action) return new NextResponse(null, { status: 400 });
+    if (action.status === "TRANSLATE") return translate(action);
+    if (action.status === "PUBLISH") return publish(action);
+    if (action.status === "MARK_POSTED") return markPosted(action);
     if (
       action.status === "CHANGES_REQUESTED" &&
       process.env.SLACK_SOCIAL_AI_ENABLED === "true"
@@ -141,4 +154,116 @@ export async function POST(request: NextRequest) {
     // Non-200 makes the failure visible in Slack. Retrying cannot change a prior decision.
     return new NextResponse(null, { status: 503 });
   }
+}
+
+/** "Publish to @getrandomtrip.en": queue one publication of an approved review. */
+async function publish(action: ApprovalAction) {
+  const result =
+    process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true"
+      ? await queueSocialPublish({
+          reviewId: action.id,
+          user: action.user,
+          messageTs: action.messageTs,
+        })
+      : "disabled";
+  after(async () => {
+    if (result === "queued") {
+      const review = await prisma.socialApproval.findUnique({
+        where: { id: action.id },
+      });
+      if (review?.status === "PUBLISHING")
+        await refreshSocialMessage(review, "PUBLISHING");
+      try {
+        await dispatchSocialWorker();
+      } catch {
+        console.error(
+          "[social-approvals] dispatch deferred to durable recovery",
+        );
+      }
+      return;
+    }
+    await notifyClicker(
+      action,
+      result === "disabled"
+        ? "Publishing is disabled. Contact an admin."
+        : result === "out_of_order"
+          ? "An earlier Spanish post isn't on @getrandomtrip.en yet. Publish or mark it as posted first, to keep both feeds in the same order."
+          : result === "unlinked"
+            ? "Only translations of a Spanish post can be published, to keep both feeds in the same order."
+            : "Only the latest approved revision can be published.",
+    );
+  });
+  return new NextResponse(null, { status: 200 });
+}
+
+/** "Mark as posted manually": the post is already on English; offer the next one. */
+async function markPosted(action: ApprovalAction) {
+  const source = await markSourcePosted({
+    sourceId: action.id,
+    messageTs: action.messageTs,
+  });
+  after(async () => {
+    if (!source) {
+      await notifyClicker(
+        action,
+        "This post can't be marked: it's being published by the app or was already handled.",
+      );
+      return;
+    }
+    await refreshSourceMessage(source, "SYNCED", action.user);
+    await announceNextSourcePost();
+  });
+  return new NextResponse(null, { status: 200 });
+}
+
+/** Ephemeral notice to the person who clicked. Best effort. */
+async function notifyClicker(action: ApprovalAction, text: string) {
+  try {
+    await fetch(action.responseUrl, {
+      method: "POST",
+      redirect: "error",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ response_type: "ephemeral", text }),
+      signal: AbortSignal.timeout(5000),
+    });
+  } catch {
+    console.error("[social-approvals] notice not delivered");
+  }
+}
+
+/** "Translate this post": queue one paid translation, then hand off to the worker. */
+async function translate(action: ApprovalAction) {
+  const result =
+    process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+      ? await queueSocialTranslation({
+          sourceId: action.id,
+          user: action.user,
+          messageTs: action.messageTs,
+        })
+      : "disabled";
+  after(async () => {
+    if (result === "queued") {
+      const source = await prisma.socialSource.findUnique({
+        where: { id: action.id },
+      });
+      if (source?.status === "TRANSLATION_QUEUED")
+        await refreshSourceMessage(source, "TRANSLATION_QUEUED", action.user);
+      try {
+        await dispatchSocialWorker();
+      } catch {
+        console.error(
+          "[social-approvals] dispatch deferred to durable recovery",
+        );
+      }
+      return;
+    }
+    const text =
+      result === "budget"
+        ? "Daily AI limit reached. Try again tomorrow or contact an admin."
+        : result === "disabled"
+          ? "AI translation is disabled. Contact an admin."
+          : "This post was already handled or is unavailable.";
+    await notifyClicker(action, text);
+  });
+  return new NextResponse(null, { status: 200 });
 }

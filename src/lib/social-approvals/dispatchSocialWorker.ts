@@ -11,7 +11,8 @@ export function socialWorkerAuthorized(request: Request) {
 }
 export async function dispatchSocialWorker() {
   if (
-    process.env.SLACK_SOCIAL_AI_ENABLED !== "true" ||
+    (process.env.SLACK_SOCIAL_AI_ENABLED !== "true" &&
+      process.env.SLACK_SOCIAL_PUBLISH_ENABLED !== "true") ||
     !process.env.SLACK_SOCIAL_WORKER_SECRET ||
     !process.env.SLACK_SOCIAL_APP_ORIGIN
   )

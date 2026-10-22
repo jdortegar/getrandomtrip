@@ -1,7 +1,23 @@
 import { randomUUID } from "node:crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { lockSocialApproval } from "./socialApprovals";
+import { MIRRORED_STATUSES } from "./socialSources";
 import type { SocialFeedback } from "@/lib/social-approvals/feedbackModal";
+
+/** Accepted paid AI jobs (translations and revisions) per UTC day. */
+export const DAILY_AI_JOBS = 10;
+
+/** Call while holding the "daily-ai-budget" lock. */
+async function dailyBudgetLeft(tx: Prisma.TransactionClient) {
+  const since = new Date();
+  since.setUTCHours(0, 0, 0, 0);
+  return (
+    (await tx.socialRevisionJob.count({
+      where: { createdAt: { gte: since }, kind: { not: "PUBLISH" } },
+    })) < DAILY_AI_JOBS
+  );
+}
 
 export async function queueSocialRevision(input: SocialFeedback) {
   return prisma.$transaction(
@@ -20,14 +36,7 @@ export async function queueSocialRevision(input: SocialFeedback) {
       });
       if (existing) return "queued"; // Retry cannot create another paid job.
       if (!row || row.status !== "PENDING" || row.revision >= 5) return "stale";
-      const since = new Date();
-      since.setUTCHours(0, 0, 0, 0);
-      if (
-        (await tx.socialRevisionJob.count({
-          where: { createdAt: { gte: since } },
-        })) >= 10
-      )
-        return "budget";
+      if (!(await dailyBudgetLeft(tx))) return "budget";
       await tx.socialApproval.update({
         where: { id: row.id },
         data: {
@@ -43,6 +52,7 @@ export async function queueSocialRevision(input: SocialFeedback) {
           actor: input.user,
           feedback: input.feedback,
           target: input.target,
+          slides: input.slides,
         },
       });
       return "queued";
@@ -51,15 +61,135 @@ export async function queueSocialRevision(input: SocialFeedback) {
   );
 }
 
-export async function claimSocialRevision() {
+/**
+ * Queues the first translation of an announced Spanish post. One TRANSLATE job
+ * per source: repeated clicks replay "queued" without another paid job.
+ */
+export async function queueSocialTranslation(input: {
+  sourceId: string;
+  user: string;
+  messageTs: string;
+}) {
+  return prisma.$transaction(
+    async (tx) => {
+      await lockSocialApproval(tx, `source:${input.sourceId}`);
+      await lockSocialApproval(tx, "daily-ai-budget");
+      const source = await tx.socialSource.findUnique({
+        where: { id: input.sourceId },
+      });
+      if (!source || source.messageTs !== input.messageTs) return "stale";
+      if (
+        await tx.socialRevisionJob.findUnique({
+          where: { sourceId: source.id },
+        })
+      )
+        return "queued";
+      if (source.status !== "ANNOUNCED") return "stale";
+      if (!(await dailyBudgetLeft(tx))) return "budget";
+      await tx.socialSource.update({
+        where: { id: source.id },
+        data: { status: "TRANSLATION_QUEUED" },
+      });
+      await tx.socialRevisionJob.create({
+        data: {
+          kind: "TRANSLATE",
+          sourceId: source.id,
+          actor: input.user,
+          feedback: "",
+          target: "both",
+        },
+      });
+      return "queued";
+    },
+    { maxWait: 500, timeout: 1500 },
+  );
+}
+
+/**
+ * Queues publication of an approved review. One PUBLISH job per review, so a
+ * repeated click can never publish twice.
+ */
+export async function queueSocialPublish(input: {
+  reviewId: string;
+  user: string;
+  messageTs: string;
+}) {
+  return prisma.$transaction(
+    async (tx) => {
+      const ref = await tx.socialApproval.findUnique({
+        where: { id: input.reviewId },
+      });
+      if (!ref || ref.messageTs !== input.messageTs) return "stale";
+      // @getrandomtrip.en mirrors the Spanish feed in order: only reviews of a
+      // Spanish post can publish, and only after every earlier post is mirrored.
+      if (!ref.sourceId) return "unlinked";
+      await lockSocialApproval(tx, `source:${ref.sourceId}`);
+      await lockSocialApproval(tx, ref.reviewKey);
+      const source = await tx.socialSource.findUnique({
+        where: { id: ref.sourceId },
+      });
+      if (!source || MIRRORED_STATUSES.includes(source.status)) return "stale";
+      if (
+        await tx.socialSource.count({
+          where: {
+            postedAt: { lt: source.postedAt },
+            status: { notIn: MIRRORED_STATUSES },
+          },
+        })
+      )
+        return "out_of_order";
+      if (
+        await tx.socialRevisionJob.findUnique({
+          where: { reviewId: ref.id },
+        })
+      )
+        return "queued";
+      const row = await tx.socialApproval.findUnique({
+        where: { id: ref.id },
+      });
+      if (row?.status !== "APPROVED") return "stale";
+      await tx.socialApproval.update({
+        where: { id: row.id },
+        data: { status: "PUBLISHING" },
+      });
+      await tx.socialRevisionJob.create({
+        data: {
+          kind: "PUBLISH",
+          reviewId: row.id,
+          actor: input.user,
+          feedback: "",
+          target: "both",
+        },
+      });
+      return "queued";
+    },
+    { maxWait: 500, timeout: 1500 },
+  );
+}
+
+/** How long a claimed job stays exclusive. Checkpoints renew this window. */
+export const SOCIAL_JOB_LEASE_MS = 10 * 60_000;
+
+/** Job kinds the worker may run with the current flags. */
+export function enabledJobKinds() {
+  return [
+    ...(process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+      ? ["TRANSLATE", "REVISE"]
+      : []),
+    ...(process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true" ? ["PUBLISH"] : []),
+  ];
+}
+
+export async function claimSocialRevision(kinds = enabledJobKinds()) {
   return prisma.$transaction(async (tx) => {
     // Crashed/expired paid work is not replayed automatically: avoid duplicate spend.
     await tx.socialRevisionJob.updateMany({
       where: { status: "RUNNING", leaseUntil: { lt: new Date() } },
       data: { status: "MANUAL_RECOVERY", errorCode: "LEASE_EXPIRED" },
     });
+    if (!kinds.length) return null;
     const candidate = await tx.socialRevisionJob.findFirst({
-      where: { status: "QUEUED", attempts: { lt: 2 } },
+      where: { status: "QUEUED", attempts: { lt: 2 }, kind: { in: kinds } },
       orderBy: { createdAt: "asc" },
     });
     if (!candidate) return null;
@@ -69,14 +199,14 @@ export async function claimSocialRevision() {
       data: {
         status: "RUNNING",
         leaseToken,
-        leaseUntil: new Date(Date.now() + 10 * 60_000),
+        leaseUntil: new Date(Date.now() + SOCIAL_JOB_LEASE_MS),
         attempts: { increment: 1 },
       },
     });
     if (!result.count) return null;
     return tx.socialRevisionJob.findUnique({
       where: { id: candidate.id },
-      include: { review: true },
+      include: { review: true, source: true },
     });
   });
 }
@@ -85,14 +215,19 @@ export async function finishGeneratedSocialRevision(
   jobId: string,
   leaseToken: string,
   caption: string,
-  imageUrl: string,
+  imageUrls: string[],
 ) {
   return prisma.$transaction(async (tx) => {
     const job = await tx.socialRevisionJob.findUnique({
       where: { id: jobId },
       include: { review: true },
     });
-    if (!job || job.status !== "RUNNING" || job.leaseToken !== leaseToken)
+    if (
+      !job?.review ||
+      job.status !== "RUNNING" ||
+      job.leaseToken !== leaseToken ||
+      !imageUrls.length
+    )
       return null;
     await lockSocialApproval(tx, job.review.reviewKey);
     // Fence after the potentially blocking source lock. Conditional UPDATE also
@@ -104,11 +239,11 @@ export async function finishGeneratedSocialRevision(
         leaseToken,
         leaseUntil: { gt: new Date() },
       },
-      data: { generatedCaption: caption, generatedImageUrl: imageUrl },
+      data: { generatedCaption: caption, generatedImageUrls: imageUrls },
     });
     if (!owned.count) return null;
     const source = await tx.socialApproval.findUnique({
-      where: { id: job.reviewId },
+      where: { id: job.review.id },
     });
     if (source?.status !== "CHANGES_REQUESTED") return null;
     await tx.socialApproval.update({
@@ -121,7 +256,9 @@ export async function finishGeneratedSocialRevision(
         revision: source.revision + 1,
         requestId: `generated-${job.id}`,
         caption,
-        imageUrl,
+        imageUrl: imageUrls[0],
+        imageUrls,
+        sourceId: source.sourceId,
         createdBy: source.createdBy,
       },
     });

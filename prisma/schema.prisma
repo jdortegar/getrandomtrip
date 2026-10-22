@@ -1147,20 +1147,24 @@ model EmailEvent {
   @@map("email_events")
 }
 
-// Test-only Slack reviews. No Instagram publication state or credentials.
+// Slack reviews of English drafts for @getrandomtrip.en. imageUrl is the first
+// slide (kept for single-image reviews); imageUrls holds every slide in order.
 model SocialApproval {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   reviewKey   String
   revision    Int
-  requestId   String   @unique
+  requestId   String             @unique
   caption     String
   imageUrl    String
-  status      String   @default("POSTING")
+  imageUrls   String[]           @default([])
+  sourceId    String?
+  source      SocialSource?      @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  status      String             @default("POSTING")
   messageTs   String?
   decidedBy   String?
   decidedAt   DateTime?
   createdBy   String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime           @default(now())
   decision    String?
   revisionJob SocialRevisionJob?
 
@@ -1168,25 +1172,57 @@ model SocialApproval {
   @@map("social_approvals")
 }
 
-
-// Durable feedback and bounded AI work; one accepted request per source revision.
+// Durable bounded work. kind TRANSLATE (from a source post), REVISE (feedback on a
+// review) or PUBLISH (an approved review). At most one job per review and per source.
 model SocialRevisionJob {
-  id               String @id @default(cuid())
-  reviewId         String @unique
-  review           SocialApproval @relation(fields: [reviewId], references: [id], onDelete: Restrict)
-  actor            String
-  feedback         String
-  target           String
-  status           String @default("QUEUED")
-  leaseToken       String?
-  leaseUntil       DateTime?
-  attempts         Int @default(0)
-  generatedCaption String?
-  generatedImageUrl String?
-  newReviewId      String?
-  errorCode        String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                 String          @id @default(cuid())
+  kind               String          @default("REVISE")
+  reviewId           String?         @unique
+  review             SocialApproval? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  sourceId           String?         @unique
+  source             SocialSource?   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  actor              String
+  feedback           String
+  target             String
+  /// 1-based slide numbers targeted by an artwork revision; empty means every slide.
+  slides             Int[]           @default([])
+  status             String          @default("QUEUED")
+  leaseToken         String?
+  leaseUntil         DateTime?
+  attempts           Int             @default(0)
+  generatedCaption   String?
+  generatedImageUrl  String?
+  generatedImageUrls String[]        @default([])
+  /// TRANSLATE only: { slides: [{ replacements: [{ from, to }] }], notes: [] }
+  /// from the paid transcreation, reused when a claim resumes.
+  transcreation      Json?
+  newReviewId        String?
+  publishedMediaId   String?
+  /// Set immediately before media_publish. A PUBLISH job without it never
+  /// reached Instagram's publish call, so it is safe to retry.
+  publishAttemptedAt DateTime?
+  publishedPermalink String?
+  errorCode          String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
   @@index([status, createdAt])
   @@map("social_revision_jobs")
+}
+
+// A Spanish @getrandomtrip.es post announced in Slack, at most once per Instagram media id.
+model SocialSource {
+  id        String             @id @default(cuid())
+  igMediaId String             @unique
+  permalink String
+  caption   String
+  mediaType String
+  postedAt  DateTime
+  status    String             @default("ANNOUNCING")
+  messageTs String?
+  createdAt DateTime           @default(now())
+  reviews   SocialApproval[]
+  job       SocialRevisionJob?
+
+  @@map("social_sources")
 }

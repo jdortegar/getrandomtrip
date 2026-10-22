@@ -14,6 +14,24 @@ export interface SocialFeedback {
   messageTs: string;
   feedback: string;
   target: "caption" | "image" | "both";
+  /** 1-based slides for artwork changes; empty means every slide. */
+  slides: number[];
+}
+
+const MAX_SLIDES = 10;
+
+/** Parses "1, 3" style input. Returns null when any entry is not a slide number. */
+export function parseSlideList(raw: string | undefined): number[] | null {
+  const text = raw?.trim() ?? "";
+  if (!text) return [];
+  const parts = text.split(/[\s,]+/).filter(Boolean);
+  const slides = parts.map(Number);
+  if (
+    parts.length > MAX_SLIDES ||
+    slides.some((n) => !Number.isInteger(n) || n < 1 || n > MAX_SLIDES)
+  )
+    return null;
+  return [...new Set(slides)].sort((a, b) => a - b);
 }
 function sign(value: string, secret: string) {
   return createHmac("sha256", secret).update(value).digest("hex");
@@ -57,6 +75,21 @@ export function feedbackModal(action: ApprovalAction, secret: string) {
             text: { type: "plain_text", text },
             value,
           })),
+        },
+      },
+      {
+        type: "input",
+        block_id: "slides",
+        optional: true,
+        label: { type: "plain_text", text: "Which slides? (artwork only)" },
+        hint: {
+          type: "plain_text",
+          text: "Slide numbers, e.g. 1, 3. Leave empty to change every slide.",
+        },
+        element: {
+          type: "plain_text_input",
+          action_id: "slides",
+          max_length: 40,
         },
       },
       {
@@ -120,7 +153,9 @@ export function parseSocialFeedback(
     ) as FeedbackContext;
     const feedback = p.view.state?.values?.feedback?.feedback?.value?.trim();
     const target = p.view.state?.values?.target?.target?.selected_option?.value;
+    const slides = parseSlideList(p.view.state?.values?.slides?.slides?.value);
     if (
+      !slides ||
       ctx.user !== p.user.id ||
       ctx.expires < Date.now() ||
       !ctx.id ||
@@ -137,6 +172,7 @@ export function parseSocialFeedback(
       messageTs: ctx.messageTs,
       feedback,
       target: target as SocialFeedback["target"],
+      slides: target === "caption" ? [] : slides,
     };
   } catch {
     return null;

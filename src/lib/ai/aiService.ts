@@ -29,14 +29,19 @@ interface ChatCompletion {
   }>;
 }
 
+/** A user message part: text, or an image as a data: or https: URL. */
+export type ChatContentPart =
+  | { type: "text"; text: string }
+  | { type: "image_url"; image_url: { url: string } };
+
 /**
  * Server-side AI entry point. Translation is the only task so far.
  * Drafting and grammar edits should be added here as further methods.
  */
 export async function completeJson(
   system: string,
-  user: string,
-  options: { maxTokens?: number; signal?: AbortSignal } = {},
+  user: string | ChatContentPart[],
+  options: { maxTokens?: number; signal?: AbortSignal; model?: string } = {},
 ): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new AiServiceError("AI is not configured", 503);
@@ -48,7 +53,8 @@ export async function completeJson(
         { content: user, role: "user" },
       ],
       max_completion_tokens: options.maxTokens ?? 16_384,
-      model: process.env.OPENAI_TRANSLATION_MODEL || DEFAULT_MODEL,
+      model:
+        options.model || process.env.OPENAI_TRANSLATION_MODEL || DEFAULT_MODEL,
       response_format: { type: "json_object" },
       temperature: 0.2,
     }),
