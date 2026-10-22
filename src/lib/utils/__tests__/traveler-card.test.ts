@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   filterCarouselCards,
+  getCarouselCardOptions,
   isTypeOffered,
   resolveCarouselCardHref,
   type TravelerTypeCardData,
@@ -129,5 +130,30 @@ describe("resolveCarouselCardHref (design ADR-8 href table)", () => {
         tripperSlug: "maría gómez",
       }),
     ).toBe("/experiences/by-type/couple?tripper=mar%C3%ADa%20g%C3%B3mez");
+  });
+});
+
+describe("getCarouselCardOptions production preview types", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("hides family, honeymoon, and paws on production", () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "production");
+    expect(getCarouselCardOptions("en").map((card) => card.key)).toEqual([
+      "solo",
+      "couple",
+      "group",
+    ]);
+  });
+
+  it("keeps family, honeymoon, and paws on nonproduction", () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
+    expect(getCarouselCardOptions("en").map((card) => card.key)).toEqual([
+      "solo",
+      "couple",
+      "group",
+      "family",
+      "honeymoon",
+      "paws",
+    ]);
   });
 });

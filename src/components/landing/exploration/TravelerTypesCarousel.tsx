@@ -11,7 +11,10 @@ import {
 } from "@/lib/utils/experiencesData";
 import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
 import { motion } from "framer-motion";
-import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import {
+  PREVIEW_TRAVELER_TYPES,
+  type TravelerTypeSlug,
+} from "@/lib/data/traveler-types";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 
 interface TravelerTypesCarouselProps {
@@ -31,8 +34,6 @@ interface TravelerTypesCarouselProps {
   /** When true, the card content is wrapped to the top of the card. */
   wrapped?: boolean;
 }
-
-const COMING_SOON_SLUGS: TravelerTypeSlug[] = ["family", "paws", "honeymoon"];
 
 export function TravelerTypesCarousel({
   availableTypes,
@@ -73,7 +74,7 @@ export function TravelerTypesCarousel({
       <EmblaCarousel slidesPerView={4} overflow={overflow}>
         {typesToShow.map((type, index) => {
           const slug = type.key.toLowerCase() as TravelerTypeSlug;
-          const isComingSoon = COMING_SOON_SLUGS.includes(slug);
+          const isComingSoon = PREVIEW_TRAVELER_TYPES.includes(slug);
           return (
             <TravelerTypeCard
               key={type.key}

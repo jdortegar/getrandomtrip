@@ -52,20 +52,20 @@ vi.mock("@/components/layout/Section", () => ({
 vi.mock("@/components/EmblaCarousel/EmblaCarousel", () => ({
   default: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
-vi.mock("@/components/landing/exploration/TravelerTypesCarousel", () => ({
-  TravelerTypesCarousel: ({
-    localizedTravelerTypes,
-    onSelect,
+vi.mock("@/components/ui/TabSelector", () => ({
+  TabSelector: ({
+    onTabChange,
+    tabs,
   }: {
-    localizedTravelerTypes: Array<{ key: string }>;
-    onSelect: (key: string) => void;
+    onTabChange: (key: string) => void;
+    tabs: Array<{ id: string }>;
   }) => (
     <div>
-      {localizedTravelerTypes.map(({ key }) => (
+      {tabs.map(({ id }) => (
         <button
-          data-traveler-type={key}
-          key={key}
-          onClick={() => onSelect(key)}
+          data-tab={id}
+          key={id}
+          onClick={() => onTabChange(id)}
           type="button"
         />
       ))}
@@ -306,14 +306,14 @@ it("reprices the XSED card at the solo rate when solo is selected on /experience
 
   act(() =>
     container
-      .querySelector<HTMLButtonElement>('[data-traveler-type="solo"]')
+      .querySelector<HTMLButtonElement>('[data-tab="solo"]')
       ?.click(),
   );
   expect(cards()[0].textContent).toContain("USD 350");
 
   act(() =>
     container
-      .querySelector<HTMLButtonElement>('[data-traveler-type="family"]')
+      .querySelector<HTMLButtonElement>('[data-tab="group"]')
       ?.click(),
   );
   expect(cards()[0].textContent).toContain("USD 250");

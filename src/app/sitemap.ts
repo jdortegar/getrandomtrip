@@ -5,21 +5,12 @@ import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
 import { getAllTrippers } from "@/lib/db/tripper-queries";
-import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+import { getPublicTravelerTypeSlugs } from "@/lib/data/traveler-types";
 
 import { buildAlternates } from "@/lib/seo/urls";
 import { isGateEnabled } from "@/lib/siteSettings";
 
 export const dynamic = "force-dynamic";
-
-const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
-  "couple",
-  "solo",
-  "family",
-  "group",
-  "honeymoon",
-  "paws",
-];
 
 type PathConfig = {
   changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
@@ -71,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Experiences by traveler type: /experiences/by-type/[type]
-  for (const slug of TRAVELER_TYPE_SLUGS) {
+  for (const slug of getPublicTravelerTypeSlugs()) {
     entries.push(
       ...toSitemapEntries(`experiences/by-type/${slug}`, {
         changeFrequency: "monthly",

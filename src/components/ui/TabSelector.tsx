@@ -73,6 +73,7 @@ export function TabSelector({
               tabClassName,
               isActive ? styles.tabActive : styles.tabInactive,
             )}
+            data-tab={tab.id}
             disabled={tab.disabled}
             key={tab.id}
             onClick={() => !tab.disabled && onTabChange(tab.id)}
