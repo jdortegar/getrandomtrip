@@ -67,7 +67,7 @@ export function getCarouselCardOptions(
   },
 ): TravelerTypeCardData[] {
   const cards = getCardOptions(locale);
-  const publicKeys = new Set(getPublicTravelerTypeSlugs());
+  const publicKeys = new Set<string>(getPublicTravelerTypeSlugs());
   if (options?.travelerTypes?.length) {
     return options.travelerTypes.filter((card) => publicKeys.has(card.key));
   }
