@@ -8,11 +8,18 @@ export const DESIGN_SYSTEM_BRAND_SECTIONS = [
 ] as const;
 
 export const DESIGN_SYSTEM_COMPONENT_SECTIONS = [
+  "headings",
+  "icons",
+  "avatar",
   "buttons",
   "controls",
   "badges",
-  "layout",
+  "tabs",
+  "cards",
   "tables",
+  "layout",
+  "journey",
+  "dashboard",
 ] as const;
 
 export type DesignSystemGalleryView = "brand" | "components";

@@ -1,14 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentType,
+  type MouseEvent,
+} from "react";
 import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/Button";
 import { BadgeExamples } from "@/components/app/design-system/BadgeExamples";
 import { ButtonExamples } from "@/components/app/design-system/ButtonExamples";
 import { ControlExamples } from "@/components/app/design-system/ControlExamples";
+import { AvatarExamples } from "@/components/app/design-system/AvatarExamples";
+import { ComposedCardExamples } from "@/components/app/design-system/ComposedCardExamples";
+import { DashboardExamples } from "@/components/app/design-system/DashboardExamples";
 import { GalleryHero } from "@/components/app/design-system/GalleryHero";
 import { GalleryNav } from "@/components/app/design-system/GalleryNav";
 import { GallerySection } from "@/components/app/design-system/GallerySection";
+import { HeadingExamples } from "@/components/app/design-system/HeadingExamples";
+import { IconExamples } from "@/components/app/design-system/IconExamples";
+import { JourneyExamples } from "@/components/app/design-system/JourneyExamples";
+import { TabExamples } from "@/components/app/design-system/TabExamples";
 import { LayoutExamples } from "@/components/app/design-system/LayoutExamples";
 import { TableExamples } from "@/components/app/design-system/TableExamples";
 import { BrandColor } from "@/components/app/design-system/brand/BrandColor";
@@ -20,6 +33,7 @@ import { BrandVoice } from "@/components/app/design-system/brand/BrandVoice";
 import { VoiceStoriesCard } from "@/components/app/design-system/brand/VoiceStoriesCard";
 import { useNavbarChrome } from "@/context/NavbarChromeContext";
 import {
+  DESIGN_SYSTEM_COMPONENT_SECTIONS,
   DESIGN_SYSTEM_SECTIONS,
   type DesignSystemGalleryView,
 } from "@/lib/constants/DESIGN_SYSTEM_GALLERY";
@@ -34,6 +48,24 @@ interface DesignSystemGalleryProps {
   copy: DesignSystemDict;
   view: DesignSystemGalleryView;
 }
+
+const COMPONENT_SECTION_EXAMPLES = {
+  avatar: AvatarExamples,
+  badges: BadgeExamples,
+  buttons: ButtonExamples,
+  cards: ComposedCardExamples,
+  controls: ControlExamples,
+  dashboard: DashboardExamples,
+  headings: HeadingExamples,
+  icons: IconExamples,
+  journey: JourneyExamples,
+  layout: LayoutExamples,
+  tables: TableExamples,
+  tabs: TabExamples,
+} as const satisfies Record<
+  (typeof DESIGN_SYSTEM_COMPONENT_SECTIONS)[number],
+  ComponentType<{ copy: DesignSystemDict }>
+>;
 
 export function DesignSystemGallery({
   agentDocsHref,
@@ -210,41 +242,19 @@ export function DesignSystemGallery({
               agentDocsLabel={copy.agentDocs}
               copy={copy.componentsHero}
             />
-            <GallerySection
-              copy={copy.sections.buttons}
-              id="buttons"
-              number={numberOf("buttons")}
-            >
-              <ButtonExamples copy={copy} />
-            </GallerySection>
-            <GallerySection
-              copy={copy.sections.controls}
-              id="controls"
-              number={numberOf("controls")}
-            >
-              <ControlExamples copy={copy} />
-            </GallerySection>
-            <GallerySection
-              copy={copy.sections.badges}
-              id="badges"
-              number={numberOf("badges")}
-            >
-              <BadgeExamples copy={copy} />
-            </GallerySection>
-            <GallerySection
-              copy={copy.sections.layout}
-              id="layout"
-              number={numberOf("layout")}
-            >
-              <LayoutExamples copy={copy} />
-            </GallerySection>
-            <GallerySection
-              copy={copy.sections.tables}
-              id="tables"
-              number={numberOf("tables")}
-            >
-              <TableExamples copy={copy} />
-            </GallerySection>
+            {DESIGN_SYSTEM_COMPONENT_SECTIONS.map((id) => {
+              const Example = COMPONENT_SECTION_EXAMPLES[id];
+              return (
+                <GallerySection
+                  copy={copy.sections[id]}
+                  id={id}
+                  key={id}
+                  number={numberOf(id)}
+                >
+                  <Example copy={copy} />
+                </GallerySection>
+              );
+            })}
           </>
         )}
         <div className="border-gray-200 border-t flex flex-wrap gap-4 items-center justify-between py-8">

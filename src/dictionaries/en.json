@@ -19,7 +19,7 @@
     "componentsHero": {
       "eyebrow": "Randomtrip / Components",
       "title": "Real pieces, ready to use.",
-      "description": "Buttons, fields, states, layout, and tables. The same components the product uses, here to try.",
+      "description": "From headings to dashboards. The same components the product uses, here to try.",
       "localOnly": "A playground, not a booking flow. Nothing here is sent or saved."
     },
     "sections": {
@@ -67,6 +67,41 @@
         "nav": "Badges & chips",
         "title": "Small signals, clear meaning",
         "description": "Status badges report a state. Rounded chips invite a choice. Different roles, different treatments."
+      },
+      "headings": {
+        "nav": "Section titles",
+        "title": "Titles that set the scene",
+        "description": "The real page heading and section heading. Use them; do not restyle a parallel title."
+      },
+      "tabs": {
+        "nav": "Tabs",
+        "title": "One row, one place",
+        "description": "The shared TabSelector. Inline for product screens, marketing for editorial pages."
+      },
+      "icons": {
+        "nav": "Icons",
+        "title": "Small, consistent marks",
+        "description": "Lucide icons. Inline actions are h-4 w-4. KPI pucks are h-9 w-9."
+      },
+      "avatar": {
+        "nav": "Avatar",
+        "title": "A face, or a fallback",
+        "description": "AvatarWithFallback with a photo and without one. Sizes from the shared component."
+      },
+      "cards": {
+        "nav": "Cards",
+        "title": "Surfaces with a job",
+        "description": "Experience, tripper, traveler type, blog, and drop cards. Use the real component; do not restyle a copy."
+      },
+      "journey": {
+        "nav": "Journey",
+        "title": "The path, step by step",
+        "description": "Progress, dropdowns, pills, excuse cards, and section cards from the real journey. Do not restyle a copy."
+      },
+      "dashboard": {
+        "nav": "Dashboards",
+        "title": "Shared shell, distinct controls",
+        "description": "Nav tabs and KPI cards used across dashboards, plus role-specific controls like the view toggle. Use the real component."
       },
       "layout": {
         "nav": "Layout & rhythm",
@@ -709,6 +744,90 @@
         "INACTIVE": "Inactive",
         "ARCHIVED": "Archived"
       }
+    },
+    "headings": {
+      "page": "Page heading",
+      "section": "Section heading",
+      "sectionLeft": "Section heading, left aligned",
+      "pageEyebrow": "Randomtrip / Example",
+      "pageTitle": "A title for the whole page.",
+      "pageDescription": "PageHeading is the top of a screen: eyebrow, condensed title, and a short lead.",
+      "sectionEyebrow": "A quiet start",
+      "sectionTitle": "This is a section heading",
+      "sectionSubtitle": "SectionHeading introduces a block inside the page, not the page itself."
+    },
+    "tabs": {
+      "inline": "Inline tabs",
+      "marketing": "Marketing tabs",
+      "overview": "Overview",
+      "details": "Details",
+      "reviews": "Reviews",
+      "selected": "Selected: {tab}"
+    },
+    "icons": {
+      "inline": "Inline (h-4 w-4)",
+      "puck": "KPI puck (h-9 w-9)",
+      "hint": "All icons from lucide-react. Do not mix sizes inside the same row of actions."
+    },
+    "avatar": {
+      "photo": "With photo",
+      "fallback": "Fallback",
+      "photoAlt": "Sample traveler portrait"
+    },
+    "cards": {
+      "body": "White surface, light border, room for a title and a short thought.",
+      "experience": "Experience card",
+      "level": "Level card",
+      "tripper": "Tripper card",
+      "tripperCarousel": "Tripper carousel card",
+      "travelerType": "Traveler type card",
+      "blog": "Blog card",
+      "drop": "Drop card",
+      "closing": "Wonder begins where certainty ends.",
+      "tripperName": "Lucía",
+      "travelerTypeTitle": "Slow coast",
+      "blogCategory": "Journal",
+      "blogTitle": "Lunch that lasted until dusk",
+      "dropLabel": "Nº1",
+      "dropTitle": "A table by the water",
+      "featureDuration": "Duration",
+      "featureDurationValue": "4 nights"
+    },
+    "journey": {
+      "progress": "Progress",
+      "progressLabel": "Progress",
+      "dropdowns": "Dropdowns",
+      "dropdownLabel": "Who is travelling",
+      "dropdownContent": "2 travelers",
+      "dropdownBody": "Adults and dates stay in this panel, the same way the journey keeps them.",
+      "pills": "Pills",
+      "pillOrigin": "Origin",
+      "pillDates": "Dates",
+      "pillTransport": "Transport",
+      "pillRemove": "Remove {label}",
+      "excuse": "Excuse card",
+      "excuseTitle": "A long lunch by the water",
+      "excuseDescription": "You needed a reason. This one will do.",
+      "excuseCta": "Choose and continue",
+      "section": "Section card",
+      "sectionTitle": "Preferences",
+      "sectionDescription": "Filters and add-ons live in this panel.",
+      "sectionAction": "Edit",
+      "sectionBody": "Keep the journey in one place. Open a section when you need it.",
+      "comingSoon": "Coming soon",
+      "completed": "Completed",
+      "incomplete": "Incomplete",
+      "tabBudget": "Budget",
+      "tabDetails": "Details",
+      "tabPreferences": "Preferences",
+      "subOrigin": "Origin",
+      "subDates": "Dates",
+      "subFilters": "Filters"
+    },
+    "dashboard": {
+      "nav": "Nav tabs",
+      "kpis": "KPI cards",
+      "toggle": "View toggle"
     },
     "layout": {
       "eyebrow": "The composition",

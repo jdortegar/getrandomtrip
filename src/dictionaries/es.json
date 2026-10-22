@@ -19,7 +19,7 @@
     "componentsHero": {
       "eyebrow": "Randomtrip / Componentes",
       "title": "Piezas reales, listas para usar.",
-      "description": "Botones, campos, estados, layout y tablas. Los mismos componentes que usa el producto, para probarlos aquí.",
+      "description": "De los títulos al dashboard. Los mismos componentes que usa el producto, para probarlos aquí.",
       "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda."
     },
     "sections": {
@@ -67,6 +67,41 @@
         "nav": "Estados y chips",
         "title": "Pequeñas señales, ideas claras",
         "description": "Las insignias comunican estados. Los chips redondeados invitan a elegir. Funciones distintas, tratamientos distintos."
+      },
+      "headings": {
+        "nav": "Títulos de sección",
+        "title": "Títulos que marcan el escenario",
+        "description": "El título de página y el de sección reales. Úsalos; no inventes un título paralelo."
+      },
+      "tabs": {
+        "nav": "Pestañas",
+        "title": "Una fila, un lugar",
+        "description": "El TabSelector compartido. Inline para producto, marketing para páginas editoriales."
+      },
+      "icons": {
+        "nav": "Iconos",
+        "title": "Marcas pequeñas y consistentes",
+        "description": "Iconos Lucide. Acciones en línea: h-4 w-4. Pucks de KPI: h-9 w-9."
+      },
+      "avatar": {
+        "nav": "Avatar",
+        "title": "Un rostro, o un respaldo",
+        "description": "AvatarWithFallback con foto y sin ella. Los tamaños salen del componente compartido."
+      },
+      "cards": {
+        "nav": "Tarjetas",
+        "title": "Superficies con un trabajo",
+        "description": "Tarjetas de experiencia, tripper, tipo de viajero, blog y drop. Usa el componente real; no copies el estilo."
+      },
+      "journey": {
+        "nav": "Journey",
+        "title": "El camino, paso a paso",
+        "description": "Progreso, desplegables, pills, tarjetas de excusa y de sección del journey real. No copies el estilo."
+      },
+      "dashboard": {
+        "nav": "Dashboards",
+        "title": "Shell compartido, controles propios",
+        "description": "Pestañas y tarjetas KPI compartidas, más controles propios como el toggle de vista. Usa el componente real."
       },
       "layout": {
         "nav": "Diseño y ritmo",
@@ -709,6 +744,90 @@
         "INACTIVE": "Inactivo",
         "ARCHIVED": "Archivado"
       }
+    },
+    "headings": {
+      "page": "Título de página",
+      "section": "Título de sección",
+      "sectionLeft": "Título de sección, alineado a la izquierda",
+      "pageEyebrow": "Randomtrip / Ejemplo",
+      "pageTitle": "Un título para toda la página.",
+      "pageDescription": "PageHeading es el inicio de una pantalla: ceja, título condensado y una entrada corta.",
+      "sectionEyebrow": "Un comienzo quieto",
+      "sectionTitle": "Esto es un título de sección",
+      "sectionSubtitle": "SectionHeading presenta un bloque dentro de la página, no la página entera."
+    },
+    "tabs": {
+      "inline": "Pestañas inline",
+      "marketing": "Pestañas de marketing",
+      "overview": "Resumen",
+      "details": "Detalles",
+      "reviews": "Reseñas",
+      "selected": "Seleccionado: {tab}"
+    },
+    "icons": {
+      "inline": "En línea (h-4 w-4)",
+      "puck": "Puck de KPI (h-9 w-9)",
+      "hint": "Todos los iconos de lucide-react. No mezcles tamaños en la misma fila de acciones."
+    },
+    "avatar": {
+      "photo": "Con foto",
+      "fallback": "Respaldo",
+      "photoAlt": "Retrato de viajero de ejemplo"
+    },
+    "cards": {
+      "body": "Superficie blanca, borde ligero, espacio para un título y una idea corta.",
+      "experience": "Tarjeta de experiencia",
+      "level": "Tarjeta de nivel",
+      "tripper": "Tarjeta de tripper",
+      "tripperCarousel": "Tarjeta de carrusel de tripper",
+      "travelerType": "Tarjeta de tipo de viajero",
+      "blog": "Tarjeta de blog",
+      "drop": "Tarjeta de drop",
+      "closing": "El asombro empieza donde termina la certeza.",
+      "tripperName": "Lucía",
+      "travelerTypeTitle": "Costa lenta",
+      "blogCategory": "Diario",
+      "blogTitle": "Un almuerzo que duró hasta el anochecer",
+      "dropLabel": "Nº1",
+      "dropTitle": "Una mesa junto al agua",
+      "featureDuration": "Duración",
+      "featureDurationValue": "4 noches"
+    },
+    "journey": {
+      "progress": "Progreso",
+      "progressLabel": "Progreso",
+      "dropdowns": "Desplegables",
+      "dropdownLabel": "Quién viaja",
+      "dropdownContent": "2 viajeros",
+      "dropdownBody": "Adultos y fechas viven en este panel, igual que en el journey.",
+      "pills": "Pills",
+      "pillOrigin": "Origen",
+      "pillDates": "Fechas",
+      "pillTransport": "Transporte",
+      "pillRemove": "Quitar {label}",
+      "excuse": "Tarjeta de excusa",
+      "excuseTitle": "Un almuerzo largo junto al agua",
+      "excuseDescription": "Hacía falta un motivo. Este sirve.",
+      "excuseCta": "Elegir y continuar",
+      "section": "Tarjeta de sección",
+      "sectionTitle": "Preferencias",
+      "sectionDescription": "Filtros y extras viven en este panel.",
+      "sectionAction": "Editar",
+      "sectionBody": "El journey queda en un solo lugar. Abre una sección cuando la necesites.",
+      "comingSoon": "Próximamente",
+      "completed": "Completado",
+      "incomplete": "Incompleto",
+      "tabBudget": "Presupuesto",
+      "tabDetails": "Detalles",
+      "tabPreferences": "Preferencias",
+      "subOrigin": "Origen",
+      "subDates": "Fechas",
+      "subFilters": "Filtros"
+    },
+    "dashboard": {
+      "nav": "Pestañas de nav",
+      "kpis": "Tarjetas KPI",
+      "toggle": "Toggle de vista"
     },
     "layout": {
       "eyebrow": "La composición",

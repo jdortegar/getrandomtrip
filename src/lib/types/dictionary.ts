@@ -307,6 +307,13 @@ export interface DesignSystemDict {
     buttons: DesignSystemSectionDict;
     controls: DesignSystemSectionDict;
     badges: DesignSystemSectionDict;
+    headings: DesignSystemSectionDict;
+    tabs: DesignSystemSectionDict;
+    icons: DesignSystemSectionDict;
+    avatar: DesignSystemSectionDict;
+    cards: DesignSystemSectionDict;
+    journey: DesignSystemSectionDict;
+    dashboard: DesignSystemSectionDict;
     layout: DesignSystemSectionDict;
     tables: DesignSystemSectionDict;
   };
@@ -374,8 +381,92 @@ export interface DesignSystemDict {
       PENDING_REVIEW: string;
       PENDING_TRIPPER_REVIEW: string;
       INACTIVE: string;
-      ARCHIVED: string;
+        ARCHIVED: string;
     };
+  };
+  headings: {
+    page: string;
+    section: string;
+    sectionLeft: string;
+    pageEyebrow: string;
+    pageTitle: string;
+    pageDescription: string;
+    sectionEyebrow: string;
+    sectionTitle: string;
+    sectionSubtitle: string;
+  };
+  tabs: {
+    inline: string;
+    marketing: string;
+    overview: string;
+    details: string;
+    reviews: string;
+    selected: string;
+  };
+  icons: {
+    inline: string;
+    puck: string;
+    hint: string;
+  };
+  avatar: {
+    photo: string;
+    fallback: string;
+    photoAlt: string;
+  };
+  cards: {
+    body: string;
+    experience: string;
+    level: string;
+    tripper: string;
+    tripperCarousel: string;
+    travelerType: string;
+    blog: string;
+    drop: string;
+    closing: string;
+    tripperName: string;
+    travelerTypeTitle: string;
+    blogCategory: string;
+    blogTitle: string;
+    dropLabel: string;
+    dropTitle: string;
+    featureDuration: string;
+    featureDurationValue: string;
+  };
+  journey: {
+    progress: string;
+    progressLabel: string;
+    dropdowns: string;
+    dropdownLabel: string;
+    dropdownContent: string;
+    dropdownBody: string;
+    pills: string;
+    pillOrigin: string;
+    pillDates: string;
+    pillTransport: string;
+    pillRemove: string;
+    excuse: string;
+    excuseTitle: string;
+    excuseDescription: string;
+    excuseCta: string;
+    section: string;
+    sectionTitle: string;
+    sectionDescription: string;
+    sectionAction: string;
+    sectionBody: string;
+    comingSoon: string;
+    completed: string;
+    incomplete: string;
+    tabBudget: string;
+    tabDetails: string;
+    tabPreferences: string;
+    subOrigin: string;
+    subDates: string;
+    subFilters: string;
+  };
+  dashboard: {
+    nav: string;
+    kpis: string;
+    toggle: string;
   };
   layout: {
     eyebrow: string;

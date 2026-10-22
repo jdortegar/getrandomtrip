@@ -25,13 +25,13 @@ export function GallerySection({
   return (
     <section
       aria-labelledby={`${id}-title`}
-      className="border-gray-200 border-t py-12 scroll-mt-36"
+      className="border-gray-200 border-t py-16 scroll-mt-36"
       id={id}
       tabIndex={-1}
     >
       <div
         className={cn(
-          "gap-5 grid mb-8",
+          "gap-5 grid mb-10",
           "md:grid-cols-2",
           lead === "start" ? "md:items-start" : "md:items-end",
         )}

@@ -13,6 +13,12 @@ import type { DesignSystemDict } from "@/lib/types/dictionary";
 
 const scrollTo = vi.hoisted(() => vi.fn());
 vi.mock("lenis/react", () => ({ useLenis: () => ({ scrollTo }) }));
+vi.mock("next/navigation", () => ({
+  useParams: () => ({ locale: "en" }),
+  usePathname: () => "/en/design-system/components",
+  useRouter: () => ({ push: vi.fn() }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 let container: HTMLDivElement;
@@ -117,6 +123,75 @@ it.each(["brand", "components"] as const)(
   },
 );
 
+it("shows real page and section headings in the components gallery", () => {
+  renderGallery("components");
+  const section = container.querySelector("#headings")!;
+  expect(section.querySelector('[data-component="PageHeading"]')).not.toBeNull();
+  expect(section.querySelectorAll('[data-component="SectionHeading"]').length).toBeGreaterThan(0);
+});
+
+it("shows real tabs, icons, and avatars in the components gallery", () => {
+  renderGallery("components");
+  expect(
+    container.querySelectorAll('#tabs [data-component="TabSelector"]').length,
+  ).toBe(2);
+  expect(container.querySelector("#icons svg")).not.toBeNull();
+  expect(
+    container.querySelectorAll('#avatar [data-component="AvatarWithFallback"]')
+      .length,
+  ).toBeGreaterThan(0);
+});
+
+it("shows real product cards in the components gallery", () => {
+  renderGallery("components");
+  expect(
+    container.querySelectorAll('#cards [data-component="ExperienceCard"]').length,
+  ).toBe(1);
+  expect(container.querySelector('#cards [data-component="TripperCard"]')).not.toBeNull();
+  expect(container.querySelector('#cards [data-component="TravelerTypeCard"]')).not.toBeNull();
+  const blogCard = container.querySelector('#cards [data-component="BlogCard"]');
+  expect(blogCard).not.toBeNull();
+  expect(blogCard!.previousElementSibling?.textContent).toBe(copy.cards.blog);
+  expect(container.querySelector('#cards [data-component="DropCard"]')).not.toBeNull();
+  expect(container.querySelector('#cards [data-component="TripperCarouselCard"]')).not.toBeNull();
+});
+
+it("shows real journey progress, dropdowns, and pills in the components gallery", () => {
+  renderGallery("components");
+  expect(
+    container.querySelector('#journey [data-component="JourneyProgressSidebar"]'),
+  ).not.toBeNull();
+  expect(
+    container.querySelectorAll('#journey [data-component="JourneyDropdown"]').length,
+  ).toBe(2);
+  expect(
+    container.querySelectorAll('#journey [data-component="RemovableTag"]').length,
+  ).toBeGreaterThan(0);
+  expect(
+    container.querySelectorAll('#journey [data-component="ExcuseCard"]').length,
+  ).toBe(2);
+  expect(
+    container.querySelector('#journey [data-component="JourneySectionCard"]'),
+  ).not.toBeNull();
+});
+
+it("shows shared dashboard tabs, KPI cards, and the view toggle", () => {
+  renderGallery("components");
+  const dashboardTabs = container.querySelectorAll(
+    '#dashboard [data-component="DashboardNavTabs"] a',
+  );
+  expect(dashboardTabs.length).toBeGreaterThan(1);
+  expect(
+    [...dashboardTabs].some((tab) => tab.className.includes("bg-primary")),
+  ).toBe(true);
+  expect(
+    container.querySelector('#dashboard [data-component="DashboardStatsGrid"]'),
+  ).not.toBeNull();
+  expect(
+    container.querySelector('#dashboard [data-component="TripperViewToggle"]'),
+  ).not.toBeNull();
+});
+
 it("numbers brand sections on the brand page and component sections on the components page", () => {
   renderGallery("brand");
   expect(solid).toHaveBeenCalledWith(true);
@@ -131,7 +206,7 @@ it("numbers brand sections on the brand page and component sections on the compo
   );
   expect(brandLinks).toHaveLength(DESIGN_SYSTEM_BRAND_SECTIONS.length);
   expect(brandLinks[0]!.textContent).toContain("01");
-  expect(container.querySelectorAll("section")).toHaveLength(
+  expect(container.querySelectorAll("#gallery-content > section")).toHaveLength(
     DESIGN_SYSTEM_BRAND_SECTIONS.length,
   );
 
@@ -146,11 +221,14 @@ it("numbers brand sections on the brand page and component sections on the compo
   );
   expect(componentLinks).toHaveLength(DESIGN_SYSTEM_COMPONENT_SECTIONS.length);
   expect(componentLinks[0]!.textContent).toContain("01");
-  expect(container.querySelectorAll("section")).toHaveLength(
-    DESIGN_SYSTEM_COMPONENT_SECTIONS.length,
-  );
-  for (const id of DESIGN_SYSTEM_COMPONENT_SECTIONS)
-    expect(container.querySelector(`section#${id}`)).not.toBeNull();
+  expect(
+    Array.from(componentLinks).map((link) => link.getAttribute("href")),
+  ).toEqual(DESIGN_SYSTEM_COMPONENT_SECTIONS.map((id) => `#${id}`));
+  expect(
+    Array.from(
+      container.querySelectorAll("#gallery-content > section"),
+    ).map((section) => section.id),
+  ).toEqual([...DESIGN_SYSTEM_COMPONENT_SECTIONS]);
   for (const id of DESIGN_SYSTEM_BRAND_SECTIONS)
     expect(container.querySelector(`section#${id}`)).toBeNull();
 });
@@ -205,8 +283,15 @@ it("uses gallery scrollspy on the current view without changing focus or hash", 
 
 it("jumps gallery anchors immediately when reduced motion is preferred", () => {
   vi.spyOn(window, "matchMedia").mockReturnValue({
+    addEventListener: vi.fn(),
+    addListener: vi.fn(),
+    dispatchEvent: vi.fn(),
     matches: true,
-  } as MediaQueryList);
+    media: "(prefers-reduced-motion: reduce)",
+    onchange: null,
+    removeEventListener: vi.fn(),
+    removeListener: vi.fn(),
+  } as unknown as MediaQueryList);
   renderGallery("components");
   const link = container.querySelector<HTMLAnchorElement>(
     'nav a[href="#controls"]',
