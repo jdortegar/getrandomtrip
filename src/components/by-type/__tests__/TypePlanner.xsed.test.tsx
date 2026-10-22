@@ -351,6 +351,6 @@ it.each([
     expect(badges()).toEqual([featured]);
     expect(dict.journey.tripperBadge.mostChosen).toBe(featured);
     const badge = container.querySelector("[data-ribbon]");
-    expect(badge?.classList.contains("translate-y-1/2")).toBe(true);
+    expect(badge?.classList.contains("top-[124px]")).toBe(true);
   },
 );

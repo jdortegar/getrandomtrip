@@ -26,6 +26,7 @@ let container: HTMLDivElement;
 let root: Root;
 const levels = getPlannerContentForType("solo", "en").levels;
 const explora = levels.find((level) => level.id === "modo-explora")!;
+const essenza = levels.find((level) => level.id === "essenza")!;
 const atelier = levels.find((level) => level.id === "atelier-getaway")!;
 const card = () =>
   container.querySelector<HTMLElement>('[data-component="ExperienceCard"]')!;
@@ -48,6 +49,7 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().textContent).toContain(content.tag);
   expect(card().textContent).toContain(content.kicker);
   expect(card().querySelector("h3")?.textContent).toBe(content.name);
+  expect(card().querySelector("h3")?.getAttribute("data-name-lines")).toBe("2");
   expect(card().querySelector("h3 sup")?.textContent).toBe("™");
   expect(card().textContent).toContain(content.eyebrow);
   expect(card().textContent).toContain(content.description);
@@ -68,6 +70,12 @@ it("renders the photo header, card copy, detail rows and price", () => {
   );
   expect(card().textContent).toContain(content.transportNote);
   expect(card().classList.contains("bg-white")).toBe(true);
+});
+
+it("keeps a single-word card name on one line", () => {
+  act(() => root.render(<ExperienceCard level={essenza} />));
+  expect(card().querySelector("h3")?.textContent).toBe(essenza.card!.name);
+  expect(card().querySelector("h3")?.getAttribute("data-name-lines")).toBe("1");
 });
 
 it("shows the most-chosen ribbon only when featured, or a custom badge", () => {
