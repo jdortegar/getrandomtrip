@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import {
   DESIGN_SYSTEM_SECTIONS,
+  gallerySectionNumber,
   type DesignSystemGalleryView,
 } from "@/lib/constants/DESIGN_SYSTEM_GALLERY";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
@@ -32,8 +33,6 @@ export function GalleryNav({
   view,
 }: GalleryNavProps) {
   const sections = DESIGN_SYSTEM_SECTIONS[view];
-  const numberOf = (id: (typeof sections)[number]) =>
-    String(sections.indexOf(id) + 1).padStart(2, "0");
 
   return (
     <nav
@@ -78,7 +77,9 @@ export function GalleryNav({
                   aria-current={active === id ? "location" : undefined}
                   href={`#${id}`}
                 >
-                  <span className="font-mono text-xs">{numberOf(id)}</span>
+                  <span className="font-mono text-xs">
+                    {gallerySectionNumber(sections, id)}
+                  </span>
                   {copy.sections[id].nav}
                 </a>
               </Button>

@@ -33,8 +33,10 @@ import { BrandVoice } from "@/components/app/design-system/brand/BrandVoice";
 import { VoiceStoriesCard } from "@/components/app/design-system/brand/VoiceStoriesCard";
 import { useNavbarChrome } from "@/context/NavbarChromeContext";
 import {
+  DESIGN_SYSTEM_BRAND_SECTIONS,
   DESIGN_SYSTEM_COMPONENT_SECTIONS,
   DESIGN_SYSTEM_SECTIONS,
+  gallerySectionNumber,
   type DesignSystemGalleryView,
 } from "@/lib/constants/DESIGN_SYSTEM_GALLERY";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
@@ -151,9 +153,6 @@ export function DesignSystemGallery({
     target.focus({ preventScroll: true });
   }
 
-  const numberOf = (id: (typeof sections)[number]) =>
-    String(sections.indexOf(id) + 1).padStart(2, "0");
-
   return (
     <div
       className={cn(styles.gallery, "bg-ground min-w-0 text-ink")}
@@ -192,28 +191,28 @@ export function DesignSystemGallery({
             <GallerySection
               copy={copy.sections.essence}
               id="essence"
-              number={numberOf("essence")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "essence")}
             >
               <BrandEssence copy={copy.essence} />
             </GallerySection>
             <GallerySection
               copy={copy.sections.logo}
               id="logo"
-              number={numberOf("logo")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "logo")}
             >
               <BrandLogo copy={copy.logo} />
             </GallerySection>
             <GallerySection
               copy={copy.sections.color}
               id="color"
-              number={numberOf("color")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "color")}
             >
               <BrandColor copy={copy.color} usageLabel={copy.usage} />
             </GallerySection>
             <GallerySection
               copy={copy.sections.typography}
               id="typography"
-              number={numberOf("typography")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "typography")}
             >
               <BrandTypography copy={copy.typography} />
             </GallerySection>
@@ -222,7 +221,7 @@ export function DesignSystemGallery({
               copy={copy.sections.voice}
               id="voice"
               lead="start"
-              number={numberOf("voice")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "voice")}
               subtitle={copy.voice.intro.title}
             >
               <BrandVoice copy={copy.voice} />
@@ -230,7 +229,7 @@ export function DesignSystemGallery({
             <GallerySection
               copy={copy.sections.photography}
               id="photography"
-              number={numberOf("photography")}
+              number={gallerySectionNumber(DESIGN_SYSTEM_BRAND_SECTIONS, "photography")}
             >
               <BrandPhotography copy={copy.photography} />
             </GallerySection>
@@ -249,7 +248,10 @@ export function DesignSystemGallery({
                   copy={copy.sections[id]}
                   id={id}
                   key={id}
-                  number={numberOf(id)}
+                  number={gallerySectionNumber(
+                    DESIGN_SYSTEM_COMPONENT_SECTIONS,
+                    id,
+                  )}
                 >
                   <Example copy={copy} />
                 </GallerySection>
