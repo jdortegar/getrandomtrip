@@ -22,7 +22,7 @@ Branch: `feat/social-translation-flow` (from `develop` 2ecf845d) · Delivery: `s
 | T4 | S4, S5 | inline | done | d09d4a46 |
 | T5 | S1–S5 docs/env | inline | done | a552f920 |
 | T6 | S6 | inline | done | d7a81283 |
-| T7 | S5 | inline | done | retry before media_publish |
+| T7 | S5 | inline | done | 79d0d88a |
 
 - T1 — Multi-image reviews: schema (`imageUrls`, job `kind`, nullable `reviewId`, `sourceId`), migration, Slack card renders all slides, feedback modal accepts slide numbers. Risk: item 1 (persisted format change on existing tables).
 - T2 — `SocialSource` model, source Graph client (media + children), daily scheduled function (production only) + internal route + admin "check now", Slack "Translate this post" card.
