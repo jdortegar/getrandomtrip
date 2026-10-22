@@ -39,7 +39,7 @@ export function TripperCarouselCard({
         />
         <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 w-full px-4 py-4">
-          <h3 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-tight text-white">
+          <h3 className="font-barlow-condensed text-3xl font-bold uppercase leading-tight text-white">
             {name}
           </h3>
           <div className="mt-1 flex items-center justify-between text-sm text-white/80">

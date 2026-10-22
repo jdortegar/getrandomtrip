@@ -89,7 +89,7 @@ export function UnpaidTripsAlert({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {trips.length} pending
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.unpaidTrips.title}
         </h2>
         <p className="mt-2 text-sm text-ink">{copy.unpaidTrips.message}</p>

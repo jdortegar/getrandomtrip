@@ -73,7 +73,7 @@ export function DashboardStatsGrid({ copy, stats }: DashboardStatsGridProps) {
             </div>
             <div className="flex items-stretch gap-3.5">
               <span className="w-1 rounded-full bg-feature" />
-              <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
+              <p className="font-barlow-condensed text-5xl font-bold leading-[0.9] text-ink">
                 {card.value}
               </p>
             </div>

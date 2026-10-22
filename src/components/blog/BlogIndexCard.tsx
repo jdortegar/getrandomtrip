@@ -97,7 +97,7 @@ export function BlogIndexCard({
             <div className="flex flex-col gap-1">
               <h3
                 className={cn(
-                  "font-barlow-condensed text-xl font-extrabold uppercase tracking-wide transition-colors sm:text-2xl md:text-3xl",
+                  "font-barlow-condensed text-xl font-bold uppercase tracking-wide transition-colors sm:text-2xl md:text-3xl",
                   post.coverUrl
                     ? "text-white group-hover:text-blue-200"
                     : "text-ink group-hover:text-blue-600",

@@ -97,7 +97,7 @@ export default function BlogPostHero({
         <p className="mb-2 font-bold text-sm uppercase tracking-[0.4em] text-feature md:text-base">
           BLOG
         </p>
-        <h1 className="mb-4 font-barlow-condensed text-5xl font-extrabold uppercase leading-none md:text-7xl">
+        <h1 className="mb-4 font-barlow-condensed text-5xl font-bold uppercase leading-none md:text-7xl">
           {title}
         </h1>
         <p className="mb-8 max-w-2xl font-barlow text-base leading-relaxed text-white/95 md:text-lg">

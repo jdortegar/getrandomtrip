@@ -27,7 +27,7 @@ export function TripCostSummary({ copy, price }: TripCostSummaryProps) {
     : [];
   return (
     <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-      <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
+      <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
         {copy.costsTitle}
       </h3>
       <div className="space-y-3">
