@@ -4,6 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { DesignSystemGallery } from "../DesignSystemGallery";
 import { NavbarChromeContext } from "@/context/NavbarChromeContext";
 import en from "@/dictionaries/en.json";
+import es from "@/dictionaries/es.json";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 
 const scrollTo = vi.hoisted(() => vi.fn());
@@ -37,16 +38,64 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-it("uses six numbered anchor sections and safely reveals scrollspy without changing focus or hash", () => {
+const brandSections = [
+  "essence",
+  "logo",
+  "color",
+  "typography",
+  "voice",
+  "photography",
+];
+const componentSections = ["buttons", "controls", "badges", "layout", "tables"];
+
+function renderGallery(dictionary: DesignSystemDict = copy) {
   act(() =>
     root.render(
       <NavbarChromeContext.Provider
         value={{ setNavbarBackgroundPrimary: solid }}
       >
-        <DesignSystemGallery copy={copy} />
+        <DesignSystemGallery copy={dictionary} />
       </NavbarChromeContext.Provider>,
     ),
   );
+}
+
+it.each([en.designSystem, es.designSystem])(
+  "groups brand and component anchors under localized nav labels",
+  (raw) => {
+    const localized = raw as DesignSystemDict;
+    renderGallery(localized);
+    const groups = Array.from(
+      container.querySelectorAll<HTMLElement>('nav [role="group"]'),
+    );
+    expect(groups).toHaveLength(2);
+    const labelOf = (group: HTMLElement) =>
+      container.querySelector(`#${group.getAttribute("aria-labelledby")}`)!
+        .textContent;
+    expect(labelOf(groups[0])).toBe(localized.groups.brand);
+    expect(labelOf(groups[1])).toBe(localized.groups.components);
+    const hrefs = (group: HTMLElement) =>
+      Array.from(group.querySelectorAll("a")).map((a) =>
+        a.getAttribute("href"),
+      );
+    expect(hrefs(groups[0])).toEqual(brandSections.map((id) => `#${id}`));
+    expect(hrefs(groups[1])).toEqual(componentSections.map((id) => `#${id}`));
+    for (const id of [...brandSections, ...componentSections])
+      expect(container.querySelector(`section#${id}`)).not.toBeNull();
+    const voice = container.querySelector("#voice")!;
+    const subtitle = voice.querySelector("[data-section-lead]")!;
+    expect(subtitle.textContent).toBe(localized.voice.intro.title);
+    expect(subtitle.className).toContain("font-nothing-you-could-do");
+    expect(subtitle.className).not.toContain("uppercase");
+    expect(voice.querySelector("[data-voice-stories]")?.textContent).toContain(
+      localized.voice.stories.title,
+    );
+    expect(container.querySelector("#foundations")).toBeNull();
+  },
+);
+
+it("uses eleven numbered anchor sections and safely reveals scrollspy without changing focus or hash", () => {
+  renderGallery();
   expect(solid).toHaveBeenCalledWith(true);
   expect(container.querySelector("main")).toBeNull();
   expect(
@@ -55,8 +104,10 @@ it("uses six numbered anchor sections and safely reveals scrollspy without chang
   const navigation = container.querySelector("nav")!;
   expect(navigation.className).toContain("top-16");
   const links = navigation.querySelectorAll<HTMLAnchorElement>("a");
-  expect(links).toHaveLength(6);
+  expect(links).toHaveLength(11);
   const sections = Array.from(container.querySelectorAll("section"));
+  expect(sections).toHaveLength(11);
+  expect(links[6].textContent).toContain("07");
   sections.forEach((section, index) => {
     expect(section.className).toContain("scroll-mt-36");
     vi.spyOn(section, "getBoundingClientRect").mockReturnValue({
@@ -68,12 +119,12 @@ it("uses six numbered anchor sections and safely reveals scrollspy without chang
   expect(links[0].getAttribute("aria-current")).toBe("location");
   links[0].focus();
   const hash = window.location.hash;
-  const scroller = links[0].parentElement!;
+  const scroller = navigation.querySelector<HTMLElement>(".overflow-x-auto")!;
   vi.spyOn(scroller, "getBoundingClientRect").mockReturnValue({
     left: 0,
     right: 300,
   } as DOMRect);
-  vi.spyOn(links[5], "getBoundingClientRect").mockReturnValue({
+  vi.spyOn(links[10], "getBoundingClientRect").mockReturnValue({
     left: 850,
     right: 1000,
   } as DOMRect);
@@ -84,7 +135,7 @@ it("uses six numbered anchor sections and safely reveals scrollspy without chang
   );
   act(() => window.dispatchEvent(new Event("scroll")));
   act(() => frames.shift()!(1));
-  expect(links[5].getAttribute("aria-current")).toBe("location");
+  expect(links[10].getAttribute("aria-current")).toBe("location");
   expect(scroller.scrollLeft).toBe(700);
   expect(document.activeElement).toBe(links[0]);
   expect(window.location.hash).toBe(hash);

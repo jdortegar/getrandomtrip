@@ -20,7 +20,7 @@ export function GalleryHero({ copy }: GalleryHeroProps) {
           title={copy.title}
         />
         <Button asChild>
-          <a href="#foundations">
+          <a href="#essence">
             {copy.explore}
             <ArrowDownRight aria-hidden className="h-4 w-4" />
           </a>

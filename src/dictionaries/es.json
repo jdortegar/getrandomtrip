@@ -4,21 +4,21 @@
   },
   "designSystem": {
     "skip": "Saltar a la galería",
-    "navigation": "Secciones de componentes",
+    "navigation": "Secciones del sistema de diseño",
     "usage": "Ejemplo de uso",
     "backToTop": "Volver arriba ↑",
     "footer": "Randomtrip / Un lenguaje visual compartido",
     "hero": {
-      "eyebrow": "Randomtrip / La biblioteca de componentes",
+      "eyebrow": "Randomtrip / Marca y componentes",
       "title": "Diseñado para lo inesperado.",
-      "description": "Un lenguaje visual para cada viaje. Explora las bases y los componentes reales e interactivos de Randomtrip.",
+      "description": "Un lenguaje visual para cada viaje. Explora la marca y los componentes reales e interactivos de Randomtrip.",
       "explore": "Explorar el sistema",
       "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
       "overview": "Las bases",
       "facts": [
         {
           "label": "Tipografías",
-          "value": "Barlow + Barlow Condensed"
+          "value": "Barlow, Barlow Condensed + Nothing You Could Do"
         },
         {
           "label": "Apariencia",
@@ -31,10 +31,35 @@
       ]
     },
     "sections": {
-      "foundations": {
-        "nav": "Fundamentos",
-        "title": "Color y tipografía",
-        "description": "Un lienzo cálido y una tipografía con carácter. Ground y Mineral Sage dan espacio al viaje; Deep Teal y Ochre guían la mirada."
+      "essence": {
+        "nav": "Esencia",
+        "title": "Esencia y North Star",
+        "description": "Por qué existimos, en qué creemos y la idea que guía cada decisión de marca."
+      },
+      "logo": {
+        "nav": "Logo",
+        "title": "Logo de marca",
+        "description": "Isologo, lockup y lockup con tagline — después las cuatro combinaciones de color. Siempre sobre un color de la paleta, nunca sobre un fondo improvisado."
+      },
+      "color": {
+        "nav": "Color",
+        "title": "Paleta de color",
+        "description": "Que aporta claridad, carácter y un toque de asombro. Nombres de marca, tokens y la proporción que los mantiene en equilibrio."
+      },
+      "typography": {
+        "nav": "Tipografía",
+        "title": "Nuestras letras dan vida a la historia",
+        "description": "Tres voces tipográficas: editorial, humana y documental. Y cómo se comportan sobre imágenes."
+      },
+      "voice": {
+        "nav": "Voz y payoffs",
+        "title": "Tono de voz y payoffs",
+        "description": "No expliques la magia. Deja la curiosidad justa para que quieran descubrirla."
+      },
+      "photography": {
+        "nav": "Fotografía",
+        "title": "Fotografía y Trippers",
+        "description": "Momentos reales. Un poco más de magia. Y el marco de colección que reconoce a cada Tripper."
       },
       "buttons": {
         "nav": "Botones y enlaces",
@@ -62,50 +87,575 @@
         "description": "Busca, filtra, ordena y recorre experiencias ficticias. Todas las interacciones se quedan en esta página."
       }
     },
-    "foundations": {
+    "groups": {
+      "brand": "Marca",
+      "components": "Componentes"
+    },
+    "essence": {
+      "foundationsTitle": "Los fundamentos",
+      "positioningTitle": "Posicionamiento de marca",
+      "northStar": {
+        "label": "North Star",
+        "value": "El asombro empieza donde termina la certeza."
+      },
+      "context": {
+        "label": "El contexto",
+        "title": "Viajar se volvió demasiado planificado.",
+        "body": "Las personas pasan horas comparando destinos, hoteles, reseñas e itinerarios para escapadas cortas que deberían ayudarlas a desconectarse.",
+        "question": "¿Y si por una vez no tuvieras que elegir nada?"
+      },
+      "purpose": {
+        "label": "Nuestro propósito",
+        "hint": "Por qué existimos",
+        "title": "Hacer que viajar vuelva a sentirse mágico.",
+        "body": "Ayudar a las personas a descubrir viajes que jamás habrían elegido, pero que terminan amando."
+      },
+      "vision": {
+        "label": "Nuestra visión",
+        "hint": "Hacia dónde vamos",
+        "body": "Un mundo donde las personas viajan con más curiosidad y menos suposiciones."
+      },
+      "belief": {
+        "label": "Nuestras creencias",
+        "title": "Las mejores experiencias no siempre son las que elegimos.",
+        "body": [
+          "Cuando optimizamos cada decisión, a menudo terminamos repitiéndonos.",
+          "Los lugares que buscamos suelen ser los lugares que ya habíamos imaginado.",
+          "Las experiencias que recordamos, en cambio, suelen ser las que nunca esperamos."
+        ]
+      },
+      "essence": {
+        "label": "Esencia de marca",
+        "value": "Serendipia por diseño"
+      },
+      "values": {
+        "label": "Valores fundamentales",
+        "items": [
+          {
+            "name": "Curiosidad",
+            "description": "Nos impulsa a ir más allá de lo conocido y descubrir lo inesperado."
+          },
+          {
+            "name": "Confianza",
+            "description": "Nos permite soltar el control, sabiendo que todo está cuidadosamente diseñado."
+          },
+          {
+            "name": "Facilidad",
+            "description": "Eliminamos decisiones y planificación para dejar más espacio a la serendipia."
+          }
+        ]
+      },
+      "character": {
+        "label": "Carácter de marca",
+        "items": ["Curioso", "Humano", "Ligero", "Inesperado"]
+      },
+      "promise": {
+        "label": "Promesa de marca",
+        "value": "Redescubrir el asombro de viajar"
+      },
+      "valueProposition": {
+        "label": "Propuesta de valor",
+        "value": "Viajes que no habrías elegido, pero que terminas amando."
+      },
+      "insight": {
+        "label": "Consumer insight",
+        "value": "Quiero viajar y descubrir algo nuevo, pero estoy cansado de pasar horas investigando, comparando, planificando sin encontrar destinos que me sorprendan de verdad."
+      },
+      "consumer": {
+        "label": "Consumer description",
+        "value": "Personas viajeras curiosas, impulsadas por las experiencias, digitalmente hábiles, culturalmente curiosas y abiertas a probar cosas fuera de sus preferencias habituales."
+      }
+    },
+    "logo": {
+      "lockups": {
+        "original": {
+          "name": "Original sobre Off White",
+          "description": "La versión principal. Ícono en Ochre, palabra en Deep Teal.",
+          "alt": "Logo de Randomtrip en dos colores sobre Off White"
+        },
+        "teal": {
+          "name": "Ochre sobre Deep Teal",
+          "description": "Para fondos oscuros de marca. Logo completo en Ochre.",
+          "alt": "Logo de Randomtrip en Ochre sobre Deep Teal"
+        },
+        "sage": {
+          "name": "Deep Teal sobre Mineral Sage",
+          "description": "Para secciones y bloques en Mineral Sage. Logo completo en Deep Teal.",
+          "alt": "Logo de Randomtrip en Deep Teal sobre Mineral Sage"
+        },
+        "ochre": {
+          "name": "Blanco sobre Ochre",
+          "description": "Para momentos de energía. Logo completo en blanco.",
+          "alt": "Logo de Randomtrip en blanco sobre Ochre"
+        }
+      },
+      "iso": {
+        "name": "Isologo",
+        "description": "El símbolo solo. Para favicons, avatares y espacios estrechos.",
+        "alt": "Isologo de Randomtrip"
+      },
+      "noTagline": {
+        "name": "Sin tagline",
+        "description": "El lockup de todos los días. Ícono y palabra, nada más.",
+        "alt": "Logo de Randomtrip sin tagline"
+      },
+      "tagline": {
+        "name": "Con tagline",
+        "description": "La versión con tagline, para piezas donde el logo se presenta solo.",
+        "alt": "Logo de Randomtrip con tagline"
+      },
+      "note": "Las versiones de un solo color usan el mismo archivo SVG como máscara, así que el trazo es siempre idéntico al original."
+    },
+    "color": {
+      "intro": {
+        "title": "Nuestra paleta nace de la naturaleza, los caminos abiertos y los descubrimientos que importan.",
+        "body": "Combina calma y confianza con una chispa de energía inesperada. Crea un mundo propio, contemporáneo, cálido y lleno de posibilidades."
+      },
+      "signal": {
+        "title": "El color es una señal de marca",
+        "body": "El uso constante de nuestros colores construye reconocimiento y crea una experiencia Randomtrip fluida en cada punto de contacto."
+      },
       "clipboard": {
         "action": "Copiar color",
         "pending": "Copiando…",
         "success": "Color copiado",
         "failure": "No se pudo copiar. Selecciona el valor visible y cópialo manualmente."
       },
-      "colors": {
-        "primary": {
-          "name": "Deep Teal",
-          "usage": "Acciones, texto, foco · 5–10%"
+      "rgbLabel": "RGB",
+      "tiers": {
+        "core": "Paleta principal",
+        "dark": "Tonos oscuros",
+        "secondary": "Paleta secundaria",
+        "ui": "Neutros de interfaz"
+      },
+      "swatches": {
+        "offWhite": {
+          "name": "Off White",
+          "traits": "Ligero | Sereno | Limpio",
+          "usage": "Nuestro fondo principal. Aporta espacio, claridad y una sensación moderna y ligera."
         },
-        "secondary": {
+        "mineralSage": {
           "name": "Mineral Sage",
-          "usage": "Superficies de apoyo · 30%"
+          "traits": "Curioso | Natural | Humano",
+          "usage": "Nuestro color secundario distintivo. Aporta naturaleza, calma y descubrimiento. Úsalo en secciones, bloques y fondos superpuestos."
         },
-        "feature": {
+        "deepTeal": {
+          "name": "Deep Teal",
+          "traits": "Fiable | Seguro | Audaz",
+          "usage": "Nuestro color principal para texto, navegación y elementos sólidos. Ancla la marca con profundidad y confianza."
+        },
+        "ochre": {
           "name": "Ochre",
-          "usage": "Pequeños puntos de énfasis · 0–5%"
+          "traits": "Inesperado | Enérgico | Optimista",
+          "usage": "Nuestro acento distintivo. Añade energía, destaca momentos clave y da vida al espíritu de la sorpresa."
         },
-        "ground": {
-          "name": "Ground",
-          "usage": "El lienzo principal · 60%"
+        "deepTealDark": {
+          "name": "Deep Teal Dark",
+          "traits": "",
+          "usage": "Solo para texto sobre imágenes."
         },
-        "surface": {
-          "name": "Superficie",
-          "usage": "Tarjetas y paneles"
+        "sageDark": {
+          "name": "Sage Dark",
+          "traits": "",
+          "usage": "Solo para texto sobre imágenes."
+        },
+        "canyonClay": {
+          "name": "Canyon Clay",
+          "traits": "",
+          "usage": "Reservado para XSED."
+        },
+        "skyDrift": {
+          "name": "Sky Drift",
+          "traits": "",
+          "usage": "Solo referencia. Todavía sin rol en la interfaz."
         },
         "ink": {
           "name": "Ink",
-          "usage": "Títulos y texto"
+          "traits": "",
+          "usage": "Títulos y texto de interfaz."
+        },
+        "surface": {
+          "name": "Superficie",
+          "traits": "",
+          "usage": "Tarjetas y paneles."
         }
       },
-      "paletteNote": "Selecciona un color para copiar su valor CSS actual. Las proporciones orientan la vista completa. XSED Orange se reserva para la submarca XSED, no para la interfaz general.",
-      "typography": "Dos tipografías. Una voz.",
-      "typeNote": "Barlow para leer. Barlow Condensed para títulos y números.",
-      "displayLabel": "Destacado / Barlow Condensed · 36–60 px",
-      "displaySample": "Más allá de lo conocido.",
-      "headingLabel": "Sección / Barlow Condensed · 30 px",
-      "headingSample": "Cada viaje empieza en algún lugar.",
-      "bodyLabel": "Texto / Barlow · 16 px",
-      "bodySample": "Deja espacio para lo inesperado. Los detalles cuidados y un poco de curiosidad convierten un viaje en algo que vale la pena recordar.",
-      "captionLabel": "Detalle / Barlow · 12 px",
-      "captionSample": "Un pequeño detalle. Una experiencia más clara."
+      "ratio": {
+        "title": "Cómo usarla",
+        "description": "La proporción de cada vista completa. Deep Teal es el que más se exagera: es para texto y detalles, no para grandes superficies.",
+        "items": {
+          "offWhite": {
+            "share": "60%",
+            "label": "Neutro",
+            "usage": "Usa Off White como lienzo principal para crear claridad y aire. Debe dominar el fondo junto con la fotografía."
+          },
+          "mineralSage": {
+            "share": "30%",
+            "label": "Secundario",
+            "usage": "Usa Mineral Sage en algunas áreas, secciones, contenedores y fondos sutiles."
+          },
+          "deepTeal": {
+            "share": "5–10%",
+            "label": "Acento",
+            "usage": "Usa Deep Teal para texto, titulares, navegación, iconos y elementos clave."
+          },
+          "ochre": {
+            "share": "0–5%",
+            "label": "Inesperado",
+            "usage": "Usa Ochre para llamadas a la acción, destacados y momentos que necesitan energía."
+          }
+        }
+      },
+      "mapping": {
+        "title": "De la marca al código",
+        "description": "Cada color de marca tiene un token de paleta. La interfaz usa los tokens de rol; los colores sin rol se usan por su nombre de paleta, o no se usan.",
+        "brand": "Color de marca",
+        "palette": "Token de paleta",
+        "role": "Token de rol",
+        "none": "—"
+      }
+    },
+    "typography": {
+      "intro": {
+        "title": "Nuestra tipografía es editorial, humana e inesperada, igual que los viajes que creamos.",
+        "body": "La tipografía es una de las formas más potentes de dar vida a nuestra voz. Define cómo se siente la gente, cómo lee y cómo conecta. Une confianza y curiosidad, estructura y alma, claridad y un toque de sorpresa."
+      },
+      "voices": {
+        "editorial": {
+          "title": "1. La voz editorial",
+          "traits": "Audaz. Provocadora. Segura.",
+          "purpose": "Para frases potentes que despiertan curiosidad.",
+          "sample": "Viajes que no habrías elegido",
+          "font": "Barlow Condensed Bold · 700"
+        },
+        "human": {
+          "title": "2. La voz humana",
+          "traits": "Personal. Íntima. Cercana.",
+          "purpose": "Para giros emocionales, reflexiones y fragmentos de una historia.",
+          "sample": "Pero que terminas amando.",
+          "font": "Nothing You Could Do"
+        },
+        "documentary": {
+          "title": "3. La voz documental y el texto de marca",
+          "traits": "Real. Clara. Fiable.",
+          "purpose": "Para información concreta que ancla la historia a la realidad.",
+          "sample": "Las mejores historias son las que de verdad pasaron.",
+          "font": "Barlow Regular · 400"
+        }
+      },
+      "images": {
+        "title": "Tipografía en imágenes",
+        "lead": "El texto también viaja.",
+        "body": "La tipografía sobre imagen es parte de nuestra forma de contar historias. Debe sentirse integrada en la imagen, crear jerarquía y dejar espacio para que la fotografía también cuente.",
+        "worksLabel": "Sí funciona",
+        "failsLabel": "No funciona",
+        "rules": [
+          {
+            "title": "01 | Idea protagonista",
+            "body": "Usa Barlow Condensed en Medium Bold, siempre en mayúsculas, con el interletrado e interlínea de referencia. Una voz directa y fácil de leer.",
+            "alt": "Una persona sentada sobre rocas mirando una costa de montaña",
+            "works": {
+              "primary": "Menos\nelección —\nmás\nposibilidad."
+            },
+            "fails": {
+              "primary": "Menos\nelección\nmás\nposibilidad."
+            }
+          },
+          {
+            "title": "02 | Giros emocionales",
+            "body": "Para los momentos más humanos o emocionales usa Nothing You Could Do. Funciona mejor 1 o 2 puntos más pequeña que la idea principal.",
+            "alt": "Una persona en el agua mirando el atardecer sobre el mar",
+            "works": {
+              "primary": "Hay un viaje\nque vas a hacer\neste año",
+              "secondary": "y no lo vas a planificar."
+            },
+            "fails": {
+              "primary": "Hay un viaje\nque vas a hacer\neste año",
+              "secondary": "y no lo vas a planificar."
+            }
+          },
+          {
+            "title": "03 | Combinación de tipografías",
+            "body": "Combina dos tipografías solo excepcionalmente, cuando la frase se divide de forma natural y quieres enfatizar una parte más emocional.",
+            "alt": "Zapatillas apoyadas en la ventanilla de un auto sobre un lago de montaña",
+            "works": {
+              "primary": "Tu próximo\nfin de semana —",
+              "secondary": "empieza este domingo."
+            },
+            "fails": {
+              "primary": "Deja espacio\npara lo\ninesperado."
+            }
+          },
+          {
+            "title": "04 | Jerarquía de mensajes",
+            "body": "Cuando son dos mensajes distintos, usa Barlow Condensed o Nothing You Could Do para el principal y Barlow Regular en minúsculas para el secundario.",
+            "alt": "Un callejón de piedra que se abre a una bahía con veleros",
+            "works": {
+              "primary": "Viajar se llenó\nde decisiones.",
+              "caption": "Comparar, elegir,\nplanificar cada detalle."
+            },
+            "fails": {
+              "primary": "Viajar se llenó\nde decisiones.",
+              "caption": "Comparar.\nElegir.\nPlanificar cada detalle."
+            }
+          },
+          {
+            "title": "05 | Composición y alineación",
+            "body": "Alinea el texto a la izquierda o derecha. Centra solo para enfatizar. Deja margen alrededor del texto para que respire y evita acercarlo demasiado a los bordes.",
+            "alt": "Una viajera asomada a una van frente a una carretera costera",
+            "works": {
+              "primary": "Tú sabes\nel precio,\nqué incluye\ny cuándo viajas.",
+              "caption": "¿El destino?\nLo descubres 48 horas antes."
+            },
+            "fails": {
+              "primary": "Por suerte,\nes domingo!",
+              "caption": "Únete a la lista de espera. Te avisamos cuando abra el próximo Sunday Drop."
+            }
+          },
+          {
+            "title": "06 | Color del texto",
+            "body": "Usa blanco sobre imágenes oscuras. Usa Deep Teal Dark y Sage Dark sobre imágenes claras, siempre priorizando contraste y legibilidad.",
+            "alt": "Una cámara y un mapa abierto sobre un muro de piedra al sol",
+            "works": {
+              "primary": "Cada domingo —\nuna nueva\nposibilidad."
+            },
+            "fails": {
+              "primary": "Más posibilidad.",
+              "caption": "Cupos limitados para una escapada el siguiente fin de semana."
+            }
+          }
+        ],
+        "principles": {
+          "title": "Principios clave de tipografía",
+          "body": "El texto forma parte de la historia, no es una capa encima. Usa contraste, escala y ubicación para crear intriga. Deja espacio. No toda la imagen necesita texto."
+        },
+        "decorative": {
+          "title": "Claro y decorativo",
+          "body": "La lectura siempre es lo primero. La tipografía debe acompañar la imagen, nunca competir con ella."
+        }
+      }
+    },
+    "voice": {
+      "intro": {
+        "title": "Habla como alguien con quien querrías viajar",
+        "body": "No expliques la magia. Deja la curiosidad justa para que quieran descubrirla."
+      },
+      "characterLabel": "De nuestro carácter de marca…",
+      "toneLabel": "…a nuestro tono de voz",
+      "worksLabel": "Sí funciona",
+      "failsLabel": "No funciona",
+      "cards": [
+        {
+          "trait": "Curioso",
+          "description": "Miramos más allá de lo evidente y siempre nos preguntamos qué más podría pasar.",
+          "voice": "Abre posibilidades en vez de vender destinos",
+          "works": "¿Y si no eligieras adónde ir?",
+          "fails": "Descubre nuestra amplia selección de viajes emocionantes."
+        },
+        {
+          "trait": "Humano",
+          "description": "Somos cercanos, reales e imperfectos. Celebramos los vínculos entre personas y los detalles.",
+          "voice": "Habla como una persona, no como una plataforma de viajes",
+          "works": "No estabas buscando este lugar. Mejor así.",
+          "fails": "Nuestras plataformas ofrecen experiencias únicas y personalizadas."
+        },
+        {
+          "trait": "Ligero",
+          "description": "Hacemos que descubrir sea simple e intuitivo. Sin fricción. Solo espacio para lo que importa.",
+          "voice": "Di menos, haz que cada palabra cuente",
+          "works": "Haz la maleta. Nosotros seguimos desde aquí.",
+          "fails": "Completa tus preferencias y crearemos un viaje sorpresa a tu medida."
+        },
+        {
+          "trait": "Inesperado",
+          "description": "Nos gusta el giro inesperado. Una pequeña sorpresa convierte un viaje cualquiera en uno que no se olvida.",
+          "voice": "Despierta curiosidad, no lo reveles todo",
+          "works": "Tu mejor historia podría estar donde nunca buscaste.",
+          "fails": "Reserva un viaje sorpresa y descubre tu destino 48 horas antes de salir."
+        }
+      ],
+      "stories": {
+        "title": "Coleccionamos historias",
+        "body": "Hablamos de posibilidades, historias y de soltar el control. No de misterio, destinos sorpresa ni mecanismos."
+      },
+      "payoffs": {
+        "title": "Una firma. Cinco mensajes.",
+        "subtitle": "Cada uno tiene un trabajo distinto.",
+        "body": "Randomtrip se expresa a través de un sistema simple y consistente de payoffs, diseñado para contar la misma idea según el objetivo y el contexto de cada comunicación.",
+        "purposeLabel": "Propósito",
+        "useLabel": "Uso recomendado",
+        "items": {
+          "philosophy": {
+            "label": "01 | La filosofía",
+            "text": "El asombro\nempieza\ndonde termina\nla certeza.",
+            "purpose": "La expresión más elevada de la marca. Define nuestra forma de entender el viaje: la magia ocurre cuando soltamos el control.",
+            "use": "Social Media, hero del sitio web, portadas y piezas de branding institucional y manifiestos de marca."
+          },
+          "benefit": {
+            "label": "02 | El beneficio",
+            "text": "Menos\nelección\nmás\nposibilidades.",
+            "purpose": "Traduce la propuesta de Randomtrip a un beneficio inmediato. Responde directamente a la fatiga de decisión y al estrés de la planificación.",
+            "use": "Social Media, secciones de \"Cómo funciona\", mailings de producto y beneficios clave en la landing page."
+          },
+          "promise": {
+            "label": "03 | La promesa",
+            "text": "Hay viajes\nque nunca\nelegirías.",
+            "accent": "Hasta que los vives.",
+            "purpose": "Convierte la tensión central de Randomtrip en curiosidad. Resuelve la barrera de la desconfianza hacia lo desconocido.",
+            "use": "Social Media, cerca de testimonios, contenido UGC, carruseles de Instagram de experiencias reales y el checkout."
+          },
+          "emotion": {
+            "label": "04 | La emoción",
+            "text": "Vuelve a sentir\nla magia\nde viajar.",
+            "purpose": "Es la expresión más directa de nuestro propósito de marca y la más emocional y humana del sistema. Conecta con el deseo de volver a sentir la magia del descubrimiento genuino.",
+            "use": "Social Media, contenidos emocionales de Brand Story, footers del sitio web y agradecimientos post-viaje."
+          },
+          "differentiator": {
+            "label": "05 | El diferencial",
+            "text": "No busques\ndestinos.\nEncuentra\nhistorias.",
+            "purpose": "Reformula qué viene a buscar una persona a Randomtrip. El valor no está en acumular destinos, sino en vivir algo que termine convirtiéndose en una historia.",
+            "use": "Bio de redes sociales, sección de Trippers, y campañas de branding emocional y de comunidad."
+          }
+        },
+        "rule": {
+          "title": "Una idea protagonista",
+          "body": "Cada pieza debe tener una expresión principal, elegida según el objetivo de comunicación. Puede incorporar una segunda, como refuerzo, cuando ayude a completar la historia."
+        },
+        "signature": {
+          "label": "La firma de marca",
+          "words": "Wonder • Wander",
+          "accent": "Repeat",
+          "purpose": "Firma institucional y dispositivo de reconocimiento.",
+          "use": "Junto al logotipo o como cierre de piezas de marca, campañas, video, social, packaging y comunicaciones institucionales."
+        }
+      }
+    },
+    "photography": {
+      "philosophy": {
+        "title": "Filosofía fotográfica",
+        "lead": "No buscamos destinos. Buscamos historias.",
+        "body": "La fotografía de Randomtrip no trata de demostrar adónde fuiste. Trata de capturar los momentos que hicieron que el viaje valiera la pena recordar. Nuestra fotografía siempre debe dejar un poco de espacio a la imaginación.",
+        "items": [
+          {
+            "title": "Real. No perfecta",
+            "body": "Luz natural. Encuadres imperfectos. Movimiento. Grano. Sombras. Recortes inesperados. Personas reales, sin posar. La vida pasando, no posando.",
+            "alt": "Una puerta azul y un sombrero de paja a la sombra de la tarde"
+          },
+          {
+            "title": "Actitud, más que el destino",
+            "body": "Un detalle pequeño puede decir más que un lugar emblemático. Fotografiamos la sensación de descubrir, no solo el lugar. La imagen debería hacerte pensar: ¿qué pasó aquí?",
+            "alt": "Una mano apoyada en la ventanilla de un tren sobre un valle verde"
+          },
+          {
+            "title": "Historias. No postales",
+            "body": "Puertas. Mesas después de comer. Una vista desde el tren. Algo olvidado. Alguien doblando una esquina. Momentos con historia, incluso cuando no la conocemos completa.",
+            "alt": "Una mesa después de almorzar, todavía al sol"
+          },
+          {
+            "title": "Coleccionada",
+            "body": "Cada fotografía debe sentirse como algo descubierto por el camino, no como algo creado para la cámara.",
+            "alt": "Una calle de piedra que baja hacia el agua"
+          },
+          {
+            "title": "Tratamiento de color coherente",
+            "body": "Cada imagen lleva un pigmento sutil de nuestra paleta para crear una estética reconocible. Variedad con identidad propia.",
+            "alt": "Un pueblo en la ladera sobre un mar brillante"
+          }
+        ]
+      },
+      "treatment": {
+        "title": "Tratamiento fotográfico",
+        "lead": "Momentos reales. Un poco más de magia.",
+        "body": "Retratamos los lugares tal como son y elevamos suavemente su atmósfera para que lo cotidiano se sienta un poco más extraordinario: profundidad de Salvia, calidez de Ocre y color natural.",
+        "items": [
+          {
+            "title": "Equilibrado y natural",
+            "body": "La realidad va primero. Los colores siguen siendo creíbles y los lugares se sienten reales. La magia está en cómo los miramos.",
+            "alt": "Una viajera asomada a una van frente a la costa"
+          },
+          {
+            "title": "Sage en las sombras",
+            "body": "Un toque de curiosidad: Mineral Sage vive sutilmente en sombras, follaje y tonos neutros, dando a cada imagen nuestra mirada.",
+            "alt": "Un callejón tratado de casas de piedra hacia el mar"
+          },
+          {
+            "title": "Ocre en la luz",
+            "body": "Donde la magia atrapa la luz. El Ocre da calidez al sol, la piel, la piedra y la madera, con energía y asombro.",
+            "alt": "Una persona en el agua al atardecer"
+          },
+          {
+            "title": "Primero lo real. Después la magia",
+            "body": "Partimos de una fotografía honesta y creíble. El tratamiento acompaña el momento, nunca lo inventa.",
+            "alt": "Una mujer con sombrero frente a un atardecer en la playa"
+          },
+          {
+            "title": "Coleccionado. No producido",
+            "body": "Grano sutil, negros suaves y textura natural hacen que cada foto se sienta como un momento para guardar.",
+            "alt": "Una cámara y un mapa sobre un muro de piedra al sol"
+          }
+        ]
+      },
+      "trippers": {
+        "title": "Tratamiento de los Trippers",
+        "lead": "Personas reales. Historias inesperadas.",
+        "body": "Nuestros Trippers dan vida a Randomtrip. El tratamiento es cálido, imperfecto y auténtico. Nunca demasiado pulido. Dejamos que el momento hable. Solo lo enmarcamos con curiosidad.",
+        "examplesLabel": "Ejemplo de tratamiento",
+        "principlesLabel": "Principios del tratamiento",
+        "principles": [
+          {
+            "title": "Fotos reales y personales",
+            "body": "Personas, momentos e historias reales, contadas con sus propias palabras."
+          },
+          {
+            "title": "Texto curioso",
+            "body": "Detalles escritos a mano y elementos orgánicos que invitan a imaginar."
+          },
+          {
+            "title": "Marco de colección",
+            "body": "Siempre con la franja vertical de libreta para transmitir una colección. Nombre y usuario de redes para reconocer a cada Tripper."
+          }
+        ],
+        "note": {
+          "title": "Los Trippers cuentan historias",
+          "body": "Sus momentos inspiran a otros a dejar espacio para lo inesperado y coleccionar sus propias historias."
+        },
+        "sampleNote": "Nombres y usuarios de ejemplo.",
+        "collection": {
+          "number": "Col. #0007",
+          "role": "Randomtripper",
+          "location": "Buenos Aires, Argentina"
+        },
+        "examples": [
+          {
+            "handle": "@mateo.explora",
+            "name": "Mateo",
+            "subtitle": "El explorador",
+            "quote": "Busca lugares tranquilos, encuentros reales y caminos poco transitados.",
+            "alt": "Mateo sentado sobre una roca al atardecer"
+          },
+          {
+            "handle": "@lucia.captura",
+            "name": "Lucía",
+            "subtitle": "La que busca cultura",
+            "quote": "Siempre encuentra la mesa donde comen los locales.",
+            "alt": "Lucía sentada contra un muro iluminado por el sol"
+          },
+          {
+            "handle": "@caro.tripper",
+            "name": "Caro",
+            "subtitle": "La Tripper en familia",
+            "quote": "Más tiempo juntos. Mejores historias.",
+            "alt": "Caro caminando por un sendero con sus hijos"
+          },
+          {
+            "handle": "@tomas.reset",
+            "name": "Tomás",
+            "subtitle": "El que busca resetear",
+            "quote": "Menos prisa. Más presencia.",
+            "alt": "Tomás sentado junto al agua al anochecer"
+          }
+        ]
+      }
     },
     "buttons": {
       "variants": "Una jerarquía, muchas acciones",
@@ -1422,7 +1972,20 @@
         "Serás redirigido al checkout para completar el pago."
       ],
       "days": ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"],
-      "months": ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+      "months": [
+        "ene",
+        "feb",
+        "mar",
+        "abr",
+        "may",
+        "jun",
+        "jul",
+        "ago",
+        "sep",
+        "oct",
+        "nov",
+        "dic"
+      ]
     }
   },
   "xsedDropsPage": {

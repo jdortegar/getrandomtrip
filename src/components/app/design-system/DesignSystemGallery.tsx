@@ -6,11 +6,17 @@ import { Button } from "@/components/ui/Button";
 import { BadgeExamples } from "@/components/app/design-system/BadgeExamples";
 import { ButtonExamples } from "@/components/app/design-system/ButtonExamples";
 import { ControlExamples } from "@/components/app/design-system/ControlExamples";
-import { FoundationExamples } from "@/components/app/design-system/FoundationExamples";
 import { GalleryHero } from "@/components/app/design-system/GalleryHero";
 import { GallerySection } from "@/components/app/design-system/GallerySection";
 import { LayoutExamples } from "@/components/app/design-system/LayoutExamples";
 import { TableExamples } from "@/components/app/design-system/TableExamples";
+import { BrandColor } from "@/components/app/design-system/brand/BrandColor";
+import { BrandEssence } from "@/components/app/design-system/brand/BrandEssence";
+import { BrandLogo } from "@/components/app/design-system/brand/BrandLogo";
+import { BrandPhotography } from "@/components/app/design-system/brand/BrandPhotography";
+import { BrandTypography } from "@/components/app/design-system/brand/BrandTypography";
+import { BrandVoice } from "@/components/app/design-system/brand/BrandVoice";
+import { VoiceStoriesCard } from "@/components/app/design-system/brand/VoiceStoriesCard";
 import { useNavbarChrome } from "@/context/NavbarChromeContext";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
@@ -19,14 +25,26 @@ import styles from "@/components/app/design-system/DesignSystemGallery.module.cs
 interface DesignSystemGalleryProps {
   copy: DesignSystemDict;
 }
-const sections = [
-  "foundations",
-  "buttons",
-  "controls",
-  "badges",
-  "layout",
-  "tables",
+const groups = [
+  {
+    id: "brand",
+    sections: [
+      "essence",
+      "logo",
+      "color",
+      "typography",
+      "voice",
+      "photography",
+    ],
+  },
+  {
+    id: "components",
+    sections: ["buttons", "controls", "badges", "layout", "tables"],
+  },
 ] as const;
+const sections = groups.flatMap((group) => group.sections);
+const numberOf = (id: (typeof sections)[number]) =>
+  String(sections.indexOf(id) + 1).padStart(2, "0");
 
 export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
   const [active, setActive] = useState<string>(sections[0]);
@@ -127,27 +145,43 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
       >
         <div className="rt-container">
           <div className="flex min-w-0 overflow-x-auto" ref={nav}>
-            {sections.map((id, index) => (
-              <Button
-                asChild
+            {groups.map((group, groupIndex) => (
+              <div
+                aria-labelledby={`nav-group-${group.id}`}
                 className={cn(
-                  "border-0 border-b-2 border-transparent gap-2 h-16 px-4 rounded-none shrink-0 text-neutral-600 text-xs",
-                  "hover:bg-accent",
-                  "aria-[current=location]:border-primary aria-[current=location]:text-primary",
+                  "flex items-center shrink-0",
+                  groupIndex > 0 && "border-gray-300 border-l ml-2 pl-2",
                 )}
-                key={id}
-                variant="ghost"
+                key={group.id}
+                role="group"
               >
-                <a
-                  aria-current={active === id ? "location" : undefined}
-                  href={`#${id}`}
+                <span
+                  className="font-semibold pl-2 pr-1 shrink-0 text-[10px] text-neutral-500 tracking-[0.18em] uppercase"
+                  id={`nav-group-${group.id}`}
                 >
-                  <span className="font-mono text-xs">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  {copy.sections[id].nav}
-                </a>
-              </Button>
+                  {copy.groups[group.id]}
+                </span>
+                {group.sections.map((id) => (
+                  <Button
+                    asChild
+                    className={cn(
+                      "border-0 border-b-2 border-transparent gap-2 h-16 px-4 rounded-none shrink-0 text-neutral-600 text-xs",
+                      "hover:bg-accent",
+                      "aria-[current=location]:border-primary aria-[current=location]:text-primary",
+                    )}
+                    key={id}
+                    variant="ghost"
+                  >
+                    <a
+                      aria-current={active === id ? "location" : undefined}
+                      href={`#${id}`}
+                    >
+                      <span className="font-mono text-xs">{numberOf(id)}</span>
+                      {copy.sections[id].nav}
+                    </a>
+                  </Button>
+                ))}
+              </div>
             ))}
           </div>
         </div>
@@ -159,25 +193,83 @@ export function DesignSystemGallery({ copy }: DesignSystemGalleryProps) {
       >
         <GalleryHero copy={copy.hero} />
         <GallerySection
-          copy={copy.sections.foundations}
-          id="foundations"
-          number="01"
+          copy={copy.sections.essence}
+          id="essence"
+          number={numberOf("essence")}
         >
-          <FoundationExamples copy={copy} />
+          <BrandEssence copy={copy.essence} />
         </GallerySection>
-        <GallerySection copy={copy.sections.buttons} id="buttons" number="02">
+        <GallerySection
+          copy={copy.sections.logo}
+          id="logo"
+          number={numberOf("logo")}
+        >
+          <BrandLogo copy={copy.logo} />
+        </GallerySection>
+        <GallerySection
+          copy={copy.sections.color}
+          id="color"
+          number={numberOf("color")}
+        >
+          <BrandColor copy={copy.color} usageLabel={copy.usage} />
+        </GallerySection>
+        <GallerySection
+          copy={copy.sections.typography}
+          id="typography"
+          number={numberOf("typography")}
+        >
+          <BrandTypography copy={copy.typography} />
+        </GallerySection>
+        <GallerySection
+          aside={<VoiceStoriesCard copy={copy.voice.stories} />}
+          copy={copy.sections.voice}
+          id="voice"
+          lead="start"
+          number={numberOf("voice")}
+          subtitle={copy.voice.intro.title}
+        >
+          <BrandVoice copy={copy.voice} />
+        </GallerySection>
+        <GallerySection
+          copy={copy.sections.photography}
+          id="photography"
+          number={numberOf("photography")}
+        >
+          <BrandPhotography copy={copy.photography} />
+        </GallerySection>
+        <GallerySection
+          copy={copy.sections.buttons}
+          id="buttons"
+          number={numberOf("buttons")}
+        >
           <ButtonExamples copy={copy} />
         </GallerySection>
-        <GallerySection copy={copy.sections.controls} id="controls" number="03">
+        <GallerySection
+          copy={copy.sections.controls}
+          id="controls"
+          number={numberOf("controls")}
+        >
           <ControlExamples copy={copy} />
         </GallerySection>
-        <GallerySection copy={copy.sections.badges} id="badges" number="04">
+        <GallerySection
+          copy={copy.sections.badges}
+          id="badges"
+          number={numberOf("badges")}
+        >
           <BadgeExamples copy={copy} />
         </GallerySection>
-        <GallerySection copy={copy.sections.layout} id="layout" number="05">
+        <GallerySection
+          copy={copy.sections.layout}
+          id="layout"
+          number={numberOf("layout")}
+        >
           <LayoutExamples copy={copy} />
         </GallerySection>
-        <GallerySection copy={copy.sections.tables} id="tables" number="06">
+        <GallerySection
+          copy={copy.sections.tables}
+          id="tables"
+          number={numberOf("tables")}
+        >
           <TableExamples copy={copy} />
         </GallerySection>
         <div className="border-gray-200 border-t flex flex-wrap gap-4 items-center justify-between py-8">

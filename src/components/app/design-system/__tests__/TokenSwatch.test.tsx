@@ -35,11 +35,11 @@ it.each([en.designSystem, es.designSystem])(
     act(() =>
       root.render(
         <TokenSwatch
-          copy={copy.foundations.clipboard}
+          copy={copy.color.clipboard}
           fallback="#0F5C60"
           name="Deep Teal"
           token="--color-primary"
-          usage={copy.foundations.colors.primary.usage}
+          usage={copy.color.swatches.deepTeal.usage}
         />,
       ),
     );
@@ -55,24 +55,24 @@ it.each([en.designSystem, es.designSystem])(
     expect(button.getAttribute("aria-busy")).toBe("true");
     expect(button.querySelector(".animate-spin")).not.toBeNull();
     expect(container.querySelector('[role="status"]')!.textContent).toBe(
-      copy.foundations.clipboard.pending,
+      copy.color.clipboard.pending,
     );
     await act(async () => resolve());
     expect(button.disabled).toBe(false);
     expect(button.getAttribute("aria-busy")).toBe("false");
     expect(container.querySelector('[role="status"]')!.textContent).toBe(
-      copy.foundations.clipboard.success,
+      copy.color.clipboard.success,
     );
     write.mockRejectedValueOnce(new Error("Denied"));
     await act(async () => button.click());
     expect(button.disabled).toBe(false);
     expect(container.querySelector('[role="status"]')!.textContent).toBe(
-      copy.foundations.clipboard.failure,
+      copy.color.clipboard.failure,
     );
     write.mockResolvedValueOnce();
     await act(async () => button.click());
     expect(container.querySelector('[role="status"]')!.textContent).toBe(
-      copy.foundations.clipboard.success,
+      copy.color.clipboard.success,
     );
   },
 );

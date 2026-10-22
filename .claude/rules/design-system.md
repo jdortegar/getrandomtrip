@@ -12,7 +12,33 @@ paths:
 
 ## Color Tokens
 
-Eight canonical tokens — use nothing outside these and the Tailwind neutral scale:
+Brand context (why these colors, logo, voice, photography) lives in `.claude/rules/brand.md`.
+
+### Two tiers
+
+`src/app/globals.css` defines a **palette tier** named after the Brand Book colors, and a **role tier** that points at it. The hex values live only in the palette tier.
+
+| Brand name     | Palette token    | Hex       | Role token  |
+| -------------- | ---------------- | --------- | ----------- |
+| Deep Teal      | `deep-teal`      | `#0F5C60` | `primary`   |
+| Mineral Sage   | `mineral-sage`   | `#A4B4AA` | `secondary` |
+| Ochre          | `ochre`          | `#E5A51C` | `feature`   |
+| Off White      | `off-white`      | `#F3F2ED` | `ground`    |
+| Canyon Clay    | `canyon-clay`    | `#D97E4A` | `xsed`      |
+| Deep Teal Dark | `deep-teal-dark` | `#082E30` | —           |
+| Sage Dark      | `sage-dark`      | `#4D5E54` | —           |
+| Sky Drift      | `sky-drift`      | `#6BAAC9` | —           |
+| Ink            | `ink`            | `#383838` | `ink`       |
+
+Call-site rule:
+
+- UI code uses the **role tokens** (`bg-primary`, `text-feature`, …). Never `bg-deep-teal` where `bg-primary` exists — Tailwind generates both, so this rule is the only guard.
+- Palette names are allowed directly only for the three roleless colors and inside the design-system Brand part (`src/components/app/design-system/brand/**`).
+- `deep-teal-dark` / `sage-dark`: text over light images only. `sky-drift`: no UI role yet — don't use it in UI. `canyon-clay`: XSED-only, through `xsed`.
+
+### Role tokens
+
+Eight canonical role tokens — use nothing outside these, the three roleless palette tokens above, and the Tailwind neutral scale:
 
 | Token        | Hex       | Tailwind               | Usage                                      |
 | ------------ | --------- | ---------------------- | ------------------------------------------ |
@@ -48,8 +74,8 @@ No dark mode. `<body>` is locked to `bg-ground text-ink`. Never add `dark:` vari
 
 | Role            | Classes                                                                       |
 | --------------- | ----------------------------------------------------------------------------- |
-| Section heading | `font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink` |
-| KPI value       | `font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink`   |
+| Section heading | `font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink` |
+| KPI value       | `font-barlow-condensed text-5xl font-bold leading-[.9] text-ink`   |
 | Price cell      | `font-barlow-condensed text-lg font-bold leading-none text-ink`          |
 | Eyebrow         | `text-xs font-semibold uppercase tracking-[0.18em] text-primary`          |
 | Table header    | `text-[11px] font-semibold uppercase tracking-wider text-neutral-500`         |
@@ -59,6 +85,8 @@ No dark mode. `<body>` is locked to `bg-ground text-ink`. Never add `dark:` vari
 | Label           | `text-sm font-medium text-neutral-500`                                        |
 
 Use `font-barlow-condensed` for numeric KPI values, section headings, and price cells only. Everything else uses the default body font.
+
+The Brand Book specifies the editorial voice as Barlow Condensed **Bold (700)** — use `font-bold`, never `font-extrabold`. See `.claude/rules/brand.md` for the three type voices.
 
 ---
 
@@ -72,7 +100,7 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
     {copy.eyebrow}
   </p>
-  <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+  <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
     {copy.heading}
   </h2>
 </div>
@@ -83,7 +111,7 @@ Every dashboard section opens with this exact pattern. No plain `<h2>` without t
     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
       {copy.eyebrow}
     </p>
-    <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+    <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
       {copy.heading}
     </h2>
   </div>
@@ -120,7 +148,7 @@ Rules:
   {/* Bottom: ochre accent bar + Barlow Condensed value */}
   <div className="flex items-stretch gap-3">
     <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
-    <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink">
+    <span className="font-barlow-condensed text-5xl font-bold leading-[.9] text-ink">
       {value}
     </span>
   </div>
@@ -136,7 +164,7 @@ Icon puck colors: sage (`bg-secondary/10 text-secondary`) for most stats; ochre 
   {metrics.map((m, i) => (
     <div key={i} className="flex flex-1 items-center justify-between px-6 py-4 border-l border-gray-200 first:border-l-0">
       <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-500">{m.label}</span>
-      <span className="font-barlow-condensed text-3xl font-extrabold text-ink">{m.value}</span>
+      <span className="font-barlow-condensed text-3xl font-bold text-ink">{m.value}</span>
     </div>
   ))}
 </div>

@@ -2,14 +2,17 @@
 
 import { Check, Copy, Loader2 } from "lucide-react";
 import { useRef, useState, useSyncExternalStore } from "react";
-import type { DesignSystemDict } from "@/lib/types/dictionary";
+import type { DesignSystemColorDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 
 interface TokenSwatchProps {
-  copy: DesignSystemDict["foundations"]["clipboard"];
+  copy: DesignSystemColorDict["clipboard"];
   fallback: string;
   name: string;
+  /** Preformatted RGB line, e.g. "RGB 15 92 96". */
+  rgb?: string;
   token: string;
+  traits?: string;
   usage: string;
 }
 
@@ -19,7 +22,9 @@ export function TokenSwatch({
   copy,
   fallback,
   name,
+  rgb,
   token,
+  traits,
   usage,
 }: TokenSwatchProps) {
   const [pending, setPending] = useState(false);
@@ -77,9 +82,19 @@ export function TokenSwatch({
               <Copy aria-hidden className="h-4 shrink-0 w-4" />
             )}
           </span>
+          {traits && (
+            <span className="block mt-1 text-neutral-600 text-xs">
+              {traits}
+            </span>
+          )}
           <span className="block break-all font-mono mt-2 text-neutral-600 text-xs">
             {value}
           </span>
+          {rgb && (
+            <span className="block font-mono mt-1 text-neutral-600 text-xs">
+              {rgb}
+            </span>
+          )}
           <span className="block break-all font-mono mt-1 text-neutral-600 text-xs">
             {token}
           </span>
