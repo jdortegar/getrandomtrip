@@ -21,7 +21,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "DON’T MISS THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "One night, one dinner and a local experience close to home. Head out in your own car and get a change of scenery.",
           details: [
@@ -51,7 +51,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "NO TE PIERDAS EL PRÓXIMO DROP",
+          ctaLabel: "NO TE PIERDAS EL DROP",
           description:
             "Una noche, una cena y una experiencia local cerca de casa. Sal en tu propio auto y cambia de aire.",
           details: [
@@ -388,7 +388,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "DON’T MISS THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "One night, one dinner and a local experience close to home. You get the car ready; we take care of the plan.",
           details: [
@@ -419,7 +419,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "NO SE PIERDAN EL PROXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Una noche, una cena y una experiencia local cerca de casa. Ustedes preparan el auto; nosotros, el plan.",
           details: [
@@ -764,7 +764,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "DON’T MISS THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "One night, one dinner and a local experience close to home. Gather the group and get your vehicles ready; we take care of the plan.",
           details: [
@@ -794,7 +794,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicles",
         },
         es: {
-          ctaLabel: "NO SE PIERDAN EL PROXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Una noche, una cena y una experiencia local cerca de casa. Reúnan al grupo y preparen sus vehículos; nosotros nos ocupamos del plan.",
           details: [
@@ -1138,7 +1138,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "DON’T MISS THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "One night, one dinner and a local experience close to home. Get your vehicle ready; we take care of a plan to discover as a family.",
           details: [
@@ -1169,7 +1169,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "NO SE PIERDAN EL PROXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Una noche, una cena y una experiencia local cerca de casa. Preparen su vehículo; nosotros nos ocupamos de un plan para descubrir en familia.",
           details: [
@@ -1573,7 +1573,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "DON’T MISS THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "One night, one dinner and a local experience close to home. Get your vehicle ready and enjoy a change of scenery with the one who always wants to come along.",
           details: [
@@ -1607,7 +1607,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "NO TE PIERDAS EL PROXIMO DROP",
+          ctaLabel: "NO TE PIERDAS EL DROP",
           description:
             "Una noche, una cena y una experiencia local cerca de casa. Prepara tu vehículo y cambia de aire con quien siempre quiere ir contigo.",
           details: [

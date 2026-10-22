@@ -17,12 +17,16 @@ vi.mock("@/components/by-type/TypePlanner", () => ({
     </div>
   ),
 }));
-vi.mock("@/components/landing/exploration/TravelerTypesCarousel", () => ({
-  TravelerTypesCarousel: ({
-    onSelect,
+vi.mock("@/components/ui/TabSelector", () => ({
+  TabSelector: ({
+    onTabChange,
   }: {
-    onSelect: (type: string) => void;
-  }) => <button onClick={() => onSelect("couple")}>Couple</button>,
+    onTabChange: (type: string) => void;
+  }) => (
+    <button data-tab="couple" onClick={() => onTabChange("couple")}>
+      Couple
+    </button>
+  ),
 }));
 import ExperiencesPageClient from "../ExperiencesPageClient";
 (
