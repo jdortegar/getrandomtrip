@@ -1,25 +1,46 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DesignSystemGallery } from "@/components/app/design-system/DesignSystemGallery";
+import { GalleryLlmsDocument } from "@/components/app/design-system/GalleryLlmsDocument";
+import { DESIGN_SYSTEM_LLMS } from "@/lib/constants/DESIGN_SYSTEM_LLMS";
+import { designSystemGalleryMetadata } from "@/lib/helpers/designSystemGalleryMetadata";
 import { hasLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
-export const metadata: Metadata = { robots: { index: false, follow: false } };
+interface DesignSystemPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: DesignSystemPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(locale)) return { robots: { index: false, follow: false } };
+  return designSystemGalleryMetadata(locale);
+}
 
 export default async function DesignSystemPage({
   params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+}: DesignSystemPageProps) {
   const { locale } = await params;
   if (!hasLocale(locale)) notFound();
   const { designSystem } = await getDictionary(locale);
+  const agentDocsHref = pathForLocale(locale, "/design-system/llms");
   return (
-    <DesignSystemGallery
-      brandHref={`/${locale}/design-system`}
-      componentsHref={`/${locale}/design-system/components`}
-      copy={designSystem}
-      view="brand"
-    />
+    <>
+      <DesignSystemGallery
+        agentDocsHref={agentDocsHref}
+        brandHref={pathForLocale(locale, "/design-system")}
+        componentsHref={pathForLocale(locale, "/design-system/components")}
+        copy={designSystem}
+        view="brand"
+      />
+      <GalleryLlmsDocument
+        copy={designSystem}
+        href={agentDocsHref}
+        markdown={DESIGN_SYSTEM_LLMS}
+      />
+    </>
   );
 }

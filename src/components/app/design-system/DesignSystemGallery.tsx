@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import styles from "@/components/app/design-system/DesignSystemGallery.module.css";
 
 interface DesignSystemGalleryProps {
+  agentDocsHref: string;
   brandHref: string;
   componentsHref: string;
   copy: DesignSystemDict;
@@ -35,6 +36,7 @@ interface DesignSystemGalleryProps {
 }
 
 export function DesignSystemGallery({
+  agentDocsHref,
   brandHref,
   componentsHref,
   copy,
@@ -150,7 +152,11 @@ export function DesignSystemGallery({
       >
         {view === "brand" ? (
           <>
-            <GalleryHero copy={copy.hero} exploreHref="#essence" />
+            <GalleryHero
+              agentDocsHref={agentDocsHref}
+              agentDocsLabel={copy.agentDocs}
+              copy={copy.hero}
+            />
             <GallerySection
               copy={copy.sections.essence}
               id="essence"
@@ -199,7 +205,11 @@ export function DesignSystemGallery({
           </>
         ) : (
           <>
-            <GalleryHero copy={copy.componentsHero} exploreHref="#buttons" />
+            <GalleryHero
+              agentDocsHref={agentDocsHref}
+              agentDocsLabel={copy.agentDocs}
+              copy={copy.componentsHero}
+            />
             <GallerySection
               copy={copy.sections.buttons}
               id="buttons"
@@ -238,7 +248,17 @@ export function DesignSystemGallery({
           </>
         )}
         <div className="border-gray-200 border-t flex flex-wrap gap-4 items-center justify-between py-8">
-          <p className="text-neutral-600 text-sm">{copy.footer}</p>
+          <div>
+            <p className="text-neutral-600 text-sm">{copy.footer}</p>
+            <p className="mt-1">
+              <a
+                className="font-mono text-neutral-500 text-xs underline"
+                href={agentDocsHref}
+              >
+                {copy.agentDocs}
+              </a>
+            </p>
+          </div>
           <Button asChild variant="link">
             <a href="#gallery-content">{copy.backToTop}</a>
           </Button>

@@ -1,8 +1,9 @@
 ---
 description: >-
-  Randomtrip Brand Book 3.1 for agents: essence, palette and usage ratio,
-  logo lockups, type voices, tone of voice, payoffs, photography and Tripper
-  treatment. Apply when writing UI, copy, emails, or dictionary strings.
+  Randomtrip Brand Book 3.1. Live page: /design-system (and
+  /en/design-system). Essence, palette ratio, logo, type, voice, photography,
+  Tripper treatment. Apply when writing UI, copy, emails, or dictionary
+  strings, or when the user mentions the brand gallery / design-system page.
 alwaysApply: false
 paths:
   - "src/components/**"
@@ -13,7 +14,7 @@ paths:
 
 # Randomtrip Brand
 
-Source: Randomtrip Brand Book 3.1 (ESP). Live reference: the Brand part of `/[locale]/design-system` (`src/components/app/design-system/brand/`). Code-level tokens and component patterns live in `design-system.md`; this file is the *why* and the voice.
+Source: Randomtrip Brand Book 3.1 (ESP). Live reference: `/[locale]/design-system` (`src/app/[locale]/design-system/page.tsx`, `src/components/app/design-system/brand/`). The UI kit is a separate page: `/[locale]/design-system/components`. Code-level tokens and component patterns live in `design-system.md`; this file is the *why* and the voice.
 
 ## Essence
 

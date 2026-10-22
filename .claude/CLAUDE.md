@@ -36,6 +36,8 @@ All user-facing routes live under `src/app/[locale]/` (i18n prefix: `es` or `en`
 | `/journey/*`                 | Trip booking flow                        |
 | `/experiences/*`             | Experience / package discovery flow      |
 | `/blog`                      | Blog listing / articles                  |
+| `/design-system`             | Brand Book gallery (noindex)             |
+| `/design-system/components`  | UI component gallery (noindex)           |
 
 API routes live under `src/app/api/` and are not locale-prefixed.
 

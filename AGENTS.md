@@ -21,7 +21,8 @@ their content here:
 | `docs/Guidelines.md` | Team engineering guidelines |
 | `docs/TeamWorkflow.md` | PR/review workflow, branch strategy |
 | `.claude/CLAUDE.md` | Claude-specific agent rules (behaviour + conciseness) |
-| `.claude/rules/design-system.md` | Color tokens, typography, card/table patterns |
+| `.claude/rules/brand.md` | Brand Book 3.1 — essence, voice, logo, photography. Live: `/[locale]/design-system` |
+| `.claude/rules/design-system.md` | Color tokens, typography, card/table patterns. Live UI kit: `/[locale]/design-system/components` |
 | `.claude/rules/component-patterns.md` | Component isolation, dashboard layout, props pattern |
 
 ---
@@ -190,8 +191,16 @@ if (!hasRoleAccess(session.user.role, ['ADMIN'])) return forbidden();
 
 ## Design System
 
-Brand values and component treatments: `.claude/rules/design-system.md`.
+Brand values: `.claude/rules/brand.md`. Component treatments: `.claude/rules/design-system.md`.
 Keep Randomtrip's branding, dictionary-based copy, and light-only appearance.
+
+Live galleries (noindex; Spanish default, English under `/en/…`):
+
+- `/[locale]/design-system` — Brand Book (essence, logo, color, type, voice, photography)
+- `/[locale]/design-system/components` — UI kit (buttons, fields, badges, layout, tables)
+- `/[locale]/design-system/llms` — public AI rules as markdown (no repository needed)
+
+When a task names these pages, use them as the visual source of truth. Update their demos when shared components or brand treatments change. Source: `src/components/app/design-system`.
 
 ### Layers
 
@@ -206,8 +215,9 @@ Keep Randomtrip's branding, dictionary-based copy, and light-only appearance.
   page sections assembled from shared components.
 - **Pages and feature containers:** `src/app` and existing feature containers
   handle routing, data loading, localization, and composition.
-- **Gallery:** `src/components/app/design-system` demonstrates the actual shared
-  components, not separately styled copies.
+- **Gallery:** `src/components/app/design-system` — Brand Book on
+  `/design-system`, UI kit on `/design-system/components`. Demos use the actual
+  shared components, not separately styled copies.
 
 These are the boundaries for new design-system work. Create new layer directories
 only when needed. Leave existing components in their current locations until a
@@ -222,8 +232,8 @@ scoped migration is approved; reuse them instead of creating parallel versions.
 - Reuse existing components, typography, brand assets, and semantic tokens. Treat
   `src/app/globals.css` and the full design-system spec as the sources of truth for
   current values and usage; do not duplicate palette values in agent guidance.
-- Keep `/design-system` (Spanish) and `/en/design-system` (English) useful as
-  interactive component galleries. Update their demos when shared components or
+- Keep `/design-system` and `/design-system/components` (and `/en/…`) useful as
+  the live brand and UI galleries. Update their demos when shared components or
   behavior change.
 - Preserve native semantics, keyboard interaction, visible focus, readable
   contrast, usable touch targets, and reduced-motion support.

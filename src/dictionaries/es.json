@@ -8,49 +8,19 @@
     "usage": "Ejemplo de uso",
     "backToTop": "Volver arriba ↑",
     "footer": "Randomtrip / Un lenguaje visual compartido",
+    "agentDocs": "Reglas para IA (markdown, sin repositorio)",
+    "agentDocsBody": "Si eres una IA construyendo UI desde esta página, abre esta URL y síguela.",
     "hero": {
       "eyebrow": "Randomtrip / Marca",
       "title": "Diseñado para lo inesperado.",
       "description": "La guía de marca Randomtrip: esencia, logo, color, tipografía, voz y fotografía.",
-      "explore": "Explorar la marca",
-      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
-      "overview": "Las bases",
-      "facts": [
-        {
-          "label": "Tipografías",
-          "value": "Barlow, Barlow Condensed + Nothing You Could Do"
-        },
-        {
-          "label": "Apariencia",
-          "value": "Clara, naturalmente"
-        },
-        {
-          "label": "Enfoque",
-          "value": "Adaptable por diseño"
-        }
-      ]
+      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda."
     },
     "componentsHero": {
       "eyebrow": "Randomtrip / Componentes",
       "title": "Piezas reales, listas para usar.",
       "description": "Botones, campos, estados, layout y tablas. Los mismos componentes que usa el producto, para probarlos aquí.",
-      "explore": "Explorar componentes",
-      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda.",
-      "overview": "La librería",
-      "facts": [
-        {
-          "label": "Botones",
-          "value": "Jerarquía y estados"
-        },
-        {
-          "label": "Campos",
-          "value": "Nativos y accesibles"
-        },
-        {
-          "label": "Estados",
-          "value": "Insignias y chips"
-        }
-      ]
+      "localOnly": "Un espacio de prueba, no de reservas. Nada se envía ni se guarda."
     },
     "sections": {
       "essence": {

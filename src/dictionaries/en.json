@@ -8,49 +8,19 @@
     "usage": "Usage example",
     "backToTop": "Back to top ↑",
     "footer": "Randomtrip / A shared visual language",
+    "agentDocs": "AI rules (markdown, no repository needed)",
+    "agentDocsBody": "If you are an AI building UI from this page, fetch this URL and follow it.",
     "hero": {
       "eyebrow": "Randomtrip / Brand",
       "title": "Designed for the unexpected.",
       "description": "The Randomtrip brand guide: essence, logo, color, type, voice, and photography.",
-      "explore": "Explore the brand",
-      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved.",
-      "overview": "The foundation",
-      "facts": [
-        {
-          "label": "Typefaces",
-          "value": "Barlow, Barlow Condensed + Nothing You Could Do"
-        },
-        {
-          "label": "Appearance",
-          "value": "Light, naturally"
-        },
-        {
-          "label": "Approach",
-          "value": "Responsive by design"
-        }
-      ]
+      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved."
     },
     "componentsHero": {
       "eyebrow": "Randomtrip / Components",
       "title": "Real pieces, ready to use.",
       "description": "Buttons, fields, states, layout, and tables. The same components the product uses, here to try.",
-      "explore": "Explore components",
-      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved.",
-      "overview": "The library",
-      "facts": [
-        {
-          "label": "Buttons",
-          "value": "Hierarchy and states"
-        },
-        {
-          "label": "Fields",
-          "value": "Native and accessible"
-        },
-        {
-          "label": "States",
-          "value": "Badges and chips"
-        }
-      ]
+      "localOnly": "A playground, not a booking flow. Nothing here is sent or saved."
     },
     "sections": {
       "essence": {

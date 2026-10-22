@@ -20,8 +20,9 @@ let root: Root;
 let frames: FrameRequestCallback[];
 const copy = en.designSystem as DesignSystemDict;
 const solid = vi.fn();
-const brandHref = "/es/design-system";
-const componentsHref = "/es/design-system/components";
+const agentDocsHref = "/design-system/llms";
+const brandHref = "/design-system";
+const componentsHref = "/design-system/components";
 
 beforeEach(() => {
   frames = [];
@@ -54,6 +55,7 @@ function renderGallery(
         value={{ setNavbarBackgroundPrimary: solid }}
       >
         <DesignSystemGallery
+          agentDocsHref={agentDocsHref}
           brandHref={brandHref}
           componentsHref={componentsHref}
           copy={dictionary}
@@ -95,6 +97,23 @@ it.each([en.designSystem, es.designSystem])(
     const subtitle = voice.querySelector("[data-section-lead]")!;
     expect(subtitle.textContent).toBe(localized.voice.intro.title);
     expect(container.querySelector("#foundations")).toBeNull();
+  },
+);
+
+it.each(["brand", "components"] as const)(
+  "introduces the %s gallery without a jump CTA or overview card",
+  (view) => {
+    renderGallery(view);
+    const hero = container.querySelector("[data-gallery-hero]")!;
+    const intro =
+      view === "brand" ? en.designSystem.hero : en.designSystem.componentsHero;
+    expect(hero.textContent).toContain(intro.title);
+    expect(hero.textContent).toContain(intro.localOnly);
+    expect(hero.querySelector("aside")).toBeNull();
+    expect(hero.querySelector("button")).toBeNull();
+    expect(
+      hero.querySelector<HTMLAnchorElement>("a")?.getAttribute("href"),
+    ).toBe(agentDocsHref);
   },
 );
 

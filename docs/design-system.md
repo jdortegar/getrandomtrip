@@ -6,7 +6,7 @@ Consolidated patterns extracted from the live codebase. **New requirements must 
 
 ## 1. Color
 
-Brand rules (palette, ratio, voice, logo, photography) live in `.claude/rules/brand.md`; the live reference is the Brand part of `/[locale]/design-system`.
+Brand rules (palette, ratio, voice, logo, photography) live in `.claude/rules/brand.md`. Live galleries: `/[locale]/design-system` (Brand Book) and `/[locale]/design-system/components` (UI kit).
 
 ### Palette tier (brand names)
 

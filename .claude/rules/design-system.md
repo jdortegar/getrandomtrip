@@ -1,7 +1,9 @@
 ---
 description: >-
-  Dashboard design tokens, component patterns, and layout rules for all
-  dashboard sections. Tripper OS, client dashboard, and admin pages.
+  Tokens, typography, cards, tables, buttons. Live UI kit:
+  /design-system/components. Brand gallery: /design-system. Apply when
+  building UI, or when the user mentions the design-system page or component
+  gallery from another component.
 alwaysApply: false
 paths:
   - "src/components/**"
@@ -9,6 +11,8 @@ paths:
 ---
 
 # Design System
+
+Live UI kit: `/[locale]/design-system/components` (`src/app/[locale]/design-system/components/page.tsx`). Brand Book gallery: `/[locale]/design-system`. When a task refers to the design-system page, use those routes as the visual source of truth and update their demos when shared components change.
 
 ## Color Tokens
 

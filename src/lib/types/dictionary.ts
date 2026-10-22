@@ -278,13 +278,7 @@ export interface DesignSystemHeroDict {
   eyebrow: string;
   title: string;
   description: string;
-  explore: string;
   localOnly: string;
-  overview: string;
-  facts: {
-    label: string;
-    value: string;
-  }[];
 }
 
 export interface DesignSystemDict {
@@ -293,6 +287,8 @@ export interface DesignSystemDict {
   usage: string;
   backToTop: string;
   footer: string;
+  agentDocs: string;
+  agentDocsBody: string;
   hero: DesignSystemHeroDict;
   componentsHero: DesignSystemHeroDict;
   groups: {
