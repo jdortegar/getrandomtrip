@@ -2983,7 +2983,7 @@
         "repeatText": "Repeat",
         "text": "Wonder • Wander"
       },
-      "fallbackImage": "/images/hero-image-1.jpeg",
+      "fallbackImage": "/images/fallbacks/hero-experiences-video.jpeg",
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
         "href": "#travel-type-selector",
@@ -2992,7 +2992,7 @@
       "scrollText": "Scroll",
       "subtitle": "Elige el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
       "title": "Experiencias",
-      "videoSrc": "/videos/hero-video-1.mp4"
+      "videoSrc": "/videos/experiences-hero.mp4"
     },
     "travelTypeEyebrow": "Punto de partida",
     "travelTypeSubtitle": "Elige con quién vas a vivir esta experiencia.",
