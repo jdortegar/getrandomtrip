@@ -29,6 +29,7 @@
     "db:backfill-departure-time-zone": "npx tsx scripts/backfill-departure-time-zone.ts",
     "db:backfill-tripper-hero-crop": "npx tsx scripts/backfill-tripper-hero-crop.ts",
     "db:backfill-blog-translations": "npx tsx scripts/backfill-blog-translations.ts",
+    "db:backfill-waitlist-contacts": "npx tsx scripts/backfill-waitlist-contacts.ts",
     "db:cleanup-duplicate-trips": "npx tsx scripts/cleanup-duplicate-trip-requests.ts",
     "db:convert-approved-visas": "npx tsx scripts/convert-approved-visas-to-iso.ts",
     "db:rename-access-invites": "npx tsx scripts/rename-tripper-invites-to-access-invites.ts",
@@ -40,7 +41,8 @@
     "discord:update-work-permissions": "npx tsx scripts/discord-update-work-permissions.ts",
     "postinstall": "npx prisma generate && node scripts/copy-tinymce-to-public.mjs",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "screenshots": "node .agents/skills/screenshot/scripts/capture.mjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

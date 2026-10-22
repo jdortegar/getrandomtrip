@@ -33,13 +33,17 @@ export default function AdminNewBooking({
   amount,
   currency,
 }: AdminNewBookingProps) {
-  const ctaHref = `${BASE_URL}/es/dashboard/admin/trip-requests`;
+  const ctaHref = `${BASE_URL}/es/dashboard/admin/trip-requests/${encodeURIComponent(tripRequestId)}`;
 
   return (
-    <EmailLayout locale="es" preview={`Nueva reserva de ${clientName} — ${tripType.toUpperCase()}`}>
+    <EmailLayout
+      locale="es"
+      preview={`Nueva reserva de ${clientName} — ${tripType.toUpperCase()}`}
+    >
       <Heading style={heading}>Nueva reserva</Heading>
       <Text style={bodyText}>
-        Se acaba de confirmar una nueva reserva. Revisá los detalles a continuación.
+        Se acaba de confirmar una nueva reserva. Revisá los detalles a
+        continuación.
       </Text>
 
       <Section style={summaryPanel}>
@@ -49,7 +53,9 @@ export default function AdminNewBooking({
         </Text>
         <Text style={summaryRow}>
           <span style={summaryLabel}>Email:</span>{" "}
-          <span style={summaryValue}>{clientEmail}</span>
+          <a href={`mailto:${clientEmail}`} style={emailLink}>
+            {clientEmail}
+          </a>
         </Text>
         <Text style={summaryRow}>
           <span style={summaryLabel}>Tipo de viaje:</span>{" "}
@@ -65,7 +71,9 @@ export default function AdminNewBooking({
         </Text>
         <Text style={summaryRow}>
           <span style={summaryLabel}>Origen:</span>{" "}
-          <span style={summaryValue}>{originCity}, {originCountry}</span>
+          <span style={summaryValue}>
+            {originCity}, {originCountry}
+          </span>
         </Text>
         {departureDate && (
           <Text style={summaryRow}>
@@ -76,7 +84,9 @@ export default function AdminNewBooking({
         <Text style={divider} />
         <Text style={summaryRow}>
           <span style={summaryLabel}>Total pagado:</span>{" "}
-          <span style={amountValue}>{currency.toUpperCase()} {amount}</span>
+          <span style={amountValue}>
+            {currency.toUpperCase()} {amount}
+          </span>
         </Text>
         <Text style={summaryRow}>
           <span style={summaryLabel}>ID reserva:</span>{" "}
@@ -97,14 +107,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -126,13 +136,13 @@ const summaryPanel: React.CSSProperties = {
 const summaryRow: React.CSSProperties = {
   margin: "0 0 8px",
   fontSize: "13px",
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
 };
 
 const summaryLabel: React.CSSProperties = {
   fontWeight: "700",
-  color: "#111827",
+  color: "#383838", // Ink
 };
 
 const summaryValue: React.CSSProperties = {
@@ -141,8 +151,13 @@ const summaryValue: React.CSSProperties = {
 
 const amountValue: React.CSSProperties = {
   fontWeight: "700",
-  color: "#111827",
+  color: "#383838", // Ink
   fontSize: "15px",
+};
+
+const emailLink: React.CSSProperties = {
+  color: "#0F5C60", // Deep Teal (brand primary)
+  textDecoration: "underline",
 };
 
 const divider: React.CSSProperties = {
@@ -153,8 +168,8 @@ const divider: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

@@ -57,3 +57,9 @@ it("hides misleading stale results on errors and leaves retry outside inert rows
   expect(container.querySelector('[role="alert"]')).toBeNull();
   expect(row.closest("[hidden],[inert]")).toBeNull();
 });
+
+it("leaves visible space between the error message and the retry button", () => {
+  render(false, "Failed");
+  const alert = container.querySelector('[role="alert"]')!;
+  expect(alert.className).toContain("gap-6");
+});

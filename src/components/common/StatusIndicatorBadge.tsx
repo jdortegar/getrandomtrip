@@ -13,6 +13,9 @@ interface StatusIndicatorBadgeProps {
     | "traveler-trip-summary"
     | "document"
     | "availability"
+    | "email-contact"
+    | "email-campaign"
+    | "email-send"
     | "tripper-booking"
     | "tripper-booking-summary"
     | "notification"
@@ -83,6 +86,33 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
     },
   },
   document: { fallback: "warning", statuses: { published: "success" } },
+  "email-campaign": {
+    fallback: "warning",
+    statuses: {
+      DRAFT: "warning",
+      PARTIAL: "danger",
+      SENDING: "info",
+      SENT: "success",
+    },
+  },
+  "email-send": {
+    fallback: "inactive",
+    statuses: {
+      BOUNCED: "danger",
+      DELIVERED: "success",
+      FAILED: "danger",
+      QUEUED: "inactive",
+      SENT: "info",
+    },
+  },
+  "email-contact": {
+    fallback: "inactive",
+    statuses: {
+      BOUNCED: "danger",
+      SUBSCRIBED: "success",
+      UNSUBSCRIBED: "inactive",
+    },
+  },
   earning: {
     fallback: "warning",
     statuses: { paid: "success", pending: "warning", processing: "info" },

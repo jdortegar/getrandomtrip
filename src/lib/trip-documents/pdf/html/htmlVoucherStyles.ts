@@ -117,8 +117,7 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
   min-height:262px}
 .hotel-policy .section-title{padding-left:64px;
   margin-bottom:19px}
-.hotel-policy .policy-list p{font-family:Inter;
-  min-height:60px;
+.hotel-policy .policy-list p{min-height:60px;
   font-size:13px;
   line-height:20px;
   padding-left:28px}
@@ -136,7 +135,6 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
   height:42px;
   font-size:15px;
   font-weight:700}
-.numbered-item .number{font-family:Inter}
 .numbered-item>div{flex:1;
   min-width:0;
   padding:0 0 16px}
@@ -155,8 +153,7 @@ body:not(.roadmap) .header h1{text-transform:uppercase}
 .dinner-presentation{min-height:165px;
   margin-top:20px;
   margin-bottom:12px}
-.dinner-presentation>p{font-family:Inter;
-  font-size:13px;
+.dinner-presentation>p{font-size:13px;
   line-height:18px;
   margin-top:27px;
   max-width:860px}

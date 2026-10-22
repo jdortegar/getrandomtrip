@@ -1,3 +1,5 @@
+import type { PromoRejectionReason } from "@/types/payments";
+
 export interface DesignSystemSectionDict {
   nav: string;
   title: string;
@@ -1755,6 +1757,13 @@ export type XsedNotifyFormCopy = Pick<
   | "successMessage"
 >;
 
+export interface ExperienceCardDict {
+  /** Price footnote fallback when the level has none. */
+  perPerson: string;
+  /** Accessible label of the selected-state check. */
+  selected: string;
+}
+
 export interface XsedLevelCardDict {
   /** Badge shown on the top edge of the XSED card. */
   badge: string;
@@ -1857,6 +1866,7 @@ export interface AdminDashboardDict {
   nav: {
     blog: string;
     dashboard: string;
+    emailCampaigns: string;
     experiences: string;
     newExperience: string;
     newPost: string;
@@ -1871,6 +1881,11 @@ export interface AdminDashboardDict {
     blog: { description: string; title: string };
     blogDetail: { description: string; title: string };
     blogNew: { description: string; title: string };
+    emailCampaignContacts: { description: string; title: string };
+    emailCampaignSegments: { description: string; title: string };
+    emailCampaigns: { description: string; title: string };
+    emailCampaignsNew: { description: string; title: string };
+    emailCampaignDetail: { description: string; title: string };
     experiences: { description: string; title: string };
     experiencesNew: { description: string; title: string };
     experiencesDetail: { description: string; title: string };
@@ -2089,6 +2104,344 @@ export interface AdminXsedDict {
   };
 }
 
+/** Admin email campaigns: campaigns list (comparison view) and contacts. */
+export interface EmailCampaignsAdminDict {
+  tabs: { campaigns: string; contacts: string; segments: string };
+  /** Keyed by `CampaignLocale`. */
+  locales: { en: string; es: string };
+  campaigns: {
+    eyebrow: string;
+    heading: string;
+    newCampaign: string;
+    errorLoad: string;
+    notSent: string;
+    noPromo: string;
+    empty: { title: string; body: string };
+    noMatches: string;
+    searchPlaceholder: string;
+    filters: {
+      status: string;
+      segment: string;
+      allStatuses: string;
+      allSegments: string;
+    };
+    /** `ariaSortBy` interpolates `{field}`. */
+    sort: { ariaSortBy: string };
+    columns: {
+      campaign: string;
+      promoCode: string;
+      status: string;
+      sentAt: string;
+      clicks: string;
+      conversions: string;
+      revenue: string;
+      actions: string;
+    };
+    actions: { view: string; edit: string; delete: string };
+    /** `body` interpolates `{name}`. */
+    delete: {
+      title: string;
+      body: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
+    };
+    /** Keyed by `CampaignStatus`. */
+    status: { DRAFT: string; PARTIAL: string; SENDING: string; SENT: string };
+  };
+  contacts: {
+    eyebrow: string;
+    heading: string;
+    errorLoad: string;
+    empty: string;
+    searchPlaceholder: string;
+    filters: {
+      source: string;
+      status: string;
+      segment: string;
+      allSources: string;
+      allStatuses: string;
+      allSegments: string;
+    };
+    columns: {
+      email: string;
+      name: string;
+      source: string;
+      segments: string;
+      status: string;
+      locale: string;
+      createdAt: string;
+      actions: string;
+    };
+    /** Keyed by `ContactSource`. */
+    source: { FRIENDS_FAMILY: string; WAITLIST: string };
+    /** Keyed by `ContactStatus`. */
+    status: { BOUNCED: string; SUBSCRIBED: string; UNSUBSCRIBED: string };
+    actions: {
+      edit: string;
+      resubscribe: string;
+      resubscribing: string;
+      resubscribeError: string;
+    };
+    /** Edit contact modal (name, language, segments). */
+    edit: {
+      title: string;
+      name: string;
+      locale: string;
+      segments: string;
+      segmentsHint: string;
+      cancel: string;
+      save: string;
+      saving: string;
+      saved: string;
+      errors: {
+        generic: string;
+        invalid: string;
+        invalidSegment: string;
+        notFound: string;
+      };
+    };
+    form: {
+      title: string;
+      description: string;
+      email: string;
+      name: string;
+      locale: string;
+      tags: string;
+      tagsPlaceholder: string;
+      segments: string;
+      segmentsHint: string;
+      submit: string;
+      submitting: string;
+      success: string;
+      errors: {
+        duplicate: string;
+        generic: string;
+        invalid: string;
+        invalidEmail: string;
+        invalidSegment: string;
+      };
+    };
+  };
+  segments: {
+    eyebrow: string;
+    heading: string;
+    newSegment: string;
+    errorLoad: string;
+    empty: { title: string; body: string };
+    /** Category label of the seeded, non-deletable segments. */
+    systemLabel: string;
+    columns: {
+      name: string;
+      members: string;
+      subscribed: string;
+      actions: string;
+    };
+    actions: { edit: string; delete: string };
+    feedback: { created: string; saved: string; deleted: string };
+    form: {
+      createTitle: string;
+      editTitle: string;
+      systemHint: string;
+      name: string;
+      description: string;
+      cancel: string;
+      create: string;
+      creating: string;
+      save: string;
+      saving: string;
+      errors: {
+        nameRequired: string;
+        duplicate: string;
+        invalid: string;
+        notFound: string;
+        generic: string;
+      };
+    };
+    /** `body` interpolates `{name}`. */
+    delete: {
+      title: string;
+      body: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
+      errors: {
+        inUse: string;
+        system: string;
+        notFound: string;
+        generic: string;
+      };
+    };
+    /** Segment multi-select chips; `count` interpolates `{name}` and `{count}`. */
+    picker: {
+      loading: string;
+      error: string;
+      retry: string;
+      empty: string;
+      count: string;
+    };
+  };
+  editor: {
+    newEyebrow: string;
+    newHeading: string;
+    editEyebrow: string;
+    contentHeading: string;
+    audienceHeading: string;
+    fields: {
+      name: string;
+      subject: string;
+      preheader: string;
+      title: string;
+      body: string;
+      bodyHint: string;
+      ctaLabel: string;
+      ctaUrl: string;
+      ctaUrlPlaceholder: string;
+      locale: string;
+      segment: string;
+      segmentHint: string;
+    };
+    create: string;
+    creating: string;
+    save: string;
+    saving: string;
+    saved: string;
+    /** `tooLong` interpolates `{max}`. */
+    validation: {
+      required: string;
+      tooLong: string;
+      ctaUrl: string;
+      ctaPair: string;
+      segment: string;
+      summary: string;
+    };
+    /** Templates interpolate `{code}`, `{n}`, `{amount}`, `{date}`, `{used}`, `{max}`. */
+    promo: {
+      label: string;
+      placeholder: string;
+      hint: string;
+      lookup: string;
+      lookingUp: string;
+      notFound: string;
+      inactive: string;
+      error: string;
+      rulesTitle: string;
+      percentOff: string;
+      amountOff: string;
+      expires: string;
+      noExpiry: string;
+      uses: string;
+      usesUnlimited: string;
+      firstTimeOnly: string;
+      anyCustomer: string;
+      minimum: string;
+      noMinimum: string;
+    };
+    delete: {
+      button: string;
+      confirmBody: string;
+      confirm: string;
+      deleting: string;
+      cancel: string;
+    };
+  };
+  detail: {
+    eyebrow: string;
+    errorLoad: string;
+    notFound: string;
+    backToList: string;
+    /** Interpolates `{date}`. */
+    sentOn: string;
+  };
+  preview: {
+    heading: string;
+    frameTitle: string;
+    unsubscribeNote: string;
+    testSend: string;
+    testSending: string;
+    /** Interpolates `{email}`. */
+    testSent: string;
+  };
+  /**
+   * `confirmBody` (plural) interpolates `{count}`; `confirmBodyOne` is the single-recipient form.
+   * `restrictedNote` interpolates `{count}` and `{total}`; summary templates `{status}`, `{sent}`, `{failed}`, `{total}`.
+   */
+  send: {
+    heading: string;
+    description: string;
+    sendNow: string;
+    retry: string;
+    checking: string;
+    confirmBody: string;
+    confirmBodyOne: string;
+    restrictedNote: string;
+    retryBody: string;
+    emptyAudience: string;
+    confirm: string;
+    sending: string;
+    cancel: string;
+    inProgress: string;
+    summaryTitle: string;
+    summary: string;
+  };
+  metrics: {
+    eyebrow: string;
+    heading: string;
+    errorLoad: string;
+    kpis: {
+      sent: string;
+      delivered: string;
+      opens: string;
+      clicks: string;
+      conversions: string;
+      revenue: string;
+      discount: string;
+    };
+    /** Interpolates `{count}`. */
+    rateHint: string;
+    /** Interpolates `{shared}`. */
+    conversionsHint: string;
+    bounced: string;
+    failed: string;
+    opensNote: string;
+    /** Interpolates `{count}`. */
+    otherCurrency: string;
+  };
+  recipients: {
+    heading: string;
+    empty: string;
+    columns: {
+      email: string;
+      name: string;
+      status: string;
+      opened: string;
+      clicked: string;
+      purchased: string;
+    };
+    yes: string;
+    no: string;
+    /** Keyed by `CampaignSendStatus`. */
+    status: {
+      BOUNCED: string;
+      DELIVERED: string;
+      FAILED: string;
+      QUEUED: string;
+      SENT: string;
+    };
+  };
+  /** Localized admin campaign API failures. */
+  errors: {
+    generic: string;
+    validation: string;
+    notFound: string;
+    notEditable: string;
+    invalidPromo: string;
+    adminEmailMissing: string;
+    notSendable: string;
+    emptyAudience: string;
+  };
+}
+
 export interface AdminPagesDict {
   home: {
     eyebrow: string;
@@ -2297,6 +2650,7 @@ export interface AdminPagesDict {
       ariaSortBy: string;
     };
   };
+  emailCampaigns: EmailCampaignsAdminDict;
   waitlist: {
     count: string;
     errorLoad: string;
@@ -2839,6 +3193,21 @@ export interface VerifyEmailPageDict {
   reasonExpired: string;
   reasonUsed: string;
   reasonMissing: string;
+}
+
+/** Public campaign unsubscribe page (`/{locale}/unsubscribe`). */
+export interface EmailUnsubscribeDict {
+  eyebrow: string;
+  title: string;
+  body: string;
+  confirmCta: string;
+  pending: string;
+  successTitle: string;
+  successBody: string;
+  invalidTitle: string;
+  invalidBody: string;
+  error: string;
+  homeCta: string;
 }
 
 export interface ResetPasswordPageDict {
@@ -3436,6 +3805,7 @@ export interface MarketingDictionary {
     errorApprove: string;
     errorReject: string;
   };
+  experienceCard: ExperienceCardDict;
   xsedLevelCard: XsedLevelCardDict;
   xsedPage: XsedPageDict;
   xsedUnavailable: {
@@ -3498,6 +3868,7 @@ export interface MarketingDictionary {
     referredByRequired: string;
   };
   verifyEmailPage: VerifyEmailPageDict;
+  emailUnsubscribe: EmailUnsubscribeDict;
   resetPasswordPage: ResetPasswordPageDict;
   tripperInviteAccept: TripperInviteAcceptDict;
   home: {
@@ -4038,6 +4409,7 @@ export interface MarketingDictionary {
         saveTravelDocumentsFailed: string;
         saveUserFailed: string;
         updateTripFailed: string;
+        promo: Record<PromoRejectionReason, string>;
       };
       addonsPerPersonLabel: string;
       filterFeeLabel: string;

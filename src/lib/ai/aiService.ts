@@ -1,4 +1,7 @@
-import { withTranslationCache, writeCachedTranslation } from "@/lib/ai/translationCache";
+import {
+  withTranslationCache,
+  writeCachedTranslation,
+} from "@/lib/ai/translationCache";
 import {
   parseTranslationTexts,
   translationMessages,
@@ -30,7 +33,11 @@ interface ChatCompletion {
  * Server-side AI entry point. Translation is the only task so far.
  * Drafting and grammar edits should be added here as further methods.
  */
-async function completeJson(system: string, user: string): Promise<string> {
+export async function completeJson(
+  system: string,
+  user: string,
+  options: { maxTokens?: number; signal?: AbortSignal } = {},
+): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new AiServiceError("AI is not configured", 503);
 
@@ -40,7 +47,7 @@ async function completeJson(system: string, user: string): Promise<string> {
         { content: system, role: "system" },
         { content: user, role: "user" },
       ],
-      max_completion_tokens: 16_384,
+      max_completion_tokens: options.maxTokens ?? 16_384,
       model: process.env.OPENAI_TRANSLATION_MODEL || DEFAULT_MODEL,
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -50,11 +57,15 @@ async function completeJson(system: string, user: string): Promise<string> {
       "Content-Type": "application/json",
     },
     method: "POST",
+    signal: options.signal,
   });
 
   const payloadText = await response.text();
   if (!response.ok) {
-    console.error(`OpenAI translation HTTP ${response.status}`, payloadText.slice(0, 400));
+    console.error(
+      `OpenAI translation HTTP ${response.status}`,
+      payloadText.slice(0, 400),
+    );
     throw new AiServiceError("AI request failed", 502);
   }
 
@@ -114,7 +125,12 @@ async function translateBatch(
 }
 
 export const aiService = {
-  async translate(pieces: TranslationPiece[], target: TranslationLocale): Promise<string[]> {
-    return withTranslationCache(pieces, target, (batch) => translateBatch(batch, target));
+  async translate(
+    pieces: TranslationPiece[],
+    target: TranslationLocale,
+  ): Promise<string[]> {
+    return withTranslationCache(pieces, target, (batch) =>
+      translateBatch(batch, target),
+    );
   },
 };

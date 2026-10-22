@@ -14,12 +14,13 @@ const copy: AdminDashboardDict["nav"] = {
   blog: "Blog",
   newPost: "New Post",
   notifications: "Notifications",
+  emailCampaigns: "Email campaigns",
 };
 
 describe("buildAdminNavTabs", () => {
-  it("returns 10 tabs in the documented order", () => {
+  it("returns 11 tabs in the documented order", () => {
     const tabs = buildAdminNavTabs(copy, "es");
-    expect(tabs).toHaveLength(10);
+    expect(tabs).toHaveLength(11);
     expect(tabs.map((t) => t.label)).toEqual([
       copy.dashboard,
       copy.tripRequests,
@@ -29,6 +30,7 @@ describe("buildAdminNavTabs", () => {
       copy.reviews,
       copy.blog,
       copy.newPost,
+      copy.emailCampaigns,
       copy.notifications,
       copy.settings,
     ]);
@@ -45,6 +47,7 @@ describe("buildAdminNavTabs", () => {
       "/dashboard/admin/reviews",
       "/dashboard/admin/blog",
       "/dashboard/admin/blog/new",
+      "/dashboard/admin/email-campaigns",
       "/dashboard/admin/notifications",
       "/dashboard/admin/settings",
     ]);

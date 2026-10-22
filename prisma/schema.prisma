@@ -120,6 +120,8 @@ model User {
   tripTravelers           TripTraveler[]
   tripDocumentsUploaded   TripDocument[]       @relation("TripDocumentsUploaded")
   tripContactMessagesSent TripContactMessage[] @relation("TripContactMessagesSent")
+  contacts                Contact[]
+  campaignsCreated        Campaign[]           @relation("CampaignCreatedBy")
 
   @@map("users")
 }
@@ -554,6 +556,14 @@ model Payment {
   paidAt    DateTime? // When payment was completed
   expiresAt DateTime? // When payment preference expires
 
+  // Promo attribution, copied from PaymentIntent metadata on settlement
+  promoCode             String? // Code the buyer typed, uppercased (e.g. 'FUNDADOR30')
+  stripePromotionCodeId String? // Stripe promotion code id ('promo_...')
+  /// Discount granted by the promo code, in major USD units (e.g. 30.5 = USD 30.50),
+  /// from PaymentIntent metadata `discountAmountUsd`. Null when unknown or no discount.
+  promoDiscountUsd      Float?
+
+  @@index([stripePromotionCodeId])
   @@map("payments")
 }
 
@@ -977,4 +987,206 @@ model XsedNotificationSignup {
   @@index([createdAt])
   @@index([lastNotifiedAt])
   @@map("xsed_notification_signups")
+}
+
+// ============================================================================
+// EMAIL CAMPAIGNS (admin marketing email)
+// ============================================================================
+
+enum ContactSource {
+  WAITLIST
+  FRIENDS_FAMILY
+}
+
+enum ContactStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+  BOUNCED
+}
+
+enum CampaignStatus {
+  DRAFT
+  SENDING
+  SENT
+  PARTIAL
+}
+
+enum CampaignSendStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  BOUNCED
+  FAILED
+}
+
+enum EmailEventType {
+  DELIVERED
+  BOUNCED
+  COMPLAINED
+  OPENED
+  CLICKED
+}
+
+model Contact {
+  id             String        @id @default(cuid())
+  email          String        @unique // Always stored lowercase
+  name           String?
+  source         ContactSource
+  status         ContactStatus @default(SUBSCRIBED)
+  locale         String        @default("es") // "es" | "en"; campaign segment filter
+  tags           String[]      @default([])
+  userId         String? // Linked by email when a matching account exists
+  user           User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  unsubscribedAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  sends    CampaignSend[]
+  segments ContactSegment[]
+
+  @@index([source, status])
+  @@map("contacts")
+}
+
+model Campaign {
+  id                    String          @id @default(cuid())
+  name                  String // Internal admin label
+  subject               String
+  preheader             String?
+  title                 String
+  bodyMarkdown          String          @db.Text
+  ctaLabel              String?
+  ctaUrl                String?
+  locale                String // "es" | "en"; one locale per campaign
+  segmentSources        ContactSource[] // Deprecated mirror of system segments; targeting reads `segments`
+  stripePromotionCodeId String? // Optional Stripe promotion code ('promo_...')
+  promoCode             String? // Its customer-facing code, e.g. 'FUNDADOR30'
+  status                CampaignStatus  @default(DRAFT)
+  sentAt                DateTime?
+  createdById           String?
+  createdBy             User?           @relation("CampaignCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  sends    CampaignSend[]
+  segments CampaignSegment[]
+
+  @@map("campaigns")
+}
+
+/// Admin-managed contact group a campaign can target. The two system segments
+/// (`systemKey` set) are seeded by migration and can be renamed, never deleted.
+model Segment {
+  id          String         @id @default(cuid())
+  name        String         @unique // Case-insensitive uniqueness is enforced by the app
+  description String?
+  systemKey   ContactSource? @unique // WAITLIST / FRIENDS_FAMILY system segments; null for custom
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  contacts  ContactSegment[]
+  campaigns CampaignSegment[]
+
+  @@map("segments")
+}
+
+model ContactSegment {
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  segmentId String
+  segment   Segment  @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([contactId, segmentId])
+  @@index([segmentId])
+  @@map("contact_segments")
+}
+
+/// A segment targeted by a campaign cannot be deleted (Restrict).
+model CampaignSegment {
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  segmentId  String
+  segment    Segment  @relation(fields: [segmentId], references: [id], onDelete: Restrict)
+
+  @@id([campaignId, segmentId])
+  @@map("campaign_segments")
+}
+
+model CampaignSend {
+  id              String             @id @default(cuid())
+  campaignId      String
+  campaign        Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contactId       String
+  contact         Contact            @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  email           String // Recipient snapshot at send time
+  resendMessageId String?            @unique
+  status          CampaignSendStatus @default(QUEUED)
+  error           String?
+  sentAt          DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  events EmailEvent[]
+
+  @@unique([campaignId, contactId])
+  @@map("campaign_sends")
+}
+
+model EmailEvent {
+  id              String         @id @default(cuid())
+  sendId          String
+  send            CampaignSend   @relation(fields: [sendId], references: [id], onDelete: Cascade)
+  type            EmailEventType
+  metadata        Json?
+  providerEventId String?        @unique // Webhook delivery id, for idempotency
+  occurredAt      DateTime
+  createdAt       DateTime       @default(now())
+
+  @@index([sendId, type])
+  @@map("email_events")
+}
+
+// Test-only Slack reviews. No Instagram publication state or credentials.
+model SocialApproval {
+  id          String   @id @default(cuid())
+  reviewKey   String
+  revision    Int
+  requestId   String   @unique
+  caption     String
+  imageUrl    String
+  status      String   @default("POSTING")
+  messageTs   String?
+  decidedBy   String?
+  decidedAt   DateTime?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  decision    String?
+  revisionJob SocialRevisionJob?
+
+  @@unique([reviewKey, revision])
+  @@map("social_approvals")
+}
+
+
+// Durable feedback and bounded AI work; one accepted request per source revision.
+model SocialRevisionJob {
+  id               String @id @default(cuid())
+  reviewId         String @unique
+  review           SocialApproval @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  actor            String
+  feedback         String
+  target           String
+  status           String @default("QUEUED")
+  leaseToken       String?
+  leaseUntil       DateTime?
+  attempts         Int @default(0)
+  generatedCaption String?
+  generatedImageUrl String?
+  newReviewId      String?
+  errorCode        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  @@index([status, createdAt])
+  @@map("social_revision_jobs")
 }

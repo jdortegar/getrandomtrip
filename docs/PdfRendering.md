@@ -29,9 +29,9 @@ synthetic PDF fixtures from the reference-render tests for PNG inspection.
   border weights without browser fractional-border quantization.
 - Brand/icons are discrete original vector assets, not a full-page background.
   Booking values and QR destinations are always regenerated from validated input.
-- Arimo is the licensed Arial-metric-compatible substitute, not identical Arial
-  outlines. Barlow Bold and Inter 3.19 match the original heading/legal fonts.
-  See the font `SOURCE.md` files and bundled OFL licenses.
+- PDFs use only the approved brand font, Barlow (Regular 400 and Bold 700),
+  embedded from `public/assets/fonts/barlow/`. See its `SOURCE.md` and bundled
+  OFL license.
 - HTML text is escaped; authored links require HTTPS. The browser disables page
   JavaScript and blocks network/file loads; only trusted pagination is evaluated.
 - Every render owns a fresh browser, with a 40-second deadline, bounded cleanup,

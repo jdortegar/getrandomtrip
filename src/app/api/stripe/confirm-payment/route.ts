@@ -3,7 +3,12 @@ import { getServerSession } from "next-auth";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { authOptions } from "@/lib/auth";
-import { findPaymentByProviderId, findPaymentByStripeIntentId, updatePaymentFromStripeWebhook } from "@/lib/db/payment";
+import {
+  findPaymentByProviderId,
+  findPaymentByStripeIntentId,
+  promoAttributionFromMetadata,
+  updatePaymentFromStripeWebhook,
+} from "@/lib/db/payment";
 import type { UpdatePaymentData } from "@/lib/db/payment";
 
 /**
@@ -69,6 +74,7 @@ export async function POST(request: NextRequest) {
     providerPaymentId: intent.id,
     stripePaymentIntentId: intent.id,
     paidAt: new Date(intent.created * 1000),
+    ...promoAttributionFromMetadata(intent.metadata),
   };
 
   try {

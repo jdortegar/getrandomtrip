@@ -96,7 +96,10 @@ beforeEach(() => {
     locale: "en",
   });
   db.experience.findUnique.mockResolvedValue({ title: "Experience" });
-  db.blogPost.findUnique.mockResolvedValue({ title: "Blog" });
+  db.blogPost.findUnique.mockResolvedValue({
+    sourceLocale: "es",
+    translationRows: [{ locale: "es", title: "Blog" }],
+  });
   db.tripRequest.findUnique.mockResolvedValue({
     startDate: new Date("2026-10-10T12:00:00Z"),
     type: "couple",

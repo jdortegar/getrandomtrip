@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterAll, beforeAll, expect, it } from "vitest";
+import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import puppeteer, { type Browser } from "puppeteer-core";
@@ -13,6 +13,10 @@ import {
   hotelFixture,
   referenceFixtures,
 } from "./referenceFixtures";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 let browser: Browser;
 beforeAll(async () => {
   const executablePath = await localChromiumPath();
@@ -87,8 +91,9 @@ for (const input of referenceFixtures) {
       expect(result.pages).toBe(1);
       const roadmap = input.template.endsWith("roadmap");
       expect(result.logo.width).toBeCloseTo(roadmap ? 243.84 : 203.2, 3);
+      // SVGLength values are float32, so 61.2 reads back as 61.20000076...
+      expect(result.logo.height).toBeCloseTo(roadmap ? 61.2 : 51, 3);
       expect(result.logo).toMatchObject({
-        height: roadmap ? 61.2 : 51,
         preserveAspectRatio: 6, // SVG xMidYMid: centered, never stretched.
         meetOrSlice: 1, // SVG meet: contain the complete approved mark.
       });

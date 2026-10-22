@@ -30,7 +30,7 @@ export function TableQueryBoundary({
     >
       {error && (
         <div
-          className="flex flex-col gap-3 items-center p-6 text-center"
+          className="flex flex-col gap-6 items-center p-6 text-center"
           role="alert"
         >
           <p className="text-red-600 text-sm">{error}</p>

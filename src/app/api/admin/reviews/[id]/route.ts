@@ -68,7 +68,13 @@ export async function PATCH(
 
     const review = await prisma.review.update({
       data: updateData,
-      select: { id: true, isApproved: true, isPublic: true, tripperId: true },
+      select: {
+        id: true,
+        isApproved: true,
+        isPublic: true,
+        rating: true,
+        tripperId: true,
+      },
       where: { id: params.id },
     });
 
@@ -76,13 +82,27 @@ export async function PATCH(
     const wasJustApproved = !existing.isApproved && body.isApproved;
     if (wasJustApproved && review.tripperId) {
       try {
+        const tripper = await prisma.user.findUnique({
+          select: { locale: true },
+          where: { id: review.tripperId },
+        });
+        const notifCopy =
+          tripper?.locale === "en"
+            ? {
+                title: "You have a new approved review",
+                body: `A traveler rated you ${review.rating}/5. The review has been approved and you can see it in your dashboard.`,
+              }
+            : {
+                title: "Tienes una nueva reseña aprobada",
+                body: `Un viajero te calificó con ${review.rating}/5. La reseña ya fue aprobada y puedes verla en tu panel.`,
+              };
         await prisma.notification.create({
           data: {
             userId: review.tripperId,
             type: "REVIEW_APPROVED",
             audience: "TRIPPER",
             isRead: false,
-            title: "Tienes una nueva reseña aprobada",
+            ...notifCopy,
             metadata: { reviewId: review.id },
           },
         });
