@@ -8,22 +8,32 @@ export function ExperienceCardName({ name }: ExperienceCardNameProps) {
   const base = match?.[1] ?? name;
   const lines = base.split(/\s+/).filter(Boolean);
   const mark = match ? (
-    <sup className="ml-px align-super text-[7px] font-semibold leading-none">
+    <sup className="align-text-top font-semibold leading-none mt-3 text-[0.4em]">
       ™
     </sup>
   ) : null;
 
   return (
     <h3
-      className="min-w-0 font-barlow-condensed text-[50px] font-extrabold uppercase leading-[45px] text-primary"
+      className="font-barlow-condensed text-[48px] font-extrabold uppercase leading-[45px] text-primary"
       data-name-lines={lines.length}
     >
-      {lines.map((line, index) => (
-        <span className="block whitespace-pre" key={line}>
-          {index < lines.length - 1 ? `${line} ` : line}
-          {index === lines.length - 1 ? mark : null}
-        </span>
-      ))}
+      {lines.map((line, index) => {
+        const isLast = index === lines.length - 1;
+        return (
+          <span
+            className={
+              isLast && mark
+                ? "inline-flex items-start whitespace-pre"
+                : "block whitespace-pre"
+            }
+            key={line}
+          >
+            {isLast ? line : `${line} `}
+            {isLast ? mark : null}
+          </span>
+        );
+      })}
     </h3>
   );
 }
