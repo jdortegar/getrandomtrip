@@ -2996,6 +2996,14 @@
     },
     "travelTypeEyebrow": "Starting point",
     "travelTypeSubtitle": "Choose who you're traveling with for this experience.",
+    "travelTypeTabs": {
+      "couple": "Couple",
+      "family": "Family",
+      "group": "Group",
+      "honeymoon": "Honeymoon",
+      "paws": "PAWS",
+      "solo": "Solo"
+    },
     "travelTypeTitle": "By traveler type"
   },
   "trippers": {

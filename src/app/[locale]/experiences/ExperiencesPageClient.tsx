@@ -28,15 +28,16 @@ export default function ExperiencesPageClient({
   const dict = (locale === "en" ? en : es) as Dictionary;
   const exp = dict.experiences;
   const travelerTypes = dict.home.exploration.travelerTypes;
+  const tabLabels = exp.travelTypeTabs;
   const typeTabs = useMemo(
     () =>
       getCarouselCardOptions(locale, {
         localizedTravelerTypes: travelerTypes,
       }).map((type) => ({
         id: type.key,
-        label: type.title,
+        label: tabLabels[type.key as keyof typeof tabLabels] ?? type.title,
       })),
-    [locale, travelerTypes],
+    [locale, tabLabels, travelerTypes],
   );
   const [selectedTypeTraveler, setSelectedTypeTraveler] =
     useState<TravelerTypeSlug>("couple");
@@ -57,8 +58,8 @@ export default function ExperiencesPageClient({
         subtitle={exp.travelTypeSubtitle}
         title={exp.travelTypeTitle}
       >
-        <div className="flex flex-col gap-8">
-          <div className="rt-container">
+        <div className="flex flex-col gap-8 min-w-0 w-full">
+          <div className="rt-container min-w-0">
             <TabSelector
               activeTab={selectedTypeTraveler}
               layoutId="experiences-traveler-type"

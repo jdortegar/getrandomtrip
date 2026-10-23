@@ -115,7 +115,7 @@ export function ExperienceCard({
   return (
     <div
       className={cn(
-        "@container relative flex h-full min-h-[620px] w-full max-w-[300px] flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
+        "@container relative flex h-full min-h-155 w-full max-w-75 flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
         "shadow-[0_4px_23.9px_0_rgba(0,0,0,0.13)]",
         (onSelect || navigateOnCardClick) &&
           "cursor-pointer hover:shadow-[0_6px_28px_0_rgba(0,0,0,0.2)]",
@@ -154,13 +154,13 @@ export function ExperienceCard({
               style={{ objectPosition: card.photoPosition }}
               width={600}
             />
-            <span className="absolute left-[14.5px] top-[13.5px] flex h-[21px] min-w-[97px] items-center justify-center whitespace-nowrap rounded-[2px] bg-ground px-3 text-xs font-semibold uppercase leading-none text-primary">
+            <span className="absolute left-[14.5px] top-[13.5px] flex h-5.25 min-w-24.25 items-center justify-center whitespace-nowrap rounded-xs bg-ground px-3 text-xs font-semibold uppercase leading-none text-primary">
               {card.tag}
             </span>
           </div>
           {ribbon && (
             <span
-              className="absolute right-[21px] top-[124px] z-10 flex h-[21px] min-w-[97px] items-center justify-center whitespace-nowrap rounded-[2px] bg-feature px-3 text-xs font-semibold uppercase leading-none text-ink"
+              className="absolute right-5.25 top-31 z-10 flex h-5.25 min-w-24.25 items-center justify-center whitespace-nowrap rounded-xs bg-feature px-3 text-xs font-semibold uppercase leading-none text-ink"
               data-ribbon
             >
               {ribbon}
@@ -175,7 +175,7 @@ export function ExperienceCard({
         )
       )}
 
-      <div className="flex flex-1 flex-col px-[16.5px] pb-[21px] pt-[14.5px]">
+      <div className="flex flex-1 flex-col px-[16.5px] pb-5.25 pt-[14.5px]">
         {(tripperBadge || showRandomtripBadge) && (
           <p className="mb-1.5 font-barlow-condensed text-[0.65rem] font-extrabold uppercase leading-tight text-neutral-600 @[280px]:text-xs">
             {tripperBadge
@@ -190,43 +190,43 @@ export function ExperienceCard({
 
         <div className="mt-0.5 flex items-end gap-2">
           <ExperienceCardName name={name} />
-          <div className="mb-1 h-[29px] w-px shrink-0 bg-primary" />
+          <div className="mb-1 h-7.25 w-px shrink-0 bg-primary" />
           <div className="flex shrink-0 flex-col justify-end">
             {level.priceLabel ? (
               <span className="text-[10px] leading-none text-neutral-600">
                 {level.priceLabel}
               </span>
             ) : null}
-            <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-[26px] text-primary">
+            <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
               {`USD ${level.price}`}
             </span>
-            <span className="max-w-[8rem] whitespace-pre-line text-xs leading-tight text-neutral-600">
+            <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
               {level.priceFootnote || copy.perPerson}
             </span>
           </div>
         </div>
 
         {card?.eyebrow ? (
-          <p className="mt-[13px] font-barlow text-[18px] font-semibold leading-[18px] text-primary">
+          <p className="font-barlow font-semibold leading-6 mt-3.25 text-lg text-primary">
             {card.eyebrow}
           </p>
         ) : null}
 
-        <p className="mt-1.5 text-sm leading-[19px] text-neutral-600">
+        <p className="mt-1.5 text-sm leading-4.75 text-neutral-600">
           {description}
         </p>
 
-        <div className="mt-[15px] h-px bg-secondary-100" />
+        <div className="mt-3.75 h-px bg-secondary-100" />
 
-        <dl className="mt-[15px] grid grid-cols-[79px_1fr] items-center gap-x-0 gap-y-[5px] text-xs leading-[14px]">
+        <dl className="mt-3.75 grid grid-cols-[auto_1fr] items-start gap-x-0 gap-y-1.25 text-xs leading-3.5">
           {details.map((detail) => (
             <React.Fragment key={detail.label}>
-              <dt className="pr-2 font-normal leading-snug text-primary">
+              <dt className="font-normal leading-snug pr-2 text-primary whitespace-nowrap">
                 {detail.label}
               </dt>
-              <dd className="font-semibold leading-snug text-neutral-600">
+              <dd className="min-w-0 font-semibold leading-snug text-neutral-600">
                 {detail.kind === "transport" && card?.transport ? (
-                  <span className="flex flex-wrap items-center gap-x-[7px] gap-y-1">
+                  <span className="flex flex-wrap items-center gap-x-1.75 gap-y-1">
                     <ExperienceCardTransport
                       label={detail.value}
                       modes={card.transport.modes}

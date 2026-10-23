@@ -116,7 +116,7 @@ const Section = ({
           </div>
         )}
         <motion.div
-          className="mx-auto w-full"
+          className="min-w-0 mx-auto w-full"
           initial={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.6, delay: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}

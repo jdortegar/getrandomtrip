@@ -26,6 +26,7 @@ let container: HTMLDivElement;
 let root: Root;
 const levels = getPlannerContentForType("solo", "en").levels;
 const explora = levels.find((level) => level.id === "modo-explora")!;
+const exploraPlus = levels.find((level) => level.id === "explora-plus")!;
 const essenza = levels.find((level) => level.id === "essenza")!;
 const atelier = levels.find((level) => level.id === "atelier-getaway")!;
 const card = () =>
@@ -72,10 +73,46 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().classList.contains("bg-white")).toBe(true);
 });
 
+it("keeps long detail values in their column so they do not overlap labels", () => {
+  const pawsExplora = getPlannerContentForType("paws", "en").levels.find(
+    (level) => level.id === "modo-explora",
+  )!;
+  act(() => root.render(<ExperienceCard level={pawsExplora} />));
+  const list = card().querySelector("dl")!;
+  const value = [...card().querySelectorAll("dd")].find((node) =>
+    node.textContent?.includes("pet-friendly"),
+  );
+  expect(list.className).toContain("grid-cols-[auto_1fr]");
+  expect(value?.classList.contains("min-w-0")).toBe(true);
+  expect(card().textContent).toContain("Accommodation");
+  expect(value?.textContent).toContain("With personality · 3–4★ · pet-friendly");
+});
+
 it("keeps a single-word card name on one line", () => {
   act(() => root.render(<ExperienceCard level={essenza} />));
   expect(card().querySelector("h3")?.textContent).toBe(essenza.card!.name);
   expect(card().querySelector("h3")?.getAttribute("data-name-lines")).toBe("1");
+});
+
+it("renders the trademark as a compact superscript after the last letter", () => {
+  act(() => root.render(<ExperienceCard level={exploraPlus} />));
+  const lastLine = card().querySelector("h3 span:last-of-type");
+  const mark = lastLine?.querySelector("sup");
+  expect(lastLine?.textContent).toBe("EXPLORA+™");
+  expect(lastLine?.classList.contains("items-start")).toBe(true);
+  expect(mark?.textContent).toBe("™");
+  expect(mark?.className).toContain("text-[0.4em]");
+  expect(mark?.classList.contains("align-text-top")).toBe(true);
+  expect(mark?.classList.contains("mt-3")).toBe(true);
+});
+
+it("gives the card eyebrow room to wrap two lines", () => {
+  act(() => root.render(<ExperienceCard level={atelier} />));
+  const eyebrow = [...card().querySelectorAll("p")].find((node) =>
+    node.textContent?.includes("Tripper Travel Advisor"),
+  );
+  expect(eyebrow?.classList.contains("leading-6")).toBe(true);
+  expect(eyebrow?.classList.contains("text-lg")).toBe(true);
 });
 
 it("shows the most-chosen ribbon only when featured, or a custom badge", () => {
