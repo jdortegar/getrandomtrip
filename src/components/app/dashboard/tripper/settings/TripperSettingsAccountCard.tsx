@@ -76,7 +76,7 @@ export function TripperSettingsAccountCard({
             <div
               className={cn(
                 "h-1.5 flex-1 rounded-full",
-                i <= tierIndex ? "bg-secondary" : "bg-gray-200",
+                i <= tierIndex ? "bg-primary" : "bg-gray-200",
               )}
               key={key}
             />
