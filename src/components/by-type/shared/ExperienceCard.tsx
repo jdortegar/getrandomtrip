@@ -207,7 +207,7 @@ export function ExperienceCard({
         </div>
 
         {card?.eyebrow ? (
-          <p className="mt-3.25 font-barlow text-[18px] font-semibold leading-team-bio-compact text-primary">
+          <p className="font-barlow font-semibold leading-6 mt-3.25 text-lg text-primary">
             {card.eyebrow}
           </p>
         ) : null}
@@ -218,13 +218,13 @@ export function ExperienceCard({
 
         <div className="mt-3.75 h-px bg-secondary-100" />
 
-        <dl className="mt-3.75 grid grid-cols-[79px_1fr] items-center gap-x-0 gap-y-1.25 text-xs leading-3.5">
+        <dl className="mt-3.75 grid grid-cols-[auto_1fr] items-start gap-x-0 gap-y-1.25 text-xs leading-3.5">
           {details.map((detail) => (
             <React.Fragment key={detail.label}>
-              <dt className="pr-2 font-normal leading-snug text-primary">
+              <dt className="font-normal leading-snug pr-2 text-primary whitespace-nowrap">
                 {detail.label}
               </dt>
-              <dd className="font-semibold leading-snug text-neutral-600">
+              <dd className="min-w-0 font-semibold leading-snug text-neutral-600">
                 {detail.kind === "transport" && card?.transport ? (
                   <span className="flex flex-wrap items-center gap-x-1.75 gap-y-1">
                     <ExperienceCardTransport

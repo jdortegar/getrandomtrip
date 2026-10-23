@@ -20,10 +20,13 @@ const VARIANT_STYLES = {
     tabInactive: "text-ink hover:text-neutral-700",
   },
   marketing: {
-    container: "mb-20 flex justify-center gap-8 text-xl text-primary",
+    container: cn(
+      "flex gap-6 justify-start mb-20 min-w-0 overflow-x-auto overscroll-x-contain pb-4 text-lg text-primary w-full",
+      "md:gap-8 md:justify-center md:overflow-visible md:text-xl",
+    ),
     indicator:
       "absolute -bottom-3 left-0 right-0 m-auto h-[2px] w-1/2 rounded-full bg-primary",
-    tab: "relative cursor-pointer",
+    tab: "cursor-pointer relative shrink-0 whitespace-nowrap",
     tabActive: "text-primary",
     tabInactive: "text-ink",
   },

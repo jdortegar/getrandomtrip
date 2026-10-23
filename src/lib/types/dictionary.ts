@@ -4075,6 +4075,14 @@ export interface MarketingDictionary {
     };
     travelTypeEyebrow: string;
     travelTypeSubtitle: string;
+    travelTypeTabs: {
+      couple: string;
+      family: string;
+      group: string;
+      honeymoon: string;
+      paws: string;
+      solo: string;
+    };
     travelTypeTitle: string;
   };
   trippers: {
