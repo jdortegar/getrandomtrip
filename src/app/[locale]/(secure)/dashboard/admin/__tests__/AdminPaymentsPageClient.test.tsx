@@ -41,7 +41,7 @@ function payment(overrides: Partial<AdminPayment> = {}): AdminPayment {
     createdAt: "2026-01-01T00:00:00.000Z",
     currency: "USD",
     id: "p1",
-    provider: "mercadopago",
+    provider: "stripe",
     status: "APPROVED",
     user: { email: "a@b.com", name: "Ana" },
     ...overrides,

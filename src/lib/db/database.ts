@@ -79,7 +79,6 @@ export interface CreatePaymentData {
   tripId: string;
   provider: string;
   providerPaymentId?: string;
-  providerPreferenceId?: string;
   providerSessionId?: string;
   amount: number;
   currency?: string;

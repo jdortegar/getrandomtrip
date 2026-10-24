@@ -34,7 +34,7 @@ their content here:
 | Framework | Next.js 16 (App Router), TypeScript strict |
 | Database | PostgreSQL via Prisma 7 |
 | Auth | NextAuth 4 — `getServerSession(authOptions)` |
-| Payments | Stripe + MercadoPago |
+| Payments | Stripe |
 | State | Zustand 5 (slice pattern) |
 | UI | Shadcn UI + Radix UI + Tailwind CSS |
 | Email | React Email + Resend |
