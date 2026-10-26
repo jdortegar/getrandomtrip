@@ -8,6 +8,11 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/blog/blogRepository", () => ({
+  findPublishedBySlug: vi.fn(async (_locale: string, slug: string) =>
+    slug === "trekking-en-grupo"
+      ? { kind: "redirect", slug: "trekking-en-grupo-tips-y-risas" }
+      : { kind: "not_found" },
+  ),
   listPublishedLocaleSlugs: vi.fn(async () => [
     { id: "es", updatedAt: new Date(), localeSlugs: { es: "spanish-only" } },
     {
@@ -53,6 +58,19 @@ it("emits one entry per complete translation with its own slug and reciprocal al
       en: "https://getrandomtrip.com/en/blog/translated",
     });
   }
+});
+
+it("skips traveler story slugs a published post already claims", async () => {
+  const urls = (await sitemap()).map((entry) => entry.url);
+  expect(urls.some((url) => url.endsWith("/blog/trekking-en-grupo"))).toBe(
+    false,
+  );
+  expect(urls).toContain(
+    "https://getrandomtrip.com/blog/viajar-solo-la-mejor-decision",
+  );
+  expect(urls).toContain(
+    "https://getrandomtrip.com/en/blog/viajar-solo-la-mejor-decision",
+  );
 });
 
 it("advertises no hidden pages when the launch gate is reenabled", async () => {
