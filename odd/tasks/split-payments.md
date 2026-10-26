@@ -1,0 +1,49 @@
+# Split payments — "Pay individually" for group trips
+
+Objective: let each traveler of a group trip pay their own share through Stripe; the trip goes ahead with whoever paid by the deadline, shared per-trip add-ons are re-split through a dashboard top-up, and the organizer covers unpaid top-ups.
+Branch: `feat/split-payments` (from `develop`, to be created at T1) · Delivery: `ask-on-risk` → `feature-branch-chain` (forecast ~1,800 authored lines). Tracker `feat/split-payments` (draft, no-merge PR to `develop`); slice 01 `feat/split-payments-01-schema` (T1) targets the tracker, each later slice targets its parent · Test runner: `npx vitest run <path>`.
+
+## Specs
+
+- **S1 — Checkout choice.** "we add a step in checkout saying something like "Pay total" or "Pay individually."" "Pay total" keeps today's single-payment flow unchanged.
+- **S2 — Invitations.** "If the user chooses to pay individually, we ask for each traveler's email to send a trip invitation, maybe with a direct checkout link." Reuses the existing `TripTraveler` invite token flow (`invite/[token]`). The organizer pays their own share at checkout. Minors have no email; their shares are paid by the organizer (confirmed: "Yes, your assumption is correct.").
+- **S3 — Deadline outcome.** "When one of the friends doesn't pay, the trip still continues, but without them. All travelers who pay before the deadline will be the ones traveling." Unpaid invitees are dropped and `pax` becomes the paid headcount. Assumption: no minimum group size (a group may end as solo). Assumption: deadline length is a config value (default to be decided, ≤ the existing companion lock windows).
+- **S4 — Disclaimer.** "we can add a disclaimer that if invitees don't confirm before the deadline, the trip will change and costs will be updated." Shown at the S1 choice (organizer must accept), in the invitation, and in the invitee checkout; states the deadline and the maximum possible top-up. Copy in `es` and `en`.
+- **S5 — Shared add-on split.** "I think we should split the cost across all travelers. Then, if the other two don't accept, we can charge an extra fee to update those add-on values." Per-pax costs never change. Per-trip add-ons are divided across all invited travelers; at the deadline they are re-divided among payers and each payer owes a `TOP_UP` for the difference.
+- **S6 — Top-up payment UI.** "I'm okay with having a second payment. We need to create a modal or some kind of UI to do that charge, maybe in the traveler dashboard, and the user needs to enter their credit card again." On-session only: no saved cards, no off-session charges. Reuses `StripePaymentForm`. Email + dashboard banner open the modal; one reminder before the grace period ends. Assumption: grace period length is a config value.
+- **S7 — Organizer covers the rest.** "The organizer covered the rest in one single payment." After the grace period, all unpaid top-ups become one organizer payment. Assumption: the destination reveal is blocked until that payment succeeds.
+
+## Tasks
+
+| ID | Specs | Route | Status | Commit |
+|----|-------|-------|--------|--------|
+| T1 | S1–S7 data | inline | done (uncommitted; develop DB not migrated) | — |
+| T2 | S2, S5, S4 | inline | pending | — |
+| T3 | S1, S2, S4 | inline | pending | — |
+| T4 | S2 | inline | pending | — |
+| T5 | S3, S5 | inline | pending | — |
+| T6 | S6 | inline | pending | — |
+| T7 | S7 | inline | pending | — |
+| T8 | S1–S7 docs | inline | pending | — |
+
+- T1 — Schema + migration `20261026120000_split_payments` (additive): `Payment` stays the trip's single bill; new `PaymentShare` (paymentId, travelerId? = null for organizer, userId?, `kind` `SHARE | TOP_UP | ORGANIZER_REMAINDER`, amount, currency, status, own `stripePaymentIntentId @unique`); `TripRequest` adds `paymentMode` (`TOTAL | INDIVIDUAL`, default TOTAL), `paymentDeadline`, `topUpDeadline`; status `COLLECTING` (admin flow, labels es/en). Apply to develop DB via `prisma db execute`. Risk: item 1 (new enum value on `TripRequestStatus` can't be dropped in Postgres) .
+- T2 — Pure share calculator: per-traveler share, minors and rounding remainder to the organizer, per-trip add-ons split across invitees, maximum top-up, re-split after drop-outs. Unit tests for 4→4, 4→2, 4→1, minors, rounding.
+- T3 — Checkout step: "Pay total" / "Pay individually" choice, adult email entry, disclaimer acceptance, organizer pays own share, trip → `COLLECTING`, invites sent with direct checkout link. i18n.
+- T4 — Invitee share checkout: invite link → share summary + PaymentIntent for the share; webhook routes payments by `travelerId`/`kind`. Risk: item 3 (webhook shared with the existing single-payment flow).
+- T5 — Deadline job (Netlify scheduled function + `src/app/api/internal/*` route, like `traveler-reminder`): drop unpaid travelers, update `pax`/`paxDetails`, create `TOP_UP` payments, notify; trip → `CONFIRMED` when nothing is owed. Idempotent.
+- T6 — Dashboard top-up banner + modal with `StripePaymentForm`, top-up email, reminder before grace end. i18n.
+- T7 — Grace job: sum unpaid top-ups into one `ORGANIZER_REMAINDER` payment, organizer notice + modal, reveal gated until paid.
+- T8 — Docs/help copy for the flow.
+
+## Log
+
+- **L1 (2026-10-24, user):** "In my app, I recently ran into a scenario where users need to buy an experience separately. Let's say there is a group of four friends that wants to buy an experience, but they want to pay individually. I need to research if Stripe supports this kind of split payment or find a way to handle this scenario. Let's research it and discuss ideas."
+- **L2 (research):** Stripe has no native multi-payer order; build it as one PaymentIntent per payer. Online card holds last ~7 days (https://docs.stripe.com/payments/place-a-hold-on-a-payment-method). Multicapture/Connect don't fit.
+- **L3 (user):** "When one of the friends doesn't pay, the trip still continues, but without them. All travelers who pay before the deadline will be the ones traveling. Also, I'm thinking of a way where we save the trip ID, but we add a step in checkout saying something like "Pay total" or "Pay individually." If the user chooses to pay individually, we ask for each traveler's email to send a trip invitation, maybe with a direct checkout link." → Decision: charge immediately, no holds (no refunds ever needed).
+- **L4 (user):** "Yes, your assumption is correct. I'm thinking that maybe we can add a disclaimer that if invitees don't confirm before the deadline, the trip will change and costs will be updated."
+- **L5 (user):** "I don't agree with the option to charge the full per-trip add-ons to the organizer. It's very possible that one or two travelers from the group won't end up going. For example, on a four-person trip, two people dropping out is a real scenario, and we might be charging amounts that will be hard to refund. Instead, I think we should split the cost across all travelers. Then, if the other two don't accept, we can charge an extra fee to update those add-on values."
+- **L6 (user):** "I'm okay with having a second payment. We need to create a modal or some kind of UI to do that charge, maybe in the traveler dashboard, and the user needs to enter their credit card again."
+- **L7 (user):** "The organizer covered the rest in one single payment."
+- **L8 (2026-10-26):** Document created. Open: deadline/grace lengths, promo-code allocation across shares, chain strategy. Engram mirror `odd/split-payments/tasks`: pending (Engram tools unavailable this session). Next: T1 on `feat/split-payments`.
+- **L9 (2026-10-26, T1):** Design change: dropping `Payment.tripRequestId @unique` would break 173 reads in 46 files of `tripRequest.payment`; chose additive `PaymentShare` child table instead (existing readers unchanged; webhook in T4 looks up shares by PaymentIntent first). Evidence: `prisma validate` ok; `npm run typecheck` clean except 3 pre-existing `DesignSystemPage.test.tsx` errors (same on develop); trip-status tests RED 3 failed → GREEN 9/9; related suites `npx vitest run` admin/hooks: 81 files, 906 tests passed; eslint clean. Pending: apply migration to develop DB, chain strategy, commit.
+- **L10 (2026-10-26, user):** "feature branch please" → chain strategy `feature-branch-chain`. Slice 01 = T1.

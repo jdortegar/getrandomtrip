@@ -3363,6 +3363,7 @@ export interface TripDetailDict {
     DRAFT: string;
     SAVED: string;
     PENDING_PAYMENT: string;
+    COLLECTING: string;
     CONFIRMED: string;
     REVEALED: string;
     COMPLETED: string;
@@ -5142,6 +5143,7 @@ export interface MarketingDictionary {
       CONFIRMED: string;
       DRAFT: string;
       PENDING_PAYMENT: string;
+      COLLECTING: string;
       REVEALED: string;
       SAVED: string;
     };

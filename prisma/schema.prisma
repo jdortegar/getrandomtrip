@@ -108,6 +108,7 @@ model User {
   referredTravelers       User[]               @relation("ReferredBy")
   ownedExperiences        Experience[]         @relation("OwnedExperiences")
   payments                Payment[]
+  paymentShares           PaymentShare[]
   reviews                 Review[]
   tripperReviews          Review[]             @relation("TripperReviews")
   likedExperiences        ExperienceLike[]
@@ -174,6 +175,11 @@ model TripRequest {
 
   // Tripper Attribution
   tripperId String? // Tripper who attributed this request (set at creation via ?tripper=slug)
+
+  // Split payments: INDIVIDUAL = each adult pays a PaymentShare against the single Payment
+  paymentMode     PaymentMode @default(TOTAL)
+  paymentDeadline DateTime? // Invitees must pay their share by this time; unpaid ones are dropped
+  topUpDeadline   DateTime? // Grace end for TOP_UP shares; leftovers become ORGANIZER_REMAINDER
 
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String? // Revealed destination
@@ -563,8 +569,41 @@ model Payment {
   /// from PaymentIntent metadata `discountAmountUsd`. Null when unknown or no discount.
   promoDiscountUsd      Float?
 
+  shares PaymentShare[] // INDIVIDUAL mode charges against this trip bill
+
   @@index([stripePromotionCodeId])
   @@map("payments")
+}
+
+/// One charge against a trip's Payment when the trip is paid individually.
+model PaymentShare {
+  id String @id @default(cuid())
+
+  paymentId  String
+  payment    Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  // Companion row this share belongs to; null = the organizer's own share
+  travelerId String?
+  traveler   TripTraveler? @relation(fields: [travelerId], references: [id], onDelete: SetNull)
+  // Account that paid; null until an invitee pays
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  kind     PaymentShareKind @default(SHARE)
+  amount   Float // Amount due for this share, in `currency`
+  currency String // Copied from the parent Payment
+
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  failureReason         String?
+  paidAt                DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([paymentId])
+  @@index([travelerId])
+  @@index([status])
+  @@map("payment_shares")
 }
 
 /// Durable first-payment notification snapshot; intentionally survives source deletion.
@@ -632,7 +671,8 @@ model TripTraveler {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  tripRequest   TripRequest    @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  paymentShares PaymentShare[]
 
   @@index([tripRequestId])
   @@index([status])
@@ -795,10 +835,22 @@ enum TripRequestStatus {
   DRAFT
   SAVED
   PENDING_PAYMENT
+  COLLECTING // INDIVIDUAL mode: organizer paid, invitees paying until paymentDeadline
   CONFIRMED
   REVEALED
   COMPLETED
   CANCELLED
+}
+
+enum PaymentMode {
+  TOTAL // One payment covers the whole trip
+  INDIVIDUAL // Each adult pays their own PaymentShare
+}
+
+enum PaymentShareKind {
+  SHARE // Traveler's initial share
+  TOP_UP // Re-split per-trip add-ons after drop-outs
+  ORGANIZER_REMAINDER // Unpaid top-ups the organizer covers in one payment
 }
 
 enum TripContactStatus {
