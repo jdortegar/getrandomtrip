@@ -4474,6 +4474,23 @@ export interface MarketingDictionary {
       backToEdit: string;
       continueToPayment: string;
       paymentTitle: string;
+      paymentMode: {
+        title: string;
+        description: string;
+        totalOption: string;
+        individualOption: string;
+        emailsTitle: string;
+        emailsHint: string;
+        emailLabel: string;
+        calculate: string;
+        calculating: string;
+        yourShareLabel: string;
+        companionShareLabel: string;
+        disclaimer: string;
+        disclaimerRequired: string;
+        emailsInvalid: string;
+        calculateFirst: string;
+      };
       paymentBack: string;
       paymentSubmit: string;
       paymentProcessing: string;

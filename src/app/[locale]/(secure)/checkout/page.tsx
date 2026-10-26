@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { Calendar, Car, Loader2, MapPin } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
+import { CheckoutPaymentModeCard } from "@/components/app/checkout/CheckoutPaymentModeCard";
 import { CheckoutTravelDocumentsCard } from "@/components/app/checkout/CheckoutTravelDocumentsCard";
 import {
   CheckoutTravelDetailsCard,
@@ -46,6 +47,9 @@ import { normalizeCountryCodes, normalizeVisaCodes } from "@/lib/geo/countryOpti
 import type { XsedTravelType } from "@/types/core";
 import { Button } from "@/components/ui/Button";
 import { useCheckoutQuote } from "@/hooks/useCheckoutQuote";
+import { parseCompanionEmails } from "@/lib/payments/companion-emails";
+import { INDIVIDUAL_PAYMENT_WINDOW_MS } from "@/lib/payments/split-shares";
+import type { CheckoutPaymentSplit } from "@/lib/types/CheckoutQuote";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
 import { getCheckoutLevel, getCheckoutPaxDetails, getFixedCheckoutParty } from "@/lib/helpers/checkout-party";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -198,17 +202,34 @@ function CheckoutContent() {
   const checkoutLevel = payment.quote?.level ?? (trip ? getCheckoutLevel(trip) : "");
   const [isConfirming, setIsConfirming] = useState(false);
   const confirmingRef = useRef(false);
+  const [paymentMode, setPaymentMode] = useState<CheckoutPaymentSplit["paymentMode"]>("TOTAL");
+  const [companionEmails, setCompanionEmails] = useState<string[]>([]);
+  const [emailsInvalid, setEmailsInvalid] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [showDisclaimerError, setShowDisclaimerError] = useState(false);
+  // A saved INDIVIDUAL split comes back on reload: adopt its mode and emails once per quote.
+  const quoteSplit = payment.quote?.paymentMode === "INDIVIDUAL" ? payment.quote.split : undefined;
+  const [hydratedSplitIntent, setHydratedSplitIntent] = useState<string | null>(null);
+  if (quoteSplit && payment.quote && hydratedSplitIntent !== payment.quote.paymentIntentId) {
+    setHydratedSplitIntent(payment.quote.paymentIntentId);
+    setPaymentMode("INDIVIDUAL");
+    setCompanionEmails(quoteSplit.companionEmails);
+  }
+  const splitErrorCode = payment.errorCode === "INVALID_COMPANION_EMAILS" ||
+    payment.errorCode === "INDIVIDUAL_REQUIRES_COMPANIONS";
+  // Never offer the full-total intent while the buyer chose to pay individually.
+  const splitPending = paymentMode === "INDIVIDUAL" && !quoteSplit;
   const appliedPromocode = payment.promoCode;
   const promoDiscount = payment.quote?.discountAmount ?? 0;
   const promoLoading = payment.pending || isConfirming;
   const promoRejection = promoReasonFromErrorCode(payment.errorCode);
-  const paymentError = payment.errorCode === "INVALID_TRIP_DATES"
+  const paymentError = splitErrorCode ? null : payment.errorCode === "INVALID_TRIP_DATES"
     ? dict?.journey.checkout.errors.invalidDates ?? null
     : promoRejection
       ? dict?.journey.checkout.errors.promo[promoRejection] ?? payment.error
       : payment.error;
   const promoError = paymentError;
-  const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
+  const clientSecret = payment.isReady() && !splitPending ? payment.quote?.clientSecret ?? null : null;
   const onPaymentInfoSubmitted = useCheckoutTracking(trip?.id, trip?.type, clientSecret ? payment.quote : null);
   const contactFormRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
@@ -578,7 +599,13 @@ function CheckoutContent() {
     const details = getFixedCheckoutParty(trip.type, checkoutLevel) ?? nextDetails;
     const nextPax = details.adults + details.minors;
     if (nextPax === trip.pax && paxDetailsEquals(details, trip.paxDetails) && payment.isReady()) return;
-    await payment.refresh({ save: async () => {
+    // A different number of companions invalidates the split: quote the total until recalculated.
+    const resetSplit = paymentMode === "INDIVIDUAL" && details.adults !== paxDetails.adults;
+    if (resetSplit) {
+      setDisclaimerAccepted(false);
+      if (details.adults < 2) setPaymentMode("TOTAL");
+    }
+    await payment.refresh({ ...(resetSplit ? { split: { paymentMode: "TOTAL" } } : {}), save: async () => {
       const response = await fetch("/api/trip-requests", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: trip.id, pax: nextPax, paxDetails: details }),
@@ -597,13 +624,51 @@ function CheckoutContent() {
     } });
   }
 
+  function handlePaymentModeChange(mode: CheckoutPaymentSplit["paymentMode"]) {
+    if (mode === paymentMode || promoLoading || confirmingRef.current) return;
+    setPaymentMode(mode);
+    setDisclaimerAccepted(false);
+    setShowDisclaimerError(false);
+    setEmailsInvalid(false);
+    if (mode === "TOTAL") void payment.refresh({ split: { paymentMode: "TOTAL" } }).catch(() => {});
+  }
+
+  function handleCompanionEmailChange(index: number, value: string) {
+    setEmailsInvalid(false);
+    setCompanionEmails((previous) => {
+      const next = Array.from({ length: Math.max(0, paxDetails.adults - 1) }, (_, i) => previous[i] ?? "");
+      next[index] = value;
+      return next;
+    });
+  }
+
+  async function handleCalculateShare() {
+    if (promoLoading || confirmingRef.current) return;
+    const slots = Math.max(0, paxDetails.adults - 1);
+    const emails = Array.from({ length: slots }, (_, i) => companionEmails[i] ?? "");
+    const parsed = parseCompanionEmails(emails, slots, session?.user?.email);
+    if (!parsed) {
+      setEmailsInvalid(true);
+      return;
+    }
+    setDisclaimerAccepted(false);
+    try {
+      await payment.refresh({ split: { paymentMode: "INDIVIDUAL", companionEmails: parsed } });
+    } catch { /* The quote error is shown on the payment mode card. */ }
+  }
+
   function handlePaymentProcessingChange(processing: boolean) {
     confirmingRef.current = processing;
     setIsConfirming(processing);
   }
 
   const onBeforeConfirm = async (): Promise<boolean> => {
-    if (!hasTripId || !trip?.id || !payment.isReady()) return false;
+    if (!hasTripId || !trip?.id || !payment.isReady() || splitPending) return false;
+    if (paymentMode === "INDIVIDUAL" && !disclaimerAccepted) {
+      setShowDisclaimerError(true);
+      toast.error(dict?.journey?.checkout?.paymentMode?.disclaimerRequired);
+      return false;
+    }
     const confirmedSecret = clientSecret;
     if (!session && !isAuthed) {
       useUserStore.getState().openAuth("signin");
@@ -950,9 +1015,37 @@ function CheckoutContent() {
               value={buyerDocuments}
             />
 
+            {paxDetails.adults > 1 && !getFixedCheckoutParty(trip.type, checkoutLevel) ? (
+              <CheckoutPaymentModeCard
+                calculating={payment.pending && paymentMode === "INDIVIDUAL"}
+                copy={checkoutCopy.paymentMode}
+                deadlineHours={INDIVIDUAL_PAYMENT_WINDOW_MS / (60 * 60 * 1000)}
+                disabled={isConfirming}
+                disclaimerAccepted={disclaimerAccepted}
+                emails={Array.from({ length: paxDetails.adults - 1 }, (_, i) => companionEmails[i] ?? "")}
+                emailsError={emailsInvalid || splitErrorCode ? checkoutCopy.paymentMode.emailsInvalid : null}
+                mode={paymentMode}
+                onCalculate={() => { void handleCalculateShare(); }}
+                onDisclaimerChange={(accepted) => {
+                  setDisclaimerAccepted(accepted);
+                  if (accepted) setShowDisclaimerError(false);
+                }}
+                onEmailChange={handleCompanionEmailChange}
+                onModeChange={handlePaymentModeChange}
+                share={quoteSplit && payment.quote ? {
+                  companion: quoteSplit.companionShare,
+                  maxTopUp: quoteSplit.maxTopUp.organizer,
+                  yours: payment.quote.total,
+                } : null}
+                showDisclaimerError={showDisclaimerError}
+                usd={usd}
+              />
+            ) : null}
+
             <CheckoutContactCard
               checkoutCopy={checkoutCopy}
               clientSecret={clientSecret}
+              paymentNotice={splitPending && !payment.pending ? checkoutCopy.paymentMode.calculateFirst : null}
               formData={formData}
               formRef={contactFormRef}
               isXsed={trip?.type === "xsed"}

@@ -617,7 +617,11 @@ describe("POST /api/stripe/payment-intent — individual payment mode", () => {
       paymentMode: "INDIVIDUAL",
       total: 1023.34,
       tripTotal: 3070,
-      split: { companionShare: 1023.33, maxTopUp: { invitee: 11.67, organizer: 46.66 } },
+      split: {
+        companionEmails: ["ana@example.com", "bo@example.com"],
+        companionShare: 1023.33,
+        maxTopUp: { invitee: 11.67, organizer: 46.66 },
+      },
     });
     expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(
       expect.objectContaining({ amount: 102334, metadata: expect.objectContaining({ paymentMode: "INDIVIDUAL" }) }),
@@ -666,6 +670,20 @@ describe("POST /api/stripe/payment-intent — individual payment mode", () => {
     const res = await POST(individualRequest({}));
     expect(res.status).toBe(200);
     expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 102334 }));
+  });
+
+  it("falls back to the total when a saved split no longer fits the party", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
+      paymentMode: "INDIVIDUAL",
+      travelers: [{ kind: "ADULT", userId: null, email: "ana@example.com" }],
+    }) as never);
+    const res = await POST(individualRequest({}));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ paymentMode: "TOTAL", total: 3070 });
+    expect(vi.mocked(upsertPaymentForTripCheckout).mock.calls[0][0]).toMatchObject({
+      previousPaymentMode: "INDIVIDUAL",
+    });
+    expect(vi.mocked(upsertPaymentForTripCheckout).mock.calls[0][0].split).toBeUndefined();
   });
 
   it("drops back to a full-total charge when the buyer switches to TOTAL", async () => {

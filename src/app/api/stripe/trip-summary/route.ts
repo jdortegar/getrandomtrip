@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { findPaymentByStripeIntentId } from "@/lib/db/payment";
+import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 
@@ -55,10 +56,17 @@ export async function GET(request: NextRequest) {
   }
 
   const roster = await getRosterForTrip(trip.id, session.user.id);
+  // INDIVIDUAL: `Payment.amount` is the trip bill; the organizer paid only their share.
+  const organizerShare = trip.paymentMode === "INDIVIDUAL"
+    ? await prisma.paymentShare.findFirst({
+        where: { paymentId: payment.id, travelerId: null, kind: "SHARE" },
+        select: { amount: true },
+      })
+    : null;
 
   return NextResponse.json({
     payment: {
-      amount: payment.amount,
+      amount: organizerShare?.amount ?? payment.amount,
       currency: payment.currency,
       status: payment.status,
       receiptUrl,

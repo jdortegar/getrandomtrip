@@ -22,6 +22,7 @@ import {
   type TripDiscount,
   withTripDiscount,
 } from "@/lib/payments/split-shares";
+import { parseCompanionEmails } from "@/lib/payments/companion-emails";
 import type { PaymentMode } from "@prisma/client";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 import type { PromoRejectionReason } from "@/types/payments";
@@ -37,24 +38,6 @@ const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
   max_redemptions_reached: "This promo code has reached its usage limit",
   minimum_amount: "Your trip does not reach this promo code's minimum amount",
 };
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/**
- * Normalized companion emails for an INDIVIDUAL quote, or null when they don't
- * fill every adult companion slot with distinct addresses other than the buyer's.
- */
-function parseCompanionEmails(
-  raw: unknown,
-  slots: number,
-  buyerEmail: string | null | undefined,
-): string[] | null {
-  if (!Array.isArray(raw) || raw.length !== slots) return null;
-  const emails = raw.map((e) => (typeof e === "string" ? e.trim().toLowerCase() : ""));
-  const buyer = buyerEmail?.trim().toLowerCase();
-  if (emails.some((e) => !EMAIL_RE.test(e) || e === buyer)) return null;
-  return new Set(emails).size === emails.length ? emails : null;
-}
 
 /** Enforces the promotion code rules Stripe would apply on redemption. Counts
  * exclude this trip so re-quoting a code already applied here never rejects it.
@@ -178,21 +161,28 @@ export async function checkoutQuoteResponse(
 
     const paxDetails = getCheckoutPaxDetails(trip);
     const pax = paxDetails.adults + paxDetails.minors;
-    const paymentMode: PaymentMode =
+    // Only an explicit INDIVIDUAL request is rejected when the split is
+    // invalid; a saved split that no longer fits the party quotes the total.
+    let paymentMode: PaymentMode =
       body.paymentMode ?? trip.paymentMode ?? "TOTAL";
     let companionEmails: string[] = [];
     if (paymentMode === "INDIVIDUAL") {
-      if (paxDetails.adults < 2) {
-        return fail("Individual payment needs another adult", 400, "INDIVIDUAL_REQUIRES_COMPANIONS");
-      }
+      const explicit = body.paymentMode === "INDIVIDUAL";
       const raw =
         body.companionEmails ??
         (trip.travelers ?? [])
           .filter((t) => t.kind === "ADULT" && t.userId === null)
           .map((t) => t.email);
-      const parsed = parseCompanionEmails(raw, paxDetails.adults - 1, session.user.email);
-      if (!parsed) return fail("Invalid companion emails", 400, "INVALID_COMPANION_EMAILS");
-      companionEmails = parsed;
+      const parsed = paxDetails.adults < 2
+        ? null
+        : parseCompanionEmails(raw, paxDetails.adults - 1, session.user.email);
+      if (!parsed && explicit) {
+        return paxDetails.adults < 2
+          ? fail("Individual payment needs another adult", 400, "INDIVIDUAL_REQUIRES_COMPANIONS")
+          : fail("Invalid companion emails", 400, "INVALID_COMPANION_EMAILS");
+      }
+      if (parsed) companionEmails = parsed;
+      else paymentMode = "TOTAL";
     }
     const level = getCheckoutLevel(trip);
     const overrides = await loadTripperPriceOverrides(trip.tripperId);
@@ -414,6 +404,7 @@ export async function checkoutQuoteResponse(
       ...(split
         ? {
             split: {
+              companionEmails,
               companionShare: split.shares[1].amountCents / 100,
               maxTopUp: {
                 invitee: (maxTopUp?.inviteeCents ?? 0) / 100,

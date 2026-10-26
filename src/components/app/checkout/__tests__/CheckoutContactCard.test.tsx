@@ -95,3 +95,38 @@ it("reloads a rejected Stripe script and keeps a successful instance stable", as
     });
   }
 });
+
+it("holds back the payment form behind a neutral notice until the share is calculated", async () => {
+  vi.stubEnv("NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY", "pk_test_fixture");
+  mock.load.mockResolvedValue({} as Stripe);
+  const { CheckoutContactCard } = await import("../CheckoutContactCard");
+  const container = document.createElement("div");
+  const testRoot = createRoot(container);
+  const notice = en.journey.checkout.paymentMode.calculateFirst;
+  await act(async () =>
+    testRoot.render(
+      <CheckoutContactCard
+        checkoutCopy={en.journey.checkout as never}
+        clientSecret="secret_total"
+        formData={{ city: "", country: "", idDocument: "", name: "", phone: "", state: "", street: "", zipCode: "" }}
+        formRef={createRef<HTMLFormElement>()}
+        onBack={vi.fn()}
+        onBeforeConfirm={vi.fn()}
+        onFieldChange={vi.fn()}
+        onPaymentProcessingChange={vi.fn()}
+        onRetryPayment={vi.fn()}
+        paymentError={null}
+        paymentNotice={notice}
+        retryLabel="Retry"
+        sessionEmail="buyer@example.com"
+        summary={en.journey.summary as never}
+      />,
+    ),
+  );
+  try {
+    expect(container.querySelector("[role=status]")?.textContent).toBe(notice);
+    expect(container.textContent).not.toContain("Retry form");
+  } finally {
+    act(() => testRoot.unmount());
+  }
+});

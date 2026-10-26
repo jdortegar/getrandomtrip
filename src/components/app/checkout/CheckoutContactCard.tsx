@@ -187,6 +187,8 @@ interface CheckoutContactCardProps {
   onPaymentProcessingChange: (processing: boolean) => void;
   onRetryPayment: () => void;
   paymentError: string | null;
+  /** Neutral reason the payment form is held back (no retry action). */
+  paymentNotice?: string | null;
   paymentRecoveryHref?: string;
   retryLabel: string;
   sessionEmail: string;
@@ -196,6 +198,7 @@ interface CheckoutContactCardProps {
 export function CheckoutContactCard({
   checkoutCopy,
   clientSecret,
+  paymentNotice = null,
   formData,
   formRef,
   isXsed = false,
@@ -355,6 +358,10 @@ export function CheckoutContactCard({
               <Button onClick={onRetryPayment} type="button" variant="secondary">{retryLabel}</Button>
             )}
           </div>
+        ) : paymentNotice ? (
+          <p className="text-sm text-neutral-600" role="status">
+            {paymentNotice}
+          </p>
         ) : clientSecret ? (
           <Elements
             key={`${clientSecret}:${paymentElement.attempt}`}
