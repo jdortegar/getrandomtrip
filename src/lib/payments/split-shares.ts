@@ -7,6 +7,9 @@ import type { PaymentTotalsResult } from "@/lib/helpers/payment-totals";
  */
 export type TotalsAtPax = (pax: number) => PaymentTotalsResult;
 
+/** Invitees have this long after the organizer pays to pay their share. */
+export const INDIVIDUAL_PAYMENT_WINDOW_MS = 72 * 60 * 60 * 1000;
+
 /** Who is splitting an INDIVIDUAL trip; the organizer is implicit. */
 export interface SplitParty {
   /** Adult companion `TripTraveler` ids invited to pay their own share. */

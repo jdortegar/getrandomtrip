@@ -1,9 +1,11 @@
-import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
+import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed, sendTravelerInviteEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import type { PaymentMode, PaymentStatus, Prisma } from "@prisma/client";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
+import { INDIVIDUAL_PAYMENT_WINDOW_MS } from "@/lib/payments/split-shares";
+import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 
 export interface CreatePaymentData {
   userId: string;
@@ -340,6 +342,8 @@ export async function updatePaymentFromStripeWebhook(
   // Match checkout's lock order: TripRequest before Payment. The provisional
   // promotion is invisible until commit and must roll back if the claim is lost.
   const lostClaim = new Error("Payment claim changed");
+  // INDIVIDUAL: the organizer's intent opens collection; confirmation waits for the deadline.
+  const individual = payment.tripRequest?.paymentMode === "INDIVIDUAL";
   const outcome = await prisma.$transaction(async (tx) => {
     const promoted = finalData.status === "APPROVED"
       ? await tx.tripRequest.updateMany({
@@ -347,7 +351,9 @@ export async function updatePaymentFromStripeWebhook(
             id: payment.tripRequestId,
             status: { in: ["DRAFT", "SAVED", "PENDING_PAYMENT"] },
           },
-          data: { status: "CONFIRMED" },
+          data: individual
+            ? { status: "COLLECTING", paymentDeadline: new Date(Date.now() + INDIVIDUAL_PAYMENT_WINDOW_MS) }
+            : { status: "CONFIRMED" },
         })
       : { count: 0 };
     const { count } = await tx.payment.updateMany({
@@ -364,9 +370,16 @@ export async function updatePaymentFromStripeWebhook(
       data: { ...finalData, updatedAt: new Date() },
     });
     if (count === 0) throw lostClaim;
+    if (individual && finalData.status) {
+      await tx.paymentShare.updateMany({
+        where: { paymentId: payment.id, stripePaymentIntentId },
+        data: { status: finalData.status, ...(finalData.status === "APPROVED" ? { paidAt: new Date() } : {}) },
+      });
+    }
     // Mode comes from the verified provider intent, never the browser request.
     // Test/unknown mode still settles normally but cannot reach the sales outbox.
-    const saleQueued = liveMode && finalData.status === "APPROVED" && !repairsApprovedBooking;
+    // INDIVIDUAL trips queue the sale once the deadline confirms the final bill.
+    const saleQueued = liveMode && finalData.status === "APPROVED" && !repairsApprovedBooking && !individual;
     if (saleQueued) {
       const settled = await tx.payment.findUniqueOrThrow({
         where: { id: payment.id },
@@ -385,7 +398,9 @@ export async function updatePaymentFromStripeWebhook(
   if (!outcome.changed) return payment;
 
   // External side effects only after commit and only for the winning promotion.
-  if (outcome.confirmed) {
+  if (outcome.confirmed && individual) {
+    await inviteSplitCompanions(payment.tripRequestId);
+  } else if (outcome.confirmed) {
     sendBookingConfirmed(payment.tripRequestId, payment.userId);
     sendAdminNewBooking(payment.tripRequestId, payment.userId);
   }
@@ -401,4 +416,23 @@ export async function updatePaymentFromStripeWebhook(
   }
 
   return { ...payment, ...finalData };
+}
+
+/**
+ * Invites every companion who still owes their share once the organizer has
+ * paid. Only never-invited rows get a token, so a replayed webhook sends
+ * nothing twice; delivery failures never undo the settled payment.
+ */
+async function inviteSplitCompanions(tripRequestId: string) {
+  const companions = await prisma.tripTraveler.findMany({
+    where: { tripRequestId, kind: "ADULT", status: "PENDING", userId: null, email: { not: null } },
+    select: { id: true },
+  });
+  for (const { id } of companions) {
+    try {
+      sendTravelerInviteEmail(id, await issueTravelerInvite(id, "PENDING"));
+    } catch (error) {
+      console.error("[split] companion invite not issued:", id, error);
+    }
+  }
 }

@@ -6234,6 +6234,7 @@
     },
     "tripStatus": {
       "CANCELLED": "Cancelled",
+      "COLLECTING": "Waiting on your group",
       "COMPLETED": "Completed",
       "CONFIRMED": "Confirmed",
       "DRAFT": "Draft",
