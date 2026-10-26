@@ -42,6 +42,7 @@ export const MIRRORED_STATUSES = ["PUBLISHED", "SYNCED"];
 
 export async function listSourceRows() {
   return prisma.socialSource.findMany({
+    where: { accountUsername: "getrandomtrip.es" },
     select: {
       id: true,
       igMediaId: true,

@@ -57,3 +57,34 @@ Slack signatures cover the original bytes and expire after five minutes. App, wo
 - [ ] Publish one approved test review and confirm it appears only on @getrandomtrip.en.
 
 References: [Instagram content publishing](https://developers.facebook.com/docs/instagram-platform/content-publishing/), [Slack interaction responses](https://docs.slack.dev/interactivity/handling-user-interaction/), [OpenAI image edits](https://developers.openai.com/api/reference/resources/images/methods/edit), [Netlify scheduled functions](https://docs.netlify.com/build/functions/scheduled-functions/).
+
+## Import a URL and stop at Slack review
+
+An authenticated admin can open `/dashboard/admin/social-approvals` (English: `/en/dashboard/admin/social-approvals`) and submit a URL, or POST to `/api/admin/social-approvals/import`:
+
+```json
+{
+  "instagramUrl": "https://www.instagram.com/p/De0IMw8jOGl/",
+  "useReviewedExample": true
+}
+```
+
+This **read-only import** uses the existing `SOCIAL_TARGET_PAGE_TOKEN`, independently of the publication flag. The Page token must resolve through the existing Meta account/profile client to **getrandomtrip.en**, with access to its professional-account media. The URL is parsed locally and never fetched or scraped: only an exact canonical permalink returned from the owned media feed (up to 500 recent accessible posts) can match. The initial UI supports one IMAGE post; reels, videos and carousels return a clear unsupported-media error. Meta permissions/access failures are not bypassed with browser login or scraping. The existing Facebook Login integration needs `instagram_basic` and applicable Page access/read permissions; verify the actual app/token setup before live testing. Meta documentation retrieval was unavailable during this implementation, so no new endpoint/permission capability is claimed.
+
+Both Slack approvals and AI generation must already be configured/enabled. The same durable TRANSLATE queue, spend caps, checkpoints, immutable asset storage, and Slack review posting are reused. The worker rechecks account identity before reading media. Imported EN source rows are isolated from the Spanish synchronization backlog. Their generated reviews are **not linked to a publishable Spanish source**, and the Slack publish button is suppressed even if an unrelated publishing feature is enabled. This import does not publish anything or grant human approval.
+
+For this exact reviewed solo post, selecting `useReviewedExample: true` locks the exact artwork headline and four-paragraph caption from the corrected transcreator references. The shortcode alone never selects or approves that copy. The same option on a different post is rejected. Explicit current-assignment `copyLocks` take precedence independently:
+
+```json
+{
+  "instagramUrl": "https://www.instagram.com/p/De0IMw8jOGl/",
+  "copyLocks": {
+    "caption": "Exact caption with intentional paragraph breaks.",
+    "artworkHeadline": "EXACT MAIN HEADLINE"
+  }
+}
+```
+
+Locked caption text bypasses rewriting, including during generic Slack feedback revisions. Locked headline instructions take precedence in artwork edits; pixel-exact rendering still requires visual approval. General feedback does not silently unlock either field. For an explicitly changed locked field, an admin can submit a new manual review using the existing admin review endpoint with a new request ID, the same review key, updated artwork URL/caption, and updated `copyLocks`. Re-importing an already queued post with different locks returns a conflict rather than creating another paid assignment.
+
+The corrected brand policy is versioned in `src/lib/ai/socialBrandPolicy.ts` and used by initial transcreation **and** feedback revisions. Artwork, caption and editorial rationale remain separate; rationale cannot enter the caption. No generated field implies a human approval. See `docs/SocialTranscreationPolicy.md` for policy provenance and scope.

@@ -29,3 +29,9 @@ export function socialTargetConfig() {
     return null;
   return { token, username: "getrandomtrip.en" };
 }
+
+/** Read-only own-account import; never requires or enables the publish flag. */
+export function socialImportConfig() {
+  const token = readToken(process.env.SOCIAL_TARGET_PAGE_TOKEN);
+  return token ? { token, username: "getrandomtrip.en" } : null;
+}

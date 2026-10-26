@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import { parseCopyLocks } from "@/lib/ai/socialBrandPolicy";
 import type { Prisma } from "@prisma/client";
 import {
   refreshSocialMessage,
@@ -25,7 +26,11 @@ import {
 import { approvalConfig, slideUrls } from "./slackApproval";
 import { postSocialReview } from "./postSocialReview";
 import { loadSocialArtwork, saveSocialArtwork } from "./socialAssets";
-import { socialSourceConfig, socialTargetConfig } from "./socialAccounts";
+import {
+  socialImportConfig,
+  socialSourceConfig,
+  socialTargetConfig,
+} from "./socialAccounts";
 import { announceNextSourcePost } from "./runSourceCheck";
 import {
   createMediaContainer,
@@ -154,7 +159,11 @@ async function reviseJob(
   if (job.target !== "caption" && !targets.length)
     throw new Error("SLIDES_INVALID");
   if (!job.generatedCaption && job.target !== "image") {
-    caption = await reviseSocialCaption(caption, job.feedback);
+    caption = await reviseSocialCaption(
+      caption,
+      job.feedback,
+      parseCopyLocks(review.copyLocks),
+    );
     await checkpoint({ generatedCaption: caption });
   }
   // generatedImageUrls holds finished targets in order, so a resumed claim
@@ -170,6 +179,7 @@ async function reviseJob(
       source.bytes,
       source.type,
       job.feedback,
+      parseCopyLocks(review.copyLocks),
     );
     slides[index] = await saveSocialArtwork(job.id, bytes, index + 1);
     done.push(slides[index]);
@@ -199,22 +209,34 @@ async function translateJob(
 ) {
   const source = job.source;
   if (!source) throw new Error("STALE_SOURCE");
-  const account = socialSourceConfig();
+  const imported = source.accountUsername === "getrandomtrip.en";
+  const account = imported ? socialImportConfig() : socialSourceConfig();
   if (!account) throw new Error("SOURCE_UNCONFIGURED");
   if (!process.env.OPENAI_SOCIAL_IMAGE_MODEL)
     throw new Error("AI_IMAGE_UNCONFIGURED");
+  if (imported) {
+    const profile = await getProfile(account.token);
+    if (profile.username !== account.username)
+      throw new Error("SOURCE_UNCONFIGURED");
+  }
+  const locks = parseCopyLocks(source.copyLocks);
   const urls = await getSourceSlides(account.token, source.igMediaId);
   const images = await Promise.all(urls.map(downloadSourceImage));
   let plan = job.transcreation as Transcreation | null;
   let caption = job.generatedCaption;
   if (!plan || !caption || plan.slides?.length !== images.length) {
-    const result = await transcreatePost(source.caption, images);
+    const result = Object.keys(locks).length
+      ? await transcreatePost(source.caption, images, locks)
+      : await transcreatePost(source.caption, images);
     plan = result;
     caption = result.caption;
     await checkpoint({
       generatedCaption: caption,
       transcreation: {
-        slides: result.slides.map((s) => ({ replacements: s.replacements })),
+        slides: result.slides.map((s) => ({
+          replacements: s.replacements,
+          ...(s.lockedHeadline ? { lockedHeadline: s.lockedHeadline } : {}),
+        })),
         notes: result.notes,
       },
     });
@@ -224,18 +246,19 @@ async function translateJob(
     const image = images[index];
     const copy = plan.slides[index];
     // Slides without Spanish text keep the original, normalized to JPEG.
-    const url = copy.replacements.length
-      ? await saveSocialArtwork(
-          job.id,
-          await translateSlideArtwork(image.bytes, image.type, copy),
-          index + 1,
-        )
-      : await saveSocialArtwork(
-          job.id,
-          await sharp(image.bytes).jpeg({ quality: 92 }).toBuffer(),
-          index + 1,
-          "image/jpeg",
-        );
+    const url =
+      copy.replacements.length || copy.lockedHeadline
+        ? await saveSocialArtwork(
+            job.id,
+            await translateSlideArtwork(image.bytes, image.type, copy),
+            index + 1,
+          )
+        : await saveSocialArtwork(
+            job.id,
+            await sharp(image.bytes).jpeg({ quality: 92 }).toBuffer(),
+            index + 1,
+            "image/jpeg",
+          );
     done.push(url);
     await checkpoint({ generatedImageUrls: [...done] });
   }
@@ -244,10 +267,13 @@ async function translateJob(
   const { row } = await createSocialApproval({
     reviewKey: `instagram-${shortcodeOf(source.permalink) ?? source.igMediaId}`,
     requestId: `translated-${job.id}`,
-    caption,
+    caption: locks.caption ?? caption,
     imageUrl: done[0],
     imageUrls: done,
-    sourceId: source.id,
+    ...(imported ? {} : { sourceId: source.id }),
+    ...(Object.keys(locks).length
+      ? { copyLocks: locks as Prisma.InputJsonValue }
+      : {}),
     createdBy: job.actor,
   });
   await prisma.socialRevisionJob.updateMany({

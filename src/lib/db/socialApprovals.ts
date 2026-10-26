@@ -1,3 +1,4 @@
+import { parseCopyLocks } from "@/lib/ai/socialBrandPolicy";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
@@ -13,6 +14,7 @@ interface NewApproval {
   /** Every slide in order; imageUrl must equal the first entry when present. */
   imageUrls?: string[];
   sourceId?: string;
+  copyLocks?: Prisma.InputJsonValue;
   createdBy: string;
 }
 
@@ -31,7 +33,11 @@ export async function createSocialApproval(input: NewApproval) {
       where: { requestId: input.requestId },
     });
     if (existing) {
+      const oldLocks = parseCopyLocks(existing.copyLocks);
+      const newLocks = parseCopyLocks(input.copyLocks);
       if (
+        oldLocks.caption !== newLocks.caption ||
+        oldLocks.artworkHeadline !== newLocks.artworkHeadline ||
         existing.reviewKey !== input.reviewKey ||
         existing.caption !== input.caption ||
         existing.imageUrl !== input.imageUrl ||

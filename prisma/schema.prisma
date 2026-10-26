@@ -1166,6 +1166,7 @@ model SocialApproval {
   createdBy   String
   createdAt   DateTime           @default(now())
   decision    String?
+  copyLocks   Json?
   revisionJob SocialRevisionJob?
 
   @@unique([reviewKey, revision])
@@ -1212,6 +1213,8 @@ model SocialRevisionJob {
 
 // A Spanish @getrandomtrip.es post announced in Slack, at most once per Instagram media id.
 model SocialSource {
+  accountUsername String @default("getrandomtrip.es")
+  copyLocks Json?
   id        String             @id @default(cuid())
   igMediaId String             @unique
   permalink String

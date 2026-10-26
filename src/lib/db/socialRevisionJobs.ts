@@ -9,7 +9,7 @@ import type { SocialFeedback } from "@/lib/social-approvals/feedbackModal";
 export const DAILY_AI_JOBS = 10;
 
 /** Call while holding the "daily-ai-budget" lock. */
-async function dailyBudgetLeft(tx: Prisma.TransactionClient) {
+export async function dailyBudgetLeft(tx: Prisma.TransactionClient) {
   const since = new Date();
   since.setUTCHours(0, 0, 0, 0);
   return (
@@ -133,6 +133,7 @@ export async function queueSocialPublish(input: {
         await tx.socialSource.count({
           where: {
             postedAt: { lt: source.postedAt },
+            accountUsername: "getrandomtrip.es",
             status: { notIn: MIRRORED_STATUSES },
           },
         })
@@ -259,6 +260,9 @@ export async function finishGeneratedSocialRevision(
         imageUrl: imageUrls[0],
         imageUrls,
         sourceId: source.sourceId,
+        ...(source.copyLocks
+          ? { copyLocks: source.copyLocks as Prisma.InputJsonValue }
+          : {}),
         createdBy: source.createdBy,
       },
     });
