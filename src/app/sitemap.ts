@@ -1,6 +1,9 @@
 import { travelerStorySlugs } from "@/lib/blog/travelerStories";
 import { availableBlogLocales, blogLocalePaths } from "@/lib/seo/blogLocales";
-import { listPublishedLocaleSlugs } from "@/lib/blog/blogRepository";
+import {
+  findPublishedBySlug,
+  listPublishedLocaleSlugs,
+} from "@/lib/blog/blogRepository";
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
@@ -102,12 +105,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((t) => [t.tripperSlug, t.updatedAt]),
   );
 
-  for (const slug of travelerStorySlugs()) {
+  // Stories only render where no published post claims the slug; claimed
+  // slugs redirect, and the post is listed below at its own slug.
+  const storyLocales = await Promise.all(
+    travelerStorySlugs().map(async (slug) => ({
+      slug,
+      locales: (
+        await Promise.all(
+          LOCALES.map(async (locale) =>
+            (await findPublishedBySlug(locale, slug)).kind === "not_found"
+              ? [locale]
+              : [],
+          ),
+        )
+      ).flat(),
+    })),
+  );
+  for (const { slug, locales } of storyLocales) {
+    if (!locales.length) continue;
     entries.push(
-      ...toSitemapEntries(`blog/${slug}`, {
-        changeFrequency: "monthly",
-        priority: 0.6,
-      }),
+      ...toSitemapEntries(
+        `blog/${slug}`,
+        { changeFrequency: "monthly", priority: 0.6 },
+        undefined,
+        locales,
+      ),
     );
   }
 
