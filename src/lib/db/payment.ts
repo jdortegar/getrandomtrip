@@ -1,6 +1,6 @@
 import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
-import type { PaymentStatus, Prisma } from "@prisma/client";
+import type { PaymentMode, PaymentStatus, Prisma } from "@prisma/client";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
@@ -83,24 +83,39 @@ export async function createPayment(data: CreatePaymentData) {
   });
 }
 
+/** INDIVIDUAL checkout: what the organizer pays now and each companion owes. */
+export interface CheckoutSplit {
+  /** USD cents charged on the organizer's intent. */
+  organizerCents: number;
+  /** One per adult companion, in roster order; emails are normalized. */
+  companions: { email: string; amountCents: number }[];
+}
+
 /**
  * Creates or updates the single `Payment` row for a trip (unique `tripRequestId`).
  * Used when the user starts checkout again — resets to PENDING with new Stripe PaymentIntent.
+ * With `split`, `amount` is the trip bill and the organizer's intent is also
+ * recorded as their `PaymentShare`; companion rows and their pending shares are
+ * rebuilt from `split.companions`. A trip leaving INDIVIDUAL mode drops them.
  */
 export async function upsertPaymentForTripCheckout(data: CreatePaymentData & {
   expectedTripUpdatedAt: Date;
   level: string;
   paxDetails: PaxDetails;
   previousPayment: { id: string; stripePaymentIntentId: string | null } | null;
+  previousPaymentMode?: PaymentMode;
+  split?: CheckoutSplit;
 }) {
   const currency = data.currency ?? "USD";
+  const paymentMode: PaymentMode = data.split ? "INDIVIDUAL" : "TOTAL";
   return prisma.$transaction(async (tx) => {
     const conflict = () => Object.assign(new Error("Checkout changed, please retry"), { status: 409 });
     const party = data.paxDetails;
     const changed = await tx.tripRequest.updateMany({
       where: { id: data.tripRequestId, userId: data.userId, updatedAt: data.expectedTripUpdatedAt,
         status: { in: ["SAVED", "PENDING_PAYMENT"] } },
-      data: { status: "PENDING_PAYMENT", level: data.level, pax: party.adults + party.minors, paxDetails: { ...party } },
+      data: { status: "PENDING_PAYMENT", level: data.level, pax: party.adults + party.minors, paxDetails: { ...party },
+        ...(data.split || data.previousPaymentMode === "INDIVIDUAL" ? { paymentMode } : {}) },
     });
     if (changed.count !== 1) throw conflict();
     const fields = {
@@ -114,10 +129,44 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData & {
         data: { ...fields, providerPaymentId: null },
       });
       if (updated.count !== 1) throw conflict();
+      await syncCheckoutSplit(tx, data, data.previousPayment.id, currency);
       return;
     }
-    await tx.payment.create({ data: { ...fields, tripRequestId: data.tripRequestId, userId: data.userId } });
+    const created = await tx.payment.create({ data: { ...fields, tripRequestId: data.tripRequestId, userId: data.userId } });
+    await syncCheckoutSplit(tx, data, created.id, currency);
   });
+}
+
+/**
+ * Rebuilds the pre-payment split. Only runs while the payment is retryable, so
+ * every unclaimed ADULT row was created here (the paid roster comes later).
+ */
+async function syncCheckoutSplit(
+  tx: Prisma.TransactionClient,
+  data: { tripRequestId: string; userId: string; stripePaymentIntentId?: string;
+    previousPaymentMode?: PaymentMode; split?: CheckoutSplit },
+  paymentId: string,
+  currency: string,
+) {
+  if (!data.split && data.previousPaymentMode !== "INDIVIDUAL") return;
+  await tx.paymentShare.deleteMany({ where: { paymentId, status: { in: [...RETRYABLE_PAYMENT_STATUSES] } } });
+  await tx.tripTraveler.deleteMany({
+    where: { tripRequestId: data.tripRequestId, kind: "ADULT", userId: null },
+  });
+  if (!data.split) return;
+  await tx.paymentShare.create({
+    data: { paymentId, userId: data.userId, kind: "SHARE", currency,
+      amount: data.split.organizerCents / 100, stripePaymentIntentId: data.stripePaymentIntentId },
+  });
+  for (const companion of data.split.companions) {
+    const traveler = await tx.tripTraveler.create({
+      data: { tripRequestId: data.tripRequestId, kind: "ADULT", email: companion.email },
+    });
+    await tx.paymentShare.create({
+      data: { paymentId, travelerId: traveler.id, kind: "SHARE", currency,
+        amount: companion.amountCents / 100 },
+    });
+  }
 }
 
 /**

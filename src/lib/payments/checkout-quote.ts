@@ -15,6 +15,14 @@ import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
 import { evaluatePromoRules, promoErrorCode } from "@/lib/payments/promo-rules";
 import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
+import {
+  maxTopUpCents,
+  splitInitialShares,
+  type TotalsAtPax,
+  type TripDiscount,
+  withTripDiscount,
+} from "@/lib/payments/split-shares";
+import type { PaymentMode } from "@prisma/client";
 import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 import type { PromoRejectionReason } from "@/types/payments";
 
@@ -29,6 +37,24 @@ const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
   max_redemptions_reached: "This promo code has reached its usage limit",
   minimum_amount: "Your trip does not reach this promo code's minimum amount",
 };
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Normalized companion emails for an INDIVIDUAL quote, or null when they don't
+ * fill every adult companion slot with distinct addresses other than the buyer's.
+ */
+function parseCompanionEmails(
+  raw: unknown,
+  slots: number,
+  buyerEmail: string | null | undefined,
+): string[] | null {
+  if (!Array.isArray(raw) || raw.length !== slots) return null;
+  const emails = raw.map((e) => (typeof e === "string" ? e.trim().toLowerCase() : ""));
+  const buyer = buyerEmail?.trim().toLowerCase();
+  if (emails.some((e) => !EMAIL_RE.test(e) || e === buyer)) return null;
+  return new Set(emails).size === emails.length ? emails : null;
+}
 
 /** Enforces the promotion code rules Stripe would apply on redemption. Counts
  * exclude this trip so re-quoting a code already applied here never rejects it.
@@ -87,7 +113,12 @@ export async function checkoutQuoteResponse(
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) return fail("Unauthorized", 401);
-    let body: { tripId?: string; promoCode?: string | null };
+    let body: {
+      tripId?: string;
+      promoCode?: string | null;
+      paymentMode?: PaymentMode;
+      companionEmails?: unknown;
+    };
     try {
       body = await request.json();
     } catch {
@@ -101,10 +132,17 @@ export async function checkoutQuoteResponse(
     if (mode === "apply" && !body.promoCode?.trim()) {
       return fail("promoCode is required", 400);
     }
+    if (
+      body.paymentMode !== undefined &&
+      body.paymentMode !== "TOTAL" &&
+      body.paymentMode !== "INDIVIDUAL"
+    ) {
+      return fail("Invalid payment mode", 400);
+    }
 
     let trip = await prisma.tripRequest.findUnique({
       where: { id: tripId },
-      include: { payment: true },
+      include: { payment: true, travelers: true },
     });
     if (!trip) return fail("Trip not found", 404);
     if (trip.userId !== session.user.id) return fail("Forbidden", 403);
@@ -120,7 +158,7 @@ export async function checkoutQuoteResponse(
     if (status !== trip.status) {
       trip = await prisma.tripRequest.findUnique({
         where: { id: tripId },
-        include: { payment: true },
+        include: { payment: true, travelers: true },
       });
       if (!trip) return fail("Trip not found", 404);
       const refreshedDateError = validateTripDates(trip);
@@ -140,6 +178,22 @@ export async function checkoutQuoteResponse(
 
     const paxDetails = getCheckoutPaxDetails(trip);
     const pax = paxDetails.adults + paxDetails.minors;
+    const paymentMode: PaymentMode =
+      body.paymentMode ?? trip.paymentMode ?? "TOTAL";
+    let companionEmails: string[] = [];
+    if (paymentMode === "INDIVIDUAL") {
+      if (paxDetails.adults < 2) {
+        return fail("Individual payment needs another adult", 400, "INDIVIDUAL_REQUIRES_COMPANIONS");
+      }
+      const raw =
+        body.companionEmails ??
+        (trip.travelers ?? [])
+          .filter((t) => t.kind === "ADULT" && t.userId === null)
+          .map((t) => t.email);
+      const parsed = parseCompanionEmails(raw, paxDetails.adults - 1, session.user.email);
+      if (!parsed) return fail("Invalid companion emails", 400, "INVALID_COMPANION_EMAILS");
+      companionEmails = parsed;
+    }
     const level = getCheckoutLevel(trip);
     const overrides = await loadTripperPriceOverrides(trip.tripperId);
     const resolution = resolveBasePricePerPerson({
@@ -147,30 +201,32 @@ export async function checkoutQuoteResponse(
       overrides,
       travelerType: trip.type,
     });
-    const totals = calculatePaymentTotals({
+    const pricedTrip = trip;
+    const totalsAt: TotalsAtPax = (paxAt) => calculatePaymentTotals({
       addons: {
         selected: Array.isArray(trip.addons)
           ? (trip.addons as unknown as AddonSelection[])
           : [],
       },
       avoidCount: trip.avoidDestinations.length,
-      basePriceUsd: applyPaxMultiplier(resolution.price, trip.type, pax),
+      basePriceUsd: applyPaxMultiplier(resolution.price, pricedTrip.type, paxAt),
       filters: {
-        accommodationType: trip.accommodationType,
-        transport: trip.transport,
-        climate: trip.climate,
-        maxTravelTime: trip.maxTravelTime,
-        departPref: trip.departPref,
-        arrivePref: trip.arrivePref,
-        avoidDestinations: trip.avoidDestinations,
+        accommodationType: pricedTrip.accommodationType,
+        transport: pricedTrip.transport,
+        climate: pricedTrip.climate,
+        maxTravelTime: pricedTrip.maxTravelTime,
+        departPref: pricedTrip.departPref,
+        arrivePref: pricedTrip.arrivePref,
+        avoidDestinations: pricedTrip.avoidDestinations,
       } as Filters,
       logistics: {
-        pax,
-        nights: trip.nights,
-        country: trip.originCountry,
-        city: trip.originCity,
+        pax: paxAt,
+        nights: pricedTrip.nights,
+        country: pricedTrip.originCountry,
+        city: pricedTrip.originCity,
       },
     });
+    const totals = totalsAt(pax);
     if (!Number.isFinite(totals.totalTrip) || totals.totalTrip <= 0) {
       return fail("Could not compute payment amount", 422);
     }
@@ -206,6 +262,7 @@ export async function checkoutQuoteResponse(
         ?.trim()
         .toUpperCase() || null;
     let discount = 0;
+    let tripDiscount: TripDiscount = {};
     let promoCodeId = "";
     if (code) {
       const rejectPromo = async (error: string, errorCode?: string) => {
@@ -250,30 +307,46 @@ export async function checkoutQuoteResponse(
       discount = coupon.percent_off
         ? (totals.totalTrip * coupon.percent_off) / 100
         : (coupon.amount_off ?? 0) / 100;
+      tripDiscount = coupon.percent_off
+        ? { percentOff: coupon.percent_off }
+        : { amountOffUsd: (coupon.amount_off ?? 0) / 100 };
       promoCodeId = promotion.id;
     }
     // Preserve the existing paid-checkout minimum; never advertise a free order
     // when Stripe will actually charge USD 0.50.
-    const amountCents = Math.max(
+    const tripAmountCents = Math.max(
       code ? 50 : 0,
       Math.round(
         (totals.totalTrip - Math.min(discount, totals.totalTrip)) * 100,
       ),
     );
+    // INDIVIDUAL: the organizer is charged only their share of the discounted trip.
+    const party = { invitedTravelerIds: companionEmails, minors: paxDetails.minors };
+    const discountedAt = withTripDiscount(totalsAt, tripDiscount);
+    // Emails stand in for traveler ids: companion rows are created on persistence.
+    const split =
+      paymentMode === "INDIVIDUAL" ? splitInitialShares(discountedAt, party) : null;
+    const maxTopUp = split ? maxTopUpCents(discountedAt, party) : null;
+    const amountCents = split
+      ? Math.max(code ? 50 : 0, split.shares[0].amountCents)
+      : tripAmountCents;
     const total = amountCents / 100;
-    const discountAmount = Math.round((totals.totalTrip - total) * 100) / 100;
+    const tripTotal = tripAmountCents / 100;
+    const discountAmount = Math.round((totals.totalTrip - tripTotal) * 100) / 100;
     const metadata = {
       tripId,
       userId: session.user.id,
       promoCode: code ?? "",
       promoCodeId,
       discountAmountUsd: String(discountAmount),
+      paymentMode,
     };
     const canReuse =
       existing &&
       existing.status !== "canceled" &&
       existing.amount === amountCents &&
       (existing.metadata?.promoCode || null) === code &&
+      (existing.metadata?.paymentMode || "TOTAL") === paymentMode &&
       existing.client_secret;
     let intent = existing;
     if (!canReuse) {
@@ -298,13 +371,25 @@ export async function checkoutQuoteResponse(
         userId: session.user.id,
         tripRequestId: tripId,
         provider: "stripe",
-        amount: total,
+        amount: tripTotal,
         currency: "USD",
         stripePaymentIntentId: intent.id,
         expectedTripUpdatedAt: trip.updatedAt,
         paxDetails,
         level,
         previousPayment: trip.payment,
+        previousPaymentMode: trip.paymentMode,
+        ...(split
+          ? {
+              split: {
+                organizerCents: amountCents,
+                companions: split.shares.slice(1).map((s) => ({
+                  email: s.travelerId as string,
+                  amountCents: s.amountCents,
+                })),
+              },
+            }
+          : {}),
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
     } catch (error) {
@@ -324,6 +409,19 @@ export async function checkoutQuoteResponse(
       totals,
       paxDetails,
       level,
+      paymentMode,
+      tripTotal,
+      ...(split
+        ? {
+            split: {
+              companionShare: split.shares[1].amountCents / 100,
+              maxTopUp: {
+                invitee: (maxTopUp?.inviteeCents ?? 0) / 100,
+                organizer: (maxTopUp?.organizerCents ?? 0) / 100,
+              },
+            },
+          }
+        : {}),
     });
   } catch (error) {
     console.error("Checkout quote failed:", error);

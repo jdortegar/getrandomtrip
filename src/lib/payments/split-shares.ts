@@ -39,6 +39,30 @@ export interface TopUpSplit {
   topUps: ShareLine[];
 }
 
+/** Promo applied to the whole trip, as checkout reads it from the Stripe coupon. */
+export interface TripDiscount {
+  percentOff?: number;
+  amountOffUsd?: number;
+}
+
+/**
+ * Applies the organizer's promo to the trip total at every headcount, so the
+ * discount is split evenly across all shares and top-ups stay discounted.
+ */
+export function withTripDiscount(
+  totalsAt: TotalsAtPax,
+  discount: TripDiscount,
+): TotalsAtPax {
+  return (pax) => {
+    const totals = totalsAt(pax);
+    const off = discount.percentOff
+      ? (totals.totalTrip * discount.percentOff) / 100
+      : (discount.amountOffUsd ?? 0);
+    const totalTrip = totals.totalTrip - Math.min(off, totals.totalTrip);
+    return { ...totals, totalPerPax: totalTrip / pax, totalTrip };
+  };
+}
+
 /** Same rounding checkout uses for the Stripe amount. */
 function toCents(usd: number): number {
   return Math.round(usd * 100);

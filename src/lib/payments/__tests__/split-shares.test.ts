@@ -8,6 +8,7 @@ import {
   splitInitialShares,
   splitTopUps,
   type TotalsAtPax,
+  withTripDiscount,
 } from "../split-shares";
 import type { Filters } from "@/store/slices/journeyStore";
 
@@ -166,5 +167,41 @@ describe("maxTopUpCents", () => {
   it("is zero when nothing is priced per trip", () => {
     const max = maxTopUpCents(stubTotals(0), fourFriends);
     expect(max).toEqual({ inviteeCents: 0, organizerCents: 0 });
+  });
+});
+
+describe("withTripDiscount", () => {
+  it("splits a percentage promo evenly across every share", () => {
+    const totalsAt = withTripDiscount(stubTotals(70), { percentOff: 10 });
+    const split = splitInitialShares(totalsAt, fourFriends);
+    expect(split.totalCents).toBe(366300);
+    expect(split.shares.map((s) => s.amountCents)).toEqual([
+      91575, 91575, 91575, 91575,
+    ]);
+  });
+
+  it("splits a fixed-amount promo evenly across every share", () => {
+    const totalsAt = withTripDiscount(stubTotals(70), { amountOffUsd: 100 });
+    const split = splitInitialShares(totalsAt, fourFriends);
+    expect(split.totalCents).toBe(397000);
+    expect(split.shares.map((s) => s.amountCents)).toEqual([
+      99250, 99250, 99250, 99250,
+    ]);
+  });
+
+  it("never discounts below zero", () => {
+    const totalsAt = withTripDiscount(stubTotals(0), { amountOffUsd: 99999 });
+    expect(totalsAt(2).totalTrip).toBe(0);
+    expect(totalsAt(2).totalPerPax).toBe(0);
+  });
+
+  it("keeps top-ups discounted after drop-outs", () => {
+    const totalsAt = withTripDiscount(stubTotals(70), { percentOff: 10 });
+    const result = splitTopUps(totalsAt, fourFriends, ["t2"]);
+    // 1750 cents undiscounted, 10% off
+    expect(result.topUps).toEqual([
+      { travelerId: null, amountCents: 1575 },
+      { travelerId: "t2", amountCents: 1575 },
+    ]);
   });
 });
