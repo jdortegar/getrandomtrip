@@ -399,7 +399,9 @@ export async function updatePaymentFromStripeWebhook(
 
   // External side effects only after commit and only for the winning promotion.
   if (outcome.confirmed && individual) {
-    await inviteSplitCompanions(payment.tripRequestId);
+    await inviteSplitCompanions(payment.tripRequestId).catch((error: unknown) => {
+      console.error("[split] companion invites not sent:", payment.tripRequestId, error);
+    });
   } else if (outcome.confirmed) {
     sendBookingConfirmed(payment.tripRequestId, payment.userId);
     sendAdminNewBooking(payment.tripRequestId, payment.userId);

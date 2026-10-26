@@ -491,6 +491,13 @@ describe("Stripe webhook payment identity", () => {
       expect(sendTravelerInviteEmail).toHaveBeenCalledOnce();
     });
 
+    it("never throws when loading companions fails after settlement", async () => {
+      db.tripTraveler.findMany.mockRejectedValue(new Error("db down"));
+      await expect(updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" })).resolves.toBeDefined();
+      expect(trip.status).toBe("COLLECTING");
+      expect(row.status).toBe("APPROVED");
+    });
+
     it("records a failed organizer payment on their share without inviting anyone", async () => {
       await updatePaymentFromStripeWebhook("pi_old", { status: "FAILED" });
       expect(trip.status).toBe("PENDING_PAYMENT");
