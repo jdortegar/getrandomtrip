@@ -207,18 +207,22 @@ function CheckoutContent() {
   const [emailsInvalid, setEmailsInvalid] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [showDisclaimerError, setShowDisclaimerError] = useState(false);
-  // A saved INDIVIDUAL split comes back on reload: adopt its mode and emails once per quote.
+  // A saved INDIVIDUAL split comes back on reload: adopt its mode, and its
+  // emails only while the form has none, so a refresh never overwrites edits.
   const quoteSplit = payment.quote?.paymentMode === "INDIVIDUAL" ? payment.quote.split : undefined;
   const [hydratedSplitIntent, setHydratedSplitIntent] = useState<string | null>(null);
   if (quoteSplit && payment.quote && hydratedSplitIntent !== payment.quote.paymentIntentId) {
     setHydratedSplitIntent(payment.quote.paymentIntentId);
     setPaymentMode("INDIVIDUAL");
-    setCompanionEmails(quoteSplit.companionEmails);
+    if (companionEmails.every((email) => !email.trim())) setCompanionEmails(quoteSplit.companionEmails);
   }
+  const quotedEmailsChanged = Boolean(quoteSplit) &&
+    companionEmails.map((email) => email.trim().toLowerCase()).join("\n") !==
+      quoteSplit!.companionEmails.join("\n");
   const splitErrorCode = payment.errorCode === "INVALID_COMPANION_EMAILS" ||
     payment.errorCode === "INDIVIDUAL_REQUIRES_COMPANIONS";
   // Never offer the full-total intent while the buyer chose to pay individually.
-  const splitPending = paymentMode === "INDIVIDUAL" && !quoteSplit;
+  const splitPending = paymentMode === "INDIVIDUAL" && (!quoteSplit || quotedEmailsChanged);
   const appliedPromocode = payment.promoCode;
   const promoDiscount = payment.quote?.discountAmount ?? 0;
   const promoLoading = payment.pending || isConfirming;
@@ -280,6 +284,7 @@ function CheckoutContent() {
   async function handleApplyPromocode() {
     const code = promocode.trim().toUpperCase();
     if (!code || !trip?.id || promoLoading || confirmingRef.current) return;
+    setDisclaimerAccepted(false);
     try {
       await payment.refresh({ promoCode: code });
       setPromocode("");
@@ -289,6 +294,7 @@ function CheckoutContent() {
 
   async function handleRemovePromocode() {
     if (!trip?.id || promoLoading || confirmingRef.current) return;
+    setDisclaimerAccepted(false);
     try { await payment.refresh({ promoCode: null }); }
     catch { /* Keep confirmation blocked until the quote can be refreshed. */ }
   }
@@ -635,6 +641,7 @@ function CheckoutContent() {
 
   function handleCompanionEmailChange(index: number, value: string) {
     setEmailsInvalid(false);
+    setDisclaimerAccepted(false);
     setCompanionEmails((previous) => {
       const next = Array.from({ length: Math.max(0, paxDetails.adults - 1) }, (_, i) => previous[i] ?? "");
       next[index] = value;
@@ -1032,7 +1039,7 @@ function CheckoutContent() {
                 }}
                 onEmailChange={handleCompanionEmailChange}
                 onModeChange={handlePaymentModeChange}
-                share={quoteSplit && payment.quote ? {
+                share={quoteSplit && payment.quote && !splitPending ? {
                   companion: quoteSplit.companionShare,
                   maxTopUp: quoteSplit.maxTopUp.organizer,
                   yours: payment.quote.total,

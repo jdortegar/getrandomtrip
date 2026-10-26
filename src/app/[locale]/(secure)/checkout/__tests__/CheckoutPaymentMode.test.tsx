@@ -185,6 +185,25 @@ describe("checkout payment mode", () => {
     expect(container.textContent).not.toContain(copy.disclaimerRequired);
   });
 
+  it("holds payment again when a companion email changes after calculating", async () => {
+    await mount();
+    await click(copy.individualOption);
+    await typeEmails("ana@example.com", "bo@example.com");
+    await click(copy.calculate);
+    expect(view.contact!.clientSecret).toBe("secret-share");
+    await act(async () => container.querySelector<HTMLInputElement>("input[type=checkbox]")!.click());
+    await typeEmails("ana@example.com", "carla@example.com");
+    expect(view.contact!.clientSecret).toBeNull();
+    expect(view.contact!.paymentNotice).toBe(copy.calculateFirst);
+    let allowed = true;
+    await act(async () => { allowed = await view.contact!.onBeforeConfirm(); });
+    expect(allowed).toBe(false);
+    await click(copy.calculate);
+    expect(quoteBodies().at(-1)).toMatchObject({ companionEmails: ["ana@example.com", "carla@example.com"] });
+    expect(view.contact!.clientSecret).toBe("secret-share");
+    expect(container.querySelector<HTMLInputElement>("input[type=checkbox]")!.checked).toBe(false);
+  });
+
   it("goes back to charging the whole trip when switching to the total", async () => {
     await mount();
     await click(copy.individualOption);
