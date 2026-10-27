@@ -46,7 +46,7 @@ const totalsAt = (pax: number) => ({
   totalPerPax: 1000 + 70 / pax, totalTrip: 1000 * pax + 70,
 });
 
-type Share = { id: string; kind: string; travelerId: string | null; userId: string | null; status: string; stripePaymentIntentId: string | null };
+type Share = { id: string; kind: string; travelerId: string | null; userId: string | null; status: string; stripePaymentIntentId: string | null; amount?: number };
 function trip(shares: Share[], overrides: Record<string, unknown> = {}) {
   return {
     id: "trip-1",
@@ -67,10 +67,11 @@ function trip(shares: Share[], overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
-const organizer: Share = { id: "s-org", kind: "SHARE", travelerId: null, userId: "organizer", status: "APPROVED", stripePaymentIntentId: "pi_org" };
-const ana = (status = "PENDING", intent: string | null = "pi_ana"): Share => ({ id: "s-ana", kind: "SHARE", travelerId: "t-ana", userId: "ana", status, stripePaymentIntentId: intent });
-const bo = (status = "APPROVED"): Share => ({ id: "s-bo", kind: "SHARE", travelerId: "t-bo", userId: "bo", status, stripePaymentIntentId: "pi_bo" });
-const cy = (status = "PENDING"): Share => ({ id: "s-cy", kind: "SHARE", travelerId: "t-cy", userId: null, status, stripePaymentIntentId: null });
+// Checkout shares of a 4-person trip: 1000 + 70/4 = USD 1017.50 each.
+const organizer: Share = { id: "s-org", kind: "SHARE", travelerId: null, userId: "organizer", status: "APPROVED", stripePaymentIntentId: "pi_org", amount: 1017.5 };
+const ana = (status = "PENDING", intent: string | null = "pi_ana"): Share => ({ id: "s-ana", kind: "SHARE", travelerId: "t-ana", userId: "ana", status, stripePaymentIntentId: intent, amount: 1017.5 });
+const bo = (status = "APPROVED"): Share => ({ id: "s-bo", kind: "SHARE", travelerId: "t-bo", userId: "bo", status, stripePaymentIntentId: "pi_bo", amount: 1017.5 });
+const cy = (status = "PENDING"): Share => ({ id: "s-cy", kind: "SHARE", travelerId: "t-cy", userId: null, status, stripePaymentIntentId: null, amount: 1017.5 });
 
 describe("confirmCollectedTrip", () => {
   beforeEach(() => {
@@ -78,7 +79,10 @@ describe("confirmCollectedTrip", () => {
     db.$transaction.mockImplementation((run: (tx: typeof db) => unknown) => run(db));
     mocks.totals.mockResolvedValue(totalsAt);
     db.tripRequest.updateMany.mockResolvedValue({ count: 1 });
-    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_ana", status: "requires_payment_method", created: 1 });
+    stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
+      id === "pi_org"
+        ? { id: "pi_org", status: "succeeded", created: 1, livemode: true }
+        : { id, status: "requires_payment_method", created: 1 });
     stripeMock.paymentIntents.cancel.mockResolvedValue({});
     mocks.sale.mockResolvedValue({});
   });
@@ -124,7 +128,8 @@ describe("confirmCollectedTrip", () => {
     db.tripRequest.findUnique
       .mockResolvedValueOnce(trip([organizer, ana(), bo()]))
       .mockResolvedValueOnce(trip([organizer, ana("APPROVED"), bo()]));
-    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_ana", status: "succeeded", created: 100 });
+    stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
+      ({ id, status: "succeeded", created: 100, livemode: true }));
     db.paymentShare.count.mockResolvedValue(2);
 
     await confirmCollectedTrip("trip-1", NOW);
@@ -160,9 +165,8 @@ describe("confirmCollectedTrip", () => {
   });
 
   it("queues no sale notification for a test-mode payment", async () => {
-    db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana("APPROVED"), bo()], {
-      payment: { ...trip([]).payment, providerResponse: { livemode: false }, shares: [organizer, ana("APPROVED"), bo()] },
-    }));
+    db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana("APPROVED"), bo()]));
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_org", status: "succeeded", created: 1, livemode: false });
     db.paymentShare.count.mockResolvedValue(2);
     await confirmCollectedTrip("trip-1", NOW);
     expect(db.saleNotificationDelivery.create).not.toHaveBeenCalled();
@@ -172,7 +176,8 @@ describe("confirmCollectedTrip", () => {
 
   it("retries later while a share payment is still processing", async () => {
     db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana(), bo()]));
-    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_ana", status: "processing", created: 1 });
+    stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
+      ({ id, status: id === "pi_org" ? "succeeded" : "processing", created: 1, livemode: true }));
     await expect(confirmCollectedTrip("trip-1", NOW)).rejects.toThrow("still processing");
     expect(db.tripRequest.updateMany).not.toHaveBeenCalled();
   });
@@ -199,6 +204,70 @@ describe("confirmCollectedTrip", () => {
   });
 });
 
+describe("confirmCollectedTrip corrections", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    db.$transaction.mockImplementation((run: (tx: typeof db) => unknown) => run(db));
+    mocks.totals.mockResolvedValue(totalsAt);
+    db.tripRequest.updateMany.mockResolvedValue({ count: 1 });
+    stripeMock.paymentIntents.cancel.mockResolvedValue({});
+    mocks.sale.mockResolvedValue({});
+    stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
+      id === "pi_org"
+        ? { id: "pi_org", status: "succeeded", created: 1, livemode: true }
+        : { id, status: "requires_payment_method", created: 1 });
+  });
+
+  it("queues the sale for a live organizer payment even when the stored event is empty", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana("APPROVED"), bo()], {
+      payment: { ...trip([]).payment, providerResponse: {}, shares: [organizer, ana("APPROVED"), bo()] },
+    }));
+    db.paymentShare.count.mockResolvedValue(2);
+    await confirmCollectedTrip("trip-1", NOW);
+    expect(db.saleNotificationDelivery.create).toHaveBeenCalledOnce();
+  });
+
+  it("records what was actually collected when a fixed promo makes the smaller trip cheaper", async () => {
+    // Organizer paid 1035 − 25 = 1010 on a 2-person trip with USD 50 off; alone it costs 1070 − 50 = 1020,
+    // so they owe a USD 10 top-up and the bill is what they paid in total.
+    const orgShare = { ...organizer, amount: 1010 };
+    const anaShare = { ...ana(), amount: 1010 };
+    db.tripRequest.findUnique.mockResolvedValue(trip([orgShare, anaShare], {
+      paxDetails: { adults: 2, minors: 0, rooms: 1 }, pax: 2,
+      payment: { ...trip([]).payment, stripePromotionCodeId: "promo_1", shares: [orgShare, anaShare] },
+    }));
+    stripeMock.promotionCodes.retrieve.mockResolvedValue({ promotion: { coupon: { amount_off: 5000 } } });
+    db.paymentShare.count.mockResolvedValue(0);
+    await confirmCollectedTrip("trip-1", NOW);
+    expect(db.payment.update).toHaveBeenCalledWith({ where: { id: "payment-1" }, data: { amount: 1020 } });
+  });
+
+  it("never records a bill below the money already collected", async () => {
+    // Everyone paid USD 1100 each (stored), while current pricing for 3 people says less.
+    const paid = (share: Share) => ({ ...share, status: "APPROVED", amount: 1100 });
+    const shares = [paid(organizer), paid(ana("APPROVED")), paid(bo())];
+    db.tripRequest.findUnique.mockResolvedValue(trip(shares, {
+      paxDetails: { adults: 3, minors: 0, rooms: 2 }, pax: 3,
+      payment: { ...trip([]).payment, shares },
+    }));
+    db.paymentShare.count.mockResolvedValue(2);
+    await confirmCollectedTrip("trip-1", NOW);
+    expect(db.payment.update).toHaveBeenCalledWith({ where: { id: "payment-1" }, data: { amount: 3300 } });
+    expect(db.saleNotificationDelivery.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ amount: 3300 }),
+    });
+  });
+
+  it("also cancels a share intent created while collection was closing", async () => {
+    db.tripRequest.findUnique
+      .mockResolvedValueOnce(trip([organizer, ana("PENDING", null), bo()]))
+      .mockResolvedValue(trip([organizer, ana("PENDING", "pi_late"), bo()]));
+    db.paymentShare.count.mockResolvedValue(1);
+    await confirmCollectedTrip("trip-1", NOW);
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_late");
+  });
+});
+
 describe("runDeadlinePass", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -221,6 +290,13 @@ describe("runDeadlinePass", () => {
 
 describe("runReinvitePass", () => {
   beforeEach(() => vi.resetAllMocks());
+
+  it("keeps re-inviting other trips when one fails", async () => {
+    db.tripRequest.findMany.mockResolvedValue([{ id: "trip-1" }, { id: "trip-2" }]);
+    mocks.invite.mockRejectedValueOnce(new Error("db down"));
+    expect(await runReinvitePass(NOW)).toEqual({ trips: 2 });
+    expect(mocks.invite).toHaveBeenCalledWith("trip-2");
+  });
 
   it("re-sends missed invites only while the trip is still collecting", async () => {
     db.tripRequest.findMany.mockResolvedValue([{ id: "trip-1" }]);

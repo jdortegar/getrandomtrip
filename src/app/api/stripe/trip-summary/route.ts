@@ -59,7 +59,8 @@ export async function GET(request: NextRequest) {
   // INDIVIDUAL: `Payment.amount` is the trip bill; the organizer paid only their share.
   const organizerShare = trip.paymentMode === "INDIVIDUAL"
     ? await prisma.paymentShare.findFirst({
-        where: { paymentId: payment.id, travelerId: null, kind: "SHARE" },
+        // A dropped companion's share also loses its traveler; only the organizer's is theirs.
+        where: { paymentId: payment.id, travelerId: null, userId: payment.userId, kind: "SHARE" },
         select: { amount: true },
       })
     : null;

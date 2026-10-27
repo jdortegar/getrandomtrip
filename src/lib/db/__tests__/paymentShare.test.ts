@@ -19,7 +19,7 @@ describe("settleShareFromStripe", () => {
       where: {
         id: "share-1",
         stripePaymentIntentId: "pi_share",
-        status: { notIn: ["APPROVED", "COMPLETED", "REFUNDED", "PARTIALLY_REFUNDED", "CHARGEBACK"] },
+        status: { notIn: ["APPROVED", "COMPLETED", "REFUNDED", "PARTIALLY_REFUNDED", "CHARGEBACK", "CANCELLED"] },
       },
       data: { status: "APPROVED", paidAt },
     });

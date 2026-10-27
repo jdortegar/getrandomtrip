@@ -1,13 +1,18 @@
 import type { PaymentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-/** Outcomes a later, duplicate, or out-of-order event must never reverse. */
+/**
+ * Outcomes a later, duplicate, or out-of-order event must never reverse.
+ * CANCELLED covers a companion dropped at the deadline: a late charge on their
+ * intent must not turn them back into a payer (retries reclaim as PENDING first).
+ */
 const SETTLED_SHARE_STATUSES: PaymentStatus[] = [
   "APPROVED",
   "COMPLETED",
   "REFUNDED",
   "PARTIALLY_REFUNDED",
   "CHARGEBACK",
+  "CANCELLED",
 ];
 
 /**

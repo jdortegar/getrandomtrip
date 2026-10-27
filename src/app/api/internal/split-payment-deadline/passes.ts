@@ -61,15 +61,6 @@ async function loadTripDiscount(promotionCodeId: string | null): Promise<TripDis
   return coupon.amount_off ? { amountOffUsd: coupon.amount_off / 100 } : {};
 }
 
-/** True when the stored settlement event says the organizer paid in live mode. */
-function settledLive(providerResponse: unknown): boolean {
-  return Boolean(
-    providerResponse &&
-      typeof providerResponse === "object" &&
-      (providerResponse as { livemode?: unknown }).livemode === true,
-  );
-}
-
 /**
  * Confirms one trip whose collection deadline passed. Companions who paid
  * travel; the rest are dropped, per-trip costs are re-split into TOP_UP shares
@@ -85,17 +76,18 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
   const before = await load();
   if (!before?.payment || before.status !== "COLLECTING") return false;
 
-  const companionShares = before.payment.shares.filter(
-    (s) => s.kind === "SHARE" && s.travelerId !== null,
-  );
-  await closeShareIntents(
-    companionShares
-      .filter((s) => s.status !== "APPROVED" && s.stripePaymentIntentId)
-      .map((s) => s.stripePaymentIntentId as string),
-  );
+  const openIntents = (shares: typeof before.payment.shares) =>
+    shares
+      .filter((s) => s.kind === "SHARE" && s.travelerId !== null && s.status !== "APPROVED" && s.stripePaymentIntentId)
+      .map((s) => s.stripePaymentIntentId as string);
+  const closed = openIntents(before.payment.shares);
+  await closeShareIntents(closed);
 
   const trip = await load();
   if (!trip?.payment || trip.status !== "COLLECTING") return false;
+  // An intent claimed while the first pass ran is closed too; if it settled,
+  // the in-transaction count check sends this trip to the next run.
+  await closeShareIntents(openIntents(trip.payment.shares).filter((id) => !closed.includes(id)));
   const payment = trip.payment;
   const companions = payment.shares.filter((s) => s.kind === "SHARE" && s.travelerId !== null);
   const paidIds = companions.filter((s) => s.status === "APPROVED").map((s) => s.travelerId as string);
@@ -111,9 +103,24 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
     minors: details.minors,
   };
   const { pax, totalCents, topUps } = splitTopUps(totalsAt, party, paidIds);
+  // Top-ups never go negative, so payers can have paid more than the smaller
+  // trip now costs (e.g. PAWS losing its multiplier, a fixed promo over fewer
+  // people). The bill records what was actually collected.
+  const toCents = (amount: number) => Math.round(amount * 100);
+  const paidCents = payment.shares
+    .filter((s) => s.kind === "SHARE" && s.status === "APPROVED" &&
+      (s.travelerId === null ? s.userId === trip.userId : paidIds.includes(s.travelerId)))
+    .reduce((sum, s) => sum + toCents(s.amount), 0);
+  const topUpCents = topUps.reduce((sum, t) => sum + Math.max(0, t.amountCents), 0);
+  const billCents = Math.max(totalCents, paidCents + topUpCents);
   const adults = 1 + paidIds.length;
   const paxDetails = { ...details, adults, rooms: Math.min(details.rooms, pax) };
-  const saleIntentId = settledLive(payment.providerResponse) ? payment.stripePaymentIntentId : null;
+  // Live mode comes from Stripe: the stored event is empty when the organizer
+  // was settled by the confirm-payment fallback.
+  const organizerIntent = payment.stripePaymentIntentId
+    ? await getStripe().paymentIntents.retrieve(payment.stripePaymentIntentId)
+    : null;
+  const saleIntentId = organizerIntent?.livemode === true ? organizerIntent.id : null;
 
   const outcome = await prisma.$transaction(async (tx) => {
     const promoted = await tx.tripRequest.updateMany({
@@ -142,7 +149,7 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
         where: { id: { in: unpaid.map((s) => s.travelerId as string) } },
       });
     }
-    await tx.payment.update({ where: { id: payment.id }, data: { amount: totalCents / 100 } });
+    await tx.payment.update({ where: { id: payment.id }, data: { amount: billCents / 100 } });
     for (const topUp of topUps) {
       if (topUp.amountCents <= 0) continue;
       const companion = companions.find((s) => s.travelerId === topUp.travelerId);
@@ -163,7 +170,7 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
           paymentId: payment.id,
           stripePaymentIntentId: saleIntentId,
           tripRequestId: trip.id,
-          amount: totalCents / 100,
+          amount: billCents / 100,
           currency: payment.currency,
         },
       });
@@ -216,6 +223,12 @@ export async function runReinvitePass(now: Date): Promise<ReinvitePassResult> {
     },
     select: { id: true },
   });
-  for (const { id } of trips) await inviteSplitCompanions(id);
+  for (const { id } of trips) {
+    try {
+      await inviteSplitCompanions(id);
+    } catch (error) {
+      console.error("[split-deadline] re-invite failed; retrying next run:", id, error);
+    }
+  }
   return { trips: trips.length };
 }

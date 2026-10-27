@@ -152,7 +152,7 @@ describe("GET /api/stripe/trip-summary", () => {
     vi.mocked(prisma.paymentShare.findFirst).mockResolvedValue({ amount: 1023.34 } as never);
     const body = await (await GET(makeRequest())).json();
     expect(prisma.paymentShare.findFirst).toHaveBeenCalledWith({
-      where: { paymentId: "payment-1", travelerId: null, kind: "SHARE" },
+      where: { paymentId: "payment-1", travelerId: null, userId: "buyer-1", kind: "SHARE" },
       select: { amount: true },
     });
     expect(body.payment.amount).toBe(1023.34);
