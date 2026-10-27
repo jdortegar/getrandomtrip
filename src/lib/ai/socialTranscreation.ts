@@ -1,3 +1,8 @@
+import {
+  SOCIAL_BRAND_POLICY,
+  captionOnly,
+  type SocialCopyLocks,
+} from "./socialBrandPolicy";
 import { completeJson, type ChatContentPart } from "./aiService";
 import { editSocialImage } from "./socialRevision";
 
@@ -5,13 +10,15 @@ import { editSocialImage } from "./socialRevision";
  * Condensed from .claude/skills/randomtrip-en-social-transcreator (SKILL.md and
  * references). Keep both in sync when the brand rules change.
  */
-export const TRANSCREATION_SYSTEM = `You transcreate Randomtrip Instagram posts from Latin American Spanish into publish-ready international/US English that sounds as if Randomtrip wrote it in English first. Transcreate, do not translate literally: keep what the post is doing (hook, stakes, twist, CTA), not its Spanish syntax.
+export const TRANSCREATION_SYSTEM = `${SOCIAL_BRAND_POLICY}
+
+You transcreate Randomtrip Instagram posts from Latin American Spanish into publish-ready international/US English that sounds as if Randomtrip wrote it in English first. Transcreate, do not translate literally: keep what the post is doing (hook, stakes, twist, CTA), not its Spanish syntax.
 
 Brand: Randomtrip is about discovery beyond choice — thoughtful human work makes room for trips people would never have chosen but end up loving. The surprise destination is a mechanism, not the promise. Voice: curious, human ("you", "we", contractions), light, short sentences, confident and specific, playfully challenging endless research and planning fatigue (never the traveler). Never travel-agency copy, hype, superlatives, "perfect getaway", "hidden gem", "epic", "wanderlust" filler. Never frame it as a game, lottery, gamble or rolling dice; unexpected is not random.
 
 Locked language (exact when that meaning is intended): Randomtrip (prose) / RANDOMTRIP (all-caps art); WONDER. WANDER. REPEAT.; Wonder begins where certainty ends.; Serendipity by Design; SERENDIPIA DISEÑADA -> SERENDIPITY BY DESIGN.; "No es azar. Es serendipia diseñada." -> "Nothing left to chance. Plenty left to discover."; "No sabes adónde vas. Y eso es exactamente lo mejor." -> "You don't know where you're going. And that's the best part."; "Somos Randomtrip." -> "Meet Randomtrip." Never translate product names: XSED, ESSENZA, MODO EXPLORA, EXPLORA+, BIVOUAC, ATELIER GETAWAY, Trippers, Sunday Drop, X Suerte Es Domingo.
 
-Facts are source-bound: never add or remove prices, currency, nights, dates, times, distances, inclusions (flights, stays, meals), 48-hour reveal timing, availability or personalization that the Spanish source does not state; keep qualifiers such as "up to" or "could". Keep XSED mechanics only on XSED posts. Keep URLs, codes and "link in bio" CTAs. No Spanish ¿ or ¡. Keep useful emoji and line breaks. Hashtags: keep branded ones (#getrandomtrip, #randomtrip); replace generic Spanish tags with a few natural English ones, never literal translations.
+Facts are source-bound: never add or remove prices, currency, nights, dates, times, distances, inclusions (flights, stays, meals), 48-hour reveal timing, availability or personalization that the Spanish source does not state; keep qualifiers such as "up to" or "could". Keep XSED mechanics only on XSED posts. Keep URLs, codes and "link in bio" CTAs. No Spanish ¿ or ¡. Keep useful emoji and line breaks. Hashtags: do not append hashtags or new campaign lines; preserve only source-supported hashtags unless explicitly requested.
 
 On-image text: for each image, list every legible Spanish text fragment exactly as printed (same case and accents) with its English replacement. Headlines that are uppercase stay uppercase; keep line breaks as "\\n"; keep English no longer than the Spanish where possible. Skip text that is already English, logos, brand marks, product packaging and slide counters such as "1 / 3". If an image has no Spanish text, return an empty list.
 
@@ -21,6 +28,7 @@ with exactly one "slides" entry per image, in order. "notes" lists material ambi
 
 export interface SlideCopy {
   replacements: { from: string; to: string }[];
+  lockedHeadline?: string;
 }
 
 export interface Transcreation {
@@ -37,13 +45,21 @@ export function transcreationModel() {
 export async function transcreatePost(
   caption: string,
   images: { bytes: Uint8Array; type: string }[],
+  locks: SocialCopyLocks = {},
 ): Promise<Transcreation> {
+  if (locks.caption && locks.artworkHeadline && images.length === 1)
+    return {
+      caption: locks.caption,
+      slides: [{ replacements: [], lockedHeadline: locks.artworkHeadline }],
+      notes: [],
+    };
   const parts: ChatContentPart[] = [
     {
       type: "text",
       text: JSON.stringify({
         spanishCaption: caption,
         imageCount: images.length,
+        lockedFields: locks,
       }),
     },
     ...images.map(
@@ -60,7 +76,11 @@ export async function transcreatePost(
     model: transcreationModel(),
     signal: AbortSignal.timeout(90_000),
   });
-  return parseTranscreation(raw, images.length);
+  const plan = parseTranscreation(raw, images.length);
+  plan.caption = locks.caption ?? captionOnly(plan.caption);
+  if (locks.artworkHeadline && plan.slides.length === 1)
+    plan.slides[0].lockedHeadline = locks.artworkHeadline;
+  return plan;
 }
 
 export function parseTranscreation(
@@ -116,7 +136,9 @@ export async function translateSlideArtwork(
   return editSocialImage(
     image,
     contentType,
-    `Edit this Instagram slide. Replace ONLY the text listed below with the exact English text given, letter for letter ("\\n" marks a line break). Keep the same fonts, sizes, weights, colors, alignment, line breaks and positions. Do not change the photo, objects, background, crop, logos, slide counter or anything else. Add no other text.\n${lines}`,
+    `${SOCIAL_BRAND_POLICY}
+${copy.lockedHeadline ? `Set the main headline to this locked exact text, without changing any word, case or punctuation: ${JSON.stringify(copy.lockedHeadline)}. This takes precedence over any other replacement or rationale. Keep other artwork fields separate.` : ""}
+Edit this Instagram slide. Replace ONLY the text listed below with the exact English text given, letter for letter ("\\n" marks a line break). Keep the same fonts, sizes, weights, colors, alignment, line breaks and positions. Do not change the photo, objects, background, crop, logos, slide counter or anything else. Add no other text.\n${lines}`,
     "high",
   );
 }

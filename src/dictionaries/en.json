@@ -1,4 +1,30 @@
 {
+  "socialImport": {
+    "title": "Create review from Instagram URL",
+    "description": "Import one image post owned by @getrandomtrip.en. Generate an English draft in the app and send it to Slack for approval. This import cannot publish to Instagram.",
+    "url": "Instagram post URL",
+    "assignment": "Copy assignment",
+    "unlocked": "Transcreate unlocked copy",
+    "reviewed": "Use the exact Fabrizio-reviewed solo post copy (De0IMw8jOGl only)",
+    "caption": "Locked caption (optional; preserved exactly)",
+    "headline": "Locked artwork headline (optional; preserved exactly)",
+    "submit": "Create Slack review",
+    "pending": "Importing and queuing draft…",
+    "queued": "Draft queued. The app will send a fresh review to Slack; nothing has been approved or published.",
+    "error": "The import could not be completed. Please try again or contact an administrator.",
+    "errors": {
+      "INVALID_INSTAGRAM_URL": "Enter a valid HTTPS Instagram /p/ post URL.",
+      "POST_NOT_IN_OWNED_FEED": "This post was not found in the configured @getrandomtrip.en account’s accessible media feed.",
+      "IMPORT_ACCOUNT_UNCONFIGURED": "The English account’s Meta token is not configured.",
+      "IMPORT_ACCOUNT_MISMATCH": "The configured Meta token belongs to a different account.",
+      "IMPORT_SINGLE_IMAGE_ONLY": "Only single-image posts are supported by this import.",
+      "IMPORT_DISABLED": "Social approvals or AI generation are disabled.",
+      "REVIEWED_ASSET_MISMATCH": "The reviewed example applies only to post De0IMw8jOGl.",
+      "IMPORT_ASSIGNMENT_CONFLICT": "This post already has a different import assignment. Inspect its existing job before making another review.",
+      "IMPORT_DAILY_LIMIT": "The daily generation limit has been reached.",
+      "INVALID_COPY_LOCKS": "Check the locked caption and headline lengths."
+    }
+  },
   "tripTransport": {
     "ownCar": "Own car"
   },

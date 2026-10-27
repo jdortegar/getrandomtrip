@@ -3609,6 +3609,7 @@ export interface ImageEditorDict {
 }
 
 export interface MarketingDictionary {
+  socialImport: import("./SocialImportCopy").SocialImportCopy;
   tripTransport: {
     ownCar: string;
   };

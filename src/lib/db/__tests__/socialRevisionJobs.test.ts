@@ -299,6 +299,7 @@ describe("queueSocialPublish", () => {
     expect(m.sourceCount).toHaveBeenCalledWith({
       where: {
         postedAt: { lt: new Date("2026-04-24T00:00:00Z") },
+        accountUsername: "getrandomtrip.es",
         status: { notIn: ["PUBLISHED", "SYNCED"] },
       },
     });

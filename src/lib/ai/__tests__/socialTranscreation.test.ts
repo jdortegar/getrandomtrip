@@ -89,3 +89,29 @@ it("edits a slide with only the exact replacements, at high quality", async () =
   expect(prompt).toContain('Replace "¿CÓMO FUNCIONA?" with "HOW IT WORKS"');
   expect(quality).toBe("high");
 });
+
+it("uses exact selected copy without asking the model to rewrite approved fields", async () => {
+  const locks = {
+    caption: "Exact caption.\n\nSecond paragraph.",
+    artworkHeadline: "GET LOST TO FIND YOURSELF",
+  };
+  const result = await transcreatePost(
+    "Fuente",
+    [{ bytes: new Uint8Array([1]), type: "image/png" }],
+    locks,
+  );
+  expect(m.complete).not.toHaveBeenCalled();
+  expect(result).toEqual({
+    caption: locks.caption,
+    slides: [{ replacements: [], lockedHeadline: locks.artworkHeadline }],
+    notes: [],
+  });
+});
+it("sends locked headline separately to image editing, never as caption rationale", async () => {
+  await translateSlideArtwork(new Uint8Array([1]), "image/png", {
+    replacements: [],
+    lockedHeadline: "GET LOST TO FIND YOURSELF",
+  });
+  expect(m.edit.mock.calls[0][2]).toContain('"GET LOST TO FIND YOURSELF"');
+  expect(m.edit.mock.calls[0][2]).toContain("locked exact text");
+});

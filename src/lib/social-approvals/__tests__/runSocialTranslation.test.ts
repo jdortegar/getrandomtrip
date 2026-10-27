@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
+  profile: vi.fn(),
   claim: vi.fn(),
   update: vi.fn(),
   sourceUpdate: vi.fn(),
@@ -12,6 +13,9 @@ const m = vi.hoisted(() => ({
   transcreate: vi.fn(),
   translate: vi.fn(),
   save: vi.fn(),
+}));
+vi.mock("@/lib/instagram-recap/instagramClient", () => ({
+  getProfile: m.profile,
 }));
 vi.mock("sharp", () => ({
   default: () => ({
@@ -229,4 +233,42 @@ it("renews the 10-minute lease on every checkpoint so a carousel cannot expire m
       Date.now() + 11 * 60_000,
     );
   }
+});
+
+it("imports EN-owned selected copy into a fresh review that cannot publish", async () => {
+  vi.stubEnv("SOCIAL_TARGET_PAGE_TOKEN", "x".repeat(30));
+  const locks = {
+    caption: "Exact caption.\n\nSecond paragraph.",
+    artworkHeadline: "GET LOST TO FIND YOURSELF",
+  };
+  m.profile.mockResolvedValue({
+    username: "getrandomtrip.en",
+    userId: "owned",
+  });
+  m.claim.mockResolvedValue({
+    ...job,
+    source: {
+      ...source,
+      accountUsername: "getrandomtrip.en",
+      copyLocks: locks,
+      mediaType: "IMAGE",
+    },
+  });
+  m.slides.mockResolvedValue(["https://x.cdninstagram.com/1.jpg"]);
+  m.transcreate.mockResolvedValue({
+    caption: locks.caption,
+    slides: [{ replacements: [], lockedHeadline: locks.artworkHeadline }],
+    notes: [],
+  });
+  await runSocialRevision();
+  expect(m.slides).toHaveBeenCalledWith("x".repeat(30), source.igMediaId);
+  expect(m.create).toHaveBeenCalledWith(
+    expect.objectContaining({ caption: locks.caption, copyLocks: locks }),
+  );
+  expect(m.create.mock.calls[0][0]).not.toHaveProperty("sourceId");
+  expect(m.translate).toHaveBeenCalledWith(expect.anything(), "image/jpeg", {
+    replacements: [],
+    lockedHeadline: locks.artworkHeadline,
+  });
+  expect(m.post).toHaveBeenCalledOnce();
 });

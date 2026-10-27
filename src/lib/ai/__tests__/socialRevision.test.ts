@@ -60,3 +60,13 @@ it("edits rather than generates from scratch, with one low-quality output and ph
   );
   expect(options.body.get("image")).toBeInstanceOf(Blob);
 });
+
+it("preserves an explicitly locked caption exactly without a paid completion", async () => {
+  const locked = "Lose the plan. Find yourself.\n\nExact paragraph.";
+  expect(
+    await reviseSocialCaption("Different caption", "General copy polish", {
+      caption: locked,
+    }),
+  ).toBe(locked);
+  expect(complete).not.toHaveBeenCalled();
+});

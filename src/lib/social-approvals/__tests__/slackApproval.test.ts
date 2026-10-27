@@ -169,3 +169,17 @@ it("parses the Publish and Translate buttons", () => {
   publish.actions = [{ action_id: "social_other", value: "x" }];
   expect(parseApprovalAction(publish, config)).toBeNull();
 });
+
+it("never offers publication for an unlinked imported review even when publishing is enabled", () => {
+  vi.stubEnv("SLACK_SOCIAL_PUBLISH_ENABLED", "true");
+  const message = approvalMessage({
+    id: "review",
+    revision: 1,
+    caption: "Exact caption",
+    imageUrl: "https://app.test/image.png",
+    status: "APPROVED",
+    decidedBy: "admin",
+    sourceId: null,
+  });
+  expect(JSON.stringify(message)).not.toContain('"action_id":"social_publish"');
+});

@@ -1,4 +1,30 @@
 {
+  "socialImport": {
+    "title": "Crear revisión desde una URL de Instagram",
+    "description": "Importa una publicación de una imagen de @getrandomtrip.en. La aplicación genera un borrador en inglés y lo envía a Slack para aprobación. Esta importación no puede publicar en Instagram.",
+    "url": "URL de la publicación de Instagram",
+    "assignment": "Instrucciones de contenido",
+    "unlocked": "Adaptar el contenido no bloqueado",
+    "reviewed": "Usar el texto exacto revisado por Fabrizio (solo De0IMw8jOGl)",
+    "caption": "Caption bloqueado (opcional; se conserva exactamente)",
+    "headline": "Título de la imagen bloqueado (opcional; se conserva exactamente)",
+    "submit": "Crear revisión en Slack",
+    "pending": "Importando y preparando el borrador…",
+    "queued": "Borrador en cola. La aplicación enviará una nueva revisión a Slack; no se aprobó ni publicó nada.",
+    "error": "No se pudo completar la importación. Intenta de nuevo o contacta a un administrador.",
+    "errors": {
+      "INVALID_INSTAGRAM_URL": "Ingresa una URL HTTPS válida de una publicación /p/ de Instagram.",
+      "POST_NOT_IN_OWNED_FEED": "No se encontró la publicación en el contenido accesible de @getrandomtrip.en.",
+      "IMPORT_ACCOUNT_UNCONFIGURED": "El token de Meta de la cuenta en inglés no está configurado.",
+      "IMPORT_ACCOUNT_MISMATCH": "El token de Meta configurado pertenece a otra cuenta.",
+      "IMPORT_SINGLE_IMAGE_ONLY": "Esta importación solo admite publicaciones de una imagen.",
+      "IMPORT_DISABLED": "Las aprobaciones sociales o la generación con IA están desactivadas.",
+      "REVIEWED_ASSET_MISMATCH": "El ejemplo revisado corresponde solo a De0IMw8jOGl.",
+      "IMPORT_ASSIGNMENT_CONFLICT": "La publicación ya tiene otras instrucciones de importación. Revisa su trabajo existente antes de crear otra revisión.",
+      "IMPORT_DAILY_LIMIT": "Se alcanzó el límite diario de generación.",
+      "INVALID_COPY_LOCKS": "Revisa la longitud del caption y del título bloqueados."
+    }
+  },
   "tripTransport": {
     "ownCar": "Auto propio"
   },

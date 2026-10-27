@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 export interface ApprovalContent {
   id: string;
   revision: number;
+  sourceId?: string | null;
   caption: string;
   imageUrl: string;
   /** Every slide in order; empty for reviews created before multi-slide support. */
@@ -77,6 +78,7 @@ export function approvalMessage(
   const pending = row.status === "PENDING";
   const publishable =
     row.status === "APPROVED" &&
+    row.sourceId !== null &&
     process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true";
   const status = `${STATUS[row.status] ?? "Superseded or unavailable"}${
     row.status === "PUBLISHED" && options.permalink
