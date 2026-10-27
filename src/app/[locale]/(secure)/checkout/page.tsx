@@ -216,8 +216,10 @@ function CheckoutContent() {
     setPaymentMode("INDIVIDUAL");
     if (companionEmails.every((email) => !email.trim())) setCompanionEmails(quoteSplit.companionEmails);
   }
+  // Compare only the visible slots, the same ones a calculation sends.
   const quotedEmailsChanged = Boolean(quoteSplit) &&
-    companionEmails.map((email) => email.trim().toLowerCase()).join("\n") !==
+    Array.from({ length: Math.max(0, paxDetails.adults - 1) }, (_, i) =>
+      (companionEmails[i] ?? "").trim().toLowerCase()).join("\n") !==
       quoteSplit!.companionEmails.join("\n");
   const splitErrorCode = payment.errorCode === "INVALID_COMPANION_EMAILS" ||
     payment.errorCode === "INDIVIDUAL_REQUIRES_COMPANIONS";

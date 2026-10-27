@@ -11,7 +11,10 @@ interface Contact {
   paymentNotice?: string | null;
   onBeforeConfirm: () => Promise<boolean>;
 }
-const view = vi.hoisted(() => ({ contact: null as Contact | null }));
+interface Travel {
+  onSaveTravelers: (party: { adults: number; minors: number; rooms: number }) => Promise<void>;
+}
+const view = vi.hoisted(() => ({ contact: null as Contact | null, travel: null as Travel | null }));
 // Next's AppRouterContext provides one stable router instance.
 const router = vi.hoisted(() => ({ replace: vi.fn(), back: vi.fn() }));
 const session = vi.hoisted(() => ({
@@ -30,7 +33,10 @@ vi.mock("@/components/journey/HeaderHero", () => ({ default: () => null }));
 vi.mock("@/components/chrome/ChatFab", () => ({ default: () => null }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 vi.mock("@/components/app/checkout/CheckoutTravelDetailsCard", () => ({
-  CheckoutTravelDetailsCard: () => <section data-checkout-block="trip-details" />,
+  CheckoutTravelDetailsCard: (props: Travel) => {
+    view.travel = props;
+    return <section data-checkout-block="trip-details" />;
+  },
 }));
 vi.mock("@/components/app/checkout/CheckoutContactCard", () => ({
   CheckoutContactCard: (props: Contact) => {
@@ -76,9 +82,16 @@ describe("checkout payment mode", () => {
 
   beforeEach(() => {
     view.contact = null;
+    view.travel = null;
+    Object.assign(trip, { pax: 3, paxDetails: { adults: 3, minors: 0, rooms: 2 } });
     fetchMock.mockReset();
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
       if (url === "/api/trips") return Response.json({ trips: [trip] });
+      if (url === "/api/trip-requests") {
+        const body = JSON.parse(String(init?.body));
+        Object.assign(trip, { pax: body.pax, paxDetails: body.paxDetails });
+        return Response.json({ tripRequest: trip });
+      }
       if (url === "/api/stripe/payment-intent") {
         const body = JSON.parse(String(init?.body));
         const base = {
@@ -202,6 +215,19 @@ describe("checkout payment mode", () => {
     expect(quoteBodies().at(-1)).toMatchObject({ companionEmails: ["ana@example.com", "carla@example.com"] });
     expect(view.contact!.clientSecret).toBe("secret-share");
     expect(container.querySelector<HTMLInputElement>("input[type=checkbox]")!.checked).toBe(false);
+  });
+
+  it("pays the recalculated share after the group shrinks, without editing emails", async () => {
+    await mount();
+    await click(copy.individualOption);
+    await typeEmails("ana@example.com", "bo@example.com");
+    await click(copy.calculate);
+    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 0, rooms: 1 }); });
+    expect(view.contact!.clientSecret).toBeNull();
+    expect(container.querySelectorAll("input[type=email]")).toHaveLength(1);
+    await click(copy.calculate);
+    expect(quoteBodies().at(-1)).toMatchObject({ paymentMode: "INDIVIDUAL", companionEmails: ["ana@example.com"] });
+    expect(view.contact!.clientSecret).toBe("secret-share");
   });
 
   it("goes back to charging the whole trip when switching to the total", async () => {
