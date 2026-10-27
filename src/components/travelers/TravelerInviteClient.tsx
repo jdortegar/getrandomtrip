@@ -322,6 +322,11 @@ function InviteForm({
       }
 
       setState("success");
+      // A companion of an individually paid trip still owes their share.
+      if (typeof data.shareDue?.travelerId === "string") {
+        router.push(`/${locale}/checkout/share/${encodeURIComponent(data.shareDue.travelerId)}`);
+        return;
+      }
       redirectTimer.current = setTimeout(() => {
         router.push(`/${locale}/dashboard`);
       }, 1500);

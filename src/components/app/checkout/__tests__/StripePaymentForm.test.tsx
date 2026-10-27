@@ -23,7 +23,7 @@ describe("Stripe confirmation lifecycle", () => {
   const onBeforeConfirm = vi.fn();
   const onProcessingChange = vi.fn();
   const onPaymentInfoSubmitted = vi.fn();
-  function form(key: string) {
+  function form(key: string, returnPath?: string) {
     return (
       <StripePaymentForm
         billingCity=""
@@ -49,6 +49,7 @@ describe("Stripe confirmation lifecycle", () => {
         onPaymentInfoSubmitted={onPaymentInfoSubmitted}
         onProcessingChange={onProcessingChange}
         onRetry={vi.fn()}
+        returnPath={returnPath}
       />
     );
   }
@@ -188,5 +189,19 @@ describe("Stripe confirmation lifecycle", () => {
     await act(async () => resolveOld(false));
     expect(onProcessingChange).toHaveBeenLastCalledWith(true);
     expect(confirmPayment).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [undefined, "/en/checkout/success"],
+    ["/checkout/share/traveler-ana", "/en/checkout/share/traveler-ana"],
+  ])("returns from Stripe to %s", async (returnPath, expected) => {
+    act(() => root.render(form("return", returnPath)));
+    onBeforeConfirm.mockResolvedValue(true);
+    confirmPayment.mockResolvedValue({ error: { message: "declined" } });
+    act(() => element.ready());
+    await act(async () => submit());
+    expect(confirmPayment).toHaveBeenCalledWith(expect.objectContaining({
+      confirmParams: expect.objectContaining({ return_url: `${window.location.origin}${expected}` }),
+    }));
   });
 });

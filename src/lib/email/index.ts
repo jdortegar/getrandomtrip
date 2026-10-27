@@ -904,7 +904,10 @@ export async function deliverTravelerInviteEmail(
 ): Promise<void> {
   const traveler = await prisma.tripTraveler.findUnique({
     where: { id: travelerId },
-    include: { tripRequest: { include: { user: true } } },
+    include: {
+      tripRequest: { include: { user: true } },
+      paymentShares: { where: { kind: "SHARE" } },
+    },
   });
 
   if (!traveler?.email) return;
@@ -913,6 +916,24 @@ export async function deliverTravelerInviteEmail(
   const locale = resolveLocale(tripRequest.user.locale);
   const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
   const inviteUrl = buildTravelerInviteUrl(locale, plaintextToken);
+  // Individually paid trips: the companion pays their own share by the deadline.
+  const shareRow = traveler.paymentShares?.[0];
+  const share =
+    tripRequest.paymentMode === "INDIVIDUAL" && shareRow && tripRequest.paymentDeadline
+      ? {
+          amount: `${shareRow.currency} ${shareRow.amount.toFixed(Number.isInteger(shareRow.amount) ? 0 : 2)}`,
+          // 24h clock: "a. m." would end the sentence with a doubled period.
+          deadline: new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-AR", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hourCycle: "h23",
+            timeZone: tripRequest.departureTimeZone ?? "America/Argentina/Buenos_Aires",
+          }).format(tripRequest.paymentDeadline),
+        }
+      : null;
 
   await sendMail({
     to: traveler.email,
@@ -925,6 +946,7 @@ export async function deliverTravelerInviteEmail(
         startDate: tripRequest.startDate,
         endDate: tripRequest.endDate,
         tripType: tripRequest.type,
+        share,
       }),
     },
   });

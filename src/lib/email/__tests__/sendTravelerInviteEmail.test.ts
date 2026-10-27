@@ -32,6 +32,38 @@ beforeEach(() => {
 });
 
 describe("deliverTravelerInviteEmail", () => {
+  it("states the companion's share and deadline for an individually paid trip", async () => {
+    db.tripTraveler.findUnique.mockResolvedValue({
+      ...traveler,
+      paymentShares: [{ amount: 1023.33, currency: "USD" }],
+      tripRequest: {
+        ...traveler.tripRequest,
+        paymentMode: "INDIVIDUAL",
+        paymentDeadline: new Date("2026-10-30T12:00:00.000Z"),
+        departureTimeZone: "America/Argentina/Buenos_Aires",
+      },
+    });
+
+    await deliverTravelerInviteEmail("trav-1", "tok");
+
+    expect(db.tripTraveler.findUnique).toHaveBeenCalledWith(expect.objectContaining({
+      include: expect.objectContaining({ paymentShares: { where: { kind: "SHARE" } } }),
+    }));
+    const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react);
+    expect(html).toContain("USD 1023.33");
+    expect(html).toContain("Paga tu parte antes del 30 de octubre de 2026 a las 09:00. Si no pagas a tiempo");
+  });
+
+  it("never mentions a share on a trip paid in total", async () => {
+    db.tripTraveler.findUnique.mockResolvedValue({
+      ...traveler,
+      paymentShares: [],
+      tripRequest: { ...traveler.tripRequest, paymentMode: "TOTAL", paymentDeadline: null },
+    });
+    await deliverTravelerInviteEmail("trav-1", "tok");
+    expect(renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react)).not.toContain("Tu parte");
+  });
+
   it("sends the buyer-named subject and a dated body without the destination", async () => {
     await deliverTravelerInviteEmail("trav-1", "tok");
 

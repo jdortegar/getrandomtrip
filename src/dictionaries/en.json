@@ -7213,6 +7213,20 @@
     "errorAlreadySubmitted": "You have already submitted a review for this trip. Thank you for your time!",
     "errorGeneric": "An error occurred while submitting your review. Please try again."
   },
+  "shareCheckout": {
+    "title": "Your share of the trip",
+    "description": "{name} put this trip together. Pay your share to join.",
+    "amountLabel": "Your share",
+    "deadline": "You have until {date} to pay.",
+    "loading": "Preparing secure payment…",
+    "errorMessage": "We couldn't prepare the payment.",
+    "retry": "Try again",
+    "paidTitle": "Done, you're in",
+    "paidDescription": "We got your payment. We'll let you know when the group is complete.",
+    "closedTitle": "The payment window has closed",
+    "closedDescription": "This trip is no longer taking payments. If you think that's a mistake, talk to {name}.",
+    "toTrips": "Go to my trips"
+  },
   "inviteTravelers": {
     "eyebrow": "Before you travel",
     "heading": "Invite your travel friends",

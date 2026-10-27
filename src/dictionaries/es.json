@@ -7213,6 +7213,20 @@
     "errorAlreadySubmitted": "Ya enviaste una reseña para este viaje. ¡Gracias por tu tiempo!",
     "errorGeneric": "Ocurrió un error al enviar tu reseña. Por favor intentá de nuevo."
   },
+  "shareCheckout": {
+    "title": "Tu parte del viaje",
+    "description": "{name} armó este viaje. Paga tu parte para sumarte.",
+    "amountLabel": "Tu parte",
+    "deadline": "Tienes hasta el {date} para pagar.",
+    "loading": "Preparando el pago seguro…",
+    "errorMessage": "No pudimos preparar el pago.",
+    "retry": "Reintentar",
+    "paidTitle": "Listo, ya estás dentro",
+    "paidDescription": "Recibimos tu pago. Te avisaremos cuando el grupo esté completo.",
+    "closedTitle": "El plazo para pagar terminó",
+    "closedDescription": "Este viaje ya no recibe pagos. Si crees que es un error, habla con {name}.",
+    "toTrips": "Ir a mis viajes"
+  },
   "inviteTravelers": {
     "eyebrow": "Antes de viajar",
     "heading": "Invita a tus compañeros de viaje",

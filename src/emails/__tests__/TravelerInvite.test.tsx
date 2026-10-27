@@ -83,3 +83,22 @@ describe("TravelerInvite body", () => {
     expect(html).not.toContain("Lisbon");
   });
 });
+
+describe("TravelerInvite for an individually paid trip", () => {
+  const share = { amount: "USD 1023.33", deadline: "30 de octubre de 2026, 09:00" };
+
+  it("states the companion's share and the pay-by time in both locales", async () => {
+    const es = await render(<TravelerInvite {...props} locale="es" share={share} />);
+    expect(es).toContain("Tu parte");
+    expect(es).toContain("USD 1023.33");
+    expect(es).toContain("Paga tu parte antes del 30 de octubre de 2026, 09:00. Si no pagas a tiempo, el viaje sigue sin ti.");
+    const en = await render(<TravelerInvite {...props} locale="en" share={{ ...share, deadline: "October 30, 2026, 9:00 AM" }} />);
+    expect(en).toContain("Your share");
+    expect(en).toContain("Pay your share before October 30, 2026, 9:00 AM.");
+  });
+
+  it("leaves total-paid invites unchanged", async () => {
+    const html = await render(<TravelerInvite {...props} locale="es" />);
+    expect(html).not.toContain("Tu parte");
+  });
+});

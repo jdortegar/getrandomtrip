@@ -3609,6 +3609,22 @@ export interface ImageEditorDict {
   uploadError: string;
 }
 
+/** Companion share checkout (`/checkout/share/[travelerId]`). `{name}` = organizer first name. */
+export interface ShareCheckoutDict {
+  title: string;
+  description: string;
+  amountLabel: string;
+  deadline: string;
+  loading: string;
+  errorMessage: string;
+  retry: string;
+  paidTitle: string;
+  paidDescription: string;
+  closedTitle: string;
+  closedDescription: string;
+  toTrips: string;
+}
+
 export interface MarketingDictionary {
   tripTransport: {
     ownCar: string;
@@ -5182,6 +5198,7 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  shareCheckout: ShareCheckoutDict;
   destinationAssignmentReminder: DestinationAssignmentReminderDict;
   tripRevealNotification: TripRevealNotificationDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;

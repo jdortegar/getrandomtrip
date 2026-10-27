@@ -22,7 +22,8 @@ vi.mock("next-auth/react", () => ({
   useSession: () => sessionState.value,
   signOut,
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/components/auth/AuthModal", () => ({
   default: (props: Record<string, unknown>) => {
     authModalProps.last = props;
@@ -447,6 +448,13 @@ describe("TravelerInviteClient — travel documents", () => {
       nationalities: ["AR"],
       visas: ["SCHENGEN"],
     });
+  });
+
+  it("sends a companion who still owes a share straight to their share checkout", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ ok: true, shareDue: { travelerId: "trav-1" } }));
+    render(matchingResolution);
+    await fillAndSubmit();
+    expect(push).toHaveBeenCalledWith("/en/checkout/share/trav-1");
   });
 
   it("requires a nationality before submitting", async () => {

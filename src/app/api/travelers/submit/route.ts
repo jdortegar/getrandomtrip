@@ -135,7 +135,21 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({ ok: true });
+    // INDIVIDUAL trips: send the companion straight to their own share checkout.
+    const shareDue = await prisma.paymentShare.findFirst({
+      where: {
+        travelerId: result.travelerId,
+        kind: "SHARE",
+        status: { not: "APPROVED" },
+        payment: { tripRequest: { status: "COLLECTING" } },
+      },
+      select: { id: true },
+    });
+
+    return NextResponse.json({
+      ok: true,
+      ...(shareDue ? { shareDue: { travelerId: result.travelerId } } : {}),
+    });
   } catch (error) {
     console.error("[travelers/submit] POST error:", error);
     return NextResponse.json({ error: "invalid" }, { status: 400 });

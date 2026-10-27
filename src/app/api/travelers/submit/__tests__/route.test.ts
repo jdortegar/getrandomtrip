@@ -20,6 +20,9 @@ vi.mock("@/lib/prisma", () => ({
     notification: {
       create: vi.fn(),
     },
+    paymentShare: {
+      findFirst: vi.fn(),
+    },
   },
 }));
 
@@ -225,6 +228,36 @@ describe("POST /api/travelers/submit", () => {
       consumeTravelerInvite as ReturnType<typeof vi.fn>
     ).mock.calls[0][1];
     expect(consumeArgs.userId).toBe(dbUser.id);
+  });
+
+  it("points the companion to their share checkout when a share is still due", async () => {
+    mockSessionAndUser();
+    vi.mocked(consumeTravelerInvite).mockResolvedValue({
+      ok: true, travelerId: "trav-1", tripRequestId: "trip-1", kind: "ADULT", buyerFirstName: "Alice",
+    } as never);
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } } as never);
+    vi.mocked(prisma.paymentShare.findFirst).mockResolvedValue({ id: "share-1" } as never);
+    const body = await (await POST(makeRequest(validBody))).json();
+    expect(body).toEqual({ ok: true, shareDue: { travelerId: "trav-1" } });
+    expect(prisma.paymentShare.findFirst).toHaveBeenCalledWith({
+      where: {
+        travelerId: "trav-1",
+        kind: "SHARE",
+        status: { not: "APPROVED" },
+        payment: { tripRequest: { status: "COLLECTING" } },
+      },
+      select: { id: true },
+    });
+  });
+
+  it("returns plain success when no share is due", async () => {
+    mockSessionAndUser();
+    vi.mocked(consumeTravelerInvite).mockResolvedValue({
+      ok: true, travelerId: "trav-1", tripRequestId: "trip-1", kind: "ADULT", buyerFirstName: "Alice",
+    } as never);
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } } as never);
+    vi.mocked(prisma.paymentShare.findFirst).mockResolvedValue(null);
+    expect(await (await POST(makeRequest(validBody))).json()).toEqual({ ok: true });
   });
 
   it("localizes the notification title to Spanish for an es-locale buyer (not a hardcoded string)", async () => {

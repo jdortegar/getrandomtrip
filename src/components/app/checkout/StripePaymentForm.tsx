@@ -38,6 +38,8 @@ interface StripePaymentFormProps {
   onPaymentInfoSubmitted?: () => void;
   onProcessingChange: (processing: boolean) => void;
   onRetry: () => void;
+  /** Locale-relative page Stripe returns to; defaults to the checkout success page. */
+  returnPath?: string;
 }
 
 export function StripePaymentForm({
@@ -55,6 +57,7 @@ export function StripePaymentForm({
   onPaymentInfoSubmitted,
   onProcessingChange,
   onRetry,
+  returnPath = "/checkout/success",
 }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
@@ -112,7 +115,7 @@ export function StripePaymentForm({
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/${locale}/checkout/success`,
+          return_url: `${window.location.origin}/${locale}${returnPath}`,
           payment_method_data: {
             billing_details: {
               email: billingEmail.trim() || undefined,
@@ -142,7 +145,7 @@ export function StripePaymentForm({
       // Pass payment_intent to success page so it can confirm the trip
       // even if the Stripe webhook hasn't arrived yet.
       const successUrl = new URL(
-        `/${locale}/checkout/success`,
+        `/${locale}${returnPath}`,
         window.location.origin,
       );
       if (paymentIntent?.id) {
