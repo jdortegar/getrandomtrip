@@ -18,6 +18,8 @@ const STRIPE_STATUS_MAP: Record<string, UpdatePaymentData["status"]> = {
   requires_confirmation: "PENDING",
 };
 
+const SHARE_INTENT_KINDS = ["SHARE", "TOP_UP", "ORGANIZER_REMAINDER"];
+
 export async function POST(request: NextRequest) {
   const stripe = getStripe();
   // Must read raw text — request.json() corrupts the body and breaks signature verification
@@ -60,8 +62,9 @@ export async function POST(request: NextRequest) {
       case "payment_intent.canceled": {
         const intent = event.data.object as Stripe.PaymentIntent;
         const newStatus = STRIPE_STATUS_MAP[intent.status] ?? "PENDING";
-        // Companion share intents settle their own share, never the trip Payment.
-        if (intent.metadata?.kind === "SHARE") {
+        // Share intents (companion shares, top-ups, organizer remainders) settle
+        // their own share, never the trip Payment.
+        if (SHARE_INTENT_KINDS.includes(intent.metadata?.kind ?? "")) {
           const settled = await settleShareFromStripe(
             intent.id,
             newStatus ?? "PENDING",

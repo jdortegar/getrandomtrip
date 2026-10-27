@@ -217,3 +217,13 @@ it("keeps routing organizer and total intents to the trip payment", async () => 
   expect(mocks.settleShare).not.toHaveBeenCalled();
   expect(mocks.update).toHaveBeenCalledWith("pi_org", expect.objectContaining({ status: "APPROVED" }), expect.anything(), false);
 });
+it.each(["TOP_UP", "ORGANIZER_REMAINDER"])("settles a %s intent on its share", async (kind) => {
+  mocks.settleShare.mockResolvedValue(true);
+  mocks.constructEvent.mockReturnValue({
+    type: "payment_intent.succeeded",
+    data: { object: { id: "pi_extra", status: "succeeded", created: 10, metadata: { kind, shareId: "share-2" } } },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.settleShare).toHaveBeenCalledWith("pi_extra", "APPROVED", new Date(10_000));
+  expect(mocks.update).not.toHaveBeenCalled();
+});

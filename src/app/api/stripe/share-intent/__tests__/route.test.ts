@@ -38,6 +38,7 @@ function traveler(overrides: { trip?: Record<string, unknown>; share?: Record<st
     },
     paymentShares: overrides.share === null ? [] : [{
       id: "share-ana",
+      kind: "SHARE",
       amount: 1023.33,
       currency: "USD",
       status: "PENDING",
