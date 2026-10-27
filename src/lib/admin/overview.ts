@@ -42,9 +42,9 @@ export interface AdminOverviewStats {
     tripsSold: number;
     /**
      * Gross sum of `Payment.amount` for APPROVED/COMPLETED payments,
-     * USD-only (displayed as a USD figure — `Payment.currency` also
-     * supports ARS via MercadoPago, and summing across currencies would
-     * silently blend incompatible units under one "$" label).
+     * USD-only (displayed as a USD figure — `Payment.currency` can be
+     * non-USD, and summing across currencies would silently blend
+     * incompatible units under one "$" label).
      */
     earnings: number;
     /** Count of `WaitlistEntry` rows. */

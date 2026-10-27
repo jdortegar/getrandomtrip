@@ -4822,7 +4822,7 @@
           "Cookies estrictamente necesarias: seguridad, autenticación, continuidad de sesión, balanceo de carga y prevención de fraude (por ejemplo mantener tu sesión o recordar tu idioma).",
           "Cookies funcionales: recuerdan elecciones como idioma, avance del journey cuando el producto lo contempla y preferencias de interfaz.",
           "Cookies de analítica: nos ayudan a entender uso agregado (páginas vistas, embudos, errores) para mejorar rendimiento y contenido. Donde la ley lo exija, solo las activamos con tu consentimiento.",
-          "Cookies o almacenamiento de pagos: nuestro proveedor de pago (p. ej. Mercado Pago) puede establecer cookies o tokens propios al pagar; se rigen por sus políticas."
+          "Cookies o almacenamiento de pagos: nuestro proveedor de pago (Stripe) puede establecer cookies o tokens propios al pagar; se rigen por sus políticas."
         ]
       },
       {
@@ -4882,7 +4882,7 @@
         "listItems": [
           "Datos de cuenta: nombre, correo, hash de contraseña, datos de perfil que elijas y identificadores de proveedores como Google si usas inicio social.",
           "Datos de viaje y journey: tipo de viajero, preferencias, dislikes, señales de presupuesto, fechas, tamaño del grupo, notas de accesibilidad y mensajes que envíes en el producto.",
-          "Datos de transacción: compras, estado de pago, referencias de Mercado Pago u otros procesadores (no almacenamos números completos de tarjeta en nuestros servidores).",
+          "Datos de transacción: compras, estado de pago, referencias de Stripe (no almacenamos números completos de tarjeta en nuestros servidores).",
           "Datos técnicos: IP, dispositivo, navegador, ubicación aproximada por IP, registros y cookies según nuestra Política de Cookies.",
           "Comunicaciones: tickets de soporte, correos y mensajes en la app."
         ]
@@ -4999,7 +4999,7 @@
       {
         "title": "Pagos fallidos o revertidos",
         "paragraphs": [
-          "Si Mercado Pago o tu banco rechaza o revierte un cargo, el acceso a la experiencia puede suspenderse hasta completar el pago. Cargos duplicados o errores del procesador deben reportarse a nosotros y al proveedor de pago."
+          "Si Stripe o tu banco rechaza o revierte un cargo, el acceso a la experiencia puede suspenderse hasta completar el pago. Cargos duplicados o errores del procesador deben reportarse a nosotros y al proveedor de pago."
         ]
       },
       {
@@ -5011,7 +5011,7 @@
       {
         "title": "Plazos de procesamiento",
         "paragraphs": [
-          "Los reembolsos aprobados se envían al medio de pago original cuando sea posible. Los plazos dependen de Mercado Pago o tu banco (a menudo varios días hábiles después de emitir el reembolso)."
+          "Los reembolsos aprobados se envían al medio de pago original cuando sea posible. Los plazos dependen de Stripe o tu banco (a menudo varios días hábiles después de emitir el reembolso)."
         ]
       },
       {
@@ -5068,7 +5068,7 @@
         "listIntro": "Cuando compras a través de Randomtrip:",
         "listItems": [
           "Los precios se muestran en la moneda del checkout salvo indicación distinta.",
-          "El pago se procesa con Mercado Pago u otro procesador que designemos; también aplican sus términos y política de privacidad.",
+          "El pago se procesa con Stripe; también aplican sus términos y política de privacidad.",
           "Nos autorizas a nosotros y a socios de pago a cobrar tu medio de pago por el total mostrado, incluidos impuestos y cargos cuando se indiquen.",
           "Detalles del viaje, fechas bloqueadas, inclusiones y exclusiones figuran en la oferta o confirmación. El modelo sorpresa implica que algunos detalles se revelan según las reglas del producto."
         ]

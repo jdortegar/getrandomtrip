@@ -4822,7 +4822,7 @@
           "Strictly necessary cookies: required for security, authentication, session continuity, load balancing, and fraud prevention (for example keeping you signed in or remembering your locale).",
           "Functional cookies: remember choices such as language, journey progress where designed into the product, and UI preferences.",
           "Analytics cookies: help us understand aggregate usage (pages viewed, funnels, errors) so we can improve performance and content. Where required by law, we only enable these with your consent.",
-          "Payment-related cookies or storage: our payment provider (e.g. Mercado Pago) may set their own cookies or tokens when you pay; those are governed by their policies."
+          "Payment-related cookies or storage: our payment provider (Stripe) may set their own cookies or tokens when you pay; those are governed by their policies."
         ]
       },
       {
@@ -4882,7 +4882,7 @@
         "listItems": [
           "Account data: name, email, password hash, profile details you choose to provide, and authentication identifiers from providers such as Google when you use social login.",
           "Trip and journey data: traveler type, preferences, dislikes, budget signals, dates, party size, accessibility notes, and messages you send through the product.",
-          "Transaction data: purchases, payment status, references from Mercado Pago or other processors (we do not store full card numbers on our servers).",
+          "Transaction data: purchases, payment status, references from Stripe (we do not store full card numbers on our servers).",
           "Technical data: IP address, device type, browser, approximate location from IP, logs, and cookies as described in our Cookie Policy.",
           "Communications: support tickets, emails, and in-app messages."
         ]
@@ -4999,7 +4999,7 @@
       {
         "title": "Failed or reversed payments",
         "paragraphs": [
-          "If Mercado Pago or your bank declines or reverses a charge, access to the purchased experience may be suspended until payment is successfully completed. Duplicate charges or processor errors should be reported to us and to the payment provider."
+          "If Stripe or your bank declines or reverses a charge, access to the purchased experience may be suspended until payment is successfully completed. Duplicate charges or processor errors should be reported to us and to the payment provider."
         ]
       },
       {
@@ -5011,7 +5011,7 @@
       {
         "title": "Processing time",
         "paragraphs": [
-          "Approved refunds are processed to the original payment method where possible. Timing depends on Mercado Pago or your bank (often several business days after we issue the refund)."
+          "Approved refunds are processed to the original payment method where possible. Timing depends on Stripe or your bank (often several business days after we issue the refund)."
         ]
       },
       {
@@ -5068,7 +5068,7 @@
         "listIntro": "When you purchase through Randomtrip:",
         "listItems": [
           "Prices are displayed in the currency shown at checkout unless stated otherwise.",
-          "Payment is processed by Mercado Pago or another processor we designate; their terms and privacy policy also apply.",
+          "Payment is processed by Stripe; their terms and privacy policy also apply.",
           "You authorize us and our payment partners to charge your selected payment method for the total shown, including applicable taxes and fees when quoted.",
           "Trip details, blackout dates, inclusions, and exclusions are described in the offer or confirmation. The surprise destination model means some specifics are revealed according to the product rules."
         ]

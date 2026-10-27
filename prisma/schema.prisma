@@ -514,7 +514,7 @@ model Payment {
   provider                String // 'stripe'
   providerPaymentId       String? // Stripe PaymentIntent ID
   stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
-  providerMerchantOrderId String? // MP merchant order ID (legacy, kept for historical rows)
+  providerMerchantOrderId String? // Legacy provider order ID (kept for historical rows)
   providerSessionId       String? // Session/token for provider
 
   // Payment Details
@@ -532,7 +532,7 @@ model Payment {
 
   // Payment Status & Flow
   status        PaymentStatus @default(PENDING)
-  statusDetail  String? // MP status detail (e.g., 'accredited', 'pending_waiting_payment')
+  statusDetail  String? // Provider status detail (e.g., Stripe PaymentIntent status)
   failureReason String? // Reason if payment failed
 
   // Financial Tracking
@@ -546,7 +546,7 @@ model Payment {
   chargebackAmount Float     @default(0)
   chargebackAt     DateTime?
 
-  // Provider Response Data (MP payment resource + optional `mpCheckoutReturn` / `mpCheckoutReturnAt` from redirect)
+  // Provider Response Data (Stripe PaymentIntent / webhook payload)
   providerResponse Json? // Full provider response
   webhookData      Json? // Webhook payload data
 

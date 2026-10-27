@@ -253,24 +253,21 @@ async function main() {
       data: {
         userId: user.id,
         tripRequestId: tripRequest.id,
-        provider: 'mercadopago',
-        providerPaymentId: `mp_test_${tripRequest.id}`,
-        providerPreferenceId: `pref_${tripRequest.id}`,
+        provider: 'stripe',
+        providerPaymentId: `pi_test_${tripRequest.id}`,
+        stripePaymentIntentId: `pi_test_${tripRequest.id}`,
         amount: tripRequest.totalTripUsd,
         currency: 'USD',
         paymentMethod: 'credit_card',
         cardLast4: '1234',
         cardBrand: 'Visa',
         status: paymentStatus,
-        statusDetail: paymentStatus === 'APPROVED' ? 'accredited' : 'pending',
-        mpExternalReference: trip.id,
-        mpDescription: `Viaje ${trip.type} - ${trip.level}`,
-        mpStatementDescriptor: 'GETRANDOMTRIP',
-        netAmount: trip.totalTripUsd * 0.95,
-        feeAmount: trip.totalTripUsd * 0.05,
-        paidAt: paymentStatus === 'APPROVED' ? trip.startDate : null,
-        createdAt: trip.startDate
-          ? new Date(trip.startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
+        statusDetail: paymentStatus === 'APPROVED' ? 'succeeded' : 'pending',
+        netAmount: tripRequest.totalTripUsd * 0.95,
+        feeAmount: tripRequest.totalTripUsd * 0.05,
+        paidAt: paymentStatus === 'APPROVED' ? tripRequest.startDate : null,
+        createdAt: tripRequest.startDate
+          ? new Date(tripRequest.startDate.getTime() - 7 * 24 * 60 * 60 * 1000)
           : new Date(), // 7 days before trip
       },
     });
