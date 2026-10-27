@@ -243,6 +243,7 @@ describe("confirmCollectedTrip corrections", () => {
   });
 
   it("never records a bill below the money already collected", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     // Everyone paid USD 1100 each (stored), while current pricing for 3 people says less.
     const paid = (share: Share) => ({ ...share, status: "APPROVED", amount: 1100 });
     const shares = [paid(organizer), paid(ana("APPROVED")), paid(bo())];
@@ -255,6 +256,10 @@ describe("confirmCollectedTrip corrections", () => {
     expect(db.payment.update).toHaveBeenCalledWith({ where: { id: "payment-1" }, data: { amount: 3300 } });
     expect(db.saleNotificationDelivery.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ amount: 3300 }),
+    });
+    // Overpayment is kept and refunded by hand, so it is logged for ops.
+    expect(warn).toHaveBeenCalledWith("[split-deadline] collected more than the trip now costs; refund by hand if due", {
+      tripId: "trip-1", collected: 3300, tripTotal: 3070, currency: "USD",
     });
   });
 

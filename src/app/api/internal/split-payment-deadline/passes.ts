@@ -113,6 +113,15 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
     .reduce((sum, s) => sum + toCents(s.amount), 0);
   const topUpCents = topUps.reduce((sum, t) => sum + Math.max(0, t.amountCents), 0);
   const billCents = Math.max(totalCents, paidCents + topUpCents);
+  if (billCents > totalCents) {
+    // Product decision: keep the extra and refund by hand, so ops can find it here.
+    console.warn("[split-deadline] collected more than the trip now costs; refund by hand if due", {
+      tripId: trip.id,
+      collected: billCents / 100,
+      tripTotal: totalCents / 100,
+      currency: payment.currency,
+    });
+  }
   const adults = 1 + paidIds.length;
   const paxDetails = { ...details, adults, rooms: Math.min(details.rooms, pax) };
   // Live mode comes from Stripe: the stored event is empty when the organizer
