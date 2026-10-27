@@ -10,6 +10,9 @@ export type TotalsAtPax = (pax: number) => PaymentTotalsResult;
 /** Invitees have this long after the organizer pays to pay their share. */
 export const INDIVIDUAL_PAYMENT_WINDOW_MS = 72 * 60 * 60 * 1000;
 
+/** Payers have this long after the deadline to pay a top-up before the organizer covers it. */
+export const TOP_UP_GRACE_MS = 48 * 60 * 60 * 1000;
+
 /** Who is splitting an INDIVIDUAL trip; the organizer is implicit. */
 export interface SplitParty {
   /** Adult companion `TripTraveler` ids invited to pay their own share. */

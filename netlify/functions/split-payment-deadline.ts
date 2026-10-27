@@ -1,0 +1,28 @@
+import { isProductionDeployment } from "../../src/lib/deployment";
+import type { Config } from "@netlify/functions";
+
+// Fires every hour at 15 past, UTC (staggered from traveler-reminder).
+export const config: Config = {
+  schedule: "15 * * * *",
+};
+
+export default async function handler(): Promise<Response> {
+  if (!isProductionDeployment()) return new Response(null, { status: 204 });
+  const siteUrl = process.env.URL ?? process.env.NEXT_PUBLIC_SITE_URL;
+  const secret = process.env.CRON_SECRET;
+
+  if (!siteUrl || !secret) {
+    console.error("[split-payment-deadline] Missing URL or CRON_SECRET env vars");
+    return new Response("misconfigured", { status: 500 });
+  }
+
+  const res = await fetch(`${siteUrl}/api/internal/split-payment-deadline`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${secret}` },
+  });
+
+  const body = await res.text();
+  console.log(`[split-payment-deadline] status=${res.status} body=${body}`);
+
+  return new Response(body, { status: res.status });
+}

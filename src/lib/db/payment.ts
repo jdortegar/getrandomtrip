@@ -425,7 +425,7 @@ export async function updatePaymentFromStripeWebhook(
  * paid. Only never-invited rows get a token, so a replayed webhook sends
  * nothing twice; delivery failures never undo the settled payment.
  */
-async function inviteSplitCompanions(tripRequestId: string) {
+export async function inviteSplitCompanions(tripRequestId: string) {
   const companions = await prisma.tripTraveler.findMany({
     where: { tripRequestId, kind: "ADULT", status: "PENDING", userId: null, email: { not: null } },
     select: { id: true },
