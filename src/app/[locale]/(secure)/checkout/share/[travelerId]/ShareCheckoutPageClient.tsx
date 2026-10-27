@@ -10,6 +10,7 @@ import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { stripeAppearance } from "@/lib/stripe-appearance";
+import { fetchShareIntent, type IntentResult } from "@/lib/payments/share-intent-client";
 import { getStripePromise } from "@/lib/stripe-client";
 import { cn } from "@/lib/utils";
 import type { ShareCheckoutState, ShareCheckoutView } from "@/types/payments";
@@ -26,31 +27,7 @@ type Intent =
   | { status: "ready"; clientSecret: string }
   | { status: "error" };
 
-type IntentResult =
-  | { kind: "ready"; clientSecret: string }
-  | { kind: "paid" }
-  | { kind: "closed" }
-  | { kind: "error" };
-
-/** Asks the server for this companion's share intent; sets no state. */
-async function fetchShareIntent(travelerId: string): Promise<IntentResult> {
-  try {
-    const response = await fetch("/api/stripe/share-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ travelerId }),
-    });
-    const data = await response.json();
-    if (data.paid) return { kind: "paid" };
-    if (data.errorCode === "DEADLINE_PASSED" || data.errorCode === "NOT_COLLECTING") {
-      return { kind: "closed" };
-    }
-    if (!response.ok || typeof data.clientSecret !== "string") return { kind: "error" };
-    return { kind: "ready", clientSecret: data.clientSecret };
-  } catch {
-    return { kind: "error" };
-  }
-}
+const SHARE_CLOSED_CODES = ["DEADLINE_PASSED", "NOT_COLLECTING"];
 
 export function ShareCheckoutPageClient({
   copy,
@@ -81,7 +58,7 @@ export function ShareCheckoutPageClient({
   useEffect(() => {
     if (state !== "pay") return;
     let active = true;
-    void fetchShareIntent(view.travelerId).then((result) => {
+    void fetchShareIntent("/api/stripe/share-intent", { travelerId: view.travelerId }, SHARE_CLOSED_CODES).then((result) => {
       if (active) applyResult(result);
     });
     return () => {
@@ -91,7 +68,7 @@ export function ShareCheckoutPageClient({
 
   const retryIntent = () => {
     setIntent({ status: "loading" });
-    void fetchShareIntent(view.travelerId).then(applyResult);
+    void fetchShareIntent("/api/stripe/share-intent", { travelerId: view.travelerId }, SHARE_CLOSED_CODES).then(applyResult);
   };
 
   const amount = `${view.currency} ${view.amount.toFixed(Number.isInteger(view.amount) ? 0 : 2)}`;

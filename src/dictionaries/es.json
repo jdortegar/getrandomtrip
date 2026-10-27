@@ -6258,6 +6258,20 @@
       "REVEALED": "Revelado",
       "SAVED": "Guardado"
     },
+    "topUpDue": {
+      "eyebrow": "Tu grupo cambió",
+      "title": "Falta pagar una diferencia",
+      "message": "Algunas personas no pagaron a tiempo, así que los extras compartidos se repartieron entre quienes viajan.",
+      "deadline": "Antes del {date}",
+      "action": "Pagar diferencia",
+      "modalTitle": "Pagar la diferencia",
+      "modalDescription": "Paga {amount} con tu tarjeta.",
+      "loading": "Preparando el pago seguro…",
+      "error": "No pudimos preparar el pago.",
+      "retry": "Reintentar",
+      "paid": "Listo, ya pagaste la diferencia.",
+      "closed": "El plazo para pagar la diferencia terminó."
+    },
     "unpaidTrips": {
       "action": "Completar pago",
       "bookingRefLabel": "Referencia",

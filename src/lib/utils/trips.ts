@@ -1,3 +1,4 @@
+import type { MyTopUp } from "@/types/payments";
 export interface Trip {
   basePriceUsd?: number;
   accommodationType?: string;
@@ -32,6 +33,8 @@ export interface Trip {
   };
   /** Viewer's relation to the trip; companions never receive `payment`. */
   viewerRole?: "buyer" | "companion";
+  /** The viewer's own unpaid top-up, when the trip is in its top-up grace period. */
+  myTopUp?: MyTopUp;
 }
 
 export interface Payment {
@@ -161,7 +164,15 @@ export function mapTripFromApi(raw: unknown): Trip {
       : undefined,
     viewerRole:
       trip.role === "buyer" || trip.role === "companion" ? trip.role : undefined,
+    ...(isMyTopUp(trip.myTopUp) ? { myTopUp: trip.myTopUp } : {}),
   };
+}
+
+function isMyTopUp(value: unknown): value is MyTopUp {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return typeof v.shareId === "string" && typeof v.amount === "number" &&
+    typeof v.currency === "string" && typeof v.deadline === "string";
 }
 
 /**

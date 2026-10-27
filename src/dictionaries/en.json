@@ -6258,6 +6258,20 @@
       "REVEALED": "Revealed",
       "SAVED": "Saved"
     },
+    "topUpDue": {
+      "eyebrow": "Your group changed",
+      "title": "A difference is left to pay",
+      "message": "Some people didn't pay in time, so shared extras were split again among those traveling.",
+      "deadline": "Before {date}",
+      "action": "Pay difference",
+      "modalTitle": "Pay the difference",
+      "modalDescription": "Pay {amount} with your card.",
+      "loading": "Preparing secure payment…",
+      "error": "We couldn't prepare the payment.",
+      "retry": "Try again",
+      "paid": "Done, you've paid the difference.",
+      "closed": "The window to pay the difference has closed."
+    },
     "unpaidTrips": {
       "action": "Complete payment",
       "bookingRefLabel": "Reference",

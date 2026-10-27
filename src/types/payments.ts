@@ -27,3 +27,13 @@ export interface ShareCheckoutView {
   billingEmail: string;
   billingName: string;
 }
+
+/** The viewer's own unpaid top-up on one trip. Never another payer's. */
+export interface MyTopUp {
+  shareId: string;
+  /** Major units of `currency`. */
+  amount: number;
+  currency: string;
+  /** ISO timestamp of the end of the top-up grace period. */
+  deadline: string;
+}

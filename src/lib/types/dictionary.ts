@@ -1257,6 +1257,21 @@ export interface DashboardDict {
     upcomingTrips: string;
   };
   tripStatus: Record<string, string>;
+  /** Viewer's own top-up after a group shrank. `{date}`, `{amount}` are filled in. */
+  topUpDue: {
+    eyebrow: string;
+    title: string;
+    message: string;
+    deadline: string;
+    action: string;
+    modalTitle: string;
+    modalDescription: string;
+    loading: string;
+    error: string;
+    retry: string;
+    paid: string;
+    closed: string;
+  };
   unpaidTrips: {
     action: string;
     bookingRefLabel: string;
