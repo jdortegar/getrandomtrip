@@ -172,7 +172,7 @@ function isMyTopUp(value: unknown): value is MyTopUp {
   if (!value || typeof value !== "object") return false;
   const v = value as Record<string, unknown>;
   return typeof v.shareId === "string" && typeof v.amount === "number" &&
-    typeof v.currency === "string" && typeof v.deadline === "string";
+    typeof v.currency === "string" && (typeof v.deadline === "string" || v.deadline === null);
 }
 
 /**

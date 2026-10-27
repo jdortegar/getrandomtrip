@@ -1259,6 +1259,8 @@ export interface DashboardDict {
   tripStatus: Record<string, string>;
   /** Viewer's own top-up after a group shrank. `{date}`, `{amount}` are filled in. */
   topUpDue: {
+    /** Shown instead of a date for the organizer's remainder. */
+    remainderNote: string;
     eyebrow: string;
     title: string;
     message: string;

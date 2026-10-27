@@ -120,19 +120,19 @@ describe("GET /api/trips", () => {
   it("adds each viewer's own pending top-up, also on trips joined as a companion", async () => {
     const deadline = new Date(Date.now() + 24 * 60 * 60 * 1000);
     vi.mocked(prisma.tripRequest.findMany).mockResolvedValue([
-      { id: "joined", userId: "other-buyer", type: "group", level: "essenza", status: "CONFIRMED", topUpDeadline: deadline },
-      { id: "mine", userId: "user-1", type: "group", level: "essenza", status: "CONFIRMED", topUpDeadline: null },
+      { id: "joined", userId: "other-buyer", type: "group", level: "essenza", status: "CONFIRMED", paymentMode: "INDIVIDUAL", topUpDeadline: deadline },
+      { id: "mine", userId: "user-1", type: "group", level: "essenza", status: "CONFIRMED", paymentMode: "TOTAL", topUpDeadline: null },
     ] as never);
     vi.mocked(prisma.payment.findUnique).mockResolvedValue({ id: "pay", amount: 3070, status: "APPROVED" } as never);
     vi.mocked(prisma.paymentShare.findMany).mockResolvedValue([
-      { id: "topup-me", amount: 17.5, currency: "USD", payment: { tripRequestId: "joined" } },
+      { id: "topup-me", kind: "TOP_UP", amount: 17.5, currency: "USD", payment: { tripRequestId: "joined" } },
     ] as never);
     const { GET } = await import("../route");
 
     const { trips } = await (await GET(makeRequest())).json();
 
     expect(prisma.paymentShare.findMany).toHaveBeenCalledWith(expect.objectContaining({
-      where: expect.objectContaining({ kind: "TOP_UP", userId: "user-1", payment: { tripRequestId: { in: ["joined"] } } }),
+      where: expect.objectContaining({ userId: "user-1", payment: { tripRequestId: { in: ["joined"] } } }),
     }));
     expect(trips[0]).toMatchObject({
       id: "joined",

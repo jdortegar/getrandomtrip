@@ -180,3 +180,44 @@ describe("deliverTopUpDueEmail", () => {
     expect(sendMailMock).not.toHaveBeenCalled();
   });
 });
+
+describe("deliverTopUpDueEmail reminder and remainder", () => {
+  const share = (overrides: Record<string, unknown> = {}) => ({
+    kind: "TOP_UP",
+    status: "PENDING",
+    amount: 17.5,
+    currency: "USD",
+    userId: "organizer",
+    user: { email: "lucia@example.com", locale: "es" },
+    payment: {
+      tripRequest: {
+        userId: "organizer",
+        pax: 2,
+        topUpDeadline: new Date("2026-11-01T12:00:00.000Z"),
+        departureTimeZone: "America/Argentina/Buenos_Aires",
+      },
+    },
+    ...overrides,
+  });
+
+  it("skips a reminder for a top-up settled since it was selected", async () => {
+    db.paymentShare.findUnique.mockResolvedValue(share({ status: "APPROVED" }));
+    await deliverTopUpDueEmail("topup-1", true);
+    expect(sendMailMock).not.toHaveBeenCalled();
+  });
+
+  it("tells the organizer to cover the group's remainder before the reveal", async () => {
+    db.paymentShare.findUnique.mockResolvedValue(share({
+      kind: "ORGANIZER_REMAINDER",
+      amount: 35,
+      payment: { tripRequest: { userId: "organizer", pax: 2, topUpDeadline: null, departureTimeZone: null } },
+    }));
+    await deliverTopUpDueEmail("remainder-1");
+    const mail = sendMailMock.mock.calls[0][0];
+    expect(mail.subject).toBe("Cubre la diferencia del grupo: USD 35");
+    const html = renderToStaticMarkup(mail.content.react);
+    expect(html).toContain("Como organizador, la cubres tú.");
+    expect(html).toContain("Paga desde tu panel para que podamos revelar el destino.");
+  });
+});
+

@@ -40,7 +40,14 @@ vi.mock("@/lib/email", () => ({
   deliverTopUpDueEmail: mocks.topUpDeliver,
 }));
 
-import { confirmCollectedTrip, runDeadlinePass, runReinvitePass, runTopUpReminderPass } from "../passes";
+import {
+  closeTopUpGrace,
+  confirmCollectedTrip,
+  runDeadlinePass,
+  runReinvitePass,
+  runRemainderPass,
+  runTopUpReminderPass,
+} from "../passes";
 
 const NOW = new Date("2026-10-30T12:00:00.000Z");
 const HOUR = 60 * 60 * 1000;
@@ -373,6 +380,91 @@ describe("runTopUpReminderPass", () => {
     expect(await runTopUpReminderPass(NOW)).toEqual({ reminded: 1, failed: 1 });
     expect(db.paymentShare.updateMany).toHaveBeenCalledTimes(1);
     expect(db.paymentShare.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "topup-2", reminderSentAt: null } }));
+  });
+});
+
+describe("closeTopUpGrace", () => {
+  const graceEnd = new Date("2026-11-01T12:00:00.000Z");
+  const topUp = (id: string, userId: string, status: string, intent: string | null = null): Share => ({
+    id, kind: "TOP_UP", travelerId: userId === "organizer" ? null : `t-${userId}`, userId, status, stripePaymentIntentId: intent, amount: 17.5,
+  });
+  const graceTrip = (shares: Share[]) =>
+    trip(shares, { status: "CONFIRMED", topUpDeadline: graceEnd, payment: { ...trip([]).payment, shares } });
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    db.$transaction.mockImplementation((run: (tx: typeof db) => unknown) => run(db));
+    db.tripRequest.updateMany.mockResolvedValue({ count: 1 });
+    db.paymentShare.updateMany.mockResolvedValue({ count: 2 });
+    db.paymentShare.create.mockResolvedValue({ id: "remainder-1" });
+    stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) => ({ id, status: "requires_payment_method", created: 1 }));
+    stripeMock.paymentIntents.cancel.mockResolvedValue({});
+  });
+
+  it("folds every unpaid top-up into one remainder for the organizer", async () => {
+    const shares = [organizer, topUp("tu-org", "organizer", "PENDING", "pi_tu_org"), topUp("tu-bo", "bo", "FAILED"), topUp("tu-ana", "ana", "APPROVED")];
+    db.tripRequest.findUnique.mockResolvedValue(graceTrip(shares));
+
+    await expect(closeTopUpGrace("trip-1")).resolves.toEqual({ closed: true, remainderId: "remainder-1" });
+
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_tu_org");
+    expect(db.tripRequest.updateMany).toHaveBeenCalledWith({
+      where: { id: "trip-1", topUpDeadline: graceEnd },
+      data: { topUpDeadline: null },
+    });
+    expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["tu-org", "tu-bo"] }, status: { not: "APPROVED" } },
+      data: { status: "CANCELLED" },
+    });
+    expect(db.paymentShare.create).toHaveBeenCalledWith({
+      data: { paymentId: "payment-1", travelerId: null, userId: "organizer", kind: "ORGANIZER_REMAINDER", amount: 35, currency: "USD" },
+    });
+    expect(mocks.topUpEmail).toHaveBeenCalledWith("remainder-1");
+  });
+
+  it("creates no remainder when every top-up was paid", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(graceTrip([organizer, topUp("tu-bo", "bo", "APPROVED")]));
+    await expect(closeTopUpGrace("trip-1")).resolves.toEqual({ closed: true, remainderId: null });
+    expect(db.paymentShare.create).not.toHaveBeenCalled();
+    expect(mocks.topUpEmail).not.toHaveBeenCalled();
+  });
+
+  it("settles a top-up Stripe already charged instead of folding it", async () => {
+    db.tripRequest.findUnique
+      .mockResolvedValueOnce(graceTrip([organizer, topUp("tu-bo", "bo", "PENDING", "pi_tu_bo")]))
+      .mockResolvedValueOnce(graceTrip([organizer, topUp("tu-bo", "bo", "APPROVED", "pi_tu_bo")]));
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ id: "pi_tu_bo", status: "succeeded", created: 5 });
+    await expect(closeTopUpGrace("trip-1")).resolves.toEqual({ closed: true, remainderId: null });
+    expect(mocks.settle).toHaveBeenCalledWith("pi_tu_bo", "APPROVED", new Date(5000));
+    expect(db.paymentShare.create).not.toHaveBeenCalled();
+  });
+
+  it("does nothing when another run already closed the grace period", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(graceTrip([organizer, topUp("tu-bo", "bo", "PENDING")]));
+    db.tripRequest.updateMany.mockResolvedValue({ count: 0 });
+    await expect(closeTopUpGrace("trip-1")).resolves.toEqual({ closed: false, remainderId: null });
+    expect(db.paymentShare.create).not.toHaveBeenCalled();
+  });
+
+  it("rolls back when a top-up is paid while folding", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(graceTrip([organizer, topUp("tu-org", "organizer", "PENDING"), topUp("tu-bo", "bo", "PENDING")]));
+    db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
+    await expect(closeTopUpGrace("trip-1")).rejects.toThrow("Top-ups changed");
+    expect(mocks.topUpEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe("runRemainderPass", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("closes grace periods that ended and counts failures without stopping", async () => {
+    db.tripRequest.findMany.mockResolvedValue([{ id: "trip-1" }, { id: "trip-2" }]);
+    db.tripRequest.findUnique.mockRejectedValueOnce(new Error("db down")).mockResolvedValue(null);
+    expect(await runRemainderPass(NOW)).toEqual({ closed: 0, remainders: 0, failed: 1 });
+    expect(db.tripRequest.findMany).toHaveBeenCalledWith({
+      where: { paymentMode: "INDIVIDUAL", status: { in: ["CONFIRMED", "REVEALED"] }, topUpDeadline: { lte: NOW } },
+      select: { id: true },
+    });
   });
 });
 

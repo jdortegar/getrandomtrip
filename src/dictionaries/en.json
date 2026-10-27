@@ -6259,6 +6259,7 @@
       "SAVED": "Saved"
     },
     "topUpDue": {
+      "remainderNote": "Pay it so we can reveal the destination.",
       "eyebrow": "Your group changed",
       "title": "A difference is left to pay",
       "message": "Some people didn't pay in time, so shared extras were split again among those traveling.",

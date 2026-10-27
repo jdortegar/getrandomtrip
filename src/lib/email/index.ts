@@ -69,6 +69,7 @@ import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import { buildTravelerInviteUrl, getInviteOrigin } from "@/lib/travelers/travelerInviteUrl";
 import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
 import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
+import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
 } from "@/emails/TripStartVouchers";
@@ -1229,23 +1230,31 @@ export async function deliverTopUpDueEmail(shareId: string, reminder = false): P
     where: { id: shareId },
     include: { user: true, payment: { include: { tripRequest: true } } },
   });
-  if (!share || share.kind !== "TOP_UP" || !share.user?.email) return;
+  if (!share || !share.user?.email) return;
+  // A reminder for a share settled since it was selected would be wrong.
+  if (reminder && !(RETRYABLE_PAYMENT_STATUSES as readonly string[]).includes(share.status)) return;
+  const remainder = share.kind === "ORGANIZER_REMAINDER";
+  if (share.kind !== "TOP_UP" && !remainder) return;
   const trip = share.payment.tripRequest;
-  if (!trip.topUpDeadline) return;
+  // A top-up states its pay-by time; the remainder is due before the reveal.
+  if (!remainder && !trip.topUpDeadline) return;
   const locale = resolveLocale(share.user.locale);
   const amount = `${share.currency} ${share.amount.toFixed(Number.isInteger(share.amount) ? 0 : 2)}`;
   await sendMail({
     to: share.user.email,
-    subject: getTopUpDueSubject(locale, amount, reminder),
+    subject: getTopUpDueSubject(locale, amount, reminder, remainder),
     content: {
       react: React.createElement(TopUpDue, {
         dashboardUrl: `${getInviteOrigin()}/${locale}/dashboard`,
         locale,
         amount,
-        deadline: formatPaymentDeadline(trip.topUpDeadline, locale, trip.departureTimeZone),
+        deadline: trip.topUpDeadline
+          ? formatPaymentDeadline(trip.topUpDeadline, locale, trip.departureTimeZone)
+          : null,
         travelers: trip.pax,
         isOrganizer: share.userId === trip.userId,
         reminder,
+        remainder,
       }),
     },
   });

@@ -34,14 +34,16 @@ export async function POST(request: NextRequest) {
       include: { payment: { include: { tripRequest: true } } },
     });
     // Another payer's top-up is indistinguishable from a missing one.
-    if (!share || share.kind !== "TOP_UP" || share.userId !== session.user.id) {
+    const remainder = share?.kind === "ORGANIZER_REMAINDER";
+    if (!share || (share.kind !== "TOP_UP" && !remainder) || share.userId !== session.user.id) {
       return fail("Top-up not found", 404);
     }
     const trip = share.payment.tripRequest;
     if (!["CONFIRMED", "REVEALED"].includes(trip.status)) {
       return fail("Trip is not taking top-ups", 409, "NOT_OPEN");
     }
-    if (!trip.topUpDeadline || trip.topUpDeadline.getTime() <= Date.now()) {
+    // The organizer's remainder has no deadline: it is due before the reveal.
+    if (!remainder && (!trip.topUpDeadline || trip.topUpDeadline.getTime() <= Date.now())) {
       return fail("The top-up deadline has passed", 409, "GRACE_PASSED");
     }
 
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
       tripId: trip.id,
       travelerId: share.travelerId,
       userId: session.user.id,
-      extra: { topUpDeadline: trip.topUpDeadline.toISOString() },
+      extra: trip.topUpDeadline ? { topUpDeadline: trip.topUpDeadline.toISOString() } : {},
     });
   } catch (error) {
     console.error("Top-up intent failed:", error);

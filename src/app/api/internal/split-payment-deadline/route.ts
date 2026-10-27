@@ -3,9 +3,11 @@ import { NextResponse } from "next/server";
 import {
   runDeadlinePass,
   runReinvitePass,
+  runRemainderPass,
   runTopUpReminderPass,
   type DeadlinePassResult,
   type ReinvitePassResult,
+  type RemainderPassResult,
   type TopUpReminderResult,
 } from "./passes";
 
@@ -60,11 +62,20 @@ export async function POST(request: Request) {
       errors.push(msg);
     }
 
+    let remainder: RemainderPassResult = { closed: 0, remainders: 0, failed: 0 };
+    try {
+      remainder = await runRemainderPass(now);
+    } catch (err) {
+      const msg = `Remainder pass failed: ${err instanceof Error ? err.message : String(err)}`;
+      console.error(`[split-deadline] ${msg}`);
+      errors.push(msg);
+    }
+
     console.log(
-      `[split-deadline] deadline=${JSON.stringify(deadline)} reinvite=${JSON.stringify(reinvite)} topUpReminder=${JSON.stringify(topUpReminder)} errors=${errors.length}`,
+      `[split-deadline] deadline=${JSON.stringify(deadline)} reinvite=${JSON.stringify(reinvite)} topUpReminder=${JSON.stringify(topUpReminder)} remainder=${JSON.stringify(remainder)} errors=${errors.length}`,
     );
 
-    return NextResponse.json({ deadline, reinvite, topUpReminder, errors });
+    return NextResponse.json({ deadline, reinvite, topUpReminder, remainder, errors });
   } catch (err) {
     console.error("[split-deadline] Unhandled error:", err);
     return NextResponse.json(

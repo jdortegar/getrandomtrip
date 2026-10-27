@@ -47,4 +47,12 @@ describe("TopUpDueAlert", () => {
     expect(container.textContent).toContain("Antes del 1 de noviembre de 2026 a las 09:00");
     expect(container.querySelector("button")?.textContent).toBe("Pagar diferencia");
   });
+
+  it("asks the organizer to pay their remainder so the destination can be revealed", () => {
+    const remainder = { ...trip, myTopUp: { shareId: "remainder-1", amount: 35, currency: "USD", deadline: null } } as Trip;
+    act(() => root.render(<TopUpDueAlert copy={en.dashboard.topUpDue} locale="en" onPay={onPay} trips={[remainder]} />));
+    expect(container.textContent).toContain("USD 35");
+    expect(container.textContent).toContain(en.dashboard.topUpDue.remainderNote);
+  });
 });
+

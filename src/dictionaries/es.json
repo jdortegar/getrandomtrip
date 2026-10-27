@@ -6259,6 +6259,7 @@
       "SAVED": "Guardado"
     },
     "topUpDue": {
+      "remainderNote": "Págalo para que podamos revelar el destino.",
       "eyebrow": "Tu grupo cambió",
       "title": "Falta pagar una diferencia",
       "message": "Algunas personas no pagaron a tiempo, así que los extras compartidos se repartieron entre quienes viajan.",

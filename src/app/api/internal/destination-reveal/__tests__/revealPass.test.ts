@@ -41,6 +41,19 @@ it("reveals at 09:00 departure-local two days before departure and requires assi
         // Conservative superset of every zone; the exact reveal instant is filtered in memory.
         startDate: { gt: new Date("2026-10-07T12:00:00Z"), lte: new Date("2026-10-11T12:00:00Z") },
         experienceId: { not: null },
+        // Split trips wait for every top-up and the organizer's remainder.
+        NOT: {
+          payment: {
+            shares: {
+              some: {
+                OR: [
+                  { kind: "TOP_UP", status: { in: ["PENDING", "FAILED", "REJECTED"] } },
+                  { kind: "ORGANIZER_REMAINDER", status: { not: "APPROVED" } },
+                ],
+              },
+            },
+          },
+        },
       },
     }),
   );

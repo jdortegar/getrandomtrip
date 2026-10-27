@@ -39,7 +39,9 @@ export function TopUpDueAlert({ copy, locale, trips, onPay }: TopUpDueAlertProps
           {due.map((trip) => {
             const topUp = trip.myTopUp!;
             const { levelName, travelerTypeTitle } = getTripExperienceDisplay(trip, locale);
-            const deadline = formatPaymentDeadline(new Date(topUp.deadline), lang, null);
+            const due = topUp.deadline
+              ? copy.deadline.replace("{date}", formatPaymentDeadline(new Date(topUp.deadline), lang, null))
+              : copy.remainderNote;
             return (
               <li className="flex flex-wrap items-center justify-between gap-4 px-5 py-4" key={trip.id}>
                 <div className="min-w-0">
@@ -51,7 +53,7 @@ export function TopUpDueAlert({ copy, locale, trips, onPay }: TopUpDueAlertProps
                     <p className="font-barlow-condensed text-lg font-bold leading-none text-ink">
                       {money(topUp.amount, topUp.currency)}
                     </p>
-                    <p className="mt-1 text-xs text-neutral-500">{copy.deadline.replace("{date}", deadline)}</p>
+                    <p className="mt-1 text-xs text-neutral-500">{due}</p>
                   </div>
                   <Button onClick={() => onPay(trip)} size="sm" type="button">
                     <CreditCard aria-hidden className="h-4 w-4" />

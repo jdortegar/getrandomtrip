@@ -295,3 +295,89 @@ export async function runTopUpReminderPass(now: Date): Promise<TopUpReminderResu
   }
   return result;
 }
+
+export interface RemainderPassResult {
+  closed: number;
+  remainders: number;
+  failed: number;
+}
+
+/**
+ * Closes one trip's top-up grace period: open top-up intents are settled or
+ * cancelled, unpaid top-ups are folded into one ORGANIZER_REMAINDER share and
+ * the organizer is emailed. Clearing `topUpDeadline` claims the trip, so only
+ * one run ever folds it. Returns the remainder id, or null when nothing was owed.
+ */
+export async function closeTopUpGrace(tripId: string): Promise<{ closed: boolean; remainderId: string | null }> {
+  const load = () =>
+    prisma.tripRequest.findUnique({
+      where: { id: tripId },
+      include: { payment: { include: { shares: true } } },
+    });
+  const before = await load();
+  if (!before?.payment || !before.topUpDeadline) return { closed: false, remainderId: null };
+  await closeShareIntents(
+    before.payment.shares
+      .filter((s) => s.kind === "TOP_UP" && s.status !== "APPROVED" && s.stripePaymentIntentId)
+      .map((s) => s.stripePaymentIntentId as string),
+  );
+
+  const trip = await load();
+  if (!trip?.payment || !trip.topUpDeadline) return { closed: false, remainderId: null };
+  const payment = trip.payment;
+  const unpaid = payment.shares.filter((s) => s.kind === "TOP_UP" && s.status !== "APPROVED");
+  const remainderCents = unpaid.reduce((sum, s) => sum + Math.round(s.amount * 100), 0);
+
+  const remainderId = await prisma.$transaction(async (tx) => {
+    const claimed = await tx.tripRequest.updateMany({
+      where: { id: trip.id, topUpDeadline: trip.topUpDeadline },
+      data: { topUpDeadline: null },
+    });
+    if (claimed.count !== 1) return undefined;
+    if (unpaid.length === 0) return null;
+    // A top-up paid after our read must not also be charged to the organizer.
+    const folded = await tx.paymentShare.updateMany({
+      where: { id: { in: unpaid.map((s) => s.id) }, status: { not: "APPROVED" } },
+      data: { status: "CANCELLED" },
+    });
+    if (folded.count !== unpaid.length) throw new Error("Top-ups changed while closing the grace period");
+    const remainder = await tx.paymentShare.create({
+      data: {
+        paymentId: payment.id,
+        travelerId: null,
+        userId: trip.userId,
+        kind: "ORGANIZER_REMAINDER",
+        amount: remainderCents / 100,
+        currency: payment.currency,
+      },
+    });
+    return remainder.id;
+  });
+  if (remainderId === undefined) return { closed: false, remainderId: null };
+  if (remainderId) sendTopUpDueEmail(remainderId);
+  return { closed: true, remainderId };
+}
+
+/** Folds unpaid top-ups into the organizer's remainder once a grace period ends. */
+export async function runRemainderPass(now: Date): Promise<RemainderPassResult> {
+  const due = await prisma.tripRequest.findMany({
+    where: {
+      paymentMode: "INDIVIDUAL",
+      status: { in: ["CONFIRMED", "REVEALED"] },
+      topUpDeadline: { lte: now },
+    },
+    select: { id: true },
+  });
+  const result: RemainderPassResult = { closed: 0, remainders: 0, failed: 0 };
+  for (const { id } of due) {
+    try {
+      const outcome = await closeTopUpGrace(id);
+      if (outcome.closed) result.closed++;
+      if (outcome.remainderId) result.remainders++;
+    } catch (error) {
+      result.failed++;
+      console.error("[split-deadline] grace period not closed; retrying next run:", id, error);
+    }
+  }
+  return result;
+}

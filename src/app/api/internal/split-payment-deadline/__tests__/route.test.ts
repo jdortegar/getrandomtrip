@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-const passes = vi.hoisted(() => ({ deadline: vi.fn(), reinvite: vi.fn(), reminder: vi.fn() }));
+const passes = vi.hoisted(() => ({ deadline: vi.fn(), reinvite: vi.fn(), reminder: vi.fn(), remainder: vi.fn() }));
 vi.mock("../passes", () => ({
   runDeadlinePass: passes.deadline,
   runReinvitePass: passes.reinvite,
   runTopUpReminderPass: passes.reminder,
+  runRemainderPass: passes.remainder,
 }));
 const deployment = vi.hoisted(() => ({ production: true }));
 vi.mock("@/lib/deployment", () => ({ isProductionDeployment: () => deployment.production }));
@@ -23,6 +24,7 @@ describe("POST /api/internal/split-payment-deadline", () => {
     passes.deadline.mockResolvedValue({ confirmed: 1, skipped: 0, failed: 0 });
     passes.reinvite.mockResolvedValue({ trips: 2 });
     passes.reminder.mockResolvedValue({ reminded: 1, failed: 0 });
+    passes.remainder.mockResolvedValue({ closed: 1, remainders: 1, failed: 0 });
   });
   afterEach(() => vi.unstubAllEnvs());
 
@@ -46,6 +48,7 @@ describe("POST /api/internal/split-payment-deadline", () => {
       deadline: { confirmed: 0, skipped: 0, failed: 0 },
       reinvite: { trips: 2 },
       topUpReminder: { reminded: 1, failed: 0 },
+      remainder: { closed: 1, remainders: 1, failed: 0 },
       errors: ["Deadline pass failed: db down"],
     });
   });

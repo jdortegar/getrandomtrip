@@ -94,6 +94,20 @@ describe("POST /api/stripe/top-up-intent", () => {
     expect(await res.json()).toEqual({ error: "Internal server error" });
   });
 
+  it("lets the organizer pay their remainder after the grace period, with no deadline", async () => {
+    vi.mocked(getServerSession).mockResolvedValue({ user: { id: "organizer" } });
+    db.paymentShare.findUnique.mockResolvedValue(topUp({
+      share: { kind: "ORGANIZER_REMAINDER", userId: "organizer", travelerId: null, amount: 35 },
+      trip: { topUpDeadline: null },
+    }));
+    const res = await POST(request({ shareId: "topup-ana" }));
+    expect(res.status).toBe(200);
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({
+      amount: 3500,
+      metadata: expect.objectContaining({ kind: "ORGANIZER_REMAINDER" }),
+    }));
+  });
+
   it("reports an already paid top-up", async () => {
     db.paymentShare.findUnique.mockResolvedValue(topUp({ share: { status: "APPROVED" } }));
     expect(await (await POST(request({ shareId: "topup-ana" }))).json()).toMatchObject({ paid: true });

@@ -26,6 +26,20 @@ export async function runPass2(now: Date): Promise<Pass2Result> {
         lte: new Date(now.getTime() + REVEAL_LEAD_MS + ZONE_QUERY_MARGIN_MS),
       },
       experienceId: { not: null },
+      // Individually paid trips reveal only once every top-up is settled or
+      // folded into the organizer's remainder, and that remainder is paid.
+      NOT: {
+        payment: {
+          shares: {
+            some: {
+              OR: [
+                { kind: "TOP_UP", status: { in: ["PENDING", "FAILED", "REJECTED"] } },
+                { kind: "ORGANIZER_REMAINDER", status: { not: "APPROVED" } },
+              ],
+            },
+          },
+        },
+      },
     },
     select: {
       id: true,

@@ -34,6 +34,6 @@ export interface MyTopUp {
   /** Major units of `currency`. */
   amount: number;
   currency: string;
-  /** ISO timestamp of the end of the top-up grace period. */
-  deadline: string;
+  /** ISO end of the top-up grace period; null for the organizer's remainder (due before the reveal). */
+  deadline: string | null;
 }
