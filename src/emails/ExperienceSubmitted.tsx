@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface ExperienceSubmittedProps {
   experienceTitle: string;
   experienceId: string;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   preview: (title: string) =>
@@ -31,7 +30,7 @@ export default function ExperienceSubmitted({
   experienceTitle,
   experienceId,
 }: ExperienceSubmittedProps) {
-  const reviewUrl = `${BASE_URL}/es/dashboard/admin/experiences/${experienceId}`;
+  const reviewUrl = `${getApplicationOrigin()}/es/dashboard/admin/experiences/${experienceId}`;
 
   return (
     <EmailLayout locale="es" preview={copy.preview(experienceTitle)}>

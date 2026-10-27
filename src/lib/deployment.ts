@@ -56,3 +56,12 @@ export function getNonproductionOrigin(): string | null {
 export function showTripperDiscovery(): boolean {
   return process.env.NEXT_PUBLIC_RT_DEPLOY_ENV === "nonproduction";
 }
+
+/** Trusted runtime origin for links carrying environment-specific state. */
+export function getApplicationOrigin(): string {
+  if (isProductionDeployment()) return "https://getrandomtrip.com";
+  const origin = getNonproductionOrigin();
+  if (!origin)
+    throw new Error("A trusted nonproduction public origin is required");
+  return origin;
+}

@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -8,8 +9,6 @@ interface PaymentFailedProps {
   failureReason?: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -45,7 +44,7 @@ export default function PaymentFailed({
   locale,
 }: PaymentFailedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/journey`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/journey`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

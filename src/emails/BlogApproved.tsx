@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -8,8 +9,6 @@ interface BlogApprovedProps {
   blogId: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -44,7 +43,7 @@ export default function BlogApproved({
   locale,
 }: BlogApprovedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/tripper/blog/${encodeURIComponent(blogId)}`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/tripper/blog/${encodeURIComponent(blogId)}`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
