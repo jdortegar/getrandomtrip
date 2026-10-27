@@ -1,4 +1,6 @@
 import { settleShareFromStripe } from "@/lib/db/paymentShare";
+import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
+import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import type { ShareCheckoutView } from "@/types/payments";
@@ -12,6 +14,7 @@ import type { ShareCheckoutView } from "@/types/payments";
 export async function loadShareCheckout(
   travelerId: string,
   userId: string,
+  locale: "es" | "en",
   paymentIntentId?: string,
 ): Promise<ShareCheckoutView | null> {
   const load = () =>
@@ -48,12 +51,16 @@ export async function loadShareCheckout(
     trip.status === "COLLECTING" &&
     !!trip.paymentDeadline &&
     trip.paymentDeadline.getTime() > Date.now();
+  const state = share.status === "APPROVED" ? "paid" : open ? "pay" : "closed";
   return {
     travelerId: traveler.id,
-    state: share.status === "APPROVED" ? "paid" : open ? "pay" : "closed",
+    state,
     amount: share.amount,
     currency: share.currency,
-    paymentDeadline: trip.paymentDeadline?.toISOString() ?? null,
+    paymentDeadlineLabel: trip.paymentDeadline
+      ? formatPaymentDeadline(trip.paymentDeadline, locale, trip.departureTimeZone)
+      : null,
+    maxTopUp: state === "pay" ? await loadInviteeMaxTopUp(trip) : 0,
     organizerFirstName: trip.user.name?.split(" ")[0] ?? "",
     billingEmail: traveler.user?.email ?? traveler.email ?? "",
     billingName: traveler.user?.name ?? traveler.fullName ?? "",

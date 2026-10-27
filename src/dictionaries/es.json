@@ -7214,6 +7214,8 @@
     "errorGeneric": "Ocurrió un error al enviar tu reseña. Por favor intentá de nuevo."
   },
   "shareCheckout": {
+    "disclaimer": "Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron. Los extras compartidos se reparten de nuevo, así que podrías pagar hasta {max} más.",
+    "disclaimerNoCost": "Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron.",
     "title": "Tu parte del viaje",
     "description": "{name} armó este viaje. Paga tu parte para sumarte.",
     "amountLabel": "Tu parte",

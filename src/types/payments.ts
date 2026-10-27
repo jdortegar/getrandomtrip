@@ -19,8 +19,10 @@ export interface ShareCheckoutView {
   /** Major units of `currency` (e.g. 1023.33 = USD 1,023.33). */
   amount: number;
   currency: string;
-  /** ISO timestamp; null when the trip never opened collection. */
-  paymentDeadline: string | null;
+  /** Pay-by time formatted on the server in the trip's time zone; null when collection never opened. */
+  paymentDeadlineLabel: string | null;
+  /** Most the companion may owe on top of their share, in major units of `currency`. */
+  maxTopUp: number;
   organizerFirstName: string;
   billingEmail: string;
   billingName: string;

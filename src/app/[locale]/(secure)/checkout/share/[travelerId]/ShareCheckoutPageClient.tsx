@@ -95,9 +95,8 @@ export function ShareCheckoutPageClient({
   };
 
   const amount = `${view.currency} ${view.amount.toFixed(Number.isInteger(view.amount) ? 0 : 2)}`;
-  const deadline = view.paymentDeadline
-    ? new Date(view.paymentDeadline).toLocaleString(locale, { dateStyle: "long", timeStyle: "short" })
-    : null;
+  const deadline = view.paymentDeadlineLabel;
+  const maxTopUp = `${view.currency} ${view.maxTopUp.toFixed(Number.isInteger(view.maxTopUp) ? 0 : 2)}`;
   const name = view.organizerFirstName;
 
   return (
@@ -122,6 +121,9 @@ export function ShareCheckoutPageClient({
               {deadline ? (
                 <p className="text-sm text-neutral-700">{copy.deadline.replace("{date}", deadline)}</p>
               ) : null}
+              <p className="text-xs leading-relaxed text-neutral-600">
+                {view.maxTopUp > 0 ? copy.disclaimer.replace("{max}", maxTopUp) : copy.disclaimerNoCost}
+              </p>
               {intent.status === "loading" ? (
                 <p aria-busy="true" className="flex items-center gap-2 text-sm" role="status">
                   <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

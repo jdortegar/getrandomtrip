@@ -85,7 +85,7 @@ describe("TravelerInvite body", () => {
 });
 
 describe("TravelerInvite for an individually paid trip", () => {
-  const share = { amount: "USD 1023.33", deadline: "30 de octubre de 2026, 09:00" };
+  const share = { amount: "USD 1023.33", deadline: "30 de octubre de 2026, 09:00", maxTopUp: "USD 11.67" };
 
   it("states the companion's share and the pay-by time in both locales", async () => {
     const es = await render(<TravelerInvite {...props} locale="es" share={share} />);
@@ -95,10 +95,18 @@ describe("TravelerInvite for an individually paid trip", () => {
     const en = await render(<TravelerInvite {...props} locale="en" share={{ ...share, deadline: "October 30, 2026, 9:00 AM" }} />);
     expect(en).toContain("Your share");
     expect(en).toContain("Pay your share before October 30, 2026, 9:00 AM.");
+    expect(en).toContain("so you could pay up to USD 11.67 more.");
+    expect(es).toContain("así que podrías pagar hasta USD 11.67 más.");
   });
 
   it("leaves total-paid invites unchanged", async () => {
     const html = await render(<TravelerInvite {...props} locale="es" />);
     expect(html).not.toContain("Tu parte");
+  });
+
+  it("states that the trip adjusts even when nothing can cost more", async () => {
+    const html = await render(<TravelerInvite {...props} locale="en" share={{ ...share, maxTopUp: null }} />);
+    expect(html).toContain("the trip is adjusted to those who paid.");
+    expect(html).not.toContain("could pay up to");
   });
 });

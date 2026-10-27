@@ -3611,6 +3611,9 @@ export interface ImageEditorDict {
 
 /** Companion share checkout (`/checkout/share/[travelerId]`). `{name}` = organizer first name. */
 export interface ShareCheckoutDict {
+  /** `{max}` = most the companion may owe on top of their share. */
+  disclaimer: string;
+  disclaimerNoCost: string;
   title: string;
   description: string;
   amountLabel: string;

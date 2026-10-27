@@ -8,6 +8,8 @@ const { db, sendMailMock } = vi.hoisted(() => ({
 
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
 vi.mock("@/lib/helpers/sendMail", () => ({ sendMail: sendMailMock }));
+const maxTopUp = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/payments/invitee-top-up.server", () => ({ loadInviteeMaxTopUp: maxTopUp }));
 
 import { deliverTravelerInviteEmail, sendTravelerInviteEmail } from "../index";
 
@@ -44,6 +46,7 @@ describe("deliverTravelerInviteEmail", () => {
       },
     });
 
+    maxTopUp.mockResolvedValue(11.67);
     await deliverTravelerInviteEmail("trav-1", "tok");
 
     expect(db.tripTraveler.findUnique).toHaveBeenCalledWith(expect.objectContaining({
@@ -52,6 +55,7 @@ describe("deliverTravelerInviteEmail", () => {
     const html = renderToStaticMarkup(sendMailMock.mock.calls[0][0].content.react);
     expect(html).toContain("USD 1023.33");
     expect(html).toContain("Paga tu parte antes del 30 de octubre de 2026 a las 09:00. Si no pagas a tiempo");
+    expect(html).toContain("así que podrías pagar hasta USD 11.67 más.");
   });
 
   it("never mentions a share on a trip paid in total", async () => {

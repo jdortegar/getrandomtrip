@@ -5,10 +5,8 @@ import { isTripStartDateEligible, validateTripDates } from "@/lib/helpers/tripCa
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
-import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
 import { getCheckoutLevel, getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
-import { applyPaxMultiplier } from "@/lib/data/traveler-types";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
@@ -23,8 +21,8 @@ import {
   withTripDiscount,
 } from "@/lib/payments/split-shares";
 import { parseCompanionEmails } from "@/lib/payments/companion-emails";
+import { totalsAtPrice } from "@/lib/payments/trip-totals.server";
 import type { PaymentMode } from "@prisma/client";
-import type { AddonSelection, Filters } from "@/store/slices/journeyStore";
 import type { PromoRejectionReason } from "@/types/payments";
 
 const fail = (error: string, status: number, errorCode?: string) =>
@@ -191,31 +189,7 @@ export async function checkoutQuoteResponse(
       overrides,
       travelerType: trip.type,
     });
-    const pricedTrip = trip;
-    const totalsAt: TotalsAtPax = (paxAt) => calculatePaymentTotals({
-      addons: {
-        selected: Array.isArray(trip.addons)
-          ? (trip.addons as unknown as AddonSelection[])
-          : [],
-      },
-      avoidCount: trip.avoidDestinations.length,
-      basePriceUsd: applyPaxMultiplier(resolution.price, pricedTrip.type, paxAt),
-      filters: {
-        accommodationType: pricedTrip.accommodationType,
-        transport: pricedTrip.transport,
-        climate: pricedTrip.climate,
-        maxTravelTime: pricedTrip.maxTravelTime,
-        departPref: pricedTrip.departPref,
-        arrivePref: pricedTrip.arrivePref,
-        avoidDestinations: pricedTrip.avoidDestinations,
-      } as Filters,
-      logistics: {
-        pax: paxAt,
-        nights: pricedTrip.nights,
-        country: pricedTrip.originCountry,
-        city: pricedTrip.originCity,
-      },
-    });
+    const totalsAt: TotalsAtPax = totalsAtPrice(trip, resolution.price);
     const totals = totalsAt(pax);
     if (!Number.isFinite(totals.totalTrip) || totals.totalTrip <= 0) {
       return fail("Could not compute payment amount", 422);

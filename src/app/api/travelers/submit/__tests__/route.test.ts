@@ -250,6 +250,18 @@ describe("POST /api/travelers/submit", () => {
     });
   });
 
+  it("still succeeds when the share lookup fails after the invite was consumed", async () => {
+    mockSessionAndUser();
+    vi.mocked(consumeTravelerInvite).mockResolvedValue({
+      ok: true, travelerId: "trav-1", tripRequestId: "trip-1", kind: "ADULT", buyerFirstName: "Alice",
+    } as never);
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue({ userId: "buyer-1", user: { locale: "es" } } as never);
+    vi.mocked(prisma.paymentShare.findFirst).mockRejectedValue(new Error("db down"));
+    const res = await POST(makeRequest(validBody));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+  });
+
   it("returns plain success when no share is due", async () => {
     mockSessionAndUser();
     vi.mocked(consumeTravelerInvite).mockResolvedValue({

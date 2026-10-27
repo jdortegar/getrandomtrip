@@ -7214,6 +7214,8 @@
     "errorGeneric": "An error occurred while submitting your review. Please try again."
   },
   "shareCheckout": {
+    "disclaimer": "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid. Shared extras are split again, so you could pay up to {max} more.",
+    "disclaimerNoCost": "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid.",
     "title": "Your share of the trip",
     "description": "{name} put this trip together. Pay your share to join.",
     "amountLabel": "Your share",

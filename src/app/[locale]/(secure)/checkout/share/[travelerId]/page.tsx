@@ -21,7 +21,7 @@ export default async function ShareCheckoutPage({ params, searchParams }: Props)
 
   const { payment_intent: rawIntent } = await searchParams;
   const paymentIntentId = typeof rawIntent === "string" ? rawIntent : undefined;
-  const view = await loadShareCheckout(travelerId, session.user.id, paymentIntentId);
+  const view = await loadShareCheckout(travelerId, session.user.id, locale, paymentIntentId);
   if (!view) notFound();
 
   const dict = await getDictionary(locale);

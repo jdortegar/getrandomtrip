@@ -26,7 +26,8 @@ const view: ShareCheckoutView = {
   state: "pay",
   amount: 1023.33,
   currency: "USD",
-  paymentDeadline: "2026-10-30T12:00:00.000Z",
+  paymentDeadlineLabel: "October 30, 2026 at 09:00",
+  maxTopUp: 11.67,
   organizerFirstName: "Lucía",
   billingEmail: "ana@example.com",
   billingName: "Ana Paz",
@@ -69,7 +70,8 @@ describe("ShareCheckoutPageClient", () => {
     }));
     expect(container.textContent).toContain("Lucía put this trip together");
     expect(container.textContent).toContain("USD 1023.33");
-    expect(container.textContent).toContain("You have until");
+    expect(container.textContent).toContain("You have until October 30, 2026 at 09:00 to pay.");
+    expect(container.textContent).toContain("so you could pay up to USD 11.67 more.");
     expect(form.props).toMatchObject({
       billingEmail: "ana@example.com",
       returnPath: "/checkout/share/traveler-ana",
@@ -102,5 +104,12 @@ describe("ShareCheckoutPageClient", () => {
     expect(container.textContent).toContain(es.shareCheckout.closedTitle);
     expect(container.textContent).toContain("habla con Lucía");
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("says the trip adjusts without promising a cost change when nothing can rise", async () => {
+    fetchMock.mockResolvedValue(Response.json({ clientSecret: "secret_share" }));
+    await render({ maxTopUp: 0 });
+    expect(container.textContent).toContain(copy.disclaimerNoCost);
+    expect(container.textContent).not.toContain("could pay up to");
   });
 });

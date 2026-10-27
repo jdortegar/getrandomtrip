@@ -66,6 +66,8 @@ import TravelerReminder, {
 } from "@/emails/TravelerReminder";
 import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
 import { buildTravelerInviteUrl } from "@/lib/travelers/travelerInviteUrl";
+import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
+import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
 } from "@/emails/TripStartVouchers";
@@ -918,22 +920,17 @@ export async function deliverTravelerInviteEmail(
   const inviteUrl = buildTravelerInviteUrl(locale, plaintextToken);
   // Individually paid trips: the companion pays their own share by the deadline.
   const shareRow = traveler.paymentShares?.[0];
-  const share =
-    tripRequest.paymentMode === "INDIVIDUAL" && shareRow && tripRequest.paymentDeadline
-      ? {
-          amount: `${shareRow.currency} ${shareRow.amount.toFixed(Number.isInteger(shareRow.amount) ? 0 : 2)}`,
-          // 24h clock: "a. m." would end the sentence with a doubled period.
-          deadline: new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-AR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hourCycle: "h23",
-            timeZone: tripRequest.departureTimeZone ?? "America/Argentina/Buenos_Aires",
-          }).format(tripRequest.paymentDeadline),
-        }
-      : null;
+  const formatUsd = (amount: number, currency: string) =>
+    `${currency} ${amount.toFixed(Number.isInteger(amount) ? 0 : 2)}`;
+  let share: { amount: string; deadline: string; maxTopUp: string | null } | null = null;
+  if (tripRequest.paymentMode === "INDIVIDUAL" && shareRow && tripRequest.paymentDeadline) {
+    const maxTopUp = await loadInviteeMaxTopUp(tripRequest);
+    share = {
+      amount: formatUsd(shareRow.amount, shareRow.currency),
+      deadline: formatPaymentDeadline(tripRequest.paymentDeadline, locale, tripRequest.departureTimeZone),
+      maxTopUp: maxTopUp > 0 ? formatUsd(maxTopUp, shareRow.currency) : null,
+    };
+  }
 
   await sendMail({
     to: traveler.email,

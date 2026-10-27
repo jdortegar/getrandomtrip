@@ -12,7 +12,8 @@ interface TravelerInviteProps {
   /** Raw trip type key (e.g. `group`, `xsed`). Never the destination. */
   tripType?: string | null;
   /** Individually paid trips: the companion's share and pay-by time, pre-formatted. */
-  share?: { amount: string; deadline: string } | null;
+  /** `maxTopUp` is the most they may owe on top of it if others drop out; null = nothing can rise. */
+  share?: { amount: string; deadline: string; maxTopUp: string | null } | null;
 }
 
 // Copy is gender-neutral by design (no "her"/"su" pronoun) — the buyer's
@@ -35,6 +36,10 @@ const copy = {
     shareLabel: "Tu parte",
     shareDeadline: (deadline: string) =>
       `Paga tu parte antes del ${deadline}. Si no pagas a tiempo, el viaje sigue sin ti.`,
+    shareAdjust: (maxTopUp: string | null) =>
+      maxTopUp
+        ? `Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron. Los extras compartidos se reparten de nuevo, así que podrías pagar hasta ${maxTopUp} más.`
+        : "Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron.",
   },
   en: {
     heading: "You've been added to a randomtrip",
@@ -51,6 +56,10 @@ const copy = {
     shareLabel: "Your share",
     shareDeadline: (deadline: string) =>
       `Pay your share before ${deadline}. If you don't pay in time, the trip goes on without you.`,
+    shareAdjust: (maxTopUp: string | null) =>
+      maxTopUp
+        ? `If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid. Shared extras are split again, so you could pay up to ${maxTopUp} more.`
+        : "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid.",
   },
 };
 
@@ -124,6 +133,7 @@ export default function TravelerInvite({
             <strong>{c.shareLabel}:</strong> {share.amount}
           </Text>
           <Text style={bodyText}>{c.shareDeadline(share.deadline)}</Text>
+          <Text style={bodyText}>{c.shareAdjust(share.maxTopUp)}</Text>
         </>
       )}
       <Text style={bodyText}>{c.account}</Text>
