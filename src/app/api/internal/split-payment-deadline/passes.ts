@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { inviteSplitCompanions } from "@/lib/db/payment";
 import { settleShareFromStripe } from "@/lib/db/paymentShare";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
-import { sendAdminNewBooking, sendBookingConfirmed } from "@/lib/email";
+import { sendAdminNewBooking, sendBookingConfirmed, sendTopUpDueEmail } from "@/lib/email";
 import { getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
 import {
   splitTopUps,
@@ -141,7 +141,7 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
         topUpDeadline: new Date(now.getTime() + TOP_UP_GRACE_MS),
       },
     });
-    if (promoted.count !== 1) return { confirmed: false, saleQueued: false };
+    if (promoted.count !== 1) return { confirmed: false, saleQueued: false, topUpIds: [] as string[] };
     // A late webhook between pricing and this write would change who travels.
     const settledNow = await tx.paymentShare.count({
       where: { paymentId: payment.id, kind: "SHARE", travelerId: { not: null }, status: "APPROVED" },
@@ -159,10 +159,11 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
       });
     }
     await tx.payment.update({ where: { id: payment.id }, data: { amount: billCents / 100 } });
+    const topUpIds: string[] = [];
     for (const topUp of topUps) {
       if (topUp.amountCents <= 0) continue;
       const companion = companions.find((s) => s.travelerId === topUp.travelerId);
-      await tx.paymentShare.create({
+      const created = await tx.paymentShare.create({
         data: {
           paymentId: payment.id,
           travelerId: topUp.travelerId,
@@ -172,6 +173,7 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
           currency: payment.currency,
         },
       });
+      topUpIds.push(created.id);
     }
     if (saleIntentId) {
       await tx.saleNotificationDelivery.create({
@@ -184,13 +186,14 @@ export async function confirmCollectedTrip(tripId: string, now: Date): Promise<b
         },
       });
     }
-    return { confirmed: true, saleQueued: Boolean(saleIntentId) };
+    return { confirmed: true, saleQueued: Boolean(saleIntentId), topUpIds };
   });
   if (!outcome.confirmed) return false;
 
   // External side effects only after commit and only for the winning run.
   sendBookingConfirmed(trip.id, trip.userId);
   sendAdminNewBooking(trip.id, trip.userId);
+  for (const id of outcome.topUpIds) sendTopUpDueEmail(id);
   if (outcome.saleQueued) {
     await runSaleNotificationBatch(payment.id).catch(() => {
       console.error("[split-deadline] immediate sale delivery unavailable; queued for retry");

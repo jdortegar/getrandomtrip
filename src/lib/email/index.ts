@@ -61,11 +61,12 @@ import TripperInvite, {
 import TravelerInvite, {
   getSubject as getTravelerInviteSubject,
 } from "@/emails/TravelerInvite";
+import TopUpDue, { getSubject as getTopUpDueSubject } from "@/emails/TopUpDue";
 import TravelerReminder, {
   getSubject as getTravelerReminderSubject,
 } from "@/emails/TravelerReminder";
 import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
-import { buildTravelerInviteUrl } from "@/lib/travelers/travelerInviteUrl";
+import { buildTravelerInviteUrl, getInviteOrigin } from "@/lib/travelers/travelerInviteUrl";
 import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
 import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
 import TripStartVouchers, {
@@ -1217,4 +1218,41 @@ export async function sendTripStartVouchers(
   });
 
   return { sent: true };
+}
+
+/**
+ * Tells one payer their share of the smaller group went up after the
+ * deadline. Rejects when the provider fails; see `sendTopUpDueEmail`.
+ */
+export async function deliverTopUpDueEmail(shareId: string): Promise<void> {
+  const share = await prisma.paymentShare.findUnique({
+    where: { id: shareId },
+    include: { user: true, payment: { include: { tripRequest: true } } },
+  });
+  if (!share || share.kind !== "TOP_UP" || !share.user?.email) return;
+  const trip = share.payment.tripRequest;
+  if (!trip.topUpDeadline) return;
+  const locale = resolveLocale(share.user.locale);
+  const amount = `${share.currency} ${share.amount.toFixed(Number.isInteger(share.amount) ? 0 : 2)}`;
+  await sendMail({
+    to: share.user.email,
+    subject: getTopUpDueSubject(locale, amount),
+    content: {
+      react: React.createElement(TopUpDue, {
+        dashboardUrl: `${getInviteOrigin()}/${locale}/dashboard`,
+        locale,
+        amount,
+        deadline: formatPaymentDeadline(trip.topUpDeadline, locale, trip.departureTimeZone),
+        travelers: trip.pax,
+        isOrganizer: share.userId === trip.userId,
+      }),
+    },
+  });
+}
+
+/** Fire-and-forget wrapper: failures are logged, never thrown. */
+export function sendTopUpDueEmail(shareId: string): void {
+  void deliverTopUpDueEmail(shareId).catch((err) => {
+    console.error("[email] sendTopUpDueEmail:", err);
+  });
 }

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const { db, sendMailMock } = vi.hoisted(() => ({
-  db: { tripTraveler: { findUnique: vi.fn() } },
+  db: { tripTraveler: { findUnique: vi.fn() }, paymentShare: { findUnique: vi.fn() } },
   sendMailMock: vi.fn(),
 }));
 
@@ -11,7 +11,7 @@ vi.mock("@/lib/helpers/sendMail", () => ({ sendMail: sendMailMock }));
 const maxTopUp = vi.hoisted(() => vi.fn());
 vi.mock("@/lib/payments/invitee-top-up.server", () => ({ loadInviteeMaxTopUp: maxTopUp }));
 
-import { deliverTravelerInviteEmail, sendTravelerInviteEmail } from "../index";
+import { deliverTopUpDueEmail, deliverTravelerInviteEmail, sendTravelerInviteEmail } from "../index";
 
 const traveler = {
   email: "jane@example.com",
@@ -144,5 +144,39 @@ describe("sendTravelerInviteEmail (fire-and-forget)", () => {
     expect(() => sendTravelerInviteEmail("trav-1", "tok")).not.toThrow();
     await vi.waitFor(() => expect(spy).toHaveBeenCalled());
     spy.mockRestore();
+  });
+});
+
+describe("deliverTopUpDueEmail", () => {
+  it("emails the payer their top-up with the trip's pay-by time", async () => {
+    db.paymentShare.findUnique.mockResolvedValue({
+      kind: "TOP_UP",
+      amount: 17.5,
+      currency: "USD",
+      userId: "organizer",
+      user: { email: "lucia@example.com", locale: "en" },
+      payment: {
+        tripRequest: {
+          userId: "organizer",
+          pax: 2,
+          topUpDeadline: new Date("2026-11-01T12:00:00.000Z"),
+          departureTimeZone: "America/Argentina/Buenos_Aires",
+        },
+      },
+    });
+    await deliverTopUpDueEmail("topup-1");
+    const mail = sendMailMock.mock.calls[0][0];
+    expect(mail.to).toBe("lucia@example.com");
+    expect(mail.subject).toBe("Your group changed: USD 17.50 left to pay");
+    const html = renderToStaticMarkup(mail.content.react);
+    expect(html).toContain("before November 1, 2026 at 09:00");
+    expect(html).toContain("/en/dashboard");
+    expect(html).toContain("you cover it.");
+  });
+
+  it("sends nothing for a share that is not a top-up", async () => {
+    db.paymentShare.findUnique.mockResolvedValue({ kind: "SHARE", user: { email: "x@example.com" } });
+    await deliverTopUpDueEmail("share-1");
+    expect(sendMailMock).not.toHaveBeenCalled();
   });
 });

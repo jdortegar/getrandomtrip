@@ -26,6 +26,7 @@ const mocks = vi.hoisted(() => ({
   sale: vi.fn(),
   confirmedEmail: vi.fn(),
   adminEmail: vi.fn(),
+  topUpEmail: vi.fn(),
 }));
 vi.mock("@/lib/db/paymentShare", () => ({ settleShareFromStripe: mocks.settle }));
 vi.mock("@/lib/payments/trip-totals.server", () => ({ loadTripTotalsAt: mocks.totals }));
@@ -34,6 +35,7 @@ vi.mock("@/lib/db/runSaleNotificationBatch", () => ({ runSaleNotificationBatch: 
 vi.mock("@/lib/email", () => ({
   sendBookingConfirmed: mocks.confirmedEmail,
   sendAdminNewBooking: mocks.adminEmail,
+  sendTopUpDueEmail: mocks.topUpEmail,
 }));
 
 import { confirmCollectedTrip, runDeadlinePass, runReinvitePass } from "../passes";
@@ -79,6 +81,7 @@ describe("confirmCollectedTrip", () => {
     db.$transaction.mockImplementation((run: (tx: typeof db) => unknown) => run(db));
     mocks.totals.mockResolvedValue(totalsAt);
     db.tripRequest.updateMany.mockResolvedValue({ count: 1 });
+    db.paymentShare.create.mockImplementation(async () => ({ id: `topup-${db.paymentShare.create.mock.calls.length}` }));
     stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
       id === "pi_org"
         ? { id: "pi_org", status: "succeeded", created: 1, livemode: true }
@@ -122,6 +125,8 @@ describe("confirmCollectedTrip", () => {
     expect(mocks.confirmedEmail).toHaveBeenCalledWith("trip-1", "organizer");
     expect(mocks.adminEmail).toHaveBeenCalledWith("trip-1", "organizer");
     expect(mocks.sale).toHaveBeenCalledWith("payment-1");
+    expect(mocks.topUpEmail).toHaveBeenCalledTimes(2);
+    expect(mocks.topUpEmail).toHaveBeenCalledWith("topup-1");
   });
 
   it("keeps a companion whose payment succeeded just before the deadline", async () => {
@@ -189,6 +194,13 @@ describe("confirmCollectedTrip", () => {
     expect(mocks.confirmedEmail).not.toHaveBeenCalled();
   });
 
+  it("emails no top-up when nobody owes one", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana("APPROVED"), bo()]));
+    db.paymentShare.count.mockResolvedValue(2);
+    await confirmCollectedTrip("trip-1", NOW);
+    expect(mocks.topUpEmail).not.toHaveBeenCalled();
+  });
+
   it("does nothing when another run already confirmed the trip", async () => {
     db.tripRequest.findUnique.mockResolvedValue(trip([organizer, ana("APPROVED"), bo()]));
     db.tripRequest.updateMany.mockResolvedValue({ count: 0 });
@@ -210,6 +222,7 @@ describe("confirmCollectedTrip corrections", () => {
     db.$transaction.mockImplementation((run: (tx: typeof db) => unknown) => run(db));
     mocks.totals.mockResolvedValue(totalsAt);
     db.tripRequest.updateMany.mockResolvedValue({ count: 1 });
+    db.paymentShare.create.mockImplementation(async () => ({ id: `topup-${db.paymentShare.create.mock.calls.length}` }));
     stripeMock.paymentIntents.cancel.mockResolvedValue({});
     mocks.sale.mockResolvedValue({});
     stripeMock.paymentIntents.retrieve.mockImplementation(async (id: string) =>
