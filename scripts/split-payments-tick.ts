@@ -46,13 +46,14 @@ export function parseTickArgs(argv: string[], realNow = new Date()): TickArgs {
   return { tripId, now };
 }
 
-/** Refuses anything but a nonproduction runtime with Stripe test keys. */
+/** Refuses anything but a nonproduction runtime with a Stripe test (secret or restricted) key. */
 export function assertLocalTestEnvironment(env: Record<string, string | undefined>): void {
   if (env.RT_DEPLOY_ENV !== "nonproduction") {
     throw new Error("Refusing to run: set RT_DEPLOY_ENV=nonproduction (this tick is for local testing only).");
   }
-  if (!env.STRIPE_SECRET_KEY?.startsWith("sk_test_")) {
-    throw new Error("Refusing to run: STRIPE_SECRET_KEY must be a Stripe test key (sk_test_...).");
+  const key = env.STRIPE_SECRET_KEY ?? "";
+  if (!key.startsWith("sk_test_") && !key.startsWith("rk_test_")) {
+    throw new Error("Refusing to run: STRIPE_SECRET_KEY must be a Stripe test key (sk_test_... or rk_test_...).");
   }
 }
 

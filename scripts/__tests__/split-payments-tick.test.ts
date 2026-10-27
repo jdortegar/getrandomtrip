@@ -19,6 +19,8 @@ describe("split-payments-tick", () => {
   it("only runs against a nonproduction runtime with Stripe test keys", () => {
     expect(() => assertLocalTestEnvironment({ RT_DEPLOY_ENV: "production", STRIPE_SECRET_KEY: "sk_test_x" })).toThrow("RT_DEPLOY_ENV=nonproduction");
     expect(() => assertLocalTestEnvironment({ RT_DEPLOY_ENV: "nonproduction", STRIPE_SECRET_KEY: "sk_live_x" })).toThrow("test key");
+    expect(() => assertLocalTestEnvironment({ RT_DEPLOY_ENV: "nonproduction", STRIPE_SECRET_KEY: "rk_live_x" })).toThrow("test key");
     expect(() => assertLocalTestEnvironment({ RT_DEPLOY_ENV: "nonproduction", STRIPE_SECRET_KEY: "sk_test_x" })).not.toThrow();
+    expect(() => assertLocalTestEnvironment({ RT_DEPLOY_ENV: "nonproduction", STRIPE_SECRET_KEY: "rk_test_x" })).not.toThrow();
   });
 });
