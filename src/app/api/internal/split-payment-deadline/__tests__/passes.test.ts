@@ -413,7 +413,7 @@ describe("closeTopUpGrace", () => {
       data: { topUpDeadline: null },
     });
     expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: ["tu-org", "tu-bo"] }, status: { not: "APPROVED" } },
+      where: { id: { in: ["tu-org", "tu-bo"] }, status: { in: ["PENDING", "FAILED", "CANCELLED", "REJECTED"] } },
       data: { status: "CANCELLED" },
     });
     expect(db.paymentShare.create).toHaveBeenCalledWith({
@@ -444,6 +444,28 @@ describe("closeTopUpGrace", () => {
     db.tripRequest.updateMany.mockResolvedValue({ count: 0 });
     await expect(closeTopUpGrace("trip-1")).resolves.toEqual({ closed: false, remainderId: null });
     expect(db.paymentShare.create).not.toHaveBeenCalled();
+  });
+
+  it("also cancels a top-up intent created while the grace period was closing", async () => {
+    db.tripRequest.findUnique
+      .mockResolvedValueOnce(graceTrip([organizer, topUp("tu-bo", "bo", "PENDING")]))
+      .mockResolvedValue(graceTrip([organizer, topUp("tu-bo", "bo", "PENDING", "pi_late")]));
+    db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
+    await closeTopUpGrace("trip-1");
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_late");
+  });
+
+  it("never folds a refunded or disputed top-up into the remainder", async () => {
+    db.tripRequest.findUnique.mockResolvedValue(graceTrip([
+      organizer, topUp("tu-bo", "bo", "PENDING"), topUp("tu-cy", "cy", "REFUNDED"), topUp("tu-di", "di", "CHARGEBACK"),
+    ]));
+    db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
+    await closeTopUpGrace("trip-1");
+    expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["tu-bo"] }, status: { in: ["PENDING", "FAILED", "CANCELLED", "REJECTED"] } },
+      data: { status: "CANCELLED" },
+    });
+    expect(db.paymentShare.create).toHaveBeenCalledWith({ data: expect.objectContaining({ amount: 17.5 }) });
   });
 
   it("rolls back when a top-up is paid while folding", async () => {

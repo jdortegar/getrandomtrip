@@ -316,16 +316,21 @@ export async function closeTopUpGrace(tripId: string): Promise<{ closed: boolean
     });
   const before = await load();
   if (!before?.payment || !before.topUpDeadline) return { closed: false, remainderId: null };
-  await closeShareIntents(
-    before.payment.shares
-      .filter((s) => s.kind === "TOP_UP" && s.status !== "APPROVED" && s.stripePaymentIntentId)
-      .map((s) => s.stripePaymentIntentId as string),
-  );
+  const owed = (s: { kind: string; status: string }) =>
+    s.kind === "TOP_UP" && (RETRYABLE_PAYMENT_STATUSES as readonly string[]).includes(s.status);
+  const openTopUpIntents = (shares: typeof before.payment.shares) =>
+    shares.filter((s) => owed(s) && s.stripePaymentIntentId).map((s) => s.stripePaymentIntentId as string);
+  const closed = openTopUpIntents(before.payment.shares);
+  await closeShareIntents(closed);
 
   const trip = await load();
   if (!trip?.payment || !trip.topUpDeadline) return { closed: false, remainderId: null };
+  // An intent claimed while the first pass ran is closed too; if it settled,
+  // the in-transaction fold count sends this trip to the next run.
+  await closeShareIntents(openTopUpIntents(trip.payment.shares).filter((id) => !closed.includes(id)));
   const payment = trip.payment;
-  const unpaid = payment.shares.filter((s) => s.kind === "TOP_UP" && s.status !== "APPROVED");
+  // Only top-ups still owed are folded; refunded or disputed ones never are.
+  const unpaid = payment.shares.filter(owed);
   const remainderCents = unpaid.reduce((sum, s) => sum + Math.round(s.amount * 100), 0);
 
   const remainderId = await prisma.$transaction(async (tx) => {
@@ -337,7 +342,7 @@ export async function closeTopUpGrace(tripId: string): Promise<{ closed: boolean
     if (unpaid.length === 0) return null;
     // A top-up paid after our read must not also be charged to the organizer.
     const folded = await tx.paymentShare.updateMany({
-      where: { id: { in: unpaid.map((s) => s.id) }, status: { not: "APPROVED" } },
+      where: { id: { in: unpaid.map((s) => s.id) }, status: { in: [...RETRYABLE_PAYMENT_STATUSES] } },
       data: { status: "CANCELLED" },
     });
     if (folded.count !== unpaid.length) throw new Error("Top-ups changed while closing the grace period");
