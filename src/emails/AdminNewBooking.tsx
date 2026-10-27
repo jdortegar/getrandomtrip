@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -16,8 +17,6 @@ interface AdminNewBookingProps {
   currency: string;
 }
 
-const BASE_URL = "https://getrandomtrip.com";
-
 export const subject = "Nueva reserva confirmada";
 
 export default function AdminNewBooking({
@@ -33,7 +32,7 @@ export default function AdminNewBooking({
   amount,
   currency,
 }: AdminNewBookingProps) {
-  const ctaHref = `${BASE_URL}/es/dashboard/admin/trip-requests/${encodeURIComponent(tripRequestId)}`;
+  const ctaHref = `${getApplicationOrigin()}/es/dashboard/admin/trip-requests/${encodeURIComponent(tripRequestId)}`;
 
   return (
     <EmailLayout

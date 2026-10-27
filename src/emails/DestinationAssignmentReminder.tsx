@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import {
@@ -52,7 +53,7 @@ export default function DestinationAssignmentReminder({
         {urgency}
       </Text>
       <Button
-        href={`https://getrandomtrip.com/${locale}/dashboard/admin/trip-requests/${encodeURIComponent(tripId)}`}
+        href={`${getApplicationOrigin()}/${locale}/dashboard/admin/trip-requests/${encodeURIComponent(tripId)}`}
         style={ctaButton}
       >
         {copy.cta}

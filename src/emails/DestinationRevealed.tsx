@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import {
   Button,
   Column,
@@ -19,8 +20,6 @@ interface DestinationRevealedProps {
   locale: "es" | "en";
   tripId: string;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -60,7 +59,7 @@ export default function DestinationRevealed({
   tripId,
 }: DestinationRevealedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/trips/${tripId}/reveal`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/reveal`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

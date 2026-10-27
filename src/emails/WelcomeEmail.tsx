@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -6,8 +7,6 @@ interface WelcomeEmailProps {
   name: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -37,7 +36,7 @@ export const subjects = {
 
 export default function WelcomeEmail({ name, locale }: WelcomeEmailProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/journey`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/journey`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

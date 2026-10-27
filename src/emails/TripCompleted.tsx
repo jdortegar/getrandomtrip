@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface TripCompletedProps {
   locale: "es" | "en";
   reviewToken: string;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -42,7 +41,7 @@ export default function TripCompleted({
   reviewToken,
 }: TripCompletedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/review/${reviewToken}`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/review/${reviewToken}`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

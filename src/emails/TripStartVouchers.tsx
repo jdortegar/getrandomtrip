@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import {
   Body,
   Button,
@@ -282,8 +283,8 @@ export default function TripStartVouchers({
 }: TripStartVouchersProps) {
   const c = copy[locale];
   const firstName = firstNameOf(client);
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/trips/${tripId}/reveal`;
-  const settingsHref = `${BASE_URL}/${locale}/dashboard/traveler/settings`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/reveal`;
+  const settingsHref = `${getApplicationOrigin()}/${locale}/dashboard/traveler/settings`;
   const year = new Date().getFullYear();
 
   const showSnapshot = Boolean(startDate && endDate);

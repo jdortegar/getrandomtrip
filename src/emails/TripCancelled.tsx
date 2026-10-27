@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface TripCancelledProps {
   tripRequestId: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -38,7 +37,7 @@ export const subjects = {
 
 export default function TripCancelled({ client, locale }: TripCancelledProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/contact`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/contact`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

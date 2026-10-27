@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -9,8 +10,6 @@ interface ExperienceRejectedProps {
   reviewNote: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -49,7 +48,7 @@ export default function ExperienceRejected({
   locale,
 }: ExperienceRejectedProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/dashboard/tripper/experiences/${encodeURIComponent(experienceId)}`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/tripper/experiences/${encodeURIComponent(experienceId)}`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

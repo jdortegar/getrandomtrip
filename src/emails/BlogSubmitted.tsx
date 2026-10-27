@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface BlogSubmittedProps {
   blogTitle: string;
   blogId: string;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   preview: (title: string) =>
@@ -31,7 +30,7 @@ export default function BlogSubmitted({
   blogTitle,
   blogId,
 }: BlogSubmittedProps) {
-  const reviewUrl = `${BASE_URL}/es/dashboard/admin/blog/${blogId}`;
+  const reviewUrl = `${getApplicationOrigin()}/es/dashboard/admin/blog/${blogId}`;
 
   return (
     <EmailLayout locale="es" preview={copy.preview(blogTitle)}>

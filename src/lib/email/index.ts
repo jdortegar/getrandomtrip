@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import type { AccessInviteKind } from "@prisma/client";
 import AdminNewBooking, {
   subject as adminNewBookingSubject,
@@ -453,7 +454,7 @@ export function sendExperiencePendingTripperReview(
       if (!experience?.title || !tripper?.email) return;
 
       const locale = resolveLocale(tripper.locale);
-      const BASE_URL = "https://getrandomtrip.com";
+      const BASE_URL = getApplicationOrigin();
       const reviewUrl = `${BASE_URL}/${locale}/dashboard/tripper/experiences/${experienceId}/review-copy`;
 
       await sendMail({
@@ -619,7 +620,7 @@ export function sendBlogPendingTripperReview(
       if (!blogTitle || !tripper?.email) return;
 
       const locale = resolveLocale(tripper.locale);
-      const BASE_URL = "https://getrandomtrip.com";
+      const BASE_URL = getApplicationOrigin();
       const reviewUrl = `${BASE_URL}/${locale}/dashboard/tripper/blog/${blogId}/review-copy`;
 
       await sendMail({
@@ -743,7 +744,7 @@ export function sendReviewApprovedForTripper(
       if (!tripper?.email || !review) return;
 
       const locale = resolveLocale(tripper.locale);
-      const BASE_URL = "https://getrandomtrip.com";
+      const BASE_URL = getApplicationOrigin();
       const dashboardUrl = `${BASE_URL}/${locale}/dashboard/tripper/reviews`;
       const excerpt =
         review.content.length > 200
@@ -791,7 +792,7 @@ export async function deliverVerificationEmail(
   if (!user?.email) return;
 
   const locale = resolveLocale(user.locale);
-  const BASE_URL = "https://getrandomtrip.com";
+  const BASE_URL = getApplicationOrigin();
   const next = safeInviteReturnPath(returnPath);
   const verifyUrl = `${BASE_URL}/${locale}/verify-email?token=${token}${
     next ? `&next=${encodeURIComponent(next)}` : ""
@@ -835,7 +836,7 @@ export function sendPasswordResetEmail(userId: string, token: string): void {
       if (!user?.email) return;
 
       const locale = resolveLocale(user.locale);
-      const BASE_URL = "https://getrandomtrip.com";
+      const BASE_URL = getApplicationOrigin();
       const resetUrl = `${BASE_URL}/${locale}/reset-password?token=${token}`;
 
       await sendMail({
@@ -870,7 +871,7 @@ export function sendAccessInviteEmail(
 ): void {
   void (async () => {
     try {
-      const BASE_URL = "https://getrandomtrip.com";
+      const BASE_URL = getApplicationOrigin();
       const inviteUrl = `${BASE_URL}/${locale}/tripper-invite?token=${token}`;
 
       await sendMail({
