@@ -1,4 +1,10 @@
-import { Children, isValidElement, type ReactElement } from "react";
+import {
+  Children,
+  isValidElement,
+  type ComponentProps,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { beforeEach, expect, it, vi } from "vitest";
 import DesignSystemPage, {
   generateMetadata as brandMetadata,
@@ -24,14 +30,14 @@ vi.mock("next/navigation", () => ({
 
 beforeEach(() => dictionary.mockReset());
 
-function galleryFrom(result: ReactElement) {
+function galleryFrom(result: ReactElement<{ children?: ReactNode }>) {
   const kids = Children.toArray(result.props.children);
   const gallery = kids.find(
     (kid) => isValidElement(kid) && kid.type === DesignSystemGallery,
-  ) as ReactElement;
+  ) as ReactElement<ComponentProps<typeof DesignSystemGallery>>;
   const llms = kids.find(
     (kid) => isValidElement(kid) && kid.type === GalleryLlmsDocument,
-  ) as ReactElement;
+  ) as ReactElement<ComponentProps<typeof GalleryLlmsDocument>>;
   return { gallery, llms };
 }
 
@@ -40,9 +46,9 @@ it.each([
   ["es", es],
 ] as const)("loads the brand gallery for %s", async (locale, copy) => {
   dictionary.mockResolvedValue(copy);
-  const result = (await DesignSystemPage({
+  const result = await DesignSystemPage({
     params: Promise.resolve({ locale }),
-  })) as ReactElement;
+  });
   const { gallery, llms } = galleryFrom(result);
   const typedLocale = locale as Locale;
   expect(dictionary).toHaveBeenCalledExactlyOnceWith(locale);
@@ -71,9 +77,9 @@ it.each([
   ["es", es],
 ] as const)("loads the component gallery for %s", async (locale, copy) => {
   dictionary.mockResolvedValue(copy);
-  const result = (await DesignSystemComponentsPage({
+  const result = await DesignSystemComponentsPage({
     params: Promise.resolve({ locale }),
-  })) as ReactElement;
+  });
   const { gallery } = galleryFrom(result);
   const typedLocale = locale as Locale;
   expect(gallery.props).toEqual({
