@@ -596,6 +596,7 @@ model PaymentShare {
   stripePaymentIntentId String?       @unique
   failureReason         String?
   paidAt                DateTime?
+  reminderSentAt        DateTime? // TOP_UP reminder before the grace period ends: provider accepted
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

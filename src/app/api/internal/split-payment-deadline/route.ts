@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import {
   runDeadlinePass,
   runReinvitePass,
+  runTopUpReminderPass,
   type DeadlinePassResult,
   type ReinvitePassResult,
+  type TopUpReminderResult,
 } from "./passes";
 
 // ─── Auth guard ───────────────────────────────────────────────────────────────
@@ -18,7 +20,7 @@ function isAuthorized(request: Request): boolean {
 
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
-/** Hourly: confirms INDIVIDUAL trips past their deadline and re-sends missed invites. */
+/** Hourly: confirms INDIVIDUAL trips past their deadline, re-sends missed invites, and reminds top-up payers. */
 export async function POST(request: Request) {
   if (!isProductionDeployment()) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -49,11 +51,20 @@ export async function POST(request: Request) {
       errors.push(msg);
     }
 
+    let topUpReminder: TopUpReminderResult = { reminded: 0, failed: 0 };
+    try {
+      topUpReminder = await runTopUpReminderPass(now);
+    } catch (err) {
+      const msg = `Top-up reminder pass failed: ${err instanceof Error ? err.message : String(err)}`;
+      console.error(`[split-deadline] ${msg}`);
+      errors.push(msg);
+    }
+
     console.log(
-      `[split-deadline] deadline=${JSON.stringify(deadline)} reinvite=${JSON.stringify(reinvite)} errors=${errors.length}`,
+      `[split-deadline] deadline=${JSON.stringify(deadline)} reinvite=${JSON.stringify(reinvite)} topUpReminder=${JSON.stringify(topUpReminder)} errors=${errors.length}`,
     );
 
-    return NextResponse.json({ deadline, reinvite, errors });
+    return NextResponse.json({ deadline, reinvite, topUpReminder, errors });
   } catch (err) {
     console.error("[split-deadline] Unhandled error:", err);
     return NextResponse.json(

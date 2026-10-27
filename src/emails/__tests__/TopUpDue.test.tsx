@@ -31,3 +31,14 @@ describe("TopUpDue", () => {
     expect(html).toContain("you cover it.");
   });
 });
+
+describe("TopUpDue reminder", () => {
+  it("marks the last reminder in the subject and heading", async () => {
+    expect(getSubject("es", "USD 17.50", true)).toBe("Último aviso: falta pagar USD 17.50");
+    expect(getSubject("en", "USD 17.50", true)).toBe("Last reminder: USD 17.50 left to pay");
+    const html = await render(<TopUpDue {...props} locale="es" reminder />);
+    expect(html).toContain("Último aviso: falta pagar la diferencia");
+    expect(html).toContain("Paga la diferencia antes del");
+  });
+});
+

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const db = vi.hoisted(() => {
   const client = {
     tripRequest: { findUnique: vi.fn(), findMany: vi.fn(), updateMany: vi.fn() },
-    paymentShare: { count: vi.fn(), updateMany: vi.fn(), create: vi.fn() },
+    paymentShare: { count: vi.fn(), updateMany: vi.fn(), create: vi.fn(), findMany: vi.fn() },
     tripTraveler: { deleteMany: vi.fn() },
     payment: { update: vi.fn() },
     saleNotificationDelivery: { create: vi.fn() },
@@ -27,6 +27,7 @@ const mocks = vi.hoisted(() => ({
   confirmedEmail: vi.fn(),
   adminEmail: vi.fn(),
   topUpEmail: vi.fn(),
+  topUpDeliver: vi.fn(),
 }));
 vi.mock("@/lib/db/paymentShare", () => ({ settleShareFromStripe: mocks.settle }));
 vi.mock("@/lib/payments/trip-totals.server", () => ({ loadTripTotalsAt: mocks.totals }));
@@ -36,9 +37,10 @@ vi.mock("@/lib/email", () => ({
   sendBookingConfirmed: mocks.confirmedEmail,
   sendAdminNewBooking: mocks.adminEmail,
   sendTopUpDueEmail: mocks.topUpEmail,
+  deliverTopUpDueEmail: mocks.topUpDeliver,
 }));
 
-import { confirmCollectedTrip, runDeadlinePass, runReinvitePass } from "../passes";
+import { confirmCollectedTrip, runDeadlinePass, runReinvitePass, runTopUpReminderPass } from "../passes";
 
 const NOW = new Date("2026-10-30T12:00:00.000Z");
 const HOUR = 60 * 60 * 1000;
@@ -331,3 +333,46 @@ describe("runReinvitePass", () => {
     });
   });
 });
+
+describe("runTopUpReminderPass", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  it("reminds each unpaid top-up once in the last day of its grace period", async () => {
+    db.paymentShare.findMany.mockResolvedValue([{ id: "topup-1" }, { id: "topup-2" }]);
+    db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
+    mocks.topUpDeliver.mockResolvedValue(undefined);
+
+    expect(await runTopUpReminderPass(NOW)).toEqual({ reminded: 2, failed: 0 });
+
+    expect(db.paymentShare.findMany).toHaveBeenCalledWith({
+      where: {
+        kind: "TOP_UP",
+        reminderSentAt: null,
+        status: { in: ["PENDING", "FAILED", "CANCELLED", "REJECTED"] },
+        payment: {
+          tripRequest: {
+            status: { in: ["CONFIRMED", "REVEALED"] },
+            topUpDeadline: { gt: NOW, lte: new Date(NOW.getTime() + 24 * HOUR) },
+          },
+        },
+      },
+      select: { id: true },
+    });
+    expect(mocks.topUpDeliver).toHaveBeenCalledWith("topup-1", true);
+    expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
+      where: { id: "topup-1", reminderSentAt: null },
+      data: { reminderSentAt: NOW },
+    });
+  });
+
+  it("leaves a failed send unstamped so the next run retries it", async () => {
+    db.paymentShare.findMany.mockResolvedValue([{ id: "topup-1" }, { id: "topup-2" }]);
+    db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
+    mocks.topUpDeliver.mockRejectedValueOnce(new Error("provider down")).mockResolvedValue(undefined);
+
+    expect(await runTopUpReminderPass(NOW)).toEqual({ reminded: 1, failed: 1 });
+    expect(db.paymentShare.updateMany).toHaveBeenCalledTimes(1);
+    expect(db.paymentShare.updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: { id: "topup-2", reminderSentAt: null } }));
+  });
+});
+

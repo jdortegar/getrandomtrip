@@ -13,11 +13,14 @@ interface TopUpDueProps {
   travelers: number;
   /** The organizer covers anyone's unpaid difference. */
   isOrganizer: boolean;
+  /** Last reminder before the grace period ends. */
+  reminder?: boolean;
 }
 
 const copy = {
   es: {
     heading: "Tu grupo cambió",
+    reminderHeading: "Último aviso: falta pagar la diferencia",
     body: (travelers: number) =>
       `Al cerrar el plazo viajan ${travelers} ${travelers === 1 ? "persona" : "personas"}, así que los extras compartidos se repartieron de nuevo.`,
     amountLabel: "Falta pagar",
@@ -27,6 +30,7 @@ const copy = {
   },
   en: {
     heading: "Your group changed",
+    reminderHeading: "Last reminder: a difference is left to pay",
     body: (travelers: number) =>
       `When the deadline closed, ${travelers} ${travelers === 1 ? "person is" : "people are"} traveling, so shared extras were split again.`,
     amountLabel: "Left to pay",
@@ -36,7 +40,12 @@ const copy = {
   },
 };
 
-export function getSubject(locale: "es" | "en", amount: string): string {
+export function getSubject(locale: "es" | "en", amount: string, reminder = false): string {
+  if (reminder) {
+    return locale === "en"
+      ? `Last reminder: ${amount} left to pay`
+      : `Último aviso: falta pagar ${amount}`;
+  }
   return locale === "en"
     ? `Your group changed: ${amount} left to pay`
     : `Tu grupo cambió: falta pagar ${amount}`;
@@ -49,11 +58,12 @@ export default function TopUpDue({
   deadline,
   travelers,
   isOrganizer,
+  reminder = false,
 }: TopUpDueProps) {
   const c = copy[locale];
   return (
     <EmailLayout locale={locale} preview={c.body(travelers)}>
-      <Heading style={heading}>{c.heading}</Heading>
+      <Heading style={heading}>{reminder ? c.reminderHeading : c.heading}</Heading>
       <Text style={bodyText}>{c.body(travelers)}</Text>
       <Text style={detailText}>
         <strong>{c.amountLabel}:</strong> {amount}

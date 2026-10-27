@@ -2,7 +2,13 @@ import Stripe from "stripe";
 import { inviteSplitCompanions } from "@/lib/db/payment";
 import { settleShareFromStripe } from "@/lib/db/paymentShare";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
-import { sendAdminNewBooking, sendBookingConfirmed, sendTopUpDueEmail } from "@/lib/email";
+import {
+  deliverTopUpDueEmail,
+  sendAdminNewBooking,
+  sendBookingConfirmed,
+  sendTopUpDueEmail,
+} from "@/lib/email";
+import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import { getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
 import {
   splitTopUps,
@@ -23,6 +29,14 @@ export interface DeadlinePassResult {
 export interface ReinvitePassResult {
   trips: number;
 }
+
+export interface TopUpReminderResult {
+  reminded: number;
+  failed: number;
+}
+
+/** Reminders go out in the last day of the top-up grace period. */
+export const TOP_UP_REMINDER_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 const changedDuringClose = new Error("Shares changed while closing collection");
 
@@ -243,4 +257,41 @@ export async function runReinvitePass(now: Date): Promise<ReinvitePassResult> {
     }
   }
   return { trips: trips.length };
+}
+
+/**
+ * One reminder per unpaid top-up in the last day of its grace period. The
+ * stamp is written only after the provider accepted the email, so a failed
+ * send is retried next run.
+ */
+export async function runTopUpReminderPass(now: Date): Promise<TopUpReminderResult> {
+  const due = await prisma.paymentShare.findMany({
+    where: {
+      kind: "TOP_UP",
+      reminderSentAt: null,
+      status: { in: [...RETRYABLE_PAYMENT_STATUSES] },
+      payment: {
+        tripRequest: {
+          status: { in: ["CONFIRMED", "REVEALED"] },
+          topUpDeadline: { gt: now, lte: new Date(now.getTime() + TOP_UP_REMINDER_WINDOW_MS) },
+        },
+      },
+    },
+    select: { id: true },
+  });
+  const result: TopUpReminderResult = { reminded: 0, failed: 0 };
+  for (const { id } of due) {
+    try {
+      await deliverTopUpDueEmail(id, true);
+      await prisma.paymentShare.updateMany({
+        where: { id, reminderSentAt: null },
+        data: { reminderSentAt: now },
+      });
+      result.reminded++;
+    } catch (error) {
+      result.failed++;
+      console.error("[split-deadline] top-up reminder not sent; retrying next run:", id, error);
+    }
+  }
+  return result;
 }

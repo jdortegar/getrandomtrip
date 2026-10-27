@@ -1224,7 +1224,7 @@ export async function sendTripStartVouchers(
  * Tells one payer their share of the smaller group went up after the
  * deadline. Rejects when the provider fails; see `sendTopUpDueEmail`.
  */
-export async function deliverTopUpDueEmail(shareId: string): Promise<void> {
+export async function deliverTopUpDueEmail(shareId: string, reminder = false): Promise<void> {
   const share = await prisma.paymentShare.findUnique({
     where: { id: shareId },
     include: { user: true, payment: { include: { tripRequest: true } } },
@@ -1236,7 +1236,7 @@ export async function deliverTopUpDueEmail(shareId: string): Promise<void> {
   const amount = `${share.currency} ${share.amount.toFixed(Number.isInteger(share.amount) ? 0 : 2)}`;
   await sendMail({
     to: share.user.email,
-    subject: getTopUpDueSubject(locale, amount),
+    subject: getTopUpDueSubject(locale, amount, reminder),
     content: {
       react: React.createElement(TopUpDue, {
         dashboardUrl: `${getInviteOrigin()}/${locale}/dashboard`,
@@ -1245,6 +1245,7 @@ export async function deliverTopUpDueEmail(shareId: string): Promise<void> {
         deadline: formatPaymentDeadline(trip.topUpDeadline, locale, trip.departureTimeZone),
         travelers: trip.pax,
         isOrganizer: share.userId === trip.userId,
+        reminder,
       }),
     },
   });
