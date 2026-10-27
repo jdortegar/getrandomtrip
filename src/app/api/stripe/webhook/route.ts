@@ -6,6 +6,7 @@ import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { promoAttributionFromMetadata, updatePaymentFromStripeWebhook } from "@/lib/db/payment";
 import type { UpdatePaymentData } from "@/lib/db/payment";
+import { settleShareFromStripe } from "@/lib/db/paymentShare";
 
 // Only maps statuses produced by the three events we handle.
 // payment_intent.processing is intentionally omitted — we don't subscribe to that event.
@@ -59,6 +60,16 @@ export async function POST(request: NextRequest) {
       case "payment_intent.canceled": {
         const intent = event.data.object as Stripe.PaymentIntent;
         const newStatus = STRIPE_STATUS_MAP[intent.status] ?? "PENDING";
+        // Companion share intents settle their own share, never the trip Payment.
+        if (intent.metadata?.kind === "SHARE") {
+          const settled = await settleShareFromStripe(
+            intent.id,
+            newStatus ?? "PENDING",
+            intent.status === "succeeded" ? new Date(intent.created * 1000) : undefined,
+          );
+          if (!settled) console.error("Stripe webhook: no matching share", { eventType: event.type, intentId: intent.id });
+          break;
+        }
         // Checkout writes "" when no promo applies; only a settled intent is attributed.
         const succeeded = intent.status === "succeeded";
         const updateData: UpdatePaymentData = {
