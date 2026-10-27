@@ -264,7 +264,10 @@ export async function runReinvitePass(now: Date): Promise<ReinvitePassResult> {
  * stamp is written only after the provider accepted the email, so a failed
  * send is retried next run.
  */
-export async function runTopUpReminderPass(now: Date): Promise<TopUpReminderResult> {
+export async function runTopUpReminderPass(
+  now: Date,
+  options: { tripId?: string } = {},
+): Promise<TopUpReminderResult> {
   const due = await prisma.paymentShare.findMany({
     where: {
       kind: "TOP_UP",
@@ -272,6 +275,7 @@ export async function runTopUpReminderPass(now: Date): Promise<TopUpReminderResu
       status: { in: [...RETRYABLE_PAYMENT_STATUSES] },
       payment: {
         tripRequest: {
+          ...(options.tripId ? { id: options.tripId } : {}),
           status: { in: ["CONFIRMED", "REVEALED"] },
           topUpDeadline: { gt: now, lte: new Date(now.getTime() + TOP_UP_REMINDER_WINDOW_MS) },
         },

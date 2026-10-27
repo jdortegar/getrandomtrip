@@ -74,3 +74,18 @@ reminder, organizer remainder. Every pass is idempotent and safe to re-run.
 - **Nonproduction:** the job does not run, so `INDIVIDUAL` trips stay
   `COLLECTING` there; call the internal route against a production-like
   environment to exercise it.
+
+## Testing locally
+
+The job route only runs in production. Locally (with `RT_DEPLOY_ENV=nonproduction`
+and Stripe test keys) use the tick script, one trip at a time — the local `.env`
+points at the shared develop database:
+
+```
+npm run split:tick                                          # list INDIVIDUAL trips (dry run)
+npm run split:tick -- --trip <id> --now 2026-11-02T12:00:00Z  # run the steps due at that time
+```
+
+Run it once past the trip's `paymentDeadline`, then again past the printed
+`topUpDeadline`. Forward Stripe webhooks with
+`stripe listen --forward-to localhost:<port>/api/stripe/webhook`.

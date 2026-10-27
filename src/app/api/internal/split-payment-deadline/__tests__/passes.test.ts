@@ -372,6 +372,16 @@ describe("runTopUpReminderPass", () => {
     });
   });
 
+  it("can be limited to one trip", async () => {
+    db.paymentShare.findMany.mockResolvedValue([]);
+    await runTopUpReminderPass(NOW, { tripId: "trip-9" });
+    expect(db.paymentShare.findMany).toHaveBeenCalledWith(expect.objectContaining({
+      where: expect.objectContaining({
+        payment: { tripRequest: expect.objectContaining({ id: "trip-9" }) },
+      }),
+    }));
+  });
+
   it("leaves a failed send unstamped so the next run retries it", async () => {
     db.paymentShare.findMany.mockResolvedValue([{ id: "topup-1" }, { id: "topup-2" }]);
     db.paymentShare.updateMany.mockResolvedValue({ count: 1 });
