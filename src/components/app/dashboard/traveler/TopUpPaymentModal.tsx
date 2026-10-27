@@ -3,7 +3,7 @@
 import { Elements } from "@stripe/react-stripe-js";
 import type { StripeElementLocale } from "@stripe/stripe-js";
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 import { Button } from "@/components/ui/Button";
@@ -40,14 +40,16 @@ export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, o
     setView({ status: "loading" });
   }
 
-  const apply = useCallback(
-    (result: IntentResult) => {
-      if (result.kind === "ready") setView({ status: "ready", clientSecret: result.clientSecret });
-      else setView({ status: result.kind });
-      if (result.kind === "paid") onPaid();
-    },
-    [onPaid],
-  );
+  // Read through a ref: a parent that re-renders on onPaid must not restart the request.
+  const onPaidRef = useRef(onPaid);
+  useEffect(() => {
+    onPaidRef.current = onPaid;
+  }, [onPaid]);
+  const apply = useCallback((result: IntentResult) => {
+    if (result.kind === "ready") setView({ status: "ready", clientSecret: result.clientSecret });
+    else setView({ status: result.kind });
+    if (result.kind === "paid") onPaidRef.current();
+  }, []);
 
   useEffect(() => {
     if (!shareId) return;

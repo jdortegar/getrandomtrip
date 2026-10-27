@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
     }
     const share = traveler.paymentShares[0];
     if (!share) return fail("Share not found", 404);
-    return respondWithShareIntent(share, {
+    // Awaited so a failure inside the helper reaches this route's catch.
+    return await respondWithShareIntent(share, {
       tripId: trip.id,
       travelerId: traveler.id,
       userId: session.user.id,

@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
       return fail("The top-up deadline has passed", 409, "GRACE_PASSED");
     }
 
-    return respondWithShareIntent(share, {
+    // Awaited so a failure inside the helper reaches this route's catch.
+    return await respondWithShareIntent(share, {
       tripId: trip.id,
       travelerId: share.travelerId,
       userId: session.user.id,

@@ -86,6 +86,14 @@ describe("POST /api/stripe/top-up-intent", () => {
     expect(await res.json()).toMatchObject({ errorCode });
   });
 
+  it("returns the JSON 500 when Stripe fails to create the intent", async () => {
+    db.paymentShare.findUnique.mockResolvedValue(topUp());
+    stripeMock.paymentIntents.create.mockRejectedValue(new Error("stripe down"));
+    const res = await POST(request({ shareId: "topup-ana" }));
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Internal server error" });
+  });
+
   it("reports an already paid top-up", async () => {
     db.paymentShare.findUnique.mockResolvedValue(topUp({ share: { status: "APPROVED" } }));
     expect(await (await POST(request({ shareId: "topup-ana" }))).json()).toMatchObject({ paid: true });

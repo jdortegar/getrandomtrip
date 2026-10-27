@@ -141,6 +141,14 @@ describe("POST /api/stripe/share-intent", () => {
     expect(stripeMock.paymentIntents.create).toHaveBeenCalledOnce();
   });
 
+  it("returns the JSON 500 when Stripe fails to create the intent", async () => {
+    db.tripTraveler.findUnique.mockResolvedValue(traveler());
+    stripeMock.paymentIntents.create.mockRejectedValue(new Error("stripe down"));
+    const res = await POST(request({ travelerId: "traveler-ana" }));
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Internal server error" });
+  });
+
   it("cancels its new intent when another request claimed the share first", async () => {
     db.tripTraveler.findUnique.mockResolvedValue(traveler());
     db.paymentShare.updateMany.mockResolvedValue({ count: 0 });

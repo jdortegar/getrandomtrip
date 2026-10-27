@@ -1,4 +1,4 @@
-import { act } from "react";
+import { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import en from "@/dictionaries/en.json";
@@ -84,6 +84,28 @@ describe("TopUpPaymentModal", () => {
     const retry = Array.from(document.body.querySelectorAll("[role=alert] button"))[0] as HTMLButtonElement;
     await act(async () => retry.click());
     expect(form.props).not.toBeNull();
+  });
+
+  it("requests once when already paid even if the parent re-renders on onPaid", async () => {
+    fetchMock.mockImplementation(async () => Response.json({ paid: true }));
+    function Parent() {
+      const [, set] = useState(0);
+      return (
+        <TopUpPaymentModal
+          copy={copy}
+          locale="en"
+          onClose={vi.fn()}
+          onPaid={() => set((n) => n + 1)}
+          paymentCopy={{ ...en.journey.checkout }}
+          topUp={topUp}
+        />
+      );
+    }
+    await act(async () => root.render(<Parent />));
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("requests nothing while closed", async () => {
