@@ -1,9 +1,10 @@
 import { isProductionDeployment } from "../../src/lib/deployment";
 import type { Config } from "@netlify/functions";
 
-// Fires every hour at 15 past, UTC (staggered from traveler-reminder).
+// Fires every hour at the top of the hour, UTC, sharing the wake-up with the
+// other hourly jobs so the database can scale to zero between runs.
 export const config: Config = {
-  schedule: "15 * * * *",
+  schedule: "0 * * * *",
 };
 
 export default async function handler(): Promise<Response> {
