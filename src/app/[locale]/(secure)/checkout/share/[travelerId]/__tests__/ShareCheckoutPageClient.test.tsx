@@ -103,8 +103,9 @@ describe("ShareCheckoutPageClient", () => {
     expect(form.props).toMatchObject({
       billingEmail: "ana@example.com",
       collectBillingDetails: true,
-      returnPath: "/checkout/share/traveler-ana",
     });
+    // Paying returns to the same success page as the trip checkout.
+    expect(form.props).not.toHaveProperty("returnPath");
   });
 
   it.each([

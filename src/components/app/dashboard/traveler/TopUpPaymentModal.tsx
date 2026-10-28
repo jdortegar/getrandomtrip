@@ -127,7 +127,6 @@ export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, o
               onCancel={onClose}
               onProcessingChange={() => {}}
               onRetry={retry}
-              returnPath="/dashboard/traveler"
             />
           </Elements>
         )}

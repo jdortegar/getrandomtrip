@@ -43,3 +43,11 @@ export async function settleShareFromStripe(
   });
   return true;
 }
+
+/** The share holding `intentId`, with its trip; null when none does. */
+export async function findShareByIntent(intentId: string) {
+  return prisma.paymentShare.findUnique({
+    where: { stripePaymentIntentId: intentId },
+    include: { payment: { include: { tripRequest: true } } },
+  });
+}

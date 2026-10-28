@@ -37,7 +37,10 @@ the new objects (the database has no migration history).
    deadline and maximum top-up. Booking-confirmed emails and the sale notification
    wait for the deadline.
 3. **Companions pay** from the invite → `/checkout/share/[travelerId]`
-   (`POST /api/stripe/share-intent`). Only the linked companion can pay their share.
+   (`POST /api/stripe/share-intent`). Only the linked companion can pay their share. After paying they land on the same `/checkout/success` page as the trip
+   checkout: `confirm-payment` and `trip-summary` fall back to the share when the
+   intent is not the trip `Payment`, show only the companion's own amount and
+   receipt, and never the roster or the trip bill. Top-ups return there too.
 4. **Deadline** (hourly job): open share intents are cancelled (or settled if
    Stripe already charged them), companions who did not pay are dropped, the trip
    is `CONFIRMED` for those who paid, per-trip costs are re-split into `TOP_UP`

@@ -200,7 +200,6 @@ export function ShareCheckoutPageClient({
                       onCancel={() => router.back()}
                       onProcessingChange={() => {}}
                       onRetry={retryIntent}
-                      returnPath={`/checkout/share/${encodeURIComponent(view.travelerId)}`}
                     />
                   </Elements>
                 )}
