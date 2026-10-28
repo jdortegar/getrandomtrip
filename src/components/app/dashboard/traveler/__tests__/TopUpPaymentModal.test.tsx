@@ -59,7 +59,7 @@ describe("TopUpPaymentModal", () => {
       body: JSON.stringify({ shareId: "topup-1" }),
     }));
     expect(document.body.textContent).toContain("Pay USD 17.50 with your card.");
-    expect(form.props).toMatchObject({ returnPath: "/dashboard/traveler" });
+    expect(form.props).toMatchObject({ collectBillingDetails: true, returnPath: "/dashboard/traveler" });
   });
 
   it("reports an already settled top-up", async () => {

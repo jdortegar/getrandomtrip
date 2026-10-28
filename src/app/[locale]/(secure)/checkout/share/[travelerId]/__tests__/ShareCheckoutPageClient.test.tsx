@@ -96,6 +96,7 @@ describe("ShareCheckoutPageClient", () => {
     expect(container.textContent).toContain("so you could pay up to USD 11.67 more.");
     expect(form.props).toMatchObject({
       billingEmail: "ana@example.com",
+      collectBillingDetails: true,
       returnPath: "/checkout/share/traveler-ana",
     });
   });

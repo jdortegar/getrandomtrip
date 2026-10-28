@@ -194,6 +194,7 @@ export function ShareCheckoutPageClient({
                       billingPhone=""
                       billingPostalCode=""
                       billingState=""
+                      collectBillingDetails
                       copy={paymentCopy}
                       onBeforeConfirm={async () => true}
                       onCancel={() => router.back()}

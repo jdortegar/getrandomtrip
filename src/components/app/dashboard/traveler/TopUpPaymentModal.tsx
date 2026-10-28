@@ -121,6 +121,7 @@ export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, o
               billingPhone=""
               billingPostalCode=""
               billingState=""
+              collectBillingDetails
               copy={paymentCopy}
               onBeforeConfirm={async () => true}
               onCancel={onClose}

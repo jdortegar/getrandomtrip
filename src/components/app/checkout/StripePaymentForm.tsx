@@ -40,6 +40,11 @@ interface StripePaymentFormProps {
   onRetry: () => void;
   /** Locale-relative page Stripe returns to; defaults to the checkout success page. */
   returnPath?: string;
+  /**
+   * True on pages without a contact form: Stripe collects the billing details
+   * it needs. Off by default, where checkout passes them in `billing*`.
+   */
+  collectBillingDetails?: boolean;
 }
 
 export function StripePaymentForm({
@@ -58,7 +63,9 @@ export function StripePaymentForm({
   onProcessingChange,
   onRetry,
   returnPath = "/checkout/success",
+  collectBillingDetails = false,
 }: StripePaymentFormProps) {
+  const billingField = collectBillingDetails ? "auto" : "never";
   const stripe = useStripe();
   const elements = useElements();
   const params = useParams();
@@ -202,10 +209,10 @@ export function StripePaymentForm({
           layout: "tabs",
           fields: {
             billingDetails: {
-              name: "never",
-              email: "never",
-              phone: "never",
-              address: "never",
+              name: billingField,
+              email: billingField,
+              phone: billingField,
+              address: billingField,
             },
           },
         }}

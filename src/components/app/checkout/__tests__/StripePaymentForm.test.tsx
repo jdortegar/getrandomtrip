@@ -3,11 +3,12 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StripePaymentForm } from "../StripePaymentForm";
 const confirmPayment = vi.hoisted(() => vi.fn());
-const element = vi.hoisted(() => ({ ready: () => {}, error: () => {}, change: (_complete: boolean) => {} }));
+const element = vi.hoisted(() => ({ ready: () => {}, error: () => {}, change: (_complete: boolean) => {}, options: null as unknown }));
 vi.mock("@stripe/react-stripe-js", () => ({
   useStripe: () => ({ confirmPayment }),
   useElements: () => ({}),
-  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void; onChange?: (event: { complete: boolean }) => void }) => {
+  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void; onChange?: (event: { complete: boolean }) => void; options?: unknown }) => {
+    element.options = props.options;
     element.ready = props.onReady ?? (() => {});
     element.error = props.onLoadError ?? (() => {});
     element.change = (complete) => props.onChange?.({ complete });
@@ -23,7 +24,7 @@ describe("Stripe confirmation lifecycle", () => {
   const onBeforeConfirm = vi.fn();
   const onProcessingChange = vi.fn();
   const onPaymentInfoSubmitted = vi.fn();
-  function form(key: string, returnPath?: string) {
+  function form(key: string, returnPath?: string, collectBillingDetails?: boolean) {
     return (
       <StripePaymentForm
         billingCity=""
@@ -50,6 +51,7 @@ describe("Stripe confirmation lifecycle", () => {
         onProcessingChange={onProcessingChange}
         onRetry={vi.fn()}
         returnPath={returnPath}
+        collectBillingDetails={collectBillingDetails}
       />
     );
   }
@@ -204,4 +206,19 @@ describe("Stripe confirmation lifecycle", () => {
       confirmParams: expect.objectContaining({ return_url: `${window.location.origin}${expected}` }),
     }));
   });
+
+  it("never asks for billing details the checkout already collected", () => {
+    act(() => root.render(form("default")));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "never", address: "never" } },
+    });
+  });
+
+  it("lets Stripe collect billing details on pages without a contact form", () => {
+    act(() => root.render(form("collect", undefined, true)));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "auto", email: "auto", phone: "auto", address: "auto" } },
+    });
+  });
 });
+
