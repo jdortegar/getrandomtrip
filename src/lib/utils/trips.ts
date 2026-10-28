@@ -195,7 +195,8 @@ export function isTripAwaitingPayment(trip: Trip): boolean {
  * are calendar days stored at UTC midnight, so compare against today in UTC.
  */
 export function isUpcomingTrip(trip: Trip, now: Date = new Date()): boolean {
-  if (trip.status !== "CONFIRMED" && trip.status !== "REVEALED") return false;
+  // COLLECTING is booked too: the organizer (and maybe this companion) paid.
+  if (!["COLLECTING", "CONFIRMED", "REVEALED"].includes(trip.status)) return false;
   const lastDay = new Date(trip.endDate || trip.startDate);
   if (Number.isNaN(lastDay.getTime())) return true;
   const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
