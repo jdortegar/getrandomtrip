@@ -28,7 +28,9 @@ export default async function ShareCheckoutPage({ params, searchParams }: Props)
   const checkout = dict.journey.checkout;
   return (
     <ShareCheckoutPageClient
+      checkoutCopy={checkout}
       copy={dict.shareCheckout}
+      summary={dict.journey.summary}
       locale={locale}
       paymentCopy={{
         paymentBack: checkout.paymentBack,

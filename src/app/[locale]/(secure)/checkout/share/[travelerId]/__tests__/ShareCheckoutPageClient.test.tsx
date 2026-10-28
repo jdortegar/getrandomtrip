@@ -7,6 +7,14 @@ import type { ShareCheckoutView } from "@/types/payments";
 
 const form = vi.hoisted(() => ({ props: null as Record<string, unknown> | null }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ back: vi.fn() }) }));
+vi.mock("@/components/journey/HeaderHero", () => ({
+  default: ({ title, description }: { title: string; description: string }) => (
+    <header data-testid="hero">
+      <h1>{title}</h1>
+      <p>{description}</p>
+    </header>
+  ),
+}));
 vi.mock("@/lib/stripe-client", () => ({ getStripePromise: () => Promise.resolve(null) }));
 vi.mock("@stripe/react-stripe-js", () => ({
   Elements: ({ children }: { children: React.ReactNode }) => children,
@@ -31,6 +39,14 @@ const view: ShareCheckoutView = {
   organizerFirstName: "Lucía",
   billingEmail: "ana@example.com",
   billingName: "Ana Paz",
+  trip: {
+    type: "group",
+    level: "essenza",
+    originCity: "Buenos Aires",
+    originCountry: "Argentina",
+    startDate: "2026-12-03",
+    nights: 4,
+  },
 };
 const copy = en.shareCheckout;
 
@@ -53,7 +69,9 @@ describe("ShareCheckoutPageClient", () => {
     await act(async () =>
       root.render(
         <ShareCheckoutPageClient
+          checkoutCopy={dict.journey.checkout}
           copy={dict.shareCheckout}
+          summary={dict.journey.summary}
           locale={dict === en ? "en" : "es"}
           paymentCopy={{ ...dict.journey.checkout }}
           view={{ ...view, ...overrides }}
@@ -112,4 +130,19 @@ describe("ShareCheckoutPageClient", () => {
     expect(container.textContent).toContain(copy.disclaimerNoCost);
     expect(container.textContent).not.toContain("could pay up to");
   });
+
+  it("uses the trip checkout layout: hero, trip summary and payment cards, without the trip price", async () => {
+    fetchMock.mockResolvedValue(Response.json({ clientSecret: "secret_share" }));
+    await render();
+    expect(container.querySelector("[data-testid=hero]")?.textContent).toContain(copy.title);
+    const tripCard = container.querySelector("[data-component=ShareCheckoutTripCard]")!;
+    expect(tripCard.textContent).toContain(en.journey.checkout.travelDetailsTitle);
+    expect(tripCard.textContent).toContain("Buenos Aires, Argentina.");
+    expect(tripCard.textContent).toContain(en.journey.summary.datesSection);
+    expect(tripCard.textContent).not.toContain("USD");
+    const paymentCard = container.querySelector("[data-component=ShareCheckoutPaymentCard]")!;
+    expect(paymentCard.textContent).toContain(en.journey.checkout.paymentTitle);
+    expect(paymentCard.textContent).toContain("USD 1023.33");
+  });
 });
+

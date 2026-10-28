@@ -58,6 +58,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
+import { formatDatesSummary } from "@/lib/helpers/formatDatesSummary";
 import {
   pickCheckoutTrip,
   CHECKOUT_TRIP_STATUSES,
@@ -121,27 +122,6 @@ function getFilterLabel(
     (o) => o.key === key,
   )?.label;
   return fromDict ?? key;
-}
-
-function formatDatesSummary(
-  startDate: string,
-  nights: number,
-  template: string,
-  monthsShort: string[],
-): string {
-  const [y, m, d] = startDate.split("-").map(Number);
-  const start = new Date(y, m - 1, d);
-  const end = new Date(start);
-  end.setDate(end.getDate() + nights);
-  const startDay = start.getDate();
-  const endDay = end.getDate();
-  const startMonth = monthsShort[start.getMonth()] ?? "";
-  const endMonth = monthsShort[end.getMonth()] ?? "";
-  return template
-    .replace("{startDay}", String(startDay))
-    .replace("{endDay}", String(endDay))
-    .replace("{startMonth}", startMonth)
-    .replace("{endMonth}", endMonth);
 }
 
 function getBasePriceFromCatalog(

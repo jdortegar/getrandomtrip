@@ -64,5 +64,13 @@ export async function loadShareCheckout(
     organizerFirstName: trip.user.name?.split(" ")[0] ?? "",
     billingEmail: traveler.user?.email ?? traveler.email ?? "",
     billingName: traveler.user?.name ?? traveler.fullName ?? "",
+    trip: {
+      type: trip.type,
+      level: trip.level,
+      originCity: trip.originCity,
+      originCountry: trip.originCountry,
+      startDate: trip.startDate?.toISOString().slice(0, 10) ?? null,
+      nights: trip.nights,
+    },
   };
 }

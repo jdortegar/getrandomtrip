@@ -25,6 +25,12 @@ function row(overrides: { trip?: Record<string, unknown>; share?: Record<string,
       status: "COLLECTING",
       paymentDeadline: new Date(Date.now() + 10 * HOUR),
       departureTimeZone: "America/Argentina/Buenos_Aires",
+      type: "group",
+      level: "essenza",
+      originCity: "Buenos Aires",
+      originCountry: "Argentina",
+      startDate: new Date("2026-12-03T00:00:00.000Z"),
+      nights: 4,
       user: { name: "Lucía Gómez" },
       ...overrides.trip,
     },
@@ -56,6 +62,14 @@ describe("loadShareCheckout", () => {
       billingEmail: "ana@example.com",
       billingName: "Ana Paz",
       maxTopUp: 11.67,
+      trip: {
+        type: "group",
+        level: "essenza",
+        originCity: "Buenos Aires",
+        originCountry: "Argentina",
+        startDate: "2026-12-03",
+        nights: 4,
+      },
     });
   });
 

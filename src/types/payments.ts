@@ -26,6 +26,16 @@ export interface ShareCheckoutView {
   organizerFirstName: string;
   billingEmail: string;
   billingName: string;
+  /** Read-only trip summary; never the trip's price. */
+  trip: {
+    type: string;
+    level: string;
+    originCity: string;
+    originCountry: string;
+    /** Calendar `YYYY-MM-DD`; null when undated. */
+    startDate: string | null;
+    nights: number;
+  };
 }
 
 /** The viewer's own unpaid top-up on one trip. Never another payer's. */
