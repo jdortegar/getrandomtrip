@@ -1,3 +1,5 @@
+import type { TripDetailRowsTrip } from "@/types/Checkout";
+
 /** Why checkout refused a Stripe promotion code whose rules we enforce in-house. */
 export type PromoRejectionReason =
   | "expired"
@@ -26,16 +28,8 @@ export interface ShareCheckoutView {
   organizerFirstName: string;
   billingEmail: string;
   billingName: string;
-  /** Read-only trip summary; never the trip's price. */
-  trip: {
-    type: string;
-    level: string;
-    originCity: string;
-    originCountry: string;
-    /** Calendar `YYYY-MM-DD`; null when undated. */
-    startDate: string | null;
-    nights: number;
-  };
+  /** Read-only trip summary (the checkout's detail rows); never the trip's price. */
+  trip: TripDetailRowsTrip;
 }
 
 /** The viewer's own unpaid top-up on one trip. Never another payer's. */

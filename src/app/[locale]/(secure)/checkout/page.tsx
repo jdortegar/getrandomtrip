@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Calendar, Car, Loader2, MapPin } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
 import { CheckoutPaymentModeCard } from "@/components/app/checkout/CheckoutPaymentModeCard";
@@ -16,13 +16,7 @@ import {
 import ChatFab from "@/components/chrome/ChatFab";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
-import {
-  TRANSPORT_ICONS,
-  TRANSPORT_OPTIONS,
-} from "@/components/journey/TransportSelector";
 import { useUserStore } from "@/store/slices/userStore";
-import { ADDONS } from "@/lib/data/shared/addons-catalog";
-import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
 import type { Logistics, Filters } from "@/store/slices/journeyStore";
 import {
   applyPaxMultiplier,
@@ -30,12 +24,6 @@ import {
 } from "@/lib/data/traveler-types";
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import { formatUSD } from "@/lib/format";
-import {
-  getHasExcuseStep,
-  resolveExcuseSelectionLabels,
-} from "@/lib/helpers/excuse-helper";
-import { XSED_LEVEL_ID } from "@/lib/constants/product-config";
-import { travelerTypeOf, tripFamilyOf } from "@/lib/db/tripRequestFamily";
 import {
   DEFAULT_PAX_DETAILS,
   paxDetailsEquals,
@@ -58,7 +46,7 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
-import { formatDatesSummary } from "@/lib/helpers/formatDatesSummary";
+import { buildTripDetailRows, normalizeLevelForCatalog } from "@/components/app/checkout/buildTripDetailRows";
 import {
   pickCheckoutTrip,
   CHECKOUT_TRIP_STATUSES,
@@ -66,11 +54,6 @@ import {
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
-import {
-  OWN_CAR_TRANSPORT,
-  resolveTripTransport,
-  resolveTripTransportLabel,
-} from "@/lib/helpers/transport";
 import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
 import { promoReasonFromErrorCode } from "@/lib/payments/promo-rules";
 
@@ -98,31 +81,7 @@ const DEFAULT_CHECKOUT_FILTERS: Filters = {
   transport: "plane",
 };
 
-function normalizeLevelForCatalog(raw?: string | null): string | undefined {
-  if (!raw) return undefined;
-  const normalized = raw
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace("explora+", "explora-plus");
-  if (normalized === "exploraplus") return "explora-plus";
-  if (normalized === "modoexplora" || normalized === "explora")
-    return "modo-explora";
-  return normalized || undefined;
-}
 
-function getFilterLabel(
-  group: keyof typeof FILTER_OPTIONS,
-  key: string,
-  filterOptions?: Record<
-    string,
-    { options: Array<{ key: string; label: string }> }
-  >,
-): string {
-  const fromDict = filterOptions?.[group]?.options?.find(
-    (o) => o.key === key,
-  )?.label;
-  return fromDict ?? key;
-}
 
 function getBasePriceFromCatalog(
   travelType: string | null,
@@ -448,19 +407,11 @@ function CheckoutContent() {
   const travelType =
     trip?.type != null ? normalizeTripType(trip.type) : undefined;
   const experience = checkoutLevel || undefined;
-  const excuse = trip?.excuseKey ?? undefined;
-  const refineDetails = trip?.refineDetails ?? [];
   const startDateParamRaw = trip?.startDate ?? undefined;
   const startDateParam =
     typeof startDateParamRaw === "string" && startDateParamRaw.includes("T")
       ? startDateParamRaw.slice(0, 10)
       : (startDateParamRaw ?? undefined);
-  const nightsNum = trip?.nights ?? 1;
-  const transport = trip?.transport ?? undefined;
-  const departPref = trip?.departPref ?? undefined;
-  const arrivePref = trip?.arrivePref ?? undefined;
-  const maxTravelTime = trip?.maxTravelTime ?? undefined;
-  const climate = trip?.climate ?? undefined;
 
   const selectedLevel = (() => {
     if (!experience || !travelType) return null;
@@ -497,89 +448,6 @@ function CheckoutContent() {
         : "",
     };
   })();
-  const resolvedExcuse = resolveExcuseSelectionLabels({
-    travelerType: trip ? travelerTypeOf(trip) : "",
-    excuseKey: excuse,
-    refineDetails,
-    localizedExcuses: dict?.journey?.excuses,
-    localizedRefineOptions: dict?.journey?.refineDetailOptions,
-  });
-  const excuseTitleRes = resolvedExcuse?.title;
-  const refineDetailEntries = resolvedExcuse?.refineDetails ?? [];
-  const regularTransportLabel = (() => {
-    if (!transport) return undefined;
-    const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
-    return (
-      TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
-      getFilterLabel("transport", transport, filterOpts)
-    );
-  })();
-  const transportLabel = resolveTripTransportLabel(
-    trip?.type, transport, dict?.tripTransport.ownCar ?? "", regularTransportLabel,
-  );
-  const TransportIcon = resolveTripTransport(trip?.type, transport) === OWN_CAR_TRANSPORT
-    ? Car
-    : TRANSPORT_ICONS[transport ?? "plane"];
-
-  type FilterKind =
-    | "arrivePref"
-    | "avoid"
-    | "climate"
-    | "departPref"
-    | "maxTravelTime";
-  const sumLabels = dict?.journey?.summary;
-  const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
-  const activeFilters = (() => {
-    const list: {
-      id: string;
-      kind: FilterKind;
-      label: string;
-      value?: string;
-    }[] = [];
-    if (!sumLabels) return list;
-    if (departPref && departPref !== "any") {
-      list.push({
-        id: `depart-${departPref}`,
-        kind: "departPref",
-        label: `${sumLabels.filterLabelDepart}: ${getFilterLabel("departPref", departPref, filterOpts)}`,
-      });
-    }
-    if (arrivePref && arrivePref !== "any") {
-      list.push({
-        id: `arrive-${arrivePref}`,
-        kind: "arrivePref",
-        label: `${sumLabels.filterLabelArrive}: ${getFilterLabel("arrivePref", arrivePref, filterOpts)}`,
-      });
-    }
-    if (maxTravelTime && maxTravelTime !== "no-limit") {
-      list.push({
-        id: `time-${maxTravelTime}`,
-        kind: "maxTravelTime",
-        label: `${sumLabels.filterLabelTime}: ${getFilterLabel("maxTravelTime", maxTravelTime, filterOpts)}`,
-      });
-    }
-    if (climate && climate !== "any") {
-      list.push({
-        id: `climate-${climate}`,
-        kind: "climate",
-        label: `${sumLabels.filterLabelClimate}: ${getFilterLabel("climate", climate, filterOpts)}`,
-      });
-    }
-    avoidDestinations.forEach((city) => {
-      list.push({
-        id: `avoid-${city}`,
-        kind: "avoid",
-        label: city,
-        value: city,
-      });
-    });
-    return list;
-  })();
-
-  const selectedAddons = addons.selected
-    .map((s) => ADDONS.find((a) => a.id === s.id))
-    .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
-
   const backToJourneyHref = pathForLocale(resolvedLocale, "/journey");
 
   async function persistCheckoutTravelers(nextDetails: PaxDetails) {
@@ -795,157 +663,19 @@ function CheckoutContent() {
   );
   const checkoutItemTileLabelClass = "font-normal text-gray-500 text-base";
 
-  const datesValue =
-    startDateParam && nightsNum > 0
-      ? summary?.dateRangeTemplate && summary?.monthsShort
-        ? formatDatesSummary(
-            startDateParam,
-            nightsNum,
-            summary.dateRangeTemplate,
-            summary.monthsShort,
-          )
-        : `${startDateParam} — ${nightsNum}`
-      : summary?.emptyValue;
-
-  // XSED trips keep the traveler type in `level`; legacy trips have no excuse.
-  const showExcuseAndRefineDetailRows =
-    excuse != null ||
-    (trip != null &&
-      getHasExcuseStep(
-        travelerTypeOf(trip),
-        tripFamilyOf(trip.type) === "xsed" ? XSED_LEVEL_ID : experience,
-      ));
-
-  const checkoutIconDetailRows: CheckoutIconDetailRow[] = [
-    {
-      id: "experience",
-      label: summary?.experienceSection,
-      value: selectedExperienceInfo?.label ?? summary?.emptyValue,
+  const checkoutIconDetailRows: CheckoutIconDetailRow[] = buildTripDetailRows({
+    copy: dict,
+    locale: resolvedLocale,
+    showAddonPrices: true,
+    trip: {
+      ...trip,
+      level: checkoutLevel,
+      storedLevel: trip.level,
+      startDate: startDateParam ?? null,
+      originCity: logistics?.city,
+      originCountry: logistics?.country,
     },
-    ...(showExcuseAndRefineDetailRows
-      ? [
-          {
-            id: "excuse" as const,
-            label: summary?.excuseSection,
-            value: excuseTitleRes ?? summary?.emptyValue,
-          },
-          {
-            className: "sm:col-span-2",
-            id: "refine-details" as const,
-            label: summary?.detailsSection,
-            value:
-              refineDetailEntries.length > 0 ? (
-                refineDetailEntries.map(({ key, label: detailLabel }) => (
-                  <div
-                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-                    key={key}
-                  >
-                    <span>{detailLabel}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="font-barlow text-gray-600 text-sm">
-                  {summary?.noDetails}
-                </p>
-              ),
-            valueLayout: "chips" as const,
-          },
-        ]
-      : []),
-    {
-      icon: (
-        <MapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
-      ),
-      id: "origin",
-      label: summary?.originSection,
-      value:
-        logistics?.city && logistics?.country
-          ? `${logistics.city}, ${logistics.country}.`
-          : summary?.emptyValue,
-    },
-    {
-      icon: (
-        <Calendar
-          aria-hidden
-          className="mt-0.5 h-4 w-4 shrink-0 text-gray-600"
-        />
-      ),
-      id: "dates",
-      label: summary?.datesSection,
-      value: datesValue,
-    },
-    {
-      icon: TransportIcon ? (
-        <TransportIcon
-          aria-hidden
-          className="mt-0.5 h-4 w-4 shrink-0 text-gray-600"
-        />
-      ) : undefined,
-      id: "transport",
-      label: summary?.transportSection,
-      value: transportLabel,
-    },
-
-    {
-      className: "sm:col-span-2",
-      id: "filters",
-      label:
-        activeFilters.length > 0
-          ? summary?.filtersSectionCount?.replace(
-              "{count}",
-              String(activeFilters.length),
-            )
-          : summary?.filtersSection,
-      value:
-        activeFilters.length > 0 ? (
-          activeFilters.map(({ id: filterId, label: filterLabel }) => (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-              key={filterId}
-            >
-              <span>{filterLabel}</span>
-            </div>
-          ))
-        ) : (
-          <p className="font-barlow text-gray-600 text-sm">
-            {summary?.noFilters}
-          </p>
-        ),
-      valueLayout: "chips",
-    },
-    {
-      className: "sm:col-span-2",
-      id: "addons",
-      label:
-        selectedAddons.length > 0
-          ? summary?.addonsSectionCount?.replace(
-              "{count}",
-              String(selectedAddons.length),
-            )
-          : summary?.addonsSection,
-      value:
-        selectedAddons.length > 0 ? (
-          selectedAddons.map((addon) => (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-              key={addon.id}
-            >
-              <span>
-                {journey?.addons?.[addon.id]?.title ?? addon.title}
-                {addon.priceType === "currency"
-                  ? ` — USD ${addon.price}`
-                  : ` — ${addon.price}%`}
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="font-barlow text-gray-600 text-sm">
-            {summary?.noAddons}
-          </p>
-        ),
-      valueLayout: "chips",
-    },
-  ];
+  });
 
   return (
     <div className="min-h-screen bg-ground">

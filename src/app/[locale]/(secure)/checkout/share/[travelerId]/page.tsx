@@ -30,6 +30,7 @@ export default async function ShareCheckoutPage({ params, searchParams }: Props)
     <ShareCheckoutPageClient
       checkoutCopy={checkout}
       copy={dict.shareCheckout}
+      rowsCopy={{ journey: dict.journey, tripTransport: dict.tripTransport, xsedBook: dict.xsedBook }}
       summary={dict.journey.summary}
       locale={locale}
       paymentCopy={{

@@ -40,3 +40,26 @@ export interface CheckoutTripFromApi {
   status: string;
   updatedAt: string;
 }
+
+/** Trip fields that drive the read-only trip detail rows shown at checkout. */
+export interface TripDetailRowsTrip {
+  type: string;
+  /** Checkout level (XSED keeps the traveler type here). */
+  level: string;
+  /** Level as stored on the trip, when checkout normalized it (XSED party repair). */
+  storedLevel?: string;
+  excuseKey?: string | null;
+  refineDetails?: string[];
+  /** Calendar `YYYY-MM-DD`. */
+  startDate?: string | null;
+  nights: number;
+  originCity?: string | null;
+  originCountry?: string | null;
+  transport?: string | null;
+  departPref?: string | null;
+  arrivePref?: string | null;
+  maxTravelTime?: string | null;
+  climate?: string | null;
+  avoidDestinations?: string[];
+  addons?: Array<{ id: string; qty: number }> | null;
+}

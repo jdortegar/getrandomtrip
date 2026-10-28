@@ -46,6 +46,9 @@ const view: ShareCheckoutView = {
     originCountry: "Argentina",
     startDate: "2026-12-03",
     nights: 4,
+    transport: "plane",
+    climate: "warm",
+    addons: [{ id: "car-rental", qty: 2 }],
   },
 };
 const copy = en.shareCheckout;
@@ -71,6 +74,7 @@ describe("ShareCheckoutPageClient", () => {
         <ShareCheckoutPageClient
           checkoutCopy={dict.journey.checkout}
           copy={dict.shareCheckout}
+          rowsCopy={{ journey: dict.journey, tripTransport: dict.tripTransport, xsedBook: dict.xsedBook }}
           summary={dict.journey.summary}
           locale={dict === en ? "en" : "es"}
           paymentCopy={{ ...dict.journey.checkout }}
@@ -143,6 +147,24 @@ describe("ShareCheckoutPageClient", () => {
     const paymentCard = container.querySelector("[data-component=ShareCheckoutPaymentCard]")!;
     expect(paymentCard.textContent).toContain(en.journey.checkout.paymentTitle);
     expect(paymentCard.textContent).toContain("USD 1023.33");
+  });
+
+  it("shows the checkout's trip detail rows, with add-on names but no prices", async () => {
+    fetchMock.mockResolvedValue(Response.json({ clientSecret: "secret_share" }));
+    await render();
+    const tripCard = container.querySelector("[data-component=ShareCheckoutTripCard]")!;
+    const text = tripCard.textContent ?? "";
+    for (const label of [
+      en.journey.summary.experienceSection,
+      en.journey.summary.originSection,
+      en.journey.summary.datesSection,
+      en.journey.summary.transportSection,
+    ]) {
+      expect(text).toContain(label);
+    }
+    expect(text).toContain(en.journey.summary.filterLabelClimate);
+    expect(text).toContain(en.journey.addons["car-rental"].title);
+    expect(text).not.toMatch(/USD|%/);
   });
 });
 

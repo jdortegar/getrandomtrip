@@ -1,4 +1,5 @@
 import { settleShareFromStripe } from "@/lib/db/paymentShare";
+import { getCheckoutLevel } from "@/lib/helpers/checkout-party";
 import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
 import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
 import { prisma } from "@/lib/prisma";
@@ -66,11 +67,21 @@ export async function loadShareCheckout(
     billingName: traveler.user?.name ?? traveler.fullName ?? "",
     trip: {
       type: trip.type,
-      level: trip.level,
-      originCity: trip.originCity,
-      originCountry: trip.originCountry,
+      level: getCheckoutLevel(trip),
+      storedLevel: trip.level,
+      excuseKey: trip.excuseKey,
+      refineDetails: trip.refineDetails,
       startDate: trip.startDate?.toISOString().slice(0, 10) ?? null,
       nights: trip.nights,
+      originCity: trip.originCity,
+      originCountry: trip.originCountry,
+      transport: trip.transport,
+      departPref: trip.departPref,
+      arrivePref: trip.arrivePref,
+      maxTravelTime: trip.maxTravelTime,
+      climate: trip.climate,
+      avoidDestinations: trip.avoidDestinations,
+      addons: Array.isArray(trip.addons) ? (trip.addons as Array<{ id: string; qty: number }>) : [],
     },
   };
 }

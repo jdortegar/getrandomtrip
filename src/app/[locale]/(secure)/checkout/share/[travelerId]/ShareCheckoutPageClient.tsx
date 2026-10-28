@@ -2,16 +2,16 @@
 
 import { Elements } from "@stripe/react-stripe-js";
 import type { StripeElementLocale } from "@stripe/stripe-js";
-import { Calendar, Loader2, MapPin } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { buildTripDetailRows } from "@/components/app/checkout/buildTripDetailRows";
 import { CheckoutIconValueCard } from "@/components/app/checkout/CheckoutIconValueCard";
 import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import Img from "@/components/common/Img";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
-import { formatDatesSummary } from "@/lib/helpers/formatDatesSummary";
 import type { Trip } from "@/lib/utils/trips";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
@@ -24,6 +24,8 @@ import type { ShareCheckoutState, ShareCheckoutView } from "@/types/payments";
 interface ShareCheckoutPageClientProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
   copy: Dictionary["shareCheckout"];
+  /** Copy the checkout's trip detail rows read. */
+  rowsCopy: Pick<Dictionary, "journey" | "tripTransport" | "xsedBook">;
   summary: Dictionary["journey"]["summary"];
   locale: string;
   paymentCopy: Parameters<typeof StripePaymentForm>[0]["copy"];
@@ -40,6 +42,7 @@ const SHARE_CLOSED_CODES = ["DEADLINE_PASSED", "NOT_COLLECTING"];
 export function ShareCheckoutPageClient({
   checkoutCopy,
   copy,
+  rowsCopy,
   summary,
   locale,
   paymentCopy,
@@ -90,14 +93,8 @@ export function ShareCheckoutPageClient({
     { type: view.trip.type, level: view.trip.level } as Trip,
     locale,
   );
-  const dates =
-    view.trip.startDate && view.trip.nights > 0
-      ? formatDatesSummary(view.trip.startDate, view.trip.nights, summary.dateRangeTemplate, summary.monthsShort)
-      : summary.emptyValue;
-  const origin =
-    view.trip.originCity && view.trip.originCountry
-      ? `${view.trip.originCity}, ${view.trip.originCountry}.`
-      : summary.emptyValue;
+  // Same rows as the trip checkout, without add-on prices: companions see only their share.
+  const detailRows = buildTripDetailRows({ copy: rowsCopy, locale, showAddonPrices: false, trip: view.trip });
   const cardClass = cn("flex flex-col gap-6 rounded-2xl bg-white p-5 shadow-md", "ring-1 ring-gray-100");
 
   return (
@@ -137,17 +134,18 @@ export function ShareCheckoutPageClient({
                 </p>
               </div>
             </div>
+            <p className="font-barlow text-lg text-gray-500">{checkoutCopy.itemsDescription}</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <CheckoutIconValueCard
-                icon={<MapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />}
-                title={summary.originSection}
-                value={origin}
-              />
-              <CheckoutIconValueCard
-                icon={<Calendar aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />}
-                title={summary.datesSection}
-                value={dates}
-              />
+              {detailRows.map((row) => (
+                <CheckoutIconValueCard
+                  className={row.className}
+                  icon={row.icon}
+                  key={row.id}
+                  title={row.label}
+                  value={row.value}
+                  valueLayout={row.valueLayout}
+                />
+              ))}
             </div>
           </div>
 
