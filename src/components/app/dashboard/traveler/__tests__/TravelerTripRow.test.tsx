@@ -59,10 +59,12 @@ function render(
 
 it.each([
   ["CONFIRMED", "en"],
+  ["COLLECTING", "en"],
   ["REVEALED", "en"],
   ["COMPLETED", "en"],
   ["CANCELLED", "en"],
   ["CONFIRMED", "es"],
+  ["COLLECTING", "es"],
   ["REVEALED", "es"],
   ["COMPLETED", "es"],
   ["CANCELLED", "es"],
@@ -75,7 +77,7 @@ it.each([
       link.getAttribute("href"),
     );
     const action =
-      status === "CONFIRMED" || status === "REVEALED"
+      status === "CONFIRMED" || status === "COLLECTING" || status === "REVEALED"
         ? `${prefix}/dashboard/trips/trip-id/reveal`
         : status === "COMPLETED"
           ? `${prefix}/review/review-token`
@@ -89,7 +91,7 @@ it.each([
     expect(container.textContent).toContain(
       locale === "en" ? "Jan 1, 2027" : "1 ene 2027",
     );
-    if (status === "CONFIRMED") {
+    if (status === "CONFIRMED" || status === "COLLECTING") {
       expect(container.textContent).not.toContain("Secret city");
       expect(container.textContent).toContain(copy.allTrips.emptyDestination);
     } else expect(container.textContent).toContain("Secret city");

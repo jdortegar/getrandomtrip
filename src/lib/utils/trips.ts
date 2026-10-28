@@ -194,6 +194,14 @@ export function isTripAwaitingPayment(trip: Trip): boolean {
  * so the status alone would keep past trips listed as upcoming. Trip dates
  * are calendar days stored at UTC midnight, so compare against today in UTC.
  */
+/**
+ * Booked but not revealed yet: the reveal countdown applies. COLLECTING is a
+ * split-payment trip the organizer paid while companions are still paying.
+ */
+export function isAwaitingReveal(status: string): boolean {
+  return status === "CONFIRMED" || status === "COLLECTING";
+}
+
 export function isUpcomingTrip(trip: Trip, now: Date = new Date()): boolean {
   // COLLECTING is booked too: the organizer (and maybe this companion) paid.
   if (!["COLLECTING", "CONFIRMED", "REVEALED"].includes(trip.status)) return false;

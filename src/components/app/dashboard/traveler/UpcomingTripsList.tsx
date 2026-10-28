@@ -10,7 +10,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
-import { isUpcomingTrip, type Trip } from "@/lib/utils/trips";
+import { isAwaitingReveal, isUpcomingTrip, type Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
 interface UpcomingTripsListProps {
@@ -99,7 +99,7 @@ export function UpcomingTripsList({
                     </div>
                     <span className="hidden shrink-0 sm:inline-flex"><StatusIndicatorBadge family="traveler-trip" label={statusLabel} status={trip.status} /></span>
                     <div className="flex shrink-0 items-center gap-1.5">
-                      {trip.status === "CONFIRMED" && (
+                      {isAwaitingReveal(trip.status) && (
                         <TableIconLink
                           href={pathForLocale(
                             locale as Locale,

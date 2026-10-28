@@ -8,6 +8,7 @@ import {
 } from "@/lib/helpers/getRevealCountdown";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
+import { isAwaitingReveal } from "@/lib/utils/trips";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { resolveTripDestination } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
@@ -71,8 +72,7 @@ interface TripDetailsHeroProps {
 export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   const isRevealed = trip.status === "REVEALED";
   const isCancelled = trip.status === "CANCELLED";
-  // COLLECTING: paid by the organizer, companions still paying — not revealed yet.
-  const isPreReveal = trip.status === "CONFIRMED" || trip.status === "COLLECTING";
+  const isPreReveal = isAwaitingReveal(trip.status);
   const heroImageUrl =
     (isPreReveal ? null : trip.experience?.heroImage) ?? FALLBACK_HERO_IMAGE;
 
