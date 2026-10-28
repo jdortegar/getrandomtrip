@@ -26,8 +26,16 @@ export interface ShareCheckoutView {
   /** Most the companion may owe on top of their share, in major units of `currency`. */
   maxTopUp: number;
   organizerFirstName: string;
+  /** The companion's own profile details, to prefill Stripe; empty when unknown. */
   billingEmail: string;
   billingName: string;
+  billingPhone: string;
+  billingLine1: string;
+  billingCity: string;
+  billingState: string;
+  billingPostalCode: string;
+  /** ISO 3166-1 alpha-2, or empty. */
+  billingCountry: string;
   /** Read-only trip summary (the checkout's detail rows); never the trip's price. */
   trip: TripDetailRowsTrip;
 }

@@ -1,10 +1,25 @@
 import { settleShareFromStripe } from "@/lib/db/paymentShare";
 import { getCheckoutLevel } from "@/lib/helpers/checkout-party";
+import { normalizeCountryToCode } from "@/lib/helpers/countryCode";
 import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
 import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
 import type { ShareCheckoutView } from "@/types/payments";
+
+/** Billing prefill from the companion's profile (`User.phone`, `User.address`). */
+function profileBilling(phone: string | null | undefined, address: unknown) {
+  const a = address && typeof address === "object" ? (address as Record<string, unknown>) : {};
+  const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
+  return {
+    billingPhone: text(phone),
+    billingLine1: text(a.street),
+    billingCity: text(a.city),
+    billingState: text(a.state),
+    billingPostalCode: text(a.zipCode),
+    billingCountry: normalizeCountryToCode(text(a.country)),
+  };
+}
 
 /**
  * Resolves the signed-in companion's share for the share checkout page, or
@@ -24,7 +39,7 @@ export async function loadShareCheckout(
       include: {
         tripRequest: { include: { user: { select: { name: true } } } },
         paymentShares: { where: { kind: "SHARE" } },
-        user: { select: { email: true, name: true } },
+        user: { select: { email: true, name: true, phone: true, address: true } },
       },
     });
   let traveler = await load();
@@ -65,6 +80,7 @@ export async function loadShareCheckout(
     organizerFirstName: trip.user.name?.split(" ")[0] ?? "",
     billingEmail: traveler.user?.email ?? traveler.email ?? "",
     billingName: traveler.user?.name ?? traveler.fullName ?? "",
+    ...profileBilling(traveler.user?.phone, traveler.user?.address),
     trip: {
       type: trip.type,
       level: getCheckoutLevel(trip),

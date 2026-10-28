@@ -186,14 +186,14 @@ export function ShareCheckoutPageClient({
                     stripe={stripe}
                   >
                     <StripePaymentForm
-                      billingCity=""
-                      billingCountry=""
+                      billingCity={view.billingCity}
+                      billingCountry={view.billingCountry}
                       billingEmail={view.billingEmail}
-                      billingLine1=""
+                      billingLine1={view.billingLine1}
                       billingName={view.billingName}
-                      billingPhone=""
-                      billingPostalCode=""
-                      billingState=""
+                      billingPhone={view.billingPhone}
+                      billingPostalCode={view.billingPostalCode}
+                      billingState={view.billingState}
                       collectBillingDetails
                       copy={paymentCopy}
                       onBeforeConfirm={async () => true}

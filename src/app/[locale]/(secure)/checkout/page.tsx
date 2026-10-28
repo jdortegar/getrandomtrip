@@ -46,12 +46,12 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
+import { normalizeCountryToCode } from "@/lib/helpers/countryCode";
 import { buildTripDetailRows, normalizeLevelForCatalog } from "@/components/app/checkout/buildTripDetailRows";
 import {
   pickCheckoutTrip,
   CHECKOUT_TRIP_STATUSES,
 } from "@/lib/helpers/checkout-trip";
-import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
 import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
@@ -59,17 +59,6 @@ import { promoReasonFromErrorCode } from "@/lib/payments/promo-rules";
 
 const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
 
-/** Converts a stored country value (full name or code) to a 2-letter ISO code. */
-function normalizeCountryToCode(value: string | undefined | null): string {
-  if (!value) return "";
-  const trimmed = value.trim();
-  const upper = trimmed.toUpperCase();
-  if (AMERICAN_COUNTRIES.some((c) => c.code === upper)) return upper;
-  const byName = AMERICAN_COUNTRIES.find(
-    (c) => c.name.toLowerCase() === trimmed.toLowerCase(),
-  );
-  return byName ? byName.code : "";
-}
 
 const DEFAULT_CHECKOUT_FILTERS: Filters = {
   accommodationType: "any",

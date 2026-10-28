@@ -39,6 +39,12 @@ const view: ShareCheckoutView = {
   organizerFirstName: "Lucía",
   billingEmail: "ana@example.com",
   billingName: "Ana Paz",
+  billingPhone: "",
+  billingLine1: "",
+  billingCity: "",
+  billingState: "",
+  billingPostalCode: "",
+  billingCountry: "",
   trip: {
     type: "group",
     level: "essenza",

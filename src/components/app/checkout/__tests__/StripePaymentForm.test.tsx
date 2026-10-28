@@ -24,16 +24,21 @@ describe("Stripe confirmation lifecycle", () => {
   const onBeforeConfirm = vi.fn();
   const onProcessingChange = vi.fn();
   const onPaymentInfoSubmitted = vi.fn();
-  function form(key: string, returnPath?: string, collectBillingDetails?: boolean) {
+  function form(
+    key: string,
+    returnPath?: string,
+    collectBillingDetails?: boolean,
+    billing: Partial<Record<"name" | "email" | "phone" | "line1" | "city" | "postal" | "country", string>> = {},
+  ) {
     return (
       <StripePaymentForm
-        billingCity=""
-        billingCountry=""
-        billingEmail=""
-        billingLine1=""
-        billingName=""
-        billingPhone=""
-        billingPostalCode=""
+        billingCity={billing.city ?? ""}
+        billingCountry={billing.country ?? ""}
+        billingEmail={billing.email ?? ""}
+        billingLine1={billing.line1 ?? ""}
+        billingName={billing.name ?? ""}
+        billingPhone={billing.phone ?? ""}
+        billingPostalCode={billing.postal ?? ""}
         billingState=""
         copy={{
           paymentBack: "Back",
@@ -218,6 +223,20 @@ describe("Stripe confirmation lifecycle", () => {
     act(() => root.render(form("collect", undefined, true)));
     expect(element.options).toMatchObject({
       fields: { billingDetails: { name: "auto", email: "auto", phone: "auto", address: "auto" } },
+    });
+  });
+
+  it("asks Stripe only for the billing details the page does not already know", () => {
+    act(() => root.render(form("partial", undefined, true, { name: "Ana Paz", email: "ana@example.com", line1: "Calle 1", city: "BA" })));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "auto", address: "auto" } },
+    });
+    act(() => root.render(form("full", undefined, true, {
+      name: "Ana Paz", email: "ana@example.com", phone: "+5491100000000",
+      line1: "Calle 1", city: "BA", postal: "1000", country: "AR",
+    })));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "never", address: "never" } },
     });
   });
 });
