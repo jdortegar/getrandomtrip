@@ -66,6 +66,8 @@ const copy: InviteTravelersDict = {
   landingGreeting: "",
   landingSignupExplainer: "",
   landingSignupCta: "",
+  landingLoginExplainer: "",
+  landingLoginCta: "",
   landingStep2Heading: "",
   landingConsentPrefix: "",
   landingConsentLinkLabel: "",

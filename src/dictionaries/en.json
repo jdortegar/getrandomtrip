@@ -7294,6 +7294,8 @@
     "landingGreeting": "{buyerFirstName} invited you to join their randomtrip — the destination is a surprise until reveal.",
     "landingSignupExplainer": "Create an account or log in to complete your travel details — you'll also be able to follow this trip from your dashboard.",
     "landingSignupCta": "Sign up to continue",
+    "landingLoginExplainer": "You already have an account with this email. Log in to complete your travel details and follow this trip from your dashboard.",
+    "landingLoginCta": "Log in to continue",
     "landingStep2Heading": "Almost there — complete your travel details",
     "landingConsentPrefix": "I consent to Randomtrip storing my identity document details to arrange bookings for this trip, per the ",
     "landingConsentLinkLabel": "privacy policy",

@@ -10,6 +10,7 @@ vi.mock("@/lib/prisma", () => ({
     user: {
       update: vi.fn(),
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
     },
     $transaction: vi.fn(),
   },
@@ -19,6 +20,7 @@ import { prisma } from "@/lib/prisma";
 import {
   issueTravelerInvite,
   peekTravelerInvite,
+  inviteeHasAccount,
   consumeTravelerInvite,
   getProfileTravelDocuments,
   hasLiveTravelerInviteGrant,
@@ -967,5 +969,37 @@ describe("getProfileTravelDocuments", () => {
   it("returns empty lists for an unknown user", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
     expect(await getProfileTravelDocuments("missing")).toEqual({ nationalities: [], visas: [] });
+  });
+});
+
+describe("inviteeHasAccount", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("is true when an account uses the invited address, matched case-insensitively", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ email: " Jane.Doe@gmail.com " } as never);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue({ id: "user-1" } as never);
+
+    expect(await inviteeHasAccount("trav-1")).toBe(true);
+    expect(prisma.tripTraveler.findUnique).toHaveBeenCalledWith({ where: { id: "trav-1" }, select: { email: true } });
+    expect(prisma.user.findFirst).toHaveBeenCalledWith({
+      where: { email: { equals: "Jane.Doe@gmail.com", mode: "insensitive" } },
+      select: { id: true },
+    });
+  });
+
+  it("is false when no account uses it", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ email: "new@example.com" } as never);
+    vi.mocked(prisma.user.findFirst).mockResolvedValue(null);
+
+    expect(await inviteeHasAccount("trav-1")).toBe(false);
+  });
+
+  it("is false without looking up accounts when the row has no email", async () => {
+    vi.mocked(prisma.tripTraveler.findUnique).mockResolvedValue({ email: null } as never);
+
+    expect(await inviteeHasAccount("trav-1")).toBe(false);
+    expect(prisma.user.findFirst).not.toHaveBeenCalled();
   });
 });

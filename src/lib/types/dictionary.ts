@@ -3534,6 +3534,9 @@ export interface InviteTravelersDict {
   landingGreeting: string;
   landingSignupExplainer: string;
   landingSignupCta: string;
+  /** Shown instead of the sign-up explainer when the invited address already has an account. */
+  landingLoginExplainer: string;
+  landingLoginCta: string;
   landingStep2Heading: string;
   landingConsentPrefix: string;
   landingConsentLinkLabel: string;

@@ -99,6 +99,24 @@ describe("TravelerInviteClient — invited email", () => {
     expect(authModalProps.last?.initialEmail).toBeUndefined();
   });
 
+  it("asks an invitee who already has an account to sign in, and opens the modal on login", () => {
+    render({ ...okResolution, inviteeHasAccount: true });
+
+    expect(container.textContent).toContain(copy.landingLoginExplainer);
+    expect(container.textContent).toContain(copy.landingLoginCta);
+    expect(container.textContent).not.toContain(copy.landingSignupCta);
+    expect(authModalProps.last?.defaultMode).toBe("login");
+    expect(authModalProps.last?.allowRegister).toBe(true);
+  });
+
+  it("keeps the sign-up flow for an invitee without an account", () => {
+    render(okResolution);
+
+    expect(container.textContent).toContain(copy.landingSignupExplainer);
+    expect(container.textContent).toContain(copy.landingSignupCta);
+    expect(authModalProps.last?.defaultMode).toBe("register");
+  });
+
   it("omits the hint when there is no masked address", () => {
     render({ ...okResolution, maskedEmail: null });
     expect(container.textContent).not.toContain("***");
