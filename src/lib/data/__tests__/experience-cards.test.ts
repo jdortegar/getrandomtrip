@@ -25,7 +25,6 @@ function expectCompleteCard(type: string, level: string, locale: string) {
   for (const key of [
     "ctaLabel",
     "description",
-    "eyebrow",
     "kicker",
     "name",
     "photoAlt",
@@ -56,10 +55,39 @@ describe("getExperienceCard", () => {
     },
   );
 
-  it("only gives honeymoon the Atelier card", () => {
+  it("gives honeymoon an XSED card on the couple photo", () => {
+    const card = getExperienceCard("honeymoon", "xsed", "es");
+    expect(card?.description).toContain("celebrar este nuevo comienzo");
+    expect(card?.photoSrc).toBe("/images/experience-cards/couple/xsed.jpg");
+  });
+
+  it("uses 'mi' for solo/paws and 'nuestro' for the rest on Atelier", () => {
+    for (const type of ["solo", "paws"]) {
+      expect(getExperienceCard(type, "atelier-getaway", "es")?.ctaLabel).toBe(
+        "EMPEZAR MI VIAJE A MEDIDA",
+      );
+    }
+    for (const type of ["couple", "group", "family", "honeymoon"]) {
+      expect(getExperienceCard(type, "atelier-getaway", "es")?.ctaLabel).toBe(
+        "EMPEZAR NUESTRO VIAJE A MEDIDA",
+      );
+    }
+  });
+
+  it("adds the drop schedule only to XSED, above the shared reveal note", () => {
+    const xsed = getExperienceCard("solo", "xsed", "es");
+    expect(xsed?.availabilityNote).toBe(
+      "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
+    );
+    expect(xsed?.revealNote).toBe("Destino revelado 48 horas antes de salir.");
+    expect(getExperienceCard("solo", "essenza", "es")?.availabilityNote).toBe(
+      undefined,
+    );
+  });
+
+  it("only gives honeymoon the Atelier level", () => {
     expect(getLevelIdsForType("honeymoon")).toEqual(["atelier"]);
     for (const level of [
-      "xsed",
       "essenza",
       "explora",
       "explora-plus",
@@ -77,8 +105,8 @@ describe("getExperienceCard", () => {
     const en = getExperienceCard("solo", "explora", "en")!;
     expect(es.name).toBe("MODO EXPLORA™");
     expect(en.name).toBe("MODO EXPLORA™");
-    expect(es.eyebrow).toBe("Sigue tu curiosidad.");
-    expect(en.eyebrow).toBe("Follow your curiosity.");
+    expect(es.kicker).toBe("Más por descubrir");
+    expect(en.kicker).toBe("More to discover");
     expect(en.photoSrc).toBe(es.photoSrc);
     expect(es.photoSrc).toBe(getExperienceCardPhotoSrc("solo", "modo-explora"));
     expect(es.transport?.modes).toEqual(["train-front", "ship", "plane"]);

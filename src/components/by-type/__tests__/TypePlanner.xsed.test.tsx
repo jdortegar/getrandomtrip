@@ -136,7 +136,6 @@ it.each(["en", "es"])(
       expect(xsed.textContent).toContain(`USD ${XSED_PRICE_PER_PERSON}`);
       expect(xsed.textContent).toContain(xsedCard.tag);
       expect(xsed.textContent).toContain(xsedCard.kicker);
-      expect(xsed.textContent).toContain(xsedCard.eyebrow);
       expect(xsed.textContent).toContain(xsedCard.description);
       for (const detail of xsedCard.details) {
         expect(xsed.textContent).toContain(detail.label);

@@ -52,7 +52,6 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().querySelector("h3")?.textContent).toBe(content.name);
   expect(card().querySelector("h3")?.getAttribute("data-name-lines")).toBe("2");
   expect(card().querySelector("h3 sup")?.textContent).toBe("™");
-  expect(card().textContent).toContain(content.eyebrow);
   expect(card().textContent).toContain(content.description);
   expect(card().textContent).toContain(`USD ${explora.price}`);
   expect(card().textContent).toContain(explora.priceFootnote);
@@ -106,13 +105,18 @@ it("renders the trademark as a compact superscript after the last letter", () =>
   expect(mark?.classList.contains("mt-3")).toBe(true);
 });
 
-it("gives the card eyebrow room to wrap two lines", () => {
+it("shows the kicker under the name, not above it", () => {
   act(() => root.render(<ExperienceCard level={atelier} />));
-  const eyebrow = [...card().querySelectorAll("p")].find((node) =>
-    node.textContent?.includes("Tripper Travel Advisor"),
+  const kicker = atelier.card!.kicker;
+  const nodes = [...card().querySelectorAll("p")].filter(
+    (node) => node.textContent === kicker,
   );
-  expect(eyebrow?.classList.contains("leading-6")).toBe(true);
-  expect(eyebrow?.classList.contains("text-lg")).toBe(true);
+  expect(nodes).toHaveLength(1);
+  const name = card().querySelector("h3")!;
+  expect(
+    name.compareDocumentPosition(nodes[0]) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(nodes[0].classList.contains("text-lg")).toBe(true);
 });
 
 it("shows the most-chosen ribbon only when featured, or a custom badge", () => {

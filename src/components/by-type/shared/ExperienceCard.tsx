@@ -184,10 +184,6 @@ export function ExperienceCard({
           </p>
         )}
 
-        <p className="font-barlow text-xs leading-none text-neutral-600">
-          {kicker}
-        </p>
-
         <div className="mt-0.5 flex items-end gap-2">
           <ExperienceCardName name={name} />
           <div className="mb-1 h-7.25 w-px shrink-0 bg-primary" />
@@ -206,9 +202,9 @@ export function ExperienceCard({
           </div>
         </div>
 
-        {card?.eyebrow ? (
+        {kicker ? (
           <p className="font-barlow font-semibold leading-6 mt-3.25 text-lg text-primary">
-            {card.eyebrow}
+            {kicker}
           </p>
         ) : null}
 
@@ -260,6 +256,11 @@ export function ExperienceCard({
         )}
 
         <div className="mt-auto pt-4">
+          {card?.availabilityNote ? (
+            <p className="mb-1.5 text-xs leading-snug text-neutral-600">
+              {card.availabilityNote}
+            </p>
+          ) : null}
           {card?.revealNote ? (
             <p className="mb-3 flex items-center gap-1 text-xs leading-none text-neutral-600">
               <Clock aria-hidden className="h-2.5 w-2.5 shrink-0" />
