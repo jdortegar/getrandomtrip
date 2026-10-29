@@ -6,11 +6,31 @@ export type IntentResult =
   | { kind: "error" };
 
 /**
+ * Requests in flight, by endpoint + body. Overlapping calls for the same
+ * payment (React's dev double effect, a quick re-render) share one request:
+ * a second POST would lose the server's claim race and answer 409.
+ */
+const inFlight = new Map<string, Promise<IntentResult>>();
+
+/**
  * Requests a payable intent from `endpoint`; sets no state, so callers can
  * apply the result from an effect callback. `closedCodes` are the API error
  * codes that mean the payment window is over.
  */
-export async function fetchShareIntent(
+export function fetchShareIntent(
+  endpoint: string,
+  body: Record<string, string>,
+  closedCodes: string[],
+): Promise<IntentResult> {
+  const key = `${endpoint} ${JSON.stringify(body)}`;
+  const pending = inFlight.get(key);
+  if (pending) return pending;
+  const request = requestIntent(endpoint, body, closedCodes).finally(() => inFlight.delete(key));
+  inFlight.set(key, request);
+  return request;
+}
+
+async function requestIntent(
   endpoint: string,
   body: Record<string, string>,
   closedCodes: string[],
