@@ -220,6 +220,25 @@ export async function peekTravelerInvite(
 }
 
 /**
+ * Whether an account already uses the address this traveler was invited with,
+ * so the landing page can offer "sign in" instead of "sign up". Reveals only
+ * a yes/no about the invited address; the claim still checks it on submit.
+ */
+export async function inviteeHasAccount(travelerId: string): Promise<boolean> {
+  const row = await prisma.tripTraveler.findUnique({
+    where: { id: travelerId },
+    select: { email: true },
+  });
+  const email = row?.email?.trim();
+  if (!email) return false;
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
+    select: { id: true },
+  });
+  return Boolean(user);
+}
+
+/**
  * Re-validate (expiry + cutoff, independently of any earlier peek), then
  * write the companion-submitted identity fields, stamp `submittedAt` +
  * `consentAt`, and flip `status` to `COMPLETE`. Deliberately does NOT null

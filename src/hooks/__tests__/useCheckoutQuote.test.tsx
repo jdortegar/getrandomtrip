@@ -55,6 +55,18 @@ describe("useCheckoutQuote", () => {
     expect(current.isReady()).toBe(true);
   });
 
+  it("keeps sending the chosen payment split on every later refresh", async () => {
+    await mount();
+    const bodyOf = (call: number) => JSON.parse(fetchMock.mock.calls[call][1].body);
+    expect(bodyOf(0)).toEqual({ tripId: "trip-a" });
+    const split = { paymentMode: "INDIVIDUAL" as const, companionEmails: ["ana@example.com"] };
+    await act(async () => { await current.refresh({ split }); });
+    await act(async () => { await current.refresh({ promoCode: "AMIGOS10" }); });
+    expect(bodyOf(2)).toEqual({ tripId: "trip-a", promoCode: "AMIGOS10", ...split });
+    await act(async () => { await current.refresh({ split: { paymentMode: "TOTAL" } }); });
+    expect(bodyOf(3)).toEqual({ tripId: "trip-a", paymentMode: "TOTAL" });
+  });
+
   it("serializes save→quote operations and never unlocks on an older response", async () => {
     await mount();
     const first = deferred<Response>();

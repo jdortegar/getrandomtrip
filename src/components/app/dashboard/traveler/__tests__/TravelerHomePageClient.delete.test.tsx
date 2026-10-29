@@ -77,6 +77,7 @@ it.each(["http", "network"])(
           eyebrow="Dashboard"
           heading="Your trips"
           locale="en"
+          paymentCopy={en.journey.checkout}
           roleToast=""
         />,
       ),
@@ -126,6 +127,7 @@ it("never lists a companion's paid trip as awaiting payment", async () => {
         eyebrow="Dashboard"
         heading="Your trips"
         locale="en"
+        paymentCopy={en.journey.checkout}
         roleToast=""
       />,
     ),

@@ -3,11 +3,12 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StripePaymentForm } from "../StripePaymentForm";
 const confirmPayment = vi.hoisted(() => vi.fn());
-const element = vi.hoisted(() => ({ ready: () => {}, error: () => {}, change: (_complete: boolean) => {} }));
+const element = vi.hoisted(() => ({ ready: () => {}, error: () => {}, change: (_complete: boolean) => {}, options: null as unknown }));
 vi.mock("@stripe/react-stripe-js", () => ({
   useStripe: () => ({ confirmPayment }),
   useElements: () => ({}),
-  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void; onChange?: (event: { complete: boolean }) => void }) => {
+  PaymentElement: (props: { onReady?: () => void; onLoadError?: () => void; onChange?: (event: { complete: boolean }) => void; options?: unknown }) => {
+    element.options = props.options;
     element.ready = props.onReady ?? (() => {});
     element.error = props.onLoadError ?? (() => {});
     element.change = (complete) => props.onChange?.({ complete });
@@ -23,16 +24,21 @@ describe("Stripe confirmation lifecycle", () => {
   const onBeforeConfirm = vi.fn();
   const onProcessingChange = vi.fn();
   const onPaymentInfoSubmitted = vi.fn();
-  function form(key: string) {
+  function form(
+    key: string,
+    returnPath?: string,
+    collectBillingDetails?: boolean,
+    billing: Partial<Record<"name" | "email" | "phone" | "line1" | "city" | "postal" | "country", string>> = {},
+  ) {
     return (
       <StripePaymentForm
-        billingCity=""
-        billingCountry=""
-        billingEmail=""
-        billingLine1=""
-        billingName=""
-        billingPhone=""
-        billingPostalCode=""
+        billingCity={billing.city ?? ""}
+        billingCountry={billing.country ?? ""}
+        billingEmail={billing.email ?? ""}
+        billingLine1={billing.line1 ?? ""}
+        billingName={billing.name ?? ""}
+        billingPhone={billing.phone ?? ""}
+        billingPostalCode={billing.postal ?? ""}
         billingState=""
         copy={{
           paymentBack: "Back",
@@ -49,6 +55,8 @@ describe("Stripe confirmation lifecycle", () => {
         onPaymentInfoSubmitted={onPaymentInfoSubmitted}
         onProcessingChange={onProcessingChange}
         onRetry={vi.fn()}
+        returnPath={returnPath}
+        collectBillingDetails={collectBillingDetails}
       />
     );
   }
@@ -189,4 +197,47 @@ describe("Stripe confirmation lifecycle", () => {
     expect(onProcessingChange).toHaveBeenLastCalledWith(true);
     expect(confirmPayment).not.toHaveBeenCalled();
   });
+
+  it.each([
+    [undefined, "/en/checkout/success"],
+    ["/checkout/share/traveler-ana", "/en/checkout/share/traveler-ana"],
+  ])("returns from Stripe to %s", async (returnPath, expected) => {
+    act(() => root.render(form("return", returnPath)));
+    onBeforeConfirm.mockResolvedValue(true);
+    confirmPayment.mockResolvedValue({ error: { message: "declined" } });
+    act(() => element.ready());
+    await act(async () => submit());
+    expect(confirmPayment).toHaveBeenCalledWith(expect.objectContaining({
+      confirmParams: expect.objectContaining({ return_url: `${window.location.origin}${expected}` }),
+    }));
+  });
+
+  it("never asks for billing details the checkout already collected", () => {
+    act(() => root.render(form("default")));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "never", address: "never" } },
+    });
+  });
+
+  it("lets Stripe collect billing details on pages without a contact form", () => {
+    act(() => root.render(form("collect", undefined, true)));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "auto", email: "auto", phone: "auto", address: "auto" } },
+    });
+  });
+
+  it("asks Stripe only for the billing details the page does not already know", () => {
+    act(() => root.render(form("partial", undefined, true, { name: "Ana Paz", email: "ana@example.com", line1: "Calle 1", city: "BA" })));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "auto", address: "auto" } },
+    });
+    act(() => root.render(form("full", undefined, true, {
+      name: "Ana Paz", email: "ana@example.com", phone: "+5491100000000",
+      line1: "Calle 1", city: "BA", postal: "1000", country: "AR",
+    })));
+    expect(element.options).toMatchObject({
+      fields: { billingDetails: { name: "never", email: "never", phone: "never", address: "never" } },
+    });
+  });
 });
+

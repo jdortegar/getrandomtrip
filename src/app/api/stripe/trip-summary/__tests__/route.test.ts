@@ -13,6 +13,8 @@ vi.mock("@/lib/db/payment", () => ({
   findPaymentByStripeIntentId: vi.fn(),
 }));
 
+const shareMocks = vi.hoisted(() => ({ findShare: vi.fn() }));
+vi.mock("@/lib/db/paymentShare", () => ({ findShareByIntent: shareMocks.findShare }));
 vi.mock("@/lib/stripe", () => ({
   getStripe: vi.fn(),
 }));
@@ -24,6 +26,9 @@ vi.mock("@/lib/prisma", () => ({
     },
     tripTraveler: {
       createMany: vi.fn(),
+    },
+    paymentShare: {
+      findFirst: vi.fn(),
     },
   },
 }));
@@ -129,4 +134,56 @@ describe("GET /api/stripe/trip-summary", () => {
     expect(body.trip.roster.cap).toBe(2);
     expect(body.trip.roster.travelers).toHaveLength(2);
   });
+
+  it("reports the amount actually charged: the trip bill when paying the total", async () => {
+    vi.mocked(findPaymentByStripeIntentId).mockResolvedValue({
+      id: "payment-1", amount: 3070, status: "APPROVED", currency: "USD", userId: "buyer-1",
+      stripePaymentIntentId: null, tripRequest: { ...makeTripRow(), paymentMode: "TOTAL" },
+    } as never);
+    const body = await (await GET(makeRequest())).json();
+    expect(body.payment.amount).toBe(3070);
+    expect(prisma.paymentShare.findFirst).not.toHaveBeenCalled();
+  });
+
+  it("reports the organizer's own share when the trip is paid individually", async () => {
+    vi.mocked(findPaymentByStripeIntentId).mockResolvedValue({
+      id: "payment-1", amount: 3070, status: "APPROVED", currency: "USD", userId: "buyer-1",
+      stripePaymentIntentId: null,
+      tripRequest: { ...makeTripRow(), status: "COLLECTING", paymentMode: "INDIVIDUAL" },
+    } as never);
+    vi.mocked(prisma.paymentShare.findFirst).mockResolvedValue({ amount: 1023.34 } as never);
+    const body = await (await GET(makeRequest())).json();
+    expect(prisma.paymentShare.findFirst).toHaveBeenCalledWith({
+      where: { paymentId: "payment-1", travelerId: null, userId: "buyer-1", kind: "SHARE" },
+      select: { amount: true },
+    });
+    expect(body.payment.amount).toBe(1023.34);
+    expect(body.trip.status).toBe("COLLECTING");
+  });
+
+  it("summarizes a companion's own share payment: their amount, no roster", async () => {
+    vi.mocked(findPaymentByStripeIntentId).mockResolvedValue(null as never);
+    shareMocks.findShare.mockResolvedValue({
+      id: "share-1",
+      userId: "buyer-1",
+      amount: 250,
+      currency: "USD",
+      status: "APPROVED",
+      stripePaymentIntentId: "pi_share",
+      payment: { tripRequest: { ...makeTripRow(), status: "COLLECTING", paymentMode: "INDIVIDUAL" } },
+    });
+    const res = await GET(makeRequest());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.payment).toMatchObject({ amount: 250, currency: "USD", status: "APPROVED" });
+    expect(body.trip).toMatchObject({ id: "trip-1", status: "COLLECTING", type: "family" });
+    expect(body.trip.roster).toBeNull();
+  });
+
+  it("refuses another person's share payment", async () => {
+    vi.mocked(findPaymentByStripeIntentId).mockResolvedValue(null as never);
+    shareMocks.findShare.mockResolvedValue({ id: "share-1", userId: "someone-else", payment: { tripRequest: makeTripRow() } });
+    expect((await GET(makeRequest())).status).toBe(403);
+  });
 });
+

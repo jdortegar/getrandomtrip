@@ -11,6 +11,7 @@ const headers = { "Cache-Control": "no-store" };
 // Preserve the existing booking-status semantics, including unpaid checkout.
 const SOLD_STATUSES: TripRequestStatus[] = [
   "PENDING_PAYMENT",
+  "COLLECTING",
   "CONFIRMED",
   "REVEALED",
   "COMPLETED",

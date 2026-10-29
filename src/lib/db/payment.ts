@@ -1,9 +1,11 @@
-import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed } from "@/lib/email";
+import { sendAdminNewBooking, sendBookingConfirmed, sendPaymentFailed, sendTravelerInviteEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
-import type { PaymentStatus, Prisma } from "@prisma/client";
+import type { PaymentMode, PaymentStatus, Prisma } from "@prisma/client";
 import type { PaxDetails } from "@/lib/types/PaxDetails";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
+import { INDIVIDUAL_PAYMENT_WINDOW_MS } from "@/lib/payments/split-shares";
+import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 
 export interface CreatePaymentData {
   userId: string;
@@ -83,24 +85,39 @@ export async function createPayment(data: CreatePaymentData) {
   });
 }
 
+/** INDIVIDUAL checkout: what the organizer pays now and each companion owes. */
+export interface CheckoutSplit {
+  /** USD cents charged on the organizer's intent. */
+  organizerCents: number;
+  /** One per adult companion, in roster order; emails are normalized. */
+  companions: { email: string; amountCents: number }[];
+}
+
 /**
  * Creates or updates the single `Payment` row for a trip (unique `tripRequestId`).
  * Used when the user starts checkout again — resets to PENDING with new Stripe PaymentIntent.
+ * With `split`, `amount` is the trip bill and the organizer's intent is also
+ * recorded as their `PaymentShare`; companion rows and their pending shares are
+ * rebuilt from `split.companions`. A trip leaving INDIVIDUAL mode drops them.
  */
 export async function upsertPaymentForTripCheckout(data: CreatePaymentData & {
   expectedTripUpdatedAt: Date;
   level: string;
   paxDetails: PaxDetails;
   previousPayment: { id: string; stripePaymentIntentId: string | null } | null;
+  previousPaymentMode?: PaymentMode;
+  split?: CheckoutSplit;
 }) {
   const currency = data.currency ?? "USD";
+  const paymentMode: PaymentMode = data.split ? "INDIVIDUAL" : "TOTAL";
   return prisma.$transaction(async (tx) => {
     const conflict = () => Object.assign(new Error("Checkout changed, please retry"), { status: 409 });
     const party = data.paxDetails;
     const changed = await tx.tripRequest.updateMany({
       where: { id: data.tripRequestId, userId: data.userId, updatedAt: data.expectedTripUpdatedAt,
         status: { in: ["SAVED", "PENDING_PAYMENT"] } },
-      data: { status: "PENDING_PAYMENT", level: data.level, pax: party.adults + party.minors, paxDetails: { ...party } },
+      data: { status: "PENDING_PAYMENT", level: data.level, pax: party.adults + party.minors, paxDetails: { ...party },
+        ...(data.split || data.previousPaymentMode === "INDIVIDUAL" ? { paymentMode } : {}) },
     });
     if (changed.count !== 1) throw conflict();
     const fields = {
@@ -114,10 +131,44 @@ export async function upsertPaymentForTripCheckout(data: CreatePaymentData & {
         data: { ...fields, providerPaymentId: null },
       });
       if (updated.count !== 1) throw conflict();
+      await syncCheckoutSplit(tx, data, data.previousPayment.id, currency);
       return;
     }
-    await tx.payment.create({ data: { ...fields, tripRequestId: data.tripRequestId, userId: data.userId } });
+    const created = await tx.payment.create({ data: { ...fields, tripRequestId: data.tripRequestId, userId: data.userId } });
+    await syncCheckoutSplit(tx, data, created.id, currency);
   });
+}
+
+/**
+ * Rebuilds the pre-payment split. Only runs while the payment is retryable, so
+ * every unclaimed ADULT row was created here (the paid roster comes later).
+ */
+async function syncCheckoutSplit(
+  tx: Prisma.TransactionClient,
+  data: { tripRequestId: string; userId: string; stripePaymentIntentId?: string;
+    previousPaymentMode?: PaymentMode; split?: CheckoutSplit },
+  paymentId: string,
+  currency: string,
+) {
+  if (!data.split && data.previousPaymentMode !== "INDIVIDUAL") return;
+  await tx.paymentShare.deleteMany({ where: { paymentId, status: { in: [...RETRYABLE_PAYMENT_STATUSES] } } });
+  await tx.tripTraveler.deleteMany({
+    where: { tripRequestId: data.tripRequestId, kind: "ADULT", userId: null },
+  });
+  if (!data.split) return;
+  await tx.paymentShare.create({
+    data: { paymentId, userId: data.userId, kind: "SHARE", currency,
+      amount: data.split.organizerCents / 100, stripePaymentIntentId: data.stripePaymentIntentId },
+  });
+  for (const companion of data.split.companions) {
+    const traveler = await tx.tripTraveler.create({
+      data: { tripRequestId: data.tripRequestId, kind: "ADULT", email: companion.email },
+    });
+    await tx.paymentShare.create({
+      data: { paymentId, travelerId: traveler.id, kind: "SHARE", currency,
+        amount: companion.amountCents / 100 },
+    });
+  }
 }
 
 /**
@@ -291,6 +342,8 @@ export async function updatePaymentFromStripeWebhook(
   // Match checkout's lock order: TripRequest before Payment. The provisional
   // promotion is invisible until commit and must roll back if the claim is lost.
   const lostClaim = new Error("Payment claim changed");
+  // INDIVIDUAL: the organizer's intent opens collection; confirmation waits for the deadline.
+  const individual = payment.tripRequest?.paymentMode === "INDIVIDUAL";
   const outcome = await prisma.$transaction(async (tx) => {
     const promoted = finalData.status === "APPROVED"
       ? await tx.tripRequest.updateMany({
@@ -298,7 +351,9 @@ export async function updatePaymentFromStripeWebhook(
             id: payment.tripRequestId,
             status: { in: ["DRAFT", "SAVED", "PENDING_PAYMENT"] },
           },
-          data: { status: "CONFIRMED" },
+          data: individual
+            ? { status: "COLLECTING", paymentDeadline: new Date(Date.now() + INDIVIDUAL_PAYMENT_WINDOW_MS) }
+            : { status: "CONFIRMED" },
         })
       : { count: 0 };
     const { count } = await tx.payment.updateMany({
@@ -315,9 +370,16 @@ export async function updatePaymentFromStripeWebhook(
       data: { ...finalData, updatedAt: new Date() },
     });
     if (count === 0) throw lostClaim;
+    if (individual && finalData.status) {
+      await tx.paymentShare.updateMany({
+        where: { paymentId: payment.id, stripePaymentIntentId },
+        data: { status: finalData.status, ...(finalData.status === "APPROVED" ? { paidAt: new Date() } : {}) },
+      });
+    }
     // Mode comes from the verified provider intent, never the browser request.
     // Test/unknown mode still settles normally but cannot reach the sales outbox.
-    const saleQueued = liveMode && finalData.status === "APPROVED" && !repairsApprovedBooking;
+    // INDIVIDUAL trips queue the sale once the deadline confirms the final bill.
+    const saleQueued = liveMode && finalData.status === "APPROVED" && !repairsApprovedBooking && !individual;
     if (saleQueued) {
       const settled = await tx.payment.findUniqueOrThrow({
         where: { id: payment.id },
@@ -336,7 +398,11 @@ export async function updatePaymentFromStripeWebhook(
   if (!outcome.changed) return payment;
 
   // External side effects only after commit and only for the winning promotion.
-  if (outcome.confirmed) {
+  if (outcome.confirmed && individual) {
+    await inviteSplitCompanions(payment.tripRequestId).catch((error: unknown) => {
+      console.error("[split] companion invites not sent:", payment.tripRequestId, error);
+    });
+  } else if (outcome.confirmed) {
     sendBookingConfirmed(payment.tripRequestId, payment.userId);
     sendAdminNewBooking(payment.tripRequestId, payment.userId);
   }
@@ -352,4 +418,23 @@ export async function updatePaymentFromStripeWebhook(
   }
 
   return { ...payment, ...finalData };
+}
+
+/**
+ * Invites every companion who still owes their share once the organizer has
+ * paid. Only never-invited rows get a token, so a replayed webhook sends
+ * nothing twice; delivery failures never undo the settled payment.
+ */
+export async function inviteSplitCompanions(tripRequestId: string) {
+  const companions = await prisma.tripTraveler.findMany({
+    where: { tripRequestId, kind: "ADULT", status: "PENDING", userId: null, email: { not: null } },
+    select: { id: true },
+  });
+  for (const { id } of companions) {
+    try {
+      sendTravelerInviteEmail(id, await issueTravelerInvite(id, "PENDING"));
+    } catch (error) {
+      console.error("[split] companion invite not issued:", id, error);
+    }
+  }
 }

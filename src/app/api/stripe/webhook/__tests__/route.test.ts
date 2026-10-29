@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const mocks = vi.hoisted(() => ({ constructEvent: vi.fn(), update: vi.fn() }));
+const mocks = vi.hoisted(() => ({ constructEvent: vi.fn(), update: vi.fn(), settleShare: vi.fn() }));
 vi.mock("@/lib/stripe", () => ({
   getStripe: () => ({ webhooks: { constructEvent: mocks.constructEvent } }),
 }));
@@ -11,6 +11,7 @@ vi.mock("@/lib/db/payment", async (importOriginal) => ({
     .promoAttributionFromMetadata,
   updatePaymentFromStripeWebhook: mocks.update,
 }));
+vi.mock("@/lib/db/paymentShare", () => ({ settleShareFromStripe: mocks.settleShare }));
 import { POST } from "../route";
 beforeEach(() => vi.resetAllMocks());
 afterEach(() => vi.unstubAllEnvs());
@@ -180,4 +181,49 @@ it("does not attribute a promo code to a failed intent", async () => {
   const [, data] = mocks.update.mock.calls[0];
   expect(data.stripePromotionCodeId).toBeUndefined();
   expect(data.promoDiscountUsd).toBeUndefined();
+});
+it.each([
+  ["payment_intent.succeeded", "succeeded", "APPROVED"],
+  ["payment_intent.payment_failed", "requires_payment_method", "FAILED"],
+])("settles a companion share intent (%s) without touching the trip payment", async (type, status, expected) => {
+  mocks.settleShare.mockResolvedValue(true);
+  mocks.constructEvent.mockReturnValue({
+    type,
+    data: { object: { id: "pi_share", status, created: 10, metadata: { kind: "SHARE", shareId: "share-1" } } },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.settleShare).toHaveBeenCalledWith(
+    "pi_share",
+    expected,
+    status === "succeeded" ? new Date(10_000) : undefined,
+  );
+  expect(mocks.update).not.toHaveBeenCalled();
+});
+it("acknowledges a share intent no share holds anymore", async () => {
+  mocks.settleShare.mockResolvedValue(false);
+  mocks.constructEvent.mockReturnValue({
+    type: "payment_intent.succeeded",
+    data: { object: { id: "pi_old_share", status: "succeeded", created: 1, metadata: { kind: "SHARE" } } },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.update).not.toHaveBeenCalled();
+});
+it("keeps routing organizer and total intents to the trip payment", async () => {
+  mocks.constructEvent.mockReturnValue({
+    type: "payment_intent.succeeded",
+    data: { object: { id: "pi_org", status: "succeeded", created: 1, metadata: { paymentMode: "INDIVIDUAL" } } },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.settleShare).not.toHaveBeenCalled();
+  expect(mocks.update).toHaveBeenCalledWith("pi_org", expect.objectContaining({ status: "APPROVED" }), expect.anything(), false);
+});
+it.each(["TOP_UP", "ORGANIZER_REMAINDER"])("settles a %s intent on its share", async (kind) => {
+  mocks.settleShare.mockResolvedValue(true);
+  mocks.constructEvent.mockReturnValue({
+    type: "payment_intent.succeeded",
+    data: { object: { id: "pi_extra", status: "succeeded", created: 10, metadata: { kind, shareId: "share-2" } } },
+  });
+  expect((await POST(request())).status).toBe(200);
+  expect(mocks.settleShare).toHaveBeenCalledWith("pi_extra", "APPROVED", new Date(10_000));
+  expect(mocks.update).not.toHaveBeenCalled();
 });

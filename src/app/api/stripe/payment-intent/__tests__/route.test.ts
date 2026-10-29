@@ -565,3 +565,181 @@ describe("POST /api/stripe/payment-intent — stale-intent amount guard", () => 
     expect(res.status).toBeGreaterThanOrEqual(500);
   });
 });
+
+describe("POST /api/stripe/payment-intent — individual payment mode", () => {
+  let POST: RouteModule["POST"];
+
+  function individualRequest(body: Record<string, unknown>) {
+    return new Request("http://localhost/api/stripe/payment-intent", {
+      method: "POST",
+      body: JSON.stringify({ tripId: "trip-1", ...body }),
+    }) as unknown as import("next/server").NextRequest;
+  }
+
+  function groupTrip(overrides: Record<string, unknown> = {}) {
+    return baseTrip({
+      type: "group",
+      pax: 3,
+      paxDetails: { adults: 3, minors: 0, rooms: 2 },
+      paymentMode: "TOTAL",
+      travelers: [],
+      ...overrides,
+    });
+  }
+
+  const companions = ["Ana@Example.com", "bo@example.com"];
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    vi.mocked(getServerSession).mockResolvedValue({
+      user: { id: "buyer-1", email: "buyer@example.com" },
+    });
+    vi.mocked(loadTripperPriceOverrides).mockResolvedValue(null as never);
+    vi.mocked(resolveBasePricePerPerson).mockReturnValue({ offered: true, price: 1000, source: "catalog" } as never);
+    vi.mocked(applyPaxMultiplier).mockImplementation((price) => price);
+    // USD 1000 per person + USD 70 per-trip add-on
+    vi.mocked(calculatePaymentTotals).mockImplementation(({ logistics }) => ({
+      totalTrip: 1000 * logistics.pax + 70,
+      totalPerPax: 1000 + 70 / logistics.pax,
+    }) as never);
+    vi.mocked(revertExpiredPendingPayment).mockImplementation(async (trip: { status: string }) => trip.status as never);
+    vi.mocked(upsertPaymentForTripCheckout).mockResolvedValue(undefined);
+    vi.mocked(prisma.payment.count).mockResolvedValue(0);
+    stripeMock.paymentIntents.create.mockResolvedValue({ id: "pi_org", client_secret: "secret_org" });
+    POST = (await import("../route")).POST;
+  });
+
+  it("charges the organizer only their share and persists every share", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip() as never);
+    const res = await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: companions }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({
+      paymentMode: "INDIVIDUAL",
+      total: 1023.34,
+      tripTotal: 3070,
+      split: {
+        companionEmails: ["ana@example.com", "bo@example.com"],
+        companionShare: 1023.33,
+        maxTopUp: { invitee: 11.67, organizer: 46.66 },
+      },
+    });
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: 102334, metadata: expect.objectContaining({ paymentMode: "INDIVIDUAL" }) }),
+    );
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({
+      amount: 3070,
+      previousPaymentMode: "TOTAL",
+      split: {
+        organizerCents: 102334,
+        companions: [
+          { email: "ana@example.com", amountCents: 102333 },
+          { email: "bo@example.com", amountCents: 102333 },
+        ],
+      },
+    }));
+  });
+
+  it("splits the organizer's promo discount evenly across every share", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip() as never);
+    stripeMock.promotionCodes.list.mockResolvedValue({
+      data: [{ id: "promo_1", promotion: { coupon: { valid: true, percent_off: 10 } }, restrictions: {} }],
+    });
+    const res = await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: companions, promoCode: "amigos10" }));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ total: 921, tripTotal: 2763, discountAmount: 307 });
+    expect(upsertPaymentForTripCheckout).toHaveBeenCalledWith(expect.objectContaining({
+      amount: 2763,
+      split: {
+        organizerCents: 92100,
+        companions: [
+          { email: "ana@example.com", amountCents: 92100 },
+          { email: "bo@example.com", amountCents: 92100 },
+        ],
+      },
+    }));
+  });
+
+  it("reuses the saved mode and companion emails when a refresh omits them", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
+      paymentMode: "INDIVIDUAL",
+      travelers: [
+        { kind: "ADULT", userId: null, email: "ana@example.com" },
+        { kind: "ADULT", userId: null, email: "bo@example.com" },
+      ],
+    }) as never);
+    const res = await POST(individualRequest({}));
+    expect(res.status).toBe(200);
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(expect.objectContaining({ amount: 102334 }));
+  });
+
+  it("falls back to the total when a saved split no longer fits the party", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
+      paymentMode: "INDIVIDUAL",
+      travelers: [{ kind: "ADULT", userId: null, email: "ana@example.com" }],
+    }) as never);
+    const res = await POST(individualRequest({}));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ paymentMode: "TOTAL", total: 3070 });
+    expect(vi.mocked(upsertPaymentForTripCheckout).mock.calls[0][0]).toMatchObject({
+      previousPaymentMode: "INDIVIDUAL",
+    });
+    expect(vi.mocked(upsertPaymentForTripCheckout).mock.calls[0][0].split).toBeUndefined();
+  });
+
+  it("drops back to a full-total charge when the buyer switches to TOTAL", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({ paymentMode: "INDIVIDUAL" }) as never);
+    const res = await POST(individualRequest({ paymentMode: "TOTAL" }));
+    expect(res.status).toBe(200);
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(
+      expect.objectContaining({ amount: 307000, metadata: expect.objectContaining({ paymentMode: "TOTAL" }) }),
+    );
+    const call = vi.mocked(upsertPaymentForTripCheckout).mock.calls[0][0];
+    expect(call).toMatchObject({ amount: 3070, previousPaymentMode: "INDIVIDUAL" });
+    expect(call.split).toBeUndefined();
+  });
+
+  it("creates a new intent instead of reusing one from the other mode", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
+      payment: { status: "PENDING", stripePaymentIntentId: "pi_existing" },
+    }) as never);
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({
+      id: "pi_existing", status: "requires_payment_method", amount: 102334,
+      client_secret: "secret_existing", metadata: { promoCode: "", paymentMode: "TOTAL" },
+    });
+    stripeMock.paymentIntents.cancel.mockResolvedValue({ id: "pi_existing" });
+    await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: companions }));
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalledWith("pi_existing");
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalled();
+  });
+
+  it.each([
+    ["one email for two companions", ["ana@example.com"]],
+    ["a duplicated email", ["ana@example.com", "ANA@example.com"]],
+    ["the buyer's own email", ["ana@example.com", "buyer@example.com"]],
+    ["an invalid email", ["ana@example.com", "not-an-email"]],
+  ])("rejects %s without creating an intent", async (_label, emails) => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip() as never);
+    const res = await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: emails }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ errorCode: "INVALID_COMPANION_EMAILS" });
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    expect(upsertPaymentForTripCheckout).not.toHaveBeenCalled();
+  });
+
+  it("rejects individual payment for a single adult", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
+      pax: 2, paxDetails: { adults: 1, minors: 1, rooms: 1 },
+    }) as never);
+    const res = await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: [] }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ errorCode: "INDIVIDUAL_REQUIRES_COMPANIONS" });
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unknown payment mode", async () => {
+    vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip() as never);
+    const res = await POST(individualRequest({ paymentMode: "SPLIT" }));
+    expect(res.status).toBe(400);
+    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+  });
+});

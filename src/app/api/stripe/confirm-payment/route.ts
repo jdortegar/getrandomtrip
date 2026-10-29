@@ -10,6 +10,7 @@ import {
   updatePaymentFromStripeWebhook,
 } from "@/lib/db/payment";
 import type { UpdatePaymentData } from "@/lib/db/payment";
+import { findShareByIntent, settleShareFromStripe } from "@/lib/db/paymentShare";
 
 /**
  * POST /api/stripe/confirm-payment
@@ -47,7 +48,25 @@ export async function POST(request: NextRequest) {
   const payment = (await findPaymentByStripeIntentId(paymentIntentId)) ??
     (await findPaymentByProviderId(paymentIntentId));
   if (!payment) {
-    return NextResponse.json({ error: "Payment record not found" }, { status: 404 });
+    // A companion share or top-up intent settles its own share, never the trip Payment.
+    const share = await findShareByIntent(paymentIntentId);
+    if (!share) {
+      return NextResponse.json({ error: "Payment record not found" }, { status: 404 });
+    }
+    if (share.userId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    let shareIntent: Stripe.PaymentIntent;
+    try {
+      shareIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    } catch (err) {
+      console.error("confirm-payment: failed to retrieve share intent", err);
+      return NextResponse.json({ error: "PaymentIntent not found" }, { status: 404 });
+    }
+    if (shareIntent.status === "succeeded" && shareIntent.metadata?.shareId === share.id) {
+      await settleShareFromStripe(shareIntent.id, "APPROVED", new Date(shareIntent.created * 1000));
+    }
+    return NextResponse.json({ status: shareIntent.status });
   }
   if (payment.userId !== session.user.id) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });

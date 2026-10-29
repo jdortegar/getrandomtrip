@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Calendar, Car, Loader2, MapPin } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { CheckoutContactCard } from "@/components/app/checkout/CheckoutContactCard";
+import { CheckoutPaymentModeCard } from "@/components/app/checkout/CheckoutPaymentModeCard";
 import { CheckoutTravelDocumentsCard } from "@/components/app/checkout/CheckoutTravelDocumentsCard";
 import {
   CheckoutTravelDetailsCard,
@@ -15,13 +16,7 @@ import {
 import ChatFab from "@/components/chrome/ChatFab";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
-import {
-  TRANSPORT_ICONS,
-  TRANSPORT_OPTIONS,
-} from "@/components/journey/TransportSelector";
 import { useUserStore } from "@/store/slices/userStore";
-import { ADDONS } from "@/lib/data/shared/addons-catalog";
-import { FILTER_OPTIONS } from "@/store/slices/journeyStore";
 import type { Logistics, Filters } from "@/store/slices/journeyStore";
 import {
   applyPaxMultiplier,
@@ -29,12 +24,6 @@ import {
 } from "@/lib/data/traveler-types";
 import { getCardForType, getLevelById } from "@/lib/utils/experiencesData";
 import { formatUSD } from "@/lib/format";
-import {
-  getHasExcuseStep,
-  resolveExcuseSelectionLabels,
-} from "@/lib/helpers/excuse-helper";
-import { XSED_LEVEL_ID } from "@/lib/constants/product-config";
-import { travelerTypeOf, tripFamilyOf } from "@/lib/db/tripRequestFamily";
 import {
   DEFAULT_PAX_DETAILS,
   paxDetailsEquals,
@@ -46,6 +35,9 @@ import { normalizeCountryCodes, normalizeVisaCodes } from "@/lib/geo/countryOpti
 import type { XsedTravelType } from "@/types/core";
 import { Button } from "@/components/ui/Button";
 import { useCheckoutQuote } from "@/hooks/useCheckoutQuote";
+import { parseCompanionEmails } from "@/lib/payments/companion-emails";
+import { INDIVIDUAL_PAYMENT_WINDOW_MS } from "@/lib/payments/split-shares";
+import type { CheckoutPaymentSplit } from "@/lib/types/CheckoutQuote";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
 import { getCheckoutLevel, getCheckoutPaxDetails, getFixedCheckoutParty } from "@/lib/helpers/checkout-party";
 import { getDictionary } from "@/lib/i18n/dictionaries";
@@ -54,34 +46,19 @@ import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { cn } from "@/lib/utils";
+import { normalizeCountryToCode } from "@/lib/helpers/countryCode";
+import { buildTripDetailRows, normalizeLevelForCatalog } from "@/components/app/checkout/buildTripDetailRows";
 import {
   pickCheckoutTrip,
   CHECKOUT_TRIP_STATUSES,
 } from "@/lib/helpers/checkout-trip";
-import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import { getFiltersCostBreakdown } from "@/lib/pricing";
-import {
-  OWN_CAR_TRANSPORT,
-  resolveTripTransport,
-  resolveTripTransportLabel,
-} from "@/lib/helpers/transport";
 import { useCheckoutTracking } from "@/lib/hooks/useCommerceTracking";
 import { promoReasonFromErrorCode } from "@/lib/payments/promo-rules";
 
 const usd = (n: number) => `USD ${n.toFixed(Number.isInteger(n) ? 0 : 2)}`;
 
-/** Converts a stored country value (full name or code) to a 2-letter ISO code. */
-function normalizeCountryToCode(value: string | undefined | null): string {
-  if (!value) return "";
-  const trimmed = value.trim();
-  const upper = trimmed.toUpperCase();
-  if (AMERICAN_COUNTRIES.some((c) => c.code === upper)) return upper;
-  const byName = AMERICAN_COUNTRIES.find(
-    (c) => c.name.toLowerCase() === trimmed.toLowerCase(),
-  );
-  return byName ? byName.code : "";
-}
 
 const DEFAULT_CHECKOUT_FILTERS: Filters = {
   accommodationType: "any",
@@ -93,52 +70,7 @@ const DEFAULT_CHECKOUT_FILTERS: Filters = {
   transport: "plane",
 };
 
-function normalizeLevelForCatalog(raw?: string | null): string | undefined {
-  if (!raw) return undefined;
-  const normalized = raw
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace("explora+", "explora-plus");
-  if (normalized === "exploraplus") return "explora-plus";
-  if (normalized === "modoexplora" || normalized === "explora")
-    return "modo-explora";
-  return normalized || undefined;
-}
 
-function getFilterLabel(
-  group: keyof typeof FILTER_OPTIONS,
-  key: string,
-  filterOptions?: Record<
-    string,
-    { options: Array<{ key: string; label: string }> }
-  >,
-): string {
-  const fromDict = filterOptions?.[group]?.options?.find(
-    (o) => o.key === key,
-  )?.label;
-  return fromDict ?? key;
-}
-
-function formatDatesSummary(
-  startDate: string,
-  nights: number,
-  template: string,
-  monthsShort: string[],
-): string {
-  const [y, m, d] = startDate.split("-").map(Number);
-  const start = new Date(y, m - 1, d);
-  const end = new Date(start);
-  end.setDate(end.getDate() + nights);
-  const startDay = start.getDate();
-  const endDay = end.getDate();
-  const startMonth = monthsShort[start.getMonth()] ?? "";
-  const endMonth = monthsShort[end.getMonth()] ?? "";
-  return template
-    .replace("{startDay}", String(startDay))
-    .replace("{endDay}", String(endDay))
-    .replace("{startMonth}", startMonth)
-    .replace("{endMonth}", endMonth);
-}
 
 function getBasePriceFromCatalog(
   travelType: string | null,
@@ -198,17 +130,40 @@ function CheckoutContent() {
   const checkoutLevel = payment.quote?.level ?? (trip ? getCheckoutLevel(trip) : "");
   const [isConfirming, setIsConfirming] = useState(false);
   const confirmingRef = useRef(false);
+  const [paymentMode, setPaymentMode] = useState<CheckoutPaymentSplit["paymentMode"]>("TOTAL");
+  const [companionEmails, setCompanionEmails] = useState<string[]>([]);
+  const [emailsInvalid, setEmailsInvalid] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [showDisclaimerError, setShowDisclaimerError] = useState(false);
+  // A saved INDIVIDUAL split comes back on reload: adopt its mode, and its
+  // emails only while the form has none, so a refresh never overwrites edits.
+  const quoteSplit = payment.quote?.paymentMode === "INDIVIDUAL" ? payment.quote.split : undefined;
+  const [hydratedSplitIntent, setHydratedSplitIntent] = useState<string | null>(null);
+  if (quoteSplit && payment.quote && hydratedSplitIntent !== payment.quote.paymentIntentId) {
+    setHydratedSplitIntent(payment.quote.paymentIntentId);
+    setPaymentMode("INDIVIDUAL");
+    if (companionEmails.every((email) => !email.trim())) setCompanionEmails(quoteSplit.companionEmails);
+  }
+  // Compare only the visible slots, the same ones a calculation sends.
+  const quotedEmailsChanged = Boolean(quoteSplit) &&
+    Array.from({ length: Math.max(0, paxDetails.adults - 1) }, (_, i) =>
+      (companionEmails[i] ?? "").trim().toLowerCase()).join("\n") !==
+      quoteSplit!.companionEmails.join("\n");
+  const splitErrorCode = payment.errorCode === "INVALID_COMPANION_EMAILS" ||
+    payment.errorCode === "INDIVIDUAL_REQUIRES_COMPANIONS";
+  // Never offer the full-total intent while the buyer chose to pay individually.
+  const splitPending = paymentMode === "INDIVIDUAL" && (!quoteSplit || quotedEmailsChanged);
   const appliedPromocode = payment.promoCode;
   const promoDiscount = payment.quote?.discountAmount ?? 0;
   const promoLoading = payment.pending || isConfirming;
   const promoRejection = promoReasonFromErrorCode(payment.errorCode);
-  const paymentError = payment.errorCode === "INVALID_TRIP_DATES"
+  const paymentError = splitErrorCode ? null : payment.errorCode === "INVALID_TRIP_DATES"
     ? dict?.journey.checkout.errors.invalidDates ?? null
     : promoRejection
       ? dict?.journey.checkout.errors.promo[promoRejection] ?? payment.error
       : payment.error;
   const promoError = paymentError;
-  const clientSecret = payment.isReady() ? payment.quote?.clientSecret ?? null : null;
+  const clientSecret = payment.isReady() && !splitPending ? payment.quote?.clientSecret ?? null : null;
   const onPaymentInfoSubmitted = useCheckoutTracking(trip?.id, trip?.type, clientSecret ? payment.quote : null);
   const contactFormRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<CheckoutFormFields>({
@@ -259,6 +214,7 @@ function CheckoutContent() {
   async function handleApplyPromocode() {
     const code = promocode.trim().toUpperCase();
     if (!code || !trip?.id || promoLoading || confirmingRef.current) return;
+    setDisclaimerAccepted(false);
     try {
       await payment.refresh({ promoCode: code });
       setPromocode("");
@@ -268,6 +224,7 @@ function CheckoutContent() {
 
   async function handleRemovePromocode() {
     if (!trip?.id || promoLoading || confirmingRef.current) return;
+    setDisclaimerAccepted(false);
     try { await payment.refresh({ promoCode: null }); }
     catch { /* Keep confirmation blocked until the quote can be refreshed. */ }
   }
@@ -439,19 +396,11 @@ function CheckoutContent() {
   const travelType =
     trip?.type != null ? normalizeTripType(trip.type) : undefined;
   const experience = checkoutLevel || undefined;
-  const excuse = trip?.excuseKey ?? undefined;
-  const refineDetails = trip?.refineDetails ?? [];
   const startDateParamRaw = trip?.startDate ?? undefined;
   const startDateParam =
     typeof startDateParamRaw === "string" && startDateParamRaw.includes("T")
       ? startDateParamRaw.slice(0, 10)
       : (startDateParamRaw ?? undefined);
-  const nightsNum = trip?.nights ?? 1;
-  const transport = trip?.transport ?? undefined;
-  const departPref = trip?.departPref ?? undefined;
-  const arrivePref = trip?.arrivePref ?? undefined;
-  const maxTravelTime = trip?.maxTravelTime ?? undefined;
-  const climate = trip?.climate ?? undefined;
 
   const selectedLevel = (() => {
     if (!experience || !travelType) return null;
@@ -488,89 +437,6 @@ function CheckoutContent() {
         : "",
     };
   })();
-  const resolvedExcuse = resolveExcuseSelectionLabels({
-    travelerType: trip ? travelerTypeOf(trip) : "",
-    excuseKey: excuse,
-    refineDetails,
-    localizedExcuses: dict?.journey?.excuses,
-    localizedRefineOptions: dict?.journey?.refineDetailOptions,
-  });
-  const excuseTitleRes = resolvedExcuse?.title;
-  const refineDetailEntries = resolvedExcuse?.refineDetails ?? [];
-  const regularTransportLabel = (() => {
-    if (!transport) return undefined;
-    const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
-    return (
-      TRANSPORT_OPTIONS.find((o) => o.id === transport)?.label ??
-      getFilterLabel("transport", transport, filterOpts)
-    );
-  })();
-  const transportLabel = resolveTripTransportLabel(
-    trip?.type, transport, dict?.tripTransport.ownCar ?? "", regularTransportLabel,
-  );
-  const TransportIcon = resolveTripTransport(trip?.type, transport) === OWN_CAR_TRANSPORT
-    ? Car
-    : TRANSPORT_ICONS[transport ?? "plane"];
-
-  type FilterKind =
-    | "arrivePref"
-    | "avoid"
-    | "climate"
-    | "departPref"
-    | "maxTravelTime";
-  const sumLabels = dict?.journey?.summary;
-  const filterOpts = dict?.journey?.preferencesStep?.filterOptions;
-  const activeFilters = (() => {
-    const list: {
-      id: string;
-      kind: FilterKind;
-      label: string;
-      value?: string;
-    }[] = [];
-    if (!sumLabels) return list;
-    if (departPref && departPref !== "any") {
-      list.push({
-        id: `depart-${departPref}`,
-        kind: "departPref",
-        label: `${sumLabels.filterLabelDepart}: ${getFilterLabel("departPref", departPref, filterOpts)}`,
-      });
-    }
-    if (arrivePref && arrivePref !== "any") {
-      list.push({
-        id: `arrive-${arrivePref}`,
-        kind: "arrivePref",
-        label: `${sumLabels.filterLabelArrive}: ${getFilterLabel("arrivePref", arrivePref, filterOpts)}`,
-      });
-    }
-    if (maxTravelTime && maxTravelTime !== "no-limit") {
-      list.push({
-        id: `time-${maxTravelTime}`,
-        kind: "maxTravelTime",
-        label: `${sumLabels.filterLabelTime}: ${getFilterLabel("maxTravelTime", maxTravelTime, filterOpts)}`,
-      });
-    }
-    if (climate && climate !== "any") {
-      list.push({
-        id: `climate-${climate}`,
-        kind: "climate",
-        label: `${sumLabels.filterLabelClimate}: ${getFilterLabel("climate", climate, filterOpts)}`,
-      });
-    }
-    avoidDestinations.forEach((city) => {
-      list.push({
-        id: `avoid-${city}`,
-        kind: "avoid",
-        label: city,
-        value: city,
-      });
-    });
-    return list;
-  })();
-
-  const selectedAddons = addons.selected
-    .map((s) => ADDONS.find((a) => a.id === s.id))
-    .filter((a): a is (typeof ADDONS)[number] => Boolean(a));
-
   const backToJourneyHref = pathForLocale(resolvedLocale, "/journey");
 
   async function persistCheckoutTravelers(nextDetails: PaxDetails) {
@@ -578,7 +444,13 @@ function CheckoutContent() {
     const details = getFixedCheckoutParty(trip.type, checkoutLevel) ?? nextDetails;
     const nextPax = details.adults + details.minors;
     if (nextPax === trip.pax && paxDetailsEquals(details, trip.paxDetails) && payment.isReady()) return;
-    await payment.refresh({ save: async () => {
+    // A different number of companions invalidates the split: quote the total until recalculated.
+    const resetSplit = paymentMode === "INDIVIDUAL" && details.adults !== paxDetails.adults;
+    if (resetSplit) {
+      setDisclaimerAccepted(false);
+      if (details.adults < 2) setPaymentMode("TOTAL");
+    }
+    await payment.refresh({ ...(resetSplit ? { split: { paymentMode: "TOTAL" } } : {}), save: async () => {
       const response = await fetch("/api/trip-requests", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: trip.id, pax: nextPax, paxDetails: details }),
@@ -597,13 +469,52 @@ function CheckoutContent() {
     } });
   }
 
+  function handlePaymentModeChange(mode: CheckoutPaymentSplit["paymentMode"]) {
+    if (mode === paymentMode || promoLoading || confirmingRef.current) return;
+    setPaymentMode(mode);
+    setDisclaimerAccepted(false);
+    setShowDisclaimerError(false);
+    setEmailsInvalid(false);
+    if (mode === "TOTAL") void payment.refresh({ split: { paymentMode: "TOTAL" } }).catch(() => {});
+  }
+
+  function handleCompanionEmailChange(index: number, value: string) {
+    setEmailsInvalid(false);
+    setDisclaimerAccepted(false);
+    setCompanionEmails((previous) => {
+      const next = Array.from({ length: Math.max(0, paxDetails.adults - 1) }, (_, i) => previous[i] ?? "");
+      next[index] = value;
+      return next;
+    });
+  }
+
+  async function handleCalculateShare() {
+    if (promoLoading || confirmingRef.current) return;
+    const slots = Math.max(0, paxDetails.adults - 1);
+    const emails = Array.from({ length: slots }, (_, i) => companionEmails[i] ?? "");
+    const parsed = parseCompanionEmails(emails, slots, session?.user?.email);
+    if (!parsed) {
+      setEmailsInvalid(true);
+      return;
+    }
+    setDisclaimerAccepted(false);
+    try {
+      await payment.refresh({ split: { paymentMode: "INDIVIDUAL", companionEmails: parsed } });
+    } catch { /* The quote error is shown on the payment mode card. */ }
+  }
+
   function handlePaymentProcessingChange(processing: boolean) {
     confirmingRef.current = processing;
     setIsConfirming(processing);
   }
 
   const onBeforeConfirm = async (): Promise<boolean> => {
-    if (!hasTripId || !trip?.id || !payment.isReady()) return false;
+    if (!hasTripId || !trip?.id || !payment.isReady() || splitPending) return false;
+    if (paymentMode === "INDIVIDUAL" && !disclaimerAccepted) {
+      setShowDisclaimerError(true);
+      toast.error(dict?.journey?.checkout?.paymentMode?.disclaimerRequired);
+      return false;
+    }
     const confirmedSecret = clientSecret;
     if (!session && !isAuthed) {
       useUserStore.getState().openAuth("signin");
@@ -741,157 +652,19 @@ function CheckoutContent() {
   );
   const checkoutItemTileLabelClass = "font-normal text-gray-500 text-base";
 
-  const datesValue =
-    startDateParam && nightsNum > 0
-      ? summary?.dateRangeTemplate && summary?.monthsShort
-        ? formatDatesSummary(
-            startDateParam,
-            nightsNum,
-            summary.dateRangeTemplate,
-            summary.monthsShort,
-          )
-        : `${startDateParam} — ${nightsNum}`
-      : summary?.emptyValue;
-
-  // XSED trips keep the traveler type in `level`; legacy trips have no excuse.
-  const showExcuseAndRefineDetailRows =
-    excuse != null ||
-    (trip != null &&
-      getHasExcuseStep(
-        travelerTypeOf(trip),
-        tripFamilyOf(trip.type) === "xsed" ? XSED_LEVEL_ID : experience,
-      ));
-
-  const checkoutIconDetailRows: CheckoutIconDetailRow[] = [
-    {
-      id: "experience",
-      label: summary?.experienceSection,
-      value: selectedExperienceInfo?.label ?? summary?.emptyValue,
+  const checkoutIconDetailRows: CheckoutIconDetailRow[] = buildTripDetailRows({
+    copy: dict,
+    locale: resolvedLocale,
+    showAddonPrices: true,
+    trip: {
+      ...trip,
+      level: checkoutLevel,
+      storedLevel: trip.level,
+      startDate: startDateParam ?? null,
+      originCity: logistics?.city,
+      originCountry: logistics?.country,
     },
-    ...(showExcuseAndRefineDetailRows
-      ? [
-          {
-            id: "excuse" as const,
-            label: summary?.excuseSection,
-            value: excuseTitleRes ?? summary?.emptyValue,
-          },
-          {
-            className: "sm:col-span-2",
-            id: "refine-details" as const,
-            label: summary?.detailsSection,
-            value:
-              refineDetailEntries.length > 0 ? (
-                refineDetailEntries.map(({ key, label: detailLabel }) => (
-                  <div
-                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-                    key={key}
-                  >
-                    <span>{detailLabel}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="font-barlow text-gray-600 text-sm">
-                  {summary?.noDetails}
-                </p>
-              ),
-            valueLayout: "chips" as const,
-          },
-        ]
-      : []),
-    {
-      icon: (
-        <MapPin aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-gray-600" />
-      ),
-      id: "origin",
-      label: summary?.originSection,
-      value:
-        logistics?.city && logistics?.country
-          ? `${logistics.city}, ${logistics.country}.`
-          : summary?.emptyValue,
-    },
-    {
-      icon: (
-        <Calendar
-          aria-hidden
-          className="mt-0.5 h-4 w-4 shrink-0 text-gray-600"
-        />
-      ),
-      id: "dates",
-      label: summary?.datesSection,
-      value: datesValue,
-    },
-    {
-      icon: TransportIcon ? (
-        <TransportIcon
-          aria-hidden
-          className="mt-0.5 h-4 w-4 shrink-0 text-gray-600"
-        />
-      ) : undefined,
-      id: "transport",
-      label: summary?.transportSection,
-      value: transportLabel,
-    },
-
-    {
-      className: "sm:col-span-2",
-      id: "filters",
-      label:
-        activeFilters.length > 0
-          ? summary?.filtersSectionCount?.replace(
-              "{count}",
-              String(activeFilters.length),
-            )
-          : summary?.filtersSection,
-      value:
-        activeFilters.length > 0 ? (
-          activeFilters.map(({ id: filterId, label: filterLabel }) => (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-              key={filterId}
-            >
-              <span>{filterLabel}</span>
-            </div>
-          ))
-        ) : (
-          <p className="font-barlow text-gray-600 text-sm">
-            {summary?.noFilters}
-          </p>
-        ),
-      valueLayout: "chips",
-    },
-    {
-      className: "sm:col-span-2",
-      id: "addons",
-      label:
-        selectedAddons.length > 0
-          ? summary?.addonsSectionCount?.replace(
-              "{count}",
-              String(selectedAddons.length),
-            )
-          : summary?.addonsSection,
-      value:
-        selectedAddons.length > 0 ? (
-          selectedAddons.map((addon) => (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 font-normal text-ink text-sm"
-              key={addon.id}
-            >
-              <span>
-                {journey?.addons?.[addon.id]?.title ?? addon.title}
-                {addon.priceType === "currency"
-                  ? ` — USD ${addon.price}`
-                  : ` — ${addon.price}%`}
-              </span>
-            </div>
-          ))
-        ) : (
-          <p className="font-barlow text-gray-600 text-sm">
-            {summary?.noAddons}
-          </p>
-        ),
-      valueLayout: "chips",
-    },
-  ];
+  });
 
   return (
     <div className="min-h-screen bg-ground">
@@ -950,9 +723,38 @@ function CheckoutContent() {
               value={buyerDocuments}
             />
 
+            {paxDetails.adults > 1 && !getFixedCheckoutParty(trip.type, checkoutLevel) ? (
+              <CheckoutPaymentModeCard
+                calculating={payment.pending && paymentMode === "INDIVIDUAL"}
+                copy={checkoutCopy.paymentMode}
+                deadlineHours={INDIVIDUAL_PAYMENT_WINDOW_MS / (60 * 60 * 1000)}
+                disabled={isConfirming}
+                disclaimerAccepted={disclaimerAccepted}
+                emails={Array.from({ length: paxDetails.adults - 1 }, (_, i) => companionEmails[i] ?? "")}
+                emailsError={emailsInvalid || splitErrorCode ? checkoutCopy.paymentMode.emailsInvalid : null}
+                mode={paymentMode}
+                onCalculate={() => { void handleCalculateShare(); }}
+                onDisclaimerChange={(accepted) => {
+                  setDisclaimerAccepted(accepted);
+                  if (accepted) setShowDisclaimerError(false);
+                }}
+                onEmailChange={handleCompanionEmailChange}
+                onModeChange={handlePaymentModeChange}
+                share={quoteSplit && payment.quote && !splitPending ? {
+                  companion: quoteSplit.companionShare,
+                  maxTopUp: quoteSplit.maxTopUp.organizer,
+                  minors: paxDetails.minors,
+                  yours: payment.quote.total,
+                } : null}
+                showDisclaimerError={showDisclaimerError}
+                usd={usd}
+              />
+            ) : null}
+
             <CheckoutContactCard
               checkoutCopy={checkoutCopy}
               clientSecret={clientSecret}
+              paymentNotice={splitPending && !payment.pending ? checkoutCopy.paymentMode.calculateFirst : null}
               formData={formData}
               formRef={contactFormRef}
               isXsed={trip?.type === "xsed"}

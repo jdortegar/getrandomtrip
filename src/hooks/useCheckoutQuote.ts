@@ -1,11 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { CheckoutQuote } from "@/lib/types/CheckoutQuote";
+import type { CheckoutPaymentSplit, CheckoutQuote } from "@/lib/types/CheckoutQuote";
 
 interface RefreshOptions {
   promoCode?: string | null;
   save?: () => Promise<void>;
+  /** Remembered and resent on every later refresh until replaced. */
+  split?: CheckoutPaymentSplit;
 }
 
 /** Serialize mutations, not just responses: an older request must finish before
@@ -22,6 +24,7 @@ export function useCheckoutQuote(tripId?: string) {
   const ready = useRef(false);
   const secret = useRef<string | null>(null);
   const lastOptions = useRef<RefreshOptions>({});
+  const split = useRef<CheckoutPaymentSplit | null>(null);
 
   const refresh = useCallback(
     (options: RefreshOptions = {}) => {
@@ -29,6 +32,14 @@ export function useCheckoutQuote(tripId?: string) {
       ready.current = false;
       secret.current = null;
       lastOptions.current = options;
+      if (options.split) split.current = options.split;
+      const body = {
+        tripId,
+        ...(options.promoCode !== undefined
+          ? { promoCode: options.promoCode }
+          : {}),
+        ...(split.current ?? {}),
+      };
       setPending(true);
       setError(null);
       setErrorCode(null);
@@ -45,12 +56,7 @@ export function useCheckoutQuote(tripId?: string) {
             const response = await fetch("/api/stripe/payment-intent", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                tripId,
-                ...(options.promoCode !== undefined
-                  ? { promoCode: options.promoCode }
-                  : {}),
-              }),
+              body: JSON.stringify(body),
             });
             const data = await response.json();
             if (isCurrent() && "code" in data) setPromoCode(data.code);

@@ -11,6 +11,8 @@ const db = vi.hoisted(() => ({
   },
   tripRequest: { update: vi.fn(), updateMany: vi.fn() },
   saleNotificationDelivery: { create: vi.fn() },
+  paymentShare: { updateMany: vi.fn() },
+  tripTraveler: { findMany: vi.fn() },
   $transaction: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({ prisma: db }));
@@ -18,14 +20,18 @@ vi.mock("@/lib/email", () => ({
   sendAdminNewBooking: vi.fn(),
   sendBookingConfirmed: vi.fn(),
   sendPaymentFailed: vi.fn(),
+  sendTravelerInviteEmail: vi.fn(),
 }));
+vi.mock("@/lib/travelers/travelerInviteTokens", () => ({ issueTravelerInvite: vi.fn() }));
 vi.mock("@/lib/db/runSaleNotificationBatch", () => ({ runSaleNotificationBatch: vi.fn() }));
 import { runSaleNotificationBatch } from "@/lib/db/runSaleNotificationBatch";
 import {
   sendAdminNewBooking,
   sendBookingConfirmed,
   sendPaymentFailed,
+  sendTravelerInviteEmail,
 } from "@/lib/email";
+import { issueTravelerInvite } from "@/lib/travelers/travelerInviteTokens";
 import { updatePaymentFromStripeWebhook as settlePayment, upsertPaymentForTripCheckout } from "../payment";
 // Existing regression scenarios represent live payments unless explicitly overridden.
 const updatePaymentFromStripeWebhook: typeof settlePayment = (id, data, payload, liveMode = true) =>
@@ -435,5 +441,80 @@ describe("Stripe webhook payment identity", () => {
       await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
       expect(db.payment.updateMany).not.toHaveBeenCalled();
     });
+  });
+
+  describe("individually paid trips", () => {
+    beforeEach(() => {
+      trip = { status: "PENDING_PAYMENT", paymentMode: "INDIVIDUAL" } as typeof trip;
+      db.tripTraveler.findMany.mockResolvedValue([{ id: "traveler-ana" }, { id: "traveler-bo" }]);
+      vi.mocked(issueTravelerInvite).mockImplementation(async (id) => `token-${id}`);
+    });
+
+    it("opens collection instead of confirming when the organizer pays", async () => {
+      const before = Date.now();
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(trip.status).toBe("COLLECTING");
+      const deadline = (trip as unknown as { paymentDeadline: Date }).paymentDeadline.getTime();
+      expect(deadline - before).toBeGreaterThanOrEqual(72 * 60 * 60 * 1000);
+      expect(deadline - Date.now()).toBeLessThanOrEqual(72 * 60 * 60 * 1000);
+      expect(row.status).toBe("APPROVED");
+      expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
+        where: { paymentId: "payment", stripePaymentIntentId: "pi_old" },
+        data: { status: "APPROVED", paidAt: expect.any(Date) },
+      });
+    });
+
+    it("defers the booking emails and sale notification to the deadline", async () => {
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(sendBookingConfirmed).not.toHaveBeenCalled();
+      expect(sendAdminNewBooking).not.toHaveBeenCalled();
+      expect(sales).toEqual([]);
+      expect(runSaleNotificationBatch).not.toHaveBeenCalled();
+    });
+
+    it("invites each companion who still owes their share, once", async () => {
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(db.tripTraveler.findMany).toHaveBeenCalledWith(expect.objectContaining({
+        where: expect.objectContaining({ tripRequestId: "trip", kind: "ADULT", status: "PENDING", userId: null }),
+      }));
+      expect(issueTravelerInvite).toHaveBeenCalledWith("traveler-ana", "PENDING");
+      expect(sendTravelerInviteEmail).toHaveBeenCalledWith("traveler-ana", "token-traveler-ana");
+      expect(sendTravelerInviteEmail).toHaveBeenCalledWith("traveler-bo", "token-traveler-bo");
+      await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+      expect(sendTravelerInviteEmail).toHaveBeenCalledTimes(2);
+    });
+
+    it("keeps the payment settled when one invite cannot be issued", async () => {
+      vi.mocked(issueTravelerInvite).mockRejectedValueOnce(new Error("row changed"));
+      await expect(updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" })).resolves.toBeTruthy();
+      expect(trip.status).toBe("COLLECTING");
+      expect(sendTravelerInviteEmail).toHaveBeenCalledOnce();
+    });
+
+    it("never throws when loading companions fails after settlement", async () => {
+      db.tripTraveler.findMany.mockRejectedValue(new Error("db down"));
+      await expect(updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" })).resolves.toBeDefined();
+      expect(trip.status).toBe("COLLECTING");
+      expect(row.status).toBe("APPROVED");
+    });
+
+    it("records a failed organizer payment on their share without inviting anyone", async () => {
+      await updatePaymentFromStripeWebhook("pi_old", { status: "FAILED" });
+      expect(trip.status).toBe("PENDING_PAYMENT");
+      expect(db.paymentShare.updateMany).toHaveBeenCalledWith({
+        where: { paymentId: "payment", stripePaymentIntentId: "pi_old" },
+        data: { status: "FAILED" },
+      });
+      expect(sendPaymentFailed).toHaveBeenCalledOnce();
+      expect(issueTravelerInvite).not.toHaveBeenCalled();
+    });
+  });
+
+  it("confirms a total-paid trip and never touches shares", async () => {
+    await updatePaymentFromStripeWebhook("pi_old", { status: "APPROVED" });
+    expect(trip.status).toBe("CONFIRMED");
+    expect(db.paymentShare.updateMany).not.toHaveBeenCalled();
+    expect(sendBookingConfirmed).toHaveBeenCalledOnce();
+    expect(issueTravelerInvite).not.toHaveBeenCalled();
   });
 });

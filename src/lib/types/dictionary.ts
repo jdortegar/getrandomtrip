@@ -1257,6 +1257,23 @@ export interface DashboardDict {
     upcomingTrips: string;
   };
   tripStatus: Record<string, string>;
+  /** Viewer's own top-up after a group shrank. `{date}`, `{amount}` are filled in. */
+  topUpDue: {
+    /** Shown instead of a date for the organizer's remainder. */
+    remainderNote: string;
+    eyebrow: string;
+    title: string;
+    message: string;
+    deadline: string;
+    action: string;
+    modalTitle: string;
+    modalDescription: string;
+    loading: string;
+    error: string;
+    retry: string;
+    paid: string;
+    closed: string;
+  };
   unpaidTrips: {
     action: string;
     bookingRefLabel: string;
@@ -3363,6 +3380,7 @@ export interface TripDetailDict {
     DRAFT: string;
     SAVED: string;
     PENDING_PAYMENT: string;
+    COLLECTING: string;
     CONFIRMED: string;
     REVEALED: string;
     COMPLETED: string;
@@ -3516,6 +3534,9 @@ export interface InviteTravelersDict {
   landingGreeting: string;
   landingSignupExplainer: string;
   landingSignupCta: string;
+  /** Shown instead of the sign-up explainer when the invited address already has an account. */
+  landingLoginExplainer: string;
+  landingLoginCta: string;
   landingStep2Heading: string;
   landingConsentPrefix: string;
   landingConsentLinkLabel: string;
@@ -3606,6 +3627,25 @@ export interface ImageEditorDict {
   save: string;
   saving: string;
   uploadError: string;
+}
+
+/** Companion share checkout (`/checkout/share/[travelerId]`). `{name}` = organizer first name. */
+export interface ShareCheckoutDict {
+  /** `{max}` = most the companion may owe on top of their share. */
+  disclaimer: string;
+  disclaimerNoCost: string;
+  title: string;
+  description: string;
+  amountLabel: string;
+  deadline: string;
+  loading: string;
+  errorMessage: string;
+  retry: string;
+  paidTitle: string;
+  paidDescription: string;
+  closedTitle: string;
+  closedDescription: string;
+  toTrips: string;
 }
 
 export interface MarketingDictionary {
@@ -4476,6 +4516,27 @@ export interface MarketingDictionary {
       backToEdit: string;
       continueToPayment: string;
       paymentTitle: string;
+      paymentMode: {
+        title: string;
+        description: string;
+        totalOption: string;
+        individualOption: string;
+        emailsTitle: string;
+        emailsHint: string;
+        emailLabel: string;
+        calculate: string;
+        calculating: string;
+        yourShareLabel: string;
+        companionShareLabel: string;
+        /** Under the organizer's share when one minor travels; their share is the organizer's. */
+        minorsIncludedOne: string;
+        /** Same, for several minors; `{n}` = how many. */
+        minorsIncludedOther: string;
+        disclaimer: string;
+        disclaimerRequired: string;
+        emailsInvalid: string;
+        calculateFirst: string;
+      };
       paymentBack: string;
       paymentSubmit: string;
       paymentProcessing: string;
@@ -5145,6 +5206,7 @@ export interface MarketingDictionary {
       CONFIRMED: string;
       DRAFT: string;
       PENDING_PAYMENT: string;
+      COLLECTING: string;
       REVEALED: string;
       SAVED: string;
     };
@@ -5166,6 +5228,7 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  shareCheckout: ShareCheckoutDict;
   destinationAssignmentReminder: DestinationAssignmentReminderDict;
   tripRevealNotification: TripRevealNotificationDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;

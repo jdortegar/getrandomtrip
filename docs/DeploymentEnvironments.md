@@ -106,7 +106,7 @@ Provider discovery alone is not an end-to-end OAuth success check.
   test keys; live keys and live webhook events are rejected outside production.
 - Email delivery fails explicitly before Resend is constructed; it does not
   simulate provider acceptance. Email verification, password reset, invites, and
-  manual messages therefore cannot complete. Slack and all six scheduled jobs
+  manual messages therefore cannot complete. Slack and all scheduled jobs
   are disabled, including direct calls to their internal API routes.
 - Credentials login requires the private nonproduction auth secret and an
   **approved, verified test account**. The empty database's site gate defaults to enabled; keep it

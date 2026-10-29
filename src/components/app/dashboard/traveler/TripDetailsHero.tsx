@@ -8,6 +8,7 @@ import {
 } from "@/lib/helpers/getRevealCountdown";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
+import { isAwaitingReveal } from "@/lib/utils/trips";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { resolveTripDestination } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
@@ -56,7 +57,7 @@ interface TripDetailsHeroProps {
 /**
  * Trip-lifecycle hero (design.md ADR-7, widened for the CONFIRMED
  * pre-reveal state). Status variants:
- * CONFIRMED → surprise placeholder only, no photo, no departure pill —
+ * CONFIRMED / COLLECTING (split payment still collecting) → surprise placeholder only, no photo, no departure pill —
  *   `GET /api/trips/[id]` may already include an assigned `experience`
  *   (admin can assign before the reveal window opens) so its destination/
  *   photo are deliberately ignored here rather than trusted not to leak,
@@ -71,20 +72,20 @@ interface TripDetailsHeroProps {
 export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   const isRevealed = trip.status === "REVEALED";
   const isCancelled = trip.status === "CANCELLED";
-  const isConfirmed = trip.status === "CONFIRMED";
+  const isPreReveal = isAwaitingReveal(trip.status);
   const heroImageUrl =
-    (isConfirmed ? null : trip.experience?.heroImage) ?? FALLBACK_HERO_IMAGE;
+    (isPreReveal ? null : trip.experience?.heroImage) ?? FALLBACK_HERO_IMAGE;
 
   const eyebrow = isCancelled
     ? copy.eyebrowCancelled
     : trip.status === "COMPLETED"
       ? copy.eyebrowCompleted
-      : isConfirmed
+      : isPreReveal
         ? copy.eyebrowConfirmed
         : copy.eyebrowRevealed;
   const showDot = !isCancelled;
 
-  const destination = isConfirmed
+  const destination = isPreReveal
     ? copy.destinationFallback
     : resolveTripDestination(trip, copy.destinationFallback);
   const subtitle = interpolateTemplate(copy.subtitle, {
