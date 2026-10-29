@@ -65,7 +65,7 @@ describe("badge and tag casing", () => {
   });
 
   it.each(["default", "outline", "primary"] as const)(
-    "uppercases %s toggle chips visually without changing selection behavior",
+    "keeps %s toggle chip text in its original casing without changing selection behavior",
     (variant) => {
       const onClick = vi.fn();
       act(() =>
@@ -77,7 +77,7 @@ describe("badge and tag casing", () => {
       );
 
       const chip = container.querySelector("button")!;
-      expect(chip.classList.contains("uppercase")).toBe(true);
+      expect(chip.classList.contains("uppercase")).toBe(false);
       expect(chip.textContent).toBe("Family trip");
       expect(chip.getAttribute("aria-pressed")).toBe("true");
       act(() => chip.click());

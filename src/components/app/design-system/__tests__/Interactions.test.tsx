@@ -137,7 +137,7 @@ it("updates switch, select, bounded quantity, and chip states", () => {
   ).toBeGreaterThan(0);
   act(() => button(copy.badges.chips[0]).click());
   expect(button(copy.badges.chips[0]).classList.contains("uppercase")).toBe(
-    true,
+    false,
   );
   expect(button(copy.badges.chips[0]).getAttribute("aria-pressed")).toBe(
     "true",
