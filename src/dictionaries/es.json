@@ -2824,7 +2824,7 @@
       "primaryCta": {
         "ariaLabel": "Ir a 'Comienza tu Viaje' con la pestaña 'Por Viajero' seleccionada",
         "href": "#exploration-section",
-        "text": "Get Randomtrip!"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
       "accent": "Vuelve a sentir la magia de viajar.",
@@ -3013,7 +3013,7 @@
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
         "href": "#travel-type-selector",
-        "text": "Get Randomtrip"
+        "text": "Getrandomtrip"
       },
       "scrollText": "Scroll",
       "subtitle": "Elige el presupuesto/plan por persona para el pasaje y alojamiento. Del resto nos ocupamos nosotros.",
@@ -5263,7 +5263,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Ir a la sección 'Comienza tu viaje'",
-      "ctaLabel": "Get Randomtrip",
+      "ctaLabel": "Getrandomtrip",
       "headline": "Confianza en el proceso",
       "items": [
         {

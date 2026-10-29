@@ -44,7 +44,7 @@ describe("homepage hero", () => {
       );
       expect(heading?.nextElementSibling).toBe(paragraphs[0]);
       expect(paragraphs[0].nextElementSibling).toBe(paragraphs[1]);
-      expect(cta?.textContent).toBe("Get Randomtrip!");
+      expect(cta?.textContent).toBe("Getrandomtrip!");
       expect(cta?.getAttribute("href")).toBe("#exploration-section");
       expect(cta?.getAttribute("aria-label")).toBe(
         test.copy.primaryCta.ariaLabel,

@@ -2824,7 +2824,7 @@
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",
-        "text": "Get Randomtrip!"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
       "accent": "Feel the magic of travel again.",
@@ -3013,7 +3013,7 @@
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
         "href": "#travel-type-selector",
-        "text": "Get Randomtrip"
+        "text": "Getrandomtrip"
       },
       "scrollText": "Scroll",
       "subtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
@@ -5263,7 +5263,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Go to the 'Start your journey' section",
-      "ctaLabel": "Get Randomtrip",
+      "ctaLabel": "Getrandomtrip",
       "headline": "Trust in the process",
       "items": [
         {
