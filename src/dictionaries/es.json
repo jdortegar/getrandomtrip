@@ -3015,7 +3015,7 @@
       "primaryCta": {
         "ariaLabel": "Ir a la sección de planes por viajero",
         "href": "#travel-type-selector",
-        "text": "Getrandomtrip"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
       "subtitle": "Primero, elige con quién viajar. Después, encuentra el plan que va contigo. Nosotros organizamos el viaje; tú descubrirás el destino 48 horas antes de salir.",
@@ -5284,7 +5284,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Ir a la sección 'Comienza tu viaje'",
-      "ctaLabel": "Getrandomtrip",
+      "ctaLabel": "Getrandomtrip!",
       "headline": "Confianza en el proceso",
       "items": [
         {

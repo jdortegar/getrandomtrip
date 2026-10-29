@@ -3015,7 +3015,7 @@
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
         "href": "#travel-type-selector",
-        "text": "Getrandomtrip"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
       "subtitle": "First, choose who you're traveling with. Then find the plan that fits you. We organize the trip; you'll discover the destination 48 hours before you leave.",
@@ -5284,7 +5284,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Go to the 'Start your journey' section",
-      "ctaLabel": "Getrandomtrip",
+      "ctaLabel": "Getrandomtrip!",
       "headline": "Trust in the process",
       "items": [
         {
