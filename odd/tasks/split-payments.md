@@ -1,7 +1,7 @@
 # Split payments — "Pay individually" for group trips
 
 Objective: let each traveler of a group trip pay their own share through Stripe; the trip goes ahead with whoever paid by the deadline, shared per-trip add-ons are re-split through a dashboard top-up, and the organizer covers unpaid top-ups.
-Branch: `feat/split-payments` (from `develop`, to be created at T1) · Delivery: `ask-on-risk` → `feature-branch-chain` (forecast ~1,800 authored lines). Tracker `feat/split-payments` (draft, no-merge PR to `develop`); slice 01 `feat/split-payments-01-schema` (T1) targets the tracker; slice 02 `feat/split-payments-02-share-calculator` (T2) targets slice 01; slice 03 `feat/split-payments-03-checkout-quote` (T3a, 67cb4f92) targets 02; slice 04 `feat/split-payments-04-collecting` (T3b, 8987b69f + 566c1d5e) targets 03; slice 05 `feat/split-payments-05-checkout-ui` (T3c, 0402a631) targets 04; each later slice targets its parent · Test runner: `npx vitest run <path>`.
+Branch: `feat/split-payments` (from `develop`) · Delivery: `single-pr` — one PR `feat/split-payments` → `develop` (was `feature-branch-chain` with 14 slices; changed by the user, L51) · Test runner: `npx vitest run <path>`.
 
 ## Specs
 
