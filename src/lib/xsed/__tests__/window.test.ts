@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatNextDropDay,
   getCountdownTarget,
   getNotifyTargetUtcOffset,
   isLocalWindowOpen,
@@ -81,5 +82,30 @@ describe("getNotifyTargetUtcOffset (email at 17:50 local, 10 minutes before 18:0
     "2026-09-29T20:50:00Z", // Tuesday
   ])("targets nobody at %s", (iso) => {
     expect(getNotifyTargetUtcOffset(new Date(iso))).toBeNull();
+  });
+});
+
+describe("formatNextDropDay", () => {
+  it.each([
+    // Wednesday 28 Oct → the coming Sunday.
+    ["2026-10-28T15:00:00Z", "es", "domingo 1 nov"],
+    ["2026-10-28T15:00:00Z", "en", "Sunday 1 Nov"],
+    // Sunday before 18:00 local → today's drop.
+    ["2026-11-01T20:00:00Z", "es", "domingo 1 nov"],
+    // Sunday inside the 18:00–22:00 window → still today's drop.
+    ["2026-11-01T22:00:00Z", "es", "domingo 1 nov"],
+    // Sunday after 22:00 local → next week's drop.
+    ["2026-11-02T02:00:00Z", "es", "domingo 8 nov"],
+  ])("at %s (%s) labels %s", (iso, locale, expected) => {
+    expect(formatNextDropDay(BUENOS_AIRES, locale, new Date(iso))).toBe(
+      expected,
+    );
+  });
+
+  it("falls back to Buenos Aires when the timezone is unknown", () => {
+    const now = new Date("2026-10-28T15:00:00Z");
+    expect(formatNextDropDay(null, "es", now)).toBe(
+      formatNextDropDay(BUENOS_AIRES, "es", now),
+    );
   });
 });

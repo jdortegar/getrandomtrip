@@ -1,3 +1,5 @@
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+
 export interface LevelFeature {
   title: string;
   description: string;
@@ -54,11 +56,13 @@ export interface ExperienceCardTransport {
 
 /** Locale-specific copy of an experience card. */
 export interface ExperienceCardCopy {
+  /** Scarcity/schedule line shown above the reveal note (XSED drops). */
+  availabilityNote?: string;
   ctaLabel: string;
   description: string;
   details: ExperienceCardDetail[];
-  eyebrow: string;
   footnotes: string[];
+  /** Line shown under the name (e.g. "Lo esencial con estilo"). */
   kicker: string;
   name: string;
   photoAlt: string;
@@ -75,6 +79,8 @@ export interface ExperienceCardSource {
   ctaStyle?: ExperienceCardCtaStyle;
   /** CSS object-position for the header photo. */
   photoPosition: string;
+  /** Traveler type whose photo folder to use when this pair has no photo of its own. */
+  photoType?: TravelerTypeSlug;
   transport?: ExperienceCardTransport;
 }
 
