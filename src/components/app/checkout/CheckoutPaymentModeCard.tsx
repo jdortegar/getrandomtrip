@@ -21,8 +21,8 @@ interface CheckoutPaymentModeCardProps {
   calculating: boolean;
   disabled: boolean;
   emailsError: string | null;
-  /** Present once an INDIVIDUAL quote is ready. Amounts in USD. */
-  share: { yours: number; companion: number; maxTopUp: number } | null;
+  /** Present once an INDIVIDUAL quote is ready. Amounts in USD; `yours` includes the minors' shares. */
+  share: { yours: number; companion: number; maxTopUp: number; minors?: number } | null;
   deadlineHours: number;
   disclaimerAccepted: boolean;
   onDisclaimerChange: (accepted: boolean) => void;
@@ -133,6 +133,13 @@ export function CheckoutPaymentModeCard({
                     {usd(share.yours)}
                   </dd>
                 </div>
+                {share.minors ? (
+                  <p className="-mt-1 text-xs text-neutral-500">
+                    {share.minors === 1
+                      ? copy.minorsIncludedOne
+                      : copy.minorsIncludedOther.replace("{n}", String(share.minors))}
+                  </p>
+                ) : null}
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-sm font-medium text-neutral-500">
                     {copy.companionShareLabel}

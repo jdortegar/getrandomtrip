@@ -4570,6 +4570,8 @@
         "calculating": "Calculating…",
         "yourShareLabel": "Your share today",
         "companionShareLabel": "Each companion pays",
+        "minorsIncludedOne": "Includes the share of the minor traveling with you.",
+        "minorsIncludedOther": "Includes the share of the {n} minors traveling with you.",
         "disclaimer": "Your companions have {hours} hours to pay their share. Anyone who doesn't pay in time won't travel, and the trip is adjusted to those who paid. If that changes the cost of shared extras, we'll ask you for the difference: {max} at most.",
         "disclaimerRequired": "Accept the individual payment terms to continue.",
         "emailsInvalid": "Enter a different, valid email for each companion.",

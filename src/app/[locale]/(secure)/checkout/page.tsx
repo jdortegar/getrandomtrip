@@ -743,6 +743,7 @@ function CheckoutContent() {
                 share={quoteSplit && payment.quote && !splitPending ? {
                   companion: quoteSplit.companionShare,
                   maxTopUp: quoteSplit.maxTopUp.organizer,
+                  minors: paxDetails.minors,
                   yours: payment.quote.total,
                 } : null}
                 showDisclaimerError={showDisclaimerError}

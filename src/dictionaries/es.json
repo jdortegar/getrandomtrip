@@ -4577,6 +4577,8 @@
         "calculating": "Calculando…",
         "yourShareLabel": "Tu parte hoy",
         "companionShareLabel": "Cada acompañante paga",
+        "minorsIncludedOne": "Incluye la parte del menor que viaja contigo.",
+        "minorsIncludedOther": "Incluye la parte de los {n} menores que viajan contigo.",
         "disclaimer": "Tus acompañantes tienen {hours} horas para pagar su parte. Quien no pague a tiempo no viaja y el viaje se ajusta a quienes pagaron. Si eso cambia el costo de los extras compartidos, te pediremos la diferencia: como máximo {max}.",
         "disclaimerRequired": "Acepta las condiciones del pago individual para continuar.",
         "emailsInvalid": "Ingresa un email válido y distinto para cada acompañante.",

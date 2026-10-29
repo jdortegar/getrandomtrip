@@ -111,4 +111,14 @@ describe("CheckoutPaymentModeCard", () => {
       "Accept the individual payment terms to continue.",
     ]);
   });
+
+  it("explains that the organizer's share includes the minors, in both locales", () => {
+    const share = { yours: 2100, companion: 1050, maxTopUp: 0 };
+    renderCard({ mode: "INDIVIDUAL", share: { ...share, minors: 1 } });
+    expect(harness.container.textContent).toContain("Includes the share of the minor traveling with you.");
+    renderCard({ mode: "INDIVIDUAL", share: { ...share, minors: 2 } }, esDict);
+    expect(harness.container.textContent).toContain("Incluye la parte de los 2 menores que viajan contigo.");
+    renderCard({ mode: "INDIVIDUAL", share: { ...share, minors: 0 } });
+    expect(harness.container.textContent).not.toContain("Includes the share");
+  });
 });

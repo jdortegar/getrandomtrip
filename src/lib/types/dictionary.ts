@@ -4522,6 +4522,10 @@ export interface MarketingDictionary {
         calculating: string;
         yourShareLabel: string;
         companionShareLabel: string;
+        /** Under the organizer's share when one minor travels; their share is the organizer's. */
+        minorsIncludedOne: string;
+        /** Same, for several minors; `{n}` = how many. */
+        minorsIncludedOther: string;
         disclaimer: string;
         disclaimerRequired: string;
         emailsInvalid: string;
