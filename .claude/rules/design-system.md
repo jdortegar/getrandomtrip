@@ -47,8 +47,8 @@ Eight canonical role tokens — use nothing outside these, the three roleless pa
 | Token        | Hex       | Tailwind               | Usage                                      |
 | ------------ | --------- | ---------------------- | ------------------------------------------ |
 | Ink          | `#383838` | `bg-ink` / `text-ink`  | Headings, body text                        |
-| Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons, eyebrows, underlines, carousel arrow/dot buttons, focus states |
-| Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — sections/containers, icon-puck washes, links, publish state |
+| Deep Teal    | `#0F5C60` | `bg-primary` / `text-primary` | Brand primary — nav, primary buttons, eyebrows, underlines, text links, carousel arrow/dot buttons, focus states |
+| Mineral Sage | `#A4B4AA` | `bg-secondary` / `text-secondary` | Brand secondary — sections/containers, icon-puck washes, publish state — never text links |
 | Ochre        | `#E5A51C` | `bg-feature` / `text-feature` | Brand feature/accent — high-emphasis CTA (`feature`/`pill` Button variants), KPI accent bar |
 | XSED Orange  | `#D97E4A` | `bg-xsed` / `text-xsed` / `border-xsed` | XSED sub-brand accent — existing XSED badges/chips, `src/components/app/xsed/**`, and the `tertiary` Button variant; never a general-purpose accent outside the XSED line |
 | Surface      | `#FFFFFF` | `white`                | Card and panel backgrounds                 |
@@ -356,6 +356,7 @@ Use `<RowActions>` from `@/components/common/RowActions` only for simple edit/de
 - Navigation action: `<Button asChild variant="ghost">` wrapping `<Link>`
 - Panel CTA: `<Button asChild size="sm">`
 - Never use raw styled `<a>` or `<Link>` for actions — always go through `Button`
+- Text links (inline links, "View all →", receipt/support/privacy links) are Deep Teal: `text-primary underline transition-colors hover:text-primary/80` (or `hover:underline` when not underlined at rest). Never `text-secondary` — Mineral Sage on white is ~2.2:1, below WCAG AA for text.
 
 ### Async action feedback
 

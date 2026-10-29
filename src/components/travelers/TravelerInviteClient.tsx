@@ -499,7 +499,7 @@ function InviteForm({
               />
               <span>
                 {copy.landingConsentPrefix}
-                <Link className="text-secondary underline" href={privacyHref}>
+                <Link className="text-primary underline transition-colors hover:text-primary/80" href={privacyHref}>
                   {copy.landingConsentLinkLabel}
                 </Link>
                 {copy.landingConsentSuffix}
