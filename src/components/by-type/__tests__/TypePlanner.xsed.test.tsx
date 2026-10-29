@@ -304,16 +304,12 @@ it("reprices the XSED card at the solo rate when solo is selected on /experience
   expect(cards()[0].textContent).toContain("USD 250");
 
   act(() =>
-    container
-      .querySelector<HTMLButtonElement>('[data-tab="solo"]')
-      ?.click(),
+    container.querySelector<HTMLButtonElement>('[data-tab="solo"]')?.click(),
   );
   expect(cards()[0].textContent).toContain("USD 350");
 
   act(() =>
-    container
-      .querySelector<HTMLButtonElement>('[data-tab="group"]')
-      ?.click(),
+    container.querySelector<HTMLButtonElement>('[data-tab="group"]')?.click(),
   );
   expect(cards()[0].textContent).toContain("USD 250");
 });
@@ -347,9 +343,34 @@ it.each([
     expect(cards()[0].textContent).toContain(
       getExperienceCard("couple", "xsed", locale)!.tag,
     );
-    expect(badges()).toEqual([featured]);
+    expect(badges()).toEqual([
+      expect.stringMatching(/^Next drop \S+ \d+ \S+$/),
+      featured,
+    ]);
     expect(dict.journey.tripperBadge.mostChosen).toBe(featured);
     const badge = container.querySelector("[data-ribbon]");
     expect(badge?.classList.contains("top-31")).toBe(true);
   },
 );
+
+it("shows the next drop Sunday on the XSED card ribbon", () => {
+  vi.useFakeTimers({ toFake: ["Date"] });
+  // Wednesday 28 Oct 2026 → next drop Sunday 1 Nov.
+  vi.setSystemTime(new Date("2026-10-28T15:00:00Z"));
+  try {
+    act(() =>
+      root.render(
+        <XsedLevelCard
+          copy={es.xsedLevelCard}
+          locale="es"
+          travelType="couple"
+        />,
+      ),
+    );
+    expect(container.querySelector("[data-ribbon]")?.textContent).toBe(
+      "Next drop domingo 1 nov",
+    );
+  } finally {
+    vi.useRealTimers();
+  }
+});

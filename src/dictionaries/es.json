@@ -2514,6 +2514,7 @@
   },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
+    "nextDrop": "Next drop {date}",
     "closingLine": "Una noche, una cena y una experiencia local sorpresa cerca de tu casa.",
     "ctaLabel": "Descubre XSED",
     "features": [

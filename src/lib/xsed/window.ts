@@ -12,6 +12,9 @@ export const LOCAL_WINDOW_START_HOUR = 18;
 /** Local time (in any LATAM timezone) when the booking window closes. */
 export const LOCAL_WINDOW_END_HOUR = 22;
 
+/** Timezone used before (or without) detecting a supported one. */
+export const DEFAULT_DROP_TIMEZONE = "America/Argentina/Buenos_Aires";
+
 /**
  * UTC outer boundary used server-side as a fast guard before running
  * the heavier auto-decrement computation. Must cover every supported
@@ -253,11 +256,31 @@ export function getPhase(): "open" | "waiting" {
  * Falls back to 'America/Argentina/Buenos_Aires' if `tz` is null/empty.
  */
 export function getCountdownTarget(tz: string | null, now = new Date()): Date {
-  const resolvedTz = tz ?? "America/Argentina/Buenos_Aires";
+  const resolvedTz = tz ?? DEFAULT_DROP_TIMEZONE;
   if (isLocalWindowOpen(resolvedTz, now)) {
     return getNextDropDayLocalHour(resolvedTz, LOCAL_WINDOW_END_HOUR, now);
   }
   return getNextDropDayLocalHour(resolvedTz, LOCAL_WINDOW_START_HOUR, now);
+}
+
+/**
+ * Shared (client + server).
+ * Short label of the drop day the countdown targets, in `tz`
+ * (e.g. "domingo 1 nov" / "Sunday 1 Nov"). Today while the window is still ahead or open.
+ */
+export function formatNextDropDay(
+  tz: string | null,
+  locale: string,
+  now = new Date(),
+): string {
+  const resolvedTz = tz ?? DEFAULT_DROP_TIMEZONE;
+  const parts = new Intl.DateTimeFormat(
+    locale.startsWith("en") ? "en-GB" : "es",
+    { day: "numeric", month: "short", timeZone: resolvedTz, weekday: "long" },
+  ).formatToParts(getCountdownTarget(resolvedTz, now));
+  const part = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value.replace(".", "") ?? "";
+  return `${part("weekday")} ${part("day")} ${part("month")}`;
 }
 
 /**
