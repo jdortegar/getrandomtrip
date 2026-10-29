@@ -43,3 +43,9 @@ export interface BlogIndexResponse {
   blogs: BlogIndexPost[];
   pagination: BlogIndexPagination;
 }
+
+/** First page rendered on the server so crawlers see post links in the HTML. */
+export interface BlogIndexInitial {
+  blogs: BlogIndexPost[];
+  hasMore: boolean;
+}
