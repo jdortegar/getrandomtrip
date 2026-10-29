@@ -87,7 +87,7 @@ it("subtracts the gaps from slide widths when every slide fits in view", () => {
   expect(slide?.className).not.toContain("@md:flex-[0_0_33.3333%]");
 });
 
-it("keeps full-width slides when the row scrolls", () => {
+it("takes the gutters out of slide widths when the row scrolls, so no near-duplicate last snap appears", () => {
   harness.render(
     <EmblaCarousel overflow="right" slidesPerView={3}>
       {[1, 2, 3, 4].map((index) => (
@@ -97,7 +97,7 @@ it("keeps full-width slides when the row scrolls", () => {
   );
 
   const slide = harness.container.querySelector("article")?.parentElement;
-  expect(slide?.className).toContain("@md:flex-[0_0_33.3333%]");
+  expect(slide?.className).toContain("@md:flex-[0_0_calc((100%_-_1.5rem)/3)]");
 });
 
 function mockMeasurement(width: number, wideViewport = false) {
@@ -141,7 +141,7 @@ it("scrolls instead of going static when the slides do not fit a narrow containe
   expect(slide?.parentElement?.classList.contains("justify-center")).toBe(
     false,
   );
-  expect(slide?.className).toContain("@md:flex-[0_0_33.3333%]");
+  expect(slide?.className).toContain("@md:flex-[0_0_calc((100%_-_1.5rem)/3)]");
   expect(viewportRef).toHaveBeenCalledWith(expect.any(HTMLDivElement));
   vi.unstubAllGlobals();
 });
@@ -185,4 +185,31 @@ it("measures on mount when the observer has not reported yet", () => {
   );
   rect.mockRestore();
   vi.unstubAllGlobals();
+});
+
+it("stops scrolling once the last slide is fully visible", () => {
+  harness.render(
+    <EmblaCarousel>
+      {[1, 2, 3, 4, 5, 6].map((index) => (
+        <article key={index}>Slide {index}</article>
+      ))}
+    </EmblaCarousel>,
+  );
+  expect(vi.mocked(useEmblaCarousel).mock.lastCall?.[0]).toMatchObject({
+    align: "start",
+    containScroll: "trimSnaps",
+  });
+});
+
+it("still lets a caller override the scroll containment", () => {
+  harness.render(
+    <EmblaCarousel options={{ containScroll: false }}>
+      {[1, 2, 3, 4, 5, 6].map((index) => (
+        <article key={index}>Slide {index}</article>
+      ))}
+    </EmblaCarousel>,
+  );
+  expect(vi.mocked(useEmblaCarousel).mock.lastCall?.[0]).toMatchObject({
+    containScroll: false,
+  });
 });
