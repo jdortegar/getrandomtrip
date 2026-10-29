@@ -3005,6 +3005,7 @@
       "title": "Experiences"
     },
     "hero": {
+      "accent": "Your best story might be where you never looked.",
       "branding": {
         "repeatText": "Repeat",
         "text": "Wonder • Wander"
@@ -3016,7 +3017,7 @@
         "text": "Getrandomtrip"
       },
       "scrollText": "Scroll",
-      "subtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
+      "subtitle": "First, choose who you're traveling with. Then find the plan that fits you. We organize the trip; you'll discover the destination 48 hours before you leave.",
       "title": "Experiences",
       "videoSrc": "/videos/experiences-hero.mp4"
     },

@@ -106,7 +106,7 @@ const Hero: React.FC<HeroProps> = ({
             transition={{ duration: 0.45, delay: 0.15 }}
           />
 
-          {isHome && content.accent && (
+          {content.accent && (
             <motion.p
               animate={{ y: 0, opacity: 1 }}
               data-nosnippet

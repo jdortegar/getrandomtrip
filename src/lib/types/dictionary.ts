@@ -4066,6 +4066,8 @@ export interface MarketingDictionary {
     /** Sentence-case `<title>` copy; the visible hero title stays all caps. */
     meta: { title: string };
     hero: {
+      /** Handwritten (human-voice) line shown above the subtitle. */
+      accent: string;
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
       primaryCta: { ariaLabel: string; href: string; text: string };

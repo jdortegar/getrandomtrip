@@ -115,7 +115,6 @@ it("preserves the shared hero's heading, tagline, links, and styling by default"
   const hero = renderHero(
     <Hero
       content={{
-        accent: "Homepage-only accent",
         eyebrow: "Shared eyebrow",
         primaryCta: {
           ariaLabel: "Explore",
@@ -158,5 +157,32 @@ it("preserves the shared hero's heading, tagline, links, and styling by default"
   expect(hero.querySelector("a")?.classList.contains("bg-transparent")).toBe(
     false,
   );
-  expect(hero.textContent).not.toContain("Homepage-only accent");
+});
+
+describe("experiences hero", () => {
+  it.each([
+    {
+      copy: es.experiences.hero,
+      accent: "Tu mejor historia podría estar donde nunca buscaste.",
+      subtitle:
+        "Primero, elige con quién viajar. Después, encuentra el plan que va contigo. Nosotros organizamos el viaje; tú descubrirás el destino 48 horas antes de salir.",
+    },
+    {
+      copy: en.experiences.hero,
+      accent: "Your best story might be where you never looked.",
+      subtitle:
+        "First, choose who you're traveling with. Then find the plan that fits you. We organize the trip; you'll discover the destination 48 hours before you leave.",
+    },
+  ])("shows the handwritten accent above the order-of-choice subtitle", ({ copy, accent, subtitle }) => {
+    const hero = renderHero(
+      <Hero content={copy} scrollIndicator titleClassName="uppercase" />,
+    );
+    const [accentLine, body] = hero.querySelectorAll("p");
+
+    expect(accentLine?.textContent).toBe(accent);
+    expect(accentLine?.classList.contains("font-nothing-you-could-do")).toBe(
+      true,
+    );
+    expect(body?.textContent).toBe(subtitle);
+  });
 });
