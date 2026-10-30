@@ -6,6 +6,7 @@ import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import BackToTopButton from "@/components/chrome/BackToTopButton";
 import { GlobalAuthModal } from "@/components/providers/GlobalAuthModal";
+import { CurrencyProvider } from "@/components/providers/CurrencyProvider";
 import SessionProvider from "@/components/providers/SessionProvider";
 import SetLocaleLang from "@/components/providers/SetLocaleLang";
 import SyncLocale from "@/components/providers/SyncLocale";
@@ -62,18 +63,20 @@ export default async function LocaleLayout(props: {
     <SessionProvider>
       <SetLocaleLang locale={localeTyped} />
       <SyncLocale />
-      <GateAwareChrome
-        banner={
-          <Suspense fallback={null}>
-            <AttributionModeBanner copy={dict.tripperAttribution} />
-          </Suspense>
-        }
-        dict={dict}
-        gateEnabled={gateEnabled}
-        locale={localeTyped}
-      >
-        {children}
-      </GateAwareChrome>
+      <CurrencyProvider copy={dict.currency} locale={localeTyped}>
+        <GateAwareChrome
+          banner={
+            <Suspense fallback={null}>
+              <AttributionModeBanner copy={dict.tripperAttribution} />
+            </Suspense>
+          }
+          dict={dict}
+          gateEnabled={gateEnabled}
+          locale={localeTyped}
+        >
+          {children}
+        </GateAwareChrome>
+      </CurrencyProvider>
       <AnalyticsConsent copy={dict.analyticsConsent} />
       <GlobalAuthModal dict={dict} />
       <BackToTopButton />

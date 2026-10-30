@@ -4,17 +4,22 @@ import { Elements } from "@stripe/react-stripe-js";
 import type { StripeElementLocale } from "@stripe/stripe-js";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CheckoutCurrencyNote } from "@/components/app/checkout/CheckoutCurrencyNote";
 import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import { Button } from "@/components/ui/Button";
 import { DialogDescription, DialogHeader, DialogTitle, Modal } from "@/components/ui/Modal";
 import { fetchShareIntent, type IntentResult } from "@/lib/payments/share-intent-client";
 import { stripeAppearance } from "@/lib/stripe-appearance";
 import { getStripePromise } from "@/lib/stripe-client";
+import type { CurrencyDict } from "@/lib/types/dictionary";
 import type { MyTopUp } from "@/types/payments";
 
 interface TopUpPaymentModalProps {
   copy: DashboardCopy["topUpDue"];
+  /** Optional so existing callers keep rendering without the USD note. */
+  currencyCopy?: CurrencyDict;
   paymentCopy: Parameters<typeof StripePaymentForm>[0]["copy"];
   locale: string;
   /** The top-up being paid; null keeps the modal closed. */
@@ -29,7 +34,8 @@ type View = { status: "loading" } | { status: "ready"; clientSecret: string } | 
 const TOP_UP_CLOSED_CODES = ["GRACE_PASSED", "NOT_OPEN"];
 
 /** Card payment for the viewer's own top-up, entered again on purpose (S6). */
-export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, onPaid }: TopUpPaymentModalProps) {
+export function TopUpPaymentModal({ copy, currencyCopy, paymentCopy, locale, topUp, onClose, onPaid }: TopUpPaymentModalProps) {
+  const { formatApprox } = useDisplayCurrency();
   const [view, setView] = useState<View>({ status: "loading" });
   const [stripe] = useState(() => getStripePromise());
   const shareId = topUp?.shareId ?? null;
@@ -69,6 +75,7 @@ export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, o
   };
 
   const amount = topUp ? `${topUp.currency} ${topUp.amount.toFixed(Number.isInteger(topUp.amount) ? 0 : 2)}` : "";
+  const approxAmount = topUp ? formatApprox(topUp.amount) : null;
 
   return (
     <Modal
@@ -84,8 +91,14 @@ export function TopUpPaymentModal({ copy, paymentCopy, locale, topUp, onClose, o
         <DialogDescription className="text-sm text-gray-500">
           {copy.modalDescription.replace("{amount}", amount)}
         </DialogDescription>
+        {approxAmount ? <p className="text-sm text-neutral-500">{approxAmount}</p> : null}
       </DialogHeader>
       <div className="px-6 py-5" data-component="TopUpPaymentModal">
+        {currencyCopy ? (
+          <div className="mb-4">
+            <CheckoutCurrencyNote copy={currencyCopy} />
+          </div>
+        ) : null}
         {view.status === "loading" ? (
           <p aria-busy="true" className="flex items-center gap-2 text-sm" role="status">
             <Loader2 aria-hidden className="h-4 w-4 animate-spin" />

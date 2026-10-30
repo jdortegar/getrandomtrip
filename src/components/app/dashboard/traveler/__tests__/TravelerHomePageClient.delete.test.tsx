@@ -74,6 +74,7 @@ it.each(["http", "network"])(
       root.render(
         <TravelerHomePageClient
           copy={en.dashboard}
+          currencyCopy={en.currency}
           eyebrow="Dashboard"
           heading="Your trips"
           locale="en"
@@ -124,6 +125,7 @@ it("never lists a companion's paid trip as awaiting payment", async () => {
     root.render(
       <TravelerHomePageClient
         copy={en.dashboard}
+          currencyCopy={en.currency}
         eyebrow="Dashboard"
         heading="Your trips"
         locale="en"

@@ -333,3 +333,16 @@ export interface TripTiming {
   startDate: Date;
   departureTimeZone?: string | null;
 }
+
+/**
+ * Display-only local currency resolved for the current visitor.
+ * `rate` is local units per 1 USD; prices are always charged in USD.
+ */
+export interface LocalCurrencyInfo {
+  /** ISO 4217 code, e.g. "ARS". */
+  currency: string;
+  rate: number;
+}
+
+/** What the visitor chose to see prices in. */
+export type DisplayCurrencyMode = "USD" | "LOCAL";

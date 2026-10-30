@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import { Check, Clock } from "lucide-react";
 import { localizeHref } from "@/lib/i18n/localizeHref";
 import type {
@@ -73,6 +74,7 @@ export function ExperienceCard({
   className,
 }: ExperienceCardProps) {
   const router = useRouter();
+  const { formatPrice } = useDisplayCurrency();
   const locale = useLocale();
   const tripperCopy = useDictionary((d) => d.journey.tripperBadge);
   const copy = useDictionary((d) => d.experienceCard);
@@ -198,7 +200,7 @@ export function ExperienceCard({
               </span>
             ) : null}
             <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
-              {`USD ${level.price}`}
+              {formatPrice(level.price, `USD ${level.price}`)}
             </span>
             <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
               {level.priceFootnote || copy.perPerson}

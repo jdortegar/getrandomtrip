@@ -5,6 +5,7 @@ import { ChevronDown, Minus, Plus, Check } from "lucide-react";
 import type { Addon } from "@/lib/data/shared/addons-catalog";
 import { useStore } from "@/store/store";
 import { Button } from "@/components/ui/Button";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 
 // Helper simple para clases
 const cn = (...c: Array<string | false | null | undefined>) =>
@@ -18,6 +19,7 @@ type Props = {
 
 export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
   const { addons, setAddon, removeAddon, logistics, level } = useStore();
+  const { formatPrice } = useDisplayCurrency();
   const sel = addons.selected.find((s) => s.id === addon.id);
 
   const qty = sel?.qty || 0;
@@ -85,7 +87,7 @@ export default function AnimatedDeckCard({ addon, active, onClick }: Props) {
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-ink">
             {addon.priceType === "currency"
-              ? `USD ${addon.price}`
+              ? formatPrice(addon.price, `USD ${addon.price}`)
               : `${addon.price}%`}
           </span>
           <motion.div

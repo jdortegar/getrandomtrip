@@ -9,6 +9,7 @@ import { useScrollDetection } from "@/hooks/useScrollDetection";
 import AuthModal from "@/components/auth/AuthModal";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { NavbarProfile, type NavbarProfileLabels } from "./NavbarProfile";
+import { NavCurrencyMenu } from "./NavCurrencyMenu";
 import { NavMobileDrawer, DRAWER_ID } from "./NavMobileDrawer";
 import { useMenuState } from "@/hooks/useMenuState";
 import { COOKIE_LOCALE, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
@@ -234,6 +235,11 @@ export default function Navbar({
               />
             )}
 
+            <NavCurrencyMenu
+              ariaLabel={dict?.currency?.selectCurrency ?? "Select currency"}
+              buttonClassName={iconHoverClass}
+            />
+
             <div className="relative hidden xl:flex" ref={languageMenuRef}>
               <button
                 aria-expanded={isLanguageMenuOpen}
@@ -289,6 +295,7 @@ export default function Navbar({
         onLocaleChange={switchLocale}
         onSignIn={() => openLogin()}
         whatsappHref={WHATSAPP_URL}
+        currencyLabel={dict?.currency?.selectCurrency}
       />
 
       <AuthModal
