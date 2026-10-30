@@ -68,7 +68,9 @@ export function CurrencyProvider({
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/currency")
+    // Forward a dev-only ?country=XX override; the API ignores it in production.
+    const country = new URLSearchParams(window.location.search).get("country");
+    fetch(country ? `/api/currency?country=${encodeURIComponent(country)}` : "/api/currency")
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { local: LocalCurrencyInfo | null } | null) => {
         if (cancelled) return;

@@ -3,8 +3,11 @@ import { GET } from "../route";
 
 const RATES_OK = { result: "success", rates: { USD: 1, ARS: 1200, EUR: 0.9 } };
 
-function makeRequest(headers: Record<string, string> = {}): Request {
-  return new Request("http://localhost/api/currency", { headers });
+function makeRequest(
+  headers: Record<string, string> = {},
+  query = "",
+): Request {
+  return new Request(`http://localhost/api/currency${query}`, { headers });
 }
 
 function nfGeo(code: string): string {
@@ -41,6 +44,18 @@ describe("GET /api/currency", () => {
   it("returns no local currency when the country is not detected", async () => {
     const res = await GET(makeRequest({ "x-nf-geo": "not-base64-json" }));
     expect(await res.json()).toEqual({ local: null });
+  });
+
+  it("honors ?country=XX outside production", async () => {
+    const res = await GET(makeRequest({ "x-country": "US" }, "?country=AR"));
+    expect(await res.json()).toEqual({ local: { currency: "ARS", rate: 1200 } });
+  });
+
+  it("ignores ?country=XX in production", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    const res = await GET(makeRequest({ "x-country": "US" }, "?country=AR"));
+    expect(await res.json()).toEqual({ local: null });
+    vi.unstubAllEnvs();
   });
 
   it("returns no local currency when the rates API fails", async () => {
