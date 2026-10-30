@@ -7513,5 +7513,11 @@
     "urgency": "La revelación del destino está programada en las próximas {hours} horas. Asigna una experiencia antes de {deadline}.",
     "notificationBody": "La revelación del destino para {client} está programada en las próximas {hours} horas ({deadline}). Asigna una experiencia antes de la revelación.",
     "cta": "IR AL PANEL ADMIN"
+  },
+  "currency": {
+    "selectCurrency": "Seleccionar moneda",
+    "referenceToast": "Los precios en {currency} son solo de referencia. Los cobros se hacen en dólares (USD).",
+    "checkoutDisclaimer": "Los cobros se hacen en dólares (USD). Los montos en otras monedas son aproximados y tu banco define el tipo de cambio final.",
+    "cardTaxesNote": "Tu banco o tarjeta puede sumar impuestos y cargos (por ejemplo, percepciones)."
   }
 }

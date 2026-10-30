@@ -7513,5 +7513,11 @@
     "urgency": "The destination reveal is scheduled within {hours} hours. Please assign an experience before {deadline}.",
     "notificationBody": "The destination reveal for {client} is scheduled within {hours} hours ({deadline}). Assign an experience before the reveal.",
     "cta": "GO TO ADMIN PANEL"
+  },
+  "currency": {
+    "selectCurrency": "Select currency",
+    "referenceToast": "Prices in {currency} are for reference only. Charges are made in US dollars (USD).",
+    "checkoutDisclaimer": "Charges are made in US dollars (USD). Amounts in other currencies are approximate, and your bank sets the final exchange rate.",
+    "cardTaxesNote": "Your card issuer may add taxes and fees (e.g. Argentine percepciones)."
   }
 }

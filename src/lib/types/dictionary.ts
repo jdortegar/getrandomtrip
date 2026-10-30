@@ -3648,6 +3648,15 @@ export interface ShareCheckoutDict {
   toTrips: string;
 }
 
+export interface CurrencyDict {
+  selectCurrency: string;
+  /** Toast shown when the visitor switches to the local currency; `{currency}` is the ISO code. */
+  referenceToast: string;
+  checkoutDisclaimer: string;
+  /** Extra checkout note shown only for ARS. */
+  cardTaxesNote: string;
+}
+
 export interface MarketingDictionary {
   socialImport: import("./SocialImportCopy").SocialImportCopy;
   tripTransport: {
@@ -5235,4 +5244,5 @@ export interface MarketingDictionary {
   manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
   tripperAttribution: TripperAttributionDict;
+  currency: CurrencyDict;
 }
