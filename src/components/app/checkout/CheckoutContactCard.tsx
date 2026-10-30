@@ -12,16 +12,20 @@ import { Button } from "@/components/ui/Button";
 import { AMERICAN_COUNTRIES } from "@/lib/data/shared/countries";
 import type { CheckoutFormFields } from "@/types/Checkout";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
+import type { CurrencyDict } from "@/lib/types/dictionary";
 import { hasLocale } from "@/lib/i18n/config";
 import { getStripePromise } from "@/lib/stripe-client";
 import { stripeAppearance } from "@/lib/stripe-appearance";
 import { cn } from "@/lib/utils";
+import { CheckoutCurrencyNote } from "./CheckoutCurrencyNote";
 import { StripePaymentForm } from "./StripePaymentForm";
 
 
 interface CheckoutContactCardProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
   clientSecret: string | null;
+  /** Shows the permanent "charged in USD" note above the payment form. */
+  currencyCopy?: CurrencyDict;
   formData: CheckoutFormFields;
   formRef: React.RefObject<HTMLFormElement | null>;
   isXsed?: boolean;
@@ -43,6 +47,7 @@ interface CheckoutContactCardProps {
 export function CheckoutContactCard({
   checkoutCopy,
   clientSecret,
+  currencyCopy,
   paymentNotice = null,
   formData,
   formRef,
@@ -208,49 +213,52 @@ export function CheckoutContactCard({
             {paymentNotice}
           </p>
         ) : clientSecret ? (
-          <Elements
-            key={`${clientSecret}:${paymentElement.attempt}`}
-            options={{
-              appearance: stripeAppearance,
-              clientSecret,
-              locale: stripeLocale,
-              fonts: [
-                {
-                  cssSrc:
-                    "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap",
-                },
-              ],
-            }}
-            stripe={paymentElement.stripe}
-          >
-            <StripePaymentForm
-              billingCity={formData.city}
-              billingCountry={formData.country}
-              billingEmail={sessionEmail}
-              billingLine1={formData.street}
-              billingName={formData.name}
-              billingPhone={formData.phone}
-              billingPostalCode={formData.zipCode}
-              billingState={formData.state}
-              copy={{
-                paymentBack: checkoutCopy.paymentBack,
-                paymentProcessing: checkoutCopy.paymentProcessing,
-                paymentLoading: checkoutCopy.paymentLoading,
-                paymentLoadError: checkoutCopy.paymentLoadError,
-                paymentRetry: checkoutCopy.paymentRetry,
-                paymentFailed: checkoutCopy.paymentFailed,
-                paymentSubmit: checkoutCopy.paymentSubmit,
+          <>
+            {currencyCopy ? <CheckoutCurrencyNote copy={currencyCopy} /> : null}
+            <Elements
+              key={`${clientSecret}:${paymentElement.attempt}`}
+              options={{
+                appearance: stripeAppearance,
+                clientSecret,
+                locale: stripeLocale,
+                fonts: [
+                  {
+                    cssSrc:
+                      "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap",
+                  },
+                ],
               }}
-              onBeforeConfirm={onBeforeConfirm}
-              onCancel={onBack}
-              onPaymentInfoSubmitted={onPaymentInfoSubmitted}
-              onProcessingChange={onPaymentProcessingChange}
-              onRetry={() => {
-                const stripe = getStripePromise();
-                setPaymentElement((previous) => ({ attempt: previous.attempt + 1, stripe }));
-              }}
-            />
-          </Elements>
+              stripe={paymentElement.stripe}
+            >
+              <StripePaymentForm
+                billingCity={formData.city}
+                billingCountry={formData.country}
+                billingEmail={sessionEmail}
+                billingLine1={formData.street}
+                billingName={formData.name}
+                billingPhone={formData.phone}
+                billingPostalCode={formData.zipCode}
+                billingState={formData.state}
+                copy={{
+                  paymentBack: checkoutCopy.paymentBack,
+                  paymentProcessing: checkoutCopy.paymentProcessing,
+                  paymentLoading: checkoutCopy.paymentLoading,
+                  paymentLoadError: checkoutCopy.paymentLoadError,
+                  paymentRetry: checkoutCopy.paymentRetry,
+                  paymentFailed: checkoutCopy.paymentFailed,
+                  paymentSubmit: checkoutCopy.paymentSubmit,
+                }}
+                onBeforeConfirm={onBeforeConfirm}
+                onCancel={onBack}
+                onPaymentInfoSubmitted={onPaymentInfoSubmitted}
+                onProcessingChange={onPaymentProcessingChange}
+                onRetry={() => {
+                  const stripe = getStripePromise();
+                  setPaymentElement((previous) => ({ attempt: previous.attempt + 1, stripe }));
+                }}
+              />
+            </Elements>
+          </>
         ) : (
           <div className="space-y-3">
             <div className="h-10 animate-pulse rounded bg-gray-100" />
