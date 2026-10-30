@@ -98,7 +98,11 @@ export function Toaster() {
             textAlign: "left",
           },
           classNames: {
-            icon: "!m-0 !flex !h-[22px] !w-[22px] !items-center !justify-center",
+            icon: "!m-0 !flex !h-[22px] !w-[22px] !shrink-0 !items-center !justify-center",
+            // Shrink beside the icon instead of wrapping below it (the toast
+            // wraps only so the action button can drop to its own row);
+            // right padding clears the close button.
+            content: "!min-w-0 !flex-1 !basis-0 !pr-6",
             title: "!text-[14px] !font-semibold !leading-[1.25] !text-ink",
             description: "!text-[13px] !text-ink",
             closeButton:
