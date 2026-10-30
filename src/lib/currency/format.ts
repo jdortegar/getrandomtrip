@@ -18,3 +18,16 @@ export function formatLocalApprox(
   });
   return `≈ ${formatted}`;
 }
+
+/**
+ * Rewrites every "USD <amount>" mention in copy (e.g. "2-3 filters: USD 18
+ * each.") through `convert`; amounts stay USD in the dictionary.
+ */
+export function replaceUsdAmounts(
+  text: string,
+  convert: (usd: number) => string,
+): string {
+  return text.replace(/USD\s?(\d+(?:[.,]\d+)?)/g, (_match, amount: string) =>
+    convert(Number(amount.replace(",", "."))),
+  );
+}

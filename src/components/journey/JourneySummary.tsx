@@ -39,6 +39,7 @@ import type { Filters } from "@/store/slices/journeyStore";
 import { usePayment } from "@/hooks/usePayment";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 
 type JourneySummaryDict = MarketingDictionary["journey"]["summary"];
 
@@ -157,6 +158,8 @@ export default function JourneySummary({
   tripperPriceOverrides = null,
 }: JourneySummaryProps) {
   const searchParams = useSearchParams();
+  const { formatPrice, formatPriceText } = useDisplayCurrency();
+  const money = (n: number) => formatPrice(n, checkoutUsd(n));
   const updateQuery = useQuerySync();
 
   const handleRemoveDetail = useCallback(
@@ -246,17 +249,17 @@ export default function JourneySummary({
     return {
       image: card?.img,
       label: TRAVELER_TYPE_LABELS[travelType] || card?.title || travelType,
-      price: selectedLevel ? formatUSD(price) : undefined,
+      price: selectedLevel ? formatPrice(price, formatUSD(price)) : undefined,
     };
-  }, [travelType, selectedLevel, locale, tripperPriceOverrides]);
+  }, [travelType, selectedLevel, locale, tripperPriceOverrides, formatPrice]);
 
   const selectedExperienceInfo = useMemo(() => {
     if (!selectedLevel) return null;
     return {
       label: selectedLevel.name,
-      price: `${formatUSD(selectedLevel.price)} ${summary.experiencePerPerson}`,
+      price: `${formatPrice(selectedLevel.price, formatUSD(selectedLevel.price))} ${summary.experiencePerPerson}`,
     };
-  }, [selectedLevel, summary.experiencePerPerson]);
+  }, [selectedLevel, summary.experiencePerPerson, formatPrice]);
 
   const excuseTitle = useMemo(() => {
     if (!hasExcuseStep) return undefined;
@@ -888,7 +891,7 @@ export default function JourneySummary({
                       <span>
                         {addonLabels?.[addon.id]?.title ?? addon.title}
                         {addon.priceType === "currency"
-                          ? ` — USD ${addon.price}`
+                          ? ` — ${formatPrice(addon.price, `USD ${addon.price}`)}`
                           : ` — ${addon.price}%`}
                       </span>
                       <button
@@ -934,7 +937,7 @@ export default function JourneySummary({
               {totalsLabels.summaryHeroPriceCaption}
             </p>
             <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
-              {checkoutUsd(paymentTotals.basePerPax)}
+              {money(paymentTotals.basePerPax)}
             </p>
           </div>
 
@@ -944,11 +947,11 @@ export default function JourneySummary({
                 {totalsLabels.filterFeeLabel}
               </p>
               <p className="mt-1 font-barlow font-normal text-gray-600 text-sm">
-                {filterFeeDescription}
+                {formatPriceText(filterFeeDescription)}
               </p>
             </div>
             <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
-              {checkoutUsd(paymentTotals.filtersPerPax)}
+              {money(paymentTotals.filtersPerPax)}
             </p>
           </div>
 
@@ -958,7 +961,7 @@ export default function JourneySummary({
                 {totalsLabels.addonsPerPersonLabel}
               </p>
               <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
-                {checkoutUsd(addonsPerPaxCombined)}
+                {money(addonsPerPaxCombined)}
               </p>
             </div>
           ) : null}
@@ -968,7 +971,7 @@ export default function JourneySummary({
               {totalsLabels.subtotalPerPersonLabel}
             </p>
             <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-ink">
-              {checkoutUsd(paymentTotals.totalPerPax)}
+              {money(paymentTotals.totalPerPax)}
             </p>
           </div>
 
@@ -982,7 +985,7 @@ export default function JourneySummary({
               </p>
             </div>
             <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
-              {checkoutUsd(paymentTotals.totalTrip)}
+              {money(paymentTotals.totalTrip)}
             </p>
           </div>
         </div>

@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { toast } from "sonner";
 import { COOKIE_DISPLAY_CURRENCY } from "@/lib/currency/config";
-import { formatLocalApprox } from "@/lib/currency/format";
+import { formatLocalApprox, replaceUsdAmounts } from "@/lib/currency/format";
 import type { CurrencyDict } from "@/lib/types/dictionary";
 import type { DisplayCurrencyMode, LocalCurrencyInfo } from "@/types/core";
 
@@ -28,6 +28,8 @@ interface DisplayCurrencyContextValue {
   formatPrice: (usd: number | string, usdLabel: string) => string;
   /** Secondary "≈ local" line for checkout, or null when USD is selected. */
   formatApprox: (usd: number | string) => string | null;
+  /** Converts "USD <amount>" mentions inside copy; unchanged when USD is selected. */
+  formatPriceText: (text: string) => string;
 }
 
 const DisplayCurrencyContext = createContext<DisplayCurrencyContextValue>({
@@ -37,6 +39,7 @@ const DisplayCurrencyContext = createContext<DisplayCurrencyContextValue>({
   setMode: () => {},
   formatPrice: (_usd, usdLabel) => usdLabel,
   formatApprox: () => null,
+  formatPriceText: (text) => text,
 });
 
 function readModeCookie(): DisplayCurrencyMode {
@@ -100,6 +103,10 @@ export function CurrencyProvider({
         isLocal && local ? formatLocalApprox(usd, local, locale) : usdLabel,
       formatApprox: (usd) =>
         isLocal && local ? formatLocalApprox(usd, local, locale) : null,
+      formatPriceText: (text) =>
+        isLocal && local
+          ? replaceUsdAmounts(text, (usd) => formatLocalApprox(usd, local, locale))
+          : text,
     };
   }, [local, locale, mode, setMode]);
 

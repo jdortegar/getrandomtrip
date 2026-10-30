@@ -12,6 +12,7 @@ import {
 import AvoidGrid from "@/components/journey/avoid/AvoidGrid";
 import Chip from "@/components/Chip";
 import { cn } from "@/lib/utils";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 
 export interface FilterOption {
   key: string;
@@ -162,6 +163,7 @@ export function JourneyFiltersForm({
   originCity,
   originCountry,
 }: JourneyFiltersFormProps) {
+  const { formatPriceText } = useDisplayCurrency();
   const accommodationTypeOptions: FilterOption[] =
     labelsProp.filterOptions.accommodationType.options.map((o) => ({
       key: o.key,
@@ -205,8 +207,8 @@ export function JourneyFiltersForm({
         <ul className="grid list-outside list-disc grid-cols-2 gap-x-6 gap-y-1 pl-4 text-sm font-normal text-ink">
           <li>{labelsProp.importantNote1}</li>
           <li>{labelsProp.importantNote2}</li>
-          <li>{labelsProp.importantNote3}</li>
-          <li>{labelsProp.importantNote4}</li>
+          <li>{formatPriceText(labelsProp.importantNote3)}</li>
+          <li>{formatPriceText(labelsProp.importantNote4)}</li>
         </ul>
       </div>
 

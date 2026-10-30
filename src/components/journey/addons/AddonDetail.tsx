@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
 import { useStore } from "@/store/store";
 import { X, Minus, Plus } from "lucide-react";
@@ -13,6 +14,7 @@ export default function AddonDetail({
   onClose: () => void;
 }) {
   const { addons, setAddon, removeAddon, logistics, level } = useStore();
+  const { formatPrice } = useDisplayCurrency();
   const sel = addons.selected.find((s) => s.id === activeId);
 
   const [qty, setQty] = useState(sel?.qty || 1);
@@ -73,7 +75,7 @@ export default function AddonDetail({
       <div className="mt-4">
         <div className="text-sm font-medium text-ink">Precio</div>
         <div className="text-lg font-semibold text-ink">
-          USD ${addon.price}
+          {formatPrice(addon.price, `USD $${addon.price}`)}
         </div>
       </div>
 

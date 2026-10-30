@@ -16,11 +16,12 @@ import enCopy from "@/dictionaries/en.json";
 vi.mock("sonner", () => ({ toast: { info: vi.fn() } }));
 
 function PriceProbe() {
-  const { formatPrice, formatApprox } = useDisplayCurrency();
+  const { formatPrice, formatApprox, formatPriceText } = useDisplayCurrency();
   return (
     <>
       <span data-testid="price">{formatPrice(100, "USD 100")}</span>
       <span data-testid="approx">{formatApprox(100) ?? "none"}</span>
+      <span data-testid="note">{formatPriceText("2-3 filters: USD 18 each.")}</span>
     </>
   );
 }
@@ -72,6 +73,7 @@ describe("CurrencyProvider", () => {
     await render(null);
     expect(text("price")).toBe("USD 100");
     expect(text("approx")).toBe("none");
+    expect(text("note")).toBe("2-3 filters: USD 18 each.");
     expect(container.querySelector('[aria-label="Select currency"]')).toBeNull();
   });
 
@@ -92,6 +94,7 @@ describe("CurrencyProvider", () => {
 
     expect(text("price")).toBe("≈ ARS 120,000");
     expect(text("approx")).toBe("≈ ARS 120,000");
+    expect(text("note")).toBe("2-3 filters: ≈ ARS 21,600 each.");
     expect(toast.info).toHaveBeenCalledWith(
       "Prices in ARS are for reference only. Charges are made in US dollars (USD).",
     );
