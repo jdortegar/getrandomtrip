@@ -19,10 +19,10 @@ Branch: `feat/local-currency-display` (from `develop`) · Delivery: `ask-on-risk
 
 | ID | Specs | Route | Status | Commit |
 |----|-------|-------|--------|--------|
-| T1 | S2, S9 | inline | pending | |
-| T2 | S3, S5, S6 | inline | pending | |
-| T3 | S4, S7, S8 | inline | pending | |
-| T4 | S7 | inline | pending | |
+| T1 | S2, S9 | inline | done, verified | dc33cd6b |
+| T2 | S3, S5, S6 | inline | done, verified | dc33cd6b |
+| T3 | S4, S7, S8 | inline | done, verified | cf5a4aa7 |
+| T4 | S7 | inline | done, verified | ec9e0b19 |
 
 Route evidence: no Writer trigger — units depend on T1/T2 context; parent writes inline.
 
@@ -30,3 +30,6 @@ Route evidence: no Writer trigger — units depend on T1/T2 context; parent writ
 
 - **L1 (2026-10-29)** — User request: "I need that the user sees the trip prices in his local currency, maybe a toggle could work, does stripe can accept payment in multiple currencie, search docs, or we can leave dollars but in the checkout add a disclaimer that charges will be in dollars /grill-me". Design resolved via grill-me Q1–Q12 (see Specs).
 - **L2** — Engram mirror pending: no Engram tools available in this session.
+- **L3** — Test-first exception: T1 tests were written right after the code (no RED observed); T2–T4 assertions added alongside. USD text at every call site is preserved byte-for-byte (`formatPrice(usd, existingUsdLabel)`); existing suites unchanged.
+- **L4** — S8 reality: no USD budget slider exists; the USD amounts in filters are the per-filter fee notes (`importantNote3/4`, `filterFeeLine`), converted via `formatPriceText`. `FiltersTab`/`FiltersPanel` have no importers and were left untouched.
+- **L5** — Verification: `npm run typecheck` clean, `npm run lint` clean, `npx vitest run` 726 files / 7783 tests passed. Dev probe: `/api/currency` with `x-country: AR` → `{"local":{"currency":"ARS","rate":1539.593}}`; US and no header → `{"local":null}`. Browser UI QA (navbar/drawer/toast, 360px/1280px) not run: no `.env.local` for DB-backed pages. RDD off (global). Next: manual QA on a Netlify deploy preview, then PR to `develop`.
