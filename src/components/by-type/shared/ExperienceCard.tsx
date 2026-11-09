@@ -185,14 +185,17 @@ export function ExperienceCard({
           </p>
         )}
 
-        <p className="font-barlow text-xs leading-none text-neutral-600">
-          {kicker}
-        </p>
-
-        <div className="mt-0.5 flex items-end gap-2">
-          <ExperienceCardName name={name} />
-          <div className="mb-1 h-7.25 w-px shrink-0 bg-primary" />
-          <div className="flex shrink-0 flex-col justify-end">
+        {/* Kicker + name and the price column center on one shared height,
+            with the divider spanning it. */}
+        <div className="flex items-stretch gap-2.5">
+          <div className="flex min-w-0 flex-col justify-center">
+            <p className="mb-0.5 font-barlow text-xs leading-none text-neutral-600">
+              {kicker}
+            </p>
+            <ExperienceCardName name={name} />
+          </div>
+          <div className="w-px shrink-0 self-stretch bg-primary" />
+          <div className="flex shrink-0 flex-col justify-center">
             {level.priceLabel ? (
               <span className="text-[10px] leading-none text-neutral-600">
                 {level.priceLabel}
