@@ -21,7 +21,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to get a change of scenery at your own pace.",
           details: [
@@ -51,7 +51,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO TE PIERDAS EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en tu propio auto, con cena y una experiencia local para cambiar de aire a tu ritmo.",
           details: [
@@ -85,7 +85,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE ESSENZA",
+          ctaLabel: "DESIGN YOUR ESSENZA™",
           description:
             "A two-night getaway, with transport and accommodation sorted, to take a break, change scenery and enjoy some time for yourself.",
           details: [
@@ -107,7 +107,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR ESSENZA",
+          ctaLabel: "DISEÑA TU ESSENZA™",
           description:
             "Una escapada de dos noches, con transporte y alojamiento resueltos, para hacer una pausa, cambiar de escenario y disfrutar de tiempo para ti.",
           details: [
@@ -135,7 +135,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE MODO EXPLORA",
+          ctaLabel: "ACTIVATE YOUR MODO EXPLORA™",
           description:
             "Three nights to follow your curiosity, with a stay full of character and a destination guide to explore on your own, at your own pace.",
           details: [
@@ -157,7 +157,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR MODO EXPLORA",
+          ctaLabel: "ACTIVA TU MODO EXPLORA™",
           description:
             "Tres noches para seguir tu curiosidad, con un alojamiento con personalidad y una guía del destino para explorar por tu cuenta y a tu ritmo.",
           details: [
@@ -185,7 +185,7 @@ const EXPERIENCE_CARDS: Record<
     "explora-plus": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE EXPLORA+",
+          ctaLabel: "LEVEL UP",
           description:
             "Four nights to get to know the destination more deeply, with premium accommodation, an included experience and a personalized guide to discover more of what interests you.",
           details: [
@@ -212,7 +212,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR EXPLORA+",
+          ctaLabel: "SUBE DE NIVEL",
           description:
             "Cuatro noches para conocer el destino más a fondo, con alojamiento premium, una experiencia incluida y una guía personalizada para descubrir más de lo que te interesa.",
           details: [
@@ -245,7 +245,7 @@ const EXPERIENCE_CARDS: Record<
     bivouac: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE BIVOUAC",
+          ctaLabel: "TRAVEL DIFFERENTLY",
           description:
             "Five nights to slow down and make time for yourself, with design stays, an exclusive experience and a curated guide to discover the destination unhurried.",
           details: [
@@ -274,7 +274,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR BIVOUAC",
+          ctaLabel: "VIAJA DISTINTO",
           description:
             "Cinco noches para bajar el ritmo y dedicarte tiempo, con alojamientos de diseño, una experiencia exclusiva y una guía curada para descubrir el destino con calma.",
           details: [
@@ -312,7 +312,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START MY TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to make room for what you want to experience.",
           details: [
@@ -336,7 +336,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "SOLUM™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR MI VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
             "Un viaje a medida de tus intereses, tiempos y forma de viajar, creado junto a un asesor dedicado para darle espacio a eso que quieres vivir.",
           details: [
@@ -367,7 +367,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to share.",
           details: [
@@ -398,7 +398,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en su propio auto, con cena y una experiencia local para compartir.",
           details: [
@@ -433,7 +433,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE ESSENZA",
+          ctaLabel: "TAKE THE FIRST STEP",
           description:
             "A two-night getaway, with transport and accommodation sorted, to get a change of scenery and make time for each other.",
           details: [
@@ -455,7 +455,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR ESSENZA",
+          ctaLabel: "DEN EL PRIMER PASO",
           description:
             "Una escapada de dos noches, con transporte y alojamiento resueltos, para cambiar de aire y dedicarse tiempo juntos.",
           details: [
@@ -484,7 +484,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE MODO EXPLORA",
+          ctaLabel: "EXPLORE YOUR STORY",
           description:
             "Three nights to discover a new destination together, with a stay full of character and a guide to explore at your own pace.",
           details: [
@@ -507,7 +507,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR MODO EXPLORA",
+          ctaLabel: "EXPLOREN SU HISTORIA",
           description:
             "Tres noches para descubrir juntos un nuevo destino, con un alojamiento con personalidad y una guía para explorar a su ritmo.",
           details: [
@@ -536,7 +536,7 @@ const EXPERIENCE_CARDS: Record<
     "explora-plus": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE EXPLORA+",
+          ctaLabel: "RAISE THE STAKES",
           description:
             "Four nights to get to know the destination more deeply, with premium accommodation, an included experience and a personalized guide to enjoy together.",
           details: [
@@ -564,7 +564,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR EXPLORA+",
+          ctaLabel: "SUBAN LA APUESTA",
           description:
             "Cuatro noches para conocer el destino más a fondo, con alojamiento premium, una experiencia incluida y una guía personalizada para disfrutar juntos.",
           details: [
@@ -598,7 +598,7 @@ const EXPERIENCE_CARDS: Record<
     bivouac: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE BIVOUAC",
+          ctaLabel: "TRAVEL DIFFERENTLY",
           description:
             "Five nights to travel unhurried, with design stays, an exclusive experience and a curated guide to share time and discover new places together.",
           details: [
@@ -628,7 +628,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR BIVOUAC",
+          ctaLabel: "VIAJEN DISTINTO",
           description:
             "Cinco noches para viajar sin prisa, con alojamientos de diseño, una experiencia exclusiva y una guía curada para compartir tiempo y descubrir nuevos lugares juntos.",
           details: [
@@ -667,7 +667,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START OUR TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to shape what you imagine.",
           details: [
@@ -691,7 +691,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "BOND™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR NUESTRO VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
             "Un viaje a medida de sus intereses, tiempos y forma de viajar, creado junto a un asesor dedicado para darle forma a lo que imaginan.",
           details: [
@@ -722,7 +722,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own vehicles, with dinner and a local experience to finally get that plan out of the group chat.",
           details: [
@@ -752,7 +752,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicles",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en sus propios vehículos, con cena y una experiencia local para sacar ese plan del chat.",
           details: [
@@ -787,7 +787,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE ESSENZA",
+          ctaLabel: "MAKE IT HAPPEN",
           description:
             "A two-night getaway, with transport and accommodation sorted, to bring the group together, catch up and enjoy it without organizing everything.",
           details: [
@@ -809,7 +809,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR ESSENZA",
+          ctaLabel: "HAGAN QUE SUCEDA",
           description:
             "Una escapada de dos noches, con transporte y alojamiento resueltos, para reunir al grupo, ponerse al día y disfrutar sin organizarlo todo.",
           details: [
@@ -838,7 +838,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE MODO EXPLORA",
+          ctaLabel: "BREAK THE USUAL PLAN",
           description:
             "Three nights to discover new places with friends, with a stay full of character and a destination guide to explore at the group’s pace.",
           details: [
@@ -861,7 +861,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR MODO EXPLORA",
+          ctaLabel: "SALGAN DEL PLAN DE SIEMPRE",
           description:
             "Tres noches para descubrir nuevos lugares con amigos, con un alojamiento con personalidad y una guía del destino para explorar al ritmo del grupo.",
           details: [
@@ -889,7 +889,7 @@ const EXPERIENCE_CARDS: Record<
     "explora-plus": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE EXPLORA+",
+          ctaLabel: "ADD ANOTHER STORY",
           description:
             "Four nights to add stories to the group, with premium accommodation, an included experience and a personalized guide to discover and enjoy together.",
           details: [
@@ -916,7 +916,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR EXPLORA+",
+          ctaLabel: "SUMEN OTRA HISTORIA",
           description:
             "Cuatro noches para sumar historias al grupo, con alojamiento premium, una experiencia incluida y una guía personalizada para descubrir y disfrutar juntos.",
           details: [
@@ -950,7 +950,7 @@ const EXPERIENCE_CARDS: Record<
     bivouac: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE BIVOUAC",
+          ctaLabel: "TRAVEL DIFFERENTLY",
           description:
             "Five nights to share without rushing, with design stays, an exclusive experience and a curated guide to turn the get-together into a special trip.",
           details: [
@@ -980,7 +980,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR BIVOUAC",
+          ctaLabel: "VIAJEN DISTINTO",
           description:
             "Cinco noches para compartir sin prisas, con alojamientos de diseño, una experiencia exclusiva y una guía curada para hacer del encuentro un viaje especial.",
           details: [
@@ -1019,7 +1019,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START OUR TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to the group’s interests, timing and plans, created with a dedicated advisor to turn that someday idea into a shared experience.",
           details: [
@@ -1043,7 +1043,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "CREW™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR NUESTRO VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
             "Un viaje a medida de los intereses, tiempos y planes del grupo, creado junto a un asesor dedicado para convertir esa idea pendiente en una experiencia compartida.",
           details: [
@@ -1075,7 +1075,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own vehicle, with dinner and a local experience to break the routine as a family.",
           details: [
@@ -1106,7 +1106,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en su propio vehículo, con cena y una experiencia local para salir de la rutina en familia.",
           details: [
@@ -1141,7 +1141,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE ESSENZA",
+          ctaLabel: "GET AWAY TOGETHER",
           description:
             "A two-night getaway, with transport and accommodation sorted, to get a change of scenery, share time and enjoy the simple things together.",
           details: [
@@ -1163,7 +1163,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR ESSENZA",
+          ctaLabel: "CAMBIEN DE AIRE JUNTOS",
           description:
             "Una escapada de dos noches, con transporte y alojamiento resueltos, para cambiar de aire, compartir tiempo y disfrutar juntos de las cosas simples.",
           details: [
@@ -1191,7 +1191,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE MODO EXPLORA",
+          ctaLabel: "DISCOVER AT YOUR OWN PACE",
           description:
             "Three nights to spark curiosity as a family, with a stay full of character and a destination guide to discover together at your own pace.",
           details: [
@@ -1213,7 +1213,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR MODO EXPLORA",
+          ctaLabel: "DESCUBRAN A SU RITMO",
           description:
             "Tres noches para despertar la curiosidad en familia, con un alojamiento con personalidad y una guía del destino para descubrir juntos a su ritmo.",
           details: [
@@ -1241,7 +1241,7 @@ const EXPERIENCE_CARDS: Record<
     "explora-plus": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE EXPLORA+",
+          ctaLabel: "ADD A NEW MEMORY",
           description:
             "Four nights to create new family memories, with premium accommodation, an included experience and a personalized guide to make the most of your time together.",
           details: [
@@ -1269,7 +1269,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR EXPLORA+",
+          ctaLabel: "SUMEN UN NUEVO RECUERDO",
           description:
             "Cuatro noches para crear nuevos recuerdos familiares, con alojamiento premium, una experiencia incluida y una guía personalizada para aprovechar el tiempo juntos.",
           details: [
@@ -1303,7 +1303,7 @@ const EXPERIENCE_CARDS: Record<
     bivouac: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE BIVOUAC",
+          ctaLabel: "TRAVEL DIFFERENTLY",
           description:
             "Five nights to enjoy as a family without rushing, with design stays, an exclusive experience and a curated guide to share new discoveries.",
           details: [
@@ -1332,7 +1332,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ELEGIR BIVOUAC",
+          ctaLabel: "VIAJEN DISTINTO",
           description:
             "Cinco noches para disfrutar en familia sin prisas, con alojamientos de diseño, una experiencia exclusiva y una guía curada para compartir nuevos descubrimientos.",
           details: [
@@ -1371,7 +1371,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START OUR TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your family’s ages, interests and rhythms, created with a dedicated advisor to find a way to enjoy it together.",
           details: [
@@ -1396,7 +1396,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "KIN™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR NUESTRO VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
             "Un viaje a medida de las edades, intereses y ritmos de su familia, creado junto a un asesor dedicado para encontrar una forma de disfrutar juntos.",
           details: [
@@ -1428,7 +1428,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to celebrate this new beginning.",
           details: [
@@ -1459,7 +1459,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO SE PIERDAN EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en su propio auto, con cena y una experiencia local para celebrar este nuevo comienzo.",
           details: [
@@ -1495,7 +1495,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START OUR TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE YOUR HONEYMOON",
           description:
             "A honeymoon designed around the two of you, with a dedicated advisor who shapes your interests, timing and ideas to celebrate this new beginning your way.",
           details: [
@@ -1519,7 +1519,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "NUPTIA™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR NUESTRO VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS SU LUNA DE MIEL",
           description:
             "Una luna de miel diseñada alrededor de ustedes, con un asesor dedicado que dará forma a sus intereses, tiempos e ideas para celebrar este nuevo comienzo a su manera.",
           details: [
@@ -1551,7 +1551,7 @@ const EXPERIENCE_CARDS: Record<
     xsed: {
       copy: {
         en: {
-          ctaLabel: "SEE THE NEXT DROP",
+          ctaLabel: "DON’T MISS THE DROP",
           description:
             "A one-night weekend within 300 km of home, in your own vehicle, with pet-friendly accommodation, dinner and a local experience to get a change of scenery together.",
           details: [
@@ -1585,7 +1585,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "In your own vehicle",
         },
         es: {
-          ctaLabel: "VER EL PRÓXIMO DROP",
+          ctaLabel: "NO TE PIERDAS EL DROP",
           description:
             "Un fin de semana de una noche a menos de 300 km de casa, en tu propio vehículo, con alojamiento que admite mascotas, cena y una experiencia local para cambiar de aire en su compañía.",
           details: [
@@ -1623,7 +1623,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE ESSENZA",
+          ctaLabel: "ESCAPE TOGETHER",
           description:
             "A two-night getaway with your pet, with transport suited to their needs and accommodation that welcomes them, to change scenery without leaving them behind.",
           details: [
@@ -1652,7 +1652,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on route and pet",
         },
         es: {
-          ctaLabel: "ELEGIR ESSENZA",
+          ctaLabel: "ESCÁPATE EN SU COMPAÑÍA",
           description:
             "Una escapada de dos noches con tu mascota, con transporte adaptado a sus condiciones y alojamiento que la recibe, para cambiar de escenario sin dejarla atrás.",
           details: [
@@ -1684,7 +1684,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE MODO EXPLORA",
+          ctaLabel: "FOLLOW NEW TRAILS",
           description:
             "Three nights to discover new paths with your pet, with accommodation that welcomes them and a guide to routes and places to enjoy together.",
           details: [
@@ -1713,7 +1713,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on route and pet",
         },
         es: {
-          ctaLabel: "ELEGIR MODO EXPLORA",
+          ctaLabel: "SIGUE NUEVAS HUELLAS",
           description:
             "Tres noches para descubrir nuevos caminos con tu mascota, con un alojamiento que la recibe y una guía de rutas y lugares para disfrutar en su compañía.",
           details: [
@@ -1745,7 +1745,7 @@ const EXPERIENCE_CARDS: Record<
     "explora-plus": {
       copy: {
         en: {
-          ctaLabel: "CHOOSE EXPLORA+",
+          ctaLabel: "ADD MEMORIES WITH PAWPRINTS",
           description:
             "Four nights to share more discoveries with your pet, with premium accommodation that welcomes them, a pet-friendly experience and a personalized guide to explore.",
           details: [
@@ -1773,7 +1773,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on route and pet",
         },
         es: {
-          ctaLabel: "ELEGIR EXPLORA+",
+          ctaLabel: "SUMA RECUERDOS CON HUELLAS",
           description:
             "Cuatro noches para compartir más descubrimientos con tu mascota, con alojamiento premium que la recibe, una experiencia compatible y una guía personalizada para explorar.",
           details: [
@@ -1808,7 +1808,7 @@ const EXPERIENCE_CARDS: Record<
     bivouac: {
       copy: {
         en: {
-          ctaLabel: "CHOOSE BIVOUAC",
+          ctaLabel: "TRAVEL DIFFERENTLY",
           description:
             "Five nights to slow down with your pet, with design stays that welcome them, a pet-friendly experience and a curated guide to enjoy together.",
           details: [
@@ -1841,7 +1841,7 @@ const EXPERIENCE_CARDS: Record<
           transportNote: "Depending on route and pet",
         },
         es: {
-          ctaLabel: "ELEGIR BIVOUAC",
+          ctaLabel: "VIAJA DISTINTO",
           description:
             "Cinco noches para bajar el ritmo con tu mascota, con alojamientos de diseño que la reciben, una experiencia compatible y una guía curada para disfrutar en su compañía.",
           details: [
@@ -1880,7 +1880,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "START MY TAILOR-MADE TRIP",
+          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests and your pet’s needs, created with a dedicated advisor so sharing the road becomes part of the plan.",
           details: [
@@ -1908,7 +1908,7 @@ const EXPERIENCE_CARDS: Record<
           tag: "PAWS™ · TAILOR MADE",
         },
         es: {
-          ctaLabel: "EMPEZAR MI VIAJE A MEDIDA",
+          ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
             "Un viaje a medida de tus intereses y las necesidades de tu mascota, creado junto a un asesor dedicado para que compartir el camino sea parte del plan.",
           details: [

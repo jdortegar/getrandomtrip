@@ -60,17 +60,23 @@ describe("getExperienceCard", () => {
     expect(card?.photoSrc).toBe("/images/experience-cards/couple/xsed.jpg");
   });
 
-  it("uses 'mi' for solo/paws and 'nuestro' for the rest on Atelier", () => {
-    for (const type of ["solo", "paws"]) {
-      expect(getExperienceCard(type, "atelier-getaway", "es")?.ctaLabel).toBe(
-        "EMPEZAR MI VIAJE A MEDIDA",
-      );
-    }
-    for (const type of ["couple", "group", "family", "honeymoon"]) {
-      expect(getExperienceCard(type, "atelier-getaway", "es")?.ctaLabel).toBe(
-        "EMPEZAR NUESTRO VIAJE A MEDIDA",
-      );
-    }
+  it("keeps the per-typology CTA labels", () => {
+    expect(getExperienceCard("solo", "essenza", "es")?.ctaLabel).toBe(
+      "DISEÑA TU ESSENZA™",
+    );
+    expect(getExperienceCard("solo", "atelier-getaway", "es")?.ctaLabel).toBe(
+      "CREEMOS LO IRREPETIBLE",
+    );
+    expect(
+      getExperienceCard("honeymoon", "atelier-getaway", "es")?.ctaLabel,
+    ).toBe("CREEMOS SU LUNA DE MIEL");
+    // NUPTIA's XSED card speaks to a couple, like BOND's.
+    expect(getExperienceCard("honeymoon", "xsed", "es")?.ctaLabel).toBe(
+      "NO SE PIERDAN EL DROP",
+    );
+    expect(getExperienceCard("honeymoon", "xsed", "en")?.ctaLabel).toBe(
+      "DON’T MISS THE DROP",
+    );
   });
 
   it("adds the drop schedule only to XSED", () => {
