@@ -111,6 +111,11 @@ it("keeps the USD total primary and adds the ≈ local total", async () => {
     // Base price per person in the trip header gets its own reference line.
     expect(text).toContain("USD 350");
     expect(text).toContain("≈ $350,000 ARS");
+    // Every per-person row carries it too; free rows (filtersPerPax 0) don't.
+    const approxLines = [
+      ...container.querySelectorAll('[data-component="CheckoutPricingSummary"] [data-component="LocalPriceApprox"]'),
+    ].map((el) => el.textContent?.replace(/\u00a0/g, " "));
+    expect(approxLines).toEqual(["≈ $350,000 ARS", "≈ $350,000 ARS"]);
   } finally {
     act(() => root.unmount());
     vi.unstubAllGlobals();
