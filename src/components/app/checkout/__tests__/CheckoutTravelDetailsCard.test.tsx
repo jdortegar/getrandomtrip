@@ -108,6 +108,9 @@ it("keeps the USD total primary and adds the ≈ local total", async () => {
     const text = container.textContent?.replace(/ /g, " ");
     expect(text).toContain("USD 700");
     expect(text).toContain("≈ $700,000 ARS");
+    // Base price per person in the trip header gets its own reference line.
+    expect(text).toContain("USD 350");
+    expect(text).toContain("≈ $350,000 ARS");
   } finally {
     act(() => root.unmount());
     vi.unstubAllGlobals();
