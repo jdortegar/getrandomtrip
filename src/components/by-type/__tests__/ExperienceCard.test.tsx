@@ -56,7 +56,6 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().textContent).toContain(content.description);
   expect(card().textContent).toContain(`USD ${explora.price}`);
   expect(card().textContent).toContain(explora.priceFootnote);
-  expect(card().textContent).toContain(content.revealNote);
   for (const detail of content.details) {
     expect(card().textContent).toContain(detail.label);
     if (detail.kind !== "transport")
@@ -144,9 +143,9 @@ it("links the CTA to the journey with the card's CTA label and style", () => {
   act(() =>
     root.render(<ExperienceCard level={atelier} travelerType="solo" />),
   );
-  const outline = card().querySelector("a")!;
-  expect(outline.classList.contains("bg-white")).toBe(true);
-  expect(outline.classList.contains("text-primary")).toBe(true);
+  const atelierLink = card().querySelector("a")!;
+  expect(atelierLink.classList.contains("bg-primary")).toBe(true);
+  expect(atelierLink.classList.contains("text-white")).toBe(true);
   expect(card().textContent).toContain(atelier.priceLabel);
 });
 

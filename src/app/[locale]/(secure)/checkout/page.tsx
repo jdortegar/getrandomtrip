@@ -754,6 +754,7 @@ function CheckoutContent() {
             <CheckoutContactCard
               checkoutCopy={checkoutCopy}
               clientSecret={clientSecret}
+              currencyCopy={dict.currency}
               paymentNotice={splitPending && !payment.pending ? checkoutCopy.paymentMode.calculateFirst : null}
               formData={formData}
               formRef={contactFormRef}

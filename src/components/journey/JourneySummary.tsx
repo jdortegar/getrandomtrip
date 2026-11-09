@@ -39,6 +39,7 @@ import type { Filters } from "@/store/slices/journeyStore";
 import { usePayment } from "@/hooks/usePayment";
 import { JOURNEY_ADDONS_ENABLED } from "config/journey-features";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 
 type JourneySummaryDict = MarketingDictionary["journey"]["summary"];
 
@@ -967,9 +968,15 @@ export default function JourneySummary({
             <p className="font-barlow font-bold text-base text-ink">
               {totalsLabels.subtotalPerPersonLabel}
             </p>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-xl text-ink">
-              {checkoutUsd(paymentTotals.totalPerPax)}
-            </p>
+            <div className="shrink-0 text-right">
+              <p className="font-barlow-condensed font-bold text-xl text-ink">
+                {checkoutUsd(paymentTotals.totalPerPax)}
+              </p>
+              <LocalPriceApprox
+                className="mt-0.5 text-xs text-neutral-500"
+                usd={paymentTotals.totalPerPax}
+              />
+            </div>
           </div>
 
           <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
@@ -981,9 +988,15 @@ export default function JourneySummary({
                 {filterFeePaxLine}
               </p>
             </div>
-            <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
-              {checkoutUsd(paymentTotals.totalTrip)}
-            </p>
+            <div className="shrink-0 text-right">
+              <p className="font-barlow-condensed font-bold text-3xl text-ink">
+                {checkoutUsd(paymentTotals.totalTrip)}
+              </p>
+              <LocalPriceApprox
+                className="mt-1 text-sm text-neutral-500"
+                usd={paymentTotals.totalTrip}
+              />
+            </div>
           </div>
         </div>
       )}

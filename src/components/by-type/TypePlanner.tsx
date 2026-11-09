@@ -10,10 +10,13 @@ import {
   type TravelerTypeSlug,
 } from "@/lib/data/traveler-types";
 
-/** Figma card width at every breakpoint; slides stretch so CTAs align. */
-const EXPERIENCE_CARD_WIDTH = 300;
+/**
+ * Card width at every breakpoint (Figma's 300px + room for the "≈ local"
+ * reference price beside long names); slides stretch so CTAs align.
+ */
+const EXPERIENCE_CARD_WIDTH = 336;
 const EXPERIENCE_CARD_SLIDE =
-  "self-stretch flex-[0_0_300px] sm:flex-[0_0_300px] @md:flex-[0_0_300px] @lg:flex-[0_0_300px]";
+  "self-stretch flex-[0_0_336px] sm:flex-[0_0_336px] @md:flex-[0_0_336px] @lg:flex-[0_0_336px]";
 
 interface TypePlannerProps {
   /**

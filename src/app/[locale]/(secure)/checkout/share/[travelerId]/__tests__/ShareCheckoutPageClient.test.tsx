@@ -80,6 +80,7 @@ describe("ShareCheckoutPageClient", () => {
         <ShareCheckoutPageClient
           checkoutCopy={dict.journey.checkout}
           copy={dict.shareCheckout}
+          currencyCopy={dict.currency}
           rowsCopy={{ journey: dict.journey, tripTransport: dict.tripTransport, xsedBook: dict.xsedBook }}
           summary={dict.journey.summary}
           locale={dict === en ? "en" : "es"}
@@ -100,6 +101,8 @@ describe("ShareCheckoutPageClient", () => {
     expect(container.textContent).toContain("USD 1023.33");
     expect(container.textContent).toContain("You have until October 30, 2026 at 09:00 to pay.");
     expect(container.textContent).toContain("so you could pay up to USD 11.67 more.");
+    // Charges are always USD, whatever display currency is selected.
+    expect(container.textContent).toContain(en.currency.checkoutDisclaimer);
     expect(form.props).toMatchObject({
       billingEmail: "ana@example.com",
       collectBillingDetails: true,

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 import {
   Clock,
   Globe,
@@ -192,6 +193,10 @@ export default function LevelCard({
             <span className={cn("leading-none whitespace-nowrap", textColor)}>
               {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
+            <LocalPriceApprox
+              className={cn("leading-tight text-[0.62rem]", secondaryTextColor)}
+              usd={level.price}
+            />
             <span
               className={cn(
                 "whitespace-pre-line text-left leading-tight text-[0.62rem]",

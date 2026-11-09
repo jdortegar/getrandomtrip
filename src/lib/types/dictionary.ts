@@ -3648,6 +3648,12 @@ export interface ShareCheckoutDict {
   toTrips: string;
 }
 
+export interface CurrencyDict {
+  checkoutDisclaimer: string;
+  /** Extra checkout note shown only for ARS. */
+  cardTaxesNote: string;
+}
+
 export interface MarketingDictionary {
   socialImport: import("./SocialImportCopy").SocialImportCopy;
   tripTransport: {
@@ -4007,6 +4013,8 @@ export interface MarketingDictionary {
     geoWelcome: {
       /** Toast shown by visitor country; `{country}` is replaced with the localized name. */
       message: string;
+      /** Second line when the country's currency isn't USD; `{currency}` is the ISO code. */
+      currencyNote: string;
     };
     hero: {
       accent: string;
@@ -5235,4 +5243,5 @@ export interface MarketingDictionary {
   manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
   tripperAttribution: TripperAttributionDict;
+  currency: CurrencyDict;
 }
