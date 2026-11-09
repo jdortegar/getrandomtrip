@@ -312,7 +312,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to make room for what you want to experience.",
           details: [
@@ -667,7 +667,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to shape what you imagine.",
           details: [
@@ -1019,7 +1019,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to the group’s interests, timing and plans, created with a dedicated advisor to turn that someday idea into a shared experience.",
           details: [
@@ -1371,7 +1371,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your family’s ages, interests and rhythms, created with a dedicated advisor to find a way to enjoy it together.",
           details: [
@@ -1495,7 +1495,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE YOUR HONEYMOON",
+          ctaLabel: "CREATE YOUR HONEYMOON",
           description:
             "A honeymoon designed around the two of you, with a dedicated advisor who shapes your interests, timing and ideas to celebrate this new beginning your way.",
           details: [
@@ -1880,7 +1880,7 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
             "A trip tailored to your interests and your pet’s needs, created with a dedicated advisor so sharing the road becomes part of the plan.",
           details: [

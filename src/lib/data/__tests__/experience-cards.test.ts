@@ -67,6 +67,9 @@ describe("getExperienceCard", () => {
     expect(getExperienceCard("solo", "atelier-getaway", "es")?.ctaLabel).toBe(
       "CREEMOS LO IRREPETIBLE",
     );
+    expect(getExperienceCard("solo", "atelier-getaway", "en")?.ctaLabel).toBe(
+      "CREATE THE UNREPEATABLE",
+    );
     expect(
       getExperienceCard("honeymoon", "atelier-getaway", "es")?.ctaLabel,
     ).toBe("CREEMOS SU LUNA DE MIEL");
@@ -77,6 +80,23 @@ describe("getExperienceCard", () => {
     expect(getExperienceCard("honeymoon", "xsed", "en")?.ctaLabel).toBe(
       "DON’T MISS THE DROP",
     );
+  });
+
+  it("keeps every CTA short enough for one line on the card", () => {
+    // 27 chars ("ACTIVATE YOUR MODO EXPLORA™") measured 268px of the 279px
+    // a 336px card's button leaves for text; longer labels risk clipping.
+    for (const type of TYPES) {
+      for (const level of getLevelIdsForType(type)) {
+        for (const locale of LOCALES) {
+          const label = getExperienceCard(type, level, locale)?.ctaLabel ?? "";
+          expect(
+            label.length,
+            `${type}/${level}/${locale}: ${label}`,
+          ).toBeLessThanOrEqual(27);
+          expect(label).not.toMatch(/^LET[’']S /);
+        }
+      }
+    }
   });
 
   it("adds the drop schedule only to XSED", () => {

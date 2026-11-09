@@ -95,7 +95,8 @@ export function ExperienceCard({
     }));
   const footnotes = card?.footnotes ?? [];
   const ctaClasses = cn(
-    "h-[46px] w-full rounded-[3px] px-2.5 py-[3px] text-[15px] font-semibold leading-6 tracking-[1.5px]",
+    // CTAs stay on one line; labels are capped in the card data tests.
+    "h-[46px] w-full whitespace-nowrap rounded-[3px] px-2.5 py-[3px] text-[15px] font-semibold leading-6 tracking-[1.5px]",
     CTA_TEXT[ctaStyle],
     ctaClassName,
   );
