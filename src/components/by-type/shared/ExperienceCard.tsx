@@ -185,32 +185,35 @@ export function ExperienceCard({
           </p>
         )}
 
-        {/* Kicker + name and the price column center on one shared height,
-            with the divider spanning it. */}
-        <div className="flex items-stretch gap-2.5">
-          <div className="flex min-w-0 flex-col justify-center">
+        {/* Kicker + name on the left; the prices sit on the name's last line
+            (bottom-aligned) with a divider exactly as tall as the prices, so
+            two-line names don't stretch the divider. */}
+        <div className="flex items-end gap-2.5">
+          <div className="flex min-w-0 flex-col">
             <p className="mb-0.5 font-barlow text-xs leading-none text-neutral-600">
               {kicker}
             </p>
             <ExperienceCardName name={name} />
           </div>
-          <div className="w-px shrink-0 self-stretch bg-primary" />
-          <div className="flex shrink-0 flex-col justify-center">
-            {level.priceLabel ? (
-              <span className="text-[10px] leading-none text-neutral-600">
-                {level.priceLabel}
+          <div className="flex shrink-0 items-stretch gap-2.5">
+            <div className="w-px shrink-0 bg-primary" />
+            <div className="flex shrink-0 flex-col justify-center">
+              {level.priceLabel ? (
+                <span className="text-[10px] leading-none text-neutral-600">
+                  {level.priceLabel}
+                </span>
+              ) : null}
+              <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
+                {`USD ${level.price}`}
               </span>
-            ) : null}
-            <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
-              {`USD ${level.price}`}
-            </span>
-            <LocalPriceApprox
-              className="text-xs leading-tight text-neutral-600"
-              usd={level.price}
-            />
-            <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
-              {level.priceFootnote || copy.perPerson}
-            </span>
+              <LocalPriceApprox
+                className="text-xs leading-tight text-neutral-600"
+                usd={level.price}
+              />
+              <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
+                {level.priceFootnote || copy.perPerson}
+              </span>
+            </div>
           </div>
         </div>
 
