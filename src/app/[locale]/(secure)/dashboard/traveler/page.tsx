@@ -18,6 +18,7 @@ export default async function TravelerDashboardHomePage(props: {
       <div className="rt-container text-left">
         <TravelerHomePageClient
           copy={dict.dashboard}
+          currencyCopy={dict.currency}
           eyebrow={dict.travelerDashboard.home.eyebrow}
           heading={dict.travelerDashboard.home.heading}
           locale={locale}

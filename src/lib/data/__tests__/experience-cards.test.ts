@@ -28,7 +28,6 @@ function expectCompleteCard(type: string, level: string, locale: string) {
     "kicker",
     "name",
     "photoAlt",
-    "revealNote",
     "tag",
   ] as const) {
     expect(card![key].trim(), `${type}/${level}/${locale}.${key}`).not.toBe("");
@@ -74,12 +73,11 @@ describe("getExperienceCard", () => {
     }
   });
 
-  it("adds the drop schedule only to XSED, above the shared reveal note", () => {
+  it("adds the drop schedule only to XSED", () => {
     const xsed = getExperienceCard("solo", "xsed", "es");
     expect(xsed?.availabilityNote).toBe(
       "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
     );
-    expect(xsed?.revealNote).toBe("Destino revelado 48 horas antes de salir.");
     expect(getExperienceCard("solo", "essenza", "es")?.availabilityNote).toBe(
       undefined,
     );
@@ -115,10 +113,10 @@ describe("getExperienceCard", () => {
     );
   });
 
-  it("styles XSED and Atelier CTAs per the design", () => {
+  it("styles XSED CTAs in Ochre and every other level, Atelier included, in Deep Teal", () => {
     expect(getExperienceCard("couple", "xsed", "es")?.ctaStyle).toBe("feature");
     expect(getExperienceCard("couple", "atelier", "es")?.ctaStyle).toBe(
-      "outline",
+      "primary",
     );
     expect(getExperienceCard("couple", "essenza", "es")?.ctaStyle).toBe(
       "primary",

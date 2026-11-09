@@ -45,7 +45,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt: "A traveler next to her vehicle on a road-trip getaway",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -73,7 +72,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt: "Viajera junto a su vehículo en una escapada por carretera",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -105,7 +103,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A traveler enjoys a coffee at her own pace",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "SOLUM™ · EXPRESS",
           transportNote: "Depending on the route",
         },
@@ -128,7 +125,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Una viajera disfruta de un café a su propio ritmo",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "SOLUM™ · EXPRESS",
           transportNote: "Según la ruta",
         },
@@ -157,7 +153,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A traveler takes in the landscape from the train",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "SOLUM™ · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
@@ -180,7 +175,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Una viajera contempla el paisaje desde el tren",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "SOLUM™ · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
@@ -214,7 +208,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "A traveler gazes at the clouds from a lookout",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "SOLUM™ · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
@@ -242,7 +235,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más capas, más momentos",
           name: "EXPLORA+™",
           photoAlt: "Un viajero contempla las nubes desde un mirador",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "SOLUM™ · VUELVE DISTINTO",
           transportNote: "Según la ruta",
         },
@@ -278,7 +270,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A traveler enjoys the sea from a balcony",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "SOLUM™ · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
@@ -308,7 +299,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Curaduría artesanal",
           name: "BIVOUAC™",
           photoAlt: "Una viajera disfruta del mar desde un balcón",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "SOLUM™ · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
@@ -343,7 +333,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "A traveler alone facing the sea in a design space",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "SOLUM™ · TAILOR MADE",
         },
         es: {
@@ -368,11 +357,9 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
           photoAlt: "Un viajero a solas frente al mar en un espacio de diseño",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "SOLUM™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center 74%",
     },
   },
@@ -405,7 +392,6 @@ const EXPERIENCE_CARDS: Record<
           name: "TGIS™",
           photoAlt:
             "A couple planning their route with a map next to their vehicle.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -434,7 +420,6 @@ const EXPERIENCE_CARDS: Record<
           name: "XSED™",
           photoAlt:
             "Pareja preparando su recorrido con un mapa junto a su vehículo.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -466,7 +451,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "Two men in a couple sharing a close moment outdoors.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "BOND™ · EXPRESS",
           transportNote: "Depending on the route",
         },
@@ -490,7 +474,6 @@ const EXPERIENCE_CARDS: Record<
           name: "ESSENZA™",
           photoAlt:
             "Dos hombres en pareja compartiendo un momento de complicidad al aire libre.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "BOND™ · EXPRESS",
           transportNote: "Según la ruta",
         },
@@ -520,7 +503,6 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "A couple embracing as they take in a green landscape from a train window.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "BOND™ · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
@@ -544,7 +526,6 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "Pareja abrazada contemplando un paisaje verde desde la ventana de un tren.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "BOND™ · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
@@ -579,7 +560,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "A couple sitting together facing a valley of green mountains.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "BOND™ · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
@@ -608,7 +588,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Pareja sentada junta frente a un valle de montañas verdes.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "BOND™ · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
@@ -645,7 +624,6 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "A couple embracing as they relax in a pool overlooking green surroundings.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "BOND™ · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
@@ -676,7 +654,6 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Pareja abrazada descansando en una piscina con vista a un entorno verde.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "BOND™ · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
@@ -711,7 +688,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "Two women in a couple embracing by the sea.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "BOND™ · TAILOR MADE",
         },
         es: {
@@ -736,11 +712,9 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
           photoAlt: "Dos mujeres en pareja abrazándose junto al mar.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "BOND™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center",
     },
   },
@@ -772,7 +746,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt: "Four friends playing cards next to their vehicle.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -801,7 +774,6 @@ const EXPERIENCE_CARDS: Record<
           name: "XSED™",
           photoAlt:
             "Cuatro amigos compartiendo una partida de cartas junto a su vehículo.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -833,7 +805,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "Three friends sharing coffee and conversation outdoors.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "CREW™ · EXPRESS",
           transportNote: "Depending on the route",
         },
@@ -857,7 +828,6 @@ const EXPERIENCE_CARDS: Record<
           name: "ESSENZA™",
           photoAlt:
             "Tres amigos compartiendo un café y una conversación al aire libre.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "CREW™ · EXPRESS",
           transportNote: "Según la ruta",
         },
@@ -887,7 +857,6 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "A group of friends looking out over a lake among the mountains.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "CREW™ · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
@@ -910,7 +879,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Grupo de amigos contemplando un lago entre montañas.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "CREW™ · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
@@ -944,7 +912,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "Four friends sharing food and conversation on a terrace.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "CREW™ · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
@@ -973,7 +940,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Cuatro amigos compartiendo sabores y conversación en una terraza.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "CREW™ · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
@@ -1010,7 +976,6 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "A group of friends relaxing on a wooden deck facing a green landscape.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "CREW™ · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
@@ -1041,7 +1006,6 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Grupo de amigos descansando en una terraza de madera frente a un paisaje verde.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "CREW™ · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
@@ -1076,7 +1040,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "Friends sharing a break on the deck of a boat at sunset.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "CREW™ · TAILOR MADE",
         },
         es: {
@@ -1102,11 +1065,9 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Amigos compartiendo una pausa en la cubierta de una embarcación al atardecer.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "CREW™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center 52%",
     },
   },
@@ -1139,7 +1100,6 @@ const EXPERIENCE_CARDS: Record<
           name: "TGIS™",
           photoAlt:
             "A family getting their vehicle ready for an outdoor getaway.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -1168,7 +1128,6 @@ const EXPERIENCE_CARDS: Record<
           name: "XSED™",
           photoAlt:
             "Familia preparando su vehículo para compartir una escapada al aire libre.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -1200,7 +1159,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A family sharing a break and a picnic in a park.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "KIN™ · EXPRESS",
           transportNote: "Depending on the route",
         },
@@ -1223,7 +1181,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Familia compartiendo una pausa y un picnic en un parque.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "KIN™ · EXPRESS",
           transportNote: "Según la ruta",
         },
@@ -1252,7 +1209,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A family walking a forest trail among the trees.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "KIN™ · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
@@ -1275,7 +1231,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Familia recorriendo un sendero de bosque entre árboles.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "KIN™ · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
@@ -1310,7 +1265,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "A mother and daughter sharing a moment in an apple orchard.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "KIN™ · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
@@ -1339,7 +1293,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Madre e hija compartiendo un momento en un huerto de manzanas.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "KIN™ · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
@@ -1375,7 +1328,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A family walking by the sea in the warm light of sunset.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "KIN™ · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
@@ -1406,7 +1358,6 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Familia caminando junto al mar con la luz cálida del atardecer.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "KIN™ · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
@@ -1442,7 +1393,6 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Grandparents and granddaughters sharing a break by the sea and the boats.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "KIN™ · TAILOR MADE",
         },
         es: {
@@ -1468,11 +1418,9 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Abuelos y nietas compartiendo una pausa junto al mar y las embarcaciones.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "KIN™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center 25%",
     },
   },
@@ -1505,7 +1453,6 @@ const EXPERIENCE_CARDS: Record<
           name: "TGIS™",
           photoAlt:
             "A couple planning their route with a map next to their vehicle.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -1534,7 +1481,6 @@ const EXPERIENCE_CARDS: Record<
           name: "XSED™",
           photoAlt:
             "Pareja preparando su recorrido con un mapa junto a su vehículo.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -1570,7 +1516,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Your honeymoon, designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "A couple shares an intimate moment during their trip.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "NUPTIA™ · TAILOR MADE",
         },
         es: {
@@ -1596,11 +1541,9 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Una pareja comparte un momento de intimidad durante su viaje.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "NUPTIA™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center",
     },
   },
@@ -1636,7 +1579,6 @@ const EXPERIENCE_CARDS: Record<
           name: "TGIS™",
           photoAlt:
             "Two travelers taking a break next to their vehicle with their dog.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           availabilityNote:
             "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
@@ -1668,7 +1610,6 @@ const EXPERIENCE_CARDS: Record<
           name: "XSED™",
           photoAlt:
             "Dos viajeros compartiendo una pausa junto a su vehículo con su perro.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           availabilityNote:
             "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
@@ -1707,7 +1648,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A traveler and her dog taking a break at a café.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "PAWS™ · EXPRESS",
           transportNote: "Depending on route and pet",
         },
@@ -1734,7 +1674,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Una viajera y su perro compartiendo una pausa en un café.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "PAWS™ · EXPRESS",
           transportNote: "Según ruta y mascota",
         },
@@ -1770,7 +1709,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A woman and her dog walking through a forest clearing.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "PAWS™ · CONFIDENTIAL",
           transportNote: "Depending on route and pet",
         },
@@ -1797,7 +1735,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Una mujer y su perro recorriendo un claro del bosque.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "PAWS™ · CONFIDENCIAL",
           transportNote: "Según ruta y mascota",
         },
@@ -1832,7 +1769,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "Two travelers sharing an outdoor picnic with their dog.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "PAWS™ · COME BACK DIFFERENT",
           transportNote: "Depending on route and pet",
         },
@@ -1862,7 +1798,6 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Dos viajeros compartiendo un picnic al aire libre con su perro.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "PAWS™ · VUELVE DISTINTO",
           transportNote: "Según ruta y mascota",
         },
@@ -1902,7 +1837,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A traveler petting his dog on the shore of a lake.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "PAWS™ · TOTAL DISCONNECTION",
           transportNote: "Depending on route and pet",
         },
@@ -1936,7 +1870,6 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Curaduría artesanal",
           name: "BIVOUAC™",
           photoAlt: "Un viajero acariciando a su perro a la orilla de un lago.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "PAWS™ · DESCONEXIÓN TOTAL",
           transportNote: "Según ruta y mascota",
         },
@@ -1972,7 +1905,6 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "A couple and their dog sharing a quiet moment by a fireplace.",
-          revealNote: "Destination revealed 48 hours before you leave.",
           tag: "PAWS™ · TAILOR MADE",
         },
         es: {
@@ -2001,11 +1933,9 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Una pareja y su perro compartiendo una pausa junto a una chimenea.",
-          revealNote: "Destino revelado 48 horas antes de salir.",
           tag: "PAWS™ · TAILOR MADE",
         },
       },
-      ctaStyle: "outline",
       photoPosition: "center 70%",
     },
   },

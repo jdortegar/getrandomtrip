@@ -12,6 +12,7 @@ import { TopUpDueAlert } from "@/components/app/dashboard/TopUpDueAlert";
 import { TopUpPaymentModal } from "@/components/app/dashboard/traveler/TopUpPaymentModal";
 import type { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
+import type { CurrencyDict } from "@/lib/types/dictionary";
 import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import {
   getPayments,
@@ -24,6 +25,7 @@ import {
 
 interface TravelerHomePageClientProps {
   copy: DashboardCopy;
+  currencyCopy: CurrencyDict;
   eyebrow: string;
   heading: string;
   locale: string;
@@ -59,6 +61,7 @@ function computeDashboardStats(
 
 export function TravelerHomePageClient({
   copy,
+  currencyCopy,
   eyebrow,
   heading,
   locale,
@@ -170,6 +173,7 @@ export function TravelerHomePageClient({
       )}
       <TopUpPaymentModal
         copy={copy.topUpDue}
+        currencyCopy={currencyCopy}
         locale={locale}
         onClose={() => setPayingTrip(null)}
         onPaid={() =>

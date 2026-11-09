@@ -177,7 +177,7 @@ function TransportSelector({
                 className={cn(
                   "flex w-full flex-col items-center justify-center gap-2 rounded-xl border-2 px-5 py-4 transition-colors",
                   isFirst
-                    ? "border-gray-800 bg-gray-800 text-white"
+                    ? "border-primary bg-primary text-white"
                     : "border-gray-300 bg-white text-gray-600",
                 )}
               >

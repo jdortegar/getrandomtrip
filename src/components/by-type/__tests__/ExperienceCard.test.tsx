@@ -55,7 +55,6 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().textContent).toContain(content.description);
   expect(card().textContent).toContain(`USD ${explora.price}`);
   expect(card().textContent).toContain(explora.priceFootnote);
-  expect(card().textContent).toContain(content.revealNote);
   for (const detail of content.details) {
     expect(card().textContent).toContain(detail.label);
     if (detail.kind !== "transport")
@@ -105,7 +104,7 @@ it("renders the trademark as a compact superscript after the last letter", () =>
   expect(mark?.classList.contains("mt-3")).toBe(true);
 });
 
-it("shows the kicker under the name, not above it", () => {
+it("shows the kicker once, as the pretitle above the name", () => {
   act(() => root.render(<ExperienceCard level={atelier} />));
   const kicker = atelier.card!.kicker;
   const nodes = [...card().querySelectorAll("p")].filter(
@@ -114,9 +113,10 @@ it("shows the kicker under the name, not above it", () => {
   expect(nodes).toHaveLength(1);
   const name = card().querySelector("h3")!;
   expect(
-    name.compareDocumentPosition(nodes[0]) & Node.DOCUMENT_POSITION_FOLLOWING,
+    name.compareDocumentPosition(nodes[0]) & Node.DOCUMENT_POSITION_PRECEDING,
   ).toBeTruthy();
-  expect(nodes[0].classList.contains("text-lg")).toBe(true);
+  // Same left column as the name, so it aligns with the price block.
+  expect(nodes[0].parentElement).toBe(name.parentElement);
 });
 
 it("shows the most-chosen ribbon only when featured, or a custom badge", () => {
@@ -148,9 +148,9 @@ it("links the CTA to the journey with the card's CTA label and style", () => {
   act(() =>
     root.render(<ExperienceCard level={atelier} travelerType="solo" />),
   );
-  const outline = card().querySelector("a")!;
-  expect(outline.classList.contains("bg-white")).toBe(true);
-  expect(outline.classList.contains("text-primary")).toBe(true);
+  const atelierLink = card().querySelector("a")!;
+  expect(atelierLink.classList.contains("bg-primary")).toBe(true);
+  expect(atelierLink.classList.contains("text-white")).toBe(true);
   expect(card().textContent).toContain(atelier.priceLabel);
 });
 

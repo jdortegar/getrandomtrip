@@ -2,6 +2,8 @@
 
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 interface CheckoutPricingSummaryProps {
@@ -48,6 +50,10 @@ export function CheckoutPricingSummary({
   usd,
 }: CheckoutPricingSummaryProps) {
   const discountedTotal = totalTrip - promoDiscount;
+  const { formatApprox } = useDisplayCurrency();
+  const approxTotal = formatApprox(
+    promoDiscount > 0 ? discountedTotal : totalTrip,
+  );
 
   return (
     <div className="mt-6 border-t border-gray-200 pt-4" data-component="CheckoutPricingSummary">
@@ -55,9 +61,15 @@ export function CheckoutPricingSummary({
         <p className="font-barlow text-lg font-bold text-ink">
           {checkoutCopy.summaryHeroPriceCaption}
         </p>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
-          {usd(basePerPax)}
-        </p>
+        <div className="shrink-0 text-right">
+          <p className="font-barlow-condensed text-xl font-bold text-ink">
+            {usd(basePerPax)}
+          </p>
+          <LocalPriceApprox
+            className="mt-0.5 text-sm text-gray-500"
+            usd={basePerPax}
+          />
+        </div>
       </div>
 
       <div className="mt-4 flex items-start justify-between gap-4">
@@ -69,9 +81,15 @@ export function CheckoutPricingSummary({
             {filterFeeDescription}
           </p>
         </div>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
-          {usd(filtersPerPax)}
-        </p>
+        <div className="shrink-0 text-right">
+          <p className="font-barlow-condensed text-xl font-bold text-ink">
+            {usd(filtersPerPax)}
+          </p>
+          <LocalPriceApprox
+            className="mt-0.5 text-sm text-gray-500"
+            usd={filtersPerPax}
+          />
+        </div>
       </div>
 
       {addonsPerPaxCombined > 0 ? (
@@ -79,9 +97,15 @@ export function CheckoutPricingSummary({
           <p className="font-barlow text-lg font-bold text-ink">
             {checkoutCopy.addonsPerPersonLabel}
           </p>
-          <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
-            {usd(addonsPerPaxCombined)}
-          </p>
+          <div className="shrink-0 text-right">
+            <p className="font-barlow-condensed text-xl font-bold text-ink">
+              {usd(addonsPerPaxCombined)}
+            </p>
+            <LocalPriceApprox
+              className="mt-0.5 text-sm text-gray-500"
+              usd={addonsPerPaxCombined}
+            />
+          </div>
         </div>
       ) : null}
 
@@ -89,9 +113,15 @@ export function CheckoutPricingSummary({
         <p className="font-barlow text-lg font-bold text-ink">
           {checkoutCopy.subtotalPerPersonLabel}
         </p>
-        <p className="shrink-0 text-right font-barlow-condensed text-xl font-bold text-ink">
-          {usd(totalPerPax)}
-        </p>
+        <div className="shrink-0 text-right">
+          <p className="font-barlow-condensed text-xl font-bold text-ink">
+            {usd(totalPerPax)}
+          </p>
+          <LocalPriceApprox
+            className="mt-0.5 text-sm text-gray-500"
+            usd={totalPerPax}
+          />
+        </div>
       </div>
 
       {/* Promo code */}
@@ -176,9 +206,14 @@ export function CheckoutPricingSummary({
             </span>
           </p>
         </div>
-        <p className="shrink-0 text-right font-barlow-condensed text-3xl font-bold text-ink">
-          {usd(promoDiscount > 0 ? discountedTotal : totalTrip)}
-        </p>
+        <div className="shrink-0 text-right">
+          <p className="font-barlow-condensed text-3xl font-bold text-ink">
+            {usd(promoDiscount > 0 ? discountedTotal : totalTrip)}
+          </p>
+          {approxTotal ? (
+            <p className="mt-1 text-sm text-neutral-500">{approxTotal}</p>
+          ) : null}
+        </div>
       </div>
     </div>
   );

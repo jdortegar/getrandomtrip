@@ -7,12 +7,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { buildTripDetailRows } from "@/components/app/checkout/buildTripDetailRows";
+import { CheckoutCurrencyNote } from "@/components/app/checkout/CheckoutCurrencyNote";
 import { CheckoutIconValueCard } from "@/components/app/checkout/CheckoutIconValueCard";
 import { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import Img from "@/components/common/Img";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Trip } from "@/lib/utils/trips";
+import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import { Button } from "@/components/ui/Button";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { stripeAppearance } from "@/lib/stripe-appearance";
@@ -24,6 +26,7 @@ import type { ShareCheckoutState, ShareCheckoutView } from "@/types/payments";
 interface ShareCheckoutPageClientProps {
   checkoutCopy: Dictionary["journey"]["checkout"];
   copy: Dictionary["shareCheckout"];
+  currencyCopy: Dictionary["currency"];
   /** Copy the checkout's trip detail rows read. */
   rowsCopy: Pick<Dictionary, "journey" | "tripTransport" | "xsedBook">;
   summary: Dictionary["journey"]["summary"];
@@ -42,6 +45,7 @@ const SHARE_CLOSED_CODES = ["DEADLINE_PASSED", "NOT_COLLECTING"];
 export function ShareCheckoutPageClient({
   checkoutCopy,
   copy,
+  currencyCopy,
   rowsCopy,
   summary,
   locale,
@@ -49,6 +53,7 @@ export function ShareCheckoutPageClient({
   view,
 }: ShareCheckoutPageClientProps) {
   const router = useRouter();
+  const { formatApprox } = useDisplayCurrency();
   // The server view decides; a share-intent answer (paid / closed) overrides it until the view changes.
   const [override, setOverride] = useState<{ base: ShareCheckoutState; state: ShareCheckoutState } | null>(null);
   const state = override?.base === view.state ? override.state : view.state;
@@ -85,6 +90,7 @@ export function ShareCheckoutPageClient({
   };
 
   const amount = `${view.currency} ${view.amount.toFixed(Number.isInteger(view.amount) ? 0 : 2)}`;
+  const approxAmount = formatApprox(view.amount);
   const deadline = view.paymentDeadlineLabel;
   const maxTopUp = `${view.currency} ${view.maxTopUp.toFixed(Number.isInteger(view.maxTopUp) ? 0 : 2)}`;
   const name = view.organizerFirstName;
@@ -155,7 +161,10 @@ export function ShareCheckoutPageClient({
                 <h2 className="font-barlow-condensed text-4xl font-bold uppercase">{checkoutCopy.paymentTitle}</h2>
                 <div className="flex items-center justify-between gap-4 border-t border-gray-200 pt-4">
                   <span className="text-sm font-medium text-neutral-500">{copy.amountLabel}</span>
-                  <span className="font-barlow-condensed text-3xl font-bold text-ink">{amount}</span>
+                  <div className="text-right">
+                    <span className="font-barlow-condensed text-3xl font-bold text-ink">{amount}</span>
+                    {approxAmount ? <p className="mt-1 text-sm text-neutral-500">{approxAmount}</p> : null}
+                  </div>
                 </div>
                 {deadline ? (
                   <p className="text-sm text-neutral-700">{copy.deadline.replace("{date}", deadline)}</p>
@@ -163,6 +172,7 @@ export function ShareCheckoutPageClient({
                 <p className="text-xs leading-relaxed text-neutral-600">
                   {view.maxTopUp > 0 ? copy.disclaimer.replace("{max}", maxTopUp) : copy.disclaimerNoCost}
                 </p>
+                <CheckoutCurrencyNote copy={currencyCopy} />
                 {intent.status === "loading" ? (
                   <p aria-busy="true" className="flex items-center gap-2 text-sm" role="status">
                     <Loader2 aria-hidden className="h-4 w-4 animate-spin" />
