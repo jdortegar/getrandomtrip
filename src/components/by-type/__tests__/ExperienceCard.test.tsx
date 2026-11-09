@@ -143,9 +143,9 @@ it("links the CTA to the journey with the card's CTA label and style", () => {
   act(() =>
     root.render(<ExperienceCard level={atelier} travelerType="solo" />),
   );
-  const outline = card().querySelector("a")!;
-  expect(outline.classList.contains("bg-white")).toBe(true);
-  expect(outline.classList.contains("text-primary")).toBe(true);
+  const atelierLink = card().querySelector("a")!;
+  expect(atelierLink.classList.contains("bg-primary")).toBe(true);
+  expect(atelierLink.classList.contains("text-white")).toBe(true);
   expect(card().textContent).toContain(atelier.priceLabel);
 });
 

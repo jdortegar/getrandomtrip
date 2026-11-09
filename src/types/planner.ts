@@ -36,8 +36,8 @@ export type ExperienceCardTransportMode =
   | "ship"
   | "train-front";
 
-/** CTA treatment: Deep Teal (regular levels), Ochre (XSED) or outline (Atelier). */
-export type ExperienceCardCtaStyle = "feature" | "outline" | "primary";
+/** CTA treatment: Deep Teal (every level but XSED) or Ochre (XSED). */
+export type ExperienceCardCtaStyle = "feature" | "primary";
 
 export interface ExperienceCardDetail {
   /** `transport` rows render the card's transport icons instead of the plain value. */

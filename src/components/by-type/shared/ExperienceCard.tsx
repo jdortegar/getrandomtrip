@@ -43,18 +43,13 @@ interface ExperienceCardProps {
   className?: string;
 }
 
-const CTA_VARIANT: Record<
-  ExperienceCardCtaStyle,
-  "default" | "feature" | "secondary"
-> = {
+const CTA_VARIANT: Record<ExperienceCardCtaStyle, "default" | "feature"> = {
   feature: "feature",
-  outline: "secondary",
   primary: "default",
 };
 
 const CTA_TEXT: Record<ExperienceCardCtaStyle, string> = {
   feature: "text-ink",
-  outline: "text-primary",
   primary: "text-white",
 };
 
