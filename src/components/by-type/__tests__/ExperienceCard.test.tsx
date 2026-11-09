@@ -56,7 +56,6 @@ it("renders the photo header, card copy, detail rows and price", () => {
   expect(card().textContent).toContain(content.description);
   expect(card().textContent).toContain(`USD ${explora.price}`);
   expect(card().textContent).toContain(explora.priceFootnote);
-  expect(card().textContent).toContain(content.revealNote);
   for (const detail of content.details) {
     expect(card().textContent).toContain(detail.label);
     if (detail.kind !== "transport")

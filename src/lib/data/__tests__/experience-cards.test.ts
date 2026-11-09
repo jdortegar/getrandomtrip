@@ -29,7 +29,6 @@ function expectCompleteCard(type: string, level: string, locale: string) {
     "kicker",
     "name",
     "photoAlt",
-    "revealNote",
     "tag",
   ] as const) {
     expect(card![key].trim(), `${type}/${level}/${locale}.${key}`).not.toBe("");

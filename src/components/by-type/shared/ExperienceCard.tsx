@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
-import { Check, Clock } from "lucide-react";
+import { Check } from "lucide-react";
 import { localizeHref } from "@/lib/i18n/localizeHref";
 import type {
   ExperienceCardCtaStyle,
@@ -265,12 +265,6 @@ export function ExperienceCard({
         )}
 
         <div className="mt-auto pt-4">
-          {card?.revealNote ? (
-            <p className="mb-3 flex items-center gap-1 text-xs leading-none text-neutral-600">
-              <Clock aria-hidden className="h-2.5 w-2.5 shrink-0" />
-              {card.revealNote}
-            </p>
-          ) : null}
           {selectsInPlace ? (
             <Button
               className={ctaClasses}
