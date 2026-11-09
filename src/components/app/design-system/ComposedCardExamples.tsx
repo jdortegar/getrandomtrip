@@ -17,7 +17,7 @@ interface ComposedCardExamplesProps {
 }
 
 /** Same Figma slot TypePlanner uses for ExperienceCard. */
-const CARD_SLOT = "max-w-full min-w-0 w-[300px]";
+const CARD_SLOT = "max-w-full min-w-0 w-[336px]";
 const CARD_CAPTION = "font-semibold leading-7 mb-3 text-xl";
 
 export function ComposedCardExamples({ copy }: ComposedCardExamplesProps) {

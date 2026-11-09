@@ -116,7 +116,7 @@ export function ExperienceCard({
   return (
     <div
       className={cn(
-        "@container relative flex h-full min-h-155 w-full max-w-75 flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
+        "@container relative flex h-full min-h-155 w-full max-w-84 flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
         "shadow-[0_4px_23.9px_0_rgba(0,0,0,0.13)]",
         (onSelect || navigateOnCardClick) &&
           "cursor-pointer hover:shadow-[0_6px_28px_0_rgba(0,0,0,0.2)]",
@@ -150,7 +150,7 @@ export function ExperienceCard({
               alt={card.photoAlt}
               className="absolute inset-0 h-full w-full object-cover"
               height={256}
-              sizes="300px"
+              sizes="336px"
               src={card.photoSrc}
               style={{ objectPosition: card.photoPosition }}
               width={600}
