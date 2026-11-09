@@ -9,7 +9,6 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { cn } from "@/lib/utils";
-import { NavCurrencyPill } from "./NavCurrencyPill";
 import type { NavLink } from "./Navbar";
 
 const DRAWER_ID = "nav-mobile-drawer";
@@ -28,7 +27,6 @@ interface NavMobileDrawerProps {
   onSignIn: () => void;
   onLocaleChange: (locale: Locale) => void;
   whatsappHref: string;
-  currencyLabel?: string;
 }
 
 export function NavMobileDrawer({
@@ -42,7 +40,6 @@ export function NavMobileDrawer({
   onSignIn,
   onLocaleChange,
   whatsappHref,
-  currencyLabel,
 }: NavMobileDrawerProps) {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -196,25 +193,22 @@ export function NavMobileDrawer({
             <Phone className="h-6 w-6" />
           </a>
 
-          <div className="flex items-center gap-2">
-            <NavCurrencyPill ariaLabel={currencyLabel} />
-            <div className="flex h-[38px] min-w-[92px] rounded-full bg-secondary-200 p-1">
-              {(["es", "en"] as const).map((loc) => (
-                <button
-                  key={loc}
-                  aria-label={nav?.selectLanguage}
-                  aria-pressed={currentLocale === loc}
-                  className={cn(
-                    "cursor-pointer flex-1 font-semibold px-3 rounded-full text-xs uppercase",
-                    currentLocale === loc ? "bg-white text-primary" : "text-primary/70",
-                  )}
-                  onClick={() => onLocaleChange(loc)}
-                  type="button"
-                >
-                  {loc.toUpperCase()}
-                </button>
-              ))}
-            </div>
+          <div className="flex h-[38px] min-w-[92px] rounded-full bg-secondary-200 p-1">
+            {(["es", "en"] as const).map((loc) => (
+              <button
+                key={loc}
+                aria-label={nav?.selectLanguage}
+                aria-pressed={currentLocale === loc}
+                className={cn(
+                  "cursor-pointer flex-1 font-semibold px-3 rounded-full text-xs uppercase",
+                  currentLocale === loc ? "bg-white text-primary" : "text-primary/70",
+                )}
+                onClick={() => onLocaleChange(loc)}
+                type="button"
+              >
+                {loc.toUpperCase()}
+              </button>
+            ))}
           </div>
         </div>
       </div>

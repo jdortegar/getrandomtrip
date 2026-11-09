@@ -63,7 +63,7 @@ export default async function LocaleLayout(props: {
     <SessionProvider>
       <SetLocaleLang locale={localeTyped} />
       <SyncLocale />
-      <CurrencyProvider copy={dict.currency} locale={localeTyped}>
+      <CurrencyProvider locale={localeTyped}>
         <GateAwareChrome
           banner={
             <Suspense fallback={null}>

@@ -57,9 +57,8 @@ it("retains price and editable travelers without invented review claims", () => 
   }
 });
 
-it("keeps the USD total primary and adds the ≈ local total when selected", async () => {
+it("keeps the USD total primary and adds the ≈ local total", async () => {
   const { CurrencyProvider } = await import("@/components/providers/CurrencyProvider");
-  document.cookie = "GRT_DISPLAY_CURRENCY=LOCAL; path=/";
   vi.stubGlobal(
     "fetch",
     vi.fn(async () => new Response(JSON.stringify({ local: { currency: "ARS", rate: 1000 } }))),
@@ -101,17 +100,16 @@ it("keeps the USD total primary and adds the ≈ local total when selected", asy
   try {
     await act(async () =>
       root.render(
-        <CurrencyProvider copy={en.currency} locale="en">
+        <CurrencyProvider locale="en">
           <CheckoutTravelDetailsCard {...props} />
         </CurrencyProvider>,
       ),
     );
     const text = container.textContent?.replace(/ /g, " ");
     expect(text).toContain("USD 700");
-    expect(text).toContain("≈ ARS 700,000");
+    expect(text).toContain("≈ $700,000 ARS");
   } finally {
     act(() => root.unmount());
     vi.unstubAllGlobals();
-    document.cookie = "GRT_DISPLAY_CURRENCY=; path=/; max-age=0";
   }
 });

@@ -2,7 +2,7 @@
 
 import { CalendarDays, MapPin, Sparkle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 import { getXsedPricePerPerson } from "@/lib/data/traveler-types";
 import { getNextWeekend } from "@/lib/helpers/xsed-dates";
 import type { ResolvedExcuseSelection } from "@/lib/helpers/excuse-helper";
@@ -52,7 +52,6 @@ export function XsedSummary({
   travelType,
   travelTypeLabel,
 }: XsedSummaryProps) {
-  const { formatPrice } = useDisplayCurrency();
   const pricePerPerson = getXsedPricePerPerson(travelType);
   const total = pricePerPerson * pax;
   const { saturday, sunday } = getNextWeekend();
@@ -174,9 +173,15 @@ export function XsedSummary({
           <p className="font-barlow font-semibold text-sm text-ink">
             {copy.pricePerPerson}
           </p>
-          <p className="shrink-0 text-right font-barlow-condensed font-bold text-lg text-ink">
-            {formatPrice(pricePerPerson, `USD ${pricePerPerson}`)}
-          </p>
+          <div className="shrink-0 text-right">
+            <p className="font-barlow-condensed font-bold text-lg text-ink">
+              USD {pricePerPerson}
+            </p>
+            <LocalPriceApprox
+              className="mt-0.5 text-xs text-neutral-500"
+              usd={pricePerPerson}
+            />
+          </div>
         </div>
 
         <div className="border-gray-200 border-t flex gap-4 items-start justify-between mt-5 pt-4">
@@ -188,9 +193,15 @@ export function XsedSummary({
               {peopleText}
             </p>
           </div>
-          <p className="shrink-0 text-right font-barlow-condensed font-bold text-3xl text-ink">
-            {formatPrice(total, `USD ${total}`)}
-          </p>
+          <div className="shrink-0 text-right">
+            <p className="font-barlow-condensed font-bold text-3xl text-ink">
+              USD {total}
+            </p>
+            <LocalPriceApprox
+              className="mt-1 text-sm text-neutral-500"
+              usd={total}
+            />
+          </div>
         </div>
       </div>
 

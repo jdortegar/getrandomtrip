@@ -3649,9 +3649,6 @@ export interface ShareCheckoutDict {
 }
 
 export interface CurrencyDict {
-  selectCurrency: string;
-  /** Toast shown when the visitor switches to the local currency; `{currency}` is the ISO code. */
-  referenceToast: string;
   checkoutDisclaimer: string;
   /** Extra checkout note shown only for ARS. */
   cardTaxesNote: string;
@@ -4016,6 +4013,8 @@ export interface MarketingDictionary {
     geoWelcome: {
       /** Toast shown by visitor country; `{country}` is replaced with the localized name. */
       message: string;
+      /** Second line when the country's currency isn't USD; `{currency}` is the ISO code. */
+      currencyNote: string;
     };
     hero: {
       accent: string;

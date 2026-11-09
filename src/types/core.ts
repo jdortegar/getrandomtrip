@@ -343,6 +343,3 @@ export interface LocalCurrencyInfo {
   currency: string;
   rate: number;
 }
-
-/** What the visitor chose to see prices in. */
-export type DisplayCurrencyMode = "USD" | "LOCAL";

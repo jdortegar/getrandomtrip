@@ -7,8 +7,6 @@ import en from "@/dictionaries/en.json";
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
-vi.mock("sonner", () => ({ toast: { info: vi.fn() } }));
-
 let container: HTMLDivElement;
 let root: Root;
 
@@ -21,7 +19,7 @@ async function render(local: { currency: string; rate: number } | null) {
   root = createRoot(container);
   await act(async () => {
     root.render(
-      <CurrencyProvider copy={en.currency} locale="en">
+      <CurrencyProvider locale="en">
         <CheckoutCurrencyNote copy={en.currency} />
       </CurrencyProvider>,
     );

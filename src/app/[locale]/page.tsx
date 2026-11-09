@@ -2,6 +2,7 @@ import { buildAlternates } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { GeoWelcomeToast } from "@/components/landing/GeoWelcomeToast";
+import { currencyForCountry } from "@/lib/currency/config";
 import {
   getWelcomeCountryName,
   resolveWelcomeCountry,
@@ -61,6 +62,8 @@ export default async function HomePage(props: {
     overrideCountry: typeof query.country === "string" ? query.country : null,
   });
 
+  const welcomeCurrency = currencyForCountry(welcomeCountry);
+
   return (
     <>
       {welcomeCountry ? (
@@ -71,6 +74,11 @@ export default async function HomePage(props: {
             "{country}",
             getWelcomeCountryName(welcomeCountry, resolvedLocale),
           )}
+          description={
+            welcomeCurrency
+              ? dict.home.geoWelcome.currencyNote.replace("{currency}", welcomeCurrency)
+              : undefined
+          }
         />
       ) : null}
       <HomePageClient

@@ -2813,7 +2813,8 @@
   },
   "home": {
     "geoWelcome": {
-      "message": "Welcome to Randomtrip {country}"
+      "message": "Welcome to Randomtrip {country}",
+      "currencyNote": "Prices in {currency} are for reference only. Charges are made in USD."
     },
     "hero": {
       "branding": {
@@ -7515,8 +7516,6 @@
     "cta": "GO TO ADMIN PANEL"
   },
   "currency": {
-    "selectCurrency": "Select currency",
-    "referenceToast": "Prices in {currency} are for reference only. Charges are made in US dollars (USD).",
     "checkoutDisclaimer": "Charges are made in US dollars (USD). Amounts in other currencies are approximate, and your bank sets the final exchange rate.",
     "cardTaxesNote": "Your card issuer may add taxes and fees (e.g. Argentine percepciones)."
   }

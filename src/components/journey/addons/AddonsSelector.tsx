@@ -1,19 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
 import { Check } from "lucide-react";
 import Chip from "@/components/Chip";
 import { Button } from "@/components/ui/Button";
 import { ADDONS, type Addon } from "@/lib/data/shared/addons-catalog";
 import { cn } from "@/lib/utils";
 
-function formatAddonPrice(
-  addon: Addon,
-  formatPrice: (usd: number, usdLabel: string) => string,
-): string {
+function formatAddonPrice(addon: Addon): string {
   return addon.priceType === "currency"
-    ? formatPrice(addon.price, `USD ${addon.price}`)
+    ? `USD ${addon.price}`
     : `${addon.price}%`;
 }
 
@@ -74,7 +70,6 @@ export function AddonsSelector({
   onSave,
   value,
 }: AddonsSelectorProps) {
-  const { formatPrice } = useDisplayCurrency();
   const labels = {
     addonLabels: labelsProp?.addonLabels,
     addonsClearButton: labelsProp?.addonsClearButton ?? "Borrar",
@@ -173,7 +168,7 @@ export function AddonsSelector({
                           !isSelected && "text-gray-500",
                         )}
                       >
-                        ({formatAddonPrice(addon, formatPrice)})
+                        ({formatAddonPrice(addon)})
                       </span>
                     </Chip>
                   );

@@ -1,10 +1,28 @@
 import type { LocalCurrencyInfo } from "@/types/core";
-import { formatCurrency } from "@/lib/format";
+
+const SIGNIFICANT_DIGITS = 3;
+
+function narrowSymbol(currency: string): string {
+  try {
+    return (
+      new Intl.NumberFormat("en", {
+        style: "currency",
+        currency,
+        currencyDisplay: "narrowSymbol",
+      })
+        .formatToParts(0)
+        .find((part) => part.type === "currency")?.value ?? currency
+    );
+  } catch {
+    return currency;
+  }
+}
 
 /**
  * Reference amount of a USD price in the visitor's local currency, rounded to
- * whole units and prefixed with "≈" (it is never the charged amount).
- * Uses the ISO code ("ARS"), not "$", so it can't be mistaken for USD.
+ * 3 significant figures and prefixed with "≈" (it is never the charged amount).
+ * "$" currencies append the ISO code so they can't be mistaken for USD
+ * ("≈ $539.000 ARS"); others use the localized form ("≈ 340 €").
  */
 export function formatLocalApprox(
   usd: number | string,
@@ -12,22 +30,20 @@ export function formatLocalApprox(
   locale: string,
 ): string {
   const amount = Number(usd) * local.rate;
-  const formatted = formatCurrency(amount, {
-    currency: local.currency,
-    locale,
-  });
-  return `≈ ${formatted}`;
-}
+  if (!Number.isFinite(amount)) return "";
 
-/**
- * Rewrites every "USD <amount>" mention in copy (e.g. "2-3 filters: USD 18
- * each.") through `convert`; amounts stay USD in the dictionary.
- */
-export function replaceUsdAmounts(
-  text: string,
-  convert: (usd: number) => string,
-): string {
-  return text.replace(/USD\s?(\d+(?:[.,]\d+)?)/g, (_match, amount: string) =>
-    convert(Number(amount.replace(",", "."))),
-  );
+  if (narrowSymbol(local.currency) === "$") {
+    const digits = new Intl.NumberFormat(locale, {
+      maximumSignificantDigits: SIGNIFICANT_DIGITS,
+    }).format(amount);
+    return `≈ $${digits} ${local.currency}`;
+  }
+
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: local.currency,
+    currencyDisplay: "narrowSymbol",
+    maximumSignificantDigits: SIGNIFICANT_DIGITS,
+  }).format(amount);
+  return `≈ ${formatted}`;
 }

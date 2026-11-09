@@ -1,11 +1,7 @@
 // ============================================================================
-// Display currency config — country → local currency, cookie name
+// Display currency config — country → local currency
 // Prices are always charged in USD; local currencies are display-only.
 // ============================================================================
-
-export const COOKIE_DISPLAY_CURRENCY = "GRT_DISPLAY_CURRENCY";
-
-export const BASE_CURRENCY = "USD";
 
 const EURO_COUNTRIES = [
   "AD", "AT", "BE", "CY", "DE", "EE", "ES", "FI", "FR", "GR", "HR", "IE",

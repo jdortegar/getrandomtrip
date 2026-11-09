@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useDisplayCurrency } from "@/components/providers/CurrencyProvider";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 import {
   Clock,
   Globe,
@@ -81,7 +81,6 @@ export default function LevelCard({
   className,
 }: LevelCardProps) {
   const router = useRouter();
-  const { formatPrice } = useDisplayCurrency();
   const locale = useLocale();
   const byTripperLabel = useDictionary((d) => d.journey.tripperBadge.byTripper);
   const byRandomtripLabel = useDictionary(
@@ -192,11 +191,12 @@ export default function LevelCard({
               </span>
             ) : null}
             <span className={cn("leading-none whitespace-nowrap", textColor)}>
-              {formatPrice(
-                level.price,
-                level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`,
-              )}
+              {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
+            <LocalPriceApprox
+              className={cn("mt-0.5 text-[0.75rem] leading-tight", textColor)}
+              usd={level.price}
+            />
             <span
               className={cn(
                 "whitespace-pre-line text-left leading-tight text-[0.62rem]",
