@@ -202,7 +202,7 @@ export function ExperienceCard({
               {`USD ${level.price}`}
             </span>
             <LocalPriceApprox
-              className="text-sm font-semibold leading-tight text-primary"
+              className="text-xs leading-tight text-neutral-600"
               usd={level.price}
             />
             <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">

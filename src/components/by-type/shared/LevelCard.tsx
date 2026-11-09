@@ -194,7 +194,7 @@ export default function LevelCard({
               {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
             <LocalPriceApprox
-              className={cn("mt-0.5 text-[0.75rem] leading-tight", textColor)}
+              className={cn("leading-tight text-[0.62rem]", secondaryTextColor)}
               usd={level.price}
             />
             <span
