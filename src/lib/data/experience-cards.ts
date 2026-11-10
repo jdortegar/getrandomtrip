@@ -23,7 +23,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DON’T MISS THE DROP",
           description:
-            "One night, one dinner and a local experience close to home. Head out in your own car and get a change of scenery.",
+            "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to get a change of scenery at your own pace.",
           details: [
             { label: "Duration", value: "1 night · Saturday to Sunday" },
             {
@@ -41,18 +41,19 @@ const EXPERIENCE_CARDS: Record<
               value: "Saturday dinner + a local experience",
             },
           ],
-          eyebrow: "A weekend just for you",
           footnotes: [],
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt: "A traveler next to her vehicle on a road-trip getaway",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "In your own vehicle",
         },
         es: {
           ctaLabel: "NO TE PIERDAS EL DROP",
           description:
-            "Una noche, una cena y una experiencia local cerca de casa. Sal en tu propio auto y cambia de aire.",
+            "Un fin de semana de una noche a menos de 300 km de casa, en tu propio auto, con cena y una experiencia local para cambiar de aire a tu ritmo.",
           details: [
             { label: "Duración", value: "1 noche · sábado a domingo" },
             { label: "Destino", value: "A menos de 300 km del origen" },
@@ -67,11 +68,12 @@ const EXPERIENCE_CARDS: Record<
               value: "Cena de sábado + una experiencia local",
             },
           ],
-          eyebrow: "Un fin de semana para ti",
           footnotes: [],
-          kicker: "X Suerte Es Domingo",
+          kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt: "Viajera junto a su vehículo en una escapada por carretera",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "En tu propio vehículo",
         },
@@ -85,7 +87,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DESIGN YOUR ESSENZA™",
           description:
-            "Two nights for a change of scenery, with transport and accommodation sorted. A short escape to lose yourself in the simple and find yourself in the unexpected.",
+            "A two-night getaway, with transport and accommodation sorted, to take a break, change scenery and enjoy some time for yourself.",
           details: [
             { label: "Duration", value: "2 nights" },
             { label: "Destinations", value: "Domestic" },
@@ -97,7 +99,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "Comfort · 3★ or equivalent" },
             { label: "Includes", value: "Essential destination guide" },
           ],
-          eyebrow: "A break at your own pace.",
           footnotes: [],
           kicker: "The essentials, with style",
           name: "ESSENZA™",
@@ -108,7 +109,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "DISEÑA TU ESSENZA™",
           description:
-            "Dos noches para cambiar de aire, con transporte y alojamiento resuelto. Un escape breve para perderte en lo simple y encontrarte en lo inesperado.",
+            "Una escapada de dos noches, con transporte y alojamiento resueltos, para hacer una pausa, cambiar de escenario y disfrutar de tiempo para ti.",
           details: [
             { label: "Duración", value: "2 noches" },
             { label: "Destinos", value: "Nacionales" },
@@ -120,7 +121,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Confort · 3★ o equivalente" },
             { label: "Incluye", value: "Guía esencial del destino" },
           ],
-          eyebrow: "Una pausa a tu ritmo.",
           footnotes: [],
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
@@ -137,7 +137,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "ACTIVATE YOUR MODO EXPLORA™",
           description:
-            "Three nights to explore a little further, with accommodation full of personality and a Randomtrip guide for those who travel light and want to discover without a script.",
+            "Three nights to follow your curiosity, with a stay full of character and a destination guide to explore on your own, at your own pace.",
           details: [
             { label: "Duration", value: "3 nights" },
             { label: "Destinations", value: "Domestic and regional" },
@@ -149,7 +149,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "With personality · 3–4★" },
             { label: "Includes", value: "Randomtrip destination guide" },
           ],
-          eyebrow: "Follow your curiosity.",
           footnotes: [],
           kicker: "More to discover",
           name: "MODO EXPLORA™",
@@ -160,7 +159,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "ACTIVA TU MODO EXPLORA™",
           description:
-            "Tres noches para explorar un poco más lejos, con un alojamiento con personalidad y una guía Randomtrip para quienes viajan livianos y quieren descubrir sin guion.",
+            "Tres noches para seguir tu curiosidad, con un alojamiento con personalidad y una guía del destino para explorar por tu cuenta y a tu ritmo.",
           details: [
             { label: "Duración", value: "3 noches" },
             { label: "Destinos", value: "Nacionales y regionales" },
@@ -172,7 +171,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Con personalidad · 3–4★" },
             { label: "Incluye", value: "Guía Randomtrip del destino" },
           ],
-          eyebrow: "Sigue tu curiosidad.",
           footnotes: [],
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
@@ -189,7 +187,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "LEVEL UP",
           description:
-            "Four nights, premium accommodation and an included experience to connect with the destination beyond the obvious.",
+            "Four nights to get to know the destination more deeply, with premium accommodation, an included experience and a personalized guide to discover more of what interests you.",
           details: [
             { label: "Duration", value: "4 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -204,7 +202,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experience + Destination Decoded* guide",
             },
           ],
-          eyebrow: "Give your trip more depth.",
           footnotes: [
             "* Destination Decoded: a personalized guide so every day is a curated surprise.",
           ],
@@ -217,7 +214,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SUBE DE NIVEL",
           description:
-            "Cuatro noches, alojamiento premium y una experiencia incluida para conectar con el destino más allá de lo evidente.",
+            "Cuatro noches para conocer el destino más a fondo, con alojamiento premium, una experiencia incluida y una guía personalizada para descubrir más de lo que te interesa.",
           details: [
             { label: "Duración", value: "4 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -232,7 +229,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experiencia + Guía Destination Decoded*",
             },
           ],
-          eyebrow: "Dale más profundidad al viaje.",
           footnotes: [
             "* Destination Decoded: guía personalizada para que cada día sea una sorpresa curada.",
           ],
@@ -251,7 +247,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TRAVEL DIFFERENTLY",
           description:
-            "Five nights to slow down. An intimate trip, cared for down to the detail, that turns solitude into a personal luxury.",
+            "Five nights to slow down and make time for yourself, with design stays, an exclusive experience and a curated guide to discover the destination unhurried.",
           details: [
             { label: "Duration", value: "5 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -267,7 +263,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 exclusive experience + Destination Decoded+* guide + Randomtrip accommodation perks**",
             },
           ],
-          eyebrow: "Time for you. Care in every detail.",
           footnotes: [
             "* Destination Decoded+: a guide curated by our Tripper Travel Advisors, with insider tips few people know.",
             "** Accommodation perks: may include late check-out, early check-in, an upgrade or a welcome amenity, among others. Subject to availability; none are guaranteed.",
@@ -281,7 +276,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "VIAJA DISTINTO",
           description:
-            "Cinco noches para bajar el ritmo. Un viaje íntimo, cuidado al detalle, que convierte la soledad en un lujo personal.",
+            "Cinco noches para bajar el ritmo y dedicarte tiempo, con alojamientos de diseño, una experiencia exclusiva y una guía curada para descubrir el destino con calma.",
           details: [
             { label: "Duración", value: "5 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -297,7 +292,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 experiencia exclusiva + Guía Destination Decoded+* + Beneficios Randomtrip en alojamiento**",
             },
           ],
-          eyebrow: "Tiempo para ti. Cuidado al detalle.",
           footnotes: [
             "* Destination Decoded+: guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen.",
             "** Beneficios de alojamiento: pueden incluir salida tardía (late check-out), entrada anticipada (early check-in), upgrade o amenidad de bienvenida, entre otros. Sujetos a disponibilidad; ninguno está garantizado.",
@@ -318,9 +312,9 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
-            "The luxury of traveling without witnesses, creating together experiences that become confidential. A blank canvas to create the getaway no one else will ever repeat.",
+            "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to make room for what you want to experience.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -335,7 +329,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor SOLUM™ EDITION.",
           footnotes: [],
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
@@ -345,7 +338,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
-            "El lujo de viajar sin testigos, creando juntos experiencias que se vuelven confidenciales. Un lienzo en blanco para crear la escapada que nadie más podrá repetir.",
+            "Un viaje a medida de tus intereses, tiempos y forma de viajar, creado junto a un asesor dedicado para darle espacio a eso que quieres vivir.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según tu proyecto de viaje" },
@@ -360,7 +353,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Tu Tripper Travel Advisor SOLUM™ EDITION.",
           footnotes: [],
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
@@ -377,7 +369,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DON’T MISS THE DROP",
           description:
-            "One night, one dinner and a local experience close to home. You get the car ready; we take care of the plan.",
+            "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to share.",
           details: [
             { label: "Duration", value: "1 night · Saturday to Sunday" },
             {
@@ -395,19 +387,20 @@ const EXPERIENCE_CARDS: Record<
               value: "Saturday dinner + a local experience",
             },
           ],
-          eyebrow: "A weekend away from the usual.",
           footnotes: [],
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt:
             "A couple planning their route with a map next to their vehicle.",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "In your own vehicle",
         },
         es: {
           ctaLabel: "NO SE PIERDAN EL DROP",
           description:
-            "Una noche, una cena y una experiencia local cerca de casa. Ustedes preparan el auto; nosotros, el plan.",
+            "Un fin de semana de una noche a menos de 300 km de casa, en su propio auto, con cena y una experiencia local para compartir.",
           details: [
             { label: "Duración", value: "1 noche · sábado a domingo" },
             { label: "Destino", value: "A menos de 300 km del origen" },
@@ -422,12 +415,13 @@ const EXPERIENCE_CARDS: Record<
               value: "Cena de sábado + una experiencia local",
             },
           ],
-          eyebrow: "Un fin de semana fuera de lo de siempre.",
           footnotes: [],
-          kicker: "X Suerte Es Domingo",
+          kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt:
             "Pareja preparando su recorrido con un mapa junto a su vehículo.",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "En tu propio vehículo",
         },
@@ -441,7 +435,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TAKE THE FIRST STEP",
           description:
-            "Trade the routine for an unexpected destination. A short getaway, just enough to see each other differently and remember why it all began.",
+            "A two-night getaway, with transport and accommodation sorted, to get a change of scenery and make time for each other.",
           details: [
             { label: "Duration", value: "2 nights" },
             { label: "Destinations", value: "Domestic" },
@@ -453,7 +447,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "Comfort · 3★ or equivalent" },
             { label: "Includes", value: "Essential destination guide" },
           ],
-          eyebrow: "Two nights to find each other.",
           footnotes: [],
           kicker: "The essentials, with style",
           name: "ESSENZA™",
@@ -464,7 +457,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "DEN EL PRIMER PASO",
           description:
-            "Cambien la rutina por un destino inesperado. Una escapada breve, suficiente para mirarse distinto y recordar por qué empezó todo.",
+            "Una escapada de dos noches, con transporte y alojamiento resueltos, para cambiar de aire y dedicarse tiempo juntos.",
           details: [
             { label: "Duración", value: "2 noches" },
             { label: "Destinos", value: "Nacionales" },
@@ -476,7 +469,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Confort · 3★ o equivalente" },
             { label: "Incluye", value: "Guía esencial del destino" },
           ],
-          eyebrow: "Dos noches para encontrarse.",
           footnotes: [],
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
@@ -494,7 +486,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "EXPLORE YOUR STORY",
           description:
-            "Three nights to discover new places, follow your own detours and enjoy a getaway at your own pace.",
+            "Three nights to discover a new destination together, with a stay full of character and a guide to explore at your own pace.",
           details: [
             { label: "Duration", value: "3 nights" },
             { label: "Destinations", value: "Domestic and regional" },
@@ -506,7 +498,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "With personality · 3–4★" },
             { label: "Includes", value: "Randomtrip destination guide" },
           ],
-          eyebrow: "Curiosity is better shared.",
           footnotes: [],
           kicker: "More to discover",
           name: "MODO EXPLORA™",
@@ -518,7 +509,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "EXPLOREN SU HISTORIA",
           description:
-            "Tres noches para descubrir nuevos lugares, seguir sus propios desvíos y disfrutar de una escapada a su ritmo.",
+            "Tres noches para descubrir juntos un nuevo destino, con un alojamiento con personalidad y una guía para explorar a su ritmo.",
           details: [
             { label: "Duración", value: "3 noches" },
             { label: "Destinos", value: "Nacionales y regionales" },
@@ -530,7 +521,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Con personalidad · 3–4★" },
             { label: "Incluye", value: "Guía Randomtrip del destino" },
           ],
-          eyebrow: "La curiosidad se comparte.",
           footnotes: [],
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
@@ -548,7 +538,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "RAISE THE STAKES",
           description:
-            "You bring the story; we turn it into a setting: no logistical friction, with experiences that connect and just the right dose of mystery.",
+            "Four nights to get to know the destination more deeply, with premium accommodation, an included experience and a personalized guide to enjoy together.",
           details: [
             { label: "Duration", value: "4 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -563,7 +553,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experience + Destination Decoded* guide",
             },
           ],
-          eyebrow: "More time. More moments for two.",
           footnotes: [
             "* Destination Decoded: a personalized guide so every day is a curated surprise.",
           ],
@@ -577,7 +566,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SUBAN LA APUESTA",
           description:
-            "Ustedes traen la historia; nosotros la transformamos en escenario: sin fricciones logísticas, con experiencias que conectan y la dosis justa de misterio.",
+            "Cuatro noches para conocer el destino más a fondo, con alojamiento premium, una experiencia incluida y una guía personalizada para disfrutar juntos.",
           details: [
             { label: "Duración", value: "4 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -592,7 +581,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experiencia + Guía Destination Decoded*",
             },
           ],
-          eyebrow: "Más tiempo. Más momentos de a dos.",
           footnotes: [
             "* Destination Decoded: guía personalizada para que cada día sea una sorpresa curada.",
           ],
@@ -612,7 +600,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TRAVEL DIFFERENTLY",
           description:
-            "Five nights to get lost and find each other again. A trip cared for the way you care for a relationship: with detail and patience.",
+            "Five nights to travel unhurried, with design stays, an exclusive experience and a curated guide to share time and discover new places together.",
           details: [
             { label: "Duration", value: "5 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -628,7 +616,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 exclusive experience + Destination Decoded+* guide + Randomtrip accommodation perks**",
             },
           ],
-          eyebrow: "Handcrafted romance.",
           footnotes: [
             "* Destination Decoded+: a guide curated by our Tripper Travel Advisors, with insider tips few people know.",
             "** Accommodation perks: may include late check-out, early check-in, an upgrade or a welcome amenity, among others. Subject to availability; none are guaranteed.",
@@ -643,7 +630,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "VIAJEN DISTINTO",
           description:
-            "Cinco noches para perderse y reencontrarse. Un viaje que se cuida como se cuida una relación: con detalle y paciencia.",
+            "Cinco noches para viajar sin prisa, con alojamientos de diseño, una experiencia exclusiva y una guía curada para compartir tiempo y descubrir nuevos lugares juntos.",
           details: [
             { label: "Duración", value: "5 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -659,7 +646,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 experiencia exclusiva + Guía Destination Decoded+* + Beneficios Randomtrip en alojamiento**",
             },
           ],
-          eyebrow: "Romance artesanal.",
           footnotes: [
             "* Destination Decoded+: guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen.",
             "** Beneficios de alojamiento: pueden incluir salida tardía (late check-out), entrada anticipada (early check-in), upgrade o amenidad de bienvenida, entre otros. Sujetos a disponibilidad; ninguno está garantizado.",
@@ -681,9 +667,9 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
-            "The luxury of traveling without witnesses, creating together experiences that become confidential. A blank canvas to create the trip no one but the two of you will ever repeat.",
+            "A trip tailored to your interests, timing and way of traveling, created with a dedicated advisor to shape what you imagine.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -698,7 +684,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor BOND™ EDITION.",
           footnotes: [],
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
@@ -708,7 +693,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
-            "El lujo de viajar sin testigos, creando juntos experiencias que se vuelven confidenciales. Un lienzo en blanco para crear el viaje que nadie más que ustedes podrán repetir.",
+            "Un viaje a medida de sus intereses, tiempos y forma de viajar, creado junto a un asesor dedicado para darle forma a lo que imaginan.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según su proyecto de viaje" },
@@ -723,7 +708,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Su Tripper Travel Advisor BOND™ EDITION.",
           footnotes: [],
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
@@ -740,7 +724,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DON’T MISS THE DROP",
           description:
-            "One night, one dinner and a local experience close to home. Gather the group and get your vehicles ready; we take care of the plan.",
+            "A one-night weekend within 300 km of home, in your own vehicles, with dinner and a local experience to finally get that plan out of the group chat.",
           details: [
             { label: "Duration", value: "1 night · Saturday to Sunday" },
             {
@@ -758,18 +742,19 @@ const EXPERIENCE_CARDS: Record<
               value: "Saturday dinner + a local experience",
             },
           ],
-          eyebrow: "From the group chat to the road.",
           footnotes: [],
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt: "Four friends playing cards next to their vehicle.",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "In your own vehicles",
         },
         es: {
           ctaLabel: "NO SE PIERDAN EL DROP",
           description:
-            "Una noche, una cena y una experiencia local cerca de casa. Reúnan al grupo y preparen sus vehículos; nosotros nos ocupamos del plan.",
+            "Un fin de semana de una noche a menos de 300 km de casa, en sus propios vehículos, con cena y una experiencia local para sacar ese plan del chat.",
           details: [
             { label: "Duración", value: "1 noche · sábado a domingo" },
             { label: "Destino", value: "A menos de 300 km del origen" },
@@ -784,12 +769,13 @@ const EXPERIENCE_CARDS: Record<
               value: "Cena de sábado + una experiencia local",
             },
           ],
-          eyebrow: "Del chat a la ruta.",
           footnotes: [],
-          kicker: "X Suerte Es Domingo",
+          kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt:
             "Cuatro amigos compartiendo una partida de cartas junto a su vehículo.",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "En sus propios vehículos",
         },
@@ -803,7 +789,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "MAKE IT HAPPEN",
           description:
-            "Two nights to finally make that long-postponed plan happen. Transport and accommodation sorted, time to catch up and freedom to enjoy it together.",
+            "A two-night getaway, with transport and accommodation sorted, to bring the group together, catch up and enjoy it without organizing everything.",
           details: [
             { label: "Duration", value: "2 nights" },
             { label: "Destinations", value: "Domestic" },
@@ -815,7 +801,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "Comfort · 3★ or equivalent" },
             { label: "Includes", value: "Essential destination guide" },
           ],
-          eyebrow: "The plan that finally happens.",
           footnotes: [],
           kicker: "The essentials, with style",
           name: "ESSENZA™",
@@ -826,7 +811,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "HAGAN QUE SUCEDA",
           description:
-            "Dos noches para que ese plan pendiente por fin suceda. Transporte y alojamiento resueltos, tiempo para ponerse al día y libertad para disfrutar juntos.",
+            "Una escapada de dos noches, con transporte y alojamiento resueltos, para reunir al grupo, ponerse al día y disfrutar sin organizarlo todo.",
           details: [
             { label: "Duración", value: "2 noches" },
             { label: "Destinos", value: "Nacionales" },
@@ -838,7 +823,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Confort · 3★ o equivalente" },
             { label: "Incluye", value: "Guía esencial del destino" },
           ],
-          eyebrow: "El plan que por fin sucede.",
           footnotes: [],
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
@@ -856,7 +840,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "BREAK THE USUAL PLAN",
           description:
-            "Three nights to follow the group’s curiosity. An unexpected destination, accommodation full of personality and a Randomtrip guide to discover together, without a script.",
+            "Three nights to discover new places with friends, with a stay full of character and a destination guide to explore at the group’s pace.",
           details: [
             { label: "Duration", value: "3 nights" },
             { label: "Destinations", value: "Domestic and regional" },
@@ -868,7 +852,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "With personality · 3–4★" },
             { label: "Includes", value: "Randomtrip destination guide" },
           ],
-          eyebrow: "Curiosity is contagious.",
           footnotes: [],
           kicker: "More to discover",
           name: "MODO EXPLORA™",
@@ -880,7 +863,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SALGAN DEL PLAN DE SIEMPRE",
           description:
-            "Tres noches para seguir la curiosidad del grupo. Un destino inesperado, un alojamiento con personalidad y una guía Randomtrip para descubrir juntos, sin guion.",
+            "Tres noches para descubrir nuevos lugares con amigos, con un alojamiento con personalidad y una guía del destino para explorar al ritmo del grupo.",
           details: [
             { label: "Duración", value: "3 noches" },
             { label: "Destinos", value: "Nacionales y regionales" },
@@ -892,7 +875,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Con personalidad · 3–4★" },
             { label: "Incluye", value: "Guía Randomtrip del destino" },
           ],
-          eyebrow: "La curiosidad se contagia.",
           footnotes: [],
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
@@ -909,7 +891,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "ADD ANOTHER STORY",
           description:
-            "You bring the bond; we bring the setting. Four nights to share an experience and come back with stories only the group understands.",
+            "Four nights to add stories to the group, with premium accommodation, an included experience and a personalized guide to discover and enjoy together.",
           details: [
             { label: "Duration", value: "4 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -924,7 +906,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experience + Destination Decoded* guide",
             },
           ],
-          eyebrow: "A story for the whole group.",
           footnotes: [
             "* Destination Decoded: a personalized guide so every day is a curated surprise.",
           ],
@@ -937,7 +918,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SUMEN OTRA HISTORIA",
           description:
-            "Ustedes traen la complicidad; nosotros, el escenario. Cuatro noches para compartir una experiencia y volver con historias que solo el grupo entiende.",
+            "Cuatro noches para sumar historias al grupo, con alojamiento premium, una experiencia incluida y una guía personalizada para descubrir y disfrutar juntos.",
           details: [
             { label: "Duración", value: "4 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -952,7 +933,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experiencia + Guía Destination Decoded*",
             },
           ],
-          eyebrow: "Una historia para todo el grupo.",
           footnotes: [
             "* Destination Decoded: guía personalizada para que cada día sea una sorpresa curada.",
           ],
@@ -972,7 +952,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TRAVEL DIFFERENTLY",
           description:
-            "Five nights to stop counting the hours and start being present. A trip cared for down to the detail, to reconnect with the people who make the journey special.",
+            "Five nights to share without rushing, with design stays, an exclusive experience and a curated guide to turn the get-together into a special trip.",
           details: [
             { label: "Duration", value: "5 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -988,7 +968,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 exclusive experience + Destination Decoded+* guide + Randomtrip accommodation perks**",
             },
           ],
-          eyebrow: "Getting together deserves this time.",
           footnotes: [
             "* Destination Decoded+: a guide curated by our Tripper Travel Advisors, with insider tips few people know.",
             "** Accommodation perks: may include late check-out, early check-in, an upgrade or a welcome amenity, among others. Subject to availability; none are guaranteed.",
@@ -1003,7 +982,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "VIAJEN DISTINTO",
           description:
-            "Cinco noches para dejar de contar las horas y empezar a estar presentes. Un viaje cuidado al detalle, para reconectar con quienes hacen especial el camino.",
+            "Cinco noches para compartir sin prisas, con alojamientos de diseño, una experiencia exclusiva y una guía curada para hacer del encuentro un viaje especial.",
           details: [
             { label: "Duración", value: "5 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -1019,7 +998,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 experiencia exclusiva + Guía Destination Decoded+* + Beneficios Randomtrip en alojamiento**",
             },
           ],
-          eyebrow: "Juntarse merece este tiempo.",
           footnotes: [
             "* Destination Decoded+: guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen.",
             "** Beneficios de alojamiento: pueden incluir salida tardía (late check-out), entrada anticipada (early check-in), upgrade o amenidad de bienvenida, entre otros. Sujetos a disponibilidad; ninguno está garantizado.",
@@ -1041,9 +1019,9 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
-            "Some trips only make sense with certain people. A blank canvas to create, with your Tripper Travel Advisor, an experience that bears the group’s signature.",
+            "A trip tailored to the group’s interests, timing and plans, created with a dedicated advisor to turn that someday idea into a shared experience.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -1058,7 +1036,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor CREW™ EDITION.",
           footnotes: [],
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
@@ -1068,7 +1045,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
-            "Hay viajes que solo tienen sentido con ciertas personas. Un lienzo en blanco para crear, junto a su Tripper Travel Advisor, una experiencia que lleve la firma del grupo.",
+            "Un viaje a medida de los intereses, tiempos y planes del grupo, creado junto a un asesor dedicado para convertir esa idea pendiente en una experiencia compartida.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según su proyecto de viaje" },
@@ -1083,7 +1060,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Su Tripper Travel Advisor CREW™ EDITION.",
           footnotes: [],
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
@@ -1101,7 +1077,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DON’T MISS THE DROP",
           description:
-            "One night, one dinner and a local experience close to home. Get your vehicle ready; we take care of a plan to discover as a family.",
+            "A one-night weekend within 300 km of home, in your own vehicle, with dinner and a local experience to break the routine as a family.",
           details: [
             { label: "Duration", value: "1 night · Saturday to Sunday" },
             {
@@ -1119,19 +1095,20 @@ const EXPERIENCE_CARDS: Record<
               value: "Saturday dinner + a local experience",
             },
           ],
-          eyebrow: "A weekend to be together.",
           footnotes: [],
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt:
             "A family getting their vehicle ready for an outdoor getaway.",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "In your own vehicle",
         },
         es: {
           ctaLabel: "NO SE PIERDAN EL DROP",
           description:
-            "Una noche, una cena y una experiencia local cerca de casa. Preparen su vehículo; nosotros nos ocupamos de un plan para descubrir en familia.",
+            "Un fin de semana de una noche a menos de 300 km de casa, en su propio vehículo, con cena y una experiencia local para salir de la rutina en familia.",
           details: [
             { label: "Duración", value: "1 noche · sábado a domingo" },
             { label: "Destino", value: "A menos de 300 km del origen" },
@@ -1146,12 +1123,13 @@ const EXPERIENCE_CARDS: Record<
               value: "Cena de sábado + una experiencia local",
             },
           ],
-          eyebrow: "Un fin de semana para estar juntos.",
           footnotes: [],
-          kicker: "X Suerte Es Domingo",
+          kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt:
             "Familia preparando su vehículo para compartir una escapada al aire libre.",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "En su propio vehículo",
         },
@@ -1165,7 +1143,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "GET AWAY TOGETHER",
           description:
-            "Two nights for a change of scenery and time to really see each other again. Transport and accommodation sorted, to enjoy the simple things and discover the unexpected together.",
+            "A two-night getaway, with transport and accommodation sorted, to get a change of scenery, share time and enjoy the simple things together.",
           details: [
             { label: "Duration", value: "2 nights" },
             { label: "Destinations", value: "Domestic" },
@@ -1177,7 +1155,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "Comfort · 3★ or equivalent" },
             { label: "Includes", value: "Essential destination guide" },
           ],
-          eyebrow: "A break to share.",
           footnotes: [],
           kicker: "The essentials, with style",
           name: "ESSENZA™",
@@ -1188,7 +1165,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CAMBIEN DE AIRE JUNTOS",
           description:
-            "Dos noches para cambiar de aire y volver a mirarse con tiempo. Transporte y alojamiento resueltos, para disfrutar lo simple y descubrir juntos lo inesperado.",
+            "Una escapada de dos noches, con transporte y alojamiento resueltos, para cambiar de aire, compartir tiempo y disfrutar juntos de las cosas simples.",
           details: [
             { label: "Duración", value: "2 noches" },
             { label: "Destinos", value: "Nacionales" },
@@ -1200,7 +1177,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Confort · 3★ o equivalente" },
             { label: "Incluye", value: "Guía esencial del destino" },
           ],
-          eyebrow: "Una pausa que se comparte.",
           footnotes: [],
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
@@ -1217,7 +1193,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DISCOVER AT YOUR OWN PACE",
           description:
-            "Three nights to turn every outing into a new question. Accommodation full of personality and a Randomtrip guide to explore together, at your own pace.",
+            "Three nights to spark curiosity as a family, with a stay full of character and a destination guide to discover together at your own pace.",
           details: [
             { label: "Duration", value: "3 nights" },
             { label: "Destinations", value: "Domestic and regional" },
@@ -1229,7 +1205,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Accommodation", value: "With personality · 3–4★" },
             { label: "Includes", value: "Randomtrip destination guide" },
           ],
-          eyebrow: "Curiosity has no age.",
           footnotes: [],
           kicker: "More to discover",
           name: "MODO EXPLORA™",
@@ -1240,7 +1215,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "DESCUBRAN A SU RITMO",
           description:
-            "Tres noches para convertir cada paseo en una nueva pregunta. Un alojamiento con personalidad y una guía Randomtrip para explorar juntos, a su propio ritmo.",
+            "Tres noches para despertar la curiosidad en familia, con un alojamiento con personalidad y una guía del destino para descubrir juntos a su ritmo.",
           details: [
             { label: "Duración", value: "3 noches" },
             { label: "Destinos", value: "Nacionales y regionales" },
@@ -1252,7 +1227,6 @@ const EXPERIENCE_CARDS: Record<
             { label: "Alojamiento", value: "Con personalidad · 3–4★" },
             { label: "Incluye", value: "Guía Randomtrip del destino" },
           ],
-          eyebrow: "La curiosidad no tiene edad.",
           footnotes: [],
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
@@ -1269,7 +1243,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "ADD A NEW MEMORY",
           description:
-            "Four nights to share something you haven’t experienced together yet. An included experience and a personalized guide to add a new family story.",
+            "Four nights to create new family memories, with premium accommodation, an included experience and a personalized guide to make the most of your time together.",
           details: [
             { label: "Duration", value: "4 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -1284,7 +1258,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experience + Destination Decoded* guide",
             },
           ],
-          eyebrow: "Memories that grow with you.",
           footnotes: [
             "* Destination Decoded: a personalized guide so every day is a curated surprise.",
           ],
@@ -1298,7 +1271,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SUMEN UN NUEVO RECUERDO",
           description:
-            "Cuatro noches para compartir algo que todavía no han vivido juntos. Una experiencia incluida y una guía personalizada para sumar una nueva historia familiar.",
+            "Cuatro noches para crear nuevos recuerdos familiares, con alojamiento premium, una experiencia incluida y una guía personalizada para aprovechar el tiempo juntos.",
           details: [
             { label: "Duración", value: "4 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -1313,7 +1286,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experiencia + Guía Destination Decoded*",
             },
           ],
-          eyebrow: "Recuerdos que crecen con ustedes.",
           footnotes: [
             "* Destination Decoded: guía personalizada para que cada día sea una sorpresa curada.",
           ],
@@ -1333,7 +1305,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TRAVEL DIFFERENTLY",
           description:
-            "Five nights to trade the rush for shared time. A trip cared for down to the detail, to be present and enjoy what truly brings you together.",
+            "Five nights to enjoy as a family without rushing, with design stays, an exclusive experience and a curated guide to share new discoveries.",
           details: [
             { label: "Duration", value: "5 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -1349,7 +1321,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 exclusive experience + Destination Decoded+* guide + Randomtrip accommodation perks**",
             },
           ],
-          eyebrow: "More time to be present.",
           footnotes: [
             "* Destination Decoded+: a guide curated by our Tripper Travel Advisors, with insider tips few people know.",
             "** Accommodation perks: may include late check-out, early check-in, an upgrade or a welcome amenity, among others. Subject to availability; none are guaranteed.",
@@ -1363,7 +1334,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "VIAJEN DISTINTO",
           description:
-            "Cinco noches para cambiar las prisas por tiempo compartido. Un viaje cuidado al detalle, para estar presentes y disfrutar de lo que de verdad los une.",
+            "Cinco noches para disfrutar en familia sin prisas, con alojamientos de diseño, una experiencia exclusiva y una guía curada para compartir nuevos descubrimientos.",
           details: [
             { label: "Duración", value: "5 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -1379,7 +1350,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 experiencia exclusiva + Guía Destination Decoded+* + Beneficios Randomtrip en alojamiento**",
             },
           ],
-          eyebrow: "Más tiempo para estar presentes.",
           footnotes: [
             "* Destination Decoded+: guía curada por nuestros Tripper Travel Advisors, con claves que pocos conocen.",
             "** Beneficios de alojamiento: pueden incluir salida tardía (late check-out), entrada anticipada (early check-in), upgrade o amenidad de bienvenida, entre otros. Sujetos a disponibilidad; ninguno está garantizado.",
@@ -1401,9 +1371,9 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
-            "Every family has its own way of traveling. A blank canvas to create, with your Tripper Travel Advisor, a getaway that fits your ages, interests and rhythms.",
+            "A trip tailored to your family’s ages, interests and rhythms, created with a dedicated advisor to find a way to enjoy it together.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -1418,7 +1388,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor KIN™ EDITION.",
           footnotes: [],
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
@@ -1429,7 +1398,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
-            "Cada familia tiene su forma de viajar. Un lienzo en blanco para crear una escapada que contemple sus edades, intereses y ritmos, junto a su Tripper Travel Advisor.",
+            "Un viaje a medida de las edades, intereses y ritmos de su familia, creado junto a un asesor dedicado para encontrar una forma de disfrutar juntos.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según su proyecto de viaje" },
@@ -1444,7 +1413,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Su Tripper Travel Advisor KIN™ EDITION.",
           footnotes: [],
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
@@ -1457,12 +1425,79 @@ const EXPERIENCE_CARDS: Record<
     },
   },
   honeymoon: {
+    xsed: {
+      copy: {
+        en: {
+          ctaLabel: "DON’T MISS THE DROP",
+          description:
+            "A one-night weekend within 300 km of home, in your own car, with dinner and a local experience to celebrate this new beginning.",
+          details: [
+            { label: "Duration", value: "1 night · Saturday to Sunday" },
+            {
+              label: "Destination",
+              value: "Within 300 km of your starting point",
+            },
+            {
+              label: "Transport",
+              value: "In your own vehicle",
+              kind: "transport",
+            },
+            { label: "Accommodation", value: "1 night of accommodation" },
+            {
+              label: "Includes",
+              value: "Saturday dinner + a local experience",
+            },
+          ],
+          footnotes: [],
+          kicker: "Thank God It’s Sunday",
+          name: "TGIS™",
+          photoAlt:
+            "A couple planning their route with a map next to their vehicle.",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
+          tag: "THE SUNDAY GLITCH",
+          transportNote: "In your own vehicle",
+        },
+        es: {
+          ctaLabel: "NO SE PIERDAN EL DROP",
+          description:
+            "Un fin de semana de una noche a menos de 300 km de casa, en su propio auto, con cena y una experiencia local para celebrar este nuevo comienzo.",
+          details: [
+            { label: "Duración", value: "1 noche · sábado a domingo" },
+            { label: "Destino", value: "A menos de 300 km del origen" },
+            {
+              label: "Transporte",
+              value: "En tu propio vehículo",
+              kind: "transport",
+            },
+            { label: "Alojamiento", value: "1 noche de alojamiento" },
+            {
+              label: "Incluye",
+              value: "Cena de sábado + una experiencia local",
+            },
+          ],
+          footnotes: [],
+          kicker: "X suerte es domingo",
+          name: "XSED™",
+          photoAlt:
+            "Pareja preparando su recorrido con un mapa junto a su vehículo.",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
+          tag: "THE SUNDAY GLITCH",
+          transportNote: "En tu propio vehículo",
+        },
+      },
+      ctaStyle: "feature",
+      photoType: "couple",
+      photoPosition: "center 45%",
+      transport: { modes: ["car-front"] },
+    },
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE YOUR HONEYMOON",
+          ctaLabel: "CREATE YOUR HONEYMOON",
           description:
-            "Your honeymoon, designed around the two of you. A blank canvas to create, with your Tripper Travel Advisor, the trip that marks this new beginning.",
+            "A honeymoon designed around the two of you, with a dedicated advisor who shapes your interests, timing and ideas to celebrate this new beginning your way.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -1477,7 +1512,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor NUPTIA™ EDITION.",
           footnotes: [],
           kicker: "Your honeymoon, designed one to one",
           name: "ATELIER GETAWAY™",
@@ -1487,7 +1521,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS SU LUNA DE MIEL",
           description:
-            "Su luna de miel, diseñada alrededor de ustedes. Un lienzo en blanco para crear, junto a su Tripper Travel Advisor, el viaje que marque este nuevo comienzo.",
+            "Una luna de miel diseñada alrededor de ustedes, con un asesor dedicado que dará forma a sus intereses, tiempos e ideas para celebrar este nuevo comienzo a su manera.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según su proyecto de viaje" },
@@ -1502,7 +1536,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Su Tripper Travel Advisor NUPTIA™ EDITION.",
           footnotes: [],
           kicker: "Su honeymoon, diseñada uno a uno",
           name: "ATELIER GETAWAY™",
@@ -1520,7 +1553,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "DON’T MISS THE DROP",
           description:
-            "One night, one dinner and a local experience close to home. Get your vehicle ready and enjoy a change of scenery with the one who always wants to come along.",
+            "A one-night weekend within 300 km of home, in your own vehicle, with pet-friendly accommodation, dinner and a local experience to get a change of scenery together.",
           details: [
             { label: "Duration", value: "1 night · Saturday to Sunday" },
             {
@@ -1541,19 +1574,20 @@ const EXPERIENCE_CARDS: Record<
               value: "Saturday dinner + a local experience",
             },
           ],
-          eyebrow: "Your best companion comes too.",
           footnotes: [],
           kicker: "Thank God It’s Sunday",
           name: "TGIS™",
           photoAlt:
             "Two travelers taking a break next to their vehicle with their dog.",
+          availabilityNote:
+            "Only 10 getaways per country. Sales open every Sunday at 6:00 p.m.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "In your own vehicle",
         },
         es: {
           ctaLabel: "NO TE PIERDAS EL DROP",
           description:
-            "Una noche, una cena y una experiencia local cerca de casa. Prepara tu vehículo y cambia de aire con quien siempre quiere ir contigo.",
+            "Un fin de semana de una noche a menos de 300 km de casa, en tu propio vehículo, con alojamiento que admite mascotas, cena y una experiencia local para cambiar de aire en su compañía.",
           details: [
             { label: "Duración", value: "1 noche · sábado a domingo" },
             { label: "Destino", value: "A menos de 300 km del origen" },
@@ -1571,12 +1605,13 @@ const EXPERIENCE_CARDS: Record<
               value: "Cena de sábado + una experiencia local",
             },
           ],
-          eyebrow: "Tu mejor compañía también viene.",
           footnotes: [],
-          kicker: "X Suerte Es Domingo",
+          kicker: "X suerte es domingo",
           name: "XSED™",
           photoAlt:
             "Dos viajeros compartiendo una pausa junto a su vehículo con su perro.",
+          availabilityNote:
+            "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
           tag: "THE SUNDAY GLITCH",
           transportNote: "En tu propio vehículo",
         },
@@ -1590,7 +1625,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "ESCAPE TOGETHER",
           description:
-            "Two nights for a change of scenery without leaving your pet behind. Pet-friendly accommodation and an essential guide to enjoy together, at your own pace.",
+            "A two-night getaway with your pet, with transport suited to their needs and accommodation that welcomes them, to change scenery without leaving them behind.",
           details: [
             { label: "Duration", value: "2 nights" },
             { label: "Destinations", value: "Domestic" },
@@ -1609,7 +1644,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Essential guide with a pet-friendly map",
             },
           ],
-          eyebrow: "A break for the two of you.",
           footnotes: [],
           kicker: "The essentials, with style",
           name: "ESSENZA™",
@@ -1620,7 +1654,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "ESCÁPATE EN SU COMPAÑÍA",
           description:
-            "Dos noches para cambiar de aire sin dejar a tu mascota atrás. Un alojamiento pet-friendly y una guía esencial para disfrutar juntos, a su propio ritmo.",
+            "Una escapada de dos noches con tu mascota, con transporte adaptado a sus condiciones y alojamiento que la recibe, para cambiar de escenario sin dejarla atrás.",
           details: [
             { label: "Duración", value: "2 noches" },
             { label: "Destinos", value: "Nacionales" },
@@ -1636,7 +1670,6 @@ const EXPERIENCE_CARDS: Record<
             },
             { label: "Incluye", value: "Guía esencial con mapa pet-friendly" },
           ],
-          eyebrow: "Una pausa para los dos.",
           footnotes: [],
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
@@ -1653,7 +1686,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "FOLLOW NEW TRAILS",
           description:
-            "Three nights to follow new paths with your adventure buddy. Accommodation full of personality and a guide to pet-friendly places to discover at your own pace.",
+            "Three nights to discover new paths with your pet, with accommodation that welcomes them and a guide to routes and places to enjoy together.",
           details: [
             { label: "Duration", value: "3 nights" },
             { label: "Destinations", value: "Domestic and regional" },
@@ -1672,7 +1705,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Guide to pet-friendly routes and places",
             },
           ],
-          eyebrow: "Curiosity leaves pawprints too.",
           footnotes: [],
           kicker: "More to discover",
           name: "MODO EXPLORA™",
@@ -1683,7 +1715,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SIGUE NUEVAS HUELLAS",
           description:
-            "Tres noches para seguir nuevos caminos con tu compañero de aventuras. Un alojamiento con personalidad y una guía de lugares pet-friendly para descubrir a su ritmo.",
+            "Tres noches para descubrir nuevos caminos con tu mascota, con un alojamiento que la recibe y una guía de rutas y lugares para disfrutar en su compañía.",
           details: [
             { label: "Duración", value: "3 noches" },
             { label: "Destinos", value: "Nacionales y regionales" },
@@ -1699,7 +1731,6 @@ const EXPERIENCE_CARDS: Record<
             },
             { label: "Incluye", value: "Guía de rutas y lugares pet-friendly" },
           ],
-          eyebrow: "La curiosidad también deja huellas.",
           footnotes: [],
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
@@ -1716,7 +1747,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "ADD MEMORIES WITH PAWPRINTS",
           description:
-            "Four nights to make new memories with your pet. Premium accommodation, a pet-compatible experience and a personalized guide to explore together.",
+            "Four nights to share more discoveries with your pet, with premium accommodation that welcomes them, a pet-friendly experience and a personalized guide to explore.",
           details: [
             { label: "Duration", value: "4 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -1732,7 +1763,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 pet-compatible experience + Destination Decoded* guide",
             },
           ],
-          eyebrow: "More world to share.",
           footnotes: [
             "* Destination Decoded: a personalized guide with pet-friendly places so every day is a curated surprise.",
           ],
@@ -1745,7 +1775,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "SUMA RECUERDOS CON HUELLAS",
           description:
-            "Cuatro noches para sumar nuevos recuerdos con tu mascota. Alojamiento premium, una experiencia compatible y una guía personalizada para explorar juntos.",
+            "Cuatro noches para compartir más descubrimientos con tu mascota, con alojamiento premium que la recibe, una experiencia compatible y una guía personalizada para explorar.",
           details: [
             { label: "Duración", value: "4 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -1761,7 +1791,6 @@ const EXPERIENCE_CARDS: Record<
               value: "1 experiencia compatible + Guía Destination Decoded*",
             },
           ],
-          eyebrow: "Más mundo para compartir.",
           footnotes: [
             "* Destination Decoded: guía personalizada con lugares pet-friendly para que cada día sea una sorpresa curada.",
           ],
@@ -1781,7 +1810,7 @@ const EXPERIENCE_CARDS: Record<
         en: {
           ctaLabel: "TRAVEL DIFFERENTLY",
           description:
-            "Five nights to slow down in the best company. Pet-friendly design accommodation and thoughtful details to enjoy the trip at your own pace.",
+            "Five nights to slow down with your pet, with design stays that welcome them, a pet-friendly experience and a curated guide to enjoy together.",
           details: [
             { label: "Duration", value: "5 nights" },
             { label: "Destinations", value: "Within the continent" },
@@ -1801,7 +1830,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 pet-compatible experience + Destination Decoded+* guide + Randomtrip accommodation perks**",
             },
           ],
-          eyebrow: "Care in every detail, for both of you.",
           footnotes: [
             "* Destination Decoded+: a pet-friendly guide curated by our Tripper Travel Advisors, with insider tips few people know.",
             "** Late check-out, early check-in, an upgrade or a welcome amenity may be offered. Subject to availability; none are guaranteed.",
@@ -1815,7 +1843,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "VIAJA DISTINTO",
           description:
-            "Cinco noches para bajar el ritmo en la mejor compañía. Alojamientos de diseño pet-friendly y detalles cuidados para disfrutar del viaje, a su propio paso.",
+            "Cinco noches para bajar el ritmo con tu mascota, con alojamientos de diseño que la reciben, una experiencia compatible y una guía curada para disfrutar en su compañía.",
           details: [
             { label: "Duración", value: "5 noches" },
             { label: "Destinos", value: "Dentro del continente" },
@@ -1835,7 +1863,6 @@ const EXPERIENCE_CARDS: Record<
                 "1 experiencia compatible + Guía Destination Decoded+* + Beneficios Randomtrip en alojamiento**",
             },
           ],
-          eyebrow: "Cuidado al detalle, para ambos.",
           footnotes: [
             "* Destination Decoded+: guía pet-friendly curada por nuestros Tripper Travel Advisors, con claves que pocos conocen.",
             "** Pueden ofrecerse salida tardía, entrada anticipada, upgrade o amenidad de bienvenida. Sujetos a disponibilidad; ninguno está garantizado.",
@@ -1853,9 +1880,9 @@ const EXPERIENCE_CARDS: Record<
     "atelier-getaway": {
       copy: {
         en: {
-          ctaLabel: "LET’S CREATE THE UNREPEATABLE",
+          ctaLabel: "CREATE THE UNREPEATABLE",
           description:
-            "Every bond has its own way of traveling. Let’s design a getaway around your interests and your pet’s needs, with a dedicated Tripper Travel Advisor.",
+            "A trip tailored to your interests and your pet’s needs, created with a dedicated advisor so sharing the road becomes part of the plan.",
           details: [
             { label: "Duration", value: "Tailor-made" },
             { label: "Destinations", value: "Based on your travel project" },
@@ -1873,7 +1900,6 @@ const EXPERIENCE_CARDS: Record<
               value: "One-to-one design with a Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Your Tripper Travel Advisor PAWS™ EDITION.",
           footnotes: [],
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
@@ -1884,7 +1910,7 @@ const EXPERIENCE_CARDS: Record<
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
           description:
-            "Cada vínculo tiene su forma de viajar. Diseñemos una escapada alrededor de tus intereses y las necesidades de tu mascota, con un Tripper Travel Advisor dedicado.",
+            "Un viaje a medida de tus intereses y las necesidades de tu mascota, creado junto a un asesor dedicado para que compartir el camino sea parte del plan.",
           details: [
             { label: "Duración", value: "A medida" },
             { label: "Destinos", value: "Según tu proyecto de viaje" },
@@ -1902,7 +1928,6 @@ const EXPERIENCE_CARDS: Record<
               value: "Diseño uno a uno con un Tripper Travel Advisor",
             },
           ],
-          eyebrow: "Tu Tripper Travel Advisor PAWS™ EDITION.",
           footnotes: [],
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
@@ -1959,7 +1984,7 @@ export function getExperienceCard(
     ...copy,
     ctaStyle: source.ctaStyle ?? "primary",
     photoPosition: source.photoPosition,
-    photoSrc: getExperienceCardPhotoSrc(typeSlug, level),
+    photoSrc: getExperienceCardPhotoSrc(source.photoType ?? typeSlug, level),
     transport: source.transport,
   };
 }

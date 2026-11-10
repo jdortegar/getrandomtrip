@@ -1879,6 +1879,8 @@ export interface XsedLevelCardDict {
   ctaLabel: string;
   features: Array<{ description: string; title: string }>;
   name: string;
+  /** Photo ribbon with the upcoming drop day; `{date}` is e.g. "domingo 1 nov". */
+  nextDrop: string;
   priceFootnote: string;
   subtitle: string;
 }
