@@ -44,7 +44,6 @@ vi.mock("@/lib/i18n/dictionaries", () => ({
   getDictionary: async (locale: string) => (locale === "en" ? en : es),
 }));
 vi.mock("@/components/journey/HeaderHero", () => ({ default: () => null }));
-vi.mock("@/components/chrome/ChatFab", () => ({ default: () => null }));
 vi.mock("@/components/app/checkout/CheckoutTravelDetailsCard", () => ({
   CheckoutTravelDetailsCard: () => null,
 }));

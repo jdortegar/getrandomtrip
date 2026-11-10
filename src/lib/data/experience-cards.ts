@@ -85,7 +85,7 @@ const EXPERIENCE_CARDS: Record<
     essenza: {
       copy: {
         en: {
-          ctaLabel: "DESIGN YOUR ESSENZA™",
+          ctaLabel: "DESIGN YOUR ESSENZA",
           description:
             "A two-night getaway, with transport and accommodation sorted, to take a break, change scenery and enjoy some time for yourself.",
           details: [
@@ -103,11 +103,11 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A traveler enjoys a coffee at her own pace",
-          tag: "SOLUM™ · EXPRESS",
+          tag: "SOLUM · EXPRESS",
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "DISEÑA TU ESSENZA™",
+          ctaLabel: "DISEÑA TU ESSENZA",
           description:
             "Una escapada de dos noches, con transporte y alojamiento resueltos, para hacer una pausa, cambiar de escenario y disfrutar de tiempo para ti.",
           details: [
@@ -125,7 +125,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Una viajera disfruta de un café a su propio ritmo",
-          tag: "SOLUM™ · EXPRESS",
+          tag: "SOLUM · EXPRESS",
           transportNote: "Según la ruta",
         },
       },
@@ -135,7 +135,7 @@ const EXPERIENCE_CARDS: Record<
     "modo-explora": {
       copy: {
         en: {
-          ctaLabel: "ACTIVATE YOUR MODO EXPLORA™",
+          ctaLabel: "ACTIVATE YOUR MODO EXPLORA",
           description:
             "Three nights to follow your curiosity, with a stay full of character and a destination guide to explore on your own, at your own pace.",
           details: [
@@ -153,11 +153,11 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A traveler takes in the landscape from the train",
-          tag: "SOLUM™ · CONFIDENTIAL",
+          tag: "SOLUM · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
         es: {
-          ctaLabel: "ACTIVA TU MODO EXPLORA™",
+          ctaLabel: "ACTIVA TU MODO EXPLORA",
           description:
             "Tres noches para seguir tu curiosidad, con un alojamiento con personalidad y una guía del destino para explorar por tu cuenta y a tu ritmo.",
           details: [
@@ -175,7 +175,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Una viajera contempla el paisaje desde el tren",
-          tag: "SOLUM™ · CONFIDENCIAL",
+          tag: "SOLUM · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
       },
@@ -208,7 +208,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "A traveler gazes at the clouds from a lookout",
-          tag: "SOLUM™ · COME BACK DIFFERENT",
+          tag: "SOLUM · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
         es: {
@@ -235,7 +235,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más capas, más momentos",
           name: "EXPLORA+™",
           photoAlt: "Un viajero contempla las nubes desde un mirador",
-          tag: "SOLUM™ · VUELVE DISTINTO",
+          tag: "SOLUM · VUELVE DISTINTO",
           transportNote: "Según la ruta",
         },
       },
@@ -270,7 +270,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A traveler enjoys the sea from a balcony",
-          tag: "SOLUM™ · TOTAL DISCONNECTION",
+          tag: "SOLUM · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
         es: {
@@ -299,7 +299,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Curaduría artesanal",
           name: "BIVOUAC™",
           photoAlt: "Una viajera disfruta del mar desde un balcón",
-          tag: "SOLUM™ · DESCONEXIÓN TOTAL",
+          tag: "SOLUM · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
       },
@@ -333,7 +333,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "A traveler alone facing the sea in a design space",
-          tag: "SOLUM™ · TAILOR MADE",
+          tag: "SOLUM · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
@@ -357,7 +357,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
           photoAlt: "Un viajero a solas frente al mar en un espacio de diseño",
-          tag: "SOLUM™ · TAILOR MADE",
+          tag: "SOLUM · TAILOR MADE",
         },
       },
       photoPosition: "center 74%",
@@ -451,7 +451,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "Two men in a couple sharing a close moment outdoors.",
-          tag: "BOND™ · EXPRESS",
+          tag: "BOND · EXPRESS",
           transportNote: "Depending on the route",
         },
         es: {
@@ -474,7 +474,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ESSENZA™",
           photoAlt:
             "Dos hombres en pareja compartiendo un momento de complicidad al aire libre.",
-          tag: "BOND™ · EXPRESS",
+          tag: "BOND · EXPRESS",
           transportNote: "Según la ruta",
         },
       },
@@ -503,7 +503,7 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "A couple embracing as they take in a green landscape from a train window.",
-          tag: "BOND™ · CONFIDENTIAL",
+          tag: "BOND · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
         es: {
@@ -526,7 +526,7 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "Pareja abrazada contemplando un paisaje verde desde la ventana de un tren.",
-          tag: "BOND™ · CONFIDENCIAL",
+          tag: "BOND · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
       },
@@ -560,7 +560,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "A couple sitting together facing a valley of green mountains.",
-          tag: "BOND™ · COME BACK DIFFERENT",
+          tag: "BOND · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
         es: {
@@ -588,7 +588,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Pareja sentada junta frente a un valle de montañas verdes.",
-          tag: "BOND™ · VUELVAN DISTINTOS",
+          tag: "BOND · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
       },
@@ -624,7 +624,7 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "A couple embracing as they relax in a pool overlooking green surroundings.",
-          tag: "BOND™ · TOTAL DISCONNECTION",
+          tag: "BOND · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
         es: {
@@ -654,7 +654,7 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Pareja abrazada descansando en una piscina con vista a un entorno verde.",
-          tag: "BOND™ · DESCONEXIÓN TOTAL",
+          tag: "BOND · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
       },
@@ -688,7 +688,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "Two women in a couple embracing by the sea.",
-          tag: "BOND™ · TAILOR MADE",
+          tag: "BOND · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
@@ -712,7 +712,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Diseñado uno a uno",
           name: "ATELIER GETAWAY™",
           photoAlt: "Dos mujeres en pareja abrazándose junto al mar.",
-          tag: "BOND™ · TAILOR MADE",
+          tag: "BOND · TAILOR MADE",
         },
       },
       photoPosition: "center",
@@ -805,7 +805,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "Three friends sharing coffee and conversation outdoors.",
-          tag: "CREW™ · EXPRESS",
+          tag: "CREW · EXPRESS",
           transportNote: "Depending on the route",
         },
         es: {
@@ -828,7 +828,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ESSENZA™",
           photoAlt:
             "Tres amigos compartiendo un café y una conversación al aire libre.",
-          tag: "CREW™ · EXPRESS",
+          tag: "CREW · EXPRESS",
           transportNote: "Según la ruta",
         },
       },
@@ -857,7 +857,7 @@ const EXPERIENCE_CARDS: Record<
           name: "MODO EXPLORA™",
           photoAlt:
             "A group of friends looking out over a lake among the mountains.",
-          tag: "CREW™ · CONFIDENTIAL",
+          tag: "CREW · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
         es: {
@@ -879,7 +879,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Grupo de amigos contemplando un lago entre montañas.",
-          tag: "CREW™ · CONFIDENCIAL",
+          tag: "CREW · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
       },
@@ -912,7 +912,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "Four friends sharing food and conversation on a terrace.",
-          tag: "CREW™ · COME BACK DIFFERENT",
+          tag: "CREW · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
         es: {
@@ -940,7 +940,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Cuatro amigos compartiendo sabores y conversación en una terraza.",
-          tag: "CREW™ · VUELVAN DISTINTOS",
+          tag: "CREW · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
       },
@@ -976,7 +976,7 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "A group of friends relaxing on a wooden deck facing a green landscape.",
-          tag: "CREW™ · TOTAL DISCONNECTION",
+          tag: "CREW · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
         es: {
@@ -1006,7 +1006,7 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Grupo de amigos descansando en una terraza de madera frente a un paisaje verde.",
-          tag: "CREW™ · DESCONEXIÓN TOTAL",
+          tag: "CREW · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
       },
@@ -1040,7 +1040,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "Friends sharing a break on the deck of a boat at sunset.",
-          tag: "CREW™ · TAILOR MADE",
+          tag: "CREW · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
@@ -1065,7 +1065,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Amigos compartiendo una pausa en la cubierta de una embarcación al atardecer.",
-          tag: "CREW™ · TAILOR MADE",
+          tag: "CREW · TAILOR MADE",
         },
       },
       photoPosition: "center 52%",
@@ -1159,7 +1159,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A family sharing a break and a picnic in a park.",
-          tag: "KIN™ · EXPRESS",
+          tag: "KIN · EXPRESS",
           transportNote: "Depending on the route",
         },
         es: {
@@ -1181,7 +1181,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Familia compartiendo una pausa y un picnic en un parque.",
-          tag: "KIN™ · EXPRESS",
+          tag: "KIN · EXPRESS",
           transportNote: "Según la ruta",
         },
       },
@@ -1209,7 +1209,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A family walking a forest trail among the trees.",
-          tag: "KIN™ · CONFIDENTIAL",
+          tag: "KIN · CONFIDENTIAL",
           transportNote: "Depending on the route",
         },
         es: {
@@ -1231,7 +1231,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Familia recorriendo un sendero de bosque entre árboles.",
-          tag: "KIN™ · CONFIDENCIAL",
+          tag: "KIN · CONFIDENCIAL",
           transportNote: "Según la ruta",
         },
       },
@@ -1265,7 +1265,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "A mother and daughter sharing a moment in an apple orchard.",
-          tag: "KIN™ · COME BACK DIFFERENT",
+          tag: "KIN · COME BACK DIFFERENT",
           transportNote: "Depending on the route",
         },
         es: {
@@ -1293,7 +1293,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Madre e hija compartiendo un momento en un huerto de manzanas.",
-          tag: "KIN™ · VUELVAN DISTINTOS",
+          tag: "KIN · VUELVAN DISTINTOS",
           transportNote: "Según la ruta",
         },
       },
@@ -1328,7 +1328,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A family walking by the sea in the warm light of sunset.",
-          tag: "KIN™ · TOTAL DISCONNECTION",
+          tag: "KIN · TOTAL DISCONNECTION",
           transportNote: "Depending on the route",
         },
         es: {
@@ -1358,7 +1358,7 @@ const EXPERIENCE_CARDS: Record<
           name: "BIVOUAC™",
           photoAlt:
             "Familia caminando junto al mar con la luz cálida del atardecer.",
-          tag: "KIN™ · DESCONEXIÓN TOTAL",
+          tag: "KIN · DESCONEXIÓN TOTAL",
           transportNote: "Según la ruta",
         },
       },
@@ -1393,7 +1393,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Grandparents and granddaughters sharing a break by the sea and the boats.",
-          tag: "KIN™ · TAILOR MADE",
+          tag: "KIN · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
@@ -1418,7 +1418,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Abuelos y nietas compartiendo una pausa junto al mar y las embarcaciones.",
-          tag: "KIN™ · TAILOR MADE",
+          tag: "KIN · TAILOR MADE",
         },
       },
       photoPosition: "center 25%",
@@ -1516,7 +1516,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Your honeymoon, designed one to one",
           name: "ATELIER GETAWAY™",
           photoAlt: "A couple shares an intimate moment during their trip.",
-          tag: "NUPTIA™ · TAILOR MADE",
+          tag: "NUPTIA · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS SU LUNA DE MIEL",
@@ -1541,7 +1541,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Una pareja comparte un momento de intimidad durante su viaje.",
-          tag: "NUPTIA™ · TAILOR MADE",
+          tag: "NUPTIA · TAILOR MADE",
         },
       },
       photoPosition: "center",
@@ -1648,7 +1648,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "The essentials, with style",
           name: "ESSENZA™",
           photoAlt: "A traveler and her dog taking a break at a café.",
-          tag: "PAWS™ · EXPRESS",
+          tag: "PAWS · EXPRESS",
           transportNote: "Depending on route and pet",
         },
         es: {
@@ -1674,7 +1674,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Lo esencial con estilo",
           name: "ESSENZA™",
           photoAlt: "Una viajera y su perro compartiendo una pausa en un café.",
-          tag: "PAWS™ · EXPRESS",
+          tag: "PAWS · EXPRESS",
           transportNote: "Según ruta y mascota",
         },
       },
@@ -1709,7 +1709,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More to discover",
           name: "MODO EXPLORA™",
           photoAlt: "A woman and her dog walking through a forest clearing.",
-          tag: "PAWS™ · CONFIDENTIAL",
+          tag: "PAWS · CONFIDENTIAL",
           transportNote: "Depending on route and pet",
         },
         es: {
@@ -1735,7 +1735,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Más por descubrir",
           name: "MODO EXPLORA™",
           photoAlt: "Una mujer y su perro recorriendo un claro del bosque.",
-          tag: "PAWS™ · CONFIDENCIAL",
+          tag: "PAWS · CONFIDENCIAL",
           transportNote: "Según ruta y mascota",
         },
       },
@@ -1769,7 +1769,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "More layers, more moments",
           name: "EXPLORA+™",
           photoAlt: "Two travelers sharing an outdoor picnic with their dog.",
-          tag: "PAWS™ · COME BACK DIFFERENT",
+          tag: "PAWS · COME BACK DIFFERENT",
           transportNote: "Depending on route and pet",
         },
         es: {
@@ -1798,7 +1798,7 @@ const EXPERIENCE_CARDS: Record<
           name: "EXPLORA+™",
           photoAlt:
             "Dos viajeros compartiendo un picnic al aire libre con su perro.",
-          tag: "PAWS™ · VUELVE DISTINTO",
+          tag: "PAWS · VUELVE DISTINTO",
           transportNote: "Según ruta y mascota",
         },
       },
@@ -1837,7 +1837,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Handcrafted curation",
           name: "BIVOUAC™",
           photoAlt: "A traveler petting his dog on the shore of a lake.",
-          tag: "PAWS™ · TOTAL DISCONNECTION",
+          tag: "PAWS · TOTAL DISCONNECTION",
           transportNote: "Depending on route and pet",
         },
         es: {
@@ -1870,7 +1870,7 @@ const EXPERIENCE_CARDS: Record<
           kicker: "Curaduría artesanal",
           name: "BIVOUAC™",
           photoAlt: "Un viajero acariciando a su perro a la orilla de un lago.",
-          tag: "PAWS™ · DESCONEXIÓN TOTAL",
+          tag: "PAWS · DESCONEXIÓN TOTAL",
           transportNote: "Según ruta y mascota",
         },
       },
@@ -1905,7 +1905,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "A couple and their dog sharing a quiet moment by a fireplace.",
-          tag: "PAWS™ · TAILOR MADE",
+          tag: "PAWS · TAILOR MADE",
         },
         es: {
           ctaLabel: "CREEMOS LO IRREPETIBLE",
@@ -1933,7 +1933,7 @@ const EXPERIENCE_CARDS: Record<
           name: "ATELIER GETAWAY™",
           photoAlt:
             "Una pareja y su perro compartiendo una pausa junto a una chimenea.",
-          tag: "PAWS™ · TAILOR MADE",
+          tag: "PAWS · TAILOR MADE",
         },
       },
       photoPosition: "center 70%",

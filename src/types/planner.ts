@@ -66,7 +66,7 @@ export interface ExperienceCardCopy {
   kicker: string;
   name: string;
   photoAlt: string;
-  /** Photo tag chip (e.g. "SOLUM™ · EXPRESS"). */
+  /** Photo tag chip (e.g. "SOLUM · EXPRESS"). */
   tag: string;
   /** Short note next to the transport icons (e.g. "Según la ruta"). */
   transportNote?: string;

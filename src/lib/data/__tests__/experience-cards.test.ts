@@ -62,7 +62,7 @@ describe("getExperienceCard", () => {
 
   it("keeps the per-typology CTA labels", () => {
     expect(getExperienceCard("solo", "essenza", "es")?.ctaLabel).toBe(
-      "DISEÑA TU ESSENZA™",
+      "DISEÑA TU ESSENZA",
     );
     expect(getExperienceCard("solo", "atelier-getaway", "es")?.ctaLabel).toBe(
       "CREEMOS LO IRREPETIBLE",

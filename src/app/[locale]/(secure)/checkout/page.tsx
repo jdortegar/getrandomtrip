@@ -13,7 +13,6 @@ import {
   CheckoutTravelDetailsCard,
   type CheckoutIconDetailRow,
 } from "@/components/app/checkout/CheckoutTravelDetailsCard";
-import ChatFab from "@/components/chrome/ChatFab";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import HeaderHero from "@/components/journey/HeaderHero";
 import { useUserStore } from "@/store/slices/userStore";
@@ -39,7 +38,7 @@ import { parseCompanionEmails } from "@/lib/payments/companion-emails";
 import { INDIVIDUAL_PAYMENT_WINDOW_MS } from "@/lib/payments/split-shares";
 import type { CheckoutPaymentSplit } from "@/lib/types/CheckoutQuote";
 import { calculatePaymentTotals } from "@/lib/helpers/payment-totals";
-import { getCheckoutLevel, getCheckoutPaxDetails, getFixedCheckoutParty } from "@/lib/helpers/checkout-party";
+import { canSplitPayment, getCheckoutLevel, getCheckoutPaxDetails, getFixedCheckoutParty } from "@/lib/helpers/checkout-party";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { toast } from "sonner";
 import { hasLocale } from "@/lib/i18n/config";
@@ -445,10 +444,11 @@ function CheckoutContent() {
     const nextPax = details.adults + details.minors;
     if (nextPax === trip.pax && paxDetailsEquals(details, trip.paxDetails) && payment.isReady()) return;
     // A different number of companions invalidates the split: quote the total until recalculated.
-    const resetSplit = paymentMode === "INDIVIDUAL" && details.adults !== paxDetails.adults;
+    const splittable = canSplitPayment(details);
+    const resetSplit = paymentMode === "INDIVIDUAL" && (details.adults !== paxDetails.adults || !splittable);
     if (resetSplit) {
       setDisclaimerAccepted(false);
-      if (details.adults < 2) setPaymentMode("TOTAL");
+      if (!splittable) setPaymentMode("TOTAL");
     }
     await payment.refresh({ ...(resetSplit ? { split: { paymentMode: "TOTAL" } } : {}), save: async () => {
       const response = await fetch("/api/trip-requests", {
@@ -723,7 +723,7 @@ function CheckoutContent() {
               value={buyerDocuments}
             />
 
-            {paxDetails.adults > 1 && !getFixedCheckoutParty(trip.type, checkoutLevel) ? (
+            {canSplitPayment(paxDetails) ? (
               <CheckoutPaymentModeCard
                 calculating={payment.pending && paymentMode === "INDIVIDUAL"}
                 copy={checkoutCopy.paymentMode}
@@ -773,8 +773,6 @@ function CheckoutContent() {
             />
           </div>
         </div>
-
-        <ChatFab />
       </div>
     </div>
   );
