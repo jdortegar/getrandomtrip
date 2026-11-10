@@ -176,7 +176,7 @@ export async function checkoutQuoteResponse(
         : parseCompanionEmails(raw, paxDetails.adults - 1, session.user.email);
       if (!parsed && explicit) {
         return !canSplitPayment(paxDetails)
-          ? fail("Individual payment needs another adult and more than two travelers", 400, "INDIVIDUAL_REQUIRES_COMPANIONS")
+          ? fail("Individual payment needs another adult", 400, "INDIVIDUAL_REQUIRES_COMPANIONS")
           : fail("Invalid companion emails", 400, "INVALID_COMPANION_EMAILS");
       }
       if (parsed) companionEmails = parsed;

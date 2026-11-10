@@ -82,7 +82,7 @@ describe("checkout payment mode", () => {
   beforeEach(() => {
     view.contact = null;
     view.travel = null;
-    Object.assign(trip, { pax: 3, paxDetails: { adults: 3, minors: 0, rooms: 2 } });
+    Object.assign(trip, { type: "group", pax: 3, paxDetails: { adults: 3, minors: 0, rooms: 2 } });
     fetchMock.mockReset();
     fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
       if (url === "/api/trips") return Response.json({ trips: [trip] });
@@ -154,21 +154,20 @@ describe("checkout payment mode", () => {
     expect(quoteBodies()[0]).toEqual({ tripId: "trip" });
   });
 
-  it("hides the split for a party of two and offers it once a third traveler joins", async () => {
-    Object.assign(trip, { pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 } });
+  it("offers the split to a couple", async () => {
+    Object.assign(trip, { type: "couple", pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 } });
     await mount();
-    expect(container.textContent).not.toContain(copy.title);
-    expect(view.contact!.clientSecret).toBe("secret-total");
-    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 1, rooms: 1 }); });
     expect(container.textContent).toContain(copy.title);
+    await click(copy.individualOption);
+    expect(container.querySelectorAll("input[type=email]")).toHaveLength(1);
   });
 
-  it("goes back to the total when the party shrinks to two", async () => {
+  it("goes back to the total when only one adult is left", async () => {
     await mount();
     await click(copy.individualOption);
     await typeEmails("ana@example.com", "bo@example.com");
     await click(copy.calculate);
-    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 0, rooms: 1 }); });
+    await act(async () => { await view.travel!.onSaveTravelers({ adults: 1, minors: 1, rooms: 1 }); });
     expect(container.textContent).not.toContain(copy.title);
     expect(quoteBodies().at(-1)).toEqual({ tripId: "trip", paymentMode: "TOTAL" });
     expect(view.contact!.clientSecret).toBe("secret-total");

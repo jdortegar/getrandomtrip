@@ -736,14 +736,16 @@ describe("POST /api/stripe/payment-intent — individual payment mode", () => {
     expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
   });
 
-  it("rejects individual payment for a party of two", async () => {
+  it("lets a couple pay individually", async () => {
     vi.mocked(prisma.tripRequest.findUnique).mockResolvedValue(groupTrip({
-      pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 },
+      type: "couple", pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 },
     }) as never);
     const res = await POST(individualRequest({ paymentMode: "INDIVIDUAL", companionEmails: ["ana@example.com"] }));
-    expect(res.status).toBe(400);
-    expect(await res.json()).toMatchObject({ errorCode: "INDIVIDUAL_REQUIRES_COMPANIONS" });
-    expect(stripeMock.paymentIntents.create).not.toHaveBeenCalled();
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ paymentMode: "INDIVIDUAL", split: { companionEmails: ["ana@example.com"] } });
+    expect(stripeMock.paymentIntents.create).toHaveBeenCalledWith(
+      expect.objectContaining({ metadata: expect.objectContaining({ paymentMode: "INDIVIDUAL" }) }),
+    );
   });
 
   it("rejects an unknown payment mode", async () => {
