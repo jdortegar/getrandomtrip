@@ -5,7 +5,7 @@ import { isTripStartDateEligible, validateTripDates } from "@/lib/helpers/tripCa
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getStripe } from "@/lib/stripe";
-import { getCheckoutLevel, getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
+import { canSplitPayment, getCheckoutLevel, getCheckoutPaxDetails } from "@/lib/helpers/checkout-party";
 import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
@@ -171,12 +171,12 @@ export async function checkoutQuoteResponse(
         (trip.travelers ?? [])
           .filter((t) => t.kind === "ADULT" && t.userId === null)
           .map((t) => t.email);
-      const parsed = paxDetails.adults < 2
+      const parsed = !canSplitPayment(paxDetails)
         ? null
         : parseCompanionEmails(raw, paxDetails.adults - 1, session.user.email);
       if (!parsed && explicit) {
-        return paxDetails.adults < 2
-          ? fail("Individual payment needs another adult", 400, "INDIVIDUAL_REQUIRES_COMPANIONS")
+        return !canSplitPayment(paxDetails)
+          ? fail("Individual payment needs another adult and more than two travelers", 400, "INDIVIDUAL_REQUIRES_COMPANIONS")
           : fail("Invalid companion emails", 400, "INVALID_COMPANION_EMAILS");
       }
       if (parsed) companionEmails = parsed;

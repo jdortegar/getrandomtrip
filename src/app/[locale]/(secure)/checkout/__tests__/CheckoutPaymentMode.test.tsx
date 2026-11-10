@@ -30,7 +30,6 @@ vi.mock("next-auth/react", () => ({ useSession: () => session }));
 vi.mock("@/store/slices/userStore", () => ({ useUserStore: () => ({ isAuthed: true }) }));
 vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: async (locale: string) => locale === "en" ? en : es }));
 vi.mock("@/components/journey/HeaderHero", () => ({ default: () => null }));
-vi.mock("@/components/chrome/ChatFab", () => ({ default: () => null }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn() } }));
 vi.mock("@/components/app/checkout/CheckoutTravelDetailsCard", () => ({
   CheckoutTravelDetailsCard: (props: Travel) => {
@@ -155,6 +154,26 @@ describe("checkout payment mode", () => {
     expect(quoteBodies()[0]).toEqual({ tripId: "trip" });
   });
 
+  it("hides the split for a party of two and offers it once a third traveler joins", async () => {
+    Object.assign(trip, { pax: 2, paxDetails: { adults: 2, minors: 0, rooms: 1 } });
+    await mount();
+    expect(container.textContent).not.toContain(copy.title);
+    expect(view.contact!.clientSecret).toBe("secret-total");
+    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 1, rooms: 1 }); });
+    expect(container.textContent).toContain(copy.title);
+  });
+
+  it("goes back to the total when the party shrinks to two", async () => {
+    await mount();
+    await click(copy.individualOption);
+    await typeEmails("ana@example.com", "bo@example.com");
+    await click(copy.calculate);
+    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 0, rooms: 1 }); });
+    expect(container.textContent).not.toContain(copy.title);
+    expect(quoteBodies().at(-1)).toEqual({ tripId: "trip", paymentMode: "TOTAL" });
+    expect(view.contact!.clientSecret).toBe("secret-total");
+  });
+
   it("holds the payment form until the share is calculated, then charges only the share", async () => {
     await mount();
     await click(copy.individualOption);
@@ -222,7 +241,7 @@ describe("checkout payment mode", () => {
     await click(copy.individualOption);
     await typeEmails("ana@example.com", "bo@example.com");
     await click(copy.calculate);
-    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 0, rooms: 1 }); });
+    await act(async () => { await view.travel!.onSaveTravelers({ adults: 2, minors: 1, rooms: 1 }); });
     expect(view.contact!.clientSecret).toBeNull();
     expect(container.querySelectorAll("input[type=email]")).toHaveLength(1);
     await click(copy.calculate);
