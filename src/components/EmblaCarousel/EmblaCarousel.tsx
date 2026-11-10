@@ -21,6 +21,8 @@ type EmblaCarouselProps = {
   options?: EmblaOptionsType;
   overflow?: OverflowSide;
   slideClassName?: string;
+  /** Fixed slide width in px (set together with a matching `slideClassName`); drives the fits-without-scrolling check. */
+  slideWidth?: number;
   slidesPerView?: 2 | 3 | 4;
   arrowsClassName?: string;
   wrapperClassName?: string;
@@ -28,7 +30,8 @@ type EmblaCarouselProps = {
 
 const EMBLA_OPTIONS: EmblaOptionsType = {
   align: "start",
-  containScroll: false,
+  // Stop once the last slide is fully visible instead of scrolling it to the start.
+  containScroll: "trimSnaps",
 };
 
 const EmblaCarousel = ({
@@ -38,6 +41,7 @@ const EmblaCarousel = ({
   options,
   overflow,
   slideClassName,
+  slideWidth,
   slidesPerView = 3,
   arrowsClassName,
   wrapperClassName,
@@ -51,7 +55,7 @@ const EmblaCarousel = ({
   // Slide widths are responsive, so "fits" depends on the measured width;
   // until measured, fall back to the count-based guess (no desktop flash).
   const containerRef = useRef<HTMLDivElement>(null);
-  const capacity = useCarouselCapacity(containerRef, slidesPerView);
+  const capacity = useCarouselCapacity(containerRef, slidesPerView, slideWidth);
   const isStatic = slides.length <= (capacity ?? slidesPerView);
   const wheelGestures = useMemo(() => WheelGestures(), []);
   const [emblaRef, emblaApi] = useEmblaCarousel(
@@ -102,10 +106,7 @@ const EmblaCarousel = ({
             "h-2 rounded-full transition-all",
             i === selectedIndex
               ? cn("w-8", !accentColor && "bg-primary")
-              : cn(
-                  "w-2",
-                  !accentColor && "bg-primary/30 hover:bg-primary/50",
-                ),
+              : cn("w-2", !accentColor && "bg-primary/30 hover:bg-primary/50"),
           )}
           style={
             accentColor
@@ -140,6 +141,7 @@ const EmblaCarousel = ({
       <div>
         <div
           ref={isStatic ? undefined : emblaRef}
+          data-carousel-viewport
           className={cn(
             "w-full",
             {
@@ -163,21 +165,16 @@ const EmblaCarousel = ({
               <div
                 key={index}
                 className={cn(
-                  "min-w-0 shrink-0 flex-[0_0_80%] sm:flex-[0_0_50%]",
-                  // A static row has no scroll to absorb the gap-3 gutters, so
-                  // the gutters come out of the slide widths to keep it in view.
-                  isStatic
-                    ? {
-                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)]":
-                          slidesPerView === 3,
-                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)] @lg:flex-[0_0_calc((100%_-_2.25rem)/4)]":
-                          slidesPerView === 4,
-                      }
-                    : {
-                        "@md:flex-[0_0_33.3333%]": slidesPerView === 3,
-                        "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]":
-                          slidesPerView === 4,
-                      },
+                  "min-w-0 shrink-0 flex-[0_0_80%] sm:flex-[0_0_calc((100%_-_0.75rem)/2)]",
+                  // The gap-3 gutters come out of the slide widths so a full
+                  // page fits exactly: otherwise the row overflows by the
+                  // gutters and the last snap adds a near-duplicate dot.
+                  {
+                    "@md:flex-[0_0_calc((100%_-_1.5rem)/3)]":
+                      slidesPerView === 3,
+                    "@md:flex-[0_0_calc((100%_-_1.5rem)/3)] @lg:flex-[0_0_calc((100%_-_2.25rem)/4)]":
+                      slidesPerView === 4,
+                  },
                   slideClassName,
                 )}
               >

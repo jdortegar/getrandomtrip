@@ -27,6 +27,7 @@ afterEach(() => {
   });
   container?.remove();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 /**
@@ -114,13 +115,24 @@ describe("TravelerTypesCarousel (design ADR-8 — flag, never drop)", () => {
   });
 
   it("coming-soon types never get an href, in or out of tripper context", () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
     render(<TravelerTypesCarousel availableTypes={["couple"]} tripperMode />);
 
-    // "family" is in COMING_SOON_SLUGS — coming-soon short-circuits before
+    // "family" is a preview type — coming-soon short-circuits before
     // the availability check, so it must never carry a catalog=randomtrip
     // (or any other) href even though it's not in availableTypes either.
     expect(
       container.querySelector('a[href*="/experiences/by-type/family"]'),
+    ).toBeNull();
+  });
+
+  it("hides family, honeymoon, and paws on production", () => {
+    vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "production");
+    render(<TravelerTypesCarousel />);
+
+    expect(container.textContent).not.toMatch(/family|honeymoon|paws/i);
+    expect(
+      container.querySelector('[href*="/experiences/by-type/family"]'),
     ).toBeNull();
   });
 });

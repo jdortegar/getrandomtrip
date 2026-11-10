@@ -28,6 +28,7 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
     element: React.createElement(ExperienceApproved, {
       tripper: "David",
       experienceTitle: "Aventura en Patagonia",
+      experienceId: "test-experience",
       locale: "es",
     }),
     subject: approvedSubjects.es,
@@ -36,6 +37,7 @@ const templates: Record<string, { element: React.ReactElement; subject: string }
     element: React.createElement(ExperienceRejected, {
       tripper: "David",
       experienceTitle: "Aventura en Patagonia",
+      experienceId: "test-experience",
       reviewNote: "Falta información sobre el alojamiento y las actividades incluidas. Por favor completá esas secciones antes de volver a enviar.",
       locale: "es",
     }),

@@ -135,7 +135,7 @@ export function EarningsPageClient({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
@@ -179,7 +179,7 @@ export function EarningsPageClient({
               </div>
               <div className="flex items-stretch gap-3.5">
                 <span className="w-1 rounded-full bg-feature" />
-                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
+                <p className="font-barlow-condensed text-5xl font-bold leading-[0.9] text-ink">
                   {card.value}
                 </p>
               </div>

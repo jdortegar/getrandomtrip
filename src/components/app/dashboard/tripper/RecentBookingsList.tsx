@@ -43,13 +43,13 @@ export function RecentBookingsList({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             Latest activity
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>
         <Link
           href={pathForLocale(locale as Locale, "/dashboard/tripper")}
-          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-secondary hover:text-sky-700"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-primary hover:text-primary/80"
         >
           {copy.viewAll} →
         </Link>

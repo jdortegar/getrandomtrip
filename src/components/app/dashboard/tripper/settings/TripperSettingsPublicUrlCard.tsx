@@ -60,7 +60,7 @@ export function TripperSettingsPublicUrlCard({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
@@ -71,14 +71,14 @@ export function TripperSettingsPublicUrlCard({
         </span>
         {isEditing ? (
           <input
-            className="min-w-0 flex-1 bg-transparent text-lg font-bold text-secondary outline-none"
+            className="min-w-0 flex-1 bg-transparent text-lg font-bold text-primary outline-none"
             onChange={(e) => onSlugChange(slugify(e.target.value))}
             placeholder={copy.slugPlaceholder}
             type="text"
             value={slug}
           />
         ) : (
-          <span className="truncate text-lg font-bold text-secondary">
+          <span className="truncate text-lg font-bold text-primary">
             {slug}
           </span>
         )}

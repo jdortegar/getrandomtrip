@@ -141,10 +141,10 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
                 )}
               </div>
               <div className="flex justify-start flex-col text-left">
-                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
+                <p className="font-barlow-condensed text-[0.6rem] font-bold uppercase leading-tight text-white @[200px]:text-sm">
                   {byTripperLabel}
                 </p>
-                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
+                <p className="font-barlow-condensed text-[0.6rem] font-bold uppercase leading-tight text-white @[200px]:text-sm">
                   {tripperBadge.name.toUpperCase()}
                 </p>
               </div>
@@ -160,13 +160,13 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
                     src="/assets/icons/isologo.png"
                   />
                 </div>
-                <p className="font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight text-white @[200px]:text-sm">
+                <p className="font-barlow-condensed text-[0.6rem] font-bold uppercase leading-tight text-white @[200px]:text-sm">
                   {randomtripBadgeLabel}
                 </p>
               </div>
             )
           )}
-          <h3 className="font-barlow-condensed text-xl lg:text-2xl @[250px]:text-xl @[400px]:text-5xl font-extrabold uppercase leading-tight">
+          <h3 className="font-barlow-condensed text-xl lg:text-2xl @[250px]:text-xl @[400px]:text-5xl font-bold uppercase leading-tight">
             {title}
           </h3>
           <p className="font-barlow text-sm @[250px]:text-base @[400px]:text-lg text-white/90">
@@ -176,7 +176,7 @@ const TravelerTypeCard: React.FC<TravelerTypeCardProps> = ({
 
         {comingSoonLabel && (
           <div className="absolute inset-0 z-30 flex items-center justify-center rounded-2xl bg-black/70 cursor-not-allowed">
-            <span className="font-barlow-condensed text-base @[200px]:text-2xl font-extrabold uppercase tracking-widest text-white drop-shadow-lg">
+            <span className="font-barlow-condensed text-base @[200px]:text-2xl font-bold uppercase tracking-widest text-white drop-shadow-lg">
               {comingSoonLabel}
             </span>
           </div>

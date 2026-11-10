@@ -12,6 +12,7 @@ import type { TripRequestStatus } from "@/lib/admin/trip-status";
 
 const counts: Record<TripRequestStatus, number> = {
   CANCELLED: 5,
+  COLLECTING: 0,
   COMPLETED: 29,
   CONFIRMED: 1,
   DRAFT: 10,

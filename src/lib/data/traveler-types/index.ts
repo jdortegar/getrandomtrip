@@ -13,10 +13,9 @@ import { family } from "./family";
 import { group } from "./group";
 import { honeymoon } from "./honeymoon";
 import { paws } from "./paws";
+import { showTripperDiscovery } from "@/lib/deployment";
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerTypeData } from "@/types/traveler-type";
-import type { Locale } from "@/lib/i18n/config";
-import { DEFAULT_LOCALE } from "@/lib/i18n/config";
-import { hasLocale } from "@/lib/i18n/config";
 
 export type TravelerTypeSlug =
   | "couple"
@@ -182,6 +181,21 @@ export const TRAVELER_TYPE_SLUGS: TravelerTypeSlug[] = [
   "honeymoon",
   "paws",
 ];
+
+/** Types listed as coming soon, and hidden from production marketing. */
+export const PREVIEW_TRAVELER_TYPES: TravelerTypeSlug[] = [
+  "family",
+  "honeymoon",
+  "paws",
+];
+
+/** Public listing slugs: preview types only on an explicit nonproduction build. */
+export function getPublicTravelerTypeSlugs(): TravelerTypeSlug[] {
+  if (showTripperDiscovery()) return TRAVELER_TYPE_SLUGS;
+  return TRAVELER_TYPE_SLUGS.filter(
+    (slug) => !PREVIEW_TRAVELER_TYPES.includes(slug),
+  );
+}
 
 /** Card imagery per slug for journey/tripper type selection. */
 const CARD_BY_SLUG: Record<

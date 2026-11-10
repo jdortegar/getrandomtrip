@@ -50,7 +50,10 @@ export default function ContactFormSubmission({
         <strong>{c.name}:</strong> {name}
       </Text>
       <Text style={fieldText}>
-        <strong>{c.email}:</strong> <Link href={`mailto:${email}`}>{email}</Link>
+        <strong>{c.email}:</strong>{" "}
+        <Link href={`mailto:${email}`} style={emailLink}>
+          {email}
+        </Link>
       </Text>
       <Text style={fieldText}>
         <strong>{c.interest}:</strong> {interest}
@@ -78,14 +81,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "32px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1.15",
   textAlign: "left",
 };
 
 const fieldText: React.CSSProperties = {
-  color: "#111827",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -103,7 +106,7 @@ const messageBox: React.CSSProperties = {
 };
 
 const messageText: React.CSSProperties = {
-  color: "#111827",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -111,4 +114,9 @@ const messageText: React.CSSProperties = {
   lineHeight: "1.6",
   textAlign: "left",
   whiteSpace: "pre-wrap",
+};
+
+const emailLink: React.CSSProperties = {
+  color: "#0F5C60", // Deep Teal (brand primary),
+  textDecoration: "underline",
 };

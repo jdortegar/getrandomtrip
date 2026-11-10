@@ -7,7 +7,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 import type { Locale } from "@/lib/i18n/config";
-import { SITE_URL, canonicalUrl } from "@/lib/seo/urls";
+import { getApplicationOrigin } from "@/lib/deployment";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 
 function getSecret(): string | null {
   return process.env.EMAIL_UNSUBSCRIBE_SECRET || null;
@@ -51,7 +52,7 @@ export function verifyUnsubscribeToken(token: string): string | null {
  * contact exists. The page shows its invalid-link state if opened.
  */
 export function buildUnsubscribePageUrl(locale: Locale): string {
-  return canonicalUrl(locale, "/unsubscribe");
+  return `${getApplicationOrigin()}${pathForLocale(locale, "/unsubscribe")}`;
 }
 
 /** Absolute link to the localized confirmation page, for email bodies. */
@@ -70,7 +71,7 @@ export function buildUnsubscribeHeaders(
 ): Record<"List-Unsubscribe" | "List-Unsubscribe-Post", string> {
   const token = encodeURIComponent(createUnsubscribeToken(contactId));
   return {
-    "List-Unsubscribe": `<${SITE_URL}/api/email/unsubscribe?token=${token}>`,
+    "List-Unsubscribe": `<${getApplicationOrigin()}/api/email/unsubscribe?token=${token}>`,
     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
   };
 }

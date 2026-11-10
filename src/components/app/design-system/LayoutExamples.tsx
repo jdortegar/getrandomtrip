@@ -17,7 +17,7 @@ export function LayoutExamples({ copy }: LayoutExamplesProps) {
           <p className="font-semibold text-primary text-xs tracking-widest uppercase">
             {labels.eyebrow}
           </p>
-          <h3 className="font-barlow-condensed font-extrabold leading-none mt-3 text-3xl uppercase">
+          <h3 className="font-barlow-condensed font-bold leading-none mt-3 text-3xl uppercase">
             {labels.title}
           </h3>
           <p className="max-w-2xl mt-4 text-sm">{labels.description}</p>

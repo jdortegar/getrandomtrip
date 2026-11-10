@@ -69,6 +69,23 @@ describe("POST /api/user/deactivate", () => {
     expect(updateMock).not.toHaveBeenCalled();
   });
 
+  it("counts a trip still collecting individual payments as active", async () => {
+    getServerSessionMock.mockResolvedValue({ user: { id: "u2" } });
+    findUniqueMock.mockResolvedValue({ id: "u2", roles: ["TRAVELER"] });
+    tripCountMock.mockResolvedValue(1);
+    experienceCountMock.mockResolvedValue(0);
+
+    await POST();
+
+    expect(tripCountMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          status: { in: expect.arrayContaining(["COLLECTING"]) },
+        }),
+      }),
+    );
+  });
+
   it("blocks when the tripper owns experiences, and does not deactivate", async () => {
     getServerSessionMock.mockResolvedValue({ user: { id: "u3" } });
     findUniqueMock.mockResolvedValue({ id: "u3", roles: ["TRAVELER", "TRIPPER"] });

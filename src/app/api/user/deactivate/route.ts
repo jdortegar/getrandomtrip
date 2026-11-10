@@ -10,6 +10,7 @@ const ACTIVE_TRIP_STATUSES: TripRequestStatus[] = [
   "DRAFT",
   "SAVED",
   "PENDING_PAYMENT",
+  "COLLECTING",
   "CONFIRMED",
   "REVEALED",
 ];

@@ -13,6 +13,13 @@ describe("TRIP_STATUS_FLOW", () => {
     expect(confirmed).toBeLessThan(revealed);
     expect(revealed).toBeLessThan(completed);
   });
+
+  it("places COLLECTING between PENDING_PAYMENT and CONFIRMED", () => {
+    const pending = TRIP_STATUS_FLOW.indexOf("PENDING_PAYMENT");
+    const collecting = TRIP_STATUS_FLOW.indexOf("COLLECTING");
+    expect(collecting).toBe(pending + 1);
+    expect(TRIP_STATUS_FLOW[collecting + 1]).toBe("CONFIRMED");
+  });
 });
 
 describe("countTripsByStatus", () => {
@@ -28,6 +35,11 @@ describe("countTripsByStatus", () => {
     expect(counts.COMPLETED).toBe(0);
   });
 
+  it("counts COLLECTING trips", () => {
+    const counts = countTripsByStatus([{ status: "COLLECTING" as const }]);
+    expect(counts.COLLECTING).toBe(1);
+  });
+
   it("ignores unknown statuses", () => {
     const trips = [{ status: "CONFIRMED" as const }];
     const counts = countTripsByStatus(trips);
@@ -40,6 +52,7 @@ describe("resolveInitialStatusFilter", () => {
     expect(resolveInitialStatusFilter("CONFIRMED")).toBe("CONFIRMED");
     expect(resolveInitialStatusFilter("COMPLETED")).toBe("COMPLETED");
     expect(resolveInitialStatusFilter("CANCELLED")).toBe("CANCELLED");
+    expect(resolveInitialStatusFilter("COLLECTING")).toBe("COLLECTING");
   });
 
   it("falls back to ALL when the param is null", () => {

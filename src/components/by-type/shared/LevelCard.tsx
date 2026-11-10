@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 import {
   Clock,
   Globe,
@@ -147,7 +148,7 @@ export default function LevelCard({
       {(tripperBadge || showRandomtripBadge) && (
         <p
           className={cn(
-            "mb-2 text-center font-barlow-condensed text-[0.6rem] font-extrabold uppercase leading-tight @[250px]:mb-3 @[250px]:text-xs",
+            "mb-2 text-center font-barlow-condensed text-[0.6rem] font-bold uppercase leading-tight @[250px]:mb-3 @[250px]:text-xs",
             secondaryTextColor,
           )}
         >
@@ -172,7 +173,7 @@ export default function LevelCard({
       <div className="mb-3 flex-wrap flex items-end gap-3">
         <h3
           className={cn(
-            "min-w-0 font-barlow-condensed font-extrabold uppercase text-left text-[1.95rem] @[250px]:text-[2.35rem]",
+            "min-w-0 font-barlow-condensed font-bold uppercase text-left text-[1.95rem] @[250px]:text-[2.35rem]",
             "leading-none",
             textColor,
           )}
@@ -192,6 +193,10 @@ export default function LevelCard({
             <span className={cn("leading-none whitespace-nowrap", textColor)}>
               {level.priceLabel ? ` ${level.price} USD` : `${level.price} USD`}
             </span>
+            <LocalPriceApprox
+              className={cn("leading-tight text-[0.62rem]", secondaryTextColor)}
+              usd={level.price}
+            />
             <span
               className={cn(
                 "whitespace-pre-line text-left leading-tight text-[0.62rem]",

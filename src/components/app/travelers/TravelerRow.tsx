@@ -166,6 +166,15 @@ export const TravelerRow = forwardRef<TravelerRowHandle, TravelerRowProps>(
 
     async function saveRow(): Promise<TravelerDTO | null> {
       if (!canEdit || pending.current) return traveler;
+      // Nothing entered for a minor yet: skip it, the buyer fills it in later
+      // from the trip page. A partial minor can't be stored, so it still errors.
+      if (
+        !isAdult &&
+        [fullName, dateOfBirth, idDocument].every((value) => value.trim() === "") &&
+        Object.keys(changedDocuments()).length === 0
+      ) {
+        return traveler;
+      }
       if (
         !isAdult &&
         !isMinorRowFilled({ fullName, dateOfBirth, idDocument })

@@ -3,6 +3,7 @@ import type { Config } from "@netlify/functions";
 
 // 12:05 UTC = 09:05 America/Argentina/Buenos_Aires (no DST), weekdays only.
 // Monday's run reports Fri–Sun. Offset from the GA4 recap to avoid overlap.
+// The same run announces new @getrandomtrip.es posts for Slack translation.
 // Scheduled functions cannot be invoked publicly through their function URL.
 export const config: Config = { schedule: "5 12 * * 1-5" };
 

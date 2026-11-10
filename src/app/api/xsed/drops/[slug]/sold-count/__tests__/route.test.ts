@@ -58,7 +58,7 @@ describe("country-scoped sold-count API", () => {
         tripRequests: {
           where: {
             status: {
-              in: ["PENDING_PAYMENT", "CONFIRMED", "REVEALED", "COMPLETED"],
+              in: ["PENDING_PAYMENT", "COLLECTING", "CONFIRMED", "REVEALED", "COMPLETED"],
             },
           },
           select: { originCountry: true },

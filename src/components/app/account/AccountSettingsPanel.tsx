@@ -484,7 +484,7 @@ export function AccountSettingsPanel({
                 <Calendar className="h-4 w-4 text-secondary" />
                 {p.labels.memberSince}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-bold text-ink">
                 {memberSince || "—"}
               </span>
             </div>
@@ -494,7 +494,7 @@ export function AccountSettingsPanel({
                   <Calendar className="h-4 w-4 text-secondary" />
                   {p.labels.tripperSince}
                 </div>
-                <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
+                <span className="mt-2 block font-barlow-condensed text-3xl font-bold text-ink">
                   {tripperSince || "—"}
                 </span>
               </div>
@@ -504,7 +504,7 @@ export function AccountSettingsPanel({
                 <Globe className="h-4 w-4 text-secondary" />
                 {p.labels.totalTrips}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-bold text-ink">
                 {stats.totalTrips}
               </span>
             </div>
@@ -513,7 +513,7 @@ export function AccountSettingsPanel({
                 <Star className="h-4 w-4 text-secondary" />
                 {p.labels.avgRating}
               </div>
-              <span className="mt-2 block font-barlow-condensed text-3xl font-extrabold text-ink">
+              <span className="mt-2 block font-barlow-condensed text-3xl font-bold text-ink">
                 {stats.averageRating > 0
                   ? stats.averageRating.toFixed(1)
                   : "—"}

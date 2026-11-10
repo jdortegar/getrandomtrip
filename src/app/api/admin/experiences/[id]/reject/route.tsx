@@ -95,6 +95,7 @@ export async function POST(
               content: {
                 react: (
                   <ExperienceRejected
+                    experienceId={params.id}
                     tripper={owner.name ?? ""}
                     experienceTitle={(updated as { title?: string }).title ?? ""}
                     reviewNote={reviewNote}

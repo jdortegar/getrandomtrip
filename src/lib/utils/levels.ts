@@ -22,6 +22,7 @@ import { getExcusesByType } from "@/lib/helpers/excuse-helper";
 import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import type { TripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides";
 import { getXsedLevel } from "@/lib/data/xsed-catalog";
+import { getExperienceCard } from "@/lib/data/experience-cards";
 
 /** Map experience level id to URL/store LevelSlug. */
 function toLevelSlug(levelId: string): LevelSlug {
@@ -214,6 +215,7 @@ export function getPlannerLevelsForType(
       closingLine: content.closingLine,
       ctaLabel: content.ctaLabel,
       excuses: excuses as PlannerLevel["excuses"],
+      card: getExperienceCard(type, slug, locale) ?? undefined,
     });
   }
   return plannerLevels;

@@ -22,7 +22,8 @@ vi.mock("next-auth/react", () => ({
   useSession: () => sessionState.value,
   signOut,
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+const push = vi.hoisted(() => vi.fn());
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/components/auth/AuthModal", () => ({
   default: (props: Record<string, unknown>) => {
     authModalProps.last = props;
@@ -96,6 +97,24 @@ describe("TravelerInviteClient — invited email", () => {
     expect(authModalProps.last).not.toHaveProperty("initialEmail", "jane.doe@gmail.com");
     expect(authModalProps.last?.lockEmail).toBeFalsy();
     expect(authModalProps.last?.initialEmail).toBeUndefined();
+  });
+
+  it("asks an invitee who already has an account to sign in, and opens the modal on login", () => {
+    render({ ...okResolution, inviteeHasAccount: true });
+
+    expect(container.textContent).toContain(copy.landingLoginExplainer);
+    expect(container.textContent).toContain(copy.landingLoginCta);
+    expect(container.textContent).not.toContain(copy.landingSignupCta);
+    expect(authModalProps.last?.defaultMode).toBe("login");
+    expect(authModalProps.last?.allowRegister).toBe(true);
+  });
+
+  it("keeps the sign-up flow for an invitee without an account", () => {
+    render(okResolution);
+
+    expect(container.textContent).toContain(copy.landingSignupExplainer);
+    expect(container.textContent).toContain(copy.landingSignupCta);
+    expect(authModalProps.last?.defaultMode).toBe("register");
   });
 
   it("omits the hint when there is no masked address", () => {
@@ -447,6 +466,13 @@ describe("TravelerInviteClient — travel documents", () => {
       nationalities: ["AR"],
       visas: ["SCHENGEN"],
     });
+  });
+
+  it("sends a companion who still owes a share straight to their share checkout", async () => {
+    vi.mocked(fetch).mockResolvedValue(Response.json({ ok: true, shareDue: { travelerId: "trav-1" } }));
+    render(matchingResolution);
+    await fillAndSubmit();
+    expect(push).toHaveBeenCalledWith("/en/checkout/share/trav-1");
   });
 
   it("requires a nationality before submitting", async () => {

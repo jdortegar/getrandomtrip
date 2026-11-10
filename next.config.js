@@ -4,8 +4,6 @@ const { deploymentBuildEnvironment } = require("./config/deployment.cjs");
 // Explicit local PDF assets for serverless file tracing (no remote font fetch).
 const pdfAssets = [
   "./public/assets/pdf/**",
-  "./public/assets/fonts/arimo/**",
-  "./public/assets/fonts/inter/**",
   "./node_modules/@sparticuz/chromium/bin/**",
   "./public/assets/fonts/barlow/Barlow-Regular.ttf",
   "./public/assets/fonts/barlow/Barlow-Bold.ttf",

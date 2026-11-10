@@ -64,7 +64,7 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {metricsCopy.sectionEyebrow ?? "This month"}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {metricsCopy.sectionTitle ?? "Your performance"}
         </h2>
       </div>
@@ -99,7 +99,7 @@ export function TripperStatsGrid({ stats, copy, metricsCopy }: TripperStatsGridP
               </div>
               <div className="flex items-stretch gap-3.5">
                 <span className="w-1 rounded-full bg-feature" />
-                <p className="font-barlow-condensed text-5xl font-extrabold leading-[0.9] text-ink">
+                <p className="font-barlow-condensed text-5xl font-bold leading-[0.9] text-ink">
                   {card.value}
                 </p>
               </div>
@@ -145,7 +145,7 @@ function Metric({
       </span>
       <span
         className={cn(
-          "flex items-center gap-1.5 font-barlow-condensed text-3xl font-extrabold leading-none",
+          "flex items-center gap-1.5 font-barlow-condensed text-3xl font-bold leading-none",
           trend ? "text-green-600" : "text-ink",
         )}
       >

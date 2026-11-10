@@ -44,14 +44,12 @@ export function loadHtmlAssets() {
 }
 async function readAssets(): Promise<HtmlAssets> {
   const root = join(process.cwd(), "public/assets");
-  const [logo, roadmapLogo, arimo, barlow, inter, interBold, icons] =
+  const [logo, roadmapLogo, barlowRegular, barlowBold, icons] =
     await Promise.all([
     readFile(join(root, "logos/logo_pdf.png")),
     readFile(join(root, "logos/logo_randomtrip.svg"), "utf8"),
-    readFile(join(root, "fonts/arimo/Arimo.ttf")),
+    readFile(join(root, "fonts/barlow/Barlow-Regular.ttf")),
     readFile(join(root, "fonts/barlow/Barlow-Bold.ttf")),
-    readFile(join(root, "fonts/inter/Inter-Regular.woff2")),
-    readFile(join(root, "fonts/inter/Inter-Bold.woff2")),
     Promise.all(
       names.map(async (name) => [
         name,
@@ -71,7 +69,7 @@ async function readAssets(): Promise<HtmlAssets> {
       )
       .trim(),
     icons: Object.fromEntries(icons),
-    fonts: `@font-face{font-family:Inter;src:url(data:font/woff2;base64,${inter.toString("base64")}) format('woff2');font-weight:400}@font-face{font-family:Inter;src:url(data:font/woff2;base64,${interBold.toString("base64")}) format('woff2');font-weight:700}@font-face{font-family:Arimo;src:url(data:font/ttf;base64,${arimo.toString("base64")}) format('truetype');font-weight:400 700}@font-face{font-family:Barlow;src:url(data:font/ttf;base64,${barlow.toString("base64")}) format('truetype');font-weight:700}`,
+    fonts: `@font-face{font-family:Barlow;src:url(data:font/ttf;base64,${barlowRegular.toString("base64")}) format('truetype');font-weight:400}@font-face{font-family:Barlow;src:url(data:font/ttf;base64,${barlowBold.toString("base64")}) format('truetype');font-weight:700}`,
   };
 }
 export function icon(assets: HtmlAssets, name: string, className = "icon") {

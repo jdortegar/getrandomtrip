@@ -75,7 +75,7 @@ export default function RefineDetailsCard({
         {/* Card Content */}
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center text-white">
           <div className="flex-1 flex flex-col items-center justify-center">
-            <h3 className="font-barlow-condensed text-2xl font-extrabold uppercase leading-tight mb-4 @[300px]:text-3xl">
+            <h3 className="font-barlow-condensed text-2xl font-bold uppercase leading-tight mb-4 @[300px]:text-3xl">
               {title}
             </h3>
             <p className="font-barlow text-sm @[300px]:text-lg text-white/90 max-w-xs hidden @[200px]:block">

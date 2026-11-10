@@ -128,12 +128,12 @@ describe.each([
     for (const name of [
       "bg-feature",
       "border-feature",
-      "text-white",
+      "text-ink",
       "min-h-14",
     ]) {
       expect(cta.classList.contains(name), name).toBe(true);
     }
-    expect(cta.classList.contains("text-ink")).toBe(false);
+    expect(cta.classList.contains("text-white")).toBe(false);
     expect(cta.classList.contains("bg-white")).toBe(false);
     expect(cta.textContent).toBe(content.ctaLabel);
     expect(cta.getAttribute("aria-label")).toBe(content.ctaAriaLabel);

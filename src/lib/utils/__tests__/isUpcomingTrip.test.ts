@@ -21,6 +21,16 @@ describe("isUpcomingTrip", () => {
     expect(isUpcomingTrip(trip({ status: "REVEALED" }), NOW)).toBe(true);
   });
 
+  it("includes a trip still collecting individual payments (already booked)", () => {
+    expect(isUpcomingTrip(trip({ status: "COLLECTING" }), NOW)).toBe(true);
+  });
+
+  it("excludes unpaid and cancelled trips", () => {
+    for (const status of ["DRAFT", "SAVED", "PENDING_PAYMENT", "CANCELLED", "COMPLETED"]) {
+      expect(isUpcomingTrip(trip({ status }), NOW)).toBe(false);
+    }
+  });
+
   it("excludes trips whose end date has passed", () => {
     const past = trip({
       status: "REVEALED",

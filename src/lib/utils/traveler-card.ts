@@ -4,6 +4,7 @@
  */
 
 import {
+  getPublicTravelerTypeSlugs,
   getTravelerTypeOptions,
   getTravelerType,
   type TravelerTypeSlug,
@@ -66,19 +67,24 @@ export function getCarouselCardOptions(
   },
 ): TravelerTypeCardData[] {
   const cards = getCardOptions(locale);
-  if (options?.travelerTypes?.length) return options.travelerTypes;
+  const publicKeys = new Set<string>(getPublicTravelerTypeSlugs());
+  if (options?.travelerTypes?.length) {
+    return options.travelerTypes.filter((card) => publicKeys.has(card.key));
+  }
   if (options?.localizedTravelerTypes?.length) {
     const byKey = Object.fromEntries(
       options.localizedTravelerTypes.map((t) => [t.key.toLowerCase(), t]),
     );
-    return cards.map((card) => {
-      const loc = byKey[card.key.toLowerCase()];
-      return loc
-        ? { ...card, subtitle: loc.description, title: loc.title }
-        : card;
-    });
+    return cards
+      .filter((card) => publicKeys.has(card.key))
+      .map((card) => {
+        const loc = byKey[card.key.toLowerCase()];
+        return loc
+          ? { ...card, subtitle: loc.description, title: loc.title }
+          : card;
+      });
   }
-  return cards;
+  return cards.filter((card) => publicKeys.has(card.key));
 }
 
 /**

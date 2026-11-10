@@ -1,0 +1,4 @@
+interface:
+  display_name: "Screenshot"
+  short_description: "Capture page and component screenshots at desktop and mobile with one Playwright script"
+  default_prompt: "Use $screenshot to capture the changed routes at desktop and mobile, then review the PNGs."

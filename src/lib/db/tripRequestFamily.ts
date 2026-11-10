@@ -2,9 +2,9 @@ import type { TripRequestStatus } from "@prisma/client";
 
 /**
  * Every non-terminal status a `TripRequest` can be in. A row in one of these
- * statuses counts as the user's "active" trip for its family. `CONFIRMED`,
- * `REVEALED`, `COMPLETED`, and `CANCELLED` are terminal and never block a new
- * active slot. Plain literals (type-checked against the Prisma enum) keep this
+ * statuses counts as the user's "active" trip for its family. `COLLECTING`
+ * (organizer already paid), `CONFIRMED`, `REVEALED`, `COMPLETED`, and
+ * `CANCELLED` are terminal and never block a new active slot. Plain literals (type-checked against the Prisma enum) keep this
  * module free of runtime `@prisma/client` imports, so client code can use it.
  */
 export const NON_TERMINAL_TRIP_STATUSES = [

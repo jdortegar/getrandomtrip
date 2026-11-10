@@ -1,26 +1,43 @@
-export default function SectionHeading({
-  eyebrow,
-  title,
-  subtitle,
-  align = "center",
-}: {
+import { cn } from "@/lib/utils";
+
+interface SectionHeadingProps {
+  align?: "center" | "left";
   eyebrow?: string;
-  title: string;
   subtitle?: string;
-  align?: "left" | "center";
-}) {
-  const alignCls = align === "center" ? "text-center mx-auto" : "text-left";
+  title: string;
+}
+
+export default function SectionHeading({
+  align = "center",
+  eyebrow,
+  subtitle,
+  title,
+}: SectionHeadingProps) {
   return (
-    <header className={`${alignCls} max-w-prose`} data-component="SectionHeading">
-      {eyebrow && (
-        <div className="mb-2 text-xs uppercase tracking-[0.18em] text-ink">
-          {eyebrow}
-        </div>
+    <header
+      className={cn(
+        "max-w-prose",
+        align === "center" ? "mx-auto text-center" : "text-left",
       )}
-      <h2 className="font-display text-3xl sm:text-4xl md:text-[44px] leading-[1.1] tracking-tightish">
+      data-component="SectionHeading"
+    >
+      {eyebrow ? (
+        <p className="font-semibold mb-2 text-primary text-xs tracking-[0.18em] uppercase">
+          {eyebrow}
+        </p>
+      ) : null}
+      <h2
+        className={cn(
+          "font-barlow-condensed font-bold text-3xl text-ink uppercase",
+          "sm:text-4xl md:text-[44px]",
+          "leading-none",
+        )}
+      >
         {title}
       </h2>
-      {subtitle && <p className="mt-3 text-neutral-600">{subtitle}</p>}
+      {subtitle ? (
+        <p className="mt-3 text-neutral-600">{subtitle}</p>
+      ) : null}
     </header>
   );
 }

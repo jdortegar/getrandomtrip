@@ -1,0 +1,23 @@
+---
+description: >-
+  Live design-system pages: /design-system (Brand Book) and
+  /design-system/components (UI kit). Apply when the user mentions those
+  routes, the brand gallery, the component gallery, or asks to match UI to
+  the design-system page from another component.
+globs: src/components/**/*.tsx,src/app/**/*.tsx
+alwaysApply: false
+---
+
+# Design-system galleries
+
+Public AI rules (no repository): `/design-system/llms`
+In-repo notes: `src/components/app/design-system/AGENTS.md`
+
+- `/[locale]/design-system` — Brand Book. Spec: `.claude/rules/brand.md`
+- `/[locale]/design-system/components` — UI kit using real product components.
+  Spec: `.claude/rules/design-system.md`
+
+Do not copy gallery markup into feature components. Reuse `@/components/ui`
+and tokens from `src/app/globals.css`. Update the components gallery when a
+shared component changes. Update `DESIGN_SYSTEM_LLMS.ts` when external-agent
+rules change.

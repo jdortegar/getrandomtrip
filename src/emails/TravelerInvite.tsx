@@ -11,6 +11,9 @@ interface TravelerInviteProps {
   endDate?: Date | null;
   /** Raw trip type key (e.g. `group`, `xsed`). Never the destination. */
   tripType?: string | null;
+  /** Individually paid trips: the companion's share and pay-by time, pre-formatted. */
+  /** `maxTopUp` is the most they may owe on top of it if others drop out; null = nothing can rise. */
+  share?: { amount: string; deadline: string; maxTopUp: string | null } | null;
 }
 
 // Copy is gender-neutral by design (no "her"/"su" pronoun) — the buyer's
@@ -30,6 +33,13 @@ const copy = {
       "Creá tu cuenta para ver el viaje en tu panel y confirmar tus datos.",
     subtext: "Este enlace vence en 7 días.",
     cta: "VER MI VIAJE",
+    shareLabel: "Tu parte",
+    shareDeadline: (deadline: string) =>
+      `Paga tu parte antes del ${deadline}. Si no pagas a tiempo, el viaje sigue sin ti.`,
+    shareAdjust: (maxTopUp: string | null) =>
+      maxTopUp
+        ? `Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron. Los extras compartidos se reparten de nuevo, así que podrías pagar hasta ${maxTopUp} más.`
+        : "Si alguien del grupo no paga a tiempo, no viaja y el viaje se ajusta a quienes pagaron.",
   },
   en: {
     heading: "You've been added to a randomtrip",
@@ -43,10 +53,20 @@ const copy = {
       "Create an account to see the trip in your dashboard and confirm your details.",
     subtext: "This link expires in 7 days.",
     cta: "SEE MY TRIP",
+    shareLabel: "Your share",
+    shareDeadline: (deadline: string) =>
+      `Pay your share before ${deadline}. If you don't pay in time, the trip goes on without you.`,
+    shareAdjust: (maxTopUp: string | null) =>
+      maxTopUp
+        ? `If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid. Shared extras are split again, so you could pay up to ${maxTopUp} more.`
+        : "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid.",
   },
 };
 
-export function getSubject(locale: "es" | "en", buyerFirstName: string): string {
+export function getSubject(
+  locale: "es" | "en",
+  buyerFirstName: string,
+): string {
   return copy[locale].body(buyerFirstName).replace(/\.$/, "");
 }
 
@@ -57,12 +77,15 @@ export function formatTripDates(
 ): string | null {
   const first = start ?? end;
   if (!first) return null;
-  const formatter = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-AR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const formatter = new Intl.DateTimeFormat(
+    locale === "en" ? "en-US" : "es-AR",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC",
+    },
+  );
   return formatter.formatRange(first, end ?? first);
 }
 
@@ -84,6 +107,7 @@ export default function TravelerInvite({
   startDate,
   endDate,
   tripType,
+  share,
 }: TravelerInviteProps) {
   const c = copy[locale];
   const dates = formatTripDates(startDate, endDate, locale);
@@ -103,6 +127,15 @@ export default function TravelerInvite({
           <strong>{c.typeLabel}:</strong> {type}
         </Text>
       )}
+      {share && (
+        <>
+          <Text style={detailText}>
+            <strong>{c.shareLabel}:</strong> {share.amount}
+          </Text>
+          <Text style={bodyText}>{c.shareDeadline(share.deadline)}</Text>
+          <Text style={bodyText}>{c.shareAdjust(share.maxTopUp)}</Text>
+        </>
+      )}
       <Text style={bodyText}>{c.account}</Text>
       <Text style={subtextStyle}>{c.subtext}</Text>
       <Button href={inviteUrl} style={ctaButton}>
@@ -118,14 +151,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -141,7 +174,7 @@ const detailText: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -152,8 +185,8 @@ const subtextStyle: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

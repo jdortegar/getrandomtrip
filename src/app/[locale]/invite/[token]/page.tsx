@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/i18n/dictionaries";
 import {
   getProfileTravelDocuments,
   peekTravelerInvite,
+  inviteeHasAccount,
 } from "@/lib/travelers/travelerInviteTokens";
 import Navbar from "@/components/Navbar";
 import TravelerInviteClient, {
@@ -64,6 +65,11 @@ export default async function TravelerInvitePage({ params }: Props) {
           visasLocked: false,
         };
       }
+      // Signed out: offer "sign in" when the invited address already has an
+      // account. Best effort — the sign-up flow still lets them log in.
+      const hasAccount = session?.user
+        ? false
+        : await inviteeHasAccount(peek.travelerId).catch(() => false);
       resolution = {
         ok: true,
         buyerFirstName: peek.buyerFirstName,
@@ -71,6 +77,7 @@ export default async function TravelerInvitePage({ params }: Props) {
         invitedEmail: peek.invitedEmail,
         maskedEmail: peek.maskedEmail,
         emailMismatch: peek.viewerEmailMatches === false,
+        inviteeHasAccount: hasAccount,
         travelDocuments,
       };
     } else {

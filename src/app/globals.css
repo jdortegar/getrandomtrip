@@ -158,11 +158,25 @@ html.lenis {
   --spacing-team-card: 1.25rem;
   --spacing-team-card-roomy: 1.5rem;
 
+  /* Palette tier — Brand Book 3.1 colors, named after the brand. The hex
+     values live only here; UI code uses the role tokens below, except for
+     the three roleless colors (deep-teal-dark, sage-dark, sky-drift). */
+  --color-deep-teal: #0f5c60;
+  --color-mineral-sage: #a4b4aa;
+  --color-ochre: #e5a51c;
+  --color-off-white: #f3f2ed;
+  --color-canyon-clay: #d97e4a;
+  /* Text over light images only. */
+  --color-deep-teal-dark: #082e30;
+  --color-sage-dark: #4d5e54;
+  /* Secondary palette reference; no UI role yet. */
+  --color-sky-drift: #6baac9;
+
   /* Ink — text / near-black */
   --color-ink: #383838;
 
   /* Feature brand color — Ochre */
-  --color-feature: #e5a51c;
+  --color-feature: var(--color-ochre);
   --color-feature-foreground: #1f2937;
 
   /* shadcn's generic "accent" hover token (ghost buttons, dialog close,
@@ -174,10 +188,10 @@ html.lenis {
 
   /* Ground — Off-White. Page background / table header rows only, not
      card surfaces (Surface stays white). */
-  --color-ground: #f3f2ed;
+  --color-ground: var(--color-off-white);
 
   /* Secondary brand color — Mineral Sage */
-  --color-secondary: #a4b4aa;
+  --color-secondary: var(--color-mineral-sage);
   --color-secondary-foreground: #111827;
   --color-secondary-50: #f3f6f4;
   --color-secondary-100: #e4eae6;
@@ -192,7 +206,7 @@ html.lenis {
   --color-secondary-950: #121815;
 
   /* Primary brand color — Deep Teal */
-  --color-primary: #0f5c60;
+  --color-primary: var(--color-deep-teal);
   --color-primary-foreground: #ffffff;
   --color-primary-50: #eaf4f4;
   --color-primary-100: #d2e7e7;
@@ -206,7 +220,8 @@ html.lenis {
   --color-primary-900: #073536;
   --color-primary-950: #042121;
 
-  --color-xsed: #d97e4a;
+  /* XSED sub-brand accent — Canyon Clay, reserved for the XSED line. */
+  --color-xsed: var(--color-canyon-clay);
   --color-xsed-50: #fef2f2;
   --color-xsed-100: #fee2e2;
   --color-xsed-200: #fecaca;

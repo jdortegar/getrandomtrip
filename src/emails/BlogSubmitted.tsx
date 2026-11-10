@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface BlogSubmittedProps {
   blogTitle: string;
   blogId: string;
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   preview: (title: string) =>
@@ -31,7 +30,7 @@ export default function BlogSubmitted({
   blogTitle,
   blogId,
 }: BlogSubmittedProps) {
-  const reviewUrl = `${BASE_URL}/es/dashboard/admin/blog/${blogId}`;
+  const reviewUrl = `${getApplicationOrigin()}/es/dashboard/admin/blog/${blogId}`;
 
   return (
     <EmailLayout locale="es" preview={copy.preview(blogTitle)}>
@@ -63,14 +62,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "38px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -92,13 +91,13 @@ const detailPanel: React.CSSProperties = {
 const detailRow: React.CSSProperties = {
   margin: "0 0 8px",
   fontSize: "13px",
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
 };
 
 const detailLabel: React.CSSProperties = {
   fontWeight: "700",
-  color: "#111827",
+  color: "#383838", // Ink
 };
 
 const detailValue: React.CSSProperties = {
@@ -106,7 +105,7 @@ const detailValue: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -117,8 +116,8 @@ const subtextStyle: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

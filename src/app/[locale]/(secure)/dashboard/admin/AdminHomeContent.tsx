@@ -91,7 +91,7 @@ export function AdminHomeContent({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.heading}
         </h2>
       </div>
@@ -115,7 +115,7 @@ export function AdminHomeContent({
               </div>
               <div className="flex items-stretch gap-3">
                 <div className="w-1 shrink-0 self-stretch rounded-full bg-feature" />
-                <span className="font-barlow-condensed text-5xl font-extrabold leading-[.9] text-ink">
+                <span className="font-barlow-condensed text-5xl font-bold leading-[.9] text-ink">
                   {card.value}
                 </span>
               </div>
@@ -129,7 +129,7 @@ export function AdminHomeContent({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.pending.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.pending.heading}
         </h2>
       </div>

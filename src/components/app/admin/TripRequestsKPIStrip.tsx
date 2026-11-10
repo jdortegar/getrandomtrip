@@ -39,7 +39,7 @@ export function TripRequestsKPIStrip({
           <dt className="break-words font-medium leading-5 text-neutral-600 text-sm">
             {m.label}
           </dt>
-          <dd className="font-barlow-condensed font-extrabold leading-none tabular-nums text-3xl text-ink">
+          <dd className="font-barlow-condensed font-bold leading-none tabular-nums text-3xl text-ink">
             {m.value}
           </dd>
         </div>

@@ -43,6 +43,7 @@ import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
+import { isAwaitingReveal } from "@/lib/utils/trips";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
@@ -324,7 +325,7 @@ function TripDetailsContent() {
               {/* Trip Overview */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
                 <div className="flex items-start justify-between mb-4">
-                  <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+                  <h2 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
                     {copy.detailsTitle}
                   </h2>
                   <StatusBadge
@@ -458,7 +459,7 @@ function TripDetailsContent() {
 
               {/* Filters & Preferences */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+                <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
                   {copy.filtersTitle} ({filterChips.length})
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -502,7 +503,7 @@ function TripDetailsContent() {
               {/* Add-ons */}
               {addonChips.length > 0 && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
                     {copy.addonsTitle} ({addonChips.length})
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -525,7 +526,7 @@ function TripDetailsContent() {
               {/* Customer Review */}
               {trip.customerRating && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+                  <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
                     {copy.reviewTitle}
                   </h3>
                   <div className="flex items-center gap-2 mb-3">
@@ -557,7 +558,7 @@ function TripDetailsContent() {
               {/* Payment Info (never sent to companions) */}
               {!isCompanion && trip.payment && (
                 <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
+                  <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
                     {copy.paymentInfoTitle}
                   </h3>
                   <div className="space-y-3">
@@ -611,7 +612,7 @@ function TripDetailsContent() {
 
               {/* Trip Timeline */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
                   {copy.timelineTitle}
                 </h3>
                 <div className="space-y-4">
@@ -682,7 +683,7 @@ function TripDetailsContent() {
               </div>
               {/* Actions */}
               <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-ink">
+                <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
                   {copy.actionsTitle}
                 </h3>
                 <div className="space-y-3">
@@ -697,7 +698,7 @@ function TripDetailsContent() {
                     </div>
                   )}
 
-                  {(trip.status === "CONFIRMED" ||
+                  {(isAwaitingReveal(trip.status) ||
                     trip.status === "REVEALED" ||
                     trip.status === "COMPLETED") && (
                     <Button
@@ -727,7 +728,7 @@ function TripDetailsContent() {
 
               {/* Trip Info Card */}
               <div className="rounded-2xl bg-secondary/5 p-6 ring-1 ring-secondary/20">
-                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-extrabold uppercase leading-none text-primary">
+                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-bold uppercase leading-none text-primary">
                   <Info className="h-4 w-4" />
                   {copy.tripInfoTitle}
                 </h3>
@@ -747,7 +748,7 @@ function TripDetailsContent() {
                       />
                     </li>
                   )}
-                  {trip.status === "CONFIRMED" && <li>• {copy.confirmedHint}</li>}
+                  {isAwaitingReveal(trip.status) && <li>• {copy.confirmedHint}</li>}
                   {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}
                 </ul>
               </div>

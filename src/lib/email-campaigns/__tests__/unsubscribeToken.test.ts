@@ -88,3 +88,21 @@ describe("unsubscribe links", () => {
     expect(headers["List-Unsubscribe-Post"]).toBe("List-Unsubscribe=One-Click");
   });
 });
+
+it("keeps body and one-click unsubscribe tokens in the issuing preview", () => {
+  const origin = "https://deploy-preview-304--getrandomtrip-1.netlify.app";
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", "getrandomtrip-1");
+  vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", origin);
+  expect(buildUnsubscribeUrl("contact", "en")).toMatch(
+    `${origin}/en/unsubscribe?token=`,
+  );
+  expect(buildUnsubscribePageUrl("es")).toBe(`${origin}/unsubscribe`);
+  expect(buildUnsubscribeHeaders("contact")["List-Unsubscribe"]).toMatch(
+    `<${origin}/api/email/unsubscribe?token=`,
+  );
+  vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", undefined);
+  expect(() => buildUnsubscribeHeaders("contact")).toThrow(
+    "trusted nonproduction",
+  );
+});

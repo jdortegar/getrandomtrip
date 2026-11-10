@@ -19,7 +19,10 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 vi.mock("@/lib/helpers/sendMail", () => ({ sendMail: vi.fn() }));
-vi.mock("@/lib/deployment", () => ({ isProductionDeployment: vi.fn() }));
+vi.mock("@/lib/deployment", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/deployment")>()),
+  isProductionDeployment: vi.fn(),
+}));
 vi.mock("../promo", async (importOriginal) => {
   const original = await importOriginal<typeof import("../promo")>();
   return { ...original, lookupPromotionCode: vi.fn() };

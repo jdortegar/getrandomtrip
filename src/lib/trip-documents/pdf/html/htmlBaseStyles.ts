@@ -5,7 +5,7 @@ export const htmlBaseStyles = `
 *{box-sizing:border-box}
 html,body{margin:0;
   padding:0}
-body{font-family:Arimo,sans-serif;
+body{font-family:Barlow,sans-serif;
   color:var(--ink);
   font-size:14px;
   line-height:1.45;

@@ -60,7 +60,7 @@ export function TravelerReviewsPageClient({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.title}
         </h2>
         <p className="mt-2 text-sm text-neutral-600">{copy.description}</p>
@@ -71,7 +71,7 @@ export function TravelerReviewsPageClient({
           <p className="text-xs font-semibold uppercase tracking-wide text-ink">
             {copy.kpis.totalReviewed}
           </p>
-          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-ink">
+          <p className="mt-2 font-barlow-condensed text-3xl font-bold text-ink">
             {completedWithToken.filter((t) => t.reviewSubmittedAt).length}
           </p>
         </div>
@@ -79,7 +79,7 @@ export function TravelerReviewsPageClient({
           <p className="text-xs font-semibold uppercase tracking-wide text-ink">
             {copy.kpis.averageRating}
           </p>
-          <p className="mt-2 font-barlow-condensed text-3xl font-extrabold text-ink">
+          <p className="mt-2 font-barlow-condensed text-3xl font-bold text-ink">
             {pendingCount > 0 ? pendingCount : "—"}
           </p>
         </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { GalleryPanel } from "@/components/app/design-system/GalleryPanel";
 import { UsageExample } from "@/components/app/design-system/UsageExample";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
@@ -27,10 +28,7 @@ export function ButtonExamples({ copy }: ButtonExamplesProps) {
   return (
     <>
       <div className={cn("gap-6 grid", "lg:grid-cols-2")}>
-        <div className="bg-white border border-gray-200 p-6 rounded-xl">
-          <h3 className="font-semibold mb-5 text-xl">
-            {copy.buttons.variants}
-          </h3>
+        <GalleryPanel title={copy.buttons.variants}>
           <div className="flex flex-wrap gap-4 items-center">
             {variants.map((variant) => (
               <Button
@@ -43,9 +41,11 @@ export function ButtonExamples({ copy }: ButtonExamplesProps) {
               </Button>
             ))}
           </div>
-        </div>
-        <div className="bg-accent border border-gray-200 p-6 rounded-xl">
-          <h3 className="font-semibold mb-5 text-xl">{copy.buttons.sizes}</h3>
+        </GalleryPanel>
+        <GalleryPanel
+          className="bg-accent"
+          title={copy.buttons.sizes}
+        >
           <div className="flex flex-wrap gap-4 items-center">
             {sizes.map((size) => (
               <Button
@@ -58,22 +58,24 @@ export function ButtonExamples({ copy }: ButtonExamplesProps) {
               </Button>
             ))}
           </div>
+        </GalleryPanel>
+      </div>
+      <GalleryPanel className="mt-6">
+        <div className="flex flex-wrap gap-5 items-center">
+          <Button disabled type="button">
+            {copy.buttons.disabled}
+          </Button>
+          <Button asChild variant="link">
+            <a href="#controls">
+              {copy.buttons.navigation}
+              <ArrowUpRight aria-hidden className="h-4 w-4" />
+            </a>
+          </Button>
         </div>
-      </div>
-      <div className="flex flex-wrap gap-5 items-center mt-6">
-        <Button disabled type="button">
-          {copy.buttons.disabled}
-        </Button>
-        <Button asChild variant="link">
-          <a href="#controls">
-            {copy.buttons.navigation}
-            <ArrowUpRight aria-hidden className="h-4 w-4" />
-          </a>
-        </Button>
-      </div>
-      <p className="min-h-6 mt-4 text-primary text-sm" role="status">
-        {feedback || copy.buttons.hint}
-      </p>
+        <p className="min-h-6 mt-4 text-primary text-sm" role="status">
+          {feedback || copy.buttons.hint}
+        </p>
+      </GalleryPanel>
       <UsageExample
         code={`<Button onClick={handleAction} variant="default">{copy.action}</Button>
 <Button disabled>{copy.unavailable}</Button>

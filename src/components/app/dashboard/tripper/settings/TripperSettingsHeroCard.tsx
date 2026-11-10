@@ -263,7 +263,7 @@ export function TripperSettingsHeroCard({
               {isEditing ? (
                 <>
                   <input
-                    className="w-full max-w-xs border-b-2 border-white/40 bg-transparent text-center font-barlow-condensed text-3xl font-extrabold uppercase text-white outline-none placeholder:text-white/50 focus:border-white md:text-left"
+                    className="w-full max-w-xs border-b-2 border-white/40 bg-transparent text-center font-barlow-condensed text-3xl font-bold uppercase text-white outline-none placeholder:text-white/50 focus:border-white md:text-left"
                     onChange={(e) =>
                       onChange({ ...formData, nickname: e.target.value })
                     }
@@ -274,7 +274,7 @@ export function TripperSettingsHeroCard({
                   <p className="text-xs text-white/70">{copy.nicknameHint}</p>
                 </>
               ) : (
-                <h2 className="font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-white">
+                <h2 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-white">
                   {formData.nickname || formData.name || copy.nameFallback}
                 </h2>
               )}
@@ -306,7 +306,7 @@ export function TripperSettingsHeroCard({
           <div className="flex w-full justify-around gap-4 md:hidden">
             {statCells.map(({ key, label, value }) => (
               <div className="text-white" key={key}>
-                <p className="flex items-center justify-center gap-1 font-barlow-condensed text-3xl font-extrabold leading-none">
+                <p className="flex items-center justify-center gap-1 font-barlow-condensed text-3xl font-bold leading-none">
                   {value}
                   {key === "rating" && (
                     <Star className="h-5 w-5 fill-white text-white" />
@@ -325,7 +325,7 @@ export function TripperSettingsHeroCard({
                 <p className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
                   {label}
                 </p>
-                <p className="font-barlow-condensed text-3xl font-extrabold leading-none">
+                <p className="font-barlow-condensed text-3xl font-bold leading-none">
                   {value}
                 </p>
                 {sub && <p className="mt-0.5 text-xs text-white/60">{sub}</p>}

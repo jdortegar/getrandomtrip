@@ -27,8 +27,8 @@ export default function TravelerDetailsReminder({
       <Button
         href={dashboardUrl}
         style={{
-          backgroundColor: "#facc15",
-          color: "#1f2937",
+          backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+          color: "#383838", // Ink
           padding: "16px 32px",
           borderRadius: "2px",
         }}

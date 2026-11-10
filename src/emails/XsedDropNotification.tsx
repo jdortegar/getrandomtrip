@@ -27,7 +27,8 @@ const copy = {
     body: "Spots go fast. This Sunday from 18:00 to 22:00 you can book your XSED — 1 night, surprise destination, local experience.",
     cta: "GO TO THE DROP",
     href: `${SITE_URL}/en/xsed`,
-    unsubscribeIntro: "You received this email because you signed up for XSED notifications.",
+    unsubscribeIntro:
+      "You received this email because you signed up for XSED notifications.",
     unsubscribeLabel: "Unsubscribe",
   },
 };
@@ -78,14 +79,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "36px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 20px",
   lineHeight: "1.05",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "15px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -111,7 +112,7 @@ const ctaButton: React.CSSProperties = {
 };
 
 const unsubscribeText: React.CSSProperties = {
-  color: "#999999",
+  color: "#383838", // Ink
   fontSize: "12px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -121,6 +122,6 @@ const unsubscribeText: React.CSSProperties = {
 };
 
 const unsubscribeLink: React.CSSProperties = {
-  color: "#999999",
+  color: "#0F5C60", // Deep Teal (brand primary)
   textDecoration: "underline",
 };

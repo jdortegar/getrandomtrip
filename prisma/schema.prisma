@@ -108,6 +108,7 @@ model User {
   referredTravelers       User[]               @relation("ReferredBy")
   ownedExperiences        Experience[]         @relation("OwnedExperiences")
   payments                Payment[]
+  paymentShares           PaymentShare[]
   reviews                 Review[]
   tripperReviews          Review[]             @relation("TripperReviews")
   likedExperiences        ExperienceLike[]
@@ -174,6 +175,11 @@ model TripRequest {
 
   // Tripper Attribution
   tripperId String? // Tripper who attributed this request (set at creation via ?tripper=slug)
+
+  // Split payments: INDIVIDUAL = each adult pays a PaymentShare against the single Payment
+  paymentMode     PaymentMode @default(TOTAL)
+  paymentDeadline DateTime? // Invitees must pay their share by this time; unpaid ones are dropped
+  topUpDeadline   DateTime? // Grace end for TOP_UP shares; leftovers become ORGANIZER_REMAINDER
 
   // Completed trip data (optional - populated after trip completion)
   actualDestination     String? // Revealed destination
@@ -514,7 +520,7 @@ model Payment {
   provider                String // 'stripe'
   providerPaymentId       String? // Stripe PaymentIntent ID
   stripePaymentIntentId   String? @unique // Stripe PaymentIntent ID for fast webhook lookup
-  providerMerchantOrderId String? // MP merchant order ID (legacy, kept for historical rows)
+  providerMerchantOrderId String? // Legacy provider order ID (kept for historical rows)
   providerSessionId       String? // Session/token for provider
 
   // Payment Details
@@ -532,7 +538,7 @@ model Payment {
 
   // Payment Status & Flow
   status        PaymentStatus @default(PENDING)
-  statusDetail  String? // MP status detail (e.g., 'accredited', 'pending_waiting_payment')
+  statusDetail  String? // Provider status detail (e.g., Stripe PaymentIntent status)
   failureReason String? // Reason if payment failed
 
   // Financial Tracking
@@ -546,7 +552,7 @@ model Payment {
   chargebackAmount Float     @default(0)
   chargebackAt     DateTime?
 
-  // Provider Response Data (MP payment resource + optional `mpCheckoutReturn` / `mpCheckoutReturnAt` from redirect)
+  // Provider Response Data (Stripe PaymentIntent / webhook payload)
   providerResponse Json? // Full provider response
   webhookData      Json? // Webhook payload data
 
@@ -563,8 +569,42 @@ model Payment {
   /// from PaymentIntent metadata `discountAmountUsd`. Null when unknown or no discount.
   promoDiscountUsd      Float?
 
+  shares PaymentShare[] // INDIVIDUAL mode charges against this trip bill
+
   @@index([stripePromotionCodeId])
   @@map("payments")
+}
+
+/// One charge against a trip's Payment when the trip is paid individually.
+model PaymentShare {
+  id String @id @default(cuid())
+
+  paymentId  String
+  payment    Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  // Companion row this share belongs to; null = the organizer's own share
+  travelerId String?
+  traveler   TripTraveler? @relation(fields: [travelerId], references: [id], onDelete: SetNull)
+  // Account that paid; null until an invitee pays
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  kind     PaymentShareKind @default(SHARE)
+  amount   Float // Amount due for this share, in `currency`
+  currency String // Copied from the parent Payment
+
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  failureReason         String?
+  paidAt                DateTime?
+  reminderSentAt        DateTime? // TOP_UP reminder before the grace period ends: provider accepted
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([paymentId])
+  @@index([travelerId])
+  @@index([status])
+  @@map("payment_shares")
 }
 
 /// Durable first-payment notification snapshot; intentionally survives source deletion.
@@ -632,7 +672,8 @@ model TripTraveler {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tripRequest TripRequest @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  tripRequest   TripRequest    @relation(fields: [tripRequestId], references: [id], onDelete: Cascade)
+  paymentShares PaymentShare[]
 
   @@index([tripRequestId])
   @@index([status])
@@ -795,10 +836,22 @@ enum TripRequestStatus {
   DRAFT
   SAVED
   PENDING_PAYMENT
+  COLLECTING // INDIVIDUAL mode: organizer paid, invitees paying until paymentDeadline
   CONFIRMED
   REVEALED
   COMPLETED
   CANCELLED
+}
+
+enum PaymentMode {
+  TOTAL // One payment covers the whole trip
+  INDIVIDUAL // Each adult pays their own PaymentShare
+}
+
+enum PaymentShareKind {
+  SHARE // Traveler's initial share
+  TOP_UP // Re-split per-trip add-ons after drop-outs
+  ORGANIZER_REMAINDER // Unpaid top-ups the organizer covers in one payment
 }
 
 enum TripContactStatus {
@@ -1145,4 +1198,87 @@ model EmailEvent {
 
   @@index([sendId, type])
   @@map("email_events")
+}
+
+// Slack reviews of English drafts for @getrandomtrip.en. imageUrl is the first
+// slide (kept for single-image reviews); imageUrls holds every slide in order.
+model SocialApproval {
+  id          String             @id @default(cuid())
+  reviewKey   String
+  revision    Int
+  requestId   String             @unique
+  caption     String
+  imageUrl    String
+  imageUrls   String[]           @default([])
+  sourceId    String?
+  source      SocialSource?      @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  status      String             @default("POSTING")
+  messageTs   String?
+  decidedBy   String?
+  decidedAt   DateTime?
+  createdBy   String
+  createdAt   DateTime           @default(now())
+  decision    String?
+  copyLocks   Json?
+  revisionJob SocialRevisionJob?
+
+  @@unique([reviewKey, revision])
+  @@map("social_approvals")
+}
+
+// Durable bounded work. kind TRANSLATE (from a source post), REVISE (feedback on a
+// review) or PUBLISH (an approved review). At most one job per review and per source.
+model SocialRevisionJob {
+  id                 String          @id @default(cuid())
+  kind               String          @default("REVISE")
+  reviewId           String?         @unique
+  review             SocialApproval? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
+  sourceId           String?         @unique
+  source             SocialSource?   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  actor              String
+  feedback           String
+  target             String
+  /// 1-based slide numbers targeted by an artwork revision; empty means every slide.
+  slides             Int[]           @default([])
+  status             String          @default("QUEUED")
+  leaseToken         String?
+  leaseUntil         DateTime?
+  attempts           Int             @default(0)
+  generatedCaption   String?
+  generatedImageUrl  String?
+  generatedImageUrls String[]        @default([])
+  /// TRANSLATE only: { slides: [{ replacements: [{ from, to }] }], notes: [] }
+  /// from the paid transcreation, reused when a claim resumes.
+  transcreation      Json?
+  newReviewId        String?
+  publishedMediaId   String?
+  /// Set immediately before media_publish. A PUBLISH job without it never
+  /// reached Instagram's publish call, so it is safe to retry.
+  publishAttemptedAt DateTime?
+  publishedPermalink String?
+  errorCode          String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([status, createdAt])
+  @@map("social_revision_jobs")
+}
+
+// A Spanish @getrandomtrip.es post announced in Slack, at most once per Instagram media id.
+model SocialSource {
+  accountUsername String @default("getrandomtrip.es")
+  copyLocks Json?
+  id        String             @id @default(cuid())
+  igMediaId String             @unique
+  permalink String
+  caption   String
+  mediaType String
+  postedAt  DateTime
+  status    String             @default("ANNOUNCING")
+  messageTs String?
+  createdAt DateTime           @default(now())
+  reviews   SocialApproval[]
+  job       SocialRevisionJob?
+
+  @@map("social_sources")
 }

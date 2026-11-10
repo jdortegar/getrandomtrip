@@ -21,7 +21,7 @@ const KINDS: readonly InstagramMediaKind[] = ["REELS", "FEED", "STORY", "AD"];
  * Errors are deliberately generic: the token travels in the query string, so
  * URLs and upstream bodies are never logged or rethrown.
  */
-async function graphGet<T>(
+export async function graphGet<T>(
   path: string,
   params: Record<string, string>,
   token: string,

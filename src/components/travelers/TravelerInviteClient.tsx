@@ -32,6 +32,8 @@ export type TravelerInviteResolution =
       maskedEmail?: string | null;
       /** Server-detected: the signed-in account's email differs from the invite. */
       emailMismatch?: boolean;
+      /** Signed-out viewer only: an account already uses the invited address. */
+      inviteeHasAccount?: boolean;
       /**
        * The row's nationalities and visas (or the invitee's profile when the row
        * has none), only for the invited viewer. `null`/absent: the client loads
@@ -69,6 +71,7 @@ export default function TravelerInviteClient({
       copy={copy}
       idDocumentRequired={resolution.idDocumentRequired ?? true}
       initialMismatch={resolution.emailMismatch ?? false}
+      hasAccount={resolution.inviteeHasAccount ?? false}
       invitedEmail={resolution.invitedEmail ?? null}
       locale={locale}
       maskedEmail={resolution.maskedEmail ?? null}
@@ -105,7 +108,7 @@ function ErrorCard({
   return (
     <CardShell>
       <XCircle aria-hidden className="mx-auto mb-4 h-10 w-10 text-red-600" />
-      <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
+      <h1 className="font-barlow-condensed text-2xl font-bold uppercase text-ink">
         {copy.landingErrorTitle}
       </h1>
       <p className="mt-2 text-sm text-neutral-600">{reasonCopy[reason]}</p>
@@ -117,6 +120,7 @@ function InviteForm({
   authCopy,
   buyerFirstName,
   copy,
+  hasAccount,
   idDocumentRequired,
   initialMismatch,
   invitedEmail,
@@ -127,6 +131,7 @@ function InviteForm({
 }: {
   authCopy: Pick<Dictionary, "auth">;
   buyerFirstName: string;
+  hasAccount: boolean;
   idDocumentRequired: boolean;
   copy: InviteTravelersDict;
   initialMismatch: boolean;
@@ -322,6 +327,11 @@ function InviteForm({
       }
 
       setState("success");
+      // A companion of an individually paid trip still owes their share.
+      if (typeof data.shareDue?.travelerId === "string") {
+        router.push(`/${locale}/checkout/share/${encodeURIComponent(data.shareDue.travelerId)}`);
+        return;
+      }
       redirectTimer.current = setTimeout(() => {
         router.push(`/${locale}/dashboard`);
       }, 1500);
@@ -338,7 +348,7 @@ function InviteForm({
           aria-hidden
           className="mx-auto mb-4 h-10 w-10 text-green-600"
         />
-        <h1 className="font-barlow-condensed text-2xl font-extrabold uppercase text-ink">
+        <h1 className="font-barlow-condensed text-2xl font-bold uppercase text-ink">
           {copy.landingSuccessTitle}
         </h1>
         <p className="mt-2 text-sm text-neutral-600">
@@ -357,7 +367,7 @@ function InviteForm({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           {copy.landingEyebrow}
         </p>
-        <h1 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+        <h1 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
           {copy.landingHeading}
         </h1>
         <p className="mt-4 text-left text-sm text-neutral-600">
@@ -438,7 +448,7 @@ function InviteForm({
         ) : !authenticated ? (
           <div className="mt-6 text-left">
             <p className="text-sm text-neutral-600">
-              {copy.landingSignupExplainer}
+              {hasAccount ? copy.landingLoginExplainer : copy.landingSignupExplainer}
             </p>
             {maskedEmail && (
               <p className="mt-3 text-sm font-medium text-ink">
@@ -451,12 +461,12 @@ function InviteForm({
               size="lg"
               type="button"
             >
-              {copy.landingSignupCta}
+              {hasAccount ? copy.landingLoginCta : copy.landingSignupCta}
             </Button>
           </div>
         ) : (
           <form className="mt-6 space-y-5 text-left" onSubmit={handleSubmit}>
-            <h2 className="font-barlow-condensed text-xl font-extrabold uppercase text-ink">
+            <h2 className="font-barlow-condensed text-xl font-bold uppercase text-ink">
               {copy.landingStep2Heading}
             </h2>
             {idDocumentRequired && <FormField
@@ -489,7 +499,7 @@ function InviteForm({
               />
               <span>
                 {copy.landingConsentPrefix}
-                <Link className="text-secondary underline" href={privacyHref}>
+                <Link className="text-primary underline transition-colors hover:text-primary/80" href={privacyHref}>
                   {copy.landingConsentLinkLabel}
                 </Link>
                 {copy.landingConsentSuffix}
@@ -512,7 +522,7 @@ function InviteForm({
 
       <AuthModal
         allowRegister
-        defaultMode="register"
+        defaultMode={hasAccount ? "login" : "register"}
         dict={authCopy}
         inviteReturnPath={token ? inviteReturnPath(locale, token) : undefined}
         isOpen={authOpen}

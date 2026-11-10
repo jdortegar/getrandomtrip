@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
 import EmailLayout from "./components/EmailLayout";
@@ -7,8 +8,6 @@ interface TripCancelledProps {
   tripRequestId: string;
   locale: "es" | "en";
 }
-
-const BASE_URL = "https://getrandomtrip.com";
 
 const copy = {
   es: {
@@ -36,12 +35,9 @@ export const subjects = {
   en: "Your trip has been cancelled",
 };
 
-export default function TripCancelled({
-  client,
-  locale,
-}: TripCancelledProps) {
+export default function TripCancelled({ client, locale }: TripCancelledProps) {
   const c = copy[locale];
-  const ctaHref = `${BASE_URL}/${locale}/contact`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/contact`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
@@ -61,14 +57,14 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "14px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -79,7 +75,7 @@ const bodyText: React.CSSProperties = {
 };
 
 const subtextStyle: React.CSSProperties = {
-  color: "#888",
+  color: "#383838", // Ink
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -90,8 +86,8 @@ const subtextStyle: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#facc15",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",

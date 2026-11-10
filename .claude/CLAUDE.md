@@ -36,6 +36,8 @@ All user-facing routes live under `src/app/[locale]/` (i18n prefix: `es` or `en`
 | `/journey/*`                 | Trip booking flow                        |
 | `/experiences/*`             | Experience / package discovery flow      |
 | `/blog`                      | Blog listing / articles                  |
+| `/design-system`             | Brand Book gallery (noindex)             |
+| `/design-system/components`  | UI component gallery (noindex)           |
 
 API routes live under `src/app/api/` and are not locale-prefixed.
 
@@ -66,7 +68,7 @@ Schema at `prisma/schema.prisma`. Core models:
 - **User** — all roles; Trippers have `tripperSlug`, `commission`, `destinations`, etc.
 - **TripRequest** — client trip with `status` flow: `DRAFT → SAVED → PENDING_PAYMENT → CONFIRMED → REVEALED → COMPLETED`
 - **Package** — tripper-created content matched to TripRequests
-- **Payment** — MercadoPago/Stripe payment records
+- **Payment** — Stripe payment records
 - **BlogPost** — tripper-authored content
 - **Review**, **PackageLike**, **WaitlistEntry**
 
@@ -95,7 +97,7 @@ NEXTAUTH_URL              # http://localhost:3010
 NEXTAUTH_SECRET           # Any random secret
 GOOGLE_CLIENT_ID/SECRET   # Google OAuth
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-MERCADOPAGO_TEST_ACCESS_TOKEN / TEST_PUBLIC_KEY
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY / STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET
 ```
 
 ---

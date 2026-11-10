@@ -26,6 +26,18 @@ export async function runPass2(now: Date): Promise<Pass2Result> {
         lte: new Date(now.getTime() + REVEAL_LEAD_MS + ZONE_QUERY_MARGIN_MS),
       },
       experienceId: { not: null },
+      // Individually paid trips reveal only once every top-up is paid during
+      // the grace period (`topUpDeadline` set) and, after it, once the
+      // organizer's remainder is paid. Folded top-ups no longer block.
+      NOT: {
+        OR: [
+          { payment: { shares: { some: { kind: "ORGANIZER_REMAINDER", status: { not: "APPROVED" } } } } },
+          {
+            topUpDeadline: { not: null },
+            payment: { shares: { some: { kind: "TOP_UP", status: { not: "APPROVED" } } } },
+          },
+        ],
+      },
     },
     select: {
       id: true,

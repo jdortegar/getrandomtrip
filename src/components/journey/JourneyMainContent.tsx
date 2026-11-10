@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { trackCustomEvent } from "@/lib/helpers/tracking/gtm";
 import { trackProductSelection, useProductView } from "@/lib/hooks/useCommerceTracking";
-import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import BudgetStep from "@/components/journey/BudgetStep";
@@ -53,7 +53,7 @@ import {
 import { useJourneyDraftPreferences } from "@/hooks/useJourneyDraftPreferences";
 import { useJourneySearchParams } from "@/hooks/useJourneySearchParams";
 import { useDictionary } from "@/hooks/useDictionary";
-import { useQuerySync } from "@/hooks/useQuerySync";
+import { useOptimisticQuerySync } from "@/hooks/useQuerySync";
 import { useStore } from "@/store/store";
 import { useJourneyAutoExcuse } from "@/hooks/useJourneyAutoExcuse";
 import { useUserStore } from "@/store/slices/userStore";
@@ -193,14 +193,15 @@ export default function JourneyMainContent({
   const invalidDatesCopy = useDictionary((dict) => dict.journey.checkout.errors.invalidDates);
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // Optimistic: a card click shows as selected at once while router.replace
+  // re-renders the server page in the background (see useOptimisticQuerySync).
+  const { searchParams, updateQuery } = useOptimisticQuerySync();
   const locale = (params?.locale as string) ?? "es";
   const { data: session, status: sessionStatus } = useSession();
   const [isSavingAndRedirecting, setIsSavingAndRedirecting] = useState(false);
   // Mobile puts the action bar after JourneySummary (a DOM sibling this
   // component can't reach by nesting), so it's portaled into a target slot
   // JourneyPageClient renders there; the in-flow copy below stays desktop-only.
-  const updateQuery = useQuerySync();
   const { filters, setPartial } = useStore();
 
   const url = useJourneySearchParams(searchParams);

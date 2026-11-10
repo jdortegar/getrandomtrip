@@ -85,8 +85,6 @@ it("explicitly traces local fonts/license/logo for five preview routes and persi
   for (const route of routes) {
     expect(traces[`/api/admin/trip-requests/*/${route}`]).toEqual([
       "./public/assets/pdf/**",
-      "./public/assets/fonts/arimo/**",
-      "./public/assets/fonts/inter/**",
       "./node_modules/@sparticuz/chromium/bin/**",
       "./public/assets/fonts/barlow/Barlow-Regular.ttf",
       "./public/assets/fonts/barlow/Barlow-Bold.ttf",

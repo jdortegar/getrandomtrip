@@ -110,3 +110,6 @@ export interface TripperFilterOption {
   name: string;
   slug: string;
 }
+
+/** Posts per page on the public blog index (server first page and "load more"). */
+export const BLOG_INDEX_PAGE_SIZE = 12;

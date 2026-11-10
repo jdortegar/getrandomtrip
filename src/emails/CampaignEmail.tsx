@@ -1,4 +1,11 @@
-import { Button, Heading, Hr, Link, Section, Text } from "@react-email/components";
+import {
+  Button,
+  Heading,
+  Hr,
+  Link,
+  Section,
+  Text,
+} from "@react-email/components";
 import * as React from "react";
 
 import {
@@ -30,7 +37,8 @@ const copy = {
   en: {
     promoLabel: "Your code",
     validUntil: (date: string) => `Valid until ${date}`,
-    footer: "You're receiving this email because you joined the Randomtrip list.",
+    footer:
+      "You're receiving this email because you joined the Randomtrip list.",
     unsubscribe: "Unsubscribe",
   },
 };
@@ -149,7 +157,7 @@ const heading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "42px",
   fontWeight: "800",
-  color: "#111827",
+  color: "#383838", // Ink
   margin: "0 0 24px",
   lineHeight: "1",
   textTransform: "uppercase",
@@ -162,7 +170,7 @@ const bodySection: React.CSSProperties = {
 };
 
 const bodyText: React.CSSProperties = {
-  color: "#5A5858",
+  color: "#383838", // Ink
   fontSize: "15px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -181,7 +189,7 @@ const listItem: React.CSSProperties = {
 };
 
 const inlineLink: React.CSSProperties = {
-  color: "#0F5C60",
+  color: "#0F5C60", // Deep Teal (brand primary),
   textDecoration: "underline",
 };
 
@@ -207,7 +215,7 @@ const promoLabel: React.CSSProperties = {
 
 const promoCode: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  color: "#111827",
+  color: "#383838", // Ink
   fontSize: "36px",
   fontWeight: "800",
   letterSpacing: "4px",
@@ -217,7 +225,7 @@ const promoCode: React.CSSProperties = {
 
 const promoDiscount: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#383838",
+  color: "#383838", // Ink
   fontSize: "15px",
   fontWeight: "700",
   margin: "0",
@@ -226,7 +234,7 @@ const promoDiscount: React.CSSProperties = {
 
 const promoExpiry: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
+  color: "#383838", // Ink
   fontSize: "13px",
   margin: "4px 0 0",
   lineHeight: "1.5",
@@ -238,8 +246,8 @@ const ctaSection: React.CSSProperties = {
 };
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C",
-  color: "#1f2937",
+  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
+  color: "#383838", // Ink
   fontFamily: "'Barlow', Arial, sans-serif",
   fontSize: "12px",
   fontWeight: "600",
@@ -259,7 +267,7 @@ const divider: React.CSSProperties = {
 
 const footerText: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
+  color: "#383838", // Ink
   fontSize: "12px",
   margin: "0",
   lineHeight: "1.6",
@@ -267,6 +275,6 @@ const footerText: React.CSSProperties = {
 };
 
 const unsubscribeLink: React.CSSProperties = {
-  color: "#626262",
+  color: "#0F5C60", // Deep Teal (brand primary)
   textDecoration: "underline",
 };

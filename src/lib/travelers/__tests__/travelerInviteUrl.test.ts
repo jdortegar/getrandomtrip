@@ -7,7 +7,10 @@ import {
 
 afterEach(() => vi.unstubAllEnvs());
 
-function stubNonproduction(origin: string | undefined, site = "getrandomtrip-1") {
+function stubNonproduction(
+  origin: string | undefined,
+  site = "getrandomtrip-1",
+) {
   vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
   vi.stubEnv("NEXT_PUBLIC_RT_SITE_NAME", site);
   vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", origin);
@@ -16,21 +19,26 @@ function stubNonproduction(origin: string | undefined, site = "getrandomtrip-1")
 describe("getInviteOrigin", () => {
   it("is the production site in production, ignoring any public origin", () => {
     vi.stubEnv("RT_DEPLOY_ENV", "production");
-    vi.stubEnv("NEXT_PUBLIC_RT_PUBLIC_ORIGIN", "https://develop--getrandomtrip-1.netlify.app");
+    vi.stubEnv(
+      "NEXT_PUBLIC_RT_PUBLIC_ORIGIN",
+      "https://develop--getrandomtrip-1.netlify.app",
+    );
     expect(getInviteOrigin()).toBe("https://getrandomtrip.com");
     expect(PRODUCTION_ORIGIN).toBe("https://getrandomtrip.com");
   });
 
   it("is the deploy origin in nonproduction", () => {
     stubNonproduction("https://develop--getrandomtrip-1.netlify.app");
-    expect(getInviteOrigin()).toBe("https://develop--getrandomtrip-1.netlify.app");
+    expect(getInviteOrigin()).toBe(
+      "https://develop--getrandomtrip-1.netlify.app",
+    );
   });
 
-  it("falls back to the production site only when no valid deploy origin exists", () => {
+  it("refuses to send tokens when no trusted deploy origin exists", () => {
     stubNonproduction(undefined);
-    expect(getInviteOrigin()).toBe("https://getrandomtrip.com");
+    expect(() => getInviteOrigin()).toThrow("trusted nonproduction");
     stubNonproduction("https://evil.example.com");
-    expect(getInviteOrigin()).toBe("https://getrandomtrip.com");
+    expect(() => getInviteOrigin()).toThrow("trusted nonproduction");
   });
 });
 
@@ -44,6 +52,8 @@ describe("buildTravelerInviteUrl", () => {
 
   it("uses production in production", () => {
     vi.stubEnv("RT_DEPLOY_ENV", "production");
-    expect(buildTravelerInviteUrl("es", "tok")).toBe("https://getrandomtrip.com/es/invite/tok");
+    expect(buildTravelerInviteUrl("es", "tok")).toBe(
+      "https://getrandomtrip.com/es/invite/tok",
+    );
   });
 });

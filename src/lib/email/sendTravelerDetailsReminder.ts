@@ -1,3 +1,4 @@
+import { getApplicationOrigin } from "@/lib/deployment";
 import { createElement } from "react";
 import TravelerDetailsReminder from "@/emails/TravelerDetailsReminder";
 import { sendMail } from "@/lib/helpers/sendMail";
@@ -23,7 +24,7 @@ export async function sendTravelerDetailsReminder(
   const delivery = await sendMail({
     content: {
       react: createElement(TravelerDetailsReminder, {
-        dashboardUrl: `https://getrandomtrip.com/${locale}/dashboard/trips/${encodeURIComponent(params.tripId)}`,
+        dashboardUrl: `${getApplicationOrigin()}/${locale}/dashboard/trips/${encodeURIComponent(params.tripId)}`,
         locale,
         variant: params.variant,
       }),

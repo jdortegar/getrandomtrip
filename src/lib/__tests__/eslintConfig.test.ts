@@ -15,7 +15,9 @@ async function lint(code: string) {
   return result;
 }
 
-describe("repository ESLint configuration", () => {
+// Each case boots a real ESLint instance (config + plugins + TS parser); under
+// full-suite load that cold start alone can exceed the 5s default.
+describe("repository ESLint configuration", { timeout: 30_000 }, () => {
   it("requires framework navigation in TripperTopbar", async () => {
     const eslint = new ESLint({ cwd });
     const [result] = await eslint.lintFiles([

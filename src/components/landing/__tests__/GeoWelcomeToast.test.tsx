@@ -76,3 +76,27 @@ it("does not repeat on in-app navigation back to the landing", () => {
   renderToast("AR");
   expect(sonner.info).toHaveBeenCalledTimes(1);
 });
+
+it("adds the local-currency note as the toast description when given", () => {
+  act(() =>
+    root.render(
+      <GeoWelcomeToast
+        countryCode="AR"
+        description="Prices in ARS are for reference only. Charges are made in USD."
+        flagSvg="<svg></svg>"
+        message="Welcome to Randomtrip Argentina"
+      />,
+    ),
+  );
+  act(() => vi.advanceTimersByTime(1000));
+  const [, options] = sonner.info.mock.calls[0];
+  expect(options.description).toBe(
+    "Prices in ARS are for reference only. Charges are made in USD.",
+  );
+});
+
+it("has no description for USD countries", () => {
+  renderToast("US");
+  const [, options] = sonner.info.mock.calls[0];
+  expect(options.description).toBeUndefined();
+});

@@ -17,12 +17,26 @@ vi.mock("@/components/by-type/TypePlanner", () => ({
     </div>
   ),
 }));
-vi.mock("@/components/landing/exploration/TravelerTypesCarousel", () => ({
-  TravelerTypesCarousel: ({
-    onSelect,
+vi.mock("@/components/ui/TabSelector", () => ({
+  TabSelector: ({
+    onTabChange,
+    tabs,
   }: {
-    onSelect: (type: string) => void;
-  }) => <button onClick={() => onSelect("couple")}>Couple</button>,
+    onTabChange: (type: string) => void;
+    tabs: { id: string; label: string }[];
+  }) => (
+    <div>
+      {tabs.map((tab) => (
+        <button
+          data-tab={tab.id}
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 import ExperiencesPageClient from "../ExperiencesPageClient";
 (
@@ -48,8 +62,29 @@ it.each([true, false])(
         />,
       ),
     );
-    act(() => container.querySelector("button")!.click());
+    act(() =>
+      container.querySelector<HTMLButtonElement>('[data-tab="couple"]')!.click(),
+    );
     expect(container.textContent).toContain(`essenza:${offered ? 1000 : 350}`);
     act(() => root.unmount());
   },
 );
+
+it("uses one-word Spanish traveler type tab labels", () => {
+  vi.stubEnv("NEXT_PUBLIC_RT_DEPLOY_ENV", "nonproduction");
+  const container = document.createElement("div");
+  const root = createRoot(container);
+  act(() =>
+    root.render(
+      <ExperiencesPageClient locale="es" tripperContext={null} />,
+    ),
+  );
+  expect(container.textContent).toContain("Pareja");
+  expect(container.textContent).toContain("Grupo");
+  expect(container.textContent).toContain("Familia");
+  expect(container.textContent).not.toContain("En Pareja");
+  expect(container.textContent).not.toContain("En Grupo");
+  expect(container.textContent).not.toContain("En Familia");
+  act(() => root.unmount());
+  vi.unstubAllEnvs();
+});

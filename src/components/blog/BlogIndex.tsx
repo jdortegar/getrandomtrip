@@ -14,11 +14,15 @@ import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import Section from "@/components/layout/Section";
 import { Button } from "@/components/ui/Button";
 import GlassCard from "@/components/ui/GlassCard";
-import type { TripperFilterOption } from "@/lib/constants/blog-filters";
+import {
+  BLOG_INDEX_PAGE_SIZE,
+  type TripperFilterOption,
+} from "@/lib/constants/blog-filters";
 import { BLOG_LISTING_HERO_CONFIG } from "@/lib/constants/blog-listing-hero";
 import type { Locale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type {
+  BlogIndexInitial,
   BlogIndexPost,
   BlogIndexResponse,
 } from "@/lib/types/BlogIndexPost";
@@ -28,6 +32,8 @@ type BlogPageCopy = MarketingDictionary["blogPage"];
 
 interface BlogIndexProps {
   copy: BlogPageCopy;
+  /** Server-rendered first page for the unfiltered listing; skips its fetch. */
+  initial?: BlogIndexInitial;
   locale: Locale;
 }
 
@@ -37,8 +43,6 @@ interface TripperApiUser {
   name: string;
   tripperSlug: string | null;
 }
-
-const PAGE_SIZE = 12;
 
 function getColSpan(index: number): string {
   const pattern = index % 6;
@@ -51,18 +55,19 @@ function isLargeCard(index: number): boolean {
   return index % 6 === 2;
 }
 
-export function BlogIndex({ copy, locale }: BlogIndexProps) {
+export function BlogIndex({ copy, initial, locale }: BlogIndexProps) {
   const searchParams = useSearchParams();
   const tripperId = searchParams.get("tripperId");
   const tripperName = searchParams.get("tripper");
 
   const requestGeneration = useRef(0);
+  const skipInitialFetch = useRef(Boolean(initial));
   const [resultLocale, setResultLocale] = useState(locale);
-  const [blogs, setBlogs] = useState<BlogIndexPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [blogs, setBlogs] = useState<BlogIndexPost[]>(initial?.blogs ?? []);
+  const [loading, setLoading] = useState(!initial);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(initial?.hasMore ?? true);
   const [trippers, setTrippers] = useState<TripperFilterOption[]>([]);
   const [filter, setFilter] = useState<BlogFilterState>({
     excuseKey: null,
@@ -81,37 +86,44 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
   const fetchBlogs = useCallback(
     (pageNum: number, append: boolean = false) => {
       const generation = ++requestGeneration.current;
-        const query = new URLSearchParams({
-          limit: PAGE_SIZE.toString(),
-          locale,
-          page: pageNum.toString(),
-        });
-
-        if (filter.tripperId) query.append("tripperId", filter.tripperId);
-        if (filter.levelKey) query.append("level", filter.levelKey);
-        if (filter.travelTypeKey)
-          query.append("travelType", filter.travelTypeKey);
-        if (filter.excuseKey) query.append("excuseKey", filter.excuseKey);
-
-        return fetch(`/api/blogs?${query.toString()}`)
-          .then(async (response) => ({ response, data: await response.json() as BlogIndexResponse }))
-          .then(({ response, data }) => {
-        if (generation !== requestGeneration.current) return;
-        if (response.ok && data.blogs) {
-          setResultLocale(locale);
-          setBlogs((prev) => (append ? [...prev, ...data.blogs] : data.blogs));
-          setHasMore(data.pagination.hasMore);
-        } else {
-          console.error("Error fetching blogs:", data);
-        }
-      }).catch((error: unknown) => {
-        console.error("Error fetching blogs:", error);
-      }).finally(() => {
-        if (generation === requestGeneration.current) {
-          setLoading(false);
-          setLoadingMore(false);
-        }
+      const query = new URLSearchParams({
+        limit: BLOG_INDEX_PAGE_SIZE.toString(),
+        locale,
+        page: pageNum.toString(),
       });
+
+      if (filter.tripperId) query.append("tripperId", filter.tripperId);
+      if (filter.levelKey) query.append("level", filter.levelKey);
+      if (filter.travelTypeKey)
+        query.append("travelType", filter.travelTypeKey);
+      if (filter.excuseKey) query.append("excuseKey", filter.excuseKey);
+
+      return fetch(`/api/blogs?${query.toString()}`)
+        .then(async (response) => ({
+          response,
+          data: (await response.json()) as BlogIndexResponse,
+        }))
+        .then(({ response, data }) => {
+          if (generation !== requestGeneration.current) return;
+          if (response.ok && data.blogs) {
+            setResultLocale(locale);
+            setBlogs((prev) =>
+              append ? [...prev, ...data.blogs] : data.blogs,
+            );
+            setHasMore(data.pagination.hasMore);
+          } else {
+            console.error("Error fetching blogs:", data);
+          }
+        })
+        .catch((error: unknown) => {
+          console.error("Error fetching blogs:", error);
+        })
+        .finally(() => {
+          if (generation === requestGeneration.current) {
+            setLoading(false);
+            setLoadingMore(false);
+          }
+        });
     },
     [
       locale,
@@ -167,8 +179,14 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
   }
 
   useEffect(() => {
+    if (skipInitialFetch.current) {
+      skipInitialFetch.current = false;
+      return;
+    }
     void fetchBlogs(1, false);
-    return () => { requestGeneration.current += 1; };
+    return () => {
+      requestGeneration.current += 1;
+    };
   }, [fetchBlogs]);
 
   const handleLoadMore = useCallback(() => {
@@ -219,9 +237,7 @@ export function BlogIndex({ copy, locale }: BlogIndexProps) {
                 <GlassCard>
                   <div className="p-12 text-center">
                     <Book className="mx-auto mb-4 h-16 w-16 text-neutral-400" />
-                    <p className="mb-2 text-lg text-ink">
-                      {copy.emptyTitle}
-                    </p>
+                    <p className="mb-2 text-lg text-ink">{copy.emptyTitle}</p>
                     <p className="text-sm text-neutral-400">
                       {copy.emptySubtitle}
                     </p>

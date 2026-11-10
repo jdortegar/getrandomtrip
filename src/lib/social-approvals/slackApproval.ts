@@ -1,0 +1,231 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+export interface ApprovalContent {
+  id: string;
+  revision: number;
+  sourceId?: string | null;
+  caption: string;
+  imageUrl: string;
+  /** Every slide in order; empty for reviews created before multi-slide support. */
+  imageUrls?: string[];
+  status: string;
+  decidedBy: string | null;
+}
+
+/** Slides of a review in order, falling back to the single legacy image. */
+export function slideUrls(
+  row: Pick<ApprovalContent, "imageUrl" | "imageUrls">,
+) {
+  return row.imageUrls?.length ? row.imageUrls : [row.imageUrl];
+}
+
+export function approvalConfig() {
+  const token = process.env.SLACK_SOCIAL_BOT_TOKEN;
+  const secret = process.env.SLACK_SOCIAL_SIGNING_SECRET;
+  if (
+    process.env.SLACK_SOCIAL_APPROVALS_ENABLED !== "true" ||
+    !token ||
+    !secret
+  )
+    return null;
+  return {
+    token,
+    secret,
+    team: "T0ATKF9157F",
+    channel: "C0CAQS7HNH4",
+    app: "A0CAR605CF8",
+  };
+}
+
+export function validSlackSignature(
+  raw: string,
+  timestamp: string | null,
+  signature: string | null,
+  secret: string,
+  now = Date.now(),
+) {
+  if (
+    !timestamp ||
+    !/^\d+$/.test(timestamp) ||
+    !signature ||
+    !/^v0=[a-f0-9]{64}$/.test(signature) ||
+    Math.abs(now / 1000 - Number(timestamp)) > 300
+  )
+    return false;
+  const expected = `v0=${createHmac("sha256", secret).update(`v0:${timestamp}:${raw}`).digest("hex")}`;
+  return timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
+}
+
+const STATUS: Record<string, string> = {
+  PENDING: "Awaiting approval",
+  REVISION_QUEUED:
+    "Changes requested. AI revision queued; the new draft will need approval.",
+  REVISION_FAILED:
+    "Changes requested. Revision needs admin attention. Nothing published.",
+  APPROVED: "Approved. Not published yet.",
+  CHANGES_REQUESTED:
+    "Changes requested. Please describe the changes in this thread.",
+  PUBLISHING: "Publishing to @getrandomtrip.en…",
+  PUBLISHED: "Published on @getrandomtrip.en.",
+  PUBLISH_FAILED:
+    "Publishing needs admin attention. Check @getrandomtrip.en before retrying.",
+};
+
+export function approvalMessage(
+  row: ApprovalContent,
+  options: { permalink?: string | null } = {},
+) {
+  const pending = row.status === "PENDING";
+  const publishable =
+    row.status === "APPROVED" &&
+    row.sourceId !== null &&
+    process.env.SLACK_SOCIAL_PUBLISH_ENABLED === "true";
+  const status = `${STATUS[row.status] ?? "Superseded or unavailable"}${
+    row.status === "PUBLISHED" && options.permalink
+      ? ` <${options.permalink}|View post>`
+      : ""
+  }`;
+  return {
+    text: `@getrandomtrip.en, revision ${row.revision}. ${status}`,
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*@getrandomtrip.en* · Revision ${row.revision}\n${status}${row.decidedBy ? ` (<@${row.decidedBy}>)` : ""}`,
+        },
+      },
+      ...slideUrls(row).map((url, index, all) => ({
+        type: "image",
+        image_url: url,
+        alt_text:
+          all.length > 1
+            ? `English artwork, slide ${index + 1} of ${all.length}, revision ${row.revision}`
+            : `English artwork, revision ${row.revision}`,
+      })),
+      { type: "section", text: { type: "plain_text", text: row.caption } },
+      ...(publishable
+        ? [
+            {
+              type: "actions",
+              elements: [
+                {
+                  type: "button",
+                  action_id: "social_publish",
+                  text: {
+                    type: "plain_text",
+                    text: "Publish to @getrandomtrip.en",
+                  },
+                  style: "primary",
+                  value: row.id,
+                  confirm: {
+                    title: { type: "plain_text", text: "Publish now?" },
+                    text: {
+                      type: "plain_text",
+                      text: "This posts the approved caption and every slide publicly on @getrandomtrip.en. It can't be undone from Slack.",
+                    },
+                    confirm: { type: "plain_text", text: "Publish" },
+                    deny: { type: "plain_text", text: "Cancel" },
+                  },
+                },
+              ],
+            },
+          ]
+        : []),
+      ...(pending
+        ? [
+            {
+              type: "actions",
+              elements: [
+                {
+                  type: "button",
+                  action_id: "social_approve",
+                  text: { type: "plain_text", text: "Approve" },
+                  style: "primary",
+                  value: row.id,
+                },
+                {
+                  type: "button",
+                  action_id: "social_changes",
+                  text: { type: "plain_text", text: "Request changes" },
+                  value: row.id,
+                },
+              ],
+            },
+          ]
+        : []),
+    ],
+  };
+}
+
+export interface ApprovalAction {
+  id: string;
+  user: string;
+  messageTs: string;
+  /** TRANSLATE: "Translate this post" on a Spanish source card (id is the source id). */
+  status:
+    | "APPROVED"
+    | "CHANGES_REQUESTED"
+    | "TRANSLATE"
+    | "PUBLISH"
+    | "MARK_POSTED";
+  responseUrl: string;
+}
+
+const ACTIONS: Record<string, ApprovalAction["status"]> = {
+  social_approve: "APPROVED",
+  social_changes: "CHANGES_REQUESTED",
+  social_translate: "TRANSLATE",
+  social_publish: "PUBLISH",
+  social_mark_posted: "MARK_POSTED",
+};
+
+export function parseApprovalAction(
+  payload: unknown,
+  config: NonNullable<ReturnType<typeof approvalConfig>>,
+): ApprovalAction | null {
+  const p = payload as {
+    type?: string;
+    response_url?: string;
+    api_app_id?: string;
+    team?: { id?: string };
+    channel?: { id?: string };
+    user?: { id?: string; team_id?: string };
+    container?: { type?: string; message_ts?: string; channel_id?: string };
+    message?: { ts?: string };
+    actions?: { action_id?: string; value?: string }[];
+  };
+  const a = p?.actions?.[0];
+  if (
+    p?.type !== "block_actions" ||
+    p.api_app_id !== config.app ||
+    p.team?.id !== config.team ||
+    p.channel?.id !== config.channel ||
+    p.container?.type !== "message" ||
+    p.container.channel_id !== config.channel ||
+    !p.user?.id ||
+    (p.user.team_id && p.user.team_id !== config.team) ||
+    p.actions?.length !== 1 ||
+    !a?.value ||
+    a.value.length > 100 ||
+    !p.message?.ts ||
+    p.message.ts !== p.container.message_ts
+  )
+    return null;
+  const status = ACTIONS[a.action_id ?? ""];
+  if (!status) return null;
+  if (
+    typeof p.response_url !== "string" ||
+    !/^https:\/\/hooks\.slack\.com\/actions\/[A-Za-z0-9_/-]+$/.test(
+      p.response_url,
+    )
+  )
+    return null;
+  return {
+    responseUrl: p.response_url,
+    id: a.value,
+    user: p.user.id,
+    messageTs: p.message.ts,
+    status,
+  };
+}

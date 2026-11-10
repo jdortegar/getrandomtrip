@@ -165,7 +165,7 @@ export default function HeaderHero({
           )}
           <h1
             className={cn(
-              "mb-8 font-barlow-condensed text-5xl font-extrabold md:mb-6 md:text-7xl",
+              "mb-8 font-barlow-condensed text-5xl font-bold md:mb-6 md:text-7xl",
               titleClassName,
             )}
           >
@@ -198,7 +198,7 @@ export default function HeaderHero({
                   )}
                 </div>
                 <div>
-                  <p className="font-barlow-condensed text-xl font-extrabold uppercase leading-tight text-white md:text-2xl">
+                  <p className="font-barlow-condensed text-xl font-bold uppercase leading-tight text-white md:text-2xl">
                     VIAJE CURADO POR
                     <br />
                     {tripperBadge.name.toUpperCase()}

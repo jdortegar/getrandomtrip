@@ -354,7 +354,7 @@ export function BlogPageClient({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
             {copy.eyebrow}
           </p>
-          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-extrabold uppercase leading-none text-ink">
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
             {copy.title}
           </h2>
         </div>

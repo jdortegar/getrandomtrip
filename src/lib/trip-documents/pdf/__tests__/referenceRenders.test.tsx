@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { referenceFixtures, activityFixture } from "./referenceFixtures";
 import { renderHotelVoucher } from "../renderHotelVoucher";
@@ -9,6 +9,10 @@ import { renderDinnerVoucher } from "../renderDinnerVoucher";
 import { renderActivityVoucher } from "../renderActivityVoucher";
 import { renderXsedRoadmap } from "../renderXsedRoadmap";
 import { renderExperienceRoadmap } from "../renderExperienceRoadmap";
+
+// Real Chromium renders: a cold launch under full-suite load exceeds the 5s
+// default; stay under renderHtmlPdf's 40s deadline.
+vi.setConfig({ testTimeout: 30_000, hookTimeout: 30_000 });
 const renderers = {
   "hotel-voucher": renderHotelVoucher,
   "dinner-voucher": renderDinnerVoucher,

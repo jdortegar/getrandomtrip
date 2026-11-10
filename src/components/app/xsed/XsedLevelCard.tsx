@@ -1,4 +1,8 @@
-import LevelCard from "@/components/by-type/shared/LevelCard";
+"use client";
+
+import { ExperienceCard } from "@/components/by-type/shared/ExperienceCard";
+import { useNextXsedDropDay } from "@/hooks/useNextXsedDropDay";
+import { getExperienceCard } from "@/lib/data/experience-cards";
 import { getXsedPricePerPerson } from "@/lib/data/traveler-types";
 import { hasLocale } from "@/lib/i18n/config";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -11,14 +15,29 @@ interface XsedLevelCardProps {
   travelType: string;
 }
 
-export function XsedLevelCard({ copy, locale, travelType }: XsedLevelCardProps) {
+/** Card content for the selected type; couple's (plural copy) when the type has none. */
+const FALLBACK_CARD_TYPE = "couple";
+
+export function XsedLevelCard({
+  copy,
+  locale,
+  travelType,
+}: XsedLevelCardProps) {
+  const card =
+    getExperienceCard(travelType, "xsed", locale) ??
+    getExperienceCard(FALLBACK_CARD_TYPE, "xsed", locale) ??
+    undefined;
+  const nextDropDay = useNextXsedDropDay(locale);
   return (
-    <LevelCard
-      badgeLabel={copy.badge}
+    <ExperienceCard
+      badgeLabel={
+        nextDropDay ? copy.nextDrop.replace("{date}", nextDropDay) : undefined
+      }
       ctaClassName="text-ink"
       href={pathForLocale(hasLocale(locale) ? locale : "es", "/xsed")}
       level={{
         ...copy,
+        card,
         id: "xsed",
         maxNights: 1,
         price: getXsedPricePerPerson(travelType),
@@ -26,7 +45,6 @@ export function XsedLevelCard({ copy, locale, travelType }: XsedLevelCardProps) 
         excuses: [],
       }}
       navigateOnCardClick
-      variant="light"
     />
   );
 }

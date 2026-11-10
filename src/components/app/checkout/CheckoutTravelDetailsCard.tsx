@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import Img from "@/components/common/Img";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
 import { CheckoutIconValueCard } from "@/components/app/checkout/CheckoutIconValueCard";
 import { CheckoutPricingSummary } from "@/components/app/checkout/CheckoutPricingSummary";
 import { CheckoutTravelersSummarySection } from "@/components/app/checkout/CheckoutTravelersSummarySection";
@@ -134,6 +135,10 @@ export function CheckoutTravelDetailsCard({
             <p className="font-barlow-condensed text-3xl font-bold text-ink">
               {usd(pricePerPerson)}
             </p>
+            <LocalPriceApprox
+              className="text-sm text-gray-500"
+              usd={pricePerPerson}
+            />
           </div>
         </div>
       </div>

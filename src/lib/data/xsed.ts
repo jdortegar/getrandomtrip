@@ -11,6 +11,7 @@ import type { PublicBlogSummary } from "@/types/blog";
 const SOLD_TRIP_REQUEST_STATUSES: TripRequestStatus[] = [
   "SAVED",
   "PENDING_PAYMENT",
+  "COLLECTING",
   "CONFIRMED",
   "REVEALED",
   "COMPLETED",

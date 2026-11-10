@@ -73,7 +73,7 @@ export function useVerifiedCheckoutResult(paymentIntentId: string | null) {
         if (cancelled) return;
         if (
           data.payment.status === "APPROVED" &&
-          ["CONFIRMED", "REVEALED", "COMPLETED"].includes(data.trip.status)
+          ["COLLECTING", "CONFIRMED", "REVEALED", "COMPLETED"].includes(data.trip.status)
         ) {
           setResult({ key, status: "success", data, polling: false });
           return;

@@ -279,12 +279,15 @@ export default function NewsletterGoLive({
                     alt="Instagram"
                   />
                 </Link>
-                <Link href="https://x.com/getrandomtrip" style={socialLink}>
+                <Link
+                  href="https://www.linkedin.com/company/getrandomtrip"
+                  style={socialLink}
+                >
                   <Img
-                    src={img("/images/newsletter/social-x.png")}
+                    src={img("/images/newsletter/social-linkedin.png")}
                     width="24"
                     height="24"
-                    alt="X"
+                    alt="LinkedIn"
                   />
                 </Link>
               </Column>

@@ -18,9 +18,19 @@ export default async function TravelerDashboardHomePage(props: {
       <div className="rt-container text-left">
         <TravelerHomePageClient
           copy={dict.dashboard}
+          currencyCopy={dict.currency}
           eyebrow={dict.travelerDashboard.home.eyebrow}
           heading={dict.travelerDashboard.home.heading}
           locale={locale}
+          paymentCopy={{
+            paymentBack: dict.journey.checkout.paymentBack,
+            paymentFailed: dict.journey.checkout.paymentFailed,
+            paymentLoadError: dict.journey.checkout.paymentLoadError,
+            paymentLoading: dict.journey.checkout.paymentLoading,
+            paymentProcessing: dict.journey.checkout.paymentProcessing,
+            paymentRetry: dict.journey.checkout.paymentRetry,
+            paymentSubmit: dict.journey.checkout.paymentSubmit,
+          }}
           roleToast={dict.travelerDashboard.home.roleToast}
         />
       </div>
