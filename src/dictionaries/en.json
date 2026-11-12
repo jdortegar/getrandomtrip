@@ -2983,8 +2983,7 @@
       "viewFullReviewLabel": "View full review"
     },
     "partners": {
-      "subtitle": "Your trip, in good hands.",
-      "title": "Our partners"
+      "sectionAriaLabel": "Our partners"
     },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",

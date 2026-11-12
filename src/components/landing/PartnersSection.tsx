@@ -1,5 +1,4 @@
 import Img from "@/components/common/Img";
-import Section from "@/components/layout/Section";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { cn } from "@/lib/utils";
 
@@ -8,32 +7,37 @@ interface PartnersSectionProps {
 }
 
 /**
- * Logo heights are tuned per mark so the wide wordmarks and the stacked
- * GetYourGuide logo carry similar visual weight in one row.
+ * Order and rendered logo heights follow the Figma "partners_" frame
+ * (node 6207:11117) so each mark carries the same visual weight.
  */
 const PARTNERS = [
-  { name: "Booking.com", src: "/images/partners/booking.png", width: 587, height: 98, heightClass: "h-6 md:h-7" },
-  { name: "GetYourGuide", src: "/images/partners/getyourguide.png", width: 592, height: 468, heightClass: "h-14 md:h-16" },
-  { name: "Viator", src: "/images/partners/viator.png", width: 572, height: 145, heightClass: "h-8 md:h-9" },
-  { name: "Duffel", src: "/images/partners/duffel.png", width: 544, height: 128, heightClass: "h-7 md:h-8" },
+  { name: "Viator", src: "/images/partners/viator.png", width: 572, height: 145, heightClass: "h-6 md:h-7" },
+  { name: "Booking.com", src: "/images/partners/booking.png", width: 587, height: 98, heightClass: "h-5 md:h-6" },
+  { name: "Duffel", src: "/images/partners/duffel.png", width: 544, height: 128, heightClass: "h-5 md:h-[23px]" },
+  { name: "GetYourGuide", src: "/images/partners/getyourguide.png", width: 592, height: 468, heightClass: "h-11 md:h-[53px]" },
 ] as const;
 
 export function PartnersSection({ copy }: PartnersSectionProps) {
   return (
-    <Section id="partners" subtitle={copy.subtitle} title={copy.title}>
+    <section
+      aria-label={copy.sectionAriaLabel}
+      className="bg-neutral-50"
+      data-component="PartnersSection"
+      id="partners"
+    >
       <ul
         className={cn(
-          "gap-x-8 gap-y-10 grid grid-cols-2 items-center",
-          "md:flex md:justify-between",
+          "gap-y-6 grid grid-cols-2 items-center max-w-[1240px] mx-auto px-6 py-6",
+          "md:grid-cols-4 md:min-h-[104px] md:py-0",
+          "lg:flex lg:gap-x-[180px] lg:justify-center",
         )}
-        data-component="PartnersSection"
       >
         {PARTNERS.map((partner) => (
           <li className="flex items-center justify-center" key={partner.name}>
             <Img
               alt={partner.name}
               className={cn(
-                "opacity-70 transition-opacity duration-300 w-auto hover:opacity-100",
+                "opacity-60 transition-opacity duration-300 w-auto hover:opacity-100",
                 partner.heightClass,
               )}
               height={partner.height}
@@ -44,6 +48,6 @@ export function PartnersSection({ copy }: PartnersSectionProps) {
           </li>
         ))}
       </ul>
-    </Section>
+    </section>
   );
 }

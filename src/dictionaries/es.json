@@ -2983,8 +2983,7 @@
       "viewFullReviewLabel": "Ver opinión completa"
     },
     "partners": {
-      "subtitle": "Tu viaje, en buenas manos.",
-      "title": "Nuestros aliados"
+      "sectionAriaLabel": "Nuestros aliados"
     },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
