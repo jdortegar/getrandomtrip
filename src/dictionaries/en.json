@@ -2983,7 +2983,7 @@
       "viewFullReviewLabel": "View full review"
     },
     "partners": {
-      "sectionAriaLabel": "Our partners"
+      "title": "We work with"
     },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",

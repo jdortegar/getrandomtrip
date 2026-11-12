@@ -20,15 +20,21 @@ const PARTNERS = [
 export function PartnersSection({ copy }: PartnersSectionProps) {
   return (
     <section
-      aria-label={copy.sectionAriaLabel}
-      className="bg-neutral-50"
+      aria-labelledby="partners-heading"
+      className="bg-neutral-50 pt-5"
       data-component="PartnersSection"
       id="partners"
     >
+      <h2
+        className="font-semibold text-center text-neutral-500 text-xs tracking-[0.18em] uppercase"
+        id="partners-heading"
+      >
+        {copy.title}
+      </h2>
       <ul
         className={cn(
           "gap-y-6 grid grid-cols-2 items-center max-w-[1240px] mx-auto px-6 py-6",
-          "md:grid-cols-4 md:min-h-[104px] md:py-0",
+          "md:grid-cols-4 md:min-h-[96px] md:py-0",
           "lg:flex lg:gap-x-[180px] lg:justify-center",
         )}
       >

@@ -4093,7 +4093,7 @@ export interface MarketingDictionary {
       viewFullReviewLabel: string;
     };
     partners: {
-      sectionAriaLabel: string;
+      title: string;
     };
     xsedHero: {
       backgroundImage: string;
