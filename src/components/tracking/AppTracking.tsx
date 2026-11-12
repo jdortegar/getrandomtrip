@@ -28,11 +28,7 @@ import {
 } from "@/lib/helpers/tracking/runtime";
 import { trackOAuthSuccess } from "@/lib/helpers/tracking/authSuccess";
 
-export default function AppTracking({
-  waitlistVisible = false,
-}: {
-  waitlistVisible?: boolean;
-}) {
+export default function AppTracking() {
   const pathname = usePathname();
   const consent = useSyncExternalStore(
     subscribeAnalyticsConsent,
@@ -45,7 +41,7 @@ export default function AppTracking({
   const landingAiSource = useRef<AiSource | null | undefined>(undefined);
 
   useLayoutEffect(() => {
-    const update = () => configureAnalytics(pathname, waitlistVisible);
+    const update = () => configureAnalytics(pathname);
     window.addEventListener(CONSENT_EVENT, update);
     window.addEventListener("storage", update);
     return () => {
@@ -53,7 +49,7 @@ export default function AppTracking({
       window.removeEventListener("storage", update);
       configureAnalytics("/__unavailable");
     };
-  }, [pathname, waitlistVisible]);
+  }, [pathname]);
 
   useLayoutEffect(() => {
     if (landingAiSource.current === undefined)
@@ -61,13 +57,13 @@ export default function AppTracking({
         document.referrer,
         window.location.search,
       );
-    const page = configureAnalytics(pathname, waitlistVisible);
+    const page = configureAnalytics(pathname);
     if (!page) {
       lastPage.current = null;
       return;
     }
     loadAnalyticsContainer();
-    const pageKey = `${pathname}:${waitlistVisible}`;
+    const pageKey = pathname;
     if (lastPage.current !== pageKey && !page.purchaseOnly && !page.commerceOnly && trackPageview()) {
       lastPage.current = pageKey;
       const aiSource = landingAiSource.current;
@@ -91,7 +87,7 @@ export default function AppTracking({
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [pathname, consent, waitlistVisible]);
+  }, [pathname, consent]);
 
   useEffect(() => {
     trackOAuthSuccess(session?.analyticsAuthSuccess);

@@ -265,19 +265,10 @@ it("clears persisted GA event parameters before a later pageview", () => {
   });
 });
 
-it("preserves locale for visible marketing waitlists and never maps checkout to a pageview", () => {
+it("never maps checkout success to a pageview but still allows the purchase", () => {
   consent.saveAnalyticsConsent("granted");
-  window.location.href = "https://getrandomtrip.com/en/blog/story";
-  expect(
-    runtime.configureAnalytics(window.location.pathname, true),
-  ).toMatchObject({ language: "en", page_path: "/en", page_title: "Waitlist" });
   window.location.href = "https://getrandomtrip.com/en/checkout/success";
-  expect(runtime.configureAnalytics(window.location.pathname, true)).toBeNull();
-  expect(events.trackPageview()).toBe(false);
-  // An unlocked visitor gets normalChrome's waitlistVisible=false, even if the global gate is enabled.
-  expect(
-    runtime.configureAnalytics(window.location.pathname, false),
-  ).toMatchObject({
+  expect(runtime.configureAnalytics(window.location.pathname)).toMatchObject({
     language: "en",
     purchaseOnly: true,
     page_path: "/en/checkout/success",

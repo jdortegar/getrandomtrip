@@ -2318,9 +2318,9 @@
         "title": "Semana de campaña TGIS"
       },
       "siteAccessGate": {
-        "toggleLabel": "Muro de lista de espera",
-        "toggleDescription": "Cuando está activado, los visitantes sin una cuenta invitada ven la lista de espera en lugar del sitio. Los usuarios invitados siempre pueden entrar.",
-        "maintenanceHint": "Activalo de nuevo durante una ventana de mantenimiento para mostrar la misma pantalla a los visitantes habituales — desactivalo cuando termines.",
+        "toggleLabel": "Modo mantenimiento",
+        "toggleDescription": "Cuando está activado, los visitantes ven la pantalla de mantenimiento en lugar del sitio. Solo los admins con sesión iniciada siguen entrando; inician sesión en /login.",
+        "maintenanceHint": "Úsalo solo mientras haces cambios y desactívalo al terminar. Los buscadores reciben un aviso de mantenimiento temporal (503), así que no se pierde la indexación. Puede tardar hasta 30 segundos en aplicarse.",
         "stateOn": "Activado",
         "stateOff": "Desactivado",
         "savedNote": "Guardado.",
@@ -5369,25 +5369,10 @@
     "title": "¡Ups! Te has perdido",
     "viewPackages": "Ver Paquetes"
   },
-  "waitlist": {
-    "headline": "Accede antes que nadie al lanzamiento de Randomtrip",
-    "subheadline": "Súmate a la lista y te avisamos cuando estemos listos.",
-    "nameLabel": "Nombre",
-    "namePlaceholder": "Juan",
-    "lastNameLabel": "Apellido",
-    "lastNamePlaceholder": "Pérez",
-    "emailLabel": "Email",
-    "emailPlaceholder": "tu@email.com",
-    "submitButton": "Quiero acceso anticipado",
-    "successMessage": "¡Listo! Te vamos a avisar cuando sea tu turno.",
-    "errorMessage": "Algo salió mal. Por favor, intentá de nuevo.",
-    "loginAction": "Iniciar sesión",
-    "accessDeniedTitle": "Acceso no permitido",
-    "accessDeniedBody": "Tu cuenta todavía no tiene acceso. Si te invitaron, revisá tu email; si creés que esto es un error, contactá a tu administrador.",
-    "signOutLabel": "Cerrar sesión",
-    "ariaFacebook": "Facebook",
-    "ariaInstagram": "Instagram",
-    "ariaLinkedin": "LinkedIn"
+  "maintenance": {
+    "eyebrow": "Volvemos pronto",
+    "message": "Randomtrip está en mantenimiento por un rato. Vuelve en unos minutos: tu próxima historia sigue esperándote.",
+    "title": "Estamos ajustando la ruta"
   },
   "profile": {
     "actionsAria": "Acciones de cuenta",

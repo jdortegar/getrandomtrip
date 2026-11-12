@@ -9,7 +9,7 @@ interface DashboardNavbarPrimaryLayoutProps {
 
 /**
  * Enables the marketing Navbar primary surface for the whole dashboard subtree.
- * Must render under {@link NavbarChromeContext} (GateAwareChrome when gate is unlocked).
+ * Must render under {@link NavbarChromeContext} (SiteChrome).
  */
 export function DashboardNavbarPrimaryLayout({
   children,

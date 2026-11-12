@@ -5,7 +5,6 @@ import {
   GA_MEASUREMENT_ID,
   GTM_ID,
 } from "@/lib/constants/tracking/service-keys";
-import { isIndexablePath } from "@/lib/seo/urls";
 import { analyticsPage, type AnalyticsPage } from "./privacy";
 import { readAnalyticsConsent } from "./consent";
 
@@ -43,16 +42,10 @@ export function isAnalyticsProduction(): boolean {
   );
 }
 
-export function configureAnalytics(
-  pathname: string,
-  waitlistVisible = false,
-): AnalyticsPage | null {
+export function configureAnalytics(pathname: string): AnalyticsPage | null {
   const page = analyticsPage(pathname);
   const allowed =
-    isAnalyticsProduction() &&
-    readAnalyticsConsent() === "granted" &&
-    !!page &&
-    (!waitlistVisible || isIndexablePath(pathname));
+    isAnalyticsProduction() && readAnalyticsConsent() === "granted" && !!page;
   window.dataLayer = window.dataLayer ?? [];
   if (!defaultsSet) {
     googleCommand("consent", "default", DENIED);
@@ -62,14 +55,7 @@ export function configureAnalytics(
     `ga-disable-${GA_MEASUREMENT_ID}`
   ] = !allowed;
   activePath = allowed ? pathname : null;
-  activePage = allowed
-    ? waitlistVisible
-      ? {
-          ...analyticsPage(page!.language === "en" ? "/en" : "/")!,
-          page_title: "Waitlist",
-        }
-      : page
-    : null;
+  activePage = allowed ? page : null;
   const {
     purchaseOnly: _purchaseOnly,
     commerceOnly: _commerceOnly,

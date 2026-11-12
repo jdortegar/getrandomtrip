@@ -6,6 +6,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { handleI18n } from "@/lib/i18n/middleware";
+import { maintenanceResponse } from "@/lib/maintenance/proxyGate";
 import { pathForLocale, pathWithoutLocale } from "@/lib/i18n/pathForLocale";
 import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
 import {
@@ -152,6 +153,10 @@ export async function applyAttribution(
 }
 
 export async function proxy(req: NextRequest) {
+  // Maintenance mode answers before anything else: no page runs while it's on.
+  const maintenance = await maintenanceResponse(req);
+  if (maintenance) return maintenance;
+
   // Locale continuations/rewrites also return a response, so aliases go first.
   const res = applyCanonRedirect(req) ?? handleI18n(req) ?? NextResponse.next();
 

@@ -3656,6 +3656,13 @@ export interface CurrencyDict {
   cardTaxesNote: string;
 }
 
+/** Copy for the maintenance screen shown while the site gate is on. */
+export interface MaintenanceDict {
+  eyebrow: string;
+  message: string;
+  title: string;
+}
+
 export interface MarketingDictionary {
   socialImport: import("./SocialImportCopy").SocialImportCopy;
   tripTransport: {
@@ -4946,26 +4953,7 @@ export interface MarketingDictionary {
     title: string;
     viewPackages: string;
   };
-  waitlist: {
-    accessDeniedBody: string;
-    accessDeniedTitle: string;
-    ariaFacebook: string;
-    ariaInstagram: string;
-    ariaLinkedin: string;
-    emailLabel: string;
-    emailPlaceholder: string;
-    errorMessage: string;
-    headline: string;
-    lastNameLabel: string;
-    lastNamePlaceholder: string;
-    loginAction: string;
-    nameLabel: string;
-    namePlaceholder: string;
-    signOutLabel: string;
-    subheadline: string;
-    submitButton: string;
-    successMessage: string;
-  };
+  maintenance: MaintenanceDict;
   profile: {
     actionsAria: string;
     buttons: {
