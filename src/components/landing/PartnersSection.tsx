@@ -11,17 +11,41 @@ interface PartnersSectionProps {
  * (node 6207:11117) so each mark carries the same visual weight.
  */
 const PARTNERS = [
-  { name: "Viator", src: "/images/partners/viator.png", width: 572, height: 145, heightClass: "h-6 md:h-7" },
-  { name: "Booking.com", src: "/images/partners/booking.png", width: 587, height: 98, heightClass: "h-5 md:h-6" },
-  { name: "Duffel", src: "/images/partners/duffel.png", width: 544, height: 128, heightClass: "h-5 md:h-[23px]" },
-  { name: "GetYourGuide", src: "/images/partners/getyourguide.png", width: 592, height: 468, heightClass: "h-11 md:h-[53px]" },
+  {
+    name: "Viator",
+    src: "/images/partners/viator.png",
+    width: 572,
+    height: 145,
+    heightClass: "h-6 md:h-7",
+  },
+  {
+    name: "Booking.com",
+    src: "/images/partners/booking.png",
+    width: 587,
+    height: 98,
+    heightClass: "h-5 md:h-6",
+  },
+  {
+    name: "Duffel",
+    src: "/images/partners/duffel.png",
+    width: 544,
+    height: 128,
+    heightClass: "h-5 md:h-[23px]",
+  },
+  {
+    name: "GetYourGuide",
+    src: "/images/partners/getyourguide.png",
+    width: 592,
+    height: 468,
+    heightClass: "h-11 md:h-[53px]",
+  },
 ] as const;
 
 export function PartnersSection({ copy }: PartnersSectionProps) {
   return (
     <section
       aria-labelledby="partners-heading"
-      className="bg-neutral-50 pb-6 pt-5 md:pb-8"
+      className="bg-neutral-50 pb-6 pt-5"
       data-component="PartnersSection"
       id="partners"
     >
