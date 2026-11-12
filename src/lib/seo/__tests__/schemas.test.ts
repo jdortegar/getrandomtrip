@@ -1,11 +1,18 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import {
   buildOrganizationSchema,
   buildWebSiteSchema,
   buildPersonSchema,
   buildBlogPostingSchema,
   buildFAQPageSchema,
+  buildTravelerTypeServiceSchema,
 } from "../schemas";
+
+const discovery = vi.hoisted(() => ({ enabled: false }));
+vi.mock("@/lib/deployment", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/deployment")>()),
+  showTripperDiscovery: () => discovery.enabled,
+}));
 
 const BASE_URL = "https://getrandomtrip.com";
 
@@ -208,5 +215,87 @@ describe("buildFAQPageSchema", () => {
     const firstAnswer = mainEntity[0].acceptedAnswer as Record<string, unknown>;
     expect(firstAnswer["@type"]).toBe("Answer");
     expect(firstAnswer.text).toBe("Answer 1");
+  });
+});
+
+describe("buildTravelerTypeServiceSchema", () => {
+  it.each([
+    ["es", "couple", "Viaje sorpresa"],
+    ["en", "solo", "Surprise trip"],
+  ] as const)(
+    "describes the live %s %s product as a Service of the organization",
+    (locale, slug, serviceType) => {
+      const schema = buildTravelerTypeServiceSchema(slug, locale);
+      const url = `${BASE_URL}/${locale === "en" ? "en/" : ""}experiences/by-type/${slug}`;
+      expect(schema).toMatchObject({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": `${url}#service`,
+        inLanguage: locale,
+        provider: { "@id": `${BASE_URL}/#organization` },
+        serviceType,
+        url,
+      });
+      expect(typeof schema?.name).toBe("string");
+      expect(String(schema?.description).length).toBeGreaterThan(0);
+      expect(schema?.audience).toMatchObject({ "@type": "Audience" });
+    },
+  );
+
+  it("resolves aliases to the canonical slug URL", () => {
+    expect(buildTravelerTypeServiceSchema("parejas", "es")?.url).toBe(
+      `${BASE_URL}/experiences/by-type/couple`,
+    );
+  });
+
+  it.each(["family", "honeymoon", "paws", "unknown"])(
+    "emits nothing for %s (preview or unknown types are not marketed)",
+    (slug) => {
+      expect(buildTravelerTypeServiceSchema(slug, "es")).toBeNull();
+    },
+  );
+
+  describe("hidden products, once activated", () => {
+    beforeAll(() => {
+      discovery.enabled = true;
+    });
+    afterAll(() => {
+      discovery.enabled = false;
+    });
+
+    it.each([
+      ["family", "Kin© Randomtrip", "es", "Viaje sorpresa"],
+      ["honeymoon", "Nuptia© Randomtrip", "es", "Viaje sorpresa"],
+      ["paws", "Paws© Randomtrip", "es", "Viaje sorpresa"],
+      ["family", "Kin© Randomtrip", "en", "Surprise trip"],
+      ["honeymoon", "Nuptia© Randomtrip", "en", "Surprise trip"],
+      ["paws", "Paws© Randomtrip", "en", "Surprise trip"],
+    ] as const)(
+      "builds a complete Service for %s (%s, %s)",
+      (slug, name, locale, serviceType) => {
+        const schema = buildTravelerTypeServiceSchema(slug, locale);
+        const url = `${BASE_URL}/${locale === "en" ? "en/" : ""}experiences/by-type/${slug}`;
+        expect(schema).toMatchObject({
+          "@id": `${url}#service`,
+          "@type": "Service",
+          inLanguage: locale,
+          name,
+          provider: { "@id": `${BASE_URL}/#organization` },
+          serviceType,
+          url,
+        });
+        expect(String(schema?.description).trim().length).toBeGreaterThan(20);
+        expect(
+          String((schema?.audience as { audienceType?: string }).audienceType),
+        ).not.toBe("");
+        expect(JSON.stringify(schema)).not.toMatch(/price|offers|USD/i);
+      },
+    );
+  });
+
+  it("never includes prices", () => {
+    expect(
+      JSON.stringify(buildTravelerTypeServiceSchema("couple", "en")),
+    ).not.toMatch(/price|offers|USD/i);
   });
 });

@@ -7,6 +7,8 @@ import Blog from "@/components/Blog";
 import TypePlanner from "@/components/by-type/TypePlanner";
 import { XsedLevelCard } from "@/components/app/xsed/XsedLevelCard";
 import InspirationBanner from "@/components/InspirationBanner";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildTravelerTypeServiceSchema } from "@/lib/seo/schemas";
 import {
   getTravelerType,
   getAllTravelerTypePaths,
@@ -115,8 +117,14 @@ export default async function TravelerTypePage(props: {
       }
     : undefined;
 
+  const serviceSchema = buildTravelerTypeServiceSchema(
+    typeData.meta.slug,
+    locale,
+  );
+
   return (
     <main className="relative">
+      {serviceSchema ? <JsonLd schema={serviceSchema} /> : null}
       <Hero
         content={typeData.content.hero}
         id={`${typeData.meta.slug}-hero`}
