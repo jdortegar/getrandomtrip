@@ -11,7 +11,6 @@ import { getAllTrippers } from "@/lib/db/tripper-queries";
 import { getPublicTravelerTypeSlugs } from "@/lib/data/traveler-types";
 
 import { buildAlternates } from "@/lib/seo/urls";
-import { isGateEnabled } from "@/lib/siteSettings";
 
 export const dynamic = "force-dynamic";
 
@@ -55,8 +54,11 @@ function toSitemapEntries(
   });
 }
 
+/**
+ * Served unchanged during maintenance mode: emptying it would tell crawlers
+ * the public pages are gone instead of temporarily unavailable.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  if (await isGateEnabled()) return [];
   const entries: MetadataRoute.Sitemap = [];
 
   // Static public pages

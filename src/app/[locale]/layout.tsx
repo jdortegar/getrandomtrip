@@ -29,16 +29,14 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
-  const [requestHeaders, dict, gateEnabled] = await Promise.all([
+  const [requestHeaders, dict] = await Promise.all([
     headers(),
     getDictionary(locale),
-    isGateEnabled(),
   ]);
   return routeMetadata(
     requestHeaders.get("x-pathname") ?? "/__unresolved",
     locale,
     dict,
-    gateEnabled,
   );
 }
 
