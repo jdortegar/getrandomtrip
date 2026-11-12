@@ -21,7 +21,7 @@ const recap = {
   countries: [],
   channels: [],
   pages: [],
-  actions: { signUps: 0, leads: 0, waitlist: 0, purchases: 0 },
+  actions: { signUps: 0, leads: 0, purchases: 0 },
 };
 beforeEach(() => {
   fetchRecap.mockReset().mockResolvedValue(recap);

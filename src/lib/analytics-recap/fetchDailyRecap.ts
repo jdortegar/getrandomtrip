@@ -14,7 +14,7 @@ import {
 const YESTERDAY = { startDate: "yesterday", endDate: "yesterday" };
 const LAST_WEEK = { startDate: "8daysAgo", endDate: "8daysAgo" };
 const TOP_N = 5;
-const EVENTS = ["sign_up", "generate_lead", "waitlist_join", "purchase"];
+const EVENTS = ["sign_up", "generate_lead", "purchase"];
 const DAY_MS = 86_400_000;
 
 const top = (dimension: string, metric: string) => ({
@@ -124,7 +124,6 @@ export async function fetchDailyRecap(
     actions: {
       signUps: counts.get("sign_up") ?? 0,
       leads: counts.get("generate_lead") ?? 0,
-      waitlist: counts.get("waitlist_join") ?? 0,
       purchases: counts.get("purchase") ?? 0,
     },
   };

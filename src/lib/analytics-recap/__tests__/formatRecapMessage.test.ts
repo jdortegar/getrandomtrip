@@ -19,7 +19,7 @@ const base: DailyRecap = {
     { label: "/", value: 200 },
     { label: "/journey", value: 90 },
   ],
-  actions: { signUps: 4, leads: 9, waitlist: 3, purchases: 1 },
+  actions: { signUps: 4, leads: 9, purchases: 1 },
 };
 
 const body = (recap: DailyRecap) =>
@@ -33,7 +33,7 @@ it("renders the agreed layout for a normal day", () => {
       "🌎 Countries: Argentina 61 · Spain 28",
       "🔗 Sources: Organic Search 70 · Direct 40",
       "📄 Top pages: / 200 · /journey 90",
-      "🎯 Actions: sign-ups 4 · leads 9 · waitlist 3 · purchases 1",
+      "🎯 Actions: sign-ups 4 · leads 9 · purchases 1",
       "⚠️ Only counts visitors who accepted cookies",
     ].join("\n"),
   );
@@ -53,7 +53,7 @@ it("renders a zero-traffic day without NaN or Infinity", () => {
     countries: [],
     channels: [],
     pages: [],
-    actions: { signUps: 0, leads: 0, waitlist: 0, purchases: 0 },
+    actions: { signUps: 0, leads: 0, purchases: 0 },
   };
   const text = body(zero);
   expect(text).not.toMatch(/NaN|Infinity/);

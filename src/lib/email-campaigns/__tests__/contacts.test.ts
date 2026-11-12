@@ -24,7 +24,6 @@ import {
   listContacts,
   unsubscribeContact,
   updateContact,
-  upsertWaitlistContact,
 } from "../contacts";
 
 const mocked = prisma as unknown as {
@@ -76,103 +75,6 @@ beforeEach(() => {
   mocked.segment.findMany.mockImplementation(async ({ where }) =>
     where.id.in.filter((id: string) => id !== "missing").map((id: string) => ({ id })),
   );
-});
-
-describe("upsertWaitlistContact", () => {
-  it("creates a WAITLIST contact with a normalized email and es locale", async () => {
-    mocked.contact.findUnique.mockResolvedValue(null);
-
-    const contact = await upsertWaitlistContact({
-      email: "  Ana@Example.COM ",
-      name: "Ana",
-    });
-
-    expect(mocked.contact.findUnique).toHaveBeenCalledWith({
-      where: { email: "ana@example.com" },
-    });
-    expect(mocked.contact.create).toHaveBeenCalledWith({
-      data: {
-        email: "ana@example.com",
-        locale: "es",
-        name: "Ana",
-        source: "WAITLIST",
-        userId: null,
-        segments: { create: [{ segmentId: "seg_waitlist" }] },
-      },
-      include,
-    });
-    expect(contact.email).toBe("ana@example.com");
-    expect(contact.createdAt).toBe("2026-10-01T00:00:00.000Z");
-  });
-
-  it("links the user whose email matches case-insensitively", async () => {
-    mocked.contact.findUnique.mockResolvedValue(null);
-    mocked.user.findFirst.mockResolvedValue({ id: "u1" });
-
-    await upsertWaitlistContact({ email: "ana@example.com" });
-
-    expect(mocked.user.findFirst).toHaveBeenCalledWith({
-      select: { id: true },
-      where: { email: { equals: "ana@example.com", mode: "insensitive" } },
-    });
-    expect(mocked.contact.create.mock.calls[0][0].data.userId).toBe("u1");
-  });
-
-  it("never resubscribes or changes the source/locale of an existing contact", async () => {
-    mocked.contact.findUnique.mockResolvedValue(
-      contactRow({
-        source: "FRIENDS_FAMILY",
-        status: "UNSUBSCRIBED",
-        locale: "en",
-        name: "Existing",
-        userId: "u9",
-      }),
-    );
-
-    const contact = await upsertWaitlistContact({
-      email: "ana@example.com",
-      name: "Other",
-    });
-
-    expect(mocked.contact.create).not.toHaveBeenCalled();
-    expect(mocked.contact.update).not.toHaveBeenCalled();
-    expect(mocked.contact.findUnique).toHaveBeenLastCalledWith({
-      where: { id: "c1" },
-      include,
-    });
-    expect(contact.status).toBe("UNSUBSCRIBED");
-    expect(contact.source).toBe("FRIENDS_FAMILY");
-    expect(contact.locale).toBe("en");
-  });
-
-  it("only fills a missing name and userId on an existing contact", async () => {
-    mocked.contact.findUnique.mockResolvedValue(
-      contactRow({ status: "BOUNCED", name: null, userId: null }),
-    );
-    mocked.user.findFirst.mockResolvedValue({ id: "u1" });
-
-    await upsertWaitlistContact({ email: "ana@example.com", name: "Ana" });
-
-    expect(mocked.contact.update).toHaveBeenCalledWith({
-      where: { id: "c1" },
-      data: { name: "Ana", userId: "u1" },
-      include,
-    });
-  });
-
-  it("adds an existing contact to the waitlist segment without removing others", async () => {
-    mocked.contact.findUnique.mockResolvedValue(
-      contactRow({ source: "FRIENDS_FAMILY", name: "Ana", userId: "u1" }),
-    );
-
-    await upsertWaitlistContact({ email: "ana@example.com" });
-
-    expect(mocked.contactSegment.createMany).toHaveBeenCalledWith({
-      data: [{ contactId: "c1", segmentId: "seg_waitlist" }],
-      skipDuplicates: true,
-    });
-    expect(mocked.contactSegment.deleteMany).not.toHaveBeenCalled();
-  });
 });
 
 describe("listContacts", () => {
