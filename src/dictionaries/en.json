@@ -2982,6 +2982,10 @@
       "title": "What people say about Randomtrip",
       "viewFullReviewLabel": "View full review"
     },
+    "partners": {
+      "subtitle": "Your trip, in good hands.",
+      "title": "Our partners"
+    },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",

@@ -5,6 +5,7 @@ import HomeInfo from "@/components/HomeInfo";
 import Hero from "@/components/Hero";
 import Blog from "@/components/Blog";
 import { ExplorationSection } from "@/components/landing/exploration";
+import { PartnersSection } from "@/components/landing/PartnersSection";
 import { TrustSignal } from "@/components/landing/TrustSignal";
 import Testimonials from "@/components/Testimonials/Testimonials";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
@@ -53,6 +54,7 @@ export function HomePageClient({
         viewFullReviewLabel={home.testimonials.viewFullReviewLabel}
         testimonials={testimonials ?? []}
       />
+      <PartnersSection copy={home.partners} />
     </main>
   );
 }
