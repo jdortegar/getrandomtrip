@@ -2475,7 +2475,7 @@
       "total": "Total",
       "importantTitle": "Important",
       "importantItems": [
-        "The destination is a surprise revealed on drop day.",
+        "The destination is a surprise: you find out 48 hours before departure.",
         "The final price will be confirmed by the team once the drop is assigned.",
         "Includes 1 night of lodging, dinner and a local experience.",
         "You will be redirected to checkout to complete payment."
@@ -2673,24 +2673,36 @@
       "description": "Everything you need to know before taking the leap.",
       "items": [
         {
-          "question": "How do I take the first step for my surprise trip?",
-          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+          "question": "How does a Randomtrip surprise trip work?",
+          "answer": "You choose who you're traveling with and an experience level, set your dates, departure city and number of travelers, and add filters if you like. A Tripper designs the trip, and you find out the destination 48 hours before departure."
         },
         {
           "question": "What can I choose?",
-          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+          "answer": "Who you're traveling with (solo, as a couple, as a family, as a group, with your pet or on your honeymoon), the experience level, your dates, departure city and number of travelers. You can also filter by transport, accommodation type, climate, maximum travel time and schedules, and mark destinations to avoid. The destination is up to us."
         },
         {
-          "question": "What happens if I need to change the date?",
-          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+          "question": "When do I find out the destination?",
+          "answer": "48 hours before departure. That's when you get the destination, the itinerary, and packing and weather tips to get ready."
         },
         {
           "question": "What's included?",
-          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+          "answer": "Transport from your departure city and accommodation, based on the level you choose: from overland getaways to flights and boutique hotels. Each level adds perks, such as destination guides or included experiences. Your confirmation lists exactly what's included. TGIS works differently: it's a road trip at your own pace, less than 300 km from your city."
         },
         {
-          "question": "How do you design my trip?",
-          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
+          "question": "Can I avoid destinations I already know?",
+          "answer": "Yes. Every level includes one destination to avoid, and Explora+ and Bivouac include a second one. Each additional destination counts as a filter."
+        },
+        {
+          "question": "Does the price change depending on my departure city?",
+          "answer": "No. The price depends on who you're traveling with, the experience level, the number of travelers and any extras you add, not on the city you leave from."
+        },
+        {
+          "question": "Who designs my trip?",
+          "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
+        },
+        {
+          "question": "What if I need to change the date or cancel?",
+          "answer": "It depends on how far in advance you change, the Tripper's policy and any non-refundable supplier costs. If nothing has been booked yet, we'll work to refund you, minus non-refundable fees. You can add cancellation insurance when you book."
         }
       ]
     }
@@ -5208,24 +5220,36 @@
       "eyebrow": "FAQ's",
       "items": [
         {
-          "question": "How do I take the first step for my surprise trip?",
-          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+          "question": "How does a Randomtrip surprise trip work?",
+          "answer": "You choose who you're traveling with and an experience level, set your dates, departure city and number of travelers, and add filters if you like. A Tripper designs the trip, and you find out the destination 48 hours before departure."
         },
         {
           "question": "What can I choose?",
-          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+          "answer": "Who you're traveling with (solo, as a couple, as a family, as a group, with your pet or on your honeymoon), the experience level, your dates, departure city and number of travelers. You can also filter by transport, accommodation type, climate, maximum travel time and schedules, and mark destinations to avoid. The destination is up to us."
         },
         {
-          "question": "What happens if I need to change the date?",
-          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+          "question": "When do I find out the destination?",
+          "answer": "48 hours before departure. That's when you get the destination, the itinerary, and packing and weather tips to get ready."
         },
         {
           "question": "What's included?",
-          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+          "answer": "Transport from your departure city and accommodation, based on the level you choose: from overland getaways to flights and boutique hotels. Each level adds perks, such as destination guides or included experiences. Your confirmation lists exactly what's included. TGIS works differently: it's a road trip at your own pace, less than 300 km from your city."
         },
         {
-          "question": "How do you design my trip?",
-          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
+          "question": "Can I avoid destinations I already know?",
+          "answer": "Yes. Every level includes one destination to avoid, and Explora+ and Bivouac include a second one. Each additional destination counts as a filter."
+        },
+        {
+          "question": "Does the price change depending on my departure city?",
+          "answer": "No. The price depends on who you're traveling with, the experience level, the number of travelers and any extras you add, not on the city you leave from."
+        },
+        {
+          "question": "Who designs my trip?",
+          "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
+        },
+        {
+          "question": "What if I need to change the date or cancel?",
+          "answer": "It depends on how far in advance you change, the Tripper's policy and any non-refundable supplier costs. If nothing has been booked yet, we'll work to refund you, minus non-refundable fees. You can add cancellation insurance when you book."
         }
       ],
       "title": "Featured questions"
