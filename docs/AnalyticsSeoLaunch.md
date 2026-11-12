@@ -4,7 +4,7 @@ Deploy the application and Google configuration as one coordinated change. Sourc
 
 ## Safe release order
 
-1. Verify the release candidate in a non-production environment first. Deploy production source with `NEXT_PUBLIC_GTM_ID` or `NEXT_PUBLIC_GA_MEASUREMENT_ID` empty; either missing ID disables collection. **Leave the production marketing waitlist gate unchanged for this release.** While it is enabled, gated pages remain `noindex,nofollow` and the sitemap stays empty. A future public launch requires separate approval and anonymous content/schema verification. Keep all private-route authentication and authorization enabled.
+1. Verify the release candidate in a non-production environment first. Deploy production source with `NEXT_PUBLIC_GTM_ID` or `NEXT_PUBLIC_GA_MEASUREMENT_ID` empty; either missing ID disables collection. **Leave the production marketing waitlist gate unchanged for this release.** (Historical: at that release the gate still made pages `noindex,nofollow` and emptied the sitemap; see Search visibility for current behaviour.) A future public launch requires separate approval and anonymous content/schema verification. Keep all private-route authentication and authorization enabled.
 2. Publish the reviewed GTM configuration below and disable **all GA4 enhanced measurement**, including history pageviews, scroll, outbound clicks, form interactions, downloads and video. Set the base Google tag `send_page_view=false`.
 3. Set the production build variables and redeploy: `NEXT_PUBLIC_SITE_URL=https://getrandomtrip.com`, `NEXT_PUBLIC_ANALYTICS_HOSTNAME=getrandomtrip.com`, and the verified GTM/GA measurement IDs. Preview hosts and investor subdomains remain excluded even with saved consent.
 4. Verify the consent, navigation and conversion matrix below. Do not submit synthetic purchases or registrations to production merely to test collection.
@@ -74,7 +74,7 @@ On withdrawal or private navigation, the app synchronously updates the consent b
 - Public metadata and JSON-LD share canonical URL construction. Legacy blog IDs redirect permanently to the canonical slug. Blog alternates only include usable translations; Spanish-only articles never advertise English copies.
 - Sitemap entries include every available locale with reciprocal/self language references and real modification timestamps where available. Drafts, inactive posts, review copies and unavailable translations remain excluded.
 - Private/utility pages are `noindex,nofollow`; this does not replace authentication. The secure wrapper and all existing authorization remain unchanged.
-- Re-enabling the marketing gate applies `noindex,nofollow` to public routes and returns an empty sitemap; hidden article markup remains behind the existing gate. Public-mode server rendering already worked before this change and now has an explicit regression test.
+- The gate is now only a maintenance switch. Turning it on keeps the full sitemap and adds no gate-driven `noindex`, so a maintenance window cannot de-index the site; humans still see the gate screen. Private/utility pages keep their own `noindex,nofollow`. Pending: return HTTP 503 + `Retry-After` while the gate is on (needs `src/proxy.ts`); until then keep maintenance windows short.
 - JSON-LD escapes `<`, so stored text cannot terminate the script element. Article markup includes the available modification date.
 
 ## Structured data and AI visibility
