@@ -18,7 +18,7 @@ const groupEs: TravelerTypeData = {
   },
   content: {
     hero: {
-      title: "CREW© RANDOMTRIP",
+      title: "Crew© Randomtrip",
       subtitle:
         "Equipos, amigos, intereses en común: diseñamos escapadas que funcionan para todos.",
       tagline: "Los mejores momentos se viven en plural",

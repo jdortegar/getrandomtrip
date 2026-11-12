@@ -16,7 +16,7 @@ export const groupEn: TravelerTypeData = {
   },
   content: {
     hero: {
-      title: "CREW© RANDOMTRIP",
+      title: "Crew© Randomtrip",
       subtitle:
         "Teams, friends, shared interests: we design getaways that work for everyone.",
       tagline: "The best moments are lived in plural",
