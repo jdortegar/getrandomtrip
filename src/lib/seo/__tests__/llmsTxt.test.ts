@@ -15,6 +15,12 @@ describe("buildLlmsTxt", () => {
     expect(summary).toBe(`> ${en.home.meta.description}`);
   });
 
+  it("states who operates the brand and on which domain", () => {
+    expect(txt).toContain(
+      "Randomtrip is operated by Randomtrip Inc. at getrandomtrip.com.",
+    );
+  });
+
   it("includes the Spanish summary", () => {
     expect(txt).toContain(es.home.meta.description);
   });

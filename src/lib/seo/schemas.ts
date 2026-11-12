@@ -1,17 +1,28 @@
 import { hasLocale, type Locale } from "@/lib/i18n/config";
+import en from "@/dictionaries/en.json";
+import { BRAND, BRAND_OPERATOR_LINE } from "@/lib/seo/brand";
 import { canonicalUrl, SITE_URL as BASE_URL } from "@/lib/seo/urls";
+
+const ORGANIZATION_ID = `${BASE_URL}/#organization`;
 
 export function buildOrganizationSchema(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
+    "@id": ORGANIZATION_ID,
     "@type": "Organization",
+    address: { "@type": "PostalAddress", ...BRAND.address },
+    alternateName: [...BRAND.alternateNames],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
       url: `${BASE_URL}/contact`,
     },
+    description: en.home.meta.description,
+    disambiguatingDescription: `Surprise-trip platform. ${BRAND_OPERATOR_LINE}`,
+    legalName: BRAND.legalName,
     logo: `${BASE_URL}/favicon.png`,
-    name: "Randomtrip",
+    name: BRAND.name,
+    sameAs: [...BRAND.sameAs],
     url: BASE_URL,
   };
 }
@@ -19,8 +30,11 @@ export function buildOrganizationSchema(): Record<string, unknown> {
 export function buildWebSiteSchema(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
+    "@id": `${BASE_URL}/#website`,
     "@type": "WebSite",
-    name: "Randomtrip",
+    alternateName: [...BRAND.alternateNames],
+    name: BRAND.name,
+    publisher: { "@id": ORGANIZATION_ID },
     url: BASE_URL,
   };
 }
