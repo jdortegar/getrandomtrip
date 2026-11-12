@@ -18,7 +18,7 @@ The application owns manual `page_view`. Never derive an event name from hostnam
 | Tag             | Trigger and settings                                                                                                                                                                                                                             |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Base Google tag | Initialization only; exact production hostname, `rt_analytics_allowed` equals boolean `true`, analytics consent required. `send_page_view=false`.                                                                                                |
-| GA4 event tag   | Custom-event regex `^(page_view\|scroll_depth\|sign_up\|login\|generate_lead\|newsletter_subscribe\|waitlist_join\|view_item\|select_item\|begin_checkout\|add_payment_info\|purchase)$`; same host/flag/consent guards; event name `{{Event}}`. |
+| GA4 event tag   | Custom-event regex `^(page_view\|scroll_depth\|sign_up\|login\|generate_lead\|newsletter_subscribe\|waitlist_join\|view_item\|select_item\|begin_checkout\|add_payment_info\|purchase\|ai_referral)$`; same host/flag/consent guards; event name `{{Event}}`. |
 
 Both tags must explicitly set `page_location`, `page_path`, `page_referrer`, `page_title` and `language` from the same-named dataLayer variables. Never use browser URL/title/referrer built-ins. `page_referrer` is always empty. Titles are fixed route names. Public article/profile paths use route templates instead of authored slugs or IDs. Queries and hashes never enter the payload.
 
@@ -32,8 +32,11 @@ Both tags must explicitly set `page_location`, `page_path`, `page_referrer`, `pa
 | `begin_checkout`                                     | `value`, `currency`, `items`: first ready server quote in the mounted checkout                                              |
 | `add_payment_info`                                   | Same monetary fields plus `payment_type=stripe`; submitted complete Stripe element after successful contact validation/save |
 | `purchase`                                           | Same monetary fields plus Stripe `transaction_id`; approved server payment and confirmed booking                            |
+| `ai_referral`                                        | `ai_source`: chatgpt, perplexity, gemini, claude or copilot. Once per browser session, right after the first consented `page_view` of a landing whose referrer host or `utm_source` is an AI answer engine. The referrer and query never leave the browser |
 
-Map each additional parameter to its same-named dataLayer variable: `method`, `percent`, `trip_type`, `transaction_id`, `value`, `currency`, **`items`**, **`payment_type`**. Use **Data Layer Variable Version 1 for `items`** (whole-array replacement, no recursive merge); scalar variables may use Version 2. The event payload is flat, not nested under `ecommerce`.
+Map each additional parameter to its same-named dataLayer variable: `method`, `percent`, `trip_type`, `transaction_id`, `value`, `currency`, **`items`**, **`payment_type`**, `ai_source`. Use **Data Layer Variable Version 1 for `items`** (whole-array replacement, no recursive merge); scalar variables may use Version 2. The event payload is flat, not nested under `ecommerce`.
+
+Register `ai_source` as an event-scoped custom dimension in GA4 so AI referrals can be reported by engine.
 
 The app resets every additional field to `null` before supplying that event's allowed values, and also clears them on route/consent transitions. Do not map user IDs, click labels, origins, arbitrary objects, client secrets, trip IDs, or authored titles.
 

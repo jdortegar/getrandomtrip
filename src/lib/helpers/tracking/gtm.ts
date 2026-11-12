@@ -2,6 +2,7 @@
 
 import { sanitizeEvent } from "./privacy";
 import { currentAnalyticsPage } from "./runtime";
+import type { AiSource } from "./aiReferral";
 import type { CommerceValue } from "./commerce";
 
 export type GTMEvents = { event: string; [key: string]: unknown };
@@ -40,6 +41,7 @@ export function trackCustomEvent(data: GTMEvents): boolean {
     currency: null,
     items: null,
     payment_type: null,
+    ai_source: null,
     ...fields,
     ...safe,
   });
@@ -54,6 +56,24 @@ export function trackScrollDepth(percent: number): boolean {
 }
 export function trackSignUp(method: string): boolean {
   return trackCustomEvent({ event: "sign_up", method });
+}
+const AI_REFERRAL_KEY = "rt-ai-referral";
+
+/** Once per browser session; the flag is written only after a consented send. */
+export function trackAiReferral(source: AiSource): boolean {
+  try {
+    if (window.sessionStorage.getItem(AI_REFERRAL_KEY) === "1") return false;
+  } catch {
+    /* Without storage the caller's per-document guard still applies. */
+  }
+  if (!trackCustomEvent({ event: "ai_referral", ai_source: source }))
+    return false;
+  try {
+    window.sessionStorage.setItem(AI_REFERRAL_KEY, "1");
+  } catch {
+    /* Do not retry within this page lifecycle. */
+  }
+  return true;
 }
 export function trackButtonClick(_label: string): void {
   /* Free-text click labels are intentionally not collected. */
