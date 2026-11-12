@@ -175,3 +175,26 @@ export function buildTravelerTypeServiceSchema(
     url,
   };
 }
+
+/**
+ * schema.org Service for XSED/TGIS: the 1-night experience of the same
+ * surprise-trip family (other levels run 2 to 5 nights); only its booking
+ * flow differs, so it shares the traveler types' serviceType. No prices.
+ */
+export function buildXsedServiceSchema(
+  locale: Locale,
+  copy: { description: string; label: string },
+): Record<string, unknown> {
+  const url = canonicalUrl(locale, "/xsed");
+  return {
+    "@context": "https://schema.org",
+    "@id": `${url}#service`,
+    "@type": "Service",
+    description: copy.description,
+    inLanguage: locale,
+    name: `${copy.label}© ${BRAND.name}`,
+    provider: { "@id": ORGANIZATION_ID },
+    serviceType: SERVICE_TYPE[locale],
+    url,
+  };
+}
