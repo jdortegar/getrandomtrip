@@ -302,9 +302,13 @@ Full platform management at `/(secure)/dashboard/admin/`:
 - Manage drop notification subscriber list
 - Send/manage email notifications
 
+**Maintenance mode**
+
+- Admin toggle "Modo mantenimiento" / "Maintenance mode" (`SiteSetting.gateEnabled`). While on, the proxy answers every page request from anyone who is not a signed-in admin (trippers and travelers see it too) with a standalone maintenance page (logo + short message, es/en) and HTTP 503 + `Retry-After`. APIs, webhooks and `/login` keep working. Takes effect within 30 seconds. Meant only for short windows while changes are being made.
+
 **Waitlist**
 
-- Early access signup management
+- Review, delete and invite existing early-access entries (read-only history: the public waitlist signup and screen were removed in 2026-11; the site gate now shows the maintenance screen)
 
 ---
 
