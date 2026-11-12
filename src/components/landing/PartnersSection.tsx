@@ -21,7 +21,7 @@ export function PartnersSection({ copy }: PartnersSectionProps) {
   return (
     <section
       aria-labelledby="partners-heading"
-      className="bg-neutral-50 pt-5"
+      className="bg-neutral-50 pb-6 pt-5 md:pb-8"
       data-component="PartnersSection"
       id="partners"
     >
