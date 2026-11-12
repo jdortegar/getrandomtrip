@@ -73,8 +73,8 @@ export default async function AboutUsPage(props: LocaleParams) {
       <AboutUsFounder content={aboutUs.founder} />
       <TeamSection content={aboutUs.curators} />
       <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
-      <TrustHero content={aboutUs.trust} locale={locale} />
       <PartnersSection copy={dict.home.partners} />
+      <TrustHero content={aboutUs.trust} locale={locale} />
       {showTrippers && (
         <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
       )}
