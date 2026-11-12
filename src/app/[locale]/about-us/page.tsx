@@ -72,11 +72,14 @@ export default async function AboutUsPage(props: LocaleParams) {
       <AboutUsPhilosophy content={aboutUs.philosophy} id="philosophy" />
       <AboutUsFounder content={aboutUs.founder} />
       <TeamSection content={aboutUs.curators} />
-      <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
       <PartnersSection copy={dict.home.partners} />
+      <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
       <TrustHero content={aboutUs.trust} locale={locale} />
       {showTrippers && (
-        <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
+        <PresentTrippers
+          content={aboutUs.presentTrippers}
+          trippers={trippers}
+        />
       )}
       <FaqBlock
         className={showTrippers && trippers.length > 0 ? "pt-0!" : ""}

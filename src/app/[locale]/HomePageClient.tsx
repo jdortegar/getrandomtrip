@@ -35,6 +35,7 @@ export function HomePageClient({
       <Hero content={home.hero} scrollIndicator variant="home" />
       <TrustSignal copy={home.trustSignal} />
       <HomeInfo content={home.homeInfo} />
+      <PartnersSection copy={home.partners} />
       <ExplorationSection content={home.exploration} trippers={trippers} />
       <Blog
         eyebrow={home.blog.eyebrow}
@@ -54,7 +55,6 @@ export function HomePageClient({
         viewFullReviewLabel={home.testimonials.viewFullReviewLabel}
         testimonials={testimonials ?? []}
       />
-      <PartnersSection copy={home.partners} />
     </main>
   );
 }
