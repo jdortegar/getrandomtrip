@@ -77,6 +77,27 @@ On withdrawal or private navigation, the app synchronously updates the consent b
 - Re-enabling the marketing gate applies `noindex,nofollow` to public routes and returns an empty sitemap; hidden article markup remains behind the existing gate. Public-mode server rendering already worked before this change and now has an explicit regression test.
 - JSON-LD escapes `<`, so stored text cannot terminate the script element. Article markup includes the available modification date.
 
+## Structured data and AI visibility
+
+Goal: be cited by name in AI answers (ChatGPT, Perplexity, Google AI Overviews, Claude, Copilot) for surprise-trip queries in es-LatAm and en-US. Measurement lives in `AiVisibility.md` (monthly prompt panel) and the `ai_referral` event above.
+
+| Surface                       | Schema / output                                                                                                                                                                                                                 | Source                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Every page (root layout)      | `Organization` (`@id` `/#organization`, `legalName` "Randomtrip Inc.", `alternateName`, `sameAs` Instagram/Facebook/LinkedIn, postal address, `disambiguatingDescription`) and `WebSite` (`publisher` → the Organization `@id`) | `src/lib/seo/brand.ts`, `buildOrganizationSchema`, `buildWebSiteSchema` |
+| `/faq`, `/about-us`           | `FAQPage` from the same 8 dictionary items (`faqPage.block` = `aboutUs.faq`)                                                                                                                                                    | `buildFAQPageSchema`                                                    |
+| `/xsed`                       | `FAQPage` + `Service` "XSED© Randomtrip" / "TGIS© Randomtrip"                                                                                                                                                                   | `buildXsedServiceSchema`                                                |
+| `/experiences/by-type/[type]` | `Service` per live traveler type; preview types emit nothing until they leave `PREVIEW_TRAVELER_TYPES`                                                                                                                          | `buildTravelerTypeServiceSchema`                                        |
+| `/llms.txt`                   | Plain-text brief: summary, operator line, how it works, FAQ, XSED/TGIS FAQ, key page links, es + en                                                                                                                             | `src/lib/seo/llmsTxt.ts`, `src/app/llms.txt/route.ts`                   |
+
+Rules:
+
+- **Brand disambiguation.** Other companies use the "Randomtrip" name (randomtrip.net, randomtrip.es). Machine-readable output always pins the brand to Randomtrip Inc., getrandomtrip.com and the official profiles in `brand.ts`; never name or describe the other companies.
+- **One source of truth.** Product facts in schema and `/llms.txt` come from the dictionaries and product data, never duplicated strings. Fix a wrong fact at its dictionary key and every surface follows.
+- **No prices.** Schema, FAQ and `/llms.txt` describe behaviour, not cost (no `offers`, no amounts). Price does not depend on the departure city.
+- **Same family.** Every product, XSED/TGIS included, uses `serviceType` "Viaje sorpresa" / "Surprise trip" and `provider` → the Organization. XSED is the 1-night level (see `SPEC.md` §3.6).
+- **Readable without JavaScript.** AI crawlers mostly don't run JS: FAQ answers are server-rendered (closed accordion panels keep their text, hidden). Verify with `curl -A GPTBot`.
+- **Preview products.** Launching family/honeymoon/paws = removing the slug from `PREVIEW_TRAVELER_TYPES`; its `Service` schema and sitemap entry appear together.
+
 ## Verification and rollback
 
 Check anonymously at mobile 360px and desktop 1280px:

@@ -33,7 +33,7 @@ The primary booking flow. Clients build a trip request across four steps:
 **Step 1 — Budget (required)**
 
 - Select traveler type: `couple`, `solo`, `family`, `group`, `honeymoon`, `paws`
-- Select experience level: `essenza`, `modo-explora`, `explora-plus`, `bivouac`, `atelier-getaway`
+- Select experience level: `essenza` (up to 2 nights), `modo-explora` (3), `explora-plus` (4), `bivouac` (5), `atelier-getaway` (flexible). XSED is the 1-night experience of the same family with its own flow (see 3.6).
 - Real-time base price calculated and displayed
 
 **Step 2 — Excuse (optional, type-dependent)**
@@ -149,6 +149,8 @@ DRAFT → SAVED → PENDING_PAYMENT → CONFIRMED → REVEALED → COMPLETED
 ### 3.6 XSED (Sunday Drops)
 
 Weekly surprise trips at a flat rate of $250 per person.
+
+**Positioning (agreed with the PO):** XSED (es) / TGIS (en) is the **1-night experience** of the same Randomtrip surprise-trip family, not a separate product line. The other levels run 2 (Essenza), 3 (Modo Explora), 4 (Explora+) and 5 (Bivouac) nights, and Atelier is flexible. Only the flow differs: a Saturday drop, a self-drive road trip within 300 km, its own route (`/xsed`), flat pricing and no filter step. Copy, SEO and structured data present it as the shortest experience of the family (same `serviceType` as the traveler-type products), never as a different kind of service.
 
 - New drops published each Sunday
 - Drop cards show a countdown to reveal date
