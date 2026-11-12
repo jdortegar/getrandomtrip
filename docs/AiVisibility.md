@@ -64,3 +64,42 @@ Wrong facts found:
 Competitors named:
 Actions:
 ```
+
+### 2026-11 (baseline, partial)
+
+Run 2026-11-12, logged out, via browser automation. Perplexity: full panel. ChatGPT: E9 only (logged-out session stopped answering after one prompt). Gemini/AI Overviews, Claude, Copilot: not run (need a logged-in or manual session).
+
+```
+Engines: ChatGPT | Perplexity | Gemini/AI Overviews | Claude | Copilot
+E1:  n/r | – | n/r | n/r | n/r
+E2:  n/r | – | n/r | n/r | n/r
+E3:  n/r | – | n/r | n/r | n/r
+E4:  n/r | – | n/r | n/r | n/r
+E5:  n/r | – | n/r | n/r | n/r
+E6:  n/r | – | n/r | n/r | n/r
+E7:  n/r | – | n/r | n/r | n/r
+E8:  n/r | – | n/r | n/r | n/r
+E9:  C   | ✗ | n/r | n/r | n/r
+E10: n/r | – | n/r | n/r | n/r
+N1:  n/r | – | n/r | n/r | n/r
+N2:  n/r | – | n/r | n/r | n/r
+N3:  n/r | – | n/r | n/r | n/r
+N4:  n/r | – | n/r | n/r | n/r
+N5:  n/r | – | n/r | n/r | n/r
+N6:  n/r | – | n/r | n/r | n/r
+N7:  n/r | – | n/r | n/r | n/r
+N8:  n/r | – | n/r | n/r | n/r
+N9:  n/r | ✗ | n/r | n/r | n/r
+N10: n/r | n/a | n/r | n/r | n/r
+ai_referral (GA4, last 30 days): tracking went live 2026-11-12; first real numbers in 2026-12
+Wrong facts found:
+- ✗ = answered about a DIFFERENT "Randomtrip": Perplexity E9/N9 describe randomtrip.net (travel blog by Inês and Chris) and also cite randomtrip.es. Entity confusion, not just absence.
+- ChatGPT E9 is correct (surprise trips, reveal ~48h before, flights + lodging, links getrandomtrip.com) but its image carousel shows another site's offers ("Barcelona 150€").
+Competitors named:
+- es (Perplexity E2): Escappy Travel (Colombia) as the leading LatAm surprise-trip company; Wish and Fly.
+- en (Perplexity N2, citing Forbes): Pack Up + Go, Journee, Guess Where Trips.
+Actions:
+- Disambiguate the entity: Organization schema with sameAs (Instagram, LinkedIn, Facebook), legalName "Randomtrip Inc.", and pages that say "Randomtrip (getrandomtrip.com)".
+- Get listed where the competitors are cited: Forbes-style "best mystery trip companies" roundups, LatAm press like the one citing Escappy.
+- Finish the panel for the n/r engines manually.
+```
