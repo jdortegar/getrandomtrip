@@ -1,5 +1,6 @@
 import { pathWithoutLocale } from "@/lib/i18n/pathForLocale";
 import { canonicalUrl, isIndexablePath } from "@/lib/seo/urls";
+import { isAiSource } from "./aiReferral";
 import { sanitizeCommerce } from "./commerce";
 
 export interface AnalyticsPage {
@@ -103,6 +104,8 @@ export function sanitizeEvent(
     [25, 50, 75, 90, 100].includes(Number(data.percent))
   )
     return { event, percent: Number(data.percent) };
+  if (event === "ai_referral" && isAiSource(data.ai_source))
+    return { event, ai_source: data.ai_source };
   if (event === "generate_lead" && TRIP_TYPES.includes(String(data.trip_type)))
     return { event, trip_type: data.trip_type };
   return sanitizeCommerce(data);

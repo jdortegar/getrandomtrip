@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -25,6 +25,8 @@ export default function FaqSection({
   headingId = "faq-heading",
   items,
 }: FaqSectionProps) {
+  const [openValue, setOpenValue] = useState("");
+
   if (items.length === 0) return null;
 
   return (
@@ -32,7 +34,12 @@ export default function FaqSection({
       aria-labelledby={headingId}
       className={cn("mt-10 text-left", className)} data-component="FaqSection"
     >
-      <Accordion collapsible type="single">
+      <Accordion
+        collapsible
+        onValueChange={setOpenValue}
+        type="single"
+        value={openValue}
+      >
         {items.map((item, index) => (
           <AccordionItem
             className="border-neutral-200"
@@ -56,7 +63,12 @@ export default function FaqSection({
                 {item.question}
               </span>
             </AccordionTrigger>
-            <AccordionContent className="pl-11 text-left text-neutral-600">
+            {/* forceMount keeps closed answers in the server HTML so crawlers and AI engines can read them; `hidden` keeps them collapsed. */}
+            <AccordionContent
+              className="pl-11 text-left text-neutral-600"
+              forceMount
+              hidden={openValue !== `faq-${index}`}
+            >
               {item.answer}
             </AccordionContent>
           </AccordionItem>

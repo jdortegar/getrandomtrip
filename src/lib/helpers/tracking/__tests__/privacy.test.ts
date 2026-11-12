@@ -27,6 +27,22 @@ describe("analytics privacy boundary", () => {
       analyticsPage("/checkout/success?payment_intent_client_secret=secret"),
     ).toMatchObject({ page_path: "/checkout/success", purchaseOnly: true });
   });
+  it("allows ai_referral only with a known coarse AI source", () => {
+    expect(
+      sanitizeEvent({
+        event: "ai_referral",
+        ai_source: "chatgpt",
+        page_referrer: "https://chatgpt.com/c/private",
+      }),
+    ).toEqual({ event: "ai_referral", ai_source: "chatgpt" });
+    expect(
+      sanitizeEvent({
+        event: "ai_referral",
+        ai_source: "chatgpt.com/c/private",
+      }),
+    ).toBeNull();
+    expect(sanitizeEvent({ event: "ai_referral" })).toBeNull();
+  });
   it("strips arbitrary parameters and rejects unapproved event names/values", () => {
     expect(
       sanitizeEvent({
