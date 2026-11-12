@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { FaqBlock } from "@/components/display/FaqBlock";
 import HeaderHero from "@/components/journey/HeaderHero";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { DEFAULT_OG_IMAGE } from "@/lib/seo/og";
+import { buildFAQPageSchema } from "@/lib/seo/schemas";
 import Section from "@/components/layout/Section";
 
 type LocaleParams = { params: Promise<{ locale?: string | string[] }> };
@@ -38,6 +40,7 @@ export default async function FaqPage(props: LocaleParams) {
 
   return (
     <>
+      <JsonLd schema={buildFAQPageSchema(block.items)} />
       <HeaderHero
         className="min-h-[40vh]!"
         description={hero.description}
