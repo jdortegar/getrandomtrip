@@ -29,12 +29,44 @@ describe("buildOrganizationSchema", () => {
     const schema = buildOrganizationSchema();
     expect(schema["@context"]).toBe("https://schema.org");
   });
+
+  it("identifies the brand unambiguously for search and AI engines", () => {
+    const schema = buildOrganizationSchema();
+    expect(schema["@id"]).toBe(`${BASE_URL}/#organization`);
+    expect(schema.legalName).toBe("Randomtrip Inc.");
+    expect(schema.alternateName).toEqual(
+      expect.arrayContaining(["getrandomtrip", "getrandomtrip.com"]),
+    );
+    expect(schema.sameAs).toEqual([
+      "https://www.instagram.com/getrandomtrip",
+      "https://www.facebook.com/getrandomtrip",
+      "https://www.linkedin.com/company/getrandomtrip",
+    ]);
+    expect(schema.address).toMatchObject({
+      "@type": "PostalAddress",
+      addressCountry: "US",
+      addressLocality: "Wilmington",
+      addressRegion: "DE",
+      postalCode: "19808",
+      streetAddress: "251 Little Falls Dr",
+    });
+    expect(String(schema.disambiguatingDescription)).toContain(
+      "getrandomtrip.com",
+    );
+    expect(typeof schema.description).toBe("string");
+  });
 });
 
 describe("buildWebSiteSchema", () => {
   it('returns @type "WebSite"', () => {
     const schema = buildWebSiteSchema();
     expect(schema["@type"]).toBe("WebSite");
+  });
+
+  it("names the organization as publisher by @id", () => {
+    const schema = buildWebSiteSchema();
+    expect(schema["@id"]).toBe(`${BASE_URL}/#website`);
+    expect(schema.publisher).toEqual({ "@id": `${BASE_URL}/#organization` });
   });
 
   it("includes url", () => {

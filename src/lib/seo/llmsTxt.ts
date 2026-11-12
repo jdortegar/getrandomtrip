@@ -5,6 +5,7 @@
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 import type { Locale } from "@/lib/i18n/config";
+import { BRAND, BRAND_OPERATOR_LINE } from "./brand";
 import { canonicalUrl } from "./urls";
 
 type Dict = typeof en;
@@ -77,6 +78,8 @@ export function buildLlmsTxt(): string {
     `> ${en.home.meta.description}`,
     "",
     es.home.meta.description,
+    "",
+    `${BRAND_OPERATOR_LINE} Official profiles: ${BRAND.sameAs.join(", ")}.`,
     "",
     ...localeSection("en", en),
     ...localeSection("es", es as Dict),
