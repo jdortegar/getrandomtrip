@@ -2701,6 +2701,10 @@
           "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
         },
         {
+          "question": "Who do you work with to put my trip together?",
+          "answer": "We work with trusted providers: Duffel for flights, Booking.com for accommodation, Viator and GetYourGuide for activities and experiences, and Stripe to process payments securely."
+        },
+        {
           "question": "What if I need to change the date or cancel?",
           "answer": "It depends on how far in advance you change, the Tripper's policy and any non-refundable supplier costs. If nothing has been booked yet, we'll work to refund you, minus non-refundable fees. You can add cancellation insurance when you book."
         }
@@ -5249,6 +5253,10 @@
         {
           "question": "Who designs my trip?",
           "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
+        },
+        {
+          "question": "Who do you work with to put my trip together?",
+          "answer": "We work with trusted providers: Duffel for flights, Booking.com for accommodation, Viator and GetYourGuide for activities and experiences, and Stripe to process payments securely."
         },
         {
           "question": "What if I need to change the date or cancel?",
