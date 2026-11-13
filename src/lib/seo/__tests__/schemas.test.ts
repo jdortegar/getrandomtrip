@@ -6,7 +6,10 @@ import {
   buildBlogPostingSchema,
   buildFAQPageSchema,
   buildTravelerTypeServiceSchema,
+  buildXsedServiceSchema,
 } from "../schemas";
+import enDict from "@/dictionaries/en.json";
+import esDict from "@/dictionaries/es.json";
 
 const discovery = vi.hoisted(() => ({ enabled: false }));
 vi.mock("@/lib/deployment", async (importOriginal) => ({
@@ -298,4 +301,30 @@ describe("buildTravelerTypeServiceSchema", () => {
       JSON.stringify(buildTravelerTypeServiceSchema("couple", "en")),
     ).not.toMatch(/price|offers|USD/i);
   });
+});
+
+describe("buildXsedServiceSchema", () => {
+  it.each([
+    ["es", esDict, "XSED© Randomtrip", "Viaje sorpresa", `${BASE_URL}/xsed`],
+    ["en", enDict, "TGIS© Randomtrip", "Surprise trip", `${BASE_URL}/en/xsed`],
+  ] as const)(
+    "describes the %s 1-night experience as the same surprise-trip service as the other levels",
+    (locale, dict, name, serviceType, url) => {
+      const schema = buildXsedServiceSchema(locale, {
+        description: dict.xsedPage.meta.description,
+        label: dict.nav.labelXsed,
+      });
+      expect(schema).toEqual({
+        "@context": "https://schema.org",
+        "@id": `${url}#service`,
+        "@type": "Service",
+        description: dict.xsedPage.meta.description,
+        inLanguage: locale,
+        name,
+        provider: { "@id": `${BASE_URL}/#organization` },
+        serviceType,
+        url,
+      });
+    },
+  );
 });

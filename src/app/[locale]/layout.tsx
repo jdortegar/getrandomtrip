@@ -11,11 +11,10 @@ import SessionProvider from "@/components/providers/SessionProvider";
 import SetLocaleLang from "@/components/providers/SetLocaleLang";
 import SyncLocale from "@/components/providers/SyncLocale";
 import { Toaster } from "@/components/ui/toaster";
-import { GateAwareChrome } from "@/components/waitlist/GateAwareChrome";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { AttributionModeBanner } from "@/components/tripper/AttributionModeBanner";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
-import { isGateEnabled } from "@/lib/siteSettings";
 
 /** Avoid SSG so SessionProvider/useSession have request context (no "auth" destructure error during prerender). */
 export const dynamic = "force-dynamic";
@@ -29,16 +28,14 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const { locale } = await props.params;
   if (!hasLocale(locale)) notFound();
-  const [requestHeaders, dict, gateEnabled] = await Promise.all([
+  const [requestHeaders, dict] = await Promise.all([
     headers(),
     getDictionary(locale),
-    isGateEnabled(),
   ]);
   return routeMetadata(
     requestHeaders.get("x-pathname") ?? "/__unresolved",
     locale,
     dict,
-    gateEnabled,
   );
 }
 
@@ -57,25 +54,23 @@ export default async function LocaleLayout(props: {
 
   const dict = await getDictionary(locale);
   const localeTyped = locale as Locale;
-  const gateEnabled = await isGateEnabled();
 
   return (
     <SessionProvider>
       <SetLocaleLang locale={localeTyped} />
       <SyncLocale />
       <CurrencyProvider locale={localeTyped}>
-        <GateAwareChrome
+        <SiteChrome
           banner={
             <Suspense fallback={null}>
               <AttributionModeBanner copy={dict.tripperAttribution} />
             </Suspense>
           }
           dict={dict}
-          gateEnabled={gateEnabled}
           locale={localeTyped}
         >
           {children}
-        </GateAwareChrome>
+        </SiteChrome>
       </CurrencyProvider>
       <AnalyticsConsent copy={dict.analyticsConsent} />
       <GlobalAuthModal dict={dict} />

@@ -2,6 +2,8 @@
 
 Goal: Randomtrip is cited by name in AI answers (ChatGPT, Perplexity, Google AI Overviews / Gemini, Claude, Copilot) for surprise-trip queries in **es-LatAm** and **en-US**. Two signals, reviewed together once a month:
 
+The on-site levers (structured data, `/llms.txt`, brand disambiguation) and their rules are in `AnalyticsSeoLaunch.md` → "Structured data and AI visibility". When the panel finds a wrong fact, fix it there at its dictionary key.
+
 1. **Referral traffic** — GA4 `ai_referral` events by `ai_source` (see `AnalyticsSeoLaunch.md`). Shows people who clicked through.
 2. **Manual prompt panel** — the fixed prompts below. Shows whether we are mentioned at all, even without a click.
 

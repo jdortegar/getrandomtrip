@@ -67,7 +67,7 @@ export function formatRecapMessage(recap: DailyRecap): SlackRecapPayload {
     `🌎 Countries: ${formatList(recap.countries)}`,
     `🔗 Sources: ${formatList(recap.channels)}`,
     `📄 Top pages: ${formatList(recap.pages)}`,
-    `🎯 Actions: sign-ups ${a.signUps} · leads ${a.leads} · waitlist ${a.waitlist} · purchases ${a.purchases}`,
+    `🎯 Actions: sign-ups ${a.signUps} · leads ${a.leads} · purchases ${a.purchases}`,
     "⚠️ Only counts visitors who accepted cookies",
   ].join("\n");
   return {

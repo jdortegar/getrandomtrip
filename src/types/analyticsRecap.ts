@@ -16,7 +16,6 @@ export interface RecapRankedItem {
 export interface RecapActions {
   signUps: number;
   leads: number;
-  waitlist: number;
   purchases: number;
 }
 

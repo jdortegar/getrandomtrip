@@ -53,7 +53,7 @@ it("maps GA4 reports into a DailyRecap with missing events as 0", async () => {
       { label: "/", value: 200 },
       { label: "/journey", value: 90 },
     ],
-    actions: { signUps: 4, leads: 0, waitlist: 0, purchases: 1 },
+    actions: { signUps: 4, leads: 0, purchases: 1 },
   });
 });
 
@@ -87,7 +87,6 @@ it("sends one authenticated batch with the five expected reports", async () => {
   expect(events.dimensionFilter.filter.inListFilter.values).toEqual([
     "sign_up",
     "generate_lead",
-    "waitlist_join",
     "purchase",
   ]);
   for (const r of [countries, channels, pages, events])
@@ -109,7 +108,6 @@ it("handles a zero-traffic day with empty reports and computes UTC-3 dates", asy
   expect(recap.actions).toEqual({
     signUps: 0,
     leads: 0,
-    waitlist: 0,
     purchases: 0,
   });
 });

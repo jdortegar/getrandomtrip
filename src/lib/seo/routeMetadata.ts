@@ -8,7 +8,6 @@ export function routeMetadata(
   path: string,
   locale: Locale,
   dict: Pick<Dictionary, "blogPage" | "experiences" | "home" | "xsedDropsPage">,
-  gateEnabled: boolean,
 ): Metadata {
   if (!isIndexablePath(path))
     return { robots: { index: false, follow: false } };
@@ -32,6 +31,8 @@ export function routeMetadata(
               description: dict.xsedDropsPage.description,
             }
           : undefined;
+  // Maintenance mode never adds noindex: a temporary outage must not drop
+  // public pages from search indexes (Google's guidance is a 503).
   return {
     alternates: buildAlternates(locale, path),
     // Localized site-wide default; pages that set their own description win.
@@ -42,6 +43,5 @@ export function routeMetadata(
           description: indexCopy.description,
         }
       : {}),
-    ...(gateEnabled ? { robots: { index: false, follow: false } } : {}),
   };
 }

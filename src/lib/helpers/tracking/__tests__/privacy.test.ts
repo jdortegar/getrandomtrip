@@ -27,6 +27,9 @@ describe("analytics privacy boundary", () => {
       analyticsPage("/checkout/success?payment_intent_client_secret=secret"),
     ).toMatchObject({ page_path: "/checkout/success", purchaseOnly: true });
   });
+  it("no longer allows the removed waitlist_join event", () => {
+    expect(sanitizeEvent({ event: "waitlist_join" })).toBeNull();
+  });
   it("allows ai_referral only with a known coarse AI source", () => {
     expect(
       sanitizeEvent({

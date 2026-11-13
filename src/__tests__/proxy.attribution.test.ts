@@ -7,6 +7,10 @@ import {
   signAttribution,
 } from "@/lib/tripper/attribution";
 
+// Maintenance is covered by its own tests; keep these from calling /api/site-status.
+vi.mock("@/lib/maintenance/proxyGate", () => ({
+  maintenanceResponse: async () => null,
+}));
 vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
 }));

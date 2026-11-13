@@ -88,11 +88,7 @@ export function sanitizeEvent(
   data: Record<string, unknown>,
 ): Record<string, unknown> | null {
   const { event } = data;
-  if (
-    event === "page_view" ||
-    event === "newsletter_subscribe" ||
-    event === "waitlist_join"
-  )
+  if (event === "page_view" || event === "newsletter_subscribe")
     return { event };
   if (
     (event === "sign_up" || event === "login") &&
