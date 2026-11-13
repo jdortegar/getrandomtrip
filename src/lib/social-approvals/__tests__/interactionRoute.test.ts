@@ -288,11 +288,12 @@ const markClick = {
 it("Mark as posted manually syncs the post and offers the next one in order", async () => {
   mocks.markPosted.mockResolvedValue({ id: "src", status: "SYNCED" });
   expect((await POST(request(markClick))).status).toBe(200);
+  expect(mocks.markPosted).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
   expect(mocks.markPosted).toHaveBeenCalledWith({
     sourceId: "src",
     messageTs: "123.456",
   });
-  await Promise.all(mocks.tasks.map((task) => task()));
   expect(refreshSourceMessage).toHaveBeenCalledWith(
     { id: "src", status: "SYNCED" },
     "SYNCED",

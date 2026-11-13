@@ -198,11 +198,21 @@ async function publish(action: ApprovalAction) {
 
 /** "Mark as posted manually": the post is already on English; offer the next one. */
 async function markPosted(action: ApprovalAction) {
-  const source = await markSourcePosted({
-    sourceId: action.id,
-    messageTs: action.messageTs,
-  });
   after(async () => {
+    let source: Awaited<ReturnType<typeof markSourcePosted>>;
+    try {
+      source = await markSourcePosted({
+        sourceId: action.id,
+        messageTs: action.messageTs,
+      });
+    } catch {
+      console.error("[social-approvals] could not mark source as posted");
+      await notifyClicker(
+        action,
+        "Could not confirm the post was marked. Try again.",
+      );
+      return;
+    }
     if (!source) {
       await notifyClicker(
         action,
