@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { after, NextRequest, NextResponse } from "next/server";
 import {
   refreshSocialMessage,
@@ -205,8 +206,16 @@ async function markPosted(action: ApprovalAction) {
         sourceId: action.id,
         messageTs: action.messageTs,
       });
-    } catch {
-      console.error("[social-approvals] could not mark source as posted");
+    } catch (error) {
+      console.error("[social-approvals] could not mark source as posted", {
+        sourceId: action.id,
+        code:
+          error instanceof Prisma.PrismaClientKnownRequestError
+            ? error.code
+            : error instanceof Error
+              ? error.name
+              : "unknown",
+      });
       await notifyClicker(
         action,
         "Could not confirm the post was marked. Try again.",
