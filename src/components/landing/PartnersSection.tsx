@@ -39,6 +39,15 @@ const PARTNERS = [
     height: 468,
     heightClass: "h-11 md:h-[53px]",
   },
+  {
+    // Official Stripe wordmark (Stripe logo kit, Slate), fill set to the
+    // strip's #7E7E7E grey so it matches the other marks.
+    name: "Stripe",
+    src: "/images/partners/stripe.svg",
+    width: 360,
+    height: 151,
+    heightClass: "h-7 md:h-8",
+  },
 ] as const;
 
 export function PartnersSection({ copy }: PartnersSectionProps) {
@@ -55,29 +64,52 @@ export function PartnersSection({ copy }: PartnersSectionProps) {
       >
         {copy.title}
       </h2>
-      <ul
+      {/*
+        Mobile: one row that autoplays as a seamless loop (the list is rendered
+        twice and slides by half its width). Tablet and up: a static centered
+        row. Reduced motion: no animation, the row scrolls by swiping instead.
+      */}
+      <div
         className={cn(
-          "gap-y-6 grid grid-cols-2 items-center max-w-[1240px] mx-auto px-6 py-6",
-          "md:grid-cols-4 md:min-h-[96px] md:py-0",
-          "lg:flex lg:gap-x-[180px] lg:justify-center",
+          "overflow-hidden motion-reduce:overflow-x-auto",
+          "[mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]",
+          "md:overflow-visible md:[mask-image:none]",
         )}
       >
-        {PARTNERS.map((partner) => (
-          <li className="flex items-center justify-center" key={partner.name}>
-            <Img
-              alt={partner.name}
-              className={cn(
-                "opacity-60 transition-opacity duration-300 w-auto hover:opacity-100",
-                partner.heightClass,
-              )}
-              height={partner.height}
-              sizes="200px"
-              src={partner.src}
-              width={partner.width}
-            />
-          </li>
-        ))}
-      </ul>
+        <ul
+          className={cn(
+            "flex w-max items-center py-6",
+            "animate-[infinite-scroll_20s_linear_infinite] motion-reduce:animate-none",
+            "md:mx-auto md:w-full md:max-w-[1240px] md:min-h-[96px] md:animate-none md:justify-center md:gap-x-10 md:px-6 md:py-0",
+            "lg:gap-x-24 xl:gap-x-[160px]",
+          )}
+        >
+          {[false, true].flatMap((isLoopCopy) =>
+            PARTNERS.map((partner) => (
+              <li
+                aria-hidden={isLoopCopy || undefined}
+                className={cn(
+                  "flex shrink-0 items-center justify-center px-7 md:px-0",
+                  isLoopCopy && "motion-reduce:hidden md:hidden",
+                )}
+                key={`${partner.name}${isLoopCopy ? "-loop" : ""}`}
+              >
+                <Img
+                  alt={isLoopCopy ? "" : partner.name}
+                  className={cn(
+                    "opacity-60 transition-opacity duration-300 w-auto hover:opacity-100",
+                    partner.heightClass,
+                  )}
+                  height={partner.height}
+                  sizes="200px"
+                  src={partner.src}
+                  width={partner.width}
+                />
+              </li>
+            )),
+          )}
+        </ul>
+      </div>
     </section>
   );
 }
