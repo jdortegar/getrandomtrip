@@ -72,6 +72,19 @@ export async function listSourceMedia(
     .sort((x, y) => x.postedAt.getTime() - y.postedAt.getTime());
 }
 
+/** Refresh the first image or video thumbnail before rebuilding a Slack card. */
+export async function getSourcePreview(token: string, mediaId: string) {
+  const media = await graphGet<MediaRow>(
+    `/${encodeURIComponent(mediaId)}`,
+    { fields: "media_type,media_url,thumbnail_url" },
+    token,
+  );
+  return (
+    (media.media_type === "VIDEO" ? media.thumbnail_url : media.media_url) ??
+    null
+  );
+}
+
 /** Instagram shortcode from a permalink such as https://www.instagram.com/p/ABC/. */
 export function shortcodeOf(permalink: string) {
   return permalink.match(/\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/)?.[1] ?? null;

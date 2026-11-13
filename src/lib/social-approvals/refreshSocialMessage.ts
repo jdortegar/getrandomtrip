@@ -3,6 +3,8 @@ import {
   approvalMessage,
   type ApprovalContent,
 } from "./slackApproval";
+import { socialSourceConfig } from "./socialAccounts";
+import { getSourcePreview } from "./sourceMedia";
 import { sourceMessage, type SourceContent } from "./sourceMessage";
 export async function refreshSocialMessage(
   row: ApprovalContent & { messageTs: string | null },
@@ -34,14 +36,18 @@ export async function refreshSocialMessage(
   }
 }
 
-/** Updates the Spanish post card. The expiring CDN preview is not re-sent. */
+/** Updates the Spanish post card with a fresh preview URL from Instagram. */
 export async function refreshSourceMessage(
-  source: SourceContent & { messageTs: string | null },
+  source: SourceContent & { messageTs: string | null; igMediaId: string },
   status: string,
   actor?: string | null,
 ) {
   const config = approvalConfig();
   if (!config || !source.messageTs) return;
+  const account = socialSourceConfig();
+  const previewUrl = account
+    ? await getSourcePreview(account.token, source.igMediaId).catch(() => null)
+    : null;
   try {
     const response = await fetch("https://slack.com/api/chat.update", {
       method: "POST",
@@ -52,7 +58,7 @@ export async function refreshSourceMessage(
       body: JSON.stringify({
         channel: config.channel,
         ts: source.messageTs,
-        ...sourceMessage({ ...source, status }, null, actor),
+        ...sourceMessage({ ...source, status }, previewUrl, actor),
       }),
       signal: AbortSignal.timeout(5000),
     });
