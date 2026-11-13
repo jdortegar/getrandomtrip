@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import { AiServiceError } from "@/lib/ai/aiService";
 import { parseCopyLocks } from "@/lib/ai/socialBrandPolicy";
 import type { Prisma } from "@prisma/client";
 import {
@@ -59,6 +60,13 @@ const ERROR_CODES = new Set([
   "STALE_SOURCE",
   "LEASE_LOST",
   "AI_IMAGE_UNCONFIGURED",
+  "AI_CAPTION_INVALID",
+  "AI_IMAGE_FAILED",
+  "AI_IMAGE_INVALID",
+  "UNTRUSTED_ASSET",
+  "ASSET_INVALID",
+  "ASSET_TOO_LARGE",
+  "ASSET_ORIGIN_UNCONFIGURED",
   "SLACK_DELIVERY_UNCONFIRMED",
   "SLIDES_INVALID",
   "SOURCE_UNCONFIGURED",
@@ -103,10 +111,14 @@ export async function runSocialRevision() {
     });
   } catch (error) {
     // Every uncertain paid/delivery attempt requires explicit admin recovery, never blind retries.
+    const failure =
+      job.kind === "REVISE" && error instanceof AiServiceError
+        ? "AI_CAPTION_REQUEST_FAILED"
+        : "GENERATION_OR_DELIVERY_UNCONFIRMED";
     const code =
       error instanceof Error && ERROR_CODES.has(error.message)
         ? error.message
-        : "GENERATION_OR_DELIVERY_UNCONFIRMED";
+        : failure;
     await prisma.socialRevisionJob.updateMany({
       where,
       data: {
