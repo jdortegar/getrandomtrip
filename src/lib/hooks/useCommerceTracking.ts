@@ -90,7 +90,7 @@ export function usePurchaseTracking(
       !data ||
       consent !== "granted" ||
       data.payment.status !== "APPROVED" ||
-      !["CONFIRMED", "REVEALED", "COMPLETED"].includes(data.trip.status)
+      !["COLLECTING", "CONFIRMED", "REVEALED", "COMPLETED"].includes(data.trip.status)
     )
       return;
     trackPurchase({

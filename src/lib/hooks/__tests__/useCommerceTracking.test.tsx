@@ -172,6 +172,17 @@ it("retries verified purchase on same-mount consent grant without duplicating or
   expect(JSON.stringify(window.dataLayer)).not.toContain("private");
 });
 
+it("tracks the organizer's paid share once a split trip starts collecting", () => {
+  saveAnalyticsConsent("granted");
+  result = {
+    trip: { type: "group", status: "COLLECTING" },
+    payment: { status: "APPROVED", amount: 1023.34, currency: "usd" },
+  } as CheckoutResultSummary;
+  render("/checkout/success");
+  expect(events("purchase")).toHaveLength(1);
+  expect(events("purchase")[0]).toMatchObject(bookingValue("group", 1023.34));
+});
+
 it.each(["PENDING", "FAILED", "REFUNDED"])(
   "never tracks an unapproved %s payment",
   (status) => {

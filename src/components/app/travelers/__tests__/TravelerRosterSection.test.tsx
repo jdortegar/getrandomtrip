@@ -68,6 +68,8 @@ const copy: InviteTravelersDict = {
   landingGreeting: "",
   landingSignupExplainer: "",
   landingSignupCta: "",
+  landingLoginExplainer: "",
+  landingLoginCta: "",
   landingStep2Heading: "",
   landingConsentPrefix: "",
   landingConsentLinkLabel: "",
@@ -214,7 +216,7 @@ describe("TravelerRosterSection — locked banner days", () => {
     expect(container.textContent).toContain("Antes del 2 oct");
     expect(container.textContent).not.toContain("Antes del 1 oct");
     const support = container.querySelector("a");
-    expect(support?.className).toContain("text-secondary");
+    expect(support?.className).toContain("text-primary");
     expect(support?.className).toContain("hover:text-primary");
   });
 

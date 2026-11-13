@@ -1,5 +1,6 @@
 import { pathWithoutLocale } from "@/lib/i18n/pathForLocale";
 import { canonicalUrl, isIndexablePath } from "@/lib/seo/urls";
+import { isAiSource } from "./aiReferral";
 import { sanitizeCommerce } from "./commerce";
 
 export interface AnalyticsPage {
@@ -87,11 +88,7 @@ export function sanitizeEvent(
   data: Record<string, unknown>,
 ): Record<string, unknown> | null {
   const { event } = data;
-  if (
-    event === "page_view" ||
-    event === "newsletter_subscribe" ||
-    event === "waitlist_join"
-  )
+  if (event === "page_view" || event === "newsletter_subscribe")
     return { event };
   if (
     (event === "sign_up" || event === "login") &&
@@ -103,6 +100,8 @@ export function sanitizeEvent(
     [25, 50, 75, 90, 100].includes(Number(data.percent))
   )
     return { event, percent: Number(data.percent) };
+  if (event === "ai_referral" && isAiSource(data.ai_source))
+    return { event, ai_source: data.ai_source };
   if (event === "generate_lead" && TRIP_TYPES.includes(String(data.trip_type)))
     return { event, trip_type: data.trip_type };
   return sanitizeCommerce(data);

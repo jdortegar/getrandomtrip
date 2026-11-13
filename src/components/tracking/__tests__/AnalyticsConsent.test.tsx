@@ -3,7 +3,6 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import AnalyticsConsent from "../AnalyticsConsent";
 import Footer from "@/components/layout/Footer";
-import { WaitlistPage } from "@/components/waitlist/WaitlistPage";
 import { readAnalyticsConsent } from "@/lib/helpers/tracking/consent";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/config";
@@ -140,37 +139,6 @@ it.each(
     expect(setItem).not.toHaveBeenCalled();
     expect(dispatchEvent).not.toHaveBeenCalled();
 
-    act(() => button(copy.preferences).click());
-    expect(button(copy.close)).toBeTruthy();
-    act(() => button(copy.close).click());
-  },
-);
-
-it.each(locales)(
-  "retains withdrawal access in the waitlist footer: $locale",
-  ({ dict }) => {
-    const copy = dict.analyticsConsent;
-    act(() =>
-      root.render(
-        <>
-          <WaitlistPage
-            analyticsPreferencesLabel={copy.preferences}
-            dict={dict.waitlist}
-            onOpenLogin={() => {}}
-          />
-          <AnalyticsConsent copy={copy} />
-        </>,
-      ),
-    );
-    act(() => button(copy.accept).click());
-    expect(
-      container.querySelector('[aria-labelledby="analytics-consent-title"]'),
-    ).toBeNull();
-    expect(button(copy.preferences).closest("footer")).not.toBeNull();
-    act(() => button(copy.preferences).click());
-    expect(readAnalyticsConsent()).toBe("granted");
-    act(() => button(copy.reject).click());
-    expect(readAnalyticsConsent()).toBe("denied");
     act(() => button(copy.preferences).click());
     expect(button(copy.close)).toBeTruthy();
     act(() => button(copy.close).click());

@@ -13,6 +13,11 @@ export function getFixedCheckoutParty(type: string, level: string) {
   return getFixedPaxDetailsForTravelType(type);
 }
 
+/** Splitting the payment needs at least one companion adult, couples included. */
+export function canSplitPayment(details: { adults: number }) {
+  return details.adults >= 2;
+}
+
 export function getCheckoutPaxDetails(trip: {
   type: string;
   level: string;

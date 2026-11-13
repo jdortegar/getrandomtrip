@@ -25,11 +25,9 @@ function expectCompleteCard(type: string, level: string, locale: string) {
   for (const key of [
     "ctaLabel",
     "description",
-    "eyebrow",
     "kicker",
     "name",
     "photoAlt",
-    "revealNote",
     "tag",
   ] as const) {
     expect(card![key].trim(), `${type}/${level}/${locale}.${key}`).not.toBe("");
@@ -56,10 +54,64 @@ describe("getExperienceCard", () => {
     },
   );
 
-  it("only gives honeymoon the Atelier card", () => {
+  it("gives honeymoon an XSED card on the couple photo", () => {
+    const card = getExperienceCard("honeymoon", "xsed", "es");
+    expect(card?.description).toContain("celebrar este nuevo comienzo");
+    expect(card?.photoSrc).toBe("/images/experience-cards/couple/xsed.jpg");
+  });
+
+  it("keeps the per-typology CTA labels", () => {
+    expect(getExperienceCard("solo", "essenza", "es")?.ctaLabel).toBe(
+      "DISEÑA TU ESSENZA",
+    );
+    expect(getExperienceCard("solo", "atelier-getaway", "es")?.ctaLabel).toBe(
+      "CREEMOS LO IRREPETIBLE",
+    );
+    expect(getExperienceCard("solo", "atelier-getaway", "en")?.ctaLabel).toBe(
+      "CREATE THE UNREPEATABLE",
+    );
+    expect(
+      getExperienceCard("honeymoon", "atelier-getaway", "es")?.ctaLabel,
+    ).toBe("CREEMOS SU LUNA DE MIEL");
+    // NUPTIA's XSED card speaks to a couple, like BOND's.
+    expect(getExperienceCard("honeymoon", "xsed", "es")?.ctaLabel).toBe(
+      "NO SE PIERDAN EL DROP",
+    );
+    expect(getExperienceCard("honeymoon", "xsed", "en")?.ctaLabel).toBe(
+      "DON’T MISS THE DROP",
+    );
+  });
+
+  it("keeps every CTA short enough for one line on the card", () => {
+    // 27 chars ("ACTIVATE YOUR MODO EXPLORA™") measured 268px of the 279px
+    // a 336px card's button leaves for text; longer labels risk clipping.
+    for (const type of TYPES) {
+      for (const level of getLevelIdsForType(type)) {
+        for (const locale of LOCALES) {
+          const label = getExperienceCard(type, level, locale)?.ctaLabel ?? "";
+          expect(
+            label.length,
+            `${type}/${level}/${locale}: ${label}`,
+          ).toBeLessThanOrEqual(27);
+          expect(label).not.toMatch(/^LET[’']S /);
+        }
+      }
+    }
+  });
+
+  it("adds the drop schedule only to XSED", () => {
+    const xsed = getExperienceCard("solo", "xsed", "es");
+    expect(xsed?.availabilityNote).toBe(
+      "Solo 10 escapadas por país. La venta abre cada domingo a las 18:00.",
+    );
+    expect(getExperienceCard("solo", "essenza", "es")?.availabilityNote).toBe(
+      undefined,
+    );
+  });
+
+  it("only gives honeymoon the Atelier level", () => {
     expect(getLevelIdsForType("honeymoon")).toEqual(["atelier"]);
     for (const level of [
-      "xsed",
       "essenza",
       "explora",
       "explora-plus",
@@ -77,8 +129,8 @@ describe("getExperienceCard", () => {
     const en = getExperienceCard("solo", "explora", "en")!;
     expect(es.name).toBe("MODO EXPLORA™");
     expect(en.name).toBe("MODO EXPLORA™");
-    expect(es.eyebrow).toBe("Sigue tu curiosidad.");
-    expect(en.eyebrow).toBe("Follow your curiosity.");
+    expect(es.kicker).toBe("Más por descubrir");
+    expect(en.kicker).toBe("More to discover");
     expect(en.photoSrc).toBe(es.photoSrc);
     expect(es.photoSrc).toBe(getExperienceCardPhotoSrc("solo", "modo-explora"));
     expect(es.transport?.modes).toEqual(["train-front", "ship", "plane"]);
@@ -87,10 +139,10 @@ describe("getExperienceCard", () => {
     );
   });
 
-  it("styles XSED and Atelier CTAs per the design", () => {
+  it("styles XSED CTAs in Ochre and every other level, Atelier included, in Deep Teal", () => {
     expect(getExperienceCard("couple", "xsed", "es")?.ctaStyle).toBe("feature");
     expect(getExperienceCard("couple", "atelier", "es")?.ctaStyle).toBe(
-      "outline",
+      "primary",
     );
     expect(getExperienceCard("couple", "essenza", "es")?.ctaStyle).toBe(
       "primary",

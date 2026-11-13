@@ -122,11 +122,6 @@ export interface ContactListResult {
   limit: number;
 }
 
-export interface WaitlistContactInput {
-  email: string;
-  name?: string | null;
-}
-
 export interface FriendsFamilyContactInput {
   email: string;
   name?: string | null;

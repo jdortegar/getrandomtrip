@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { Check, Clock } from "lucide-react";
+import { LocalPriceApprox } from "@/components/common/LocalPriceApprox";
+import { Check } from "lucide-react";
 import { localizeHref } from "@/lib/i18n/localizeHref";
 import type {
   ExperienceCardCtaStyle,
@@ -42,18 +43,13 @@ interface ExperienceCardProps {
   className?: string;
 }
 
-const CTA_VARIANT: Record<
-  ExperienceCardCtaStyle,
-  "default" | "feature" | "secondary"
-> = {
+const CTA_VARIANT: Record<ExperienceCardCtaStyle, "default" | "feature"> = {
   feature: "feature",
-  outline: "secondary",
   primary: "default",
 };
 
 const CTA_TEXT: Record<ExperienceCardCtaStyle, string> = {
   feature: "text-ink",
-  outline: "text-primary",
   primary: "text-white",
 };
 
@@ -99,7 +95,8 @@ export function ExperienceCard({
     }));
   const footnotes = card?.footnotes ?? [];
   const ctaClasses = cn(
-    "h-[46px] w-full rounded-[3px] px-2.5 py-[3px] text-[15px] font-semibold leading-6 tracking-[1.5px]",
+    // CTAs stay on one line; labels are capped in the card data tests.
+    "h-[46px] w-full whitespace-nowrap rounded-[3px] px-2.5 py-[3px] text-[15px] font-semibold leading-6 tracking-[1.5px]",
     CTA_TEXT[ctaStyle],
     ctaClassName,
   );
@@ -115,7 +112,7 @@ export function ExperienceCard({
   return (
     <div
       className={cn(
-        "@container relative flex h-full min-h-155 w-full max-w-75 flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
+        "@container relative flex h-full min-h-155 w-full max-w-84 flex-col overflow-hidden rounded-[7px] bg-white text-left transition-shadow duration-300",
         "shadow-[0_4px_23.9px_0_rgba(0,0,0,0.13)]",
         (onSelect || navigateOnCardClick) &&
           "cursor-pointer hover:shadow-[0_6px_28px_0_rgba(0,0,0,0.2)]",
@@ -149,7 +146,7 @@ export function ExperienceCard({
               alt={card.photoAlt}
               className="absolute inset-0 h-full w-full object-cover"
               height={256}
-              sizes="300px"
+              sizes="336px"
               src={card.photoSrc}
               style={{ objectPosition: card.photoPosition }}
               width={600}
@@ -184,35 +181,39 @@ export function ExperienceCard({
           </p>
         )}
 
-        <p className="font-barlow text-xs leading-none text-neutral-600">
-          {kicker}
-        </p>
-
-        <div className="mt-0.5 flex items-end gap-2">
-          <ExperienceCardName name={name} />
-          <div className="mb-1 h-7.25 w-px shrink-0 bg-primary" />
-          <div className="flex shrink-0 flex-col justify-end">
-            {level.priceLabel ? (
-              <span className="text-[10px] leading-none text-neutral-600">
-                {level.priceLabel}
+        {/* Kicker + name on the left; the prices sit on the name's last line
+            (bottom-aligned) with a divider exactly as tall as the prices, so
+            two-line names don't stretch the divider. */}
+        <div className="flex items-end gap-2.5">
+          <div className="flex min-w-0 flex-col">
+            <p className="mb-0.5 font-barlow text-xs leading-none text-neutral-600">
+              {kicker}
+            </p>
+            <ExperienceCardName name={name} />
+          </div>
+          <div className="flex shrink-0 items-stretch gap-2.5">
+            <div className="w-px shrink-0 bg-primary" />
+            <div className="flex shrink-0 flex-col justify-center">
+              {level.priceLabel ? (
+                <span className="text-[10px] leading-none text-neutral-600">
+                  {level.priceLabel}
+                </span>
+              ) : null}
+              <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
+                {`USD ${level.price}`}
               </span>
-            ) : null}
-            <span className="whitespace-nowrap font-barlow-condensed text-[22px] font-bold leading-6.5 text-primary">
-              {`USD ${level.price}`}
-            </span>
-            <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
-              {level.priceFootnote || copy.perPerson}
-            </span>
+              <LocalPriceApprox
+                className="text-xs leading-tight text-neutral-600"
+                usd={level.price}
+              />
+              <span className="max-w-32 whitespace-pre-line text-xs leading-tight text-neutral-600">
+                {level.priceFootnote || copy.perPerson}
+              </span>
+            </div>
           </div>
         </div>
 
-        {card?.eyebrow ? (
-          <p className="font-barlow font-semibold leading-6 mt-3.25 text-lg text-primary">
-            {card.eyebrow}
-          </p>
-        ) : null}
-
-        <p className="mt-1.5 text-sm leading-4.75 text-neutral-600">
+        <p className="mt-3.25 text-sm leading-4.75 text-neutral-600">
           {description}
         </p>
 
@@ -260,10 +261,9 @@ export function ExperienceCard({
         )}
 
         <div className="mt-auto pt-4">
-          {card?.revealNote ? (
-            <p className="mb-3 flex items-center gap-1 text-xs leading-none text-neutral-600">
-              <Clock aria-hidden className="h-2.5 w-2.5 shrink-0" />
-              {card.revealNote}
+          {card?.availabilityNote ? (
+            <p className="mb-1.5 text-xs leading-snug text-neutral-600">
+              {card.availabilityNote}
             </p>
           ) : null}
           {selectsInPlace ? (

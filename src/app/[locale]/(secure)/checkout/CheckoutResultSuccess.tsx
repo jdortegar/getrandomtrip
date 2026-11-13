@@ -211,7 +211,7 @@ export default function CheckoutResultSuccess({
                         <>
                           {" · "}
                           <a
-                            className="text-secondary underline transition-colors hover:text-secondary/80"
+                            className="text-primary underline transition-colors hover:text-primary/80"
                             href={tripData.payment.receiptUrl}
                             rel="noopener noreferrer"
                             target="_blank"

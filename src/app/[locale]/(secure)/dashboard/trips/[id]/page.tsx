@@ -43,6 +43,7 @@ import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
 import { hasMissingTravelerDetails } from "@/lib/travelers/travelerPolicy";
 import { getLevelName } from "@/lib/utils/levels";
+import { isAwaitingReveal } from "@/lib/utils/trips";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
@@ -697,7 +698,7 @@ function TripDetailsContent() {
                     </div>
                   )}
 
-                  {(trip.status === "CONFIRMED" ||
+                  {(isAwaitingReveal(trip.status) ||
                     trip.status === "REVEALED" ||
                     trip.status === "COMPLETED") && (
                     <Button
@@ -747,7 +748,7 @@ function TripDetailsContent() {
                       />
                     </li>
                   )}
-                  {trip.status === "CONFIRMED" && <li>• {copy.confirmedHint}</li>}
+                  {isAwaitingReveal(trip.status) && <li>• {copy.confirmedHint}</li>}
                   {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}
                 </ul>
               </div>

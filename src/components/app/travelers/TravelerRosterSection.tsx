@@ -63,8 +63,8 @@ export const TravelerRosterSection = forwardRef<
   const supportLink = (
     <Link
       className={cn(
-        "text-secondary transition-colors underline",
-        "hover:text-primary",
+        "text-primary transition-colors underline",
+        "hover:text-primary/80",
       )}
       href={supportHref}
     >

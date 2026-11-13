@@ -25,7 +25,30 @@ vi.mock("@/lib/i18n/dictionaries", () => ({
   getDictionary: (locale: string) => getDictionaryMock(locale),
 }));
 
+vi.mock("@/lib/deployment", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/deployment")>()),
+  showTripperDiscovery: () => false,
+}));
+
+import {
+  Children,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+} from "react";
+import { JsonLd } from "@/components/seo/JsonLd";
 import TravelerTypePage from "@/app/[locale]/experiences/by-type/[type]/page";
+
+async function serviceSchemaFor(type: string) {
+  const page = (await TravelerTypePage({
+    params: Promise.resolve({ locale: "es", type }),
+    searchParams: Promise.resolve({ catalog: "randomtrip" }),
+  })) as ReactElement<{ children: ReactNode }>;
+  const jsonLd = Children.toArray(page.props.children).find(
+    (child) => isValidElement(child) && child.type === JsonLd,
+  ) as ReactElement<{ schema: Record<string, unknown> }> | undefined;
+  return jsonLd?.props.schema;
+}
 
 const FAKE_DICT = {
   packagesByType: {
@@ -179,5 +202,24 @@ describe("TravelerTypePage — parallel data fetching (review finding #10)", () 
     expect(storyAt).toBeGreaterThan(-1);
     expect(publishedAt).toBeGreaterThan(storyAt);
     expect(markup).not.toContain("Duplicate story");
+  });
+});
+
+describe("TravelerTypePage — Service structured data", () => {
+  beforeEach(() => {
+    getPublishedBlogsForTravelTypeMock.mockResolvedValue([]);
+    getReviewsForTripTypeMock.mockResolvedValue([]);
+    getDictionaryMock.mockResolvedValue(FAKE_DICT);
+  });
+
+  it("emits a Service JSON-LD for a live traveler type", async () => {
+    expect(await serviceSchemaFor("couple")).toMatchObject({
+      "@type": "Service",
+      url: "https://getrandomtrip.com/experiences/by-type/couple",
+    });
+  });
+
+  it("emits no Service JSON-LD for a preview traveler type", async () => {
+    expect(await serviceSchemaFor("paws")).toBeUndefined();
   });
 });

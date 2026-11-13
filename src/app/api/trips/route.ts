@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { loadMyTopUps } from "@/lib/payments/my-top-ups.server";
 import { getServerSession } from "next-auth";
 import type { Prisma, TripRequestStatus } from "@prisma/client";
 import {
@@ -133,6 +134,8 @@ export async function GET(request: NextRequest) {
     const overridesByTripperId = await loadTripperPriceOverridesBatch(
       trips.map((trip) => trip.tripperId),
     );
+    // Each viewer's own unpaid top-up only; companions see theirs, never the buyer's payment.
+    const myTopUps = await loadMyTopUps(trips, user.id, new Date());
     const hydratedTrips = attachPaymentsToTrips(
       trips,
       paymentsByTripRequestId,
@@ -151,9 +154,10 @@ export async function GET(request: NextRequest) {
       };
       // Companions never see what the buyer paid or the resolved price. The
       // buyer's documents are their live profile (linked = live).
-      return role === "companion"
+      const visible = role === "companion"
         ? omitBuyerOnlyFields(item)
         : withLiveBuyerDocuments(item, user);
+      return myTopUps[trip.id] ? { ...visible, myTopUp: myTopUps[trip.id] } : visible;
     });
     console.log("Trips found:", trips.length);
 

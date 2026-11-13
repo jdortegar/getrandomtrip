@@ -5,7 +5,7 @@ import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import type { Locale } from "@/lib/i18n/config";
-import type { Trip } from "@/lib/utils/trips";
+import { isAwaitingReveal, type Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
 interface TravelerTripRowProps {
@@ -63,7 +63,7 @@ export function TravelerTripRow({ copy, locale, trip }: TravelerTripRowProps) {
       {/* Actions */}
       <td className="px-5 py-4">
         <div className="flex items-center gap-1.5">
-          {trip.status === "CONFIRMED" && (
+          {isAwaitingReveal(trip.status) && (
             <TableIconLink
               href={pathForLocale(
                 locale as Locale,

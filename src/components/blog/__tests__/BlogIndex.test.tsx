@@ -90,6 +90,26 @@ it("renders nonempty results and does not refetch on an unchanged parent rerende
   expect(requests).toEqual(["/api/blogs?limit=12&locale=en&page=1"]);
 });
 
+it("renders server-provided first page as crawlable links without refetching it", async () => {
+  await act(async () =>
+    harness.render(
+      <BlogIndex
+        copy={{ ...copy }}
+        initial={{ blogs: [post("Server story")], hasMore: true }}
+        locale="en"
+      />,
+    ),
+  );
+  expect(titles()).toEqual(["Server story"]);
+  expect(
+    harness.container.querySelector('a[href="/en/blog/server-story"]'),
+  ).not.toBeNull();
+  expect(requests).toEqual([]);
+  await loadMore();
+  expect(requests).toEqual(["/api/blogs?limit=12&locale=en&page=2"]);
+  expect(titles()).toEqual(["Server story", "Second story"]);
+});
+
 it("appends page two and shows the terminal listing message", async () => {
   await render();
   await loadMore();
@@ -116,7 +136,9 @@ it("resets pagination and replaces the list when the real level filter changes",
     select.value = "xsed";
     select.dispatchEvent(new Event("change", { bubbles: true }));
   });
-  expect(requests.at(-1)).toBe("/api/blogs?limit=12&locale=en&page=1&level=xsed");
+  expect(requests.at(-1)).toBe(
+    "/api/blogs?limit=12&locale=en&page=1&level=xsed",
+  );
   expect(titles()).toEqual(["XSED story"]);
   await act(async () =>
     select.dispatchEvent(new Event("change", { bubbles: true })),

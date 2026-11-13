@@ -2318,9 +2318,9 @@
         "title": "TGIS campaign week"
       },
       "siteAccessGate": {
-        "toggleLabel": "Waitlist gate",
-        "toggleDescription": "When on, visitors without an invited account see the early-access waitlist instead of the site. Invited users always get through.",
-        "maintenanceHint": "Turn this back on during a maintenance window to show the same screen to regular visitors — flip it off when you're done.",
+        "toggleLabel": "Maintenance mode",
+        "toggleDescription": "When on, visitors see the maintenance screen instead of the site. Only signed-in admins still get through; they sign in at /login.",
+        "maintenanceHint": "Use it only while you make changes and turn it off when you're done. Search engines get a temporary maintenance notice (503), so indexing is kept. It can take up to 30 seconds to apply.",
         "stateOn": "On",
         "stateOff": "Off",
         "savedNote": "Saved.",
@@ -2475,7 +2475,7 @@
       "total": "Total",
       "importantTitle": "Important",
       "importantItems": [
-        "The destination is a surprise revealed on drop day.",
+        "The destination is a surprise: you find out 48 hours before departure.",
         "The final price will be confirmed by the team once the drop is assigned.",
         "Includes 1 night of lodging, dinner and a local experience.",
         "You will be redirected to checkout to complete payment."
@@ -2514,6 +2514,7 @@
   },
   "xsedLevelCard": {
     "badge": "Sunday Glitch",
+    "nextDrop": "Next drop {date}",
     "closingLine": "One night, one dinner, and one surprise local experience close to home.",
     "ctaLabel": "Discover TGIS",
     "features": [
@@ -2672,24 +2673,40 @@
       "description": "Everything you need to know before taking the leap.",
       "items": [
         {
-          "question": "How do I take the first step for my surprise trip?",
-          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+          "question": "How does a Randomtrip surprise trip work?",
+          "answer": "You choose who you're traveling with and an experience level, set your dates, departure city and number of travelers, and add filters if you like. A Tripper designs the trip, and you find out the destination 48 hours before departure."
         },
         {
           "question": "What can I choose?",
-          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+          "answer": "Who you're traveling with (solo, as a couple, as a family, as a group, with your pet or on your honeymoon), the experience level, your dates, departure city and number of travelers. You can also filter by transport, accommodation type, climate, maximum travel time and schedules, and mark destinations to avoid. The destination is up to us."
         },
         {
-          "question": "What happens if I need to change the date?",
-          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+          "question": "When do I find out the destination?",
+          "answer": "48 hours before departure. That's when you get the destination, the itinerary, and packing and weather tips to get ready."
         },
         {
           "question": "What's included?",
-          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+          "answer": "Transport from your departure city and accommodation, based on the level you choose: from overland getaways to flights and boutique hotels. Each level adds perks, such as destination guides or included experiences. Your confirmation lists exactly what's included. TGIS works differently: it's a road trip at your own pace, less than 300 km from your city."
         },
         {
-          "question": "How do you design my trip?",
-          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
+          "question": "Can I avoid destinations I already know?",
+          "answer": "Yes. Every level includes one destination to avoid, and Explora+ and Bivouac include a second one. Each additional destination counts as a filter."
+        },
+        {
+          "question": "Does the price change depending on my departure city?",
+          "answer": "No. The price depends on who you're traveling with, the experience level, the number of travelers and any extras you add, not on the city you leave from."
+        },
+        {
+          "question": "Who designs my trip?",
+          "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
+        },
+        {
+          "question": "Who do you work with to put my trip together?",
+          "answer": "We work with trusted providers: Duffel for flights, Booking.com for accommodation, Viator and GetYourGuide for activities and experiences, and Stripe to process payments securely."
+        },
+        {
+          "question": "What if I need to change the date or cancel?",
+          "answer": "It depends on how far in advance you change, the Tripper's policy and any non-refundable supplier costs. If nothing has been booked yet, we'll work to refund you, minus non-refundable fees. You can add cancellation insurance when you book."
         }
       ]
     }
@@ -2813,7 +2830,8 @@
   },
   "home": {
     "geoWelcome": {
-      "message": "Welcome to Randomtrip {country}"
+      "message": "Welcome to Randomtrip {country}",
+      "currencyNote": "Prices in {currency} are for reference only. Charges are made in USD."
     },
     "hero": {
       "branding": {
@@ -2824,7 +2842,7 @@
       "primaryCta": {
         "ariaLabel": "Go to 'Start your trip' with the 'By traveller' tab selected",
         "href": "#exploration-section",
-        "text": "Get Randomtrip!"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
       "accent": "Feel the magic of travel again.",
@@ -2980,6 +2998,9 @@
       "title": "What people say about Randomtrip",
       "viewFullReviewLabel": "View full review"
     },
+    "partners": {
+      "title": "Your trip, in good hands"
+    },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
@@ -3005,6 +3026,7 @@
       "title": "Experiences"
     },
     "hero": {
+      "accent": "Your best story might be where you never looked.",
       "branding": {
         "repeatText": "Repeat",
         "text": "Wonder • Wander"
@@ -3013,10 +3035,10 @@
       "primaryCta": {
         "ariaLabel": "Go to plans by traveler type section",
         "href": "#travel-type-selector",
-        "text": "Get Randomtrip"
+        "text": "Getrandomtrip!"
       },
       "scrollText": "Scroll",
-      "subtitle": "Choose the budget/plan per person for travel and accommodation. We'll take care of the rest.",
+      "subtitle": "First, choose who you're traveling with. Then find the plan that fits you. We organize the trip; you'll discover the destination 48 hours before you leave.",
       "title": "Experiences",
       "videoSrc": "/videos/experiences-hero.mp4"
     },
@@ -4584,6 +4606,25 @@
       "backToEdit": "← Back to edit",
       "continueToPayment": "Continue to payment",
       "paymentTitle": "Complete your payment",
+      "paymentMode": {
+        "title": "How are you paying?",
+        "description": "Pay for the whole trip, or let everyone pay their own share.",
+        "totalOption": "Pay total",
+        "individualOption": "Pay individually",
+        "emailsTitle": "Your companions",
+        "emailsHint": "We'll send each of them an invite to pay their share.",
+        "emailLabel": "Companion {n} email",
+        "calculate": "Calculate my share",
+        "calculating": "Calculating…",
+        "yourShareLabel": "Your share today",
+        "companionShareLabel": "Each companion pays",
+        "minorsIncludedOne": "Includes the share of the minor traveling with you.",
+        "minorsIncludedOther": "Includes the share of the {n} minors traveling with you.",
+        "disclaimer": "Your companions have {hours} hours to pay their share. Anyone who doesn't pay in time won't travel, and the trip is adjusted to those who paid. If that changes the cost of shared extras, we'll ask you for the difference: {max} at most.",
+        "disclaimerRequired": "Accept the individual payment terms to continue.",
+        "emailsInvalid": "Enter a different, valid email for each companion.",
+        "calculateFirst": "Calculate your share to continue to payment."
+      },
       "paymentBack": "Back",
       "paymentSubmit": "Pay now",
       "paymentProcessing": "Processing...",
@@ -5186,24 +5227,40 @@
       "eyebrow": "FAQ's",
       "items": [
         {
-          "question": "How do I take the first step for my surprise trip?",
-          "answer": "Fill out a 3-minute brief with your preferences and limits. From there, your Tripper designs a tailored experience revealed on drop day."
+          "question": "How does a Randomtrip surprise trip work?",
+          "answer": "You choose who you're traveling with and an experience level, set your dates, departure city and number of travelers, and add filters if you like. A Tripper designs the trip, and you find out the destination 48 hours before departure."
         },
         {
           "question": "What can I choose?",
-          "answer": "You choose the travel style, date range, budget and your no-go's. Destination and logistics stay in our hands."
+          "answer": "Who you're traveling with (solo, as a couple, as a family, as a group, with your pet or on your honeymoon), the experience level, your dates, departure city and number of travelers. You can also filter by transport, accommodation type, climate, maximum travel time and schedules, and mark destinations to avoid. The destination is up to us."
         },
         {
-          "question": "What happens if I need to change the date?",
-          "answer": "You can reschedule up to 72 hours in advance at no charge. Later changes are subject to Tripper availability."
+          "question": "When do I find out the destination?",
+          "answer": "48 hours before departure. That's when you get the destination, the itinerary, and packing and weather tips to get ready."
         },
         {
           "question": "What's included?",
-          "answer": "Accommodation, curated activities and logistical support. Flights or transfers from your origin are arranged separately."
+          "answer": "Transport from your departure city and accommodation, based on the level you choose: from overland getaways to flights and boutique hotels. Each level adds perks, such as destination guides or included experiences. Your confirmation lists exactly what's included. TGIS works differently: it's a road trip at your own pace, less than 300 km from your city."
         },
         {
-          "question": "How do you design my trip?",
-          "answer": "Your Tripper combines your brief with their destination knowledge to build an itinerary with rhythm, surprise and emotional coherence."
+          "question": "Can I avoid destinations I already know?",
+          "answer": "Yes. Every level includes one destination to avoid, and Explora+ and Bivouac include a second one. Each additional destination counts as a filter."
+        },
+        {
+          "question": "Does the price change depending on my departure city?",
+          "answer": "No. The price depends on who you're traveling with, the experience level, the number of travelers and any extras you add, not on the city you leave from."
+        },
+        {
+          "question": "Who designs my trip?",
+          "answer": "A Tripper: a travel expert who designs and delivers the experience based on your choices. Randomtrip handles the booking, communication and payment."
+        },
+        {
+          "question": "Who do you work with to put my trip together?",
+          "answer": "We work with trusted providers: Duffel for flights, Booking.com for accommodation, Viator and GetYourGuide for activities and experiences, and Stripe to process payments securely."
+        },
+        {
+          "question": "What if I need to change the date or cancel?",
+          "answer": "It depends on how far in advance you change, the Tripper's policy and any non-refundable supplier costs. If nothing has been booked yet, we'll work to refund you, minus non-refundable fees. You can add cancellation insurance when you book."
         }
       ],
       "title": "Featured questions"
@@ -5263,7 +5320,7 @@
     "trust": {
       "backgroundImage": "/images/about-us-trust.png",
       "ctaAriaLabel": "Go to the 'Start your journey' section",
-      "ctaLabel": "Get Randomtrip",
+      "ctaLabel": "Getrandomtrip!",
       "headline": "Trust in the process",
       "items": [
         {
@@ -5323,25 +5380,10 @@
     "title": "Oops! You're lost",
     "viewPackages": "View Packages"
   },
-  "waitlist": {
-    "headline": "Get early access to Randomtrip's launch",
-    "subheadline": "Join the list and we'll notify you when we're ready.",
-    "nameLabel": "First name",
-    "namePlaceholder": "John",
-    "lastNameLabel": "Last name",
-    "lastNamePlaceholder": "Doe",
-    "emailLabel": "Email",
-    "emailPlaceholder": "you@email.com",
-    "submitButton": "I want early access",
-    "successMessage": "You're in! We'll notify you when it's your turn.",
-    "errorMessage": "Something went wrong. Please try again.",
-    "loginAction": "Log in",
-    "accessDeniedTitle": "Access not allowed",
-    "accessDeniedBody": "Your account doesn't have access yet. If you were invited, check your email; if you believe this is a mistake, contact your administrator.",
-    "signOutLabel": "Sign out",
-    "ariaFacebook": "Facebook",
-    "ariaInstagram": "Instagram",
-    "ariaLinkedin": "LinkedIn"
+  "maintenance": {
+    "eyebrow": "Back soon",
+    "message": "Randomtrip is under maintenance for a little while. Check back in a few minutes: your next story is still waiting.",
+    "title": "We're adjusting the route"
   },
   "profile": {
     "actionsAria": "Account actions",
@@ -5527,6 +5569,7 @@
       "DRAFT": "Draft",
       "SAVED": "Saved",
       "PENDING_PAYMENT": "Pending payment",
+      "COLLECTING": "Collecting individual payments",
       "CONFIRMED": "Confirmed",
       "REVEALED": "Revealed",
       "COMPLETED": "Completed",
@@ -6259,11 +6302,27 @@
     },
     "tripStatus": {
       "CANCELLED": "Cancelled",
+      "COLLECTING": "Waiting on your group",
       "COMPLETED": "Completed",
       "CONFIRMED": "Confirmed",
       "DRAFT": "Draft",
       "REVEALED": "Revealed",
       "SAVED": "Saved"
+    },
+    "topUpDue": {
+      "remainderNote": "Pay it so we can reveal the destination.",
+      "eyebrow": "Your group changed",
+      "title": "A difference is left to pay",
+      "message": "Some people didn't pay in time, so shared extras were split again among those traveling.",
+      "deadline": "Before {date}",
+      "action": "Pay difference",
+      "modalTitle": "Pay the difference",
+      "modalDescription": "Pay {amount} with your card.",
+      "loading": "Preparing secure payment…",
+      "error": "We couldn't prepare the payment.",
+      "retry": "Try again",
+      "paid": "Done, you've paid the difference.",
+      "closed": "The window to pay the difference has closed."
     },
     "unpaidTrips": {
       "action": "Complete payment",
@@ -7137,6 +7196,7 @@
       "DRAFT": "Draft",
       "SAVED": "Saved",
       "PENDING_PAYMENT": "Pending Payment",
+      "COLLECTING": "Collecting Individual Payments",
       "CONFIRMED": "Confirmed",
       "REVEALED": "Revealed",
       "COMPLETED": "Completed",
@@ -7219,6 +7279,22 @@
     "errorAlreadySubmitted": "You have already submitted a review for this trip. Thank you for your time!",
     "errorGeneric": "An error occurred while submitting your review. Please try again."
   },
+  "shareCheckout": {
+    "disclaimer": "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid. Shared extras are split again, so you could pay up to {max} more.",
+    "disclaimerNoCost": "If someone in the group doesn't pay in time, they won't travel and the trip is adjusted to those who paid.",
+    "title": "Your share of the trip",
+    "description": "{name} put this trip together. Pay your share to join.",
+    "amountLabel": "Your share",
+    "deadline": "You have until {date} to pay.",
+    "loading": "Preparing secure payment…",
+    "errorMessage": "We couldn't prepare the payment.",
+    "retry": "Try again",
+    "paidTitle": "Done, you're in",
+    "paidDescription": "We got your payment. We'll let you know when the group is complete.",
+    "closedTitle": "The payment window has closed",
+    "closedDescription": "This trip is no longer taking payments. If you think that's a mistake, talk to {name}.",
+    "toTrips": "Go to my trips"
+  },
   "inviteTravelers": {
     "eyebrow": "Before you travel",
     "heading": "Invite your travel friends",
@@ -7267,6 +7343,8 @@
     "landingGreeting": "{buyerFirstName} invited you to join their randomtrip — the destination is a surprise until reveal.",
     "landingSignupExplainer": "Create an account or log in to complete your travel details — you'll also be able to follow this trip from your dashboard.",
     "landingSignupCta": "Sign up to continue",
+    "landingLoginExplainer": "You already have an account with this email. Log in to complete your travel details and follow this trip from your dashboard.",
+    "landingLoginCta": "Log in to continue",
     "landingStep2Heading": "Almost there — complete your travel details",
     "landingConsentPrefix": "I consent to Randomtrip storing my identity document details to arrange bookings for this trip, per the ",
     "landingConsentLinkLabel": "privacy policy",
@@ -7457,5 +7535,9 @@
     "urgency": "The destination reveal is scheduled within {hours} hours. Please assign an experience before {deadline}.",
     "notificationBody": "The destination reveal for {client} is scheduled within {hours} hours ({deadline}). Assign an experience before the reveal.",
     "cta": "GO TO ADMIN PANEL"
+  },
+  "currency": {
+    "checkoutDisclaimer": "Charges are made in US dollars (USD). Amounts in other currencies are approximate, and your bank sets the final exchange rate.",
+    "cardTaxesNote": "Your card issuer may add taxes and fees (e.g. Argentine percepciones)."
   }
 }

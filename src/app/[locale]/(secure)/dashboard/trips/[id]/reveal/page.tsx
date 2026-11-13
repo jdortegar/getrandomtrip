@@ -20,6 +20,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { getRevealCountdown } from "@/lib/helpers/getRevealCountdown";
 import type { TripItineraryDict, TripRevealDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
+import { isAwaitingReveal } from "@/lib/utils/trips";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 
 interface CountdownState {
@@ -75,7 +76,7 @@ function RevealContent() {
   }, [tripId, session?.user?.id]);
 
   useEffect(() => {
-    if (!trip || trip.status !== "CONFIRMED" || !trip.startDate) return;
+    if (!trip || !isAwaitingReveal(trip.status) || !trip.startDate) return;
 
     function tick() {
       setCountdown(
@@ -137,9 +138,9 @@ function RevealContent() {
     return <TripItineraryContent />;
   }
 
-  // ── Pre-reveal state (CONFIRMED) ─────────────────────────────────────────────
+  // ── Pre-reveal state (CONFIRMED / COLLECTING) ───────────────────────────────────────────
   const isPendingAssignment =
-    countdown?.revealed === true && trip.status === "CONFIRMED";
+    countdown?.revealed === true && isAwaitingReveal(trip.status);
 
   const pad = (n: number) => String(n).padStart(2, "0");
 

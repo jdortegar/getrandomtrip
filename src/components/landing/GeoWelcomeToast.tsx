@@ -17,11 +17,14 @@ interface GeoWelcomeToastProps {
   flagSvg: string | null;
   /** Localized, ready-to-show message, e.g. "Welcome to Randomtrip Argentina". */
   message: string;
+  /** Optional second line, e.g. the local-currency reference note (non-USD countries). */
+  description?: string;
 }
 
 /** Welcomes the visitor by country every time they enter the site. */
 export function GeoWelcomeToast({
   countryCode,
+  description,
   flagSvg,
   message,
 }: GeoWelcomeToastProps) {
@@ -31,6 +34,7 @@ export function GeoWelcomeToast({
     const timer = window.setTimeout(() => {
       welcomedThisPageLoad = true;
       toast.info(message, {
+        description,
         duration: WELCOME_DURATION_MS,
         // The Toaster top-aligns toasts inline; center the flag with the text here.
         classNames: { toast: "!items-center" },
@@ -46,7 +50,7 @@ export function GeoWelcomeToast({
     }, WELCOME_DELAY_MS);
 
     return () => window.clearTimeout(timer);
-  }, [countryCode, flagSvg, message]);
+  }, [countryCode, description, flagSvg, message]);
 
   return null;
 }

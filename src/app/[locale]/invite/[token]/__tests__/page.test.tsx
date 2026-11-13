@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 
-const { peek, session, profileDocuments } = vi.hoisted(() => ({
+const { peek, session, profileDocuments, hasAccount } = vi.hoisted(() => ({
   peek: vi.fn(),
   session: vi.fn(),
   profileDocuments: vi.fn(),
+  hasAccount: vi.fn(),
 }));
 
 vi.mock("next-auth", () => ({ getServerSession: session }));
@@ -13,6 +14,7 @@ vi.mock("@/lib/i18n/dictionaries", () => ({ getDictionary: vi.fn() }));
 vi.mock("@/lib/travelers/travelerInviteTokens", () => ({
   peekTravelerInvite: peek,
   getProfileTravelDocuments: profileDocuments,
+  inviteeHasAccount: hasAccount,
 }));
 vi.mock("@/components/Navbar", () => ({ default: () => null }));
 vi.mock("@/components/travelers/TravelerInviteClient", () => ({ default: () => null }));
@@ -47,6 +49,7 @@ beforeEach(() => {
   vi.mocked(getDictionary).mockResolvedValue({ auth: {}, inviteTravelers: {} } as never);
   peek.mockResolvedValue(okPeek);
   session.mockResolvedValue(null);
+  hasAccount.mockResolvedValue(false);
 });
 
 describe("invite page payload (T11)", () => {
@@ -79,6 +82,26 @@ describe("invite page payload (T11)", () => {
 
     expect(resolution).toMatchObject({ invitedEmail: "jane.doe@gmail.com" });
     expect(resolution.emailMismatch).toBeFalsy();
+  });
+
+  it("tells a signed-out viewer whether the invited address already has an account", async () => {
+    hasAccount.mockResolvedValue(true);
+    const { resolution } = await renderPage();
+    expect(hasAccount).toHaveBeenCalledWith("trav-1");
+    expect(resolution).toMatchObject({ inviteeHasAccount: true });
+
+    hasAccount.mockRejectedValue(new Error("db down"));
+    expect((await renderPage()).resolution).toMatchObject({ ok: true, inviteeHasAccount: false });
+  });
+
+  it("skips the account lookup for a signed-in viewer", async () => {
+    session.mockResolvedValue({ user: { email: "other@example.com" } });
+    peek.mockResolvedValue({ ...okPeek, viewerEmailMatches: false });
+
+    const { resolution } = await renderPage();
+
+    expect(hasAccount).not.toHaveBeenCalled();
+    expect(resolution.inviteeHasAccount).toBeFalsy();
   });
 
   it("still renders the error card for a dead token", async () => {

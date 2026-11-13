@@ -62,11 +62,15 @@ import TripperInvite, {
 import TravelerInvite, {
   getSubject as getTravelerInviteSubject,
 } from "@/emails/TravelerInvite";
+import TopUpDue, { getSubject as getTopUpDueSubject } from "@/emails/TopUpDue";
 import TravelerReminder, {
   getSubject as getTravelerReminderSubject,
 } from "@/emails/TravelerReminder";
 import { safeInviteReturnPath } from "@/lib/auth/inviteReturnPath";
-import { buildTravelerInviteUrl } from "@/lib/travelers/travelerInviteUrl";
+import { buildTravelerInviteUrl, getInviteOrigin } from "@/lib/travelers/travelerInviteUrl";
+import { loadInviteeMaxTopUp } from "@/lib/payments/invitee-top-up.server";
+import { formatPaymentDeadline } from "@/lib/payments/payment-deadline";
+import { RETRYABLE_PAYMENT_STATUSES } from "@/lib/helpers/checkout-trip";
 import TripStartVouchers, {
   subjects as tripStartVouchersSubjects,
 } from "@/emails/TripStartVouchers";
@@ -905,7 +909,10 @@ export async function deliverTravelerInviteEmail(
 ): Promise<void> {
   const traveler = await prisma.tripTraveler.findUnique({
     where: { id: travelerId },
-    include: { tripRequest: { include: { user: true } } },
+    include: {
+      tripRequest: { include: { user: true } },
+      paymentShares: { where: { kind: "SHARE" } },
+    },
   });
 
   if (!traveler?.email) return;
@@ -914,6 +921,19 @@ export async function deliverTravelerInviteEmail(
   const locale = resolveLocale(tripRequest.user.locale);
   const buyerFirstName = tripRequest.user.name?.split(" ")[0] ?? "";
   const inviteUrl = buildTravelerInviteUrl(locale, plaintextToken);
+  // Individually paid trips: the companion pays their own share by the deadline.
+  const shareRow = traveler.paymentShares?.[0];
+  const formatUsd = (amount: number, currency: string) =>
+    `${currency} ${amount.toFixed(Number.isInteger(amount) ? 0 : 2)}`;
+  let share: { amount: string; deadline: string; maxTopUp: string | null } | null = null;
+  if (tripRequest.paymentMode === "INDIVIDUAL" && shareRow && tripRequest.paymentDeadline) {
+    const maxTopUp = await loadInviteeMaxTopUp(tripRequest);
+    share = {
+      amount: formatUsd(shareRow.amount, shareRow.currency),
+      deadline: formatPaymentDeadline(tripRequest.paymentDeadline, locale, tripRequest.departureTimeZone),
+      maxTopUp: maxTopUp > 0 ? formatUsd(maxTopUp, shareRow.currency) : null,
+    };
+  }
 
   await sendMail({
     to: traveler.email,
@@ -926,6 +946,7 @@ export async function deliverTravelerInviteEmail(
         startDate: tripRequest.startDate,
         endDate: tripRequest.endDate,
         tripType: tripRequest.type,
+        share,
       }),
     },
   });
@@ -1199,4 +1220,50 @@ export async function sendTripStartVouchers(
   });
 
   return { sent: true };
+}
+
+/**
+ * Tells one payer their share of the smaller group went up after the
+ * deadline. Rejects when the provider fails; see `sendTopUpDueEmail`.
+ */
+export async function deliverTopUpDueEmail(shareId: string, reminder = false): Promise<void> {
+  const share = await prisma.paymentShare.findUnique({
+    where: { id: shareId },
+    include: { user: true, payment: { include: { tripRequest: true } } },
+  });
+  if (!share || !share.user?.email) return;
+  // A reminder for a share settled since it was selected would be wrong.
+  if (reminder && !(RETRYABLE_PAYMENT_STATUSES as readonly string[]).includes(share.status)) return;
+  const remainder = share.kind === "ORGANIZER_REMAINDER";
+  if (share.kind !== "TOP_UP" && !remainder) return;
+  const trip = share.payment.tripRequest;
+  // A top-up states its pay-by time; the remainder is due before the reveal.
+  if (!remainder && !trip.topUpDeadline) return;
+  const locale = resolveLocale(share.user.locale);
+  const amount = `${share.currency} ${share.amount.toFixed(Number.isInteger(share.amount) ? 0 : 2)}`;
+  await sendMail({
+    to: share.user.email,
+    subject: getTopUpDueSubject(locale, amount, reminder, remainder),
+    content: {
+      react: React.createElement(TopUpDue, {
+        dashboardUrl: `${getInviteOrigin()}/${locale}/dashboard`,
+        locale,
+        amount,
+        deadline: trip.topUpDeadline
+          ? formatPaymentDeadline(trip.topUpDeadline, locale, trip.departureTimeZone)
+          : null,
+        travelers: trip.pax,
+        isOrganizer: share.userId === trip.userId,
+        reminder,
+        remainder,
+      }),
+    },
+  });
+}
+
+/** Fire-and-forget wrapper: failures are logged, never thrown. */
+export function sendTopUpDueEmail(shareId: string): void {
+  void deliverTopUpDueEmail(shareId).catch((err) => {
+    console.error("[email] sendTopUpDueEmail:", err);
+  });
 }

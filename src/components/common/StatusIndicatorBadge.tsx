@@ -154,6 +154,7 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
     fallback: "neutral",
     statuses: {
       CANCELLED: "danger",
+      COLLECTING: "warning",
       COMPLETED: "success",
       CONFIRMED: "success",
       DRAFT: "neutral",

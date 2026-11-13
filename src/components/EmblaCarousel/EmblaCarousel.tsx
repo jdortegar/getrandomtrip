@@ -30,7 +30,8 @@ type EmblaCarouselProps = {
 
 const EMBLA_OPTIONS: EmblaOptionsType = {
   align: "start",
-  containScroll: false,
+  // Stop once the last slide is fully visible instead of scrolling it to the start.
+  containScroll: "trimSnaps",
 };
 
 const EmblaCarousel = ({
@@ -164,21 +165,16 @@ const EmblaCarousel = ({
               <div
                 key={index}
                 className={cn(
-                  "min-w-0 shrink-0 flex-[0_0_80%] sm:flex-[0_0_50%]",
-                  // A static row has no scroll to absorb the gap-3 gutters, so
-                  // the gutters come out of the slide widths to keep it in view.
-                  isStatic
-                    ? {
-                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)]":
-                          slidesPerView === 3,
-                        "@md:flex-[0_0_calc((100%_-_1.5rem)/3)] @lg:flex-[0_0_calc((100%_-_2.25rem)/4)]":
-                          slidesPerView === 4,
-                      }
-                    : {
-                        "@md:flex-[0_0_33.3333%]": slidesPerView === 3,
-                        "@md:flex-[0_0_33.3333%] @lg:flex-[0_0_25%]":
-                          slidesPerView === 4,
-                      },
+                  "min-w-0 shrink-0 flex-[0_0_80%] sm:flex-[0_0_calc((100%_-_0.75rem)/2)]",
+                  // The gap-3 gutters come out of the slide widths so a full
+                  // page fits exactly: otherwise the row overflows by the
+                  // gutters and the last snap adds a near-duplicate dot.
+                  {
+                    "@md:flex-[0_0_calc((100%_-_1.5rem)/3)]":
+                      slidesPerView === 3,
+                    "@md:flex-[0_0_calc((100%_-_1.5rem)/3)] @lg:flex-[0_0_calc((100%_-_2.25rem)/4)]":
+                      slidesPerView === 4,
+                  },
                   slideClassName,
                 )}
               >

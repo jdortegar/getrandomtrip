@@ -5,6 +5,8 @@ const mocks = vi.hoisted(() => ({
   findLegacy: vi.fn(),
   update: vi.fn(),
   retrieve: vi.fn(),
+  findShare: vi.fn(),
+  settleShare: vi.fn(),
 }));
 vi.mock("next-auth", () => ({
   getServerSession: async () => ({ user: { id: "buyer" } }),
@@ -21,6 +23,10 @@ vi.mock("@/lib/db/payment", async (importOriginal) => ({
   findPaymentByStripeIntentId: mocks.find,
   findPaymentByProviderId: mocks.findLegacy,
   updatePaymentFromStripeWebhook: mocks.update,
+}));
+vi.mock("@/lib/db/paymentShare", () => ({
+  findShareByIntent: mocks.findShare,
+  settleShareFromStripe: mocks.settleShare,
 }));
 import { POST } from "../route";
 const request = () =>
@@ -124,3 +130,37 @@ it("takes live mode only from Stripe, not the browser request", async () => {
   expect((await POST(forged)).status).toBe(200);
   expect(mocks.update).toHaveBeenCalledWith("pi_test", expect.objectContaining({ status: "APPROVED" }), undefined, false);
 });
+it("settles the signed-in companion's own share intent, never the trip payment", async () => {
+  mocks.find.mockResolvedValue(null);
+  mocks.findLegacy.mockResolvedValue(null);
+  mocks.findShare.mockResolvedValue({ id: "share-1", userId: "buyer", stripePaymentIntentId: "pi_test" });
+  mocks.retrieve.mockResolvedValue({ id: "pi_test", status: "succeeded", created: 7, metadata: { shareId: "share-1", kind: "SHARE" } });
+  const res = await POST(request());
+  expect(res.status).toBe(200);
+  expect(await res.json()).toEqual({ status: "succeeded" });
+  expect(mocks.settleShare).toHaveBeenCalledWith("pi_test", "APPROVED", new Date(7000));
+  expect(mocks.update).not.toHaveBeenCalled();
+});
+it("refuses another person's share intent without asking Stripe", async () => {
+  mocks.find.mockResolvedValue(null);
+  mocks.findLegacy.mockResolvedValue(null);
+  mocks.findShare.mockResolvedValue({ id: "share-1", userId: "someone-else", stripePaymentIntentId: "pi_test" });
+  expect((await POST(request())).status).toBe(403);
+  expect(mocks.retrieve).not.toHaveBeenCalled();
+  expect(mocks.settleShare).not.toHaveBeenCalled();
+});
+it("keeps 404 when neither a payment nor a share holds the intent", async () => {
+  mocks.find.mockResolvedValue(null);
+  mocks.findLegacy.mockResolvedValue(null);
+  mocks.findShare.mockResolvedValue(null);
+  expect((await POST(request())).status).toBe(404);
+});
+it("does not settle a share from an intent issued for another share", async () => {
+  mocks.find.mockResolvedValue(null);
+  mocks.findLegacy.mockResolvedValue(null);
+  mocks.findShare.mockResolvedValue({ id: "share-1", userId: "buyer", stripePaymentIntentId: "pi_test" });
+  mocks.retrieve.mockResolvedValue({ id: "pi_test", status: "succeeded", created: 7, metadata: { shareId: "share-2" } });
+  await POST(request());
+  expect(mocks.settleShare).not.toHaveBeenCalled();
+});
+

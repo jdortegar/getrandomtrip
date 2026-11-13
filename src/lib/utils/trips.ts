@@ -1,3 +1,4 @@
+import type { MyTopUp } from "@/types/payments";
 export interface Trip {
   basePriceUsd?: number;
   accommodationType?: string;
@@ -32,6 +33,8 @@ export interface Trip {
   };
   /** Viewer's relation to the trip; companions never receive `payment`. */
   viewerRole?: "buyer" | "companion";
+  /** The viewer's own unpaid top-up, when the trip is in its top-up grace period. */
+  myTopUp?: MyTopUp;
 }
 
 export interface Payment {
@@ -161,7 +164,15 @@ export function mapTripFromApi(raw: unknown): Trip {
       : undefined,
     viewerRole:
       trip.role === "buyer" || trip.role === "companion" ? trip.role : undefined,
+    ...(isMyTopUp(trip.myTopUp) ? { myTopUp: trip.myTopUp } : {}),
   };
+}
+
+function isMyTopUp(value: unknown): value is MyTopUp {
+  if (!value || typeof value !== "object") return false;
+  const v = value as Record<string, unknown>;
+  return typeof v.shareId === "string" && typeof v.amount === "number" &&
+    typeof v.currency === "string" && (typeof v.deadline === "string" || v.deadline === null);
 }
 
 /**
@@ -183,8 +194,17 @@ export function isTripAwaitingPayment(trip: Trip): boolean {
  * so the status alone would keep past trips listed as upcoming. Trip dates
  * are calendar days stored at UTC midnight, so compare against today in UTC.
  */
+/**
+ * Booked but not revealed yet: the reveal countdown applies. COLLECTING is a
+ * split-payment trip the organizer paid while companions are still paying.
+ */
+export function isAwaitingReveal(status: string): boolean {
+  return status === "CONFIRMED" || status === "COLLECTING";
+}
+
 export function isUpcomingTrip(trip: Trip, now: Date = new Date()): boolean {
-  if (trip.status !== "CONFIRMED" && trip.status !== "REVEALED") return false;
+  // COLLECTING is booked too: the organizer (and maybe this companion) paid.
+  if (!["COLLECTING", "CONFIRMED", "REVEALED"].includes(trip.status)) return false;
   const lastDay = new Date(trip.endDate || trip.startDate);
   if (Number.isNaN(lastDay.getTime())) return true;
   const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());

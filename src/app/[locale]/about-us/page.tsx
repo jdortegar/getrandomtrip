@@ -9,6 +9,7 @@ import { AboutUsFounder } from "@/components/app/about-us/AboutUsFounder";
 import { TeamSection } from "@/components/app/about-us/TeamSection";
 import { AboutUsSteps } from "@/components/app/about-us/AboutUsSteps";
 import { TrustHero } from "@/components/app/about-us/TrustHero";
+import { PartnersSection } from "@/components/landing/PartnersSection";
 import { PresentTrippers } from "@/components/app/about-us/PresentTrippers";
 import { showTripperDiscovery } from "@/lib/deployment";
 import { getDiscoverableTrippers } from "@/lib/tripper/discovery.server";
@@ -44,10 +45,11 @@ export default async function AboutUsPage(props: LocaleParams) {
   const localeStr = typeof raw === "string" ? raw : raw?.[0];
   const locale = hasLocale(localeStr) ? localeStr : "es";
   const showTrippers = showTripperDiscovery();
-  const [aboutUs, rawTrippers] = await Promise.all([
-    getDictionary(locale).then((d) => d.aboutUs),
+  const [dict, rawTrippers] = await Promise.all([
+    getDictionary(locale),
     getDiscoverableTrippers(),
   ]);
+  const aboutUs = dict.aboutUs;
 
   const trippers = rawTrippers
     .filter((t) => t.tripperSlug && t.bio && t.bio.trim().length > 0)
@@ -70,10 +72,14 @@ export default async function AboutUsPage(props: LocaleParams) {
       <AboutUsPhilosophy content={aboutUs.philosophy} id="philosophy" />
       <AboutUsFounder content={aboutUs.founder} />
       <TeamSection content={aboutUs.curators} />
+      <PartnersSection copy={dict.home.partners} />
       <AboutUsSteps content={aboutUs.steps} cta={aboutUs.cta} locale={locale} />
       <TrustHero content={aboutUs.trust} locale={locale} />
       {showTrippers && (
-        <PresentTrippers content={aboutUs.presentTrippers} trippers={trippers} />
+        <PresentTrippers
+          content={aboutUs.presentTrippers}
+          trippers={trippers}
+        />
       )}
       <FaqBlock
         className={showTrippers && trippers.length > 0 ? "pt-0!" : ""}

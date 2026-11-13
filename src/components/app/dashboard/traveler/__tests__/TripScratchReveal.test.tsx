@@ -26,7 +26,7 @@ const copy = { title: "Scratch to reveal", subtitle: "Drag your finger" };
 // Node 25's native (unflagged) `localStorage` global shadows happy-dom's
 // implementation and is non-functional without `--localstorage-file`
 // (`setItem`/`clear` throw). Stub a real in-memory implementation per test
-// file rather than touching the shared vitest config (see GateAwareChrome.test.tsx).
+// file rather than touching the shared vitest config (same workaround as other component tests).
 function makeLocalStorageStub() {
   let store = new Map<string, string>();
   return {

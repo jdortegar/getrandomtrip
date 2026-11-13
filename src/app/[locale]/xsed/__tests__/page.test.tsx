@@ -152,3 +152,23 @@ describe("XSED FAQ spacing", () => {
     expect(faqClasses).toContain("pt-0!");
   });
 });
+
+describe("XSED structured data", () => {
+  it("emits FAQPage and a TGIS Service JSON-LD on the English page", async () => {
+    const { container } = await renderPage();
+    const schemas = Array.from(
+      container.querySelectorAll('script[type="application/ld+json"]'),
+    ).map((node) => JSON.parse(node.textContent ?? "{}"));
+
+    expect(schemas.map((schema) => schema["@type"])).toEqual(
+      expect.arrayContaining(["FAQPage", "Service"]),
+    );
+    expect(
+      schemas.find((schema) => schema["@type"] === "Service"),
+    ).toMatchObject({
+      name: "TGIS© Randomtrip",
+      provider: { "@id": "https://getrandomtrip.com/#organization" },
+      url: "https://getrandomtrip.com/en/xsed",
+    });
+  });
+});

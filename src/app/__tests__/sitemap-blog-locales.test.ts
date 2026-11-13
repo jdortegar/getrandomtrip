@@ -73,8 +73,25 @@ it("skips traveler story slugs a published post already claims", async () => {
   );
 });
 
-it("advertises no hidden pages when the launch gate is reenabled", async () => {
+it("keeps advertising public pages while maintenance mode is on", async () => {
   const { isGateEnabled } = await import("@/lib/siteSettings");
-  vi.mocked(isGateEnabled).mockResolvedValueOnce(true);
-  expect(await sitemap()).toEqual([]);
+  vi.mocked(isGateEnabled).mockResolvedValue(true);
+  try {
+    const urls = (await sitemap()).map((entry) => entry.url);
+    expect(urls).toContain("https://getrandomtrip.com");
+    expect(urls).toContain("https://getrandomtrip.com/en/blog/translated");
+  } finally {
+    vi.mocked(isGateEnabled).mockResolvedValue(false);
+  }
+});
+
+it("advertises the same pages whether maintenance mode is on or off", async () => {
+  const { isGateEnabled } = await import("@/lib/siteSettings");
+  const off = (await sitemap()).map((entry) => entry.url);
+  vi.mocked(isGateEnabled).mockResolvedValue(true);
+  try {
+    expect((await sitemap()).map((entry) => entry.url)).toEqual(off);
+  } finally {
+    vi.mocked(isGateEnabled).mockResolvedValue(false);
+  }
 });

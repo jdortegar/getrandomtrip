@@ -8,7 +8,11 @@ import {
 } from "@/components/app/dashboard";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
 import { UpcomingTripsList } from "@/components/app/dashboard/traveler/UpcomingTripsList";
+import { TopUpDueAlert } from "@/components/app/dashboard/TopUpDueAlert";
+import { TopUpPaymentModal } from "@/components/app/dashboard/traveler/TopUpPaymentModal";
+import type { StripePaymentForm } from "@/components/app/checkout/StripePaymentForm";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
+import type { CurrencyDict } from "@/lib/types/dictionary";
 import { DashboardRoleToast } from "@/components/common/DashboardRoleToast";
 import {
   getPayments,
@@ -21,9 +25,12 @@ import {
 
 interface TravelerHomePageClientProps {
   copy: DashboardCopy;
+  currencyCopy: CurrencyDict;
   eyebrow: string;
   heading: string;
   locale: string;
+  /** Stripe form copy for the top-up modal (`journey.checkout.payment*`). */
+  paymentCopy: Parameters<typeof StripePaymentForm>[0]["copy"];
   roleToast: string;
 }
 
@@ -54,12 +61,15 @@ function computeDashboardStats(
 
 export function TravelerHomePageClient({
   copy,
+  currencyCopy,
   eyebrow,
   heading,
   locale,
+  paymentCopy,
   roleToast,
 }: TravelerHomePageClientProps) {
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [payingTrip, setPayingTrip] = useState<Trip | null>(null);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     averageRating: 0,
@@ -144,6 +154,13 @@ export function TravelerHomePageClient({
             <DashboardStatsGrid copy={copy} stats={stats} />
           </section>
 
+          <TopUpDueAlert
+            copy={copy.topUpDue}
+            locale={locale}
+            onPay={setPayingTrip}
+            trips={trips}
+          />
+
           <UnpaidTripsAlert
             copy={copy}
             locale={locale}
@@ -154,6 +171,17 @@ export function TravelerHomePageClient({
           <UpcomingTripsList copy={copy} locale={locale} trips={trips} />
         </div>
       )}
+      <TopUpPaymentModal
+        copy={copy.topUpDue}
+        currencyCopy={currencyCopy}
+        locale={locale}
+        onClose={() => setPayingTrip(null)}
+        onPaid={() =>
+          setTrips((prev) => prev.map((t) => (t.id === payingTrip?.id ? { ...t, myTopUp: undefined } : t)))
+        }
+        paymentCopy={paymentCopy}
+        topUp={payingTrip?.myTopUp ?? null}
+      />
     </>
   );
 }

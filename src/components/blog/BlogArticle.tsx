@@ -38,8 +38,8 @@ export default function BlogArticle({
       {content ? (
         <div
           className={cn(
-            "max-w-none prose prose-a:text-secondary prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left",
-            "hover:prose-a:text-secondary",
+            "max-w-none prose prose-a:text-primary prose-img:rounded-xl prose-lg prose-neutral prose-p:mb-6 text-left",
+            "hover:prose-a:text-primary/80",
           )}
           dangerouslySetInnerHTML={{ __html: content }}
         />

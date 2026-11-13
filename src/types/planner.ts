@@ -1,3 +1,5 @@
+import type { TravelerTypeSlug } from "@/lib/data/traveler-types";
+
 export interface LevelFeature {
   title: string;
   description: string;
@@ -36,8 +38,8 @@ export type ExperienceCardTransportMode =
   | "ship"
   | "train-front";
 
-/** CTA treatment: Deep Teal (regular levels), Ochre (XSED) or outline (Atelier). */
-export type ExperienceCardCtaStyle = "feature" | "outline" | "primary";
+/** CTA treatment: Deep Teal (every level but XSED) or Ochre (XSED). */
+export type ExperienceCardCtaStyle = "feature" | "primary";
 
 export interface ExperienceCardDetail {
   /** `transport` rows render the card's transport icons instead of the plain value. */
@@ -54,16 +56,17 @@ export interface ExperienceCardTransport {
 
 /** Locale-specific copy of an experience card. */
 export interface ExperienceCardCopy {
+  /** Scarcity/schedule line shown above the reveal note (XSED drops). */
+  availabilityNote?: string;
   ctaLabel: string;
   description: string;
   details: ExperienceCardDetail[];
-  eyebrow: string;
   footnotes: string[];
+  /** Line shown under the name (e.g. "Lo esencial con estilo"). */
   kicker: string;
   name: string;
   photoAlt: string;
-  revealNote: string;
-  /** Photo tag chip (e.g. "SOLUM™ · EXPRESS"). */
+  /** Photo tag chip (e.g. "SOLUM · EXPRESS"). */
   tag: string;
   /** Short note next to the transport icons (e.g. "Según la ruta"). */
   transportNote?: string;
@@ -75,6 +78,8 @@ export interface ExperienceCardSource {
   ctaStyle?: ExperienceCardCtaStyle;
   /** CSS object-position for the header photo. */
   photoPosition: string;
+  /** Traveler type whose photo folder to use when this pair has no photo of its own. */
+  photoType?: TravelerTypeSlug;
   transport?: ExperienceCardTransport;
 }
 

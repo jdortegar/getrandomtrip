@@ -100,6 +100,37 @@ describe("TripDetailsHero — CONFIRMED (pre-reveal) status", () => {
   });
 });
 
+describe("TripDetailsHero — COLLECTING (split payment, pre-reveal) status", () => {
+  it("shows the pre-reveal hero, never the assigned experience", () => {
+    render(
+      trip({
+        status: "COLLECTING",
+        experience: {
+          id: "exp-1",
+          title: "Secret Getaway",
+          heroImage: "https://example.com/photo.jpg",
+          destinationCity: "Rio de Janeiro",
+          destinationCountry: "Brazil",
+          itinerary: null,
+          inclusions: null,
+          exclusions: null,
+        },
+      }),
+    );
+
+    expect(container.textContent).toContain(copy.destinationFallback);
+    expect(container.textContent).toContain(copy.eyebrowConfirmed);
+    expect(container.textContent).not.toContain(copy.eyebrowRevealed);
+    expect(container.textContent).not.toContain("Secret Getaway");
+    expect(container.textContent).not.toContain("Departs");
+    const img = container.querySelector("img");
+    expect(img?.getAttribute("src")).not.toContain("example.com");
+    expect(img?.getAttribute("src")).toContain(
+      encodeURIComponent("/images/hero-image-1.jpeg"),
+    );
+  });
+});
+
 describe("TripDetailsHero — REVEALED status (unchanged behavior)", () => {
   it("shows the real destination and a departure pill", () => {
     render(

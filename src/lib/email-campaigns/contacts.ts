@@ -31,7 +31,6 @@ import type {
   FriendsFamilyContactInput,
   SegmentRef,
   UnsubscribeResult,
-  WaitlistContactInput,
 } from "@/types/emailCampaign";
 
 /** Every query returning a `Contact` loads its segments with this include. */
@@ -85,59 +84,6 @@ async function assertSegmentsExist(ids: string[]): Promise<void> {
   if ((await missingSegmentIds(ids)).length > 0) {
     throw new ContactError("invalid_segment");
   }
-}
-
-/**
- * Creates a WAITLIST contact, or fills only the missing name / userId of an
- * existing one. Never changes source, status or locale: a contact who
- * unsubscribed or bounced is not resubscribed by signing up again. Either way
- * the contact ends up in the waitlist segment; other memberships are kept.
- */
-export async function upsertWaitlistContact(
-  input: WaitlistContactInput,
-): Promise<Contact> {
-  const email = normalizeContactEmail(input.email);
-  const name = normalizeContactName(input.name);
-  const existing = await prisma.contact.findUnique({ where: { email } });
-
-  if (!existing) {
-    const created = await prisma.contact.create({
-      data: {
-        email,
-        locale: DEFAULT_CONTACT_LOCALE,
-        name,
-        source: "WAITLIST",
-        userId: await findUserIdByEmail(email),
-        segments: { create: [{ segmentId: systemSegmentId("WAITLIST") }] },
-      },
-      include: CONTACT_INCLUDE,
-    });
-    return toContact(created);
-  }
-
-  await prisma.contactSegment.createMany({
-    data: [{ contactId: existing.id, segmentId: systemSegmentId("WAITLIST") }],
-    skipDuplicates: true,
-  });
-
-  const data: Prisma.ContactUncheckedUpdateInput = {};
-  if (!existing.name && name) data.name = name;
-  if (!existing.userId) {
-    const userId = await findUserIdByEmail(email);
-    if (userId) data.userId = userId;
-  }
-  const updated =
-    Object.keys(data).length === 0
-      ? await prisma.contact.findUnique({
-          where: { id: existing.id },
-          include: CONTACT_INCLUDE,
-        })
-      : await prisma.contact.update({
-          where: { id: existing.id },
-          data,
-          include: CONTACT_INCLUDE,
-        });
-  return toContact(updated ?? existing);
 }
 
 export async function listContacts(

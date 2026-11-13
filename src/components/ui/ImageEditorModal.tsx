@@ -174,7 +174,7 @@ export function ImageEditorModal({
           </div>
 
           <button
-            className="flex w-fit items-center gap-1.5 text-sm font-medium text-secondary hover:underline"
+            className="flex w-fit items-center gap-1.5 text-sm font-medium text-primary hover:underline"
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >

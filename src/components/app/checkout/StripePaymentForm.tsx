@@ -38,6 +38,15 @@ interface StripePaymentFormProps {
   onPaymentInfoSubmitted?: () => void;
   onProcessingChange: (processing: boolean) => void;
   onRetry: () => void;
+  /** Locale-relative page Stripe returns to; defaults to the checkout success page. */
+  returnPath?: string;
+  /**
+   * True on pages without a contact form: Stripe asks only for the billing
+   * details not already passed in `billing*` (the address counts as known only
+   * when street, city, postal code and country are all set). Off by default,
+   * where checkout passes every detail from its contact form.
+   */
+  collectBillingDetails?: boolean;
 }
 
 export function StripePaymentForm({
@@ -55,7 +64,18 @@ export function StripePaymentForm({
   onPaymentInfoSubmitted,
   onProcessingChange,
   onRetry,
+  returnPath = "/checkout/success",
+  collectBillingDetails = false,
 }: StripePaymentFormProps) {
+  const known = (value: string): "never" | "auto" =>
+    !collectBillingDetails || value.trim() ? "never" : "auto";
+  const addressKnown = [billingLine1, billingCity, billingPostalCode, billingCountry].every((v) => v.trim());
+  const billingFields = {
+    name: known(billingName),
+    email: known(billingEmail),
+    phone: known(billingPhone),
+    address: !collectBillingDetails || addressKnown ? ("never" as const) : ("auto" as const),
+  };
   const stripe = useStripe();
   const elements = useElements();
   const params = useParams();
@@ -112,7 +132,7 @@ export function StripePaymentForm({
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/${locale}/checkout/success`,
+          return_url: `${window.location.origin}/${locale}${returnPath}`,
           payment_method_data: {
             billing_details: {
               email: billingEmail.trim() || undefined,
@@ -142,7 +162,7 @@ export function StripePaymentForm({
       // Pass payment_intent to success page so it can confirm the trip
       // even if the Stripe webhook hasn't arrived yet.
       const successUrl = new URL(
-        `/${locale}/checkout/success`,
+        `/${locale}${returnPath}`,
         window.location.origin,
       );
       if (paymentIntent?.id) {
@@ -198,12 +218,7 @@ export function StripePaymentForm({
         options={{
           layout: "tabs",
           fields: {
-            billingDetails: {
-              name: "never",
-              email: "never",
-              phone: "never",
-              address: "never",
-            },
+            billingDetails: billingFields,
           },
         }}
       />

@@ -66,6 +66,8 @@ const copy: InviteTravelersDict = {
   landingGreeting: "",
   landingSignupExplainer: "",
   landingSignupCta: "",
+  landingLoginExplainer: "",
+  landingLoginCta: "",
   landingStep2Heading: "",
   landingConsentPrefix: "",
   landingConsentLinkLabel: "",
@@ -179,14 +181,31 @@ describe("TravelerRow — save() return value", () => {
     expect(onUpdated).not.toHaveBeenCalled();
   });
 
-  it("resolves null when a minor row fails local validation", async () => {
-    const traveler = baseTraveler({
-      kind: "MINOR",
-      fullName: null,
-      dateOfBirth: null,
-      idDocument: null,
-    });
+  const emptyMinor = () =>
+    baseTraveler({ kind: "MINOR", email: null, fullName: null, dateOfBirth: null, idDocument: null });
+
+  it("skips an untouched empty minor row so the buyer can fill it in later", async () => {
+    const traveler = emptyMinor();
     const { onUpdated } = render(traveler);
+
+    let result: TravelerDTO | null | undefined;
+    await act(async () => {
+      result = await handleRef.current?.save();
+    });
+
+    expect(result).toEqual(traveler);
+    expect(fetch).not.toHaveBeenCalled();
+    expect(onUpdated).not.toHaveBeenCalled();
+    expect(container.textContent).not.toContain(copy.incompleteError);
+  });
+
+  it("resolves null when a minor row is only partly filled", async () => {
+    const { onUpdated } = render(emptyMinor());
+    const input = container.querySelector<HTMLInputElement>("#traveler-trav-1-fullName")!;
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "Leo");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
 
     let result: TravelerDTO | null | undefined;
     await act(async () => {
@@ -196,6 +215,7 @@ describe("TravelerRow — save() return value", () => {
     expect(result).toBeNull();
     expect(fetch).not.toHaveBeenCalled();
     expect(onUpdated).not.toHaveBeenCalled();
+    expect(container.textContent).toContain(copy.incompleteError);
   });
 });
 

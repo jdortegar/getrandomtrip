@@ -1,17 +1,33 @@
 import { hasLocale, type Locale } from "@/lib/i18n/config";
+import en from "@/dictionaries/en.json";
+import {
+  getPublicTravelerTypeSlugs,
+  getTravelerType,
+  type TravelerTypeSlug,
+} from "@/lib/data/traveler-types";
+import { BRAND, BRAND_OPERATOR_LINE } from "@/lib/seo/brand";
 import { canonicalUrl, SITE_URL as BASE_URL } from "@/lib/seo/urls";
+
+const ORGANIZATION_ID = `${BASE_URL}/#organization`;
 
 export function buildOrganizationSchema(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
+    "@id": ORGANIZATION_ID,
     "@type": "Organization",
+    address: { "@type": "PostalAddress", ...BRAND.address },
+    alternateName: [...BRAND.alternateNames],
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer service",
       url: `${BASE_URL}/contact`,
     },
+    description: en.home.meta.description,
+    disambiguatingDescription: `Surprise-trip platform. ${BRAND_OPERATOR_LINE}`,
+    legalName: BRAND.legalName,
     logo: `${BASE_URL}/favicon.png`,
-    name: "Randomtrip",
+    name: BRAND.name,
+    sameAs: [...BRAND.sameAs],
     url: BASE_URL,
   };
 }
@@ -19,8 +35,11 @@ export function buildOrganizationSchema(): Record<string, unknown> {
 export function buildWebSiteSchema(): Record<string, unknown> {
   return {
     "@context": "https://schema.org",
+    "@id": `${BASE_URL}/#website`,
     "@type": "WebSite",
-    name: "Randomtrip",
+    alternateName: [...BRAND.alternateNames],
+    name: BRAND.name,
+    publisher: { "@id": ORGANIZATION_ID },
     url: BASE_URL,
   };
 }
@@ -121,5 +140,61 @@ export function buildFAQPageSchema(items: FAQItem[]): Record<string, unknown> {
       },
       name: item.question,
     })),
+  };
+}
+
+const SERVICE_TYPE: Record<Locale, string> = {
+  en: "Surprise trip",
+  es: "Viaje sorpresa",
+};
+
+/**
+ * schema.org Service for a live traveler-type product page. Preview types
+ * are not marketed in production and unknown slugs return null. No prices:
+ * product copy describes behaviour, not cost.
+ */
+export function buildTravelerTypeServiceSchema(
+  slugOrAlias: string,
+  locale: Locale,
+): Record<string, unknown> | null {
+  const data = getTravelerType(slugOrAlias, locale);
+  if (!data) return null;
+  const slug = data.meta.slug as TravelerTypeSlug;
+  if (!getPublicTravelerTypeSlugs().includes(slug)) return null;
+  const url = canonicalUrl(locale, `/experiences/by-type/${slug}`);
+  return {
+    "@context": "https://schema.org",
+    "@id": `${url}#service`,
+    "@type": "Service",
+    audience: { "@type": "Audience", audienceType: data.meta.label },
+    description: data.content.hero.subtitle,
+    inLanguage: locale,
+    name: data.content.hero.title,
+    provider: { "@id": ORGANIZATION_ID },
+    serviceType: SERVICE_TYPE[locale],
+    url,
+  };
+}
+
+/**
+ * schema.org Service for XSED/TGIS: the 1-night experience of the same
+ * surprise-trip family (other levels run 2 to 5 nights); only its booking
+ * flow differs, so it shares the traveler types' serviceType. No prices.
+ */
+export function buildXsedServiceSchema(
+  locale: Locale,
+  copy: { description: string; label: string },
+): Record<string, unknown> {
+  const url = canonicalUrl(locale, "/xsed");
+  return {
+    "@context": "https://schema.org",
+    "@id": `${url}#service`,
+    "@type": "Service",
+    description: copy.description,
+    inLanguage: locale,
+    name: `${copy.label}© ${BRAND.name}`,
+    provider: { "@id": ORGANIZATION_ID },
+    serviceType: SERVICE_TYPE[locale],
+    url,
   };
 }

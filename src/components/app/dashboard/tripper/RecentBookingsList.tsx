@@ -49,7 +49,7 @@ export function RecentBookingsList({
         </div>
         <Link
           href={pathForLocale(locale as Locale, "/dashboard/tripper")}
-          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-secondary hover:text-sky-700"
+          className="shrink-0 text-[13px] font-semibold uppercase tracking-[0.04em] text-primary hover:text-primary/80"
         >
           {copy.viewAll} →
         </Link>

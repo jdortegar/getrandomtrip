@@ -1257,6 +1257,23 @@ export interface DashboardDict {
     upcomingTrips: string;
   };
   tripStatus: Record<string, string>;
+  /** Viewer's own top-up after a group shrank. `{date}`, `{amount}` are filled in. */
+  topUpDue: {
+    /** Shown instead of a date for the organizer's remainder. */
+    remainderNote: string;
+    eyebrow: string;
+    title: string;
+    message: string;
+    deadline: string;
+    action: string;
+    modalTitle: string;
+    modalDescription: string;
+    loading: string;
+    error: string;
+    retry: string;
+    paid: string;
+    closed: string;
+  };
   unpaidTrips: {
     action: string;
     bookingRefLabel: string;
@@ -1862,6 +1879,8 @@ export interface XsedLevelCardDict {
   ctaLabel: string;
   features: Array<{ description: string; title: string }>;
   name: string;
+  /** Photo ribbon with the upcoming drop day; `{date}` is e.g. "domingo 1 nov". */
+  nextDrop: string;
   priceFootnote: string;
   subtitle: string;
 }
@@ -3363,6 +3382,7 @@ export interface TripDetailDict {
     DRAFT: string;
     SAVED: string;
     PENDING_PAYMENT: string;
+    COLLECTING: string;
     CONFIRMED: string;
     REVEALED: string;
     COMPLETED: string;
@@ -3516,6 +3536,9 @@ export interface InviteTravelersDict {
   landingGreeting: string;
   landingSignupExplainer: string;
   landingSignupCta: string;
+  /** Shown instead of the sign-up explainer when the invited address already has an account. */
+  landingLoginExplainer: string;
+  landingLoginCta: string;
   landingStep2Heading: string;
   landingConsentPrefix: string;
   landingConsentLinkLabel: string;
@@ -3606,6 +3629,38 @@ export interface ImageEditorDict {
   save: string;
   saving: string;
   uploadError: string;
+}
+
+/** Companion share checkout (`/checkout/share/[travelerId]`). `{name}` = organizer first name. */
+export interface ShareCheckoutDict {
+  /** `{max}` = most the companion may owe on top of their share. */
+  disclaimer: string;
+  disclaimerNoCost: string;
+  title: string;
+  description: string;
+  amountLabel: string;
+  deadline: string;
+  loading: string;
+  errorMessage: string;
+  retry: string;
+  paidTitle: string;
+  paidDescription: string;
+  closedTitle: string;
+  closedDescription: string;
+  toTrips: string;
+}
+
+export interface CurrencyDict {
+  checkoutDisclaimer: string;
+  /** Extra checkout note shown only for ARS. */
+  cardTaxesNote: string;
+}
+
+/** Copy for the maintenance screen shown while the site gate is on. */
+export interface MaintenanceDict {
+  eyebrow: string;
+  message: string;
+  title: string;
 }
 
 export interface MarketingDictionary {
@@ -3967,6 +4022,8 @@ export interface MarketingDictionary {
     geoWelcome: {
       /** Toast shown by visitor country; `{country}` is replaced with the localized name. */
       message: string;
+      /** Second line when the country's currency isn't USD; `{currency}` is the ISO code. */
+      currencyNote: string;
     };
     hero: {
       accent: string;
@@ -4042,6 +4099,9 @@ export interface MarketingDictionary {
       title: string;
       viewFullReviewLabel: string;
     };
+    partners: {
+      title: string;
+    };
     xsedHero: {
       backgroundImage: string;
       eyebrow: string;
@@ -4066,6 +4126,8 @@ export interface MarketingDictionary {
     /** Sentence-case `<title>` copy; the visible hero title stays all caps. */
     meta: { title: string };
     hero: {
+      /** Handwritten (human-voice) line shown above the subtitle. */
+      accent: string;
       branding: { repeatText?: string; text: string };
       fallbackImage: string;
       primaryCta: { ariaLabel: string; href: string; text: string };
@@ -4474,6 +4536,27 @@ export interface MarketingDictionary {
       backToEdit: string;
       continueToPayment: string;
       paymentTitle: string;
+      paymentMode: {
+        title: string;
+        description: string;
+        totalOption: string;
+        individualOption: string;
+        emailsTitle: string;
+        emailsHint: string;
+        emailLabel: string;
+        calculate: string;
+        calculating: string;
+        yourShareLabel: string;
+        companionShareLabel: string;
+        /** Under the organizer's share when one minor travels; their share is the organizer's. */
+        minorsIncludedOne: string;
+        /** Same, for several minors; `{n}` = how many. */
+        minorsIncludedOther: string;
+        disclaimer: string;
+        disclaimerRequired: string;
+        emailsInvalid: string;
+        calculateFirst: string;
+      };
       paymentBack: string;
       paymentSubmit: string;
       paymentProcessing: string;
@@ -4873,26 +4956,7 @@ export interface MarketingDictionary {
     title: string;
     viewPackages: string;
   };
-  waitlist: {
-    accessDeniedBody: string;
-    accessDeniedTitle: string;
-    ariaFacebook: string;
-    ariaInstagram: string;
-    ariaLinkedin: string;
-    emailLabel: string;
-    emailPlaceholder: string;
-    errorMessage: string;
-    headline: string;
-    lastNameLabel: string;
-    lastNamePlaceholder: string;
-    loginAction: string;
-    nameLabel: string;
-    namePlaceholder: string;
-    signOutLabel: string;
-    subheadline: string;
-    submitButton: string;
-    successMessage: string;
-  };
+  maintenance: MaintenanceDict;
   profile: {
     actionsAria: string;
     buttons: {
@@ -5143,6 +5207,7 @@ export interface MarketingDictionary {
       CONFIRMED: string;
       DRAFT: string;
       PENDING_PAYMENT: string;
+      COLLECTING: string;
       REVEALED: string;
       SAVED: string;
     };
@@ -5164,10 +5229,12 @@ export interface MarketingDictionary {
   tripReveal: TripRevealDict;
   reviewForm: ReviewFormDict;
   inviteTravelers: InviteTravelersDict;
+  shareCheckout: ShareCheckoutDict;
   destinationAssignmentReminder: DestinationAssignmentReminderDict;
   tripRevealNotification: TripRevealNotificationDict;
   travelerDetailsReminder: TravelerDetailsReminderDict;
   manualTravelerDetailsReminder: TravelerDetailsReminderDict;
   tripDetail: TripDetailDict;
   tripperAttribution: TripperAttributionDict;
+  currency: CurrencyDict;
 }

@@ -14,7 +14,7 @@ export const soloEn: TravelerTypeData = {
   },
   content: {
     hero: {
-      title: "SOLUM© RANDOMTRIP",
+      title: "Solum© Randomtrip",
       subtitle:
         "Your trip, your rules. Discover unique destinations designed for the freedom of traveling alone.",
       tagline: "Personal adventure. No commitments.",

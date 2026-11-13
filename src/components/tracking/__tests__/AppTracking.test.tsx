@@ -80,6 +80,61 @@ it("owns one pageview per pathname, not query or session changes; revocation dis
   );
 });
 
+const aiReferrals = () =>
+  (window.dataLayer as Record<string, unknown>[]).filter(
+    (event) => event.event === "ai_referral",
+  );
+function setReferrer(value: string) {
+  Object.defineProperty(document, "referrer", {
+    configurable: true,
+    get: () => value,
+  });
+}
+
+it("sends one coarse ai_referral after consent for an AI landing, never the raw referrer", () => {
+  window.sessionStorage.clear();
+  setReferrer("https://chatgpt.com/c/private-conversation");
+  act(() => root.render(<AppTracking />));
+  expect(aiReferrals()).toHaveLength(0);
+  act(() => saveAnalyticsConsent("granted"));
+  expect(aiReferrals()).toHaveLength(1);
+  expect(aiReferrals()[0]).toMatchObject({ ai_source: "chatgpt" });
+  state.path = "/en/faq";
+  window.location.href = `https://getrandomtrip.com${state.path}`;
+  act(() => root.render(<AppTracking />));
+  expect(pageviews()).toHaveLength(2);
+  expect(aiReferrals()).toHaveLength(1);
+  const nextPageview = pageviews()[1];
+  expect(nextPageview.ai_source).toBeNull();
+  expect(JSON.stringify(window.dataLayer)).not.toContain(
+    "private-conversation",
+  );
+  setReferrer("");
+});
+
+it("does not repeat ai_referral within the same browser session", () => {
+  window.sessionStorage.clear();
+  setReferrer("https://www.perplexity.ai/search");
+  saveAnalyticsConsent("granted");
+  act(() => root.render(<AppTracking />));
+  act(() => root.unmount());
+  root = createRoot(container);
+  act(() => root.render(<AppTracking />));
+  expect(pageviews()).toHaveLength(2);
+  expect(aiReferrals()).toHaveLength(1);
+  setReferrer("");
+});
+
+it("sends no ai_referral for non-AI referrers", () => {
+  window.sessionStorage.clear();
+  setReferrer("https://www.google.com/");
+  saveAnalyticsConsent("granted");
+  act(() => root.render(<AppTracking />));
+  expect(pageviews()).toHaveLength(1);
+  expect(aiReferrals()).toHaveLength(0);
+  setReferrer("");
+});
+
 it("does not pageview or scroll private/token routes after public navigation", () => {
   saveAnalyticsConsent("granted");
   act(() => root.render(<AppTracking />));

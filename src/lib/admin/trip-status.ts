@@ -2,6 +2,7 @@ export type TripRequestStatus =
   | "DRAFT"
   | "SAVED"
   | "PENDING_PAYMENT"
+  | "COLLECTING"
   | "CONFIRMED"
   | "REVEALED"
   | "COMPLETED"
@@ -11,6 +12,7 @@ export const TRIP_STATUS_FLOW: TripRequestStatus[] = [
   "DRAFT",
   "SAVED",
   "PENDING_PAYMENT",
+  "COLLECTING",
   "CONFIRMED",
   "REVEALED",
   "COMPLETED",
