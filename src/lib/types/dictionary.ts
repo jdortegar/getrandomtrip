@@ -4099,6 +4099,9 @@ export interface MarketingDictionary {
       title: string;
       viewFullReviewLabel: string;
     };
+    partners: {
+      title: string;
+    };
     xsedHero: {
       backgroundImage: string;
       eyebrow: string;

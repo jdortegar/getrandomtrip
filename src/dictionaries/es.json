@@ -2994,6 +2994,9 @@
       "title": "Lo que dicen sobre Randomtrip",
       "viewFullReviewLabel": "Ver opinión completa"
     },
+    "partners": {
+      "title": "Tu viaje, en buenas manos"
+    },
     "xsedHero": {
       "backgroundImage": "/images/fallbacks/hero-xsed.png",
       "videoSrc": "/videos/hero-xsed.mp4",
