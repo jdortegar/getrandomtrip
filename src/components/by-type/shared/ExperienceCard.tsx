@@ -151,7 +151,7 @@ export function ExperienceCard({
               style={{ objectPosition: card.photoPosition }}
               width={600}
             />
-            <span className="absolute left-[14.5px] top-[13.5px] flex h-5.25 min-w-24.25 items-center justify-center whitespace-nowrap rounded-xs bg-ground px-3 text-xs font-semibold uppercase leading-none text-primary">
+            <span className="absolute left-[14.5px] top-[13.5px] flex h-5.25 items-center whitespace-nowrap rounded-xs bg-ground px-3 text-xs font-semibold uppercase leading-none text-primary">
               {card.tag.split(" · ")[0]}
             </span>
           </div>
