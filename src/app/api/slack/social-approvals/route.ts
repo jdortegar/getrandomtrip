@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           await dispatchSocialWorker();
         } catch {
           console.error(
-            "[social-approvals] dispatch deferred to durable recovery",
+            "[social-approvals] dispatch failed; job stays queued for the next dispatch",
           );
         }
       });
@@ -178,7 +178,7 @@ async function publish(action: ApprovalAction) {
         await dispatchSocialWorker();
       } catch {
         console.error(
-          "[social-approvals] dispatch deferred to durable recovery",
+          "[social-approvals] dispatch failed; job stays queued for the next dispatch",
         );
       }
       return;
@@ -271,7 +271,7 @@ async function translate(action: ApprovalAction) {
         await dispatchSocialWorker();
       } catch {
         console.error(
-          "[social-approvals] dispatch deferred to durable recovery",
+          "[social-approvals] dispatch failed; job stays queued for the next dispatch",
         );
       }
       return;

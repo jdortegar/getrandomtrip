@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
       try {
         await dispatchSocialWorker();
       } catch {
-        console.error("[social-approvals] retry dispatch deferred to recovery");
+        console.error("[social-approvals] retry dispatch failed; job stays queued for the next dispatch");
       }
     });
     return NextResponse.json({ queued: true, testOnly: true });

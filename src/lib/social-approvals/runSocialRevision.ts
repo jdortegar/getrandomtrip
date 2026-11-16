@@ -79,15 +79,16 @@ const ERROR_CODES = new Set([
   "PUBLISH_UNCONFIRMED",
 ]);
 
-export async function runSocialRevision() {
+/** Processes the oldest queued job. Returns false when there was nothing to claim. */
+export async function runSocialRevision(): Promise<boolean> {
   const config = approvalConfig();
   // AI jobs also need the OpenAI key; publishing does not.
   const kinds = enabledJobKinds().filter(
     (kind) => kind === "PUBLISH" || !!process.env.OPENAI_API_KEY,
   );
-  if (!config || !kinds.length) return;
+  if (!config || !kinds.length) return false;
   const job = await claimSocialRevision(kinds);
-  if (!job?.leaseToken) return;
+  if (!job?.leaseToken) return false;
   const leaseToken = job.leaseToken;
   const where = { id: job.id, status: "RUNNING", leaseToken };
   const checkpoint: Checkpoint = async (data) => {
@@ -128,7 +129,7 @@ export async function runSocialRevision() {
         leaseUntil: null,
       },
     });
-    if (code === "STALE_SOURCE") return;
+    if (code === "STALE_SOURCE") return true;
     if (job.kind === "PUBLISH" && job.review) {
       await prisma.socialApproval.updateMany({
         where: { id: job.review.id, status: "PUBLISHING" },
@@ -144,6 +145,7 @@ export async function runSocialRevision() {
     } else if (job.review)
       await refreshSocialMessage(job.review, "REVISION_FAILED");
   }
+  return true;
 }
 
 async function reviseJob(
