@@ -17,7 +17,6 @@ import type { TripDetailsData } from "@/types/tripDetails";
 import { FALLBACK_HERO_IMAGE, TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
 import { TripGuide } from "./TripGuide";
 import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
-import { TripDetailsBackRow } from "./TripDetailsBackRow";
 import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
 import { TripItineraryTimeline } from "./TripItineraryTimeline";
@@ -165,10 +164,6 @@ export function TripItineraryContent() {
 
       {heroRevealed && (
         <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
-          <div className={styles.mainBlock}>
-            <TripDetailsBackRow copy={copy} locale={locale} tripId={tripId} />
-          </div>
-
           <section className={`${styles.block} ${styles.mainBlock}`}>
             <TripEssentialsStrip
               copy={copy.essentials}

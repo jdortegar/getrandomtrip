@@ -7120,10 +7120,6 @@
       "explore": "Explore my trip",
       "firstLook": "A first glimpse of what's ahead."
     },
-    "nav": {
-      "itinerary": "Itinerary",
-      "documents": "Documents"
-    },
     "essentials": {
       "lengthLabel": "Length",
       "nightsValue": "{{n}} Nights",

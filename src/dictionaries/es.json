@@ -7120,10 +7120,6 @@
       "explore": "Explorar mi viaje",
       "firstLook": "Un primer vistazo a lo que viene."
     },
-    "nav": {
-      "itinerary": "Itinerario",
-      "documents": "Documentos"
-    },
     "essentials": {
       "lengthLabel": "Duración",
       "nightsValue": "{{n}} noches",

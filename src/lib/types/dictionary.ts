@@ -3009,10 +3009,6 @@ export interface TripItineraryDict {
     /** Revealed-hero caption, bottom right. */
     firstLook: string;
   };
-  nav: {
-    itinerary: string;
-    documents: string;
-  };
   essentials: {
     lengthLabel: string;
     /** Interpolated with {{n}}. */

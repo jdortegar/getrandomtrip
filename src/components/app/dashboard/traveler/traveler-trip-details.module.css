@@ -357,33 +357,7 @@
   scroll-margin-top: 5rem;
 }
 
-/* ---------- Back row + jump nav (the guide nav's hairline row) ---------- */
-.backrow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  margin-top: 40px;
-  padding: 12px 0;
-  border-top: 1px solid var(--rt-line);
-  border-bottom: 1px solid var(--rt-line);
-}
-.root .backlink {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  font-size: 14px;
-}
-.backlink svg {
-  width: 16px;
-  height: 16px;
-}
-.jumpnav {
-  display: flex;
-  gap: 40px;
-}
-.root .jumpnav a,
+/* Guide section nav links. */
 .root .guideNav a {
   display: flex;
   align-items: center;
@@ -391,14 +365,10 @@
   padding: 10px 0;
   font-size: 14px;
 }
-.root .backlink:hover,
-.root .jumpnav a:hover,
 .root .guideNav a:hover {
   text-decoration: underline;
   text-underline-offset: 5px;
 }
-.root .backlink:focus-visible,
-.root .jumpnav a:focus-visible,
 .root .guideNav a:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
@@ -673,14 +643,6 @@
 @media (max-width: 650px) {
   .wrap {
     padding: 0 7%;
-  }
-  .backrow {
-    flex-wrap: wrap;
-    gap: 0;
-    margin-top: 28px;
-  }
-  .jumpnav {
-    gap: 24px;
   }
   .essentialsItem,
   .essentialsItem + .essentialsItem {
