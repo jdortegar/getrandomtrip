@@ -2,14 +2,13 @@
    under .root instead of :root so these custom properties and base
    element rules never leak outside this route's subtree (design.md ADR-1).
 
-   Only TWO base-element rules survive the port — `.root a:not(.btn)` and
-   `.root button/input/textarea/select` — both inheritance-safe (they only
+   Only TWO base-element rules survive the port — `.root a:not([data-slot])`
+   and `.root button/input/textarea/select` — both inheritance-safe (they only
    set color/font-family, never font-size/font-weight/line-height). The
-   `:not(.btn)` exclusion matters: `.root a` alone has higher specificity
-   (class + type) than a single-class rule like `.btnFill`, so it would
-   silently win and force `color: inherit` (ink) onto `.btnFill`'s anchors
-   instead of their intended white text/icon — invisible ink-on-ink content
-   on the filled button. Every other rule, including all icon sizing, is
+   `:not([data-slot])` exclusion matters: `.root a` (class + type) outranks a
+   single Tailwind utility, so without it the reset would force `color:
+   inherit` onto `ButtonV2` / `Button` anchors (`asChild`) — e.g. teal text
+   turning white-on-white on the hero's light button. Every other rule, including all icon sizing, is
    anchored to a generated class.
    The prototype's base64 @font-face blocks and dark-mode/[data-theme]
    overrides are dropped: Tailwind preflight already normalizes box-sizing
@@ -33,13 +32,21 @@
 
   --measure: 68ch;
 
+  /* Shared look (see "Shared look" below). */
+  --rt-line: rgba(6, 92, 96, 0.2);
+  /* Captions/meta: neutral-600 — the design system's neutral-500 is under AA on Off White. */
+  --rt-muted: #525252;
+  --rt-accent-muted: #668176;
+
   font-family: var(--font-barlow), -apple-system, "Segoe UI", sans-serif;
   font-weight: 400;
   line-height: 1.5;
-  color: var(--ink);
+  /* Design system: Ink for body and subtitles; Deep Teal for titles, eyebrows, links. */
+  color: var(--color-ink);
+  background: var(--color-ground);
 }
 
-.root a:not(.btn) {
+.root a:not([data-slot]) {
   color: inherit;
 }
 
@@ -54,32 +61,115 @@
   font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
 }
 
-/* ---------- Eyebrow / heading pattern ---------- */
+/* ---------- Shared look (prototype "Randomtrip Reveal — Tablero v2") ----------
+   One visual language for the whole revealed-trip page — the legacy trip
+   sections and the new guide alike: Off White ground, Deep Teal type,
+   hairline teal rules instead of cards/shadows, square corners, Barlow
+   Condensed uppercase titles over small tracked eyebrows. */
 .eyebrow {
   margin: 0;
-  font-weight: 700;
-  font-size: 0.72rem;
+  color: var(--color-primary);
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--cyan);
 }
-.heading {
-  margin: 0.4rem 0 0;
+.sectionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 70px;
+}
+.sectionTitle {
+  margin: 18px 0 0;
+  color: var(--color-primary);
+  font-size: clamp(45px, 4.6vw, 68px);
   font-weight: 700;
+  line-height: 0.94;
   text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: 0.005em;
-  color: var(--ink);
   text-wrap: balance;
-}
-.headingSection {
-  font-size: clamp(1.9rem, 4.2vw, 2.75rem);
+  white-space: pre-line;
 }
 .lede {
-  max-width: var(--measure);
-  margin: 0.9rem 0 0;
-  color: #4b5563;
-  font-size: 1rem;
+  max-width: 320px;
+  margin: 0;
+  font-size: 16px;
+}
+/* Sections stack on the guide's rhythm and clear the sticky navbar when
+   reached through an in-page anchor. */
+.block {
+  padding-top: 75px;
+  scroll-margin-top: 5rem;
+}
+.bigNumber {
+  font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  font-size: 90px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-secondary);
+}
+/* `.root a.x` outranks the `.root a:not([data-slot])` inherit-colour reset. */
+.root .textLink,
+.root a.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 32px;
+  min-height: 44px;
+  margin-top: 24px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 15px;
+  cursor: pointer;
+}
+.textLink svg {
+  width: 18px;
+  height: 18px;
+}
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 32px 0;
+  border-top: 1px solid var(--rt-line);
+  border-bottom: 1px solid var(--rt-line);
+}
+.emptyState svg {
+  width: 28px;
+  height: 28px;
+  color: var(--color-secondary);
+}
+.emptyState h3 {
+  margin: 0;
+  color: var(--color-primary);
+  font-size: 22px;
+}
+.emptyState p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--rt-muted);
+}
+
+@media (max-width: 650px) {
+  .sectionHead {
+    display: block;
+  }
+  .sectionHead .lede {
+    margin-top: 24px;
+  }
+  .sectionTitle {
+    margin-top: 15px;
+    font-size: 50px;
+  }
+  .block {
+    padding-top: 45px;
+  }
+  .bigNumber {
+    font-size: 60px;
+  }
 }
 
 /* ---------- Hero ----------
@@ -195,617 +285,1374 @@
   stroke-width: 1.75;
 }
 
-/* ---------- Layout shell ---------- */
+/* ---------- Page container ----------
+   Same 1600px / 6% frame as the guide, so legacy sections and guide blocks
+   line up on one grid. */
 .wrap {
-  max-width: 1100px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 1.5rem;
-}
-.backrow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding: 1.1rem 0;
-}
-.backlink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #4b5563;
-  text-decoration: none;
-  padding: 0.3rem 0;
-}
-.backlink:hover {
-  color: var(--ink);
-}
-.backlink:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
-}
-.backlink svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 1.75;
+  padding: 0 6%;
+  /* "Explore my trip" anchor target: clear the sticky navbar. */
+  scroll-margin-top: 5rem;
 }
 
-.jumpnav {
-  display: flex;
-  gap: 1.4rem;
-}
-.jumpnav a {
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  text-decoration: none;
-  color: #6b7280;
-  padding-bottom: 0.2rem;
-  border-bottom: 2px solid transparent;
-}
-.jumpnav a:hover {
-  color: var(--ink);
-  border-color: var(--border);
-}
-.jumpnav a:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
-}
-
-.block {
-  padding: 3.2rem 0;
-  border-top: 1px solid var(--border);
-}
-.block:first-of-type {
-  border-top: none;
-  padding-top: 2.2rem;
-}
-
-.sectionHead {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-/* ---------- Essentials strip (2 backed columns only — nights/pax) ---------- */
+/* ---------- Essentials strip: facts between hairlines ---------- */
 .essentials {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-  overflow: hidden;
-  margin-top: 1.4rem;
+  border-bottom: 1px solid var(--rt-line);
 }
 .essentialsItem {
-  padding: 1.25rem 1.4rem;
-  border-left: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 8px;
+  padding: 26px 24px 26px 0;
 }
-.essentialsItem:first-child {
-  border-left: none;
+.essentialsItem + .essentialsItem {
+  padding-left: 24px;
+  border-left: 1px solid var(--rt-line);
 }
 .essentialsLabel {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.68rem;
-  font-weight: 700;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #9ca3af;
+  color: var(--rt-muted);
 }
 .essentialsLabel svg {
   width: 14px;
   height: 14px;
-  color: var(--cyan);
-  stroke-width: 1.75;
 }
 .essentialsValue {
+  font-size: 34px;
   font-weight: 700;
-  font-size: 1.5rem;
-  line-height: 1;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
 }
 .essentialsValueCapitalize {
   text-transform: capitalize;
 }
 .essentialsSub {
-  font-size: 0.78rem;
-  color: #9ca3af;
+  font-size: 13px;
+  color: var(--rt-muted);
 }
 
-@media (max-width: 860px) {
-  .essentials {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .essentialsItem:nth-child(3) {
-    border-left: none;
-  }
-}
-@media (max-width: 520px) {
-  .essentials {
-    grid-template-columns: 1fr;
-  }
-  .essentialsItem {
-    border-left: none !important;
-    border-top: 1px solid var(--border);
-  }
-  .essentialsItem:first-child {
-    border-top: none;
-  }
-}
-
-/* ---------- Itinerary timeline ----------
-   Resolved Decision #1 forbids a per-stop data model, so there is no
-   per-stop content to hang the prototype's `.stops`/`.stop` rail
-   (cyan ring-dot + hairline) on. The prototype's own `.day__marker`
-   (day number/weekday/date column) never had a dot/rail of its own —
-   that decoration only ever existed at stop granularity — so it is not
-   ported here either, rather than inventing a day-level connector the
-   source design never had. */
+/* ---------- Itinerary timeline: one hairline row per day ---------- */
 .timeline {
-  list-style: none;
-  margin: 2.2rem 0 0;
+  margin: 40px 0 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
+  list-style: none;
+  border-top: 1px solid var(--rt-line);
 }
 .day {
   display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 1.2rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-  padding: 1.6rem;
+  grid-template-columns: 140px 1fr;
+  gap: 32px;
+  padding: 36px 0;
+  border-bottom: 1px solid var(--rt-line);
 }
 .dayMarker {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  text-align: center;
+  gap: 4px;
+}
+.dayDow,
+.dayDate {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--rt-muted);
 }
 .dayBody {
   min-width: 0;
 }
-.dayNum {
-  font-weight: 700;
-  font-size: 2.6rem;
-  line-height: 0.85;
-  color: var(--cyan);
-  font-variant-numeric: tabular-nums;
-}
-.dayDow {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #9ca3af;
-}
-.dayDate {
-  font-size: 0.72rem;
-  color: #9ca3af;
-}
 .dayTitle {
-  margin: 0 0 0.6rem;
+  margin: 0 0 12px;
+  color: var(--color-primary);
+  font-size: 34px;
   font-weight: 700;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  color: var(--ink);
+  line-height: 1.15;
 }
 .dayDesc {
-  margin: 0;
-  max-width: var(--measure);
-  font-size: 0.95rem;
-  color: #4b5563;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.6;
 }
-/* Tripper-authored rich text (RichTextInput/TinyMCE) — its toolbar is
-   limited to bold, italic, bullet/numbered lists, and blockquote, so only
-   those tags need styling here. */
 .dayDesc :global(p) {
-  margin: 0 0 0.75em;
+  margin: 0 0 0.8em;
 }
 .dayDesc :global(p:last-child) {
   margin-bottom: 0;
 }
 .dayDesc :global(strong) {
   font-weight: 700;
-  color: var(--ink);
 }
 .dayDesc :global(ul),
 .dayDesc :global(ol) {
-  margin: 0 0 0.75em;
-  padding-left: 1.25em;
+  margin: 0 0 0.8em;
+  padding-left: 1.2em;
 }
 .dayDesc :global(li) {
-  margin: 0.25em 0;
+  margin-bottom: 0.3em;
 }
 .dayDesc :global(blockquote) {
-  margin: 0 0 0.75em;
-  padding-left: 0.9em;
-  border-left: 2px solid var(--border, #e5e7eb);
-  font-style: italic;
+  margin: 0 0 0.8em;
+  padding-left: 16px;
+  border-left: 2px solid var(--color-feature);
+  color: var(--rt-muted);
 }
 
-@media (max-width: 640px) {
-  .day {
-    grid-template-columns: 1fr;
-  }
-  .dayMarker {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 0.6rem;
-    margin-bottom: 0.4rem;
-  }
-  .dayNum {
-    font-size: 1.9rem;
-  }
+/* ---------- Two-column section: "The essentials" + "Your documents" ----------
+   Head on the left, hairline rows on the right. */
+.splitSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8%;
+}
+.splitBody {
+  max-width: 290px;
+  margin: 22px 0 0;
+  font-size: 16px;
+}
+.rowIndex {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--rt-muted);
+}
+.rowList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* ---------- Documents ---------- */
+/* Documents: one row per file, in the accordion rows' rhythm. */
 .docNote {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: 0.9rem;
-  padding: 0.85rem 1rem;
-  background: rgba(79, 150, 182, 0.08);
-  border: 1px solid rgba(79, 150, 182, 0.25);
-  border-radius: 0.7rem;
-  font-size: 0.85rem;
-  color: #1f4a5e;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 340px;
+  margin: 22px 0 0;
+  font-size: 13px;
+  color: var(--rt-muted);
 }
 .docNote svg {
+  flex-shrink: 0;
   width: 16px;
   height: 16px;
-  color: var(--cyan);
+  margin-top: 2px;
+}
+.docRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 72px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rt-line);
+}
+.docRowBody {
+  flex: 1;
+  min-width: 0;
+}
+.docRowTitle {
+  margin: 0;
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}
+.docRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--rt-muted);
+}
+.docRowTag {
+  letter-spacing: 0.18em;
+  color: var(--color-primary);
+}
+.docRowActions {
+  display: flex;
   flex-shrink: 0;
-  stroke-width: 1.75;
+  gap: 8px;
 }
 .docGrid {
-  margin-top: 1.6rem;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-@media (max-width: 720px) {
-  .docGrid {
-    grid-template-columns: 1fr;
-  }
-}
-.docCard {
-  display: flex;
-  gap: 1rem;
-  padding: 1.2rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-.docCard:hover {
-  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.08);
-  transform: translateY(-1px);
-}
-.docCardIcon {
-  flex-shrink: 0;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 0.65rem;
-  background: var(--ground);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink);
-}
-.docCardIcon svg {
-  width: 22px;
-  height: 22px;
-  stroke-width: 1.75;
-}
-.docCardBody {
-  min-width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-}
-.docCardTitle {
-  margin: 0;
-  font-weight: 700;
-  font-size: 0.98rem;
-  color: var(--ink);
-}
-.docCardMeta {
-  margin: 0;
-  font-size: 0.82rem;
-  color: #6b7280;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-.docCardTag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cyan);
-  background: rgba(79, 150, 182, 0.12);
-  padding: 0.12rem 0.4rem;
-  border-radius: 0.3rem;
-}
-.docCardActions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 48px;
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  height: 2.35rem;
-  padding: 0 0.9rem;
-  border-radius: 0.4rem;
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1.5px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
-}
-.btn svg {
-  width: 15px;
-  height: 15px;
-  stroke-width: 1.75;
-}
-.btn:hover {
-  background: var(--ink);
-  color: #fff;
-}
-.btn:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
-}
-.btnIcon {
-  width: 2.35rem;
-  padding: 0;
-  flex-shrink: 0;
-}
-.btnFill {
-  background: var(--ink);
-  color: #fff;
-}
-.btnFill:hover {
-  background: #030712;
-}
-
-/* ---------- Inclusions / exclusions ----------
-   The prototype has no equivalent section, so this was originally left as
-   plain Tailwind markup (proposal "Out of Scope") — the one part of the
-   page that never got this module's card chrome, icon convention, or
-   color tokens, which is exactly why it read as off-brand next to its
-   styled neighbors. Card shape mirrors `.day`/`.docCard`; icons replace
-   raw unicode ✓/✗ glyphs, matching every other icon on this page. */
+/* ---------- Inclusions / exclusions: hairline lists ---------- */
 .inclCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-  padding: 1.4rem;
+  padding: 24px 0;
+  border-top: 1px solid var(--rt-line);
 }
 .inclCardTitle {
-  margin: 0 0 0.9rem;
-  font-weight: 700;
-  font-size: 0.98rem;
-  color: var(--ink);
+  margin: 0 0 14px;
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 .inclList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .inclItem {
   display: flex;
   align-items: flex-start;
-  gap: 0.55rem;
-  font-size: 0.9rem;
-  color: #4b5563;
+  gap: 10px;
+  font-size: 16px;
 }
 .inclItem svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 2;
-  margin-top: 0.15rem;
   flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
 }
 .inclItemOk svg {
-  color: #22c55e;
+  color: var(--color-primary);
 }
 .inclItemNo svg {
-  color: #f87171;
+  color: var(--rt-muted);
 }
 
-/* ---------- Help strip ---------- */
-.help {
+/* ---------- Support band (help strip + guide's "We're with you") ---------- */
+.band {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  padding: 1.8rem 2rem;
-  background: var(--ink);
-  border-radius: 1rem;
-  color: #fff;
+  gap: 38px;
+  padding: 50px 4%;
+  background: var(--color-primary);
+  color: var(--color-ground);
 }
-.helpText h3 {
-  margin: 0 0 0.3rem;
+.bandMark {
+  flex: 0 0 90px;
+  width: 90px;
+  color: var(--color-feature);
+}
+.bandTitle {
+  margin: 13px 0 0;
+  font-size: 45px;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
-  font-size: 1.4rem;
-  letter-spacing: 0.01em;
+  white-space: pre-line;
 }
-.helpText p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.88rem;
-  max-width: 48ch;
+.bandBody {
+  max-width: 52ch;
+  margin: 15px 0 0;
+  font-size: 15px;
 }
-.help .btn {
-  border-color: #fff;
-  color: #fff;
-}
-.help .btn:hover {
-  background: #fff;
-  color: var(--ink);
+.root .bandAction {
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .pagefoot {
+  padding: 40px 6% 48px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
   text-align: center;
-  padding: 2.4rem 1.5rem 3rem;
-  font-size: 0.78rem;
-  color: #9ca3af;
+  color: var(--rt-muted);
 }
 
-/* ---------- Scratch-to-reveal gate ----------
-   Ported from the approved "Scratch to Reveal Gated" prototype. `.hero`'s
-   own min-height stays untouched — `.heroGated` only forces the wrapper to
-   100svh while the gate is up, so a returning visitor (gate already opened)
-   sees the hero at its normal height with no full-viewport jump. */
-.scratchWrap {
+@media (max-width: 1000px) {
+  .essentials {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .essentialsItem:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .essentialsItem:nth-child(n + 3) {
+    border-top: 1px solid var(--rt-line);
+  }
+  .band {
+    flex-wrap: wrap;
+    gap: 25px;
+  }
+  .root .bandAction {
+    margin-left: 115px;
+  }
+}
+
+@media (max-width: 650px) {
+  .wrap {
+    padding: 0 7%;
+  }
+  .essentialsItem,
+  .essentialsItem + .essentialsItem {
+    padding: 18px 14px 18px 0;
+  }
+  .essentialsItem:nth-child(even) {
+    padding-left: 14px;
+  }
+  .essentialsValue {
+    font-size: 26px;
+  }
+  .day {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 28px 0;
+  }
+  .dayMarker {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .dayTitle {
+    font-size: 28px;
+  }
+  .docGrid {
+    grid-template-columns: 1fr;
+  }
+  .splitSection {
+    display: block;
+  }
+  .splitSection > :last-child {
+    margin-top: 20px;
+  }
+  .docRow {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+  .docRowBody {
+    flex-basis: calc(100% - 40px);
+  }
+  .docRowActions {
+    margin-left: 32px;
+  }
+  .band {
+    display: block;
+    padding: 35px 25px;
+  }
+  .bandMark {
+    width: 72px;
+    margin-bottom: 25px;
+  }
+  .bandTitle {
+    font-size: 42px;
+  }
+  .root .bandAction {
+    width: 100%;
+    margin: 28px 0 0;
+    padding: 14px 18px;
+    font-size: 15px;
+  }
+}
+
+/* ---------- Destination hero (revealed trip) ----------
+   Final state of the "Randomtrip Reveal — Tablero v2" prototype (`.cinema`
+   + `.destination`): full-viewport photo under the dashboard navbar's
+   transparent overlay, a bottom-heavy shade, and the place set huge. The
+   teal gradient shows if the photo is missing or fails to load. */
+.destHero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100svh;
+  min-height: 620px;
+  background: linear-gradient(125deg, #497c78, var(--color-primary) 65%, #143e40);
+  color: var(--color-ground);
+}
+.destPhoto {
+  position: absolute;
+  inset: 0;
+  max-width: none;
+}
+.destShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 25, 27, 0.05) 10%,
+    rgba(5, 25, 27, 0.15) 32%,
+    rgba(5, 25, 27, 0.82) 100%
+  );
+}
+.destContent {
+  position: absolute;
+  z-index: 2;
+  inset: auto 6% 55px;
+}
+.destEyebrow {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.destTitle {
+  margin: 22px 0 18px;
+  font-size: clamp(90px, 11.3vw, 170px);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  outline: none;
+}
+.destCopy {
+  max-width: 46ch;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45;
+}
+.destBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  margin-top: 28px;
+}
+.destCaption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .destTitle {
+    font-size: clamp(76px, 12vw, 125px);
+  }
+}
+@media (max-width: 650px) {
+  .destContent {
+    inset: auto 7% 34px;
+  }
+  .destEyebrow {
+    font-size: 10px;
+    letter-spacing: 0.13em;
+  }
+  .destTitle {
+    margin: 22px 0;
+    font-size: clamp(64px, 19vw, 112px);
+    line-height: 0.91;
+  }
+  .destCopy {
+    max-width: 280px;
+    font-size: 18px;
+  }
+  .destBottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    margin-top: 30px;
+  }
+  .destExplore {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .destCaption {
+    display: none;
+  }
+}
+
+/* ---------- Travel guide (TripGuide) ----------
+   The prototype's `.guide`: intro + photo, section nav, route tabs and the
+   "before you go" accordion. Eyebrows, section heads, `.block` spacing,
+   `.textLink`, `.bigNumber` and the support `.band` are the shared pieces
+   above; only guide-specific layout lives here. */
+/* Sits inside the trip <main> between the details strip and the itinerary,
+   on the page's section rhythm. */
+.guide {
+  padding-top: 75px;
+}
+.guideIntro {
+  display: grid;
+  grid-template-columns: 0.85fr 1fr;
+  gap: 8%;
+  align-items: center;
+}
+.guideTitle {
+  margin: 0 0 28px;
+  color: var(--color-primary);
+  font-size: clamp(66px, 6.8vw, 104px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+/* An experience title is a sentence, not three short lines: one step smaller. */
+.guideTitleData {
+  font-size: clamp(48px, 4.8vw, 76px);
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+.guideTitle span {
+  color: var(--rt-accent-muted);
+}
+.placeholderTag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: rgba(229, 165, 28, 0.22);
+  color: #6b4700;
+  font-family: var(--font-barlow), sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.guideTagRow {
+  margin: -14px 0 22px;
+}
+.guideLead {
+  margin: 0 0 20px;
+  font-size: 23px;
+  line-height: 1.4;
+  white-space: pre-line;
+}
+.guideBody {
+  max-width: 330px;
+  margin: 0;
+  font-size: 16px;
+}
+.guidePhoto {
+  position: relative;
+  margin: 0;
+}
+.guidePhoto img {
+  display: block;
+  width: 100%;
+  height: 540px;
+  max-width: none;
+}
+.guidePhoto figcaption {
+  color: var(--rt-muted);
+  margin-top: 12px;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+/* Carousel (ui/carousel): edge-to-edge slides; caption left, "01 / 07" and
+   the site's round arrow buttons bottom right. */
+.guidePhotoTrack {
+  margin-left: 0;
+}
+.guidePhotoSlide {
+  padding-left: 0;
+}
+.guidePhotoBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+}
+.guidePhotoBar figcaption {
+  margin-top: 0;
+}
+.guidePhotoControls {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+}
+.guidePhotoCount {
+  margin-right: 8px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: var(--rt-muted);
+}
+
+@media (max-width: 1000px) {
+  .guide {
+    padding-top: 65px;
+  }
+  .guideIntro {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+  }
+  .guideTitle {
+    margin-bottom: 24px;
+    font-size: 78px;
+  }
+  .guideBody {
+    max-width: 340px;
+  }
+  .guidePhoto img {
+    height: 460px;
+  }
+}
+
+@media (max-width: 650px) {
+  .guide {
+    padding-top: 45px;
+  }
+  .guideTitle {
+    font-size: clamp(50px, 15vw, 66px);
+  }
+  .guideLead {
+    font-size: 22px;
+  }
+  .guidePhoto img {
+    height: 380px;
+  }
+  .guidePhoto figcaption {
+    font-size: 8px;
+    line-height: 1.6;
+  }
+}
+
+/* ---------- "Relive the reveal" bar (TriggerRevealAnimation) ----------
+   The prototype's `.arrival-line`: full width under the destination hero. */
+.replayBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 6%;
+  border-bottom: 1px solid rgba(6, 92, 96, 0.2);
+  background: var(--color-ground);
+  color: var(--color-primary);
+}
+.replayLine {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.replayDot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--color-feature);
+}
+.root .replayButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 44px;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.root .replayButton:hover {
+  border-bottom-color: currentColor;
+}
+.root .replayButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+.replayButton svg {
+  width: 18px;
+  height: 18px;
+}
+@media (max-width: 650px) {
+  .replayBar {
+    display: block;
+    padding: 14px 7%;
+  }
+  .replayLine {
+    font-size: 8px;
+    letter-spacing: 0.1em;
+  }
+  .root .replayButton {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+}
+
+/* ---------- Compass + split-flap destination reveal ----------
+   Ported from the approved "Randomtrip Reveal — Tablero v2" prototype
+   (styles.css). The gate sits below the dashboard's solid sticky navbar
+   (h-16), so it is `100svh - 4rem` tall — the prototype's `.reveal-shell`.
+   `.hero` keeps its own min-height: a returning visitor (gate already
+   opened) sees the hero at its normal height. Phase is driven from
+   `data-phase` on `.gate`: ready → orienting → boarding → opening. */
+.revealWrap {
+  --reveal-teal: var(--color-primary);
+  --reveal-paper: var(--color-ground);
+  --reveal-gold: var(--color-feature);
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
-.heroGated {
-  height: 100svh;
+.revealGated {
+  height: calc(100svh - 4rem);
+  min-height: 620px;
+  max-height: 1000px;
 }
-
-.scratchContent {
+.revealContent {
   position: relative;
   z-index: 1;
   height: 100%;
-  transform: scale(1.06);
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
 }
-.scratchContentRevealed {
-  transform: scale(1);
-  pointer-events: auto;
+.revealGated .destHero {
+  height: 100%;
+  min-height: 0;
+}
+/* Once the reveal starts the navbar overlays (and hides), so the stage and
+   the hero beneath it take the full viewport. */
+.revealImmersive.revealGated {
+  height: 100svh;
+}
+/* The photo sits blurred and enlarged under the gate, then comes into focus
+   as the board clears; the title rises in after it. */
+.revealGated .destPhoto {
+  filter: blur(18px);
+  transform: scale(1.12);
+  transition:
+    filter 1.3s ease,
+    transform 5s var(--reveal-ease);
+}
+.revealGated .destContent {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.9s var(--reveal-ease);
+}
+.revealOpening .destPhoto {
+  filter: none;
+  transform: scale(1.045);
+}
+.revealOpening .destContent {
+  opacity: 1;
+  transform: none;
 }
 
-.scratchCover {
+.gate {
   position: absolute;
   inset: 0;
   z-index: 2;
-  touch-action: none;
-  cursor: url("/assets/icons/isologo-cursor.png") 36 36, grab;
-  transition: opacity 0.7s ease;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--reveal-teal);
+  color: var(--reveal-paper);
+  transition: opacity 0.8s ease;
 }
-.scratchCoverGone {
+/* The "drawer": while the sequence plays the gate is a fixed full-viewport
+   layer above the (sliding-away) navbar, whatever the page scroll. */
+.gate:not([data-phase="ready"]) {
+  position: fixed;
+  z-index: 60;
+}
+.gate[data-phase="opening"] {
   opacity: 0;
   pointer-events: none;
 }
-.scratchCanvas {
+
+/* Official isologo as a mask: single-color art with transparent cut-outs,
+   filled white or ochre (brand book's approved CSS-mask recolor). */
+.maskCompass {
+  display: block;
+  aspect-ratio: 1;
+  background: currentColor;
+  -webkit-mask: url("/assets/logos/iso-randomtrip.svg") center / contain no-repeat;
+  mask: url("/assets/logos/iso-randomtrip.svg") center / contain no-repeat;
+}
+
+/* Ready: paper intro + teal compass stage */
+.ready {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transition: opacity 0.5s ease;
+}
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 45px 8% 24px 10%;
+  background: var(--reveal-paper);
+  color: var(--reveal-teal);
+}
+.introEyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.introDot {
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--reveal-gold);
+}
+.introTitle {
+  margin: 30px 0 26px;
+  font-size: clamp(76px, 7.4vw, 118px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+.introTitle span {
+  text-decoration: underline;
+  text-decoration-color: var(--reveal-gold);
+  text-decoration-thickness: 5px;
+  text-underline-offset: 9px;
+}
+.introBody {
+  max-width: 380px;
+  color: var(--color-ink);
+  margin: 0 0 30px;
+  font-size: 20px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.introMicro {
+  margin: 14px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--rt-muted);
+}
+.introFoot {
+  margin: auto 0 0;
+  padding-top: 25px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--reveal-teal);
+  color: var(--reveal-paper);
+}
+.stageCompass {
+  position: relative;
+  z-index: 3;
+  width: 230px;
+  color: var(--reveal-paper);
+}
+.gate[data-phase="orienting"] .stageCompass {
+  animation: revealFindNorth 1.6s var(--reveal-ease) both;
+}
+.gate[data-phase="boarding"] .stageCompass,
+.gate[data-phase="opening"] .stageCompass {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+@keyframes revealFindNorth {
+  0% {
+    transform: rotate(-16deg) scale(0.94);
+  }
+  45% {
+    transform: rotate(7deg) scale(1.03);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+.stageGhost {
+  position: absolute;
+  width: 120%;
+  max-width: none;
+  opacity: 0.026;
+  transform: rotate(-18deg);
+}
+.orbit {
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(243, 242, 237, 0.14);
+  border-radius: 50%;
+}
+.orbitOuter {
+  width: 84%;
+  border-style: dashed;
+  border-color: rgba(243, 242, 237, 0.06);
+}
+.orbitLine {
+  position: absolute;
+  width: 1px;
+  height: 78%;
+  background: rgba(243, 242, 237, 0.09);
+  transform: rotate(32deg);
+}
+.stageRule {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  height: 1px;
+  background: rgba(243, 242, 237, 0.2);
+}
+.stageRuleTop {
+  top: 40px;
+}
+.stageRuleBottom {
+  bottom: 40px;
+}
+.stageTagline {
+  position: absolute;
+  top: 58px;
+  left: 9%;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.stageCaption {
+  position: absolute;
+  bottom: 65px;
+  left: 9%;
+  margin: 0;
+  font-size: 33px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+.stageIndex {
+  position: absolute;
+  right: 9%;
+  bottom: 67px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
+/* Playing: the compass stage takes the whole gate; its chrome steps back. */
+.gate:not([data-phase="ready"]) .ready {
   display: block;
 }
-.scratchHint {
+.gate:not([data-phase="ready"]) .intro {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s;
+}
+.gate:not([data-phase="ready"]) .stage {
   position: absolute;
   inset: 0;
+  background: transparent;
+}
+.gate:not([data-phase="ready"])
+  :is(.stageCaption, .stageTagline, .stageIndex, .stageGhost, .orbit, .orbitLine, .stageRule) {
+  opacity: 0;
+}
+
+.gateBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.gateBackdrop .maskCompass {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(88vmax, 1300px);
+  opacity: 0.06;
+  color: var(--reveal-paper);
+  transform: translate(-50%, -50%) rotate(-18deg);
+}
+.gate:is([data-phase="orienting"], [data-phase="boarding"]) .gateBackdrop {
+  opacity: 1;
+}
+.gate:is([data-phase="orienting"], [data-phase="boarding"]) .gateBackdrop .maskCompass {
+  animation: revealBackdropDrift 9s linear both;
+}
+@keyframes revealBackdropDrift {
+  to {
+    transform: translate(-50%, -50%) rotate(-6deg);
+  }
+}
+
+.motionCopy {
+  position: absolute;
+  z-index: 6;
+  inset: auto 20px 11%;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+.gate[data-phase="orienting"] .motionCopy {
+  opacity: 1;
+}
+.motionEyebrow {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.motionLine {
+  margin: 10px 0 0;
+  font-size: 22px;
+}
+
+/* Split-flap board */
+.board {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  padding: 70px 5%;
+  opacity: 0;
+  transform: translateY(15px);
   pointer-events: none;
-  color: #fff;
-  text-align: center;
-  padding: 32px;
-  transition: opacity 0.3s;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s var(--reveal-ease);
 }
-.scratchHintDim {
-  opacity: 0.22;
+.gate[data-phase="boarding"] .board {
+  opacity: 1;
+  transform: none;
 }
-.scratchIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+.boardSignature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 45px;
+}
+.boardCompass {
+  width: 58px;
+  color: var(--reveal-gold);
+  opacity: 0;
+}
+.gate[data-phase="boarding"] .boardCompass {
+  animation: revealFadeIn 0.45s ease-in-out 0.25s both;
+}
+@keyframes revealFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+.boardHousing {
+  width: min(100%, 1010px);
+  padding: 15px;
+  border: 1px solid rgba(243, 242, 237, 0.13);
+  border-radius: 5px;
+  background: #043c40;
+  box-shadow:
+    0 15px 50px #022b2d44,
+    inset 0 1px 0 #ffffff0d;
+}
+.flapBoard {
+  --tile-height: clamp(55px, 8vw, 111px);
+  display: grid;
+  gap: 6px;
+}
+.flapTile {
+  position: relative;
+  display: block;
+  height: var(--tile-height);
+  perspective: 450px;
+  border-radius: 3px;
+  background: #062f33;
+  box-shadow: 0 3px 3px #001f2255;
+  color: var(--reveal-paper);
+  transition: color 0.2s ease;
+}
+.boardDestination .flapTile {
+  color: var(--reveal-gold);
+}
+.flapTile::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-0.5px);
+  background: #032d30;
+  box-shadow: 0 1px 0 #ffffff0b;
+  pointer-events: none;
+}
+.tileHalf {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.staticTop,
+.movingTop {
+  top: 0;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(#155357, #104c50);
+}
+.staticBottom,
+.movingBottom {
+  top: 50%;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(#0d4448, #104b4e);
+}
+.movingTop {
+  z-index: 3;
+  transform-origin: 50% 100%;
+  opacity: 0;
+}
+.movingBottom {
+  z-index: 4;
+  transform-origin: 50% 0;
+  opacity: 0;
+}
+.tileGlyph {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: scratchBob 2.4s ease-in-out infinite;
-}
-.scratchIcon svg {
-  width: 25px;
-  height: 25px;
-}
-@keyframes scratchBob {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(-8deg);
-  }
-  50% {
-    transform: translate(10px, -6px) rotate(6deg);
-  }
-}
-.scratchTitle {
+  height: var(--tile-height);
   font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  font-size: clamp(34px, 5.6vw, 78px);
   font-weight: 700;
-  font-size: clamp(30px, 5vw, 52px);
   line-height: 1;
-  text-transform: uppercase;
-  margin: 0;
+  white-space: pre;
 }
-.scratchSubtitle {
-  margin: 0;
-  font-size: 13.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+.staticBottom .tileGlyph,
+.movingBottom .tileGlyph {
+  top: calc(var(--tile-height) * -0.5);
 }
-.scratchBar {
+.boardFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: min(100%, 1010px);
+  padding: 20px 4px 0;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.boardCode {
+  color: var(--reveal-gold);
+  white-space: nowrap;
+}
+
+.skip {
   position: absolute;
-  left: clamp(24px, 5vw, 64px);
-  right: clamp(24px, 5vw, 64px);
-  bottom: 30px;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  overflow: hidden;
+  top: 28px;
+  right: 5%;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 1px solid rgba(243, 242, 237, 0.5);
+  background: rgba(6, 52, 55, 0.85);
+  color: var(--reveal-paper);
+  font-size: 14px;
+  cursor: pointer;
 }
-.scratchBarFill {
-  display: block;
-  height: 100%;
-  background: var(--sun);
-  transition: width 0.12s linear;
+.skip:focus-visible {
+  outline: 2px solid var(--reveal-gold);
+  outline-offset: 3px;
+}
+
+/* Skip / reduced motion: the hero lands on its final state with no transitions.
+   Scoped to the elements the reveal animates — a blanket `*` here would also
+   strip the transitions of everything inside the hero (e.g. ButtonV2's hover
+   lift), which persist after the reveal. */
+.revealInstant .destPhoto,
+.revealInstant .destContent {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 1000px) {
+  .intro {
+    padding-left: 10%;
+  }
+  .introTitle {
+    font-size: clamp(52px, 7.7vw, 76px);
+  }
+  .introBody {
+    font-size: 18px;
+  }
+  .stageCompass {
+    width: 190px;
+  }
+  .flapBoard {
+    gap: 4px;
+  }
+  .boardHousing {
+    padding: 11px;
+  }
+  .tileGlyph {
+    font-size: clamp(30px, 5.7vw, 60px);
+  }
+}
+
+@media (max-width: 650px) {
+  .revealGated {
+    min-height: 600px;
+  }
+  .ready {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stage {
+    flex-shrink: 0;
+    height: 195px;
+  }
+  .stageCompass {
+    width: 122px;
+  }
+  .stageGhost {
+    width: 85%;
+  }
+  .orbitInner {
+    width: 210px;
+  }
+  .orbitOuter {
+    width: 270px;
+  }
+  .orbitLine {
+    height: 90%;
+  }
+  .stageRule {
+    left: 6%;
+    right: 6%;
+  }
+  .stageRuleTop {
+    top: 20px;
+  }
+  .stageRuleBottom {
+    bottom: 20px;
+  }
+  .stageTagline {
+    top: 31px;
+    left: 6%;
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+  .stageCaption {
+    display: none;
+  }
+  .stageIndex {
+    right: 6%;
+    bottom: 31px;
+    font-size: 9px;
+  }
+  .intro {
+    flex: 1;
+    padding: 27px 7% 22px;
+  }
+  .introEyebrow {
+    font-size: 10px;
+  }
+  .introTitle {
+    margin: 20px 0 18px;
+    font-size: clamp(51px, 16.4vw, 64px);
+  }
+  .introBody {
+    margin-bottom: 24px;
+    font-size: 17px;
+  }
+  .introCta {
+    width: 100%;
+  }
+  .introMicro {
+    margin-top: 11px;
+    font-size: 11px;
+  }
+  .introFoot {
+    padding-top: 22px;
+    font-size: 9px;
+  }
+  .gate:not([data-phase="ready"]) .intro {
+    display: none;
+  }
+  .gate:not([data-phase="ready"]) .stage {
+    height: auto;
+  }
+  .gate:not([data-phase="ready"]) .stageCompass {
+    width: 180px;
+  }
+  .motionCopy {
+    inset: auto 8% 15%;
+  }
+  .motionLine {
+    font-size: 19px;
+  }
+  .skip {
+    top: 18px;
+    right: 6%;
+    font-size: 12px;
+  }
+  .boardSignature {
+    gap: 23px;
+    margin-bottom: 34px;
+  }
+  .boardCompass {
+    width: 50px;
+  }
+  .boardHousing {
+    padding: 6px;
+    border-radius: 4px;
+  }
+  .flapBoard {
+    --tile-height: clamp(35px, 11vw, 60px);
+    gap: 2px;
+  }
+  .flapTile {
+    border-radius: 2px;
+  }
+  .flapTile::after {
+    height: 1px;
+  }
+  .tileGlyph {
+    font-size: clamp(20px, 6.8vw, 37px);
+  }
+  .boardFooter {
+    gap: 12px;
+    padding-top: 18px;
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revealWrap *,
+  .revealWrap *::before,
+  .revealWrap *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* ---------- <main> entrance stagger (post-gate) ---------- */

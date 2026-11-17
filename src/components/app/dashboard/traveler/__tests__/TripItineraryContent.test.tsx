@@ -79,14 +79,14 @@ afterEach(() => {
     root?.unmount();
   });
   container?.remove();
-  expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+  expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
 });
 
 describe("TripItineraryContent — ADR-7 status branching", () => {
   it("does not lock scrolling while the trip has not loaded", () => {
     vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
     render();
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
   it("renders the pre-reveal card and NOT the hero eyebrow when documents is undefined", async () => {
@@ -105,8 +105,8 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
 
     const text = container.textContent ?? "";
     expect(text).toContain("This trip's itinerary and documents show up once your destination is revealed.");
-    expect(text).not.toContain("Your destination, revealed");
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+    expect(text).not.toContain("Your next story");
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
   it("mounts the .root subtree and renders the hero eyebrow for a REVEALED trip", async () => {
@@ -121,9 +121,10 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     await flush();
 
     const text = container.textContent ?? "";
-    expect(text).toContain("Your destination, revealed");
-    expect(text).toContain("Mendoza, Argentina");
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(true);
+    expect(text).toContain("Your next story / Argentina");
+    expect(text).toContain("Mendoza.");
+    expect(text).toContain("Explore my trip");
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(true);
   });
 
   it("renders a muted (non-celebratory) hero for a CANCELLED trip, with no departure pill", async () => {
@@ -143,5 +144,56 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     const text = container.textContent ?? "";
     expect(text).toContain("Trip cancelled");
     expect(text).not.toContain("Departs in");
+  });
+});
+
+describe("TripItineraryContent — relive the reveal", () => {
+  const button = (label: string) =>
+    Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(label));
+  const phase = () =>
+    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')?.dataset.phase;
+
+  it("shows the bar after the reveal and sends the traveler back to the ready screen", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        json: () =>
+          Promise.resolve({
+            trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }),
+          }),
+      }),
+    );
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+
+    render();
+    await flush();
+    expect(button("Relive the reveal")).toBeUndefined();
+
+    act(() => button("Reveal my destination")!.click());
+    act(() => button("Skip to destination")!.click());
+    await flush();
+
+    expect(phase()).toBe("done");
+    expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
+    expect(container.querySelector("main")).not.toBeNull();
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
+    // The guide intro sits after the trip-details strip; "See my route" lands
+    // on the itinerary, and the hero's "Explore my trip" on the trip <main>.
+    const main = container.querySelector("main#trip-guide");
+    expect(main?.querySelector('[data-component="TripGuide"]')).not.toBeNull();
+    const blocks = Array.from(main!.children).map((el) => el.querySelector("[data-component]")?.getAttribute("data-component"));
+    expect(blocks.indexOf("TripEssentialsStrip")).toBeLessThan(blocks.indexOf("TripGuide"));
+    expect(container.querySelector('a[href="#itinerary"]')).not.toBeNull();
+    expect(main?.querySelector("#itinerary")).not.toBeNull();
+
+    act(() => button("Relive the reveal")!.click());
+    await flush();
+
+    expect(phase()).toBe("ready");
+    expect(button("Relive the reveal")).toBeUndefined();
+    expect(container.querySelector("main")).toBeNull();
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(true);
+    expect(document.activeElement).toBe(button("Reveal my destination"));
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0 });
   });
 });

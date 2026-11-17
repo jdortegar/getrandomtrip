@@ -356,6 +356,7 @@ Use `<RowActions>` from `@/components/common/RowActions` only for simple edit/de
 - Navigation action: `<Button asChild variant="ghost">` wrapping `<Link>`
 - Panel CTA: `<Button asChild size="sm">`
 - Never use raw styled `<a>` or `<Link>` for actions — always go through `Button`
+- Editorial surfaces styled after the reveal prototype ("Tablero v2" — the revealed trip page) use `ButtonV2` (`@/components/ui/ButtonV2`) instead: square, sentence case, regular weight, icon pushed to the end, 2px lift on hover (none with reduced motion). Variants: `primary` (Deep Teal), `light` (Off White → Ochre on hover; on photos and teal bands), `outline`; sizes `default` / `sm` / `icon`. `Button` stays the default everywhere else.
 - Text links (inline links, "View all →", receipt/support/privacy links) are Deep Teal: `text-primary underline transition-colors hover:text-primary/80` (or `hover:underline` when not underlined at rest). Never `text-secondary` — Mineral Sage on white is ~2.2:1, below WCAG AA for text.
 
 ### Async action feedback

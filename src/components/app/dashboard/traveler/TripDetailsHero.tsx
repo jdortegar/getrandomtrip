@@ -2,51 +2,17 @@
 
 import { Calendar, Plane, Users } from "lucide-react";
 import Img from "@/components/common/Img";
-import {
-  getCalendarDaysUntilDeparture,
-  getDepartureCountdown,
-} from "@/lib/helpers/getRevealCountdown";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import { isAwaitingReveal } from "@/lib/utils/trips";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { resolveTripDestination } from "./tripDetailsHelpers";
+import { formatTripDateRange, resolveDeparturePill, resolveTripDestination } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
 
 /** Same generic hero photo the rest of the dashboard falls back to
  * (`HeaderHero`'s default) — used whenever no experience photo is
  * assigned yet, so the hero never renders on the bare CSS gradient alone. */
 const FALLBACK_HERO_IMAGE = "/images/hero-image-1.jpeg";
-
-const LOCALE_TAGS: Record<string, string> = {
-  en: "en-US",
-  es: "es-AR",
-};
-
-function formatDateRange(
-  startDate: string | null,
-  endDate: string | null,
-  locale: string,
-): string | null {
-  if (!startDate) return null;
-  const tag = LOCALE_TAGS[locale] ?? LOCALE_TAGS.es;
-  const shortFmt = new Intl.DateTimeFormat(tag, {
-    timeZone: "UTC",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-  const start = shortFmt.format(new Date(startDate));
-  if (!endDate) return start;
-  const end = new Intl.DateTimeFormat(tag, {
-    timeZone: "UTC",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(endDate));
-  return `${start} → ${end}`;
-}
 
 interface TripDetailsHeroProps {
   copy: TripItineraryDict["hero"];
@@ -91,24 +57,9 @@ export function TripDetailsHero({ copy, locale, trip }: TripDetailsHeroProps) {
   const subtitle = interpolateTemplate(copy.subtitle, {
     nights: String(trip.nights),
   });
-  const dateRange = formatDateRange(trip.startDate, trip.endDate, locale);
+  const dateRange = formatTripDateRange(trip.startDate, trip.endDate, locale);
 
-  let pillLabel: string | null = null;
-  if (isRevealed && trip.startDate) {
-    const startDate = new Date(trip.startDate);
-    const now = new Date();
-    const countdown = getDepartureCountdown(
-      { startDate, departureTimeZone: trip.departureTimeZone },
-      now,
-    );
-    if (!countdown.elapsed) {
-      const calendarDays = getCalendarDaysUntilDeparture(startDate, now);
-      pillLabel =
-        calendarDays > 0
-          ? interpolateTemplate(copy.departsInDays, { n: String(calendarDays) })
-          : copy.departsToday;
-    }
-  }
+  const pillLabel = isRevealed ? resolveDeparturePill(trip, copy) : null;
 
   return (
     <header className={styles.hero} role="banner" data-component="TripDetailsHero">

@@ -729,7 +729,18 @@
       "disabled": "No disponible",
       "navigation": "Explorar controles",
       "feedback": "“{action}” activado. Solo una demostración.",
-      "hint": "Prueba una acción para ver la respuesta aquí."
+      "hint": "Prueba una acción para ver la respuesta aquí.",
+      "v2": {
+        "title": "ButtonV2 — editorial",
+        "hint": "Para superficies con el estilo del prototipo, como el viaje revelado: esquinas rectas, sin mayúsculas, se eleva 2px al pasar el cursor.",
+        "labels": {
+          "primary": "Revelar mi destino",
+          "light": "Explorar mi viaje",
+          "outline": "Ver detalle",
+          "small": "Ver",
+          "icon": "Descargar"
+        }
+      }
     },
     "controls": {
       "formTitle": "Un formulario pequeño, respuestas reales",
@@ -7115,11 +7126,10 @@
       "subtitle": "{{nights}} noches de viaje sorpresa te esperan.",
       "travelers": "{{n}} viajeros",
       "departsInDays": "Sale en {{n}} días",
-      "departsToday": "Sale hoy"
-    },
-    "nav": {
-      "itinerary": "Itinerario",
-      "documents": "Documentos"
+      "departsToday": "Sale hoy",
+      "eyebrowNextStory": "Tu próxima historia",
+      "explore": "Explorar mi viaje",
+      "firstLook": "Un primer vistazo a lo que viene."
     },
     "essentials": {
       "lengthLabel": "Duración",
@@ -7165,9 +7175,39 @@
     "footer": {
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
     },
-    "scratch": {
-      "title": "Rascá para descubrir",
-      "subtitle": "Deslizá el dedo sobre la tarjeta"
+    "guide": {
+      "titleLead": "El mundo,\nun poco",
+      "titleAccent": "más grande.",
+      "lead": "Ya sabes dónde.\nAhora, descubre cómo vivirlo.",
+      "body": "Una guía para encontrar el ritmo, tener lo esencial a mano y dejar espacio a lo inesperado.",
+      "photoTagline": "Un lugar para cambiar de ritmo",
+      "placeholderTag": "Sin datos",
+      "routeLink": "Conocer mi ruta",
+      "photosLabel": "Fotos del destino",
+      "photoPrev": "Foto anterior",
+      "photoNext": "Foto siguiente"
+    },
+    "revealReplay": {
+      "line": "El misterio cambia de forma. El viaje empieza.",
+      "action": "Volver a vivir el reveal"
+    },
+    "boardReveal": {
+      "eyebrow": "El gran momento",
+      "titleLead": "Lo que sigue\nno lo viste",
+      "titleAccent": "venir.",
+      "body": "Tu destino ya está elegido.\nAhora te toca descubrirlo.",
+      "cta": "Revelar mi destino",
+      "micro": "Un instante de misterio. Una historia por empezar.",
+      "footer": "Serendipia diseñada",
+      "stageTagline": "Wonder. Wander. Repeat.",
+      "stageCaption": "Lo inesperado.\nCon un norte.",
+      "orientEyebrow": "La sorpresa encuentra su norte.",
+      "orientLine": "Todo empieza a encontrar su norte.",
+      "boardCaption": "Un universo de posibilidades.",
+      "boardCaptionFinal": "Aquí empieza tu próxima historia.",
+      "skip": "Ir al destino",
+      "statusPlaying": "Estamos revelando tu destino.",
+      "statusRevealed": "Tu destino: {{destination}}."
     }
   },
   "tripReveal": {
@@ -7438,7 +7478,7 @@
   },
   "tripRevealNotification": {
     "title": "Tu destino ya está listo",
-    "body": "Ya podés descubrir tu destino sorpresa. Abrí tu viaje y rascá la tarjeta para verlo."
+    "body": "Ya podés descubrir tu destino sorpresa. Abrí tu viaje para revelarlo."
   },
   "travelerDetailsReminder": {
     "subject": "Tu viaje XSED: completá los datos de tus acompañantes",
