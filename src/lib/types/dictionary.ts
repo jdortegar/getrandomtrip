@@ -3078,6 +3078,12 @@ export interface TripItineraryDict {
     placeholderTag: string;
     /** Link down to the trip-details strip (`#trip-details`). */
     routeLink: string;
+    /** Carousel region label and arrow labels. */
+    photosLabel: string;
+    photoPrev: string;
+    photoNext: string;
+    /** Dot label, interpolated with {{n}}. */
+    photoGoTo: string;
   };
   /** Bar under the revealed hero that replays the reveal (TriggerRevealAnimation). */
   revealReplay: {

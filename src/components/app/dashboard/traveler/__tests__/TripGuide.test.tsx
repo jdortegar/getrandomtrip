@@ -1,45 +1,127 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripGuide } from "@/components/app/dashboard/traveler/TripGuide";
 import en from "@/dictionaries/en.json";
 
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
+// Same approach as the shared carousels' own tests: a minimal fake Embla API
+// (what EmblaCarousel's arrows and dots read), with spies on its actions.
+const embla = vi.hoisted(() => ({ api: null as unknown }));
+vi.mock("embla-carousel-react", () => ({ default: () => [() => {}, embla.api] }));
+
+function fakeEmbla(count: number) {
+  let index = 0;
+  const listeners = new Set<() => void>();
+  const notify = () => listeners.forEach((listener) => listener());
+  const snaps = Array.from({ length: count }, (_, i) => i);
+  const api = {
+    on: (_event: string, callback: () => void) => {
+      listeners.add(callback);
+      return api;
+    },
+    off: (_event: string, callback: () => void) => {
+      listeners.delete(callback);
+      return api;
+    },
+    selectedScrollSnap: () => index,
+    scrollSnapList: () => snaps,
+    canScrollPrev: () => count > 1,
+    canScrollNext: () => count > 1,
+    scrollNext: vi.fn(() => {
+      index = (index + 1) % count;
+      notify();
+    }),
+    scrollPrev: vi.fn(() => {
+      index = (index - 1 + count) % count;
+      notify();
+    }),
+    scrollTo: vi.fn((i: number) => {
+      index = i;
+      notify();
+    }),
+  };
+  return api;
+}
+
 const copy = en.tripItinerary.guide;
 let container: HTMLDivElement;
 let root: Root;
 
-function render() {
+function render(props: Partial<Parameters<typeof TripGuide>[0]> = {}) {
+  const photos = props.photos ?? ["/a.jpg"];
+  embla.api = photos.length > 1 ? fakeEmbla(photos.length) : undefined;
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
-  act(() =>
-    root.render(<TripGuide copy={copy} photo="/images/hero-image-1.jpeg" place="JUNÍN, ARGENTINA" />),
-  );
+  act(() => root.render(<TripGuide copy={copy} place="JUNÍN, ARGENTINA" {...props} photos={photos} />));
 }
+
+const tags = () => container.querySelectorAll('[data-component="PlaceholderTag"]');
+const button = (label: string) => container.querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
+
+beforeEach(() => {
+  embla.api = null;
+});
 
 afterEach(() => {
   act(() => root?.unmount());
   container?.remove();
 });
 
-describe("TripGuide", () => {
-  it("renders the intro with the trip's place in the photo caption", () => {
-    render();
-    expect(container.textContent).toContain(copy.titleAccent);
-    expect(container.querySelector("figcaption")?.textContent).toContain("JUNÍN, ARGENTINA / " + copy.photoTagline);
-    const routeLink = container.querySelector('a[href="#itinerary"]');
-    expect(routeLink?.textContent).toContain(copy.routeLink);
+describe("TripGuide — data", () => {
+  it("uses the experience title, description and stay, with no placeholder tags", () => {
+    render({ title: "Two days to share the road", body: "Room to talk on the way.", stay: "Estancia La Oriental" });
+
+    expect(container.querySelector("h2")?.textContent).toBe("Two days to share the road");
+    expect(container.textContent).toContain("Room to talk on the way.");
+    expect(container.querySelector("figcaption")?.textContent).toBe("JUNÍN, ARGENTINA / Estancia La Oriental");
+    // The lead is fixed brand copy and carries no tag either.
+    expect(container.textContent).toContain(copy.lead.split("\n")[0]);
+    expect(tags()).toHaveLength(0);
+    expect(container.textContent).not.toContain(copy.body);
+    expect(container.textContent).not.toContain(copy.photoTagline);
   });
 
-  it("tags every static line as not coming from the database", () => {
+  it("falls back to static copy, tagged, for every empty slot", () => {
+    render({ title: "  ", body: null, stay: undefined });
+
+    expect(container.querySelector("h2")?.textContent).toContain(copy.titleAccent);
+    expect(container.textContent).toContain(copy.body);
+    expect(container.querySelector("figcaption")?.textContent).toContain("JUNÍN, ARGENTINA / " + copy.photoTagline);
+    expect(tags()).toHaveLength(3);
+    for (const tag of tags()) expect(tag.textContent).toBe(copy.placeholderTag);
+  });
+
+  it("links down to the itinerary", () => {
     render();
-    const tagged = Array.from(container.querySelectorAll('[data-component="PlaceholderTag"]'));
-    expect(tagged).toHaveLength(4);
-    for (const tag of tagged) expect(tag.textContent).toBe(copy.placeholderTag);
-    // Title, lead, body and the photo tagline are static; the place is data.
-    expect(container.querySelector("figcaption [data-component='PlaceholderTag']")).not.toBeNull();
-    expect(container.querySelector("h2 [data-component='PlaceholderTag']")).toBeNull();
+    expect(container.querySelector('a[href="#itinerary"]')?.textContent).toContain(copy.routeLink);
+  });
+});
+
+describe("TripGuide — photo carousel", () => {
+  it("renders one slide per photo on EmblaCarousel, with localized arrows and dots", () => {
+    render({ photos: ["/a.jpg", "/b.jpg", "/c.jpg"] });
+    const api = embla.api as ReturnType<typeof fakeEmbla>;
+
+    expect(container.querySelector('[data-component="TripGuidePhotos"]')?.getAttribute("aria-label")).toBe(copy.photosLabel);
+    expect(container.querySelectorAll('[data-component="TripGuidePhotos"] img')).toHaveLength(3);
+    expect(button("Go to photo 2")).not.toBeNull();
+
+    act(() => button(copy.photoNext)!.click());
+    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    act(() => button(copy.photoPrev)!.click());
+    expect(api.scrollPrev).toHaveBeenCalledTimes(1);
+    act(() => button("Go to photo 3")!.click());
+    expect(api.scrollTo).toHaveBeenCalledWith(2);
+  });
+
+  it("renders a single photo without arrows or dots", () => {
+    render({ photos: ["/only.jpg"] });
+
+    expect(container.querySelectorAll('[data-component="TripGuidePhotos"] img')).toHaveLength(1);
+    expect(button(copy.photoNext)).toBeNull();
+    expect(button("Go to photo 1")).toBeNull();
   });
 });

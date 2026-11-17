@@ -844,6 +844,12 @@
   text-transform: uppercase;
   white-space: pre-line;
 }
+/* An experience title is a sentence, not three short lines: one step smaller. */
+.guideTitleData {
+  font-size: clamp(48px, 4.8vw, 76px);
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
 .guideTitle span {
   color: var(--rt-accent-muted);
 }
@@ -892,6 +898,15 @@
   line-height: 1.5;
   letter-spacing: 0.13em;
   text-transform: uppercase;
+}
+/* EmblaCarousel's arrow row: flush with the photo column, not the page frame. */
+.guidePhotoArrows {
+  max-width: none;
+  margin-bottom: 12px;
+  padding: 0;
+}
+.guidePhotoArrows > div {
+  margin-bottom: 0;
 }
 
 @media (max-width: 1000px) {

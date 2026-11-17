@@ -7171,7 +7171,11 @@
       "body": "A guide to find your rhythm, keep the essentials at hand and leave room for the unexpected.",
       "photoTagline": "A place to change your rhythm",
       "placeholderTag": "No data",
-      "routeLink": "See my route"
+      "routeLink": "See my route",
+      "photosLabel": "Destination photos",
+      "photoPrev": "Previous photo",
+      "photoNext": "Next photo",
+      "photoGoTo": "Go to photo {{n}}"
     },
     "revealReplay": {
       "line": "The mystery changes shape. The journey begins.",

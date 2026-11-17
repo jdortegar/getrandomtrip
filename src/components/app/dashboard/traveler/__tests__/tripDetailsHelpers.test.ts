@@ -3,6 +3,7 @@ import {
   buildDayDateLabels,
   resolveBoardDestination,
   resolveDestinationCountry,
+  resolveGuidePhotos,
   resolveTripDestination,
   resolveTripOrigin,
 } from "../tripDetailsHelpers";
@@ -130,5 +131,25 @@ describe("resolveDestinationCountry", () => {
   it("falls back to the experience country, then null", () => {
     expect(resolveDestinationCountry({ actualDestination: "Mendoza", experience })).toBe("Mexico");
     expect(resolveDestinationCountry({ actualDestination: null, experience: null })).toBeNull();
+  });
+});
+
+describe("resolveGuidePhotos", () => {
+  const FALLBACK_PHOTO = "/fallback.jpg";
+
+  it("puts destination photos first, then itinerary-day images, de-duplicated", () => {
+    const trip = {
+      experience: {
+        heroImage: "/hero.jpg",
+        photos: ["/s1.jpg", "/a1.jpg"],
+        itinerary: [{ image: "/d1.jpg" }, { image: "/s1.jpg" }, { image: null }],
+      },
+    };
+    expect(resolveGuidePhotos(trip, FALLBACK_PHOTO)).toEqual(["/s1.jpg", "/a1.jpg", "/d1.jpg"]);
+  });
+
+  it("uses the hero photo only when nothing else exists, then the fallback", () => {
+    expect(resolveGuidePhotos({ experience: { heroImage: "/hero.jpg", photos: [], itinerary: null } }, FALLBACK_PHOTO)).toEqual(["/hero.jpg"]);
+    expect(resolveGuidePhotos({ experience: null }, FALLBACK_PHOTO)).toEqual([FALLBACK_PHOTO]);
   });
 });

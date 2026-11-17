@@ -26,6 +26,7 @@ import { TripDocumentsSection } from "./TripDocumentsSection";
 import {
   resolveBoardDestination,
   resolveDestinationCountry,
+  resolveGuidePhotos,
   resolveTripDestination,
   resolveTripOrigin,
 } from "./tripDetailsHelpers";
@@ -176,9 +177,12 @@ export function TripItineraryContent() {
 
           <div className={styles.mainBlock}>
             <TripGuide
+              body={trip.experience?.description}
               copy={copy.guide}
-              photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
+              photos={resolveGuidePhotos(trip, FALLBACK_HERO_IMAGE)}
               place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
+              stay={trip.experience?.hotelName}
+              title={trip.experience?.title}
             />
           </div>
 

@@ -7171,7 +7171,11 @@
       "body": "Una guía para encontrar el ritmo, tener lo esencial a mano y dejar espacio a lo inesperado.",
       "photoTagline": "Un lugar para cambiar de ritmo",
       "placeholderTag": "Sin datos",
-      "routeLink": "Conocer mi ruta"
+      "routeLink": "Conocer mi ruta",
+      "photosLabel": "Fotos del destino",
+      "photoPrev": "Foto anterior",
+      "photoNext": "Foto siguiente",
+      "photoGoTo": "Ir a la foto {{n}}"
     },
     "revealReplay": {
       "line": "El misterio cambia de forma. El viaje empieza.",

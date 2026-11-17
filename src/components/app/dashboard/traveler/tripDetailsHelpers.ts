@@ -178,3 +178,27 @@ export function resolveDeparturePill(
   const calendarDays = getCalendarDaysUntilDeparture(startDate, now);
   return calendarDays > 0 ? interpolateTemplate(copy.departsInDays, { n: String(calendarDays) }) : copy.departsToday;
 }
+
+interface PhotoLikeTrip {
+  experience?: {
+    heroImage: string | null;
+    photos?: string[];
+    itinerary?: { image: string | null }[] | null;
+  } | null;
+}
+
+/**
+ * Photos for the guide carousel: the experience's destination photos, then
+ * itinerary-day images, de-duplicated. The hero photo (already full-screen
+ * above) is only used when nothing else exists, then `fallback`.
+ */
+export function resolveGuidePhotos(trip: PhotoLikeTrip, fallback: string): string[] {
+  const experience = trip.experience;
+  const dayImages = (Array.isArray(experience?.itinerary) ? experience.itinerary : []).map((day) => day?.image);
+  const photos = [...(experience?.photos ?? []), ...dayImages]
+    .filter((url): url is string => typeof url === "string" && url.trim() !== "")
+    .map((url) => url.trim());
+  const unique = [...new Set(photos)];
+  if (unique.length) return unique;
+  return [experience?.heroImage?.trim() || fallback];
+}

@@ -35,6 +35,12 @@ export interface TripDetailsData {
     destinationCountry: string | null;
     /** Short destination description; only sent once the trip is revealed. */
     teaser?: string | null;
+    /** Full experience description; only sent once the trip is revealed. */
+    description?: string | null;
+    /** First stay's display name (never the hotel record); only sent once revealed. */
+    hotelName?: string | null;
+    /** Destination photo URLs (gallery, XSED sections, activities); only sent once revealed. */
+    photos?: string[];
     itinerary: ItineraryDayEntry[] | null;
     inclusions: unknown[] | null;
     exclusions: unknown[] | null;
