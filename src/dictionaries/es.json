@@ -7168,6 +7168,10 @@
     "footer": {
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
     },
+    "revealReplay": {
+      "line": "El misterio cambia de forma. El viaje empieza.",
+      "action": "Volver a vivir el reveal"
+    },
     "boardReveal": {
       "eyebrow": "El gran momento",
       "titleLead": "Lo que sigue\nno lo viste",

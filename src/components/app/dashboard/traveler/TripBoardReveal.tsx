@@ -35,6 +35,8 @@ interface TripBoardRevealProps {
   copy: TripItineraryDict["boardReveal"];
   children: React.ReactNode;
   onComplete?: (result: { instant: boolean }) => void;
+  /** Focus "Reveal my destination" on mount — set when the traveler asked to replay. */
+  focusCta?: boolean;
 }
 
 /**
@@ -54,7 +56,15 @@ interface TripBoardRevealProps {
  * returns as the transparent overlay (solid again on scroll) over the
  * full-viewport destination hero.
  */
-export function TripBoardReveal({ tripId, destination, locale, copy, children, onComplete }: TripBoardRevealProps) {
+export function TripBoardReveal({
+  tripId,
+  destination,
+  locale,
+  copy,
+  children,
+  onComplete,
+  focusCta = false,
+}: TripBoardRevealProps) {
   const hydrated = useHydrated();
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const { setNavbarOverlay } = useNavbarChrome();
@@ -72,6 +82,7 @@ export function TripBoardReveal({ tripId, destination, locale, copy, children, o
 
   const boardRef = useRef<SplitFlapBoardHandle>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
+  const ctaRef = useRef<HTMLButtonElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const onCompleteRef = useRef(onComplete);
@@ -125,6 +136,11 @@ export function TripBoardReveal({ tripId, destination, locale, copy, children, o
     later(() => setPhase("opening"), openingAt);
     later(() => finish(false), openingAt + openingMs);
   }, [phase, reducedMotion, tripId, rows, boardText, finish]);
+
+  // After a replay request, put focus back on the ready screen's action.
+  useEffect(() => {
+    if (focusCta && hydrated) ctaRef.current?.focus({ preventScroll: true });
+  }, [focusCta, hydrated]);
 
   // Turning reduced motion on mid-sequence lands on the destination at once.
   useEffect(() => {
@@ -214,7 +230,7 @@ export function TripBoardReveal({ tripId, destination, locale, copy, children, o
                     <span>{copy.titleAccent}</span>
                   </h2>
                   <p className={styles.introBody}>{copy.body}</p>
-                  <Button className={styles.introCta} onClick={start} size="lg" type="button">
+                  <Button className={styles.introCta} onClick={start} ref={ctaRef} size="lg" type="button">
                     {copy.cta}
                   </Button>
                   <p className={styles.introMicro}>{copy.micro}</p>

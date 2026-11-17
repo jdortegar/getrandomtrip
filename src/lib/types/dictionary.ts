@@ -3068,7 +3068,12 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
-  /** Compass + split-flap reveal gate shown once per trip over the hero (TripBoardReveal). */
+  /** Bar under the revealed hero that replays the reveal (TriggerRevealAnimation). */
+  revealReplay: {
+    line: string;
+    action: string;
+  };
+  /** Compass + split-flap reveal gate shown over the hero on every visit (TripBoardReveal). */
   boardReveal: {
     eyebrow: string;
     /** Title before the underlined accent words. Rendered with `white-space: pre-line`. */

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useLenis } from "lenis/react";
 import { ArrowLeft, Calendar, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -16,6 +17,7 @@ import type { TripDetailsData } from "@/types/tripDetails";
 import { TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
 import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
 import { TripDetailsBackRow } from "./TripDetailsBackRow";
+import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
 import { TripItineraryTimeline } from "./TripItineraryTimeline";
 import { TripDetailsHelpStrip } from "./TripDetailsHelpStrip";
@@ -34,6 +36,9 @@ export function TripItineraryContent() {
   const [copy, setCopy] = useState<TripItineraryDict | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(false);
+  // Bumped by "Relive the reveal": remounts the gate as a fresh run.
+  const [revealRun, setRevealRun] = useState(0);
+  const lenis = useLenis();
   const mainRef = useRef<HTMLElement>(null);
 
   const tripId = params.id as string;
@@ -81,6 +86,15 @@ export function TripItineraryContent() {
   // The full-viewport hero carries its own "Explore my trip" button down to
   // the guide, so the page stays on the destination when the reveal ends.
   const handleRevealComplete = useCallback(() => setHeroRevealed(true), []);
+
+  // Back to the ready screen at the top of the page, with the guide hidden and
+  // scroll locked again until the traveler reveals (or skips) once more.
+  const handleReplay = useCallback(() => {
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo({ top: 0 });
+    setHeroRevealed(false);
+    setRevealRun((run) => run + 1);
+  }, [lenis]);
 
   if (loading || !copy) {
     return (
@@ -130,6 +144,8 @@ export function TripItineraryContent() {
     <div className={styles.root} data-component="TripItineraryContent">
       <TripBoardReveal
         copy={copy.boardReveal}
+        focusCta={revealRun > 0}
+        key={revealRun}
         destination={resolveBoardDestination(trip, copy.hero.destinationFallback)}
         locale={locale}
         onComplete={handleRevealComplete}
@@ -137,6 +153,8 @@ export function TripItineraryContent() {
       >
         <TripDestinationHero copy={copy.hero} trip={trip} />
       </TripBoardReveal>
+
+      {heroRevealed && <TriggerRevealAnimation copy={copy.revealReplay} onReplay={handleReplay} />}
 
       {heroRevealed && (
         <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
