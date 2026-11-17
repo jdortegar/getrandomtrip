@@ -35,14 +35,15 @@
 
   /* Shared look (see "Shared look" below). */
   --rt-line: rgba(6, 92, 96, 0.2);
-  --rt-muted: #536f6c;
+  /* Captions/meta: neutral-600 — the design system's neutral-500 is under AA on Off White. */
+  --rt-muted: #525252;
   --rt-accent-muted: #668176;
-  --rt-tab-bg: #e8eae3;
 
   font-family: var(--font-barlow), -apple-system, "Segoe UI", sans-serif;
   font-weight: 400;
   line-height: 1.5;
-  color: var(--color-primary);
+  /* Design system: Ink for body and subtitles; Deep Teal for titles, eyebrows, links. */
+  color: var(--color-ink);
   background: var(--color-ground);
 }
 
@@ -68,6 +69,7 @@
    Condensed uppercase titles over small tracked eyebrows. */
 .eyebrow {
   margin: 0;
+  color: var(--color-primary);
   font-size: 11px;
   line-height: 1.5;
   letter-spacing: 0.18em;
@@ -81,6 +83,7 @@
 }
 .sectionTitle {
   margin: 18px 0 0;
+  color: var(--color-primary);
   font-size: clamp(45px, 4.6vw, 68px);
   font-weight: 700;
   line-height: 0.94;
@@ -210,6 +213,7 @@
 }
 .emptyState h3 {
   margin: 0;
+  color: var(--color-primary);
   font-size: 22px;
 }
 .emptyState p {
@@ -434,6 +438,7 @@
 }
 .dayTitle {
   margin: 0 0 12px;
+  color: var(--color-primary);
   font-size: 34px;
   font-weight: 700;
   line-height: 1.15;
@@ -553,6 +558,7 @@
 }
 .inclCardTitle {
   margin: 0 0 14px;
+  color: var(--color-primary);
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.18em;
@@ -837,6 +843,7 @@
 }
 .guideTitle {
   margin: 0 0 28px;
+  color: var(--color-primary);
   font-size: clamp(66px, 6.8vw, 104px);
   font-weight: 700;
   line-height: 0.94;
@@ -893,6 +900,7 @@
   max-width: none;
 }
 .guidePhoto figcaption {
+  color: var(--rt-muted);
   margin-top: 12px;
   font-size: 9px;
   line-height: 1.5;
@@ -900,7 +908,7 @@
   text-transform: uppercase;
 }
 /* Carousel (ui/carousel): edge-to-edge slides; caption left, "01 / 07" and
-   square arrows bottom right. */
+   the site's round arrow buttons bottom right. */
 .guidePhotoTrack {
   margin-left: 0;
 }
@@ -929,49 +937,6 @@
   letter-spacing: 0.12em;
   font-variant-numeric: tabular-nums;
   color: var(--rt-muted);
-}
-/* The primitive's arrows are absolutely placed beside the slides with
-   Tailwind translate/rotate; reset to in-flow square buttons. Zeroing the
-   --tw-* variables neutralises the utilities whichever declaration wins. */
-.root .guidePhotoArrow {
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  position: static;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border: 1px solid var(--color-primary);
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  transform: none;
-  translate: none;
-  rotate: none;
-  cursor: pointer;
-  transition: background-color 0.22s;
-}
-.root .guidePhotoArrow svg {
-  width: 18px;
-  height: 18px;
-  stroke: var(--color-primary);
-}
-.root .guidePhotoArrow:hover {
-  background: var(--color-primary);
-}
-.root .guidePhotoArrow:hover svg {
-  stroke: var(--color-ground);
-}
-.root .guidePhotoArrow:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.root .guidePhotoArrow:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 @media (max-width: 1000px) {
@@ -1223,6 +1188,7 @@
 }
 .introBody {
   max-width: 380px;
+  color: var(--color-ink);
   margin: 0 0 30px;
   font-size: 20px;
   line-height: 1.5;
@@ -1232,7 +1198,7 @@
   margin: 14px 0 0;
   font-size: 12px;
   line-height: 1.5;
-  color: #536f6c;
+  color: var(--rt-muted);
 }
 .introFoot {
   margin: auto 0 0;
