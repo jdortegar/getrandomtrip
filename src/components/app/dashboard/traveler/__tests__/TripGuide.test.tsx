@@ -7,7 +7,7 @@ import en from "@/dictionaries/en.json";
 (globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 // Same approach as the shared carousels' own tests: a minimal fake Embla API
-// (what EmblaCarousel's arrows and dots read), with spies on its actions.
+// (what the shared carousel's arrows and the counter read).
 const embla = vi.hoisted(() => ({ api: null as unknown }));
 vi.mock("embla-carousel-react", () => ({ default: () => [() => {}, embla.api] }));
 
@@ -101,27 +101,29 @@ describe("TripGuide — data", () => {
 });
 
 describe("TripGuide — photo carousel", () => {
-  it("renders one slide per photo on EmblaCarousel, with localized arrows and dots", () => {
-    render({ photos: ["/a.jpg", "/b.jpg", "/c.jpg"] });
-    const api = embla.api as ReturnType<typeof fakeEmbla>;
+  const counter = () => container.querySelector('[aria-live="polite"]')?.textContent?.replace(/\s+/g, " ");
 
-    expect(container.querySelector('[data-component="TripGuidePhotos"]')?.getAttribute("aria-label")).toBe(copy.photosLabel);
-    expect(container.querySelectorAll('[data-component="TripGuidePhotos"] img')).toHaveLength(3);
-    expect(button("Go to photo 2")).not.toBeNull();
+  it("shows one slide per photo, a counter and localized arrows bottom right — no dots", () => {
+    render({ photos: ["/a.jpg", "/b.jpg", "/c.jpg"] });
+
+    expect(container.querySelector('[aria-roledescription="carousel"]')?.getAttribute("aria-label")).toBe(copy.photosLabel);
+    expect(container.querySelectorAll('[aria-roledescription="slide"]')).toHaveLength(3);
+    expect(counter()).toBe("01 / 03");
+    expect(container.querySelector('button[aria-label^="Go to"]')).toBeNull();
 
     act(() => button(copy.photoNext)!.click());
-    expect(api.scrollNext).toHaveBeenCalledTimes(1);
+    expect(counter()).toBe("02 / 03");
+
     act(() => button(copy.photoPrev)!.click());
-    expect(api.scrollPrev).toHaveBeenCalledTimes(1);
-    act(() => button("Go to photo 3")!.click());
-    expect(api.scrollTo).toHaveBeenCalledWith(2);
+    act(() => button(copy.photoPrev)!.click());
+    expect(counter()).toBe("03 / 03");
   });
 
-  it("renders a single photo without arrows or dots", () => {
+  it("renders a single photo without controls", () => {
     render({ photos: ["/only.jpg"] });
 
-    expect(container.querySelectorAll('[data-component="TripGuidePhotos"] img')).toHaveLength(1);
+    expect(container.querySelectorAll('[aria-roledescription="slide"]')).toHaveLength(1);
     expect(button(copy.photoNext)).toBeNull();
-    expect(button("Go to photo 1")).toBeNull();
+    expect(counter()).toBeUndefined();
   });
 });

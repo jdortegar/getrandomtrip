@@ -15,8 +15,6 @@ type OverflowSide = "left" | "right" | "both";
 
 type EmblaCarouselProps = {
   accentColor?: string;
-  /** Localized accessible names for the arrows and dots. Omit to keep the defaults. */
-  ariaLabels?: { prev: string; next: string; slide: (n: number) => string };
   /** Keep the left edge clipped; a full-width ancestor must clip rightward overflow. */
   bleedRight?: boolean;
   children: React.ReactNode;
@@ -38,7 +36,6 @@ const EMBLA_OPTIONS: EmblaOptionsType = {
 
 const EmblaCarousel = ({
   accentColor,
-  ariaLabels,
   bleedRight = false,
   children,
   options,
@@ -86,13 +83,11 @@ const EmblaCarousel = ({
   const arrows = (!prevBtnDisabled || !nextBtnDisabled) && (
     <div className="flex items-center justify-end gap-2.5 mb-6">
       <PrevButton
-        {...(ariaLabels && { "aria-label": ariaLabels.prev })}
         disabled={prevBtnDisabled}
         onClick={onPrevButtonClick}
         style={accentStyle}
       />
       <NextButton
-        {...(ariaLabels && { "aria-label": ariaLabels.next })}
         disabled={nextBtnDisabled}
         onClick={onNextButtonClick}
         style={accentStyle}
@@ -104,7 +99,6 @@ const EmblaCarousel = ({
     <div className="mt-7 flex items-center justify-center gap-2">
       {scrollSnaps.map((_, i) => (
         <DotButton
-          {...(ariaLabels && { "aria-label": ariaLabels.slide(i + 1) })}
           key={i}
           index={i}
           selected={i === selectedIndex}

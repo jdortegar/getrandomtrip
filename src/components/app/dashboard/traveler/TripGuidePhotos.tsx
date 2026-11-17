@@ -1,49 +1,66 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import Img from "@/components/common/Img";
-import EmblaCarousel from "@/components/EmblaCarousel/EmblaCarousel";
-import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+import { useEmblaSnapshot } from "@/components/EmblaCarousel/useEmblaSnapshot";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import styles from "./traveler-trip-details.module.css";
 
 interface TripGuidePhotosProps {
-  copy: Pick<TripItineraryDict["guide"], "photosLabel" | "photoPrev" | "photoNext" | "photoGoTo">;
+  copy: Pick<TripItineraryDict["guide"], "photosLabel" | "photoPrev" | "photoNext">;
   photos: string[];
   caption: ReactNode;
 }
 
-/**
- * EmblaCarousel's fits-without-scrolling check counts whole `slideWidth`s per
- * viewport; a width wider than any screen means "one photo per view", so two
- * or more photos always scroll.
- */
-const ONE_PER_VIEW = 100_000;
+const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * Destination photo carousel for the guide intro, on the site's shared
- * `EmblaCarousel` (its arrows and dots, localized labels), one full-width
- * photo per view, caption below. A single photo renders without controls.
+ * Destination photo carousel for the guide intro, on the shared `ui/carousel`
+ * (incl. its prev/next buttons, restyled square and placed in the caption
+ * bar): caption on the left, "01 / 07" and the arrows bottom right, no dots.
+ * A single photo renders without controls.
  */
 export function TripGuidePhotos({ copy, photos, caption }: TripGuidePhotosProps) {
+  const [api, setApi] = useState<CarouselApi>();
+  const selected = useEmblaSnapshot(api, (current) => current.selectedScrollSnap(), 0);
+  const multiple = photos.length > 1;
+
   return (
-    <figure aria-label={copy.photosLabel} className={styles.guidePhoto} data-component="TripGuidePhotos">
-      <EmblaCarousel
-        arrowsClassName={styles.guidePhotoArrows}
-        ariaLabels={{
-          prev: copy.photoPrev,
-          next: copy.photoNext,
-          slide: (n) => interpolateTemplate(copy.photoGoTo, { n: String(n) }),
-        }}
-        slideClassName="flex-[0_0_100%] sm:flex-[0_0_100%]"
-        slideWidth={ONE_PER_VIEW}
-        slidesPerView={2}
-      >
-        {photos.map((src) => (
-          <Img alt="" className="h-full w-full object-cover" key={src} src={src} />
-        ))}
-      </EmblaCarousel>
-      <figcaption>{caption}</figcaption>
+    <figure className={styles.guidePhoto} data-component="TripGuidePhotos">
+      <Carousel aria-label={copy.photosLabel} opts={{ loop: multiple }} setApi={setApi}>
+        <CarouselContent className={styles.guidePhotoTrack}>
+          {photos.map((src, i) => (
+            <CarouselItem
+              aria-label={`${pad(i + 1)} / ${pad(photos.length)}`}
+              className={styles.guidePhotoSlide}
+              key={src}
+            >
+              <Img alt="" className="h-full w-full object-cover" src={src} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+
+        <div className={styles.guidePhotoBar}>
+          <figcaption>{caption}</figcaption>
+          {multiple ? (
+            <div className={styles.guidePhotoControls}>
+              <span aria-live="polite" className={styles.guidePhotoCount}>
+                {pad(selected + 1)} / {pad(photos.length)}
+              </span>
+              <CarouselPrevious aria-label={copy.photoPrev} className={styles.guidePhotoArrow} />
+              <CarouselNext aria-label={copy.photoNext} className={styles.guidePhotoArrow} />
+            </div>
+          ) : null}
+        </div>
+      </Carousel>
     </figure>
   );
 }

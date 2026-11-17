@@ -7174,8 +7174,7 @@
       "routeLink": "See my route",
       "photosLabel": "Destination photos",
       "photoPrev": "Previous photo",
-      "photoNext": "Next photo",
-      "photoGoTo": "Go to photo {{n}}"
+      "photoNext": "Next photo"
     },
     "revealReplay": {
       "line": "The mystery changes shape. The journey begins.",
