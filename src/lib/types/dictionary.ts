@@ -343,6 +343,12 @@ export interface DesignSystemDict {
     navigation: string;
     feedback: string;
     hint: string;
+    /** ButtonV2 (editorial, prototype "Tablero v2") demo panel. */
+    v2: {
+      title: string;
+      hint: string;
+      labels: { primary: string; light: string; outline: string; small: string; icon: string };
+    };
   };
   controls: {
     formTitle: string;
@@ -3002,10 +3008,12 @@ export interface TripItineraryDict {
     /** Interpolated with {{n}}. */
     departsInDays: string;
     departsToday: string;
-  };
-  nav: {
-    itinerary: string;
-    documents: string;
+    /** Revealed-hero eyebrow, followed by " / {country}" when known. */
+    eyebrowNextStory: string;
+    /** Revealed-hero button that scrolls to the trip guide below. */
+    explore: string;
+    /** Revealed-hero caption, bottom right. */
+    firstLook: string;
   };
   essentials: {
     lengthLabel: string;
@@ -3062,10 +3070,53 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
-  /** Scratch-to-reveal gate shown once per trip over the hero (TripScratchReveal). */
-  scratch: {
-    title: string;
-    subtitle: string;
+  /** Prototype guide blocks below the revealed hero (TripGuide). Static copy for now. */
+  guide: {
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    titleLead: string;
+    titleAccent: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    lead: string;
+    body: string;
+    /** Photo caption after "{PLACE}, {COUNTRY} / ". */
+    photoTagline: string;
+    /** Marks guide copy that is still static, not trip data from the database. */
+    placeholderTag: string;
+    /** Link down to the trip-details strip (`#trip-details`). */
+    routeLink: string;
+    /** Carousel region label and arrow labels. */
+    photosLabel: string;
+    photoPrev: string;
+    photoNext: string;
+  };
+  /** Bar under the revealed hero that replays the reveal (TriggerRevealAnimation). */
+  revealReplay: {
+    line: string;
+    action: string;
+  };
+  /** Compass + split-flap reveal gate shown over the hero on every visit (TripBoardReveal). */
+  boardReveal: {
+    eyebrow: string;
+    /** Title before the underlined accent words. Rendered with `white-space: pre-line`. */
+    titleLead: string;
+    titleAccent: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    body: string;
+    cta: string;
+    micro: string;
+    footer: string;
+    stageTagline: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    stageCaption: string;
+    orientEyebrow: string;
+    orientLine: string;
+    boardCaption: string;
+    boardCaptionFinal: string;
+    skip: string;
+    /** Screen-reader status while the sequence plays. */
+    statusPlaying: string;
+    /** Screen-reader status once revealed. Interpolated with {{destination}}. */
+    statusRevealed: string;
   };
 }
 

@@ -30,7 +30,7 @@ const copy = {
     departureLabel: "Salida",
     returnLabel: "Regreso",
     subtext:
-      "No te lo contamos por acá a propósito: el destino se descubre rascando la tarjeta en tu panel.",
+      "No te lo contamos por acá a propósito: tu destino te espera en tu panel.",
     cta: "DESCUBRIR MI DESTINO",
   },
   en: {
@@ -41,7 +41,7 @@ const copy = {
     departureLabel: "Departure",
     returnLabel: "Return",
     subtext:
-      "We're deliberately not saying it here — scratch the card in your dashboard to find out.",
+      "We're deliberately not saying it here — it's waiting for you in your dashboard.",
     cta: "UNCOVER MY DESTINATION",
   },
 };
@@ -66,21 +66,21 @@ export default function DestinationRevealed({
       <Heading style={heading}>{c.heading}</Heading>
       <Text style={bodyText}>{c.body(client)}</Text>
 
-      {/* Teaser panel — same gradient as the reveal page's scratch cover,
+      {/* Teaser panel — dark gradient echoing the reveal page's gate,
           deliberately no destination name anywhere in it. */}
       <Section style={destinationPanel}>
         <Text style={teaserLine}>
           {locale === "es" ? (
             <>
-              Rascá en el sitio
+              Revelalo en tu panel
               <br />
-              para descubrirlo
+              cuando quieras
             </>
           ) : (
             <>
-              Scratch on the site
+              Reveal it in your
               <br />
-              to uncover it
+              dashboard
             </>
           )}
         </Text>

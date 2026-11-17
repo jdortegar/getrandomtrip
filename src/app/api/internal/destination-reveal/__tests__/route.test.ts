@@ -71,3 +71,32 @@ it.each([undefined, "nonproduction", "unknown"])(
     expect(runAssignmentReminders).not.toHaveBeenCalled();
   },
 );
+
+it("runs on develop/previews only with the dedicated nonproduction secret", async () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  vi.stubEnv("RT_NONPRODUCTION_CRON_SECRET", "develop-only");
+
+  const response = await POST(request("develop-only"));
+  expect(response.status).toBe(200);
+  expect(runPass2).toHaveBeenCalledOnce();
+  expect(runAssignmentReminders).toHaveBeenCalledOnce();
+});
+
+it("never accepts the inherited production CRON_SECRET on develop/previews", async () => {
+  vi.stubEnv("RT_DEPLOY_ENV", "nonproduction");
+  vi.stubEnv("RT_NONPRODUCTION_CRON_SECRET", "develop-only");
+
+  const response = await POST(request("test"));
+  expect(response.status).toBe(401);
+  expect(runPass2).not.toHaveBeenCalled();
+  expect(runAssignmentReminders).not.toHaveBeenCalled();
+});
+
+it("ignores the nonproduction secret in production and with unknown identity", async () => {
+  vi.stubEnv("RT_NONPRODUCTION_CRON_SECRET", "develop-only");
+
+  expect((await POST(request("develop-only"))).status).toBe(401);
+  vi.stubEnv("RT_DEPLOY_ENV", "unknown");
+  expect((await POST(request("develop-only"))).status).toBe(404);
+  expect(runPass2).not.toHaveBeenCalled();
+});

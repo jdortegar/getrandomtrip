@@ -7,7 +7,7 @@ import enDict from "@/dictionaries/en.json";
  * Testing Strategy — "follows the `common.countries` drift-guard
  * precedent"). Walks every leaf string under `tripItinerary` and asserts
  * it exists, with a non-empty value, in BOTH locales — new keys included
- * (hero/nav/essentials/itinerary/documents/support/footer).
+ * (hero/essentials/itinerary/documents/support/footer).
  */
 
 type JsonRecord = Record<string, unknown>;
@@ -59,10 +59,9 @@ describe("tripItinerary dictionary — es/en parity (drift guard)", () => {
     }
   });
 
-  it("new grouped keys (hero/nav/essentials/itinerary/documents/support/footer) exist in both locales", () => {
+  it("new grouped keys (hero/essentials/itinerary/documents/support/footer) exist in both locales", () => {
     for (const group of [
       "hero",
-      "nav",
       "essentials",
       "itinerary",
       "documents",

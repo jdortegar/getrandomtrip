@@ -729,7 +729,18 @@
       "disabled": "Unavailable",
       "navigation": "Explore controls",
       "feedback": "“{action}” activated. Demo only.",
-      "hint": "Try an action to see feedback here."
+      "hint": "Try an action to see feedback here.",
+      "v2": {
+        "title": "ButtonV2 — editorial",
+        "hint": "For prototype-styled surfaces such as the revealed trip: square corners, sentence case, lifts 2px on hover.",
+        "labels": {
+          "primary": "Reveal my destination",
+          "light": "Explore my trip",
+          "outline": "See details",
+          "small": "View",
+          "icon": "Download"
+        }
+      }
     },
     "controls": {
       "formTitle": "A small form, real feedback",
@@ -7115,11 +7126,10 @@
       "subtitle": "{{nights}} nights of surprise travel await.",
       "travelers": "{{n}} travelers",
       "departsInDays": "Departs in {{n}} days",
-      "departsToday": "Departs today"
-    },
-    "nav": {
-      "itinerary": "Itinerary",
-      "documents": "Documents"
+      "departsToday": "Departs today",
+      "eyebrowNextStory": "Your next story",
+      "explore": "Explore my trip",
+      "firstLook": "A first glimpse of what's ahead."
     },
     "essentials": {
       "lengthLabel": "Length",
@@ -7165,9 +7175,39 @@
     "footer": {
       "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
     },
-    "scratch": {
-      "title": "Scratch to reveal",
-      "subtitle": "Drag your finger across the card"
+    "guide": {
+      "titleLead": "The world,\na little",
+      "titleAccent": "bigger.",
+      "lead": "You know where.\nNow discover how to live it.",
+      "body": "A guide to find your rhythm, keep the essentials at hand and leave room for the unexpected.",
+      "photoTagline": "A place to change your rhythm",
+      "placeholderTag": "No data",
+      "routeLink": "See my route",
+      "photosLabel": "Destination photos",
+      "photoPrev": "Previous photo",
+      "photoNext": "Next photo"
+    },
+    "revealReplay": {
+      "line": "The mystery changes shape. The journey begins.",
+      "action": "Relive the reveal"
+    },
+    "boardReveal": {
+      "eyebrow": "The big moment",
+      "titleLead": "What's next\nyou never saw",
+      "titleAccent": "coming.",
+      "body": "Your destination is already chosen.\nNow it's yours to discover.",
+      "cta": "Reveal my destination",
+      "micro": "A moment of mystery. A story about to begin.",
+      "footer": "Designed serendipity",
+      "stageTagline": "Wonder. Wander. Repeat.",
+      "stageCaption": "The unexpected.\nWith a north.",
+      "orientEyebrow": "Surprise finds its north.",
+      "orientLine": "Everything starts finding its north.",
+      "boardCaption": "A universe of possibilities.",
+      "boardCaptionFinal": "Your next story starts here.",
+      "skip": "Skip to destination",
+      "statusPlaying": "Revealing your destination.",
+      "statusRevealed": "Your destination: {{destination}}."
     }
   },
   "tripReveal": {
@@ -7438,7 +7478,7 @@
   },
   "tripRevealNotification": {
     "title": "Your destination is ready",
-    "body": "You can now uncover your surprise destination. Open your trip and scratch the card to see it."
+    "body": "You can now uncover your surprise destination. Open your trip to reveal it."
   },
   "travelerDetailsReminder": {
     "subject": "Your XSED trip: complete your companion details",

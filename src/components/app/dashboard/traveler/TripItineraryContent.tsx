@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useLenis } from "lenis/react";
 import { ArrowLeft, Calendar, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
@@ -13,15 +14,22 @@ import { formatAdminDate } from "@/lib/admin/format";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { TripDetailsHero } from "./TripDetailsHero";
-import { BODY_LOCK_CLASS, TripScratchReveal } from "./TripScratchReveal";
-import { TripDetailsBackRow } from "./TripDetailsBackRow";
+import { FALLBACK_HERO_IMAGE, TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
+import { TripGuide } from "./TripGuide";
+import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
+import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
 import { TripItineraryTimeline } from "./TripItineraryTimeline";
 import { TripDetailsHelpStrip } from "./TripDetailsHelpStrip";
 import { TripSupportModal } from "./TripSupportModal";
 import { TripDocumentsSection } from "./TripDocumentsSection";
-import { resolveTripDestination, resolveTripOrigin } from "./tripDetailsHelpers";
+import {
+  resolveBoardDestination,
+  resolveDestinationCountry,
+  resolveGuidePhotos,
+  resolveTripDestination,
+  resolveTripOrigin,
+} from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
 
 /** Self-contained: fetches its own trip data and dictionary, so it can be
@@ -34,6 +42,9 @@ export function TripItineraryContent() {
   const [copy, setCopy] = useState<TripItineraryDict | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
   const [heroRevealed, setHeroRevealed] = useState(false);
+  // Bumped by "Relive the reveal": remounts the gate as a fresh run.
+  const [revealRun, setRevealRun] = useState(0);
+  const lenis = useLenis();
   const mainRef = useRef<HTMLElement>(null);
 
   const tripId = params.id as string;
@@ -55,17 +66,17 @@ export function TripItineraryContent() {
       .finally(() => setLoading(false));
   }, [session, tripId]);
 
-  const scratchGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
+  const revealGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
 
-  // Body scroll lock while the scratch gate is up — a class (not an inline
+  // Body scroll lock while the reveal gate is up — a class (not an inline
   // style) so it composes cleanly and always cleans up on completion/unmount.
   useEffect(() => {
-    if (!scratchGateVisible) return;
+    if (!revealGateVisible) return;
     document.body.classList.add(BODY_LOCK_CLASS);
     return () => {
       document.body.classList.remove(BODY_LOCK_CLASS);
     };
-  }, [scratchGateVisible]);
+  }, [revealGateVisible]);
 
   // Force a reflow before flipping the stagger class — without it, the browser
   // can coalesce <main>'s hidden-state paint with the revealed-state paint and
@@ -78,13 +89,18 @@ export function TripItineraryContent() {
     el?.classList.add(styles.mainRevealed);
   }, [heroRevealed]);
 
-  const handleScratchComplete = useCallback(({ instant }: { instant: boolean }) => {
-    setHeroRevealed(true);
-    if (instant) return;
-    window.setTimeout(() => {
-      window.scrollTo({ top: Math.round(window.innerHeight * 0.18), behavior: "smooth" });
-    }, 1400);
-  }, []);
+  // The full-viewport hero carries its own "Explore my trip" button down to
+  // the guide, so the page stays on the destination when the reveal ends.
+  const handleRevealComplete = useCallback(() => setHeroRevealed(true), []);
+
+  // Back to the ready screen at the top of the page, with the guide hidden and
+  // scroll locked again until the traveler reveals (or skips) once more.
+  const handleReplay = useCallback(() => {
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    else window.scrollTo({ top: 0 });
+    setHeroRevealed(false);
+    setRevealRun((run) => run + 1);
+  }, [lenis]);
 
   if (loading || !copy) {
     return (
@@ -129,22 +145,26 @@ export function TripItineraryContent() {
   const documents = trip.documents ?? [];
   const destination = resolveTripDestination(trip, copy.hero.destinationFallback);
   const origin = resolveTripOrigin(trip);
+  const boardPlace = resolveBoardDestination(trip, copy.hero.destinationFallback);
 
   return (
     <div className={styles.root} data-component="TripItineraryContent">
-      <TripScratchReveal copy={copy.scratch} onComplete={handleScratchComplete} tripId={tripId}>
-        <TripDetailsHero copy={copy.hero} locale={locale} trip={trip} />
-      </TripScratchReveal>
+      <TripBoardReveal
+        copy={copy.boardReveal}
+        focusCta={revealRun > 0}
+        key={revealRun}
+        destination={boardPlace}
+        locale={locale}
+        onComplete={handleRevealComplete}
+        tripId={tripId}
+      >
+        <TripDestinationHero copy={copy.hero} trip={trip} />
+      </TripBoardReveal>
+
+      {heroRevealed && <TriggerRevealAnimation copy={copy.revealReplay} onReplay={handleReplay} />}
 
       {heroRevealed && (
-        <main
-          className={styles.wrap}
-          ref={mainRef}
-        >
-          <div className={styles.mainBlock}>
-            <TripDetailsBackRow copy={copy} locale={locale} tripId={tripId} />
-          </div>
-
+        <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
           <section className={`${styles.block} ${styles.mainBlock}`}>
             <TripEssentialsStrip
               copy={copy.essentials}
@@ -155,21 +175,32 @@ export function TripItineraryContent() {
             />
           </section>
 
+          <div className={styles.mainBlock}>
+            <TripGuide
+              body={trip.experience?.description}
+              copy={copy.guide}
+              photos={resolveGuidePhotos(trip, FALLBACK_HERO_IMAGE)}
+              place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
+              stay={trip.experience?.hotelName}
+              title={trip.experience?.title}
+            />
+          </div>
+
           {!trip.experience && (
             <section className={`${styles.block} ${styles.mainBlock}`} id="itinerary">
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-                <Calendar className="h-10 w-10 text-gray-300" />
-                <p className="text-sm text-gray-500">{copy.noExperience}</p>
+              <div className={styles.emptyState}>
+                <Calendar aria-hidden="true" />
+                <p>{copy.noExperience}</p>
               </div>
             </section>
           )}
 
           {trip.experience && !hasItinerary && (
             <section className={`${styles.block} ${styles.mainBlock}`} id="itinerary">
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-                <Calendar className="h-10 w-10 text-gray-300" />
-                <h3 className="text-lg font-semibold text-ink">{copy.emptyTitle}</h3>
-                <p className="max-w-sm text-sm text-gray-500">{copy.emptyDescription}</p>
+              <div className={styles.emptyState}>
+                <Calendar aria-hidden="true" />
+                <h3 className={styles.cond}>{copy.emptyTitle}</h3>
+                <p>{copy.emptyDescription}</p>
               </div>
             </section>
           )}
@@ -223,7 +254,7 @@ export function TripItineraryContent() {
           )}
 
           <div className={styles.mainBlock}>
-            <TripDocumentsSection copy={copy} documents={documents} status={trip.status} />
+            <TripDocumentsSection copy={copy} documents={documents} locale={locale} status={trip.status} />
           </div>
 
           <div className={styles.mainBlock}>
@@ -231,6 +262,7 @@ export function TripItineraryContent() {
           </div>
         </main>
       )}
+
 
       {trip.destinationRevealedAt ? (
         <footer className={styles.pagefoot}>

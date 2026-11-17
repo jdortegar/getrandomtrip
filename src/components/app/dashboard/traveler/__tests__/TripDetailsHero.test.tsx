@@ -18,6 +18,9 @@ const copy: TripItineraryDict["hero"] = {
   travelers: "{{n}} travelers",
   departsInDays: "Departs in {{n}} days",
   departsToday: "Departs today",
+  eyebrowNextStory: "Your next story",
+  explore: "Explore my trip",
+  firstLook: "A first glimpse of what's ahead.",
 };
 
 function trip(overrides: Partial<TripDetailsData> = {}): TripDetailsData {

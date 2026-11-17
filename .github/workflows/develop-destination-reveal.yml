@@ -1,0 +1,46 @@
+# Develop's stand-in for production's hourly Netlify scheduled function
+# (netlify/functions/destination-reveal.ts), which Netlify only runs on the
+# published production deploy. Once a day is enough on develop: reveal timing
+# precision doesn't matter there, and each run wakes the develop database.
+# See docs/DeploymentEnvironments.md ("Scheduled jobs on develop").
+name: Develop destination-reveal job
+
+on:
+  schedule:
+    # 03:05 UTC = 00:05 in Buenos Aires, just after local reveal midnight.
+    - cron: "5 3 * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  group: develop-destination-reveal
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call the develop destination-reveal job
+        env:
+          SITE_URL: ${{ vars.DEVELOP_SITE_URL }}
+          SECRET: ${{ secrets.DEVELOP_CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SITE_URL}" ] || [ -z "${SECRET}" ]; then
+            echo "::error::Set repository variable DEVELOP_SITE_URL and secret DEVELOP_CRON_SECRET"
+            exit 1
+          fi
+          status=$(curl -sS -o response.json -w '%{http_code}' --max-time 60 \
+            -X POST -H "Authorization: Bearer ${SECRET}" \
+            "${SITE_URL%/}/api/internal/destination-reveal")
+          cat response.json; echo
+          if [ "${status}" != "200" ]; then
+            echo "::error::destination-reveal returned HTTP ${status}"
+            exit 1
+          fi
+          if ! jq -e '.errors | length == 0' response.json > /dev/null; then
+            echo "::error::destination-reveal reported errors (see response above)"
+            exit 1
+          fi

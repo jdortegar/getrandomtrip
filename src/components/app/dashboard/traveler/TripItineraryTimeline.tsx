@@ -41,7 +41,7 @@ export function TripItineraryTimeline({
           return (
             <li className={styles.day} key={index}>
               <div className={styles.dayMarker}>
-                <span className={`${styles.dayNum} ${styles.cond}`}>{padded}</span>
+                <span className={styles.bigNumber}>{padded}</span>
                 {weekday ? <span className={styles.dayDow}>{weekday}</span> : null}
                 {date ? <span className={styles.dayDate}>{date}</span> : null}
               </div>

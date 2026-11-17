@@ -4,6 +4,12 @@
  * are unit-testable without mounting any component.
  */
 
+import {
+  getCalendarDaysUntilDeparture,
+  getDepartureCountdown,
+} from "@/lib/helpers/getRevealCountdown";
+import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+
 interface DestinationLikeTrip {
   actualDestination: string | null;
   experience?: {
@@ -35,6 +41,38 @@ export function resolveTripDestination(
   if (trip.experience?.title) return trip.experience.title;
 
   return fallback;
+}
+
+/**
+ * The short place name for the split-flap reveal board: same precedence as
+ * {@link resolveTripDestination}, but only the leading place (the city) —
+ * "Mendoza, Argentina" → "Mendoza" — so it fits the board's 14 columns.
+ */
+export function resolveBoardDestination(
+  trip: DestinationLikeTrip,
+  fallback: string,
+): string {
+  // Only `actualDestination` is free text in "City, Country" form; the
+  // title and fallback copy are shown whole (the board wraps long names).
+  return (
+    trip.actualDestination?.split(",")[0]?.trim() ||
+    trip.experience?.destinationCity?.trim() ||
+    trip.experience?.title?.trim() ||
+    fallback
+  );
+}
+
+/**
+ * The destination country for the hero eyebrow: the part after the first
+ * comma of `actualDestination` ("Mendoza, Argentina" → "Argentina"), else
+ * the experience country. Null when neither is known.
+ */
+export function resolveDestinationCountry(trip: DestinationLikeTrip): string | null {
+  if (trip.actualDestination) {
+    const rest = trip.actualDestination.split(",").slice(1).join(",").trim();
+    if (rest) return rest;
+  }
+  return trip.experience?.destinationCountry?.trim() || null;
 }
 
 interface OriginLikeTrip {
@@ -93,4 +131,74 @@ export function buildDayDateLabels(
   }).format(day);
 
   return { weekday, date };
+}
+
+/** Short "Fri, Nov 20 → Wed, Nov 25, 2026" range in the trip's UTC dates. */
+export function formatTripDateRange(
+  startDate: string | null,
+  endDate: string | null,
+  locale: string,
+): string | null {
+  if (!startDate) return null;
+  const tag = resolveLocaleTag(locale);
+  const shortFmt = new Intl.DateTimeFormat(tag, {
+    timeZone: "UTC",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+  const start = shortFmt.format(new Date(startDate));
+  if (!endDate) return start;
+  const end = new Intl.DateTimeFormat(tag, {
+    timeZone: "UTC",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(endDate));
+  return `${start} → ${end}`;
+}
+
+
+interface DepartureLikeTrip {
+  startDate: string | null;
+  departureTimeZone?: string | null;
+}
+
+/** "Departs in N days" / "Departs today" for an upcoming trip; null once departed or undated. */
+export function resolveDeparturePill(
+  trip: DepartureLikeTrip,
+  copy: { departsInDays: string; departsToday: string },
+  now: Date = new Date(),
+): string | null {
+  if (!trip.startDate) return null;
+  const startDate = new Date(trip.startDate);
+  const countdown = getDepartureCountdown({ startDate, departureTimeZone: trip.departureTimeZone }, now);
+  if (countdown.elapsed) return null;
+  const calendarDays = getCalendarDaysUntilDeparture(startDate, now);
+  return calendarDays > 0 ? interpolateTemplate(copy.departsInDays, { n: String(calendarDays) }) : copy.departsToday;
+}
+
+interface PhotoLikeTrip {
+  experience?: {
+    heroImage: string | null;
+    photos?: string[];
+    itinerary?: { image: string | null }[] | null;
+  } | null;
+}
+
+/**
+ * Photos for the guide carousel: the experience's destination photos, then
+ * itinerary-day images, de-duplicated. The hero photo (already full-screen
+ * above) is only used when nothing else exists, then `fallback`.
+ */
+export function resolveGuidePhotos(trip: PhotoLikeTrip, fallback: string): string[] {
+  const experience = trip.experience;
+  const dayImages = (Array.isArray(experience?.itinerary) ? experience.itinerary : []).map((day) => day?.image);
+  const photos = [...(experience?.photos ?? []), ...dayImages]
+    .filter((url): url is string => typeof url === "string" && url.trim() !== "")
+    .map((url) => url.trim());
+  const unique = [...new Set(photos)];
+  if (unique.length) return unique;
+  return [experience?.heroImage?.trim() || fallback];
 }
