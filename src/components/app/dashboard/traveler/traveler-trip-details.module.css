@@ -824,9 +824,10 @@
    "before you go" accordion. Eyebrows, section heads, `.block` spacing,
    `.textLink`, `.bigNumber` and the support `.band` are the shared pieces
    above; only guide-specific layout lives here. */
+/* Sits inside the trip <main> between the details strip and the itinerary,
+   on the page's section rhythm. */
 .guide {
-  padding-top: 90px;
-  padding-bottom: 70px;
+  padding-top: 75px;
 }
 .guideIntro {
   display: grid;
@@ -918,7 +919,6 @@
 @media (max-width: 650px) {
   .guide {
     padding-top: 45px;
-    padding-bottom: 45px;
   }
   .guideTitle {
     font-size: clamp(50px, 15vw, 66px);

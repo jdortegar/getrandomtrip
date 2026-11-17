@@ -177,9 +177,14 @@ describe("TripItineraryContent — relive the reveal", () => {
     expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
     expect(container.querySelector("main")).not.toBeNull();
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
-    // "See my route" in the guide intro lands on the trip-details strip.
-    expect(container.querySelector('a[href="#trip-details"]')).not.toBeNull();
-    expect(container.querySelector("main #trip-details")).not.toBeNull();
+    // The guide intro sits after the trip-details strip; "See my route" lands
+    // on the itinerary, and the hero's "Explore my trip" on the trip <main>.
+    const main = container.querySelector("main#trip-guide");
+    expect(main?.querySelector('[data-component="TripGuide"]')).not.toBeNull();
+    const blocks = Array.from(main!.children).map((el) => el.querySelector("[data-component]")?.getAttribute("data-component"));
+    expect(blocks.indexOf("TripEssentialsStrip")).toBeLessThan(blocks.indexOf("TripGuide"));
+    expect(container.querySelector('a[href="#itinerary"]')).not.toBeNull();
+    expect(main?.querySelector("#itinerary")).not.toBeNull();
 
     act(() => button("Relive the reveal")!.click());
     await flush();

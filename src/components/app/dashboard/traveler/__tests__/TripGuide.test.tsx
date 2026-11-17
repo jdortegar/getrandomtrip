@@ -15,7 +15,7 @@ function render() {
   document.body.appendChild(container);
   root = createRoot(container);
   act(() =>
-    root.render(<TripGuide copy={copy} id="trip-guide" photo="/images/hero-image-1.jpeg" place="JUNÍN, ARGENTINA" />),
+    root.render(<TripGuide copy={copy} photo="/images/hero-image-1.jpeg" place="JUNÍN, ARGENTINA" />),
   );
 }
 
@@ -25,12 +25,11 @@ afterEach(() => {
 });
 
 describe("TripGuide", () => {
-  it("renders the intro with the trip's place in the photo caption, under the given anchor id", () => {
+  it("renders the intro with the trip's place in the photo caption", () => {
     render();
     expect(container.textContent).toContain(copy.titleAccent);
-    expect(container.querySelector("section")?.id).toBe("trip-guide");
     expect(container.querySelector("figcaption")?.textContent).toContain("JUNÍN, ARGENTINA / " + copy.photoTagline);
-    const routeLink = container.querySelector('a[href="#trip-details"]');
+    const routeLink = container.querySelector('a[href="#itinerary"]');
     expect(routeLink?.textContent).toContain(copy.routeLink);
   });
 

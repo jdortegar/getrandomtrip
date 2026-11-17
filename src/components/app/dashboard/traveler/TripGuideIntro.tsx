@@ -6,8 +6,8 @@ import type { TripItineraryDict } from "@/lib/types/dictionary";
 import { PlaceholderTag } from "./PlaceholderTag";
 import styles from "./traveler-trip-details.module.css";
 
-/** Anchor of the trip-details strip (nights, group, origin, type) below the guide. */
-export const TRIP_DETAILS_ID = "trip-details";
+/** `TripItineraryTimeline`'s section id (also on its empty states). */
+export const ITINERARY_ID = "itinerary";
 
 interface TripGuideIntroProps {
   copy: TripItineraryDict["guide"];
@@ -40,7 +40,7 @@ export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
           <p className={styles.guideBody}>
             {copy.body} {tag}
           </p>
-          <a className={styles.textLink} href={`#${TRIP_DETAILS_ID}`}>
+          <a className={styles.textLink} href={`#${ITINERARY_ID}`}>
             {copy.routeLink}
             <ArrowDown aria-hidden="true" />
           </a>

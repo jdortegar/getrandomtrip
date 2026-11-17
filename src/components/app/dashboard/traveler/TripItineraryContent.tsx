@@ -16,7 +16,6 @@ import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { FALLBACK_HERO_IMAGE, TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
 import { TripGuide } from "./TripGuide";
-import { TRIP_DETAILS_ID } from "./TripGuideIntro";
 import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
 import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
@@ -164,17 +163,8 @@ export function TripItineraryContent() {
       {heroRevealed && <TriggerRevealAnimation copy={copy.revealReplay} onReplay={handleReplay} />}
 
       {heroRevealed && (
-        <TripGuide
-          copy={copy.guide}
-          id={TRIP_GUIDE_ID}
-          photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
-          place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
-        />
-      )}
-
-      {heroRevealed && (
-        <main className={styles.wrap} ref={mainRef}>
-          <section className={`${styles.block} ${styles.mainBlock}`} id={TRIP_DETAILS_ID}>
+        <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
+          <section className={`${styles.block} ${styles.mainBlock}`}>
             <TripEssentialsStrip
               copy={copy.essentials}
               nights={trip.nights}
@@ -183,6 +173,14 @@ export function TripItineraryContent() {
               travelType={trip.type}
             />
           </section>
+
+          <div className={styles.mainBlock}>
+            <TripGuide
+              copy={copy.guide}
+              photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
+              place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
+            />
+          </div>
 
           {!trip.experience && (
             <section className={`${styles.block} ${styles.mainBlock}`} id="itinerary">
