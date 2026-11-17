@@ -14,7 +14,8 @@ import { formatAdminDate } from "@/lib/admin/format";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
+import { FALLBACK_HERO_IMAGE, TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
+import { TripGuide } from "./TripGuide";
 import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
 import { TripDetailsBackRow } from "./TripDetailsBackRow";
 import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
@@ -23,7 +24,12 @@ import { TripItineraryTimeline } from "./TripItineraryTimeline";
 import { TripDetailsHelpStrip } from "./TripDetailsHelpStrip";
 import { TripSupportModal } from "./TripSupportModal";
 import { TripDocumentsSection } from "./TripDocumentsSection";
-import { resolveBoardDestination, resolveTripDestination, resolveTripOrigin } from "./tripDetailsHelpers";
+import {
+  resolveBoardDestination,
+  resolveDestinationCountry,
+  resolveTripDestination,
+  resolveTripOrigin,
+} from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
 
 /** Self-contained: fetches its own trip data and dictionary, so it can be
@@ -139,6 +145,7 @@ export function TripItineraryContent() {
   const documents = trip.documents ?? [];
   const destination = resolveTripDestination(trip, copy.hero.destinationFallback);
   const origin = resolveTripOrigin(trip);
+  const boardPlace = resolveBoardDestination(trip, copy.hero.destinationFallback);
 
   return (
     <div className={styles.root} data-component="TripItineraryContent">
@@ -146,7 +153,7 @@ export function TripItineraryContent() {
         copy={copy.boardReveal}
         focusCta={revealRun > 0}
         key={revealRun}
-        destination={resolveBoardDestination(trip, copy.hero.destinationFallback)}
+        destination={boardPlace}
         locale={locale}
         onComplete={handleRevealComplete}
         tripId={tripId}
@@ -247,6 +254,15 @@ export function TripItineraryContent() {
             <TripDetailsHelpStrip copy={copy} onOpen={() => setSupportOpen(true)} />
           </div>
         </main>
+      )}
+
+      {heroRevealed && (
+        <TripGuide
+          copy={copy.guide}
+          onSupport={() => setSupportOpen(true)}
+          photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
+          place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
+        />
       )}
 
       {trip.destinationRevealedAt ? (

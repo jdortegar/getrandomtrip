@@ -10,7 +10,7 @@ import { resolveBoardDestination, resolveDestinationCountry } from "./tripDetail
 import styles from "./traveler-trip-details.module.css";
 
 /** Same generic photo the dashboard falls back to elsewhere. */
-const FALLBACK_HERO_IMAGE = "/images/hero-image-1.jpeg";
+export const FALLBACK_HERO_IMAGE = "/images/hero-image-1.jpeg";
 /** Anchor of the trip guide `<main>` rendered below the hero. */
 export const TRIP_GUIDE_ID = "trip-guide";
 

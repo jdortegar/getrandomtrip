@@ -7168,6 +7168,73 @@
     "footer": {
       "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
     },
+    "guide": {
+      "eyebrow": "02 / Your travel guide",
+      "sampleNote": "Sample content · no bookings or contracted services",
+      "titleLead": "The world,\na little",
+      "titleAccent": "bigger.",
+      "lead": "You know where.\nNow discover how to live it.",
+      "body": "A guide to find your rhythm, keep the essentials at hand and leave room for the unexpected.",
+      "routeLink": "See my route",
+      "photoTagline": "A place to change your rhythm",
+      "nav": {
+        "label": "Guide sections",
+        "route": "Your route",
+        "essentials": "Before you go",
+        "companion": "By your side"
+      },
+      "route": {
+        "eyebrow": "The route / A sample structure",
+        "title": "Less planning.\nMore being there.",
+        "note": "Your trip's times, transfers and bookings will appear here once they're confirmed.",
+        "tabsLabel": "Route moments",
+        "moments": [
+          {
+            "tab": "The first encounter",
+            "title": "Arrive. Look around. Slow down.",
+            "copy": "The moment the screen turns into landscape. Here you'll find your arrival, directions and the first meeting point.",
+            "aside": "Everything you need to start, in one place."
+          },
+          {
+            "tab": "At your pace",
+            "title": "A route with room for you.",
+            "copy": "Confirmed moments will sit alongside time to explore. Your guide will separate what's booked, what's suggested and what you can decide along the way.",
+            "aside": "Curated where it matters. Free in the details."
+          },
+          {
+            "tab": "What you take home",
+            "title": "Come back with something you didn't expect.",
+            "copy": "Directions for the way back and the last stretch will appear here. Afterwards, you can tell us which moment stayed with you.",
+            "aside": "The trip ends. The story goes on."
+          }
+        ]
+      },
+      "essentials": {
+        "eyebrow": "Before you go",
+        "title": "The essentials.\nNo detours.",
+        "body": "Surprise is more fun when the important things are clear.",
+        "packing": {
+          "question": "What do I pack?",
+          "answer": "We'll share a short list based on the destination, the season and your confirmed activities."
+        },
+        "bookings": {
+          "question": "Where are my bookings?",
+          "answer": "The vouchers and details of your confirmed services are gathered in your documents.",
+          "action": "See my documents"
+        },
+        "help": {
+          "question": "What if I need help?",
+          "answer": "Your Randomtrip team is one step away.",
+          "action": "Contact Randomtrip"
+        }
+      },
+      "companion": {
+        "eyebrow": "The destination was the surprise",
+        "title": "We're with you\nfor what's next.",
+        "body": "Your trip at hand. Your team one step away.",
+        "action": "Talk to Randomtrip"
+      }
+    },
     "revealReplay": {
       "line": "The mystery changes shape. The journey begins.",
       "action": "Relive the reveal"

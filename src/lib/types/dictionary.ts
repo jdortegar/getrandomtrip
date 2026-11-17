@@ -3068,6 +3068,45 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
+  /** Prototype guide blocks below the revealed hero (TripGuide). Static copy for now. */
+  guide: {
+    eyebrow: string;
+    sampleNote: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    titleLead: string;
+    titleAccent: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    lead: string;
+    body: string;
+    routeLink: string;
+    /** Photo caption after "{PLACE}, {COUNTRY} / ". */
+    photoTagline: string;
+    nav: { label: string; route: string; essentials: string; companion: string };
+    route: {
+      eyebrow: string;
+      /** Rendered with `white-space: pre-line`. */
+      title: string;
+      note: string;
+      tabsLabel: string;
+      moments: { tab: string; title: string; copy: string; aside: string }[];
+    };
+    essentials: {
+      eyebrow: string;
+      /** Rendered with `white-space: pre-line`. */
+      title: string;
+      body: string;
+      packing: { question: string; answer: string };
+      bookings: { question: string; answer: string; action: string };
+      help: { question: string; answer: string; action: string };
+    };
+    companion: {
+      eyebrow: string;
+      /** Rendered with `white-space: pre-line`. */
+      title: string;
+      body: string;
+      action: string;
+    };
+  };
   /** Bar under the revealed hero that replays the reveal (TriggerRevealAnimation). */
   revealReplay: {
     line: string;
