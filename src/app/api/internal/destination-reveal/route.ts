@@ -1,4 +1,4 @@
-import { isProductionDeployment } from "@/lib/deployment";
+import { isNonproductionDeployment, isProductionDeployment } from "@/lib/deployment";
 import { type NextRequest, NextResponse } from "next/server";
 import { runPass2, type Pass2Result } from "./passes";
 import {
@@ -10,9 +10,21 @@ export const dynamic = "force-dynamic";
 
 // ─── Auth guard ───────────────────────────────────────────────────────────────
 
-function isAuthorized(request: Request): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) return false;
+/**
+ * The secret this deployment accepts, or null when the job is disabled here.
+ * Production: `CRON_SECRET` (Netlify scheduled function, hourly).
+ * Develop/previews: only the dedicated `RT_NONPRODUCTION_CRON_SECRET` (daily
+ * GitHub Actions run, docs/DeploymentEnvironments.md) — never `CRON_SECRET`,
+ * which nonproduction contexts may inherit from production. Unknown or
+ * missing identity, or no dedicated secret, keeps the job disabled.
+ */
+function jobSecret(): string | null {
+  if (isProductionDeployment()) return process.env.CRON_SECRET || null;
+  if (isNonproductionDeployment()) return process.env.RT_NONPRODUCTION_CRON_SECRET || null;
+  return null;
+}
+
+function isAuthorized(request: Request, secret: string): boolean {
   const auth = request.headers.get("authorization") ?? "";
   return auth === `Bearer ${secret}`;
 }
@@ -20,11 +32,12 @@ function isAuthorized(request: Request): boolean {
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
-  if (!isProductionDeployment()) {
+  const secret = jobSecret();
+  if (!secret) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
   try {
-    if (!isAuthorized(request)) {
+    if (!isAuthorized(request, secret)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
