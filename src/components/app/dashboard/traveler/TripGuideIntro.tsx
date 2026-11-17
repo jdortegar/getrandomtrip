@@ -3,8 +3,11 @@
 import { ArrowDown } from "lucide-react";
 import Img from "@/components/common/Img";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
-import { GUIDE_ROUTE_ID } from "./tripGuideAnchors";
+import { PlaceholderTag } from "./PlaceholderTag";
 import styles from "./traveler-trip-details.module.css";
+
+/** Anchor of the trip-details strip (nights, group, origin, type) below the guide. */
+export const TRIP_DETAILS_ID = "trip-details";
 
 interface TripGuideIntroProps {
   copy: TripItineraryDict["guide"];
@@ -13,14 +16,16 @@ interface TripGuideIntroProps {
   place: string;
 }
 
-/** Guide opening: eyebrow row, "The world, a little bigger." and a photo. */
+/**
+ * Guide opening: "The world, a little bigger." and a photo.
+ * The photo and place come from the trip; every static line carries a
+ * `PlaceholderTag` until it's backed by database content.
+ */
 export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
+  const tag = <PlaceholderTag label={copy.placeholderTag} />;
+
   return (
     <>
-      <div className={styles.guideHeadingRow}>
-        <p className={styles.eyebrow}>{copy.eyebrow}</p>
-        <p className={styles.guideNote}>{copy.sampleNote}</p>
-      </div>
       <div className={styles.guideIntro} data-component="TripGuideIntro">
         <div>
           <h2 className={`${styles.guideTitle} ${styles.cond}`} id="guide-heading">
@@ -28,9 +33,14 @@ export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
             {"\n"}
             <span>{copy.titleAccent}</span>
           </h2>
-          <p className={styles.guideLead}>{copy.lead}</p>
-          <p className={styles.guideBody}>{copy.body}</p>
-          <a className={styles.textLink} href={`#${GUIDE_ROUTE_ID}`}>
+          <p className={styles.guideTagRow}>{tag}</p>
+          <p className={styles.guideLead}>
+            {copy.lead} {tag}
+          </p>
+          <p className={styles.guideBody}>
+            {copy.body} {tag}
+          </p>
+          <a className={styles.textLink} href={`#${TRIP_DETAILS_ID}`}>
             {copy.routeLink}
             <ArrowDown aria-hidden="true" />
           </a>
@@ -38,7 +48,7 @@ export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
         <figure className={styles.guidePhoto}>
           <Img alt="" className="h-full w-full object-cover" src={photo} />
           <figcaption>
-            {place} / {copy.photoTagline}
+            {place} / {copy.photoTagline} {tag}
           </figcaption>
         </figure>
       </div>

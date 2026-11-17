@@ -177,6 +177,9 @@ describe("TripItineraryContent — relive the reveal", () => {
     expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
     expect(container.querySelector("main")).not.toBeNull();
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
+    // "See my route" in the guide intro lands on the trip-details strip.
+    expect(container.querySelector('a[href="#trip-details"]')).not.toBeNull();
+    expect(container.querySelector("main #trip-details")).not.toBeNull();
 
     act(() => button("Relive the reveal")!.click());
     await flush();

@@ -106,7 +106,9 @@
   line-height: 1;
   color: var(--color-secondary);
 }
-.root .textLink {
+/* `.root a.x` (0,2,1) outranks the `.root a:not(.btn)` inherit-colour reset. */
+.root .textLink,
+.root a.textLink {
   display: inline-flex;
   align-items: center;
   gap: 32px;
@@ -168,7 +170,8 @@
   width: 44px;
   padding: 0;
 }
-.root .btnLight {
+.root .btnLight,
+.root a.btnLight {
   gap: 38px;
   min-height: 58px;
   padding: 15px 25px;
@@ -181,7 +184,8 @@
   text-transform: none;
   transition: background-color 0.22s, border-color 0.22s;
 }
-.root .btnLight:hover {
+.root .btnLight:hover,
+.root a.btnLight:hover {
   border-color: var(--color-feature);
   background: var(--color-feature);
   color: var(--color-primary);
@@ -357,23 +361,6 @@
   scroll-margin-top: 5rem;
 }
 
-/* Guide section nav links. */
-.root .guideNav a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 10px 0;
-  font-size: 14px;
-}
-.root .guideNav a:hover {
-  text-decoration: underline;
-  text-underline-offset: 5px;
-}
-.root .guideNav a:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 3px;
-}
-
 /* ---------- Essentials strip: facts between hairlines ---------- */
 .essentials {
   display: grid;
@@ -480,12 +467,36 @@
   color: var(--rt-muted);
 }
 
-/* ---------- Documents ---------- */
+/* ---------- Two-column section: "The essentials" + "Your documents" ----------
+   Head on the left, hairline rows on the right. */
+.splitSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8%;
+}
+.splitBody {
+  max-width: 290px;
+  margin: 22px 0 0;
+  font-size: 16px;
+}
+.rowIndex {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--rt-muted);
+}
+.rowList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Documents: one row per file, in the accordion rows' rhythm. */
 .docNote {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  margin-top: 32px;
+  max-width: 340px;
+  margin: 22px 0 0;
   font-size: 13px;
   color: var(--rt-muted);
 }
@@ -493,52 +504,46 @@
   flex-shrink: 0;
   width: 16px;
   height: 16px;
+  margin-top: 2px;
+}
+.docRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 72px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rt-line);
+}
+.docRowBody {
+  flex: 1;
+  min-width: 0;
+}
+.docRowTitle {
+  margin: 0;
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}
+.docRowMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--rt-muted);
+}
+.docRowTag {
+  letter-spacing: 0.18em;
+  color: var(--color-primary);
+}
+.docRowActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
 }
 .docGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 48px;
-  margin-top: 24px;
-}
-.docCard {
-  display: flex;
-  gap: 18px;
-  padding: 24px 0;
-  border-top: 1px solid var(--rt-line);
-}
-.docCardIcon svg {
-  width: 26px;
-  height: 26px;
-  color: var(--color-primary);
-}
-.docCardBody {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-}
-.docCardTitle {
-  margin: 0;
-  font-size: 18px;
-  overflow-wrap: anywhere;
-}
-.docCardMeta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font-size: 12px;
-  color: var(--rt-muted);
-}
-.docCardTag {
-  letter-spacing: 0.18em;
-  color: var(--color-primary);
-}
-.docCardActions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
 }
 
 /* ---------- Inclusions / exclusions: hairline lists ---------- */
@@ -669,6 +674,22 @@
   }
   .docGrid {
     grid-template-columns: 1fr;
+  }
+  .splitSection {
+    display: block;
+  }
+  .splitSection > :last-child {
+    margin-top: 20px;
+  }
+  .docRow {
+    flex-wrap: wrap;
+    gap: 12px 16px;
+  }
+  .docRowBody {
+    flex-basis: calc(100% - 40px);
+  }
+  .docRowActions {
+    margin-left: 32px;
   }
   .band {
     display: block;
@@ -807,18 +828,6 @@
   padding-top: 90px;
   padding-bottom: 70px;
 }
-.guideHeadingRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 25px;
-  margin-bottom: 40px;
-}
-.guideNote {
-  margin: 0;
-  font-size: 12px;
-  color: var(--rt-muted);
-}
 .guideIntro {
   display: grid;
   grid-template-columns: 0.85fr 1fr;
@@ -836,6 +845,24 @@
 }
 .guideTitle span {
   color: var(--rt-accent-muted);
+}
+.placeholderTag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: rgba(229, 165, 28, 0.22);
+  color: #6b4700;
+  font-family: var(--font-barlow), sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.guideTagRow {
+  margin: -14px 0 22px;
 }
 .guideLead {
   margin: 0 0 20px;
@@ -865,130 +892,6 @@
   letter-spacing: 0.13em;
   text-transform: uppercase;
 }
-.guideNav {
-  display: flex;
-  gap: 50px;
-  margin-top: 80px;
-  padding: 12px 0;
-  border-top: 1px solid var(--rt-line);
-  border-bottom: 1px solid var(--rt-line);
-}
-
-.guideTabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  margin-top: 40px;
-  border-bottom: 1px solid var(--rt-line);
-}
-.root .guideTab {
-  padding: 20px 12px;
-  border: 0;
-  border-bottom: 3px solid transparent;
-  background: transparent;
-  color: var(--color-primary);
-  font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
-  font-size: 27px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-}
-.guideTab span {
-  margin-left: 18px;
-  font-family: var(--font-barlow), sans-serif;
-  font-size: 15px;
-  font-weight: 400;
-}
-.root .guideTab[aria-selected="true"] {
-  border-bottom-color: var(--color-primary);
-  background: var(--rt-tab-bg);
-}
-.guideTab:focus-visible,
-.guidePanel:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-.guidePanel {
-  display: grid;
-  grid-template-columns: 100px 1fr 0.6fr;
-  gap: 32px;
-  align-items: center;
-  min-height: 240px;
-  padding: 42px 25px;
-  border-bottom: 1px solid var(--rt-line);
-}
-.guidePanel h4 {
-  margin: 12px 0;
-  font-size: 34px;
-  font-weight: 700;
-  line-height: 1.15;
-}
-.guidePanelCopy {
-  max-width: 530px;
-  margin: 0;
-  font-size: 16px;
-}
-.guidePanelAside {
-  margin: 0;
-  padding-left: 30px;
-  border-left: 1px solid var(--rt-line);
-  color: var(--rt-muted);
-}
-
-.guideEssentials {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8%;
-  margin-bottom: 85px;
-}
-.guideEssentialsBody {
-  max-width: 290px;
-  margin: 22px 0 0;
-  font-size: 16px;
-}
-.guideAccordion details {
-  border-bottom: 1px solid var(--rt-line);
-}
-.guideAccordion summary {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  min-height: 72px;
-  padding: 23px 0;
-  font-size: 19px;
-  list-style: none;
-  cursor: pointer;
-}
-.guideAccordion summary::-webkit-details-marker {
-  display: none;
-}
-.guideAccordion summary:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-.guideAccordionIndex {
-  font-size: 12px;
-  color: var(--rt-muted);
-}
-.guideAccordionPlus {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  margin-left: auto;
-  transition: transform 0.2s;
-}
-.guideAccordion details[open] .guideAccordionPlus {
-  transform: rotate(45deg);
-}
-.guideAccordion details > div {
-  padding: 0 10px 24px 35px;
-  font-size: 16px;
-}
-.guideAccordion details > div p {
-  margin: 0;
-}
-.guideAccordion .textLink {
-  margin-top: 15px;
-}
 
 @media (max-width: 1000px) {
   .guide {
@@ -1010,33 +913,12 @@
   .guidePhoto img {
     height: 460px;
   }
-  .guideTab span {
-    display: block;
-    margin: 8px 0 0;
-  }
-  .guidePanel {
-    grid-template-columns: 75px 1fr;
-    gap: 25px;
-  }
-  .guidePanelAside {
-    display: none;
-  }
 }
 
 @media (max-width: 650px) {
   .guide {
     padding-top: 45px;
     padding-bottom: 45px;
-  }
-  .guideHeadingRow {
-    display: block;
-    margin-bottom: 28px;
-  }
-  .guideNote {
-    max-width: 260px;
-    margin-top: 12px;
-    font-size: 11px;
-    line-height: 1.4;
   }
   .guideTitle {
     font-size: clamp(50px, 15vw, 66px);
@@ -1050,51 +932,6 @@
   .guidePhoto figcaption {
     font-size: 8px;
     line-height: 1.6;
-  }
-  .guideNav {
-    justify-content: space-between;
-    gap: 0;
-    margin-top: 38px;
-    padding: 8px 0;
-  }
-  .root .guideNav a {
-    font-size: 12px;
-  }
-  .guideTabs {
-    margin-top: 28px;
-  }
-  .root .guideTab {
-    padding: 17px 10px;
-    font-size: 26px;
-  }
-  .guideTab span {
-    max-width: 90px;
-    font-size: 12px;
-    line-height: 1.4;
-  }
-  .guidePanel {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    align-items: start;
-    min-height: 330px;
-    padding: 28px 0;
-  }
-  .guidePanel h4 {
-    font-size: 32px;
-  }
-  .guideEssentials {
-    display: block;
-    margin-bottom: 45px;
-  }
-  .guideAccordion {
-    margin-top: 20px;
-  }
-  .guideAccordion summary {
-    padding: 20px 0;
-    font-size: 18px;
-  }
-  .guideAccordion details > div {
-    padding-left: 28px;
   }
 }
 

@@ -42,12 +42,12 @@ function doc(overrides: Partial<TripDocumentDTO> = {}): TripDocumentDTO {
 let container: HTMLDivElement;
 let root: Root;
 
-function render(documents: TripDocumentDTO[], status = "REVEALED") {
+function render(documents: TripDocumentDTO[], status = "REVEALED", locale = "en") {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
-    root.render(<TripDocumentsSection copy={copy} documents={documents} status={status} />);
+    root.render(<TripDocumentsSection copy={copy} documents={documents} locale={locale} status={status} />);
   });
 }
 
@@ -59,6 +59,17 @@ afterEach(() => {
 });
 
 describe("TripDocumentsSection", () => {
+  it("shows the upload date as a calendar date in the page language, without a time-zone shift", () => {
+    render([doc()], "REVEALED", "en");
+    expect(container.textContent).toContain("Aug 20, 2026");
+    act(() => root.unmount());
+    container.remove();
+
+    render([doc()], "REVEALED", "es");
+    expect(container.textContent).toContain("20 de ago de 2026");
+    expect(container.textContent).not.toContain("Aug");
+  });
+
   it("renders doc.href and doc.downloadHref, never a raw /api/upload URL", () => {
     render([doc()]);
     const links = Array.from(container.querySelectorAll("a"));

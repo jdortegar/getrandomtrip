@@ -1,9 +1,8 @@
 "use client";
 
-import { Download, Eye, FileText, Image as ImageIcon, Shield } from "lucide-react";
+import { Download, Eye, Shield } from "lucide-react";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
-import { SectionHead } from "./SectionHead";
 import styles from "./traveler-trip-details.module.css";
 
 type Copy = Pick<
@@ -14,8 +13,11 @@ type Copy = Pick<
 interface TripDocumentsSectionProps {
   copy: Copy;
   documents: TripDocumentDTO[];
+  locale: string;
   status: string;
 }
+
+const LOCALE_TAGS: Record<string, string> = { en: "en-US", es: "es-AR" };
 
 /** MIME-type-derived tag only (Resolved Decision #3) — never a fabricated
  * confirmation number, room-type name, or date range. */
@@ -26,38 +28,43 @@ function tagForMimeType(mimeType: string): string {
   return (subtype ?? type ?? "file").toUpperCase();
 }
 
-function formatDocDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
+/** Upload date in the page's language, read as a calendar date (UTC) so it
+ * never shifts a day in the traveler's time zone. */
+function formatDocDate(iso: string, locale: string): string {
+  return new Intl.DateTimeFormat(LOCALE_TAGS[locale] ?? LOCALE_TAGS.es, {
+    timeZone: "UTC",
     day: "numeric",
     month: "short",
     year: "numeric",
-  });
+  }).format(new Date(iso));
 }
 
 /**
- * `.docGrid` / `.docCard` restyle of the documents section (design.md
- * ADR-2, ADR-3). View/Download stop going through `<Button asChild>` and
- * become raw `<a className={styles.btn}>` — the same call the admin
- * fulfillment header already shipped through review (ADR-2). Populates
- * strictly from `TripDocumentDTO`: label, country tag, mimeType-derived
- * tag, upload date — never a fabricated confirmation number, room-type
- * name, or date range (Resolved Decision #3). Props and the
- * `TripDocumentDTO` contract are unchanged; only the markup is.
+ * "Your documents", laid out like the guide's "The essentials. No detours."
+ * (`.splitSection`): eyebrow, title, lede and privacy note on the left; one
+ * hairline row per document on the right — index, label, type · country ·
+ * date, and View / Download. Populates strictly from `TripDocumentDTO`.
  */
-export function TripDocumentsSection({ copy, documents, status }: TripDocumentsSectionProps) {
+export function TripDocumentsSection({ copy, documents, locale, status }: TripDocumentsSectionProps) {
   const note = status === "CANCELLED" ? copy.documentsCancelledNote : copy.documentsNote;
 
   return (
-    <section className={styles.block} id="documents" data-component="TripDocumentsSection">
-      <SectionHead
-        eyebrow={copy.documents.eyebrow}
-        heading={copy.documents.heading}
-        lede={copy.documents.lede}
-      />
-
-      <div className={styles.docNote}>
-        <Shield aria-hidden="true" />
-        {note}
+    <section
+      aria-labelledby="documents-heading"
+      className={`${styles.block} ${styles.splitSection}`}
+      data-component="TripDocumentsSection"
+      id="documents"
+    >
+      <div>
+        <p className={styles.eyebrow}>{copy.documents.eyebrow}</p>
+        <h2 className={`${styles.sectionTitle} ${styles.cond}`} id="documents-heading">
+          {copy.documents.heading}
+        </h2>
+        <p className={styles.splitBody}>{copy.documents.lede}</p>
+        <p className={styles.docNote}>
+          <Shield aria-hidden="true" />
+          {note}
+        </p>
       </div>
 
       {documents.length === 0 ? (
@@ -65,45 +72,34 @@ export function TripDocumentsSection({ copy, documents, status }: TripDocumentsS
           <p>{copy.documentsEmpty}</p>
         </div>
       ) : (
-        <div className={styles.docGrid}>
-          {documents.map((doc) => {
-            const Icon = doc.mimeType.startsWith("image/") ? ImageIcon : FileText;
-            const tag = tagForMimeType(doc.mimeType);
-
-            return (
-              <div className={styles.docCard} key={doc.id}>
-                <div className={styles.docCardIcon}>
-                  <Icon aria-hidden="true" />
-                </div>
-                <div className={styles.docCardBody}>
-                  <p className={styles.docCardTitle}>{doc.label}</p>
-                  <p className={styles.docCardMeta}>
-                    <span className={styles.docCardTag}>{tag}</span>
-                    {doc.country} · {formatDocDate(doc.createdAt)}
-                  </p>
-                  <div className={styles.docCardActions}>
-                    <a
-                      className={`${styles.btn} ${styles.btnFill}`}
-                      href={doc.href}
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      <Eye aria-hidden="true" />
-                      {copy.view}
-                    </a>
-                    <a
-                      aria-label={copy.download}
-                      className={`${styles.btn} ${styles.btnIcon}`}
-                      href={doc.downloadHref}
-                    >
-                      <Download aria-hidden="true" />
-                    </a>
-                  </div>
-                </div>
+        <ul className={styles.rowList}>
+          {documents.map((doc, i) => (
+            <li className={styles.docRow} key={doc.id}>
+              <span className={styles.rowIndex}>{String(i + 1).padStart(2, "0")}</span>
+              <div className={styles.docRowBody}>
+                <p className={styles.docRowTitle}>{doc.label}</p>
+                <p className={styles.docRowMeta}>
+                  <span className={styles.docRowTag}>{tagForMimeType(doc.mimeType)}</span>
+                  {doc.country} · {formatDocDate(doc.createdAt, locale)}
+                </p>
               </div>
-            );
-          })}
-        </div>
+              <div className={styles.docRowActions}>
+                <a
+                  className={`${styles.btn} ${styles.btnFill}`}
+                  href={doc.href}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <Eye aria-hidden="true" />
+                  {copy.view}
+                </a>
+                <a aria-label={copy.download} className={`${styles.btn} ${styles.btnIcon}`} href={doc.downloadHref}>
+                  <Download aria-hidden="true" />
+                </a>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   );

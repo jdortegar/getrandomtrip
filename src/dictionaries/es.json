@@ -7165,71 +7165,13 @@
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
     },
     "guide": {
-      "eyebrow": "02 / Tu guía de viaje",
-      "sampleNote": "Contenido de muestra · sin reservas ni servicios contratados",
       "titleLead": "El mundo,\nun poco",
       "titleAccent": "más grande.",
       "lead": "Ya sabes dónde.\nAhora, descubre cómo vivirlo.",
       "body": "Una guía para encontrar el ritmo, tener lo esencial a mano y dejar espacio a lo inesperado.",
-      "routeLink": "Conocer mi ruta",
       "photoTagline": "Un lugar para cambiar de ritmo",
-      "nav": {
-        "label": "Secciones de la guía",
-        "route": "Tu ruta",
-        "essentials": "Antes de salir",
-        "companion": "A tu lado"
-      },
-      "route": {
-        "eyebrow": "La ruta / Una estructura de ejemplo",
-        "title": "Menos organizar.\nMás estar ahí.",
-        "note": "Los horarios, traslados y reservas de tu viaje aparecerán aquí cuando estén confirmados.",
-        "tabsLabel": "Momentos de la ruta",
-        "moments": [
-          {
-            "tab": "El primer encuentro",
-            "title": "Llegar. Mirar. Bajar el ritmo.",
-            "copy": "Ese momento en que la pantalla se convierte en paisaje. Aquí encontrarás tu llegada, las indicaciones y el primer punto de encuentro.",
-            "aside": "Todo lo necesario para empezar, en un solo lugar."
-          },
-          {
-            "tab": "A tu ritmo",
-            "title": "Una ruta con espacio para ti.",
-            "copy": "Los momentos confirmados convivirán con tiempo para explorar. Tu guía distinguirá lo reservado, lo sugerido y lo que puedes decidir sobre la marcha.",
-            "aside": "Curaduría en lo importante. Libertad en los detalles."
-          },
-          {
-            "tab": "Lo que te llevas",
-            "title": "Volver con algo que no esperabas.",
-            "copy": "Las indicaciones del regreso y el último tramo aparecerán aquí. Después, podrás contarnos qué momento se quedó contigo.",
-            "aside": "El viaje termina. La historia sigue."
-          }
-        ]
-      },
-      "essentials": {
-        "eyebrow": "Antes de salir",
-        "title": "Lo esencial.\nSin vueltas.",
-        "body": "La sorpresa se disfruta más cuando lo importante está claro.",
-        "packing": {
-          "question": "¿Qué llevo?",
-          "answer": "Te compartiremos una lista breve según el destino, la temporada y las actividades confirmadas."
-        },
-        "bookings": {
-          "question": "¿Dónde están mis reservas?",
-          "answer": "Los comprobantes y datos de tus servicios confirmados están reunidos en tus documentos.",
-          "action": "Ver mis documentos"
-        },
-        "help": {
-          "question": "¿Y si necesito ayuda?",
-          "answer": "Tu equipo de Randomtrip está a un paso.",
-          "action": "Contactar con Randomtrip"
-        }
-      },
-      "companion": {
-        "eyebrow": "El destino era la sorpresa",
-        "title": "Estamos contigo\nen lo que sigue.",
-        "body": "Tu viaje a mano. Tu equipo a un paso.",
-        "action": "Hablar con Randomtrip"
-      }
+      "placeholderTag": "Sin datos",
+      "routeLink": "Conocer mi ruta"
     },
     "revealReplay": {
       "line": "El misterio cambia de forma. El viaje empieza.",

@@ -16,6 +16,7 @@ import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
 import { FALLBACK_HERO_IMAGE, TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
 import { TripGuide } from "./TripGuide";
+import { TRIP_DETAILS_ID } from "./TripGuideIntro";
 import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
 import { TriggerRevealAnimation } from "./TriggerRevealAnimation";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
@@ -163,8 +164,17 @@ export function TripItineraryContent() {
       {heroRevealed && <TriggerRevealAnimation copy={copy.revealReplay} onReplay={handleReplay} />}
 
       {heroRevealed && (
-        <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
-          <section className={`${styles.block} ${styles.mainBlock}`}>
+        <TripGuide
+          copy={copy.guide}
+          id={TRIP_GUIDE_ID}
+          photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
+          place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
+        />
+      )}
+
+      {heroRevealed && (
+        <main className={styles.wrap} ref={mainRef}>
+          <section className={`${styles.block} ${styles.mainBlock}`} id={TRIP_DETAILS_ID}>
             <TripEssentialsStrip
               copy={copy.essentials}
               nights={trip.nights}
@@ -242,7 +252,7 @@ export function TripItineraryContent() {
           )}
 
           <div className={styles.mainBlock}>
-            <TripDocumentsSection copy={copy} documents={documents} status={trip.status} />
+            <TripDocumentsSection copy={copy} documents={documents} locale={locale} status={trip.status} />
           </div>
 
           <div className={styles.mainBlock}>
@@ -251,14 +261,6 @@ export function TripItineraryContent() {
         </main>
       )}
 
-      {heroRevealed && (
-        <TripGuide
-          copy={copy.guide}
-          onSupport={() => setSupportOpen(true)}
-          photo={trip.experience?.heroImage || FALLBACK_HERO_IMAGE}
-          place={[boardPlace, resolveDestinationCountry(trip)].filter(Boolean).join(", ").toLocaleUpperCase(locale)}
-        />
-      )}
 
       {trip.destinationRevealedAt ? (
         <footer className={styles.pagefoot}>
