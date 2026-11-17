@@ -729,7 +729,18 @@
       "disabled": "No disponible",
       "navigation": "Explorar controles",
       "feedback": "“{action}” activado. Solo una demostración.",
-      "hint": "Prueba una acción para ver la respuesta aquí."
+      "hint": "Prueba una acción para ver la respuesta aquí.",
+      "v2": {
+        "title": "ButtonV2 — editorial",
+        "hint": "Para superficies con el estilo del prototipo, como el viaje revelado: esquinas rectas, sin mayúsculas, se eleva 2px al pasar el cursor.",
+        "labels": {
+          "primary": "Revelar mi destino",
+          "light": "Explorar mi viaje",
+          "outline": "Ver detalle",
+          "small": "Ver",
+          "icon": "Descargar"
+        }
+      }
     },
     "controls": {
       "formTitle": "Un formulario pequeño, respuestas reales",

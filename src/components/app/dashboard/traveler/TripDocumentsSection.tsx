@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Eye, Shield } from "lucide-react";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
 import styles from "./traveler-trip-details.module.css";
@@ -84,18 +85,17 @@ export function TripDocumentsSection({ copy, documents, locale, status }: TripDo
                 </p>
               </div>
               <div className={styles.docRowActions}>
-                <a
-                  className={`${styles.btn} ${styles.btnFill}`}
-                  href={doc.href}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <Eye aria-hidden="true" />
-                  {copy.view}
-                </a>
-                <a aria-label={copy.download} className={`${styles.btn} ${styles.btnIcon}`} href={doc.downloadHref}>
-                  <Download aria-hidden="true" />
-                </a>
+                <ButtonV2 asChild size="sm">
+                  <a href={doc.href} rel="noopener noreferrer" target="_blank">
+                    <Eye aria-hidden="true" />
+                    {copy.view}
+                  </a>
+                </ButtonV2>
+                <ButtonV2 asChild size="icon" variant="outline">
+                  <a aria-label={copy.download} href={doc.downloadHref}>
+                    <Download aria-hidden="true" />
+                  </a>
+                </ButtonV2>
               </div>
             </li>
           ))}

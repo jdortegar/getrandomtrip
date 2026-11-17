@@ -2,7 +2,7 @@
 
 import { ArrowDown } from "lucide-react";
 import Img from "@/components/common/Img";
-import { Button } from "@/components/ui/Button";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
@@ -57,12 +57,12 @@ export function TripDestinationHero({ copy, trip }: TripDestinationHeroProps) {
         <p className={styles.destCopy}>{description}</p>
 
         <div className={styles.destBottom}>
-          <Button asChild className={`${styles.btnLight} ${styles.destExplore}`} size="lg" variant="white">
+          <ButtonV2 asChild className={styles.destExplore} variant="light">
             <a href={`#${TRIP_GUIDE_ID}`}>
               {copy.explore}
               <ArrowDown aria-hidden="true" />
             </a>
-          </Button>
+          </ButtonV2>
 
           <p className={styles.destCaption}>{copy.firstLook}</p>
         </div>

@@ -233,3 +233,15 @@ describe("TripBoardReveal — navbar chrome", () => {
     expect(document.body.classList.contains("rt-reveal-hero")).toBe(false);
   });
 });
+
+it("after a skip, keeps transitions on controls inside the hero (only the reveal's own elements snap)", async () => {
+  const fs = await import("node:fs");
+  const path = await import("node:path");
+  const css = fs.readFileSync(
+    path.resolve(__dirname, "../traveler-trip-details.module.css"),
+    "utf8",
+  );
+  // A blanket `.revealInstant *` would freeze ButtonV2's hover lift in the hero.
+  expect(css).not.toMatch(/\.revealInstant\s+\*/);
+  expect(css).toMatch(/\.revealInstant \.destPhoto,\n\.revealInstant \.destContent \{/);
+});

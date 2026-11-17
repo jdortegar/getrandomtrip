@@ -2,14 +2,13 @@
    under .root instead of :root so these custom properties and base
    element rules never leak outside this route's subtree (design.md ADR-1).
 
-   Only TWO base-element rules survive the port — `.root a:not(.btn)` and
-   `.root button/input/textarea/select` — both inheritance-safe (they only
+   Only TWO base-element rules survive the port — `.root a:not([data-slot])`
+   and `.root button/input/textarea/select` — both inheritance-safe (they only
    set color/font-family, never font-size/font-weight/line-height). The
-   `:not(.btn)` exclusion matters: `.root a` alone has higher specificity
-   (class + type) than a single-class rule like `.btnFill`, so it would
-   silently win and force `color: inherit` (ink) onto `.btnFill`'s anchors
-   instead of their intended white text/icon — invisible ink-on-ink content
-   on the filled button. Every other rule, including all icon sizing, is
+   `:not([data-slot])` exclusion matters: `.root a` (class + type) outranks a
+   single Tailwind utility, so without it the reset would force `color:
+   inherit` onto `ButtonV2` / `Button` anchors (`asChild`) — e.g. teal text
+   turning white-on-white on the hero's light button. Every other rule, including all icon sizing, is
    anchored to a generated class.
    The prototype's base64 @font-face blocks and dark-mode/[data-theme]
    overrides are dropped: Tailwind preflight already normalizes box-sizing
@@ -47,7 +46,7 @@
   background: var(--color-ground);
 }
 
-.root a:not(.btn) {
+.root a:not([data-slot]) {
   color: inherit;
 }
 
@@ -109,7 +108,7 @@
   line-height: 1;
   color: var(--color-secondary);
 }
-/* `.root a.x` (0,2,1) outranks the `.root a:not(.btn)` inherit-colour reset. */
+/* `.root a.x` outranks the `.root a:not([data-slot])` inherit-colour reset. */
 .root .textLink,
 .root a.textLink {
   display: inline-flex;
@@ -128,74 +127,6 @@
 .textLink svg {
   width: 18px;
   height: 18px;
-}
-/* Square brand buttons: filled teal, outline icon-only, and off-white over
-   teal/photo (`.root a`/`button` prefix outranks the inherit-color reset). */
-.root .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid var(--color-primary);
-  border-radius: 0;
-  background: transparent;
-  color: var(--color-primary);
-  font-size: 14px;
-  line-height: 1.2;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.22s, color 0.22s, border-color 0.22s;
-}
-.btn svg {
-  width: 16px;
-  height: 16px;
-}
-.root .btn:hover {
-  background: var(--color-primary);
-  color: var(--color-ground);
-}
-.root .btn:focus-visible,
-.root .btnLight:focus-visible {
-  outline: 2px solid var(--color-feature);
-  outline-offset: 3px;
-}
-.root .btnFill {
-  background: var(--color-primary);
-  color: var(--color-ground);
-}
-.root .btnFill:hover {
-  background: #08474a;
-  border-color: #08474a;
-}
-.root .btnIcon {
-  width: 44px;
-  padding: 0;
-}
-.root .btnLight,
-.root a.btnLight {
-  gap: 38px;
-  min-height: 58px;
-  padding: 15px 25px;
-  border-color: var(--color-ground);
-  border-radius: 0;
-  background: var(--color-ground);
-  color: var(--color-primary);
-  font-weight: 400;
-  letter-spacing: 0;
-  text-transform: none;
-  transition: background-color 0.22s, border-color 0.22s;
-}
-.root .btnLight:hover,
-.root a.btnLight:hover {
-  border-color: var(--color-feature);
-  background: var(--color-feature);
-  color: var(--color-primary);
-}
-.btnLight svg {
-  width: 22px;
-  height: 22px;
 }
 .emptyState {
   display: flex;
@@ -1552,10 +1483,12 @@
   outline-offset: 3px;
 }
 
-/* Skip / reduced motion: land on the final state with no transitions. */
-.revealInstant *,
-.revealInstant *::before,
-.revealInstant *::after {
+/* Skip / reduced motion: the hero lands on its final state with no transitions.
+   Scoped to the elements the reveal animates — a blanket `*` here would also
+   strip the transitions of everything inside the hero (e.g. ButtonV2's hover
+   lift), which persist after the reveal. */
+.revealInstant .destPhoto,
+.revealInstant .destContent {
   animation: none !important;
   transition: none !important;
 }

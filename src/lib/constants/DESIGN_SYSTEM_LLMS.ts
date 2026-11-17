@@ -62,9 +62,13 @@ Before inventing a field, copy the pattern on /design-system/components
   semibold, letter-spacing, near-square corners. Show a spinner and a progress
   label while saving; disabled alone is not enough. Allow retry after failure
 - Do not use raw \`<a>\` styled as a button
+- Editorial surfaces styled after the reveal prototype (the revealed trip
+  page) use ButtonV2 instead: square corners, sentence case, regular weight,
+  icon pushed to the end, 2px lift on hover. Variants: primary (Deep Teal),
+  light (Off White, Ochre on hover — on photos and teal bands), outline
 
 If you can name the primitives, use them: FormField, FormSelectField,
-TextAreaInput, FormValidationScope, QuantityStepper, Switch, Button.
+TextAreaInput, FormValidationScope, QuantityStepper, Switch, Button, ButtonV2.
 
 ## Copy and language
 

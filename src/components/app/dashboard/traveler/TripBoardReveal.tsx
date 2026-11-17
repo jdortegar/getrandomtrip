@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import { useHydrated } from "@/hooks/useHydrated";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useNavbarChrome } from "@/context/NavbarChromeContext";
@@ -230,9 +230,9 @@ export function TripBoardReveal({
                     <span>{copy.titleAccent}</span>
                   </h2>
                   <p className={styles.introBody}>{copy.body}</p>
-                  <Button className={styles.introCta} onClick={start} ref={ctaRef} size="lg" type="button">
+                  <ButtonV2 className={styles.introCta} onClick={start} ref={ctaRef} type="button">
                     {copy.cta}
-                  </Button>
+                  </ButtonV2>
                   <p className={styles.introMicro}>{copy.micro}</p>
                   <p className={styles.introFoot}>{copy.footer}</p>
                 </div>

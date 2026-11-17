@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import styles from "./traveler-trip-details.module.css";
 
@@ -22,15 +22,9 @@ export function TripDetailsHelpStrip({ copy, onOpen }: TripDetailsHelpStripProps
           <h3 className={`${styles.bandTitle} ${styles.cond}`}>{copy.support.heading}</h3>
           <p className={styles.bandBody}>{copy.support.body}</p>
         </div>
-        <Button
-          className={`${styles.btnLight} ${styles.bandAction}`}
-          onClick={onOpen}
-          size="lg"
-          type="button"
-          variant="white"
-        >
+        <ButtonV2 className={styles.bandAction} onClick={onOpen} type="button" variant="light">
           {copy.support.cta}
-        </Button>
+        </ButtonV2>
       </div>
     </section>
   );

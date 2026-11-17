@@ -343,6 +343,12 @@ export interface DesignSystemDict {
     navigation: string;
     feedback: string;
     hint: string;
+    /** ButtonV2 (editorial, prototype "Tablero v2") demo panel. */
+    v2: {
+      title: string;
+      hint: string;
+      labels: { primary: string; light: string; outline: string; small: string; icon: string };
+    };
   };
   controls: {
     formTitle: string;

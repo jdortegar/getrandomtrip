@@ -729,7 +729,18 @@
       "disabled": "Unavailable",
       "navigation": "Explore controls",
       "feedback": "“{action}” activated. Demo only.",
-      "hint": "Try an action to see feedback here."
+      "hint": "Try an action to see feedback here.",
+      "v2": {
+        "title": "ButtonV2 — editorial",
+        "hint": "For prototype-styled surfaces such as the revealed trip: square corners, sentence case, lifts 2px on hover.",
+        "labels": {
+          "primary": "Reveal my destination",
+          "light": "Explore my trip",
+          "outline": "See details",
+          "small": "View",
+          "icon": "Download"
+        }
+      }
     },
     "controls": {
       "formTitle": "A small form, real feedback",
