@@ -23,7 +23,7 @@ interface TripGuideProps {
  */
 export function TripGuide({ copy, photo, place, onSupport }: TripGuideProps) {
   return (
-    <section aria-labelledby="guide-heading" className={styles.guide} data-component="TripGuide">
+    <section aria-labelledby="guide-heading" className={`${styles.wrap} ${styles.guide}`} data-component="TripGuide">
       <TripGuideIntro copy={copy} photo={photo} place={place} />
 
       <nav aria-label={copy.nav.label} className={styles.guideNav}>

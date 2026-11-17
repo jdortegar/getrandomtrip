@@ -18,7 +18,7 @@ export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
   return (
     <>
       <div className={styles.guideHeadingRow}>
-        <p className={styles.guideEyebrow}>{copy.eyebrow}</p>
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
         <p className={styles.guideNote}>{copy.sampleNote}</p>
       </div>
       <div className={styles.guideIntro} data-component="TripGuideIntro">
@@ -30,7 +30,7 @@ export function TripGuideIntro({ copy, photo, place }: TripGuideIntroProps) {
           </h2>
           <p className={styles.guideLead}>{copy.lead}</p>
           <p className={styles.guideBody}>{copy.body}</p>
-          <a className={styles.guideInlineLink} href={`#${GUIDE_ROUTE_ID}`}>
+          <a className={styles.textLink} href={`#${GUIDE_ROUTE_ID}`}>
             {copy.routeLink}
             <ArrowDown aria-hidden="true" />
           </a>

@@ -61,7 +61,9 @@ export function TripDocumentsSection({ copy, documents, status }: TripDocumentsS
       </div>
 
       {documents.length === 0 ? (
-        <p className={styles.lede}>{copy.documentsEmpty}</p>
+        <div className={styles.emptyState}>
+          <p>{copy.documentsEmpty}</p>
+        </div>
       ) : (
         <div className={styles.docGrid}>
           {documents.map((doc) => {

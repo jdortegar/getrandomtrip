@@ -2,6 +2,7 @@
 
 import { useRef, useState, type KeyboardEvent } from "react";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
+import { SectionHead } from "./SectionHead";
 import { GUIDE_ROUTE_ID } from "./tripGuideAnchors";
 import styles from "./traveler-trip-details.module.css";
 
@@ -41,19 +42,11 @@ export function TripGuideRoute({ copy }: TripGuideRouteProps) {
   return (
     <section
       aria-labelledby="guide-route-heading"
-      className={styles.guideSection}
+      className={styles.block}
       data-component="TripGuideRoute"
       id={GUIDE_ROUTE_ID}
     >
-      <div className={styles.guideSectionTop}>
-        <div>
-          <p className={styles.guideEyebrow}>{copy.eyebrow}</p>
-          <h3 className={`${styles.guideSectionTitle} ${styles.cond}`} id="guide-route-heading">
-            {copy.title}
-          </h3>
-        </div>
-        <p>{copy.note}</p>
-      </div>
+      <SectionHead as="h3" eyebrow={copy.eyebrow} heading={copy.title} id="guide-route-heading" lede={copy.note} />
 
       <div aria-label={copy.tabsLabel} className={styles.guideTabs} role="tablist">
         {moments.map((m, i) => (
@@ -84,11 +77,11 @@ export function TripGuideRoute({ copy }: TripGuideRouteProps) {
         role="tabpanel"
         tabIndex={0}
       >
-        <span aria-hidden="true" className={`${styles.guidePanelNumber} ${styles.cond}`}>
+        <span aria-hidden="true" className={styles.bigNumber}>
           {number(selected)}
         </span>
         <div>
-          <p className={styles.guideEyebrow}>{moment.tab}</p>
+          <p className={styles.eyebrow}>{moment.tab}</p>
           <h4 className={styles.cond}>{moment.title}</h4>
           <p className={styles.guidePanelCopy}>{moment.copy}</p>
         </div>

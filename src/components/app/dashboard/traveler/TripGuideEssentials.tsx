@@ -19,7 +19,7 @@ export function TripGuideEssentials({ copy, onSupport }: TripGuideEssentialsProp
       question: copy.bookings.question,
       answer: copy.bookings.answer,
       action: (
-        <a className={styles.guideInlineLink} href={`#${TRIP_DOCUMENTS_ID}`}>
+        <a className={styles.textLink} href={`#${TRIP_DOCUMENTS_ID}`}>
           {copy.bookings.action}
         </a>
       ),
@@ -29,7 +29,7 @@ export function TripGuideEssentials({ copy, onSupport }: TripGuideEssentialsProp
       question: copy.help.question,
       answer: copy.help.answer,
       action: (
-        <button className={styles.guideInlineLink} onClick={onSupport} type="button">
+        <button className={styles.textLink} onClick={onSupport} type="button">
           {copy.help.action}
         </button>
       ),
@@ -39,13 +39,13 @@ export function TripGuideEssentials({ copy, onSupport }: TripGuideEssentialsProp
   return (
     <section
       aria-labelledby="guide-essentials-heading"
-      className={`${styles.guideSection} ${styles.guideEssentials}`}
+      className={`${styles.block} ${styles.guideEssentials}`}
       data-component="TripGuideEssentials"
       id={GUIDE_ESSENTIALS_ID}
     >
       <div>
-        <p className={styles.guideEyebrow}>{copy.eyebrow}</p>
-        <h3 className={`${styles.guideSectionTitle} ${styles.cond}`} id="guide-essentials-heading">
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
+        <h3 className={`${styles.sectionTitle} ${styles.cond}`} id="guide-essentials-heading">
           {copy.title}
         </h3>
         <p className={styles.guideEssentialsBody}>{copy.body}</p>

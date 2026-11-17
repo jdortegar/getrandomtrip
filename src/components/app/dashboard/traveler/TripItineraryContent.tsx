@@ -181,19 +181,19 @@ export function TripItineraryContent() {
 
           {!trip.experience && (
             <section className={`${styles.block} ${styles.mainBlock}`} id="itinerary">
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-                <Calendar className="h-10 w-10 text-gray-300" />
-                <p className="text-sm text-gray-500">{copy.noExperience}</p>
+              <div className={styles.emptyState}>
+                <Calendar aria-hidden="true" />
+                <p>{copy.noExperience}</p>
               </div>
             </section>
           )}
 
           {trip.experience && !hasItinerary && (
             <section className={`${styles.block} ${styles.mainBlock}`} id="itinerary">
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-                <Calendar className="h-10 w-10 text-gray-300" />
-                <h3 className="text-lg font-semibold text-ink">{copy.emptyTitle}</h3>
-                <p className="max-w-sm text-sm text-gray-500">{copy.emptyDescription}</p>
+              <div className={styles.emptyState}>
+                <Calendar aria-hidden="true" />
+                <h3 className={styles.cond}>{copy.emptyTitle}</h3>
+                <p>{copy.emptyDescription}</p>
               </div>
             </section>
           )}

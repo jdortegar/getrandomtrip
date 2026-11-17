@@ -13,14 +13,20 @@ interface TripGuideCompanionProps {
 /** Closing support band: "We're with you for what's next." + talk to the team. */
 export function TripGuideCompanion({ copy, onSupport }: TripGuideCompanionProps) {
   return (
-    <section className={styles.guideCompanion} data-component="TripGuideCompanion" id={GUIDE_COMPANION_ID}>
-      <span aria-hidden="true" className={`${styles.maskCompass} ${styles.guideCompanionMark}`} />
+    <section className={styles.band} data-component="TripGuideCompanion" id={GUIDE_COMPANION_ID}>
+      <span aria-hidden="true" className={`${styles.maskCompass} ${styles.bandMark}`} />
       <div>
-        <p className={styles.guideEyebrow}>{copy.eyebrow}</p>
-        <h3 className={`${styles.guideCompanionTitle} ${styles.cond}`}>{copy.title}</h3>
-        <p className={styles.guideCompanionBody}>{copy.body}</p>
+        <p className={styles.eyebrow}>{copy.eyebrow}</p>
+        <h3 className={`${styles.bandTitle} ${styles.cond}`}>{copy.title}</h3>
+        <p className={styles.bandBody}>{copy.body}</p>
       </div>
-      <Button className={styles.guideCompanionAction} onClick={onSupport} size="lg" type="button" variant="white">
+      <Button
+        className={`${styles.btnLight} ${styles.bandAction}`}
+        onClick={onSupport}
+        size="lg"
+        type="button"
+        variant="white"
+      >
         {copy.action}
       </Button>
     </section>

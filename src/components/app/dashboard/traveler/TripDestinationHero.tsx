@@ -57,7 +57,7 @@ export function TripDestinationHero({ copy, trip }: TripDestinationHeroProps) {
         <p className={styles.destCopy}>{description}</p>
 
         <div className={styles.destBottom}>
-          <Button asChild className={styles.destExplore} size="lg" variant="white">
+          <Button asChild className={`${styles.btnLight} ${styles.destExplore}`} size="lg" variant="white">
             <a href={`#${TRIP_GUIDE_ID}`}>
               {copy.explore}
               <ArrowDown aria-hidden="true" />
