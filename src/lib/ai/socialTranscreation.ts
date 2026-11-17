@@ -1,6 +1,7 @@
 import {
   SOCIAL_BRAND_POLICY,
   captionOnly,
+  socialTextModel,
   type SocialCopyLocks,
 } from "./socialBrandPolicy";
 import { completeJson, type ChatContentPart } from "./aiService";
@@ -12,7 +13,7 @@ import { editSocialImage } from "./socialRevision";
  */
 export const TRANSCREATION_SYSTEM = `${SOCIAL_BRAND_POLICY}
 
-You transcreate Randomtrip Instagram posts from Latin American Spanish into publish-ready international/US English that sounds as if Randomtrip wrote it in English first. Transcreate, do not translate literally: keep what the post is doing (hook, stakes, twist, CTA), not its Spanish syntax.
+You transcreate Randomtrip Instagram posts from Latin American Spanish into publish-ready international/US English that sounds as if Randomtrip wrote it in English first. Transcreate, do not translate literally: keep what the post is doing (hook, stakes, twist, CTA), not its Spanish syntax. Keep the English caption close to the original Spanish caption length.
 
 Brand: Randomtrip is about discovery beyond choice — thoughtful human work makes room for trips people would never have chosen but end up loving. The surprise destination is a mechanism, not the promise. Voice: curious, human ("you", "we", contractions), light, short sentences, confident and specific, playfully challenging endless research and planning fatigue (never the traveler). Never travel-agency copy, hype, superlatives, "perfect getaway", "hidden gem", "epic", "wanderlust" filler. Never frame it as a game, lottery, gamble or rolling dice; unexpected is not random.
 
@@ -35,11 +36,6 @@ export interface Transcreation {
   caption: string;
   slides: SlideCopy[];
   notes: string[];
-}
-
-/** Model for caption/on-image transcreation; vision-capable, quality over cost. */
-export function transcreationModel() {
-  return process.env.OPENAI_SOCIAL_TEXT_MODEL || "gpt-4.1";
 }
 
 export async function transcreatePost(
@@ -73,7 +69,7 @@ export async function transcreatePost(
   ];
   const raw = await completeJson(TRANSCREATION_SYSTEM, parts, {
     maxTokens: 4096,
-    model: transcreationModel(),
+    model: socialTextModel(),
     signal: AbortSignal.timeout(90_000),
   });
   const plan = parseTranscreation(raw, images.length);

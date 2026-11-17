@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { after, NextRequest, NextResponse } from "next/server";
 import {
   refreshSocialMessage,
@@ -77,7 +78,7 @@ export async function POST(request: NextRequest) {
           await dispatchSocialWorker();
         } catch {
           console.error(
-            "[social-approvals] dispatch deferred to durable recovery",
+            "[social-approvals] dispatch failed; job stays queued for the next dispatch",
           );
         }
       });
@@ -177,7 +178,7 @@ async function publish(action: ApprovalAction) {
         await dispatchSocialWorker();
       } catch {
         console.error(
-          "[social-approvals] dispatch deferred to durable recovery",
+          "[social-approvals] dispatch failed; job stays queued for the next dispatch",
         );
       }
       return;
@@ -198,11 +199,29 @@ async function publish(action: ApprovalAction) {
 
 /** "Mark as posted manually": the post is already on English; offer the next one. */
 async function markPosted(action: ApprovalAction) {
-  const source = await markSourcePosted({
-    sourceId: action.id,
-    messageTs: action.messageTs,
-  });
   after(async () => {
+    let source: Awaited<ReturnType<typeof markSourcePosted>>;
+    try {
+      source = await markSourcePosted({
+        sourceId: action.id,
+        messageTs: action.messageTs,
+      });
+    } catch (error) {
+      console.error("[social-approvals] could not mark source as posted", {
+        sourceId: action.id,
+        code:
+          error instanceof Prisma.PrismaClientKnownRequestError
+            ? error.code
+            : error instanceof Error
+              ? error.name
+              : "unknown",
+      });
+      await notifyClicker(
+        action,
+        "Could not confirm the post was marked. Try again.",
+      );
+      return;
+    }
     if (!source) {
       await notifyClicker(
         action,
@@ -252,7 +271,7 @@ async function translate(action: ApprovalAction) {
         await dispatchSocialWorker();
       } catch {
         console.error(
-          "[social-approvals] dispatch deferred to durable recovery",
+          "[social-approvals] dispatch failed; job stays queued for the next dispatch",
         );
       }
       return;

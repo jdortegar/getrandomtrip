@@ -88,9 +88,9 @@ export async function markSourcePosted(input: {
       const source = await tx.socialSource.findUnique({
         where: { id: input.sourceId },
       });
+      if (!source || source.messageTs !== input.messageTs) return null;
+      if (source.status === "SYNCED") return source;
       if (
-        !source ||
-        source.messageTs !== input.messageTs ||
         !MARKABLE.includes(source.status) ||
         (await tx.socialApproval.count({
           where: {
@@ -105,7 +105,7 @@ export async function markSourcePosted(input: {
         data: { status: "SYNCED" },
       });
     },
-    { maxWait: 500, timeout: 1500 },
+    { maxWait: 5000, timeout: 10_000 },
   );
 }
 

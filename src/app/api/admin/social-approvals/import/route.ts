@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       try {
         await dispatchSocialWorker();
       } catch {
-        console.error("[social-import] dispatch deferred to durable recovery");
+        console.error("[social-import] dispatch failed; job stays queued for the next dispatch");
       }
     });
     return NextResponse.json(

@@ -67,3 +67,8 @@ export function captionOnly(value: string) {
     throw new Error("AI_CAPTION_CONTAINS_RATIONALE");
   return value;
 }
+
+/** Shared model for social drafts and caption revisions. */
+export function socialTextModel() {
+  return process.env.OPENAI_SOCIAL_TEXT_MODEL || "gpt-4.1";
+}

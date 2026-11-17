@@ -1,4 +1,5 @@
 import sharp from "sharp";
+import { AiServiceError } from "@/lib/ai/aiService";
 import { parseCopyLocks } from "@/lib/ai/socialBrandPolicy";
 import type { Prisma } from "@prisma/client";
 import {
@@ -59,6 +60,13 @@ const ERROR_CODES = new Set([
   "STALE_SOURCE",
   "LEASE_LOST",
   "AI_IMAGE_UNCONFIGURED",
+  "AI_CAPTION_INVALID",
+  "AI_IMAGE_FAILED",
+  "AI_IMAGE_INVALID",
+  "UNTRUSTED_ASSET",
+  "ASSET_INVALID",
+  "ASSET_TOO_LARGE",
+  "ASSET_ORIGIN_UNCONFIGURED",
   "SLACK_DELIVERY_UNCONFIRMED",
   "SLIDES_INVALID",
   "SOURCE_UNCONFIGURED",
@@ -71,15 +79,16 @@ const ERROR_CODES = new Set([
   "PUBLISH_UNCONFIRMED",
 ]);
 
-export async function runSocialRevision() {
+/** Processes the oldest queued job. Returns false when there was nothing to claim. */
+export async function runSocialRevision(): Promise<boolean> {
   const config = approvalConfig();
   // AI jobs also need the OpenAI key; publishing does not.
   const kinds = enabledJobKinds().filter(
     (kind) => kind === "PUBLISH" || !!process.env.OPENAI_API_KEY,
   );
-  if (!config || !kinds.length) return;
+  if (!config || !kinds.length) return false;
   const job = await claimSocialRevision(kinds);
-  if (!job?.leaseToken) return;
+  if (!job?.leaseToken) return false;
   const leaseToken = job.leaseToken;
   const where = { id: job.id, status: "RUNNING", leaseToken };
   const checkpoint: Checkpoint = async (data) => {
@@ -103,10 +112,14 @@ export async function runSocialRevision() {
     });
   } catch (error) {
     // Every uncertain paid/delivery attempt requires explicit admin recovery, never blind retries.
+    const failure =
+      job.kind === "REVISE" && error instanceof AiServiceError
+        ? "AI_CAPTION_REQUEST_FAILED"
+        : "GENERATION_OR_DELIVERY_UNCONFIRMED";
     const code =
       error instanceof Error && ERROR_CODES.has(error.message)
         ? error.message
-        : "GENERATION_OR_DELIVERY_UNCONFIRMED";
+        : failure;
     await prisma.socialRevisionJob.updateMany({
       where,
       data: {
@@ -116,7 +129,7 @@ export async function runSocialRevision() {
         leaseUntil: null,
       },
     });
-    if (code === "STALE_SOURCE") return;
+    if (code === "STALE_SOURCE") return true;
     if (job.kind === "PUBLISH" && job.review) {
       await prisma.socialApproval.updateMany({
         where: { id: job.review.id, status: "PUBLISHING" },
@@ -132,6 +145,7 @@ export async function runSocialRevision() {
     } else if (job.review)
       await refreshSocialMessage(job.review, "REVISION_FAILED");
   }
+  return true;
 }
 
 async function reviseJob(
