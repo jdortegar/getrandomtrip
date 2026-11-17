@@ -34,6 +34,7 @@ Values in `netlify.toml` and most Netlify build variables are not runtime variab
 | `STRIPE_SECRET_KEY`                  | Existing key                   | Optional `sk_test_` / `rk_test_` key only          |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Existing key                   | Optional `pk_test_` key only                       |
 | `STRIPE_WEBHOOK_SECRET`              | Existing signing secret        | Separate test endpoint secret, if testing webhooks |
+| `RT_NONPRODUCTION_CRON_SECRET`       | Not used                       | Separate private random secret; enables only the destination-reveal job (below) |
 
 Only the `develop` branch override and Deploy Previews currently have the approved
 nonproduction `DATABASE_URL`. Other nonproduction contexts deliberately fail the
@@ -106,8 +107,9 @@ Provider discovery alone is not an end-to-end OAuth success check.
   test keys; live keys and live webhook events are rejected outside production.
 - Email delivery fails explicitly before Resend is constructed; it does not
   simulate provider acceptance. Email verification, password reset, invites, and
-  manual messages therefore cannot complete. Slack and all scheduled jobs
-  are disabled, including direct calls to their internal API routes.
+  manual messages therefore cannot complete. Slack and scheduled jobs are
+  disabled, including direct calls to their internal API routes — except the
+  destination-reveal job, see "Scheduled jobs on develop" below.
 - Credentials login requires the private nonproduction auth secret and an
   **approved, verified test account**. The empty database's site gate defaults to enabled; keep it
   enabled through the first deployment and account bootstrap below. Never copy
@@ -149,3 +151,36 @@ After independent review and deployment approval:
 
 Do not call the environment ready until the approved database-host guard, private
 auth secret, approved account bootstrap, and hosted smoke checks are complete.
+
+## Scheduled jobs on develop
+
+Netlify runs scheduled functions only on the published production deploy, so
+`netlify/functions/*` never fire for develop or previews. One job is opted in
+for develop so reveals and their emails can be tested end to end:
+
+- **destination-reveal** (reveals trips at their reveal moment, sends the
+  "your destination is ready" email and the admin "set the destination"
+  reminders at 72/48/24 h). Production: hourly via
+  `netlify/functions/destination-reveal.ts` with `CRON_SECRET`. Develop:
+  **daily at 03:05 UTC** (00:05 Buenos Aires) via
+  `.github/workflows/develop-destination-reveal.yml`, plus manual runs
+  ("Run workflow" in GitHub Actions or `gh workflow run develop-destination-reveal.yml`).
+
+On nonproduction the endpoint accepts only `RT_NONPRODUCTION_CRON_SECRET`, never
+`CRON_SECRET` (which nonproduction contexts may inherit from production). Without
+that variable, or with a missing/unknown deploy identity, it still returns 404.
+Daily rather than hourly keeps the develop database asleep most of the day
+(Neon compute is shared with production); a develop trip therefore reveals up
+to a day after its countdown ends. Emails carry the nonproduction subject prefix.
+
+Setup, once:
+
+1. Generate a secret (`openssl rand -base64 32`).
+2. Netlify: add `RT_NONPRODUCTION_CRON_SECRET` with that value for the
+   **develop** branch context (Functions scope), then redeploy develop.
+3. GitHub → Settings → Secrets and variables → Actions: secret
+   `DEVELOP_CRON_SECRET` (same value) and variable `DEVELOP_SITE_URL`
+   (`https://develop--<site-name>.netlify.app`).
+
+GitHub runs scheduled and manually dispatched workflows from the default branch
+(`main`), so the schedule starts after this workflow is released to `main`.
