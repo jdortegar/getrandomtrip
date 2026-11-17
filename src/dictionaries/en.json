@@ -7115,7 +7115,10 @@
       "subtitle": "{{nights}} nights of surprise travel await.",
       "travelers": "{{n}} travelers",
       "departsInDays": "Departs in {{n}} days",
-      "departsToday": "Departs today"
+      "departsToday": "Departs today",
+      "eyebrowNextStory": "Your next story",
+      "explore": "Explore my trip",
+      "firstLook": "A first glimpse of what's ahead."
     },
     "nav": {
       "itinerary": "Itinerary",
@@ -7165,9 +7168,23 @@
     "footer": {
       "line": "Trip #{{tripId}} · Destination revealed on {{date}}"
     },
-    "scratch": {
-      "title": "Scratch to reveal",
-      "subtitle": "Drag your finger across the card"
+    "boardReveal": {
+      "eyebrow": "The big moment",
+      "titleLead": "What's next\nyou never saw",
+      "titleAccent": "coming.",
+      "body": "Your destination is already chosen.\nNow it's yours to discover.",
+      "cta": "Reveal my destination",
+      "micro": "A moment of mystery. A story about to begin.",
+      "footer": "Designed serendipity",
+      "stageTagline": "Wonder. Wander. Repeat.",
+      "stageCaption": "The unexpected.\nWith a north.",
+      "orientEyebrow": "Surprise finds its north.",
+      "orientLine": "Everything starts finding its north.",
+      "boardCaption": "A universe of possibilities.",
+      "boardCaptionFinal": "Your next story starts here.",
+      "skip": "Skip to destination",
+      "statusPlaying": "Revealing your destination.",
+      "statusRevealed": "Your destination: {{destination}}."
     }
   },
   "tripReveal": {
@@ -7438,7 +7455,7 @@
   },
   "tripRevealNotification": {
     "title": "Your destination is ready",
-    "body": "You can now uncover your surprise destination. Open your trip and scratch the card to see it."
+    "body": "You can now uncover your surprise destination. Open your trip to reveal it."
   },
   "travelerDetailsReminder": {
     "subject": "Your XSED trip: complete your companion details",

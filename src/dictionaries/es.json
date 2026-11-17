@@ -7115,7 +7115,10 @@
       "subtitle": "{{nights}} noches de viaje sorpresa te esperan.",
       "travelers": "{{n}} viajeros",
       "departsInDays": "Sale en {{n}} días",
-      "departsToday": "Sale hoy"
+      "departsToday": "Sale hoy",
+      "eyebrowNextStory": "Tu próxima historia",
+      "explore": "Explorar mi viaje",
+      "firstLook": "Un primer vistazo a lo que viene."
     },
     "nav": {
       "itinerary": "Itinerario",
@@ -7165,9 +7168,23 @@
     "footer": {
       "line": "Viaje #{{tripId}} · Destino revelado el {{date}}"
     },
-    "scratch": {
-      "title": "Rascá para descubrir",
-      "subtitle": "Deslizá el dedo sobre la tarjeta"
+    "boardReveal": {
+      "eyebrow": "El gran momento",
+      "titleLead": "Lo que sigue\nno lo viste",
+      "titleAccent": "venir.",
+      "body": "Tu destino ya está elegido.\nAhora te toca descubrirlo.",
+      "cta": "Revelar mi destino",
+      "micro": "Un instante de misterio. Una historia por empezar.",
+      "footer": "Serendipia diseñada",
+      "stageTagline": "Wonder. Wander. Repeat.",
+      "stageCaption": "Lo inesperado.\nCon un norte.",
+      "orientEyebrow": "La sorpresa encuentra su norte.",
+      "orientLine": "Todo empieza a encontrar su norte.",
+      "boardCaption": "Un universo de posibilidades.",
+      "boardCaptionFinal": "Aquí empieza tu próxima historia.",
+      "skip": "Ir al destino",
+      "statusPlaying": "Estamos revelando tu destino.",
+      "statusRevealed": "Tu destino: {{destination}}."
     }
   },
   "tripReveal": {
@@ -7438,7 +7455,7 @@
   },
   "tripRevealNotification": {
     "title": "Tu destino ya está listo",
-    "body": "Ya podés descubrir tu destino sorpresa. Abrí tu viaje y rascá la tarjeta para verlo."
+    "body": "Ya podés descubrir tu destino sorpresa. Abrí tu viaje para revelarlo."
   },
   "travelerDetailsReminder": {
     "subject": "Tu viaje XSED: completá los datos de tus acompañantes",

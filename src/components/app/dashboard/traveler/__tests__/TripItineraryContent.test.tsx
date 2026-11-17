@@ -79,14 +79,14 @@ afterEach(() => {
     root?.unmount();
   });
   container?.remove();
-  expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+  expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
 });
 
 describe("TripItineraryContent — ADR-7 status branching", () => {
   it("does not lock scrolling while the trip has not loaded", () => {
     vi.stubGlobal("fetch", vi.fn().mockReturnValue(new Promise(() => {})));
     render();
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
   it("renders the pre-reveal card and NOT the hero eyebrow when documents is undefined", async () => {
@@ -105,8 +105,8 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
 
     const text = container.textContent ?? "";
     expect(text).toContain("This trip's itinerary and documents show up once your destination is revealed.");
-    expect(text).not.toContain("Your destination, revealed");
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(false);
+    expect(text).not.toContain("Your next story");
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
   it("mounts the .root subtree and renders the hero eyebrow for a REVEALED trip", async () => {
@@ -121,9 +121,10 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     await flush();
 
     const text = container.textContent ?? "";
-    expect(text).toContain("Your destination, revealed");
-    expect(text).toContain("Mendoza, Argentina");
-    expect(document.body.classList.contains("rt-scratch-locked")).toBe(true);
+    expect(text).toContain("Your next story / Argentina");
+    expect(text).toContain("Mendoza.");
+    expect(text).toContain("Explore my trip");
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(true);
   });
 
   it("renders a muted (non-celebratory) hero for a CANCELLED trip, with no departure pill", async () => {

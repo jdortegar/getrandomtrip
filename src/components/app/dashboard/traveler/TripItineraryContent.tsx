@@ -13,15 +13,15 @@ import { formatAdminDate } from "@/lib/admin/format";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
-import { TripDetailsHero } from "./TripDetailsHero";
-import { BODY_LOCK_CLASS, TripScratchReveal } from "./TripScratchReveal";
+import { TRIP_GUIDE_ID, TripDestinationHero } from "./TripDestinationHero";
+import { BODY_LOCK_CLASS, TripBoardReveal } from "./TripBoardReveal";
 import { TripDetailsBackRow } from "./TripDetailsBackRow";
 import { TripEssentialsStrip } from "./TripEssentialsStrip";
 import { TripItineraryTimeline } from "./TripItineraryTimeline";
 import { TripDetailsHelpStrip } from "./TripDetailsHelpStrip";
 import { TripSupportModal } from "./TripSupportModal";
 import { TripDocumentsSection } from "./TripDocumentsSection";
-import { resolveTripDestination, resolveTripOrigin } from "./tripDetailsHelpers";
+import { resolveBoardDestination, resolveTripDestination, resolveTripOrigin } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
 
 /** Self-contained: fetches its own trip data and dictionary, so it can be
@@ -55,17 +55,17 @@ export function TripItineraryContent() {
       .finally(() => setLoading(false));
   }, [session, tripId]);
 
-  const scratchGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
+  const revealGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
 
-  // Body scroll lock while the scratch gate is up — a class (not an inline
+  // Body scroll lock while the reveal gate is up — a class (not an inline
   // style) so it composes cleanly and always cleans up on completion/unmount.
   useEffect(() => {
-    if (!scratchGateVisible) return;
+    if (!revealGateVisible) return;
     document.body.classList.add(BODY_LOCK_CLASS);
     return () => {
       document.body.classList.remove(BODY_LOCK_CLASS);
     };
-  }, [scratchGateVisible]);
+  }, [revealGateVisible]);
 
   // Force a reflow before flipping the stagger class — without it, the browser
   // can coalesce <main>'s hidden-state paint with the revealed-state paint and
@@ -78,13 +78,9 @@ export function TripItineraryContent() {
     el?.classList.add(styles.mainRevealed);
   }, [heroRevealed]);
 
-  const handleScratchComplete = useCallback(({ instant }: { instant: boolean }) => {
-    setHeroRevealed(true);
-    if (instant) return;
-    window.setTimeout(() => {
-      window.scrollTo({ top: Math.round(window.innerHeight * 0.18), behavior: "smooth" });
-    }, 1400);
-  }, []);
+  // The full-viewport hero carries its own "Explore my trip" button down to
+  // the guide, so the page stays on the destination when the reveal ends.
+  const handleRevealComplete = useCallback(() => setHeroRevealed(true), []);
 
   if (loading || !copy) {
     return (
@@ -132,15 +128,18 @@ export function TripItineraryContent() {
 
   return (
     <div className={styles.root} data-component="TripItineraryContent">
-      <TripScratchReveal copy={copy.scratch} onComplete={handleScratchComplete} tripId={tripId}>
-        <TripDetailsHero copy={copy.hero} locale={locale} trip={trip} />
-      </TripScratchReveal>
+      <TripBoardReveal
+        copy={copy.boardReveal}
+        destination={resolveBoardDestination(trip, copy.hero.destinationFallback)}
+        locale={locale}
+        onComplete={handleRevealComplete}
+        tripId={tripId}
+      >
+        <TripDestinationHero copy={copy.hero} trip={trip} />
+      </TripBoardReveal>
 
       {heroRevealed && (
-        <main
-          className={styles.wrap}
-          ref={mainRef}
-        >
+        <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>
           <div className={styles.mainBlock}>
             <TripDetailsBackRow copy={copy} locale={locale} tripId={tripId} />
           </div>

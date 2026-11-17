@@ -56,6 +56,7 @@ export function SiteChrome({
 }: SiteChromeProps) {
   const pathname = usePathname();
   const [navbarBackgroundPrimary, setNavbarBackgroundPrimary] = useState(false);
+  const [navbarOverlay, setNavbarOverlay] = useState(false);
 
   if (isBareRoute(pathname, locale)) {
     return <>{children}</>;
@@ -67,12 +68,12 @@ export function SiteChrome({
       {banner}
       <div className="relative">
         <Navbar
-          backgroundPrimary={navbarBackgroundPrimary}
+          backgroundPrimary={navbarBackgroundPrimary && !navbarOverlay}
           contained
           dict={dict}
           locale={locale}
         />
-        <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary }}>
+        <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary, setNavbarOverlay }}>
           <main className="min-h-screen">{children}</main>
         </NavbarChromeContext.Provider>
         <Footer dict={dict} locale={locale} />

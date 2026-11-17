@@ -33,6 +33,8 @@ export interface TripDetailsData {
     heroImage: string | null;
     destinationCity: string | null;
     destinationCountry: string | null;
+    /** Short destination description; only sent once the trip is revealed. */
+    teaser?: string | null;
     itinerary: ItineraryDayEntry[] | null;
     inclusions: unknown[] | null;
     exclusions: unknown[] | null;

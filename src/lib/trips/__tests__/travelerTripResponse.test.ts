@@ -7,6 +7,7 @@ const experience = {
   heroImage: "public.jpg",
   destinationCity: "Secret city",
   destinationCountry: "Secret country",
+  teaser: "A secret short description",
   itinerary: ["Day 1"],
   inclusions: ["Hotel"],
   exclusions: ["Flight"],
@@ -52,6 +53,7 @@ describe("traveler response visibility", () => {
         "id",
         "inclusions",
         "itinerary",
+        "teaser",
         "title",
       ]);
     },

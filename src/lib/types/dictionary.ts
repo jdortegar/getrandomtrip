@@ -3002,6 +3002,12 @@ export interface TripItineraryDict {
     /** Interpolated with {{n}}. */
     departsInDays: string;
     departsToday: string;
+    /** Revealed-hero eyebrow, followed by " / {country}" when known. */
+    eyebrowNextStory: string;
+    /** Revealed-hero button that scrolls to the trip guide below. */
+    explore: string;
+    /** Revealed-hero caption, bottom right. */
+    firstLook: string;
   };
   nav: {
     itinerary: string;
@@ -3062,10 +3068,29 @@ export interface TripItineraryDict {
     /** Interpolated with {{tripId}} and {{date}}. Rendered only when `destinationRevealedAt` exists. */
     line: string;
   };
-  /** Scratch-to-reveal gate shown once per trip over the hero (TripScratchReveal). */
-  scratch: {
-    title: string;
-    subtitle: string;
+  /** Compass + split-flap reveal gate shown once per trip over the hero (TripBoardReveal). */
+  boardReveal: {
+    eyebrow: string;
+    /** Title before the underlined accent words. Rendered with `white-space: pre-line`. */
+    titleLead: string;
+    titleAccent: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    body: string;
+    cta: string;
+    micro: string;
+    footer: string;
+    stageTagline: string;
+    /** Rendered with `white-space: pre-line`; `\n` breaks lines. */
+    stageCaption: string;
+    orientEyebrow: string;
+    orientLine: string;
+    boardCaption: string;
+    boardCaptionFinal: string;
+    skip: string;
+    /** Screen-reader status while the sequence plays. */
+    statusPlaying: string;
+    /** Screen-reader status once revealed. Interpolated with {{destination}}. */
+    statusRevealed: string;
   };
 }
 

@@ -200,6 +200,8 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.5rem;
+  /* "Explore my trip" anchor target: clear the sticky navbar. */
+  scroll-margin-top: 5rem;
 }
 .backrow {
   display: flex;
@@ -690,122 +692,810 @@
   color: #9ca3af;
 }
 
-/* ---------- Scratch-to-reveal gate ----------
-   Ported from the approved "Scratch to Reveal Gated" prototype. `.hero`'s
-   own min-height stays untouched — `.heroGated` only forces the wrapper to
-   100svh while the gate is up, so a returning visitor (gate already opened)
-   sees the hero at its normal height with no full-viewport jump. */
-.scratchWrap {
+/* ---------- Destination hero (revealed trip) ----------
+   Final state of the "Randomtrip Reveal — Tablero v2" prototype (`.cinema`
+   + `.destination`): full-viewport photo under the dashboard navbar's
+   transparent overlay, a bottom-heavy shade, and the place set huge. The
+   teal gradient shows if the photo is missing or fails to load. */
+.destHero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  height: 100svh;
+  min-height: 620px;
+  background: linear-gradient(125deg, #497c78, var(--color-primary) 65%, #143e40);
+  color: var(--color-ground);
+}
+.destPhoto {
+  position: absolute;
+  inset: 0;
+  max-width: none;
+}
+.destShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 25, 27, 0.05) 10%,
+    rgba(5, 25, 27, 0.15) 32%,
+    rgba(5, 25, 27, 0.82) 100%
+  );
+}
+.destContent {
+  position: absolute;
+  z-index: 2;
+  inset: auto 6% 55px;
+}
+.destEyebrow {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.destTitle {
+  margin: 22px 0 18px;
+  font-size: clamp(90px, 11.3vw, 170px);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  outline: none;
+}
+.destCopy {
+  max-width: 46ch;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.45;
+}
+.destBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 30px;
+  margin-top: 28px;
+}
+/* `.root a.destExplore` outranks the module's `.root a:not(.btn) { color: inherit }`,
+   which would otherwise paint the label in the hero's off-white on white. */
+.root a.destExplore {
+  gap: 38px;
+  color: var(--color-primary);
+  min-height: 58px;
+  padding: 15px 25px;
+  border-color: var(--color-ground);
+  border-radius: 0;
+  background: var(--color-ground);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background-color 0.22s, border-color 0.22s;
+}
+.root a.destExplore:hover {
+  border-color: var(--color-feature);
+  background: var(--color-feature);
+  color: var(--color-primary);
+}
+.destExplore svg {
+  width: 22px;
+  height: 22px;
+}
+.destCaption {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+@media (max-width: 1000px) {
+  .destTitle {
+    font-size: clamp(76px, 12vw, 125px);
+  }
+}
+@media (max-width: 650px) {
+  .destContent {
+    inset: auto 7% 34px;
+  }
+  .destEyebrow {
+    font-size: 10px;
+    letter-spacing: 0.13em;
+  }
+  .destTitle {
+    margin: 22px 0;
+    font-size: clamp(64px, 19vw, 112px);
+    line-height: 0.91;
+  }
+  .destCopy {
+    max-width: 280px;
+    font-size: 18px;
+  }
+  .destBottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    margin-top: 30px;
+  }
+  .destExplore {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .destCaption {
+    display: none;
+  }
+}
+
+/* ---------- Compass + split-flap destination reveal ----------
+   Ported from the approved "Randomtrip Reveal — Tablero v2" prototype
+   (styles.css). The gate sits below the dashboard's solid sticky navbar
+   (h-16), so it is `100svh - 4rem` tall — the prototype's `.reveal-shell`.
+   `.hero` keeps its own min-height: a returning visitor (gate already
+   opened) sees the hero at its normal height. Phase is driven from
+   `data-phase` on `.gate`: ready → orienting → boarding → opening. */
+.revealWrap {
+  --reveal-teal: var(--color-primary);
+  --reveal-paper: var(--color-ground);
+  --reveal-gold: var(--color-feature);
+  --reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
   position: relative;
   overflow: hidden;
 }
-.heroGated {
-  height: 100svh;
+.revealGated {
+  height: calc(100svh - 4rem);
+  min-height: 620px;
+  max-height: 1000px;
 }
-
-.scratchContent {
+.revealContent {
   position: relative;
   z-index: 1;
   height: 100%;
-  transform: scale(1.06);
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
 }
-.scratchContentRevealed {
-  transform: scale(1);
-  pointer-events: auto;
+.revealGated .destHero {
+  height: 100%;
+  min-height: 0;
+}
+/* Once the reveal starts the navbar overlays (and hides), so the stage and
+   the hero beneath it take the full viewport. */
+.revealImmersive.revealGated {
+  height: 100svh;
+}
+/* The photo sits blurred and enlarged under the gate, then comes into focus
+   as the board clears; the title rises in after it. */
+.revealGated .destPhoto {
+  filter: blur(18px);
+  transform: scale(1.12);
+  transition:
+    filter 1.3s ease,
+    transform 5s var(--reveal-ease);
+}
+.revealGated .destContent {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.9s var(--reveal-ease);
+}
+.revealOpening .destPhoto {
+  filter: none;
+  transform: scale(1.045);
+}
+.revealOpening .destContent {
+  opacity: 1;
+  transform: none;
 }
 
-.scratchCover {
+.gate {
   position: absolute;
   inset: 0;
   z-index: 2;
-  touch-action: none;
-  cursor: url("/assets/icons/isologo-cursor.png") 36 36, grab;
-  transition: opacity 0.7s ease;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--reveal-teal);
+  color: var(--reveal-paper);
+  transition: opacity 0.8s ease;
 }
-.scratchCoverGone {
+/* The "drawer": while the sequence plays the gate is a fixed full-viewport
+   layer above the (sliding-away) navbar, whatever the page scroll. */
+.gate:not([data-phase="ready"]) {
+  position: fixed;
+  z-index: 60;
+}
+.gate[data-phase="opening"] {
   opacity: 0;
   pointer-events: none;
 }
-.scratchCanvas {
+
+/* Official isologo as a mask: single-color art with transparent cut-outs,
+   filled white or ochre (brand book's approved CSS-mask recolor). */
+.maskCompass {
+  display: block;
+  aspect-ratio: 1;
+  background: currentColor;
+  -webkit-mask: url("/assets/logos/iso-randomtrip.svg") center / contain no-repeat;
+  mask: url("/assets/logos/iso-randomtrip.svg") center / contain no-repeat;
+}
+
+/* Ready: paper intro + teal compass stage */
+.ready {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transition: opacity 0.5s ease;
+}
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 45px 8% 24px 10%;
+  background: var(--reveal-paper);
+  color: var(--reveal-teal);
+}
+.introEyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.introDot {
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--reveal-gold);
+}
+.introTitle {
+  margin: 30px 0 26px;
+  font-size: clamp(76px, 7.4vw, 118px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+.introTitle span {
+  text-decoration: underline;
+  text-decoration-color: var(--reveal-gold);
+  text-decoration-thickness: 5px;
+  text-underline-offset: 9px;
+}
+.introBody {
+  max-width: 380px;
+  margin: 0 0 30px;
+  font-size: 20px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.introMicro {
+  margin: 14px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #536f6c;
+}
+.introFoot {
+  margin: auto 0 0;
+  padding-top: 25px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--reveal-teal);
+  color: var(--reveal-paper);
+}
+.stageCompass {
+  position: relative;
+  z-index: 3;
+  width: 230px;
+  color: var(--reveal-paper);
+}
+.gate[data-phase="orienting"] .stageCompass {
+  animation: revealFindNorth 1.6s var(--reveal-ease) both;
+}
+.gate[data-phase="boarding"] .stageCompass,
+.gate[data-phase="opening"] .stageCompass {
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+@keyframes revealFindNorth {
+  0% {
+    transform: rotate(-16deg) scale(0.94);
+  }
+  45% {
+    transform: rotate(7deg) scale(1.03);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+  100% {
+    transform: rotate(0) scale(1);
+  }
+}
+.stageGhost {
+  position: absolute;
+  width: 120%;
+  max-width: none;
+  opacity: 0.026;
+  transform: rotate(-18deg);
+}
+.orbit {
+  position: absolute;
+  width: 70%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(243, 242, 237, 0.14);
+  border-radius: 50%;
+}
+.orbitOuter {
+  width: 84%;
+  border-style: dashed;
+  border-color: rgba(243, 242, 237, 0.06);
+}
+.orbitLine {
+  position: absolute;
+  width: 1px;
+  height: 78%;
+  background: rgba(243, 242, 237, 0.09);
+  transform: rotate(32deg);
+}
+.stageRule {
+  position: absolute;
+  left: 9%;
+  right: 9%;
+  height: 1px;
+  background: rgba(243, 242, 237, 0.2);
+}
+.stageRuleTop {
+  top: 40px;
+}
+.stageRuleBottom {
+  bottom: 40px;
+}
+.stageTagline {
+  position: absolute;
+  top: 58px;
+  left: 9%;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.stageCaption {
+  position: absolute;
+  bottom: 65px;
+  left: 9%;
+  margin: 0;
+  font-size: 33px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: pre-line;
+}
+.stageIndex {
+  position: absolute;
+  right: 9%;
+  bottom: 67px;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+}
+
+/* Playing: the compass stage takes the whole gate; its chrome steps back. */
+.gate:not([data-phase="ready"]) .ready {
   display: block;
 }
-.scratchHint {
+.gate:not([data-phase="ready"]) .intro {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s;
+}
+.gate:not([data-phase="ready"]) .stage {
   position: absolute;
   inset: 0;
+  background: transparent;
+}
+.gate:not([data-phase="ready"])
+  :is(.stageCaption, .stageTagline, .stageIndex, .stageGhost, .orbit, .orbitLine, .stageRule) {
+  opacity: 0;
+}
+
+.gateBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.gateBackdrop .maskCompass {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(88vmax, 1300px);
+  opacity: 0.06;
+  color: var(--reveal-paper);
+  transform: translate(-50%, -50%) rotate(-18deg);
+}
+.gate:is([data-phase="orienting"], [data-phase="boarding"]) .gateBackdrop {
+  opacity: 1;
+}
+.gate:is([data-phase="orienting"], [data-phase="boarding"]) .gateBackdrop .maskCompass {
+  animation: revealBackdropDrift 9s linear both;
+}
+@keyframes revealBackdropDrift {
+  to {
+    transform: translate(-50%, -50%) rotate(-6deg);
+  }
+}
+
+.motionCopy {
+  position: absolute;
+  z-index: 6;
+  inset: auto 20px 11%;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+.gate[data-phase="orienting"] .motionCopy {
+  opacity: 1;
+}
+.motionEyebrow {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.motionLine {
+  margin: 10px 0 0;
+  font-size: 22px;
+}
+
+/* Split-flap board */
+.board {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  padding: 70px 5%;
+  opacity: 0;
+  transform: translateY(15px);
   pointer-events: none;
-  color: #fff;
-  text-align: center;
-  padding: 32px;
-  transition: opacity 0.3s;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s var(--reveal-ease);
 }
-.scratchHintDim {
-  opacity: 0.22;
+.gate[data-phase="boarding"] .board {
+  opacity: 1;
+  transform: none;
 }
-.scratchIcon {
-  width: 60px;
-  height: 60px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+.boardSignature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 45px;
+}
+.boardCompass {
+  width: 58px;
+  color: var(--reveal-gold);
+  opacity: 0;
+}
+.gate[data-phase="boarding"] .boardCompass {
+  animation: revealFadeIn 0.45s ease-in-out 0.25s both;
+}
+@keyframes revealFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+.boardHousing {
+  width: min(100%, 1010px);
+  padding: 15px;
+  border: 1px solid rgba(243, 242, 237, 0.13);
+  border-radius: 5px;
+  background: #043c40;
+  box-shadow:
+    0 15px 50px #022b2d44,
+    inset 0 1px 0 #ffffff0d;
+}
+.flapBoard {
+  --tile-height: clamp(55px, 8vw, 111px);
+  display: grid;
+  gap: 6px;
+}
+.flapTile {
+  position: relative;
+  display: block;
+  height: var(--tile-height);
+  perspective: 450px;
+  border-radius: 3px;
+  background: #062f33;
+  box-shadow: 0 3px 3px #001f2255;
+  color: var(--reveal-paper);
+  transition: color 0.2s ease;
+}
+.boardDestination .flapTile {
+  color: var(--reveal-gold);
+}
+.flapTile::after {
+  content: "";
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  transform: translateY(-0.5px);
+  background: #032d30;
+  box-shadow: 0 1px 0 #ffffff0b;
+  pointer-events: none;
+}
+.tileHalf {
+  position: absolute;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+.staticTop,
+.movingTop {
+  top: 0;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(#155357, #104c50);
+}
+.staticBottom,
+.movingBottom {
+  top: 50%;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(#0d4448, #104b4e);
+}
+.movingTop {
+  z-index: 3;
+  transform-origin: 50% 100%;
+  opacity: 0;
+}
+.movingBottom {
+  z-index: 4;
+  transform-origin: 50% 0;
+  opacity: 0;
+}
+.tileGlyph {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: scratchBob 2.4s ease-in-out infinite;
-}
-.scratchIcon svg {
-  width: 25px;
-  height: 25px;
-}
-@keyframes scratchBob {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(-8deg);
-  }
-  50% {
-    transform: translate(10px, -6px) rotate(6deg);
-  }
-}
-.scratchTitle {
+  height: var(--tile-height);
   font-family: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  font-size: clamp(34px, 5.6vw, 78px);
   font-weight: 700;
-  font-size: clamp(30px, 5vw, 52px);
   line-height: 1;
-  text-transform: uppercase;
-  margin: 0;
+  white-space: pre;
 }
-.scratchSubtitle {
-  margin: 0;
-  font-size: 13.5px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+.staticBottom .tileGlyph,
+.movingBottom .tileGlyph {
+  top: calc(var(--tile-height) * -0.5);
 }
-.scratchBar {
+.boardFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  width: min(100%, 1010px);
+  padding: 20px 4px 0;
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.boardCode {
+  color: var(--reveal-gold);
+  white-space: nowrap;
+}
+
+.skip {
   position: absolute;
-  left: clamp(24px, 5vw, 64px);
-  right: clamp(24px, 5vw, 64px);
-  bottom: 30px;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
-  overflow: hidden;
+  top: 28px;
+  right: 5%;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 15px;
+  border: 1px solid rgba(243, 242, 237, 0.5);
+  background: rgba(6, 52, 55, 0.85);
+  color: var(--reveal-paper);
+  font-size: 14px;
+  cursor: pointer;
 }
-.scratchBarFill {
-  display: block;
-  height: 100%;
-  background: var(--sun);
-  transition: width 0.12s linear;
+.skip:focus-visible {
+  outline: 2px solid var(--reveal-gold);
+  outline-offset: 3px;
+}
+
+/* Skip / reduced motion: land on the final state with no transitions. */
+.revealInstant *,
+.revealInstant *::before,
+.revealInstant *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+@media (max-width: 1000px) {
+  .intro {
+    padding-left: 10%;
+  }
+  .introTitle {
+    font-size: clamp(52px, 7.7vw, 76px);
+  }
+  .introBody {
+    font-size: 18px;
+  }
+  .stageCompass {
+    width: 190px;
+  }
+  .flapBoard {
+    gap: 4px;
+  }
+  .boardHousing {
+    padding: 11px;
+  }
+  .tileGlyph {
+    font-size: clamp(30px, 5.7vw, 60px);
+  }
+}
+
+@media (max-width: 650px) {
+  .revealGated {
+    min-height: 600px;
+  }
+  .ready {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .stage {
+    flex-shrink: 0;
+    height: 195px;
+  }
+  .stageCompass {
+    width: 122px;
+  }
+  .stageGhost {
+    width: 85%;
+  }
+  .orbitInner {
+    width: 210px;
+  }
+  .orbitOuter {
+    width: 270px;
+  }
+  .orbitLine {
+    height: 90%;
+  }
+  .stageRule {
+    left: 6%;
+    right: 6%;
+  }
+  .stageRuleTop {
+    top: 20px;
+  }
+  .stageRuleBottom {
+    bottom: 20px;
+  }
+  .stageTagline {
+    top: 31px;
+    left: 6%;
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+  .stageCaption {
+    display: none;
+  }
+  .stageIndex {
+    right: 6%;
+    bottom: 31px;
+    font-size: 9px;
+  }
+  .intro {
+    flex: 1;
+    padding: 27px 7% 22px;
+  }
+  .introEyebrow {
+    font-size: 10px;
+  }
+  .introTitle {
+    margin: 20px 0 18px;
+    font-size: clamp(51px, 16.4vw, 64px);
+  }
+  .introBody {
+    margin-bottom: 24px;
+    font-size: 17px;
+  }
+  .introCta {
+    width: 100%;
+  }
+  .introMicro {
+    margin-top: 11px;
+    font-size: 11px;
+  }
+  .introFoot {
+    padding-top: 22px;
+    font-size: 9px;
+  }
+  .gate:not([data-phase="ready"]) .intro {
+    display: none;
+  }
+  .gate:not([data-phase="ready"]) .stage {
+    height: auto;
+  }
+  .gate:not([data-phase="ready"]) .stageCompass {
+    width: 180px;
+  }
+  .motionCopy {
+    inset: auto 8% 15%;
+  }
+  .motionLine {
+    font-size: 19px;
+  }
+  .skip {
+    top: 18px;
+    right: 6%;
+    font-size: 12px;
+  }
+  .boardSignature {
+    gap: 23px;
+    margin-bottom: 34px;
+  }
+  .boardCompass {
+    width: 50px;
+  }
+  .boardHousing {
+    padding: 6px;
+    border-radius: 4px;
+  }
+  .flapBoard {
+    --tile-height: clamp(35px, 11vw, 60px);
+    gap: 2px;
+  }
+  .flapTile {
+    border-radius: 2px;
+  }
+  .flapTile::after {
+    height: 1px;
+  }
+  .tileGlyph {
+    font-size: clamp(20px, 6.8vw, 37px);
+  }
+  .boardFooter {
+    gap: 12px;
+    padding-top: 18px;
+    font-size: 8px;
+    letter-spacing: 0.11em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revealWrap *,
+  .revealWrap *::before,
+  .revealWrap *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 /* ---------- <main> entrance stagger (post-gate) ---------- */

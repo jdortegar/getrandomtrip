@@ -8,6 +8,7 @@ export const TRAVELER_EXPERIENCE_SELECT = {
   heroImage: true,
   destinationCity: true,
   destinationCountry: true,
+  teaser: true,
   itinerary: true,
   inclusions: true,
   exclusions: true,
@@ -36,6 +37,7 @@ export function toTravelerTripResponse<T extends TravelerTrip>(trip: T) {
         ...(visible && {
           destinationCity: experience.destinationCity,
           destinationCountry: experience.destinationCountry,
+          teaser: experience.teaser,
           itinerary: experience.itinerary,
           inclusions: experience.inclusions,
           exclusions: experience.exclusions,
