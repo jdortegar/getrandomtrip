@@ -168,12 +168,15 @@ describe("TripItineraryContent — relive the reveal", () => {
     render();
     await flush();
     expect(button("Relive the reveal")).toBeUndefined();
+    // The "Destination revealed on …" footer belongs to the revealed page, not the gate.
+    expect(container.textContent).not.toContain("Destination revealed on");
 
     act(() => button("Reveal my destination")!.click());
     act(() => button("Skip to destination")!.click());
     await flush();
 
     expect(phase()).toBe("done");
+    expect(container.textContent).toContain("Destination revealed on");
     expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
     expect(container.querySelector("main")).not.toBeNull();
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);

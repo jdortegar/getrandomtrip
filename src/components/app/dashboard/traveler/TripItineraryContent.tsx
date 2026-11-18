@@ -264,7 +264,7 @@ export function TripItineraryContent() {
       )}
 
 
-      {trip.destinationRevealedAt ? (
+      {heroRevealed && trip.destinationRevealedAt ? (
         <footer className={styles.pagefoot}>
           {interpolateTemplate(copy.footer.line, {
             date: formatAdminDate(trip.destinationRevealedAt),
