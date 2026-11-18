@@ -219,12 +219,13 @@ it("Translate this post queues one translation, marks the card and dispatches th
     status: "TRANSLATION_QUEUED",
   } as never);
   expect((await POST(request(translateClick))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
   expect(queueSocialTranslation).toHaveBeenCalledWith({
     sourceId: "src",
     user: "U1",
     messageTs: "123.456",
   });
-  await Promise.all(mocks.tasks.map((task) => task()));
   expect(refreshSourceMessage).toHaveBeenCalledWith(
     expect.objectContaining({ id: "src" }),
     "TRANSLATION_QUEUED",

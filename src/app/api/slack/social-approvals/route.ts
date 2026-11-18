@@ -252,21 +252,45 @@ async function notifyClicker(action: ApprovalAction, text: string) {
 
 /** "Translate this post": queue one paid translation, then hand off to the worker. */
 async function translate(action: ApprovalAction) {
-  const result =
-    process.env.SLACK_SOCIAL_AI_ENABLED === "true"
-      ? await queueSocialTranslation({
-          sourceId: action.id,
-          user: action.user,
-          messageTs: action.messageTs,
-        })
-      : "disabled";
   after(async () => {
-    if (result === "queued") {
-      const source = await prisma.socialSource.findUnique({
-        where: { id: action.id },
+    let result: Awaited<ReturnType<typeof queueSocialTranslation>> | "disabled";
+    try {
+      result =
+        process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+          ? await queueSocialTranslation({
+              sourceId: action.id,
+              user: action.user,
+              messageTs: action.messageTs,
+            })
+          : "disabled";
+    } catch (error) {
+      console.error("[social-approvals] could not queue translation", {
+        sourceId: action.id,
+        code:
+          error instanceof Prisma.PrismaClientKnownRequestError
+            ? error.code
+            : error instanceof Error
+              ? error.name
+              : "unknown",
       });
-      if (source?.status === "TRANSLATION_QUEUED")
-        await refreshSourceMessage(source, "TRANSLATION_QUEUED", action.user);
+      await notifyClicker(
+        action,
+        "Could not queue the translation. Try again.",
+      );
+      return;
+    }
+    if (result === "queued") {
+      try {
+        const source = await prisma.socialSource.findUnique({
+          where: { id: action.id },
+        });
+        if (source?.status === "TRANSLATION_QUEUED")
+          await refreshSourceMessage(source, "TRANSLATION_QUEUED", action.user);
+      } catch {
+        console.error(
+          "[social-approvals] could not refresh queued translation card",
+        );
+      }
       try {
         await dispatchSocialWorker();
       } catch {
