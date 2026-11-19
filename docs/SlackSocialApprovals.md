@@ -88,3 +88,15 @@ For this exact reviewed solo post, selecting `useReviewedExample: true` locks th
 Locked caption text bypasses rewriting, including during generic Slack feedback revisions. Locked headline instructions take precedence in artwork edits; pixel-exact rendering still requires visual approval. General feedback does not silently unlock either field. For an explicitly changed locked field, an admin can submit a new manual review using the existing admin review endpoint with a new request ID, the same review key, updated artwork URL/caption, and updated `copyLocks`. Re-importing an already queued post with different locks returns a conflict rather than creating another paid assignment.
 
 The corrected brand policy is versioned in `src/lib/ai/socialBrandPolicy.ts` and used by initial transcreation **and** feedback revisions. Artwork, caption and editorial rationale remain separate; rationale cannot enter the caption. No generated field implies a human approval. See `docs/SocialTranscreationPolicy.md` for policy provenance and scope.
+
+### Safe failure diagnostics
+
+Import failures include an `X-Social-Diagnostic-Id` response header. Match it to
+`[social-diagnostics]` in the same deployment's server logs. Stages distinguish
+input parsing, Meta profile/feed lookup, database persistence, and dispatch.
+Worker logs use job/review IDs; `slack.post`, `slack.parse`, `slack.accept`, and
+`slack.record` distinguish transport, response parsing, rejection, and database
+confirmation. Only bounded categories, HTTP statuses and allowlisted codes are
+logged, never messages, stacks, payloads, tokens, URLs, or captions. A failure
+at `slack.record` may follow a successful send: inspect Slack before any recovery.
+Diagnostics do not retry, regenerate, or change approval/publication state.

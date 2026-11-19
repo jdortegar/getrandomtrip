@@ -26,6 +26,8 @@ export async function graphGet<T>(
   params: Record<string, string>,
   token: string,
 ): Promise<T> {
+  let httpStatus: number | undefined;
+  let diagnosticCategory = "network";
   try {
     const url = new URL(`${GRAPH}${path}`);
     for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
@@ -34,13 +36,24 @@ export async function graphGet<T>(
       redirect: "error",
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
+    httpStatus = response.status;
+    diagnosticCategory = "http";
     if (!response.ok) {
       await response.body?.cancel();
       throw new Error("rejected");
     }
+    diagnosticCategory = "invalid_response";
     return (await response.json()) as T;
-  } catch {
-    throw new Error("instagram_request_failed");
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      ["TimeoutError", "AbortError"].includes(error.name)
+    )
+      diagnosticCategory = "timeout";
+    throw Object.assign(new Error("instagram_request_failed"), {
+      httpStatus,
+      diagnosticCategory,
+    });
   }
 }
 

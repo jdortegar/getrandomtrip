@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { after, NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -11,6 +12,10 @@ import {
 import { selectedCopyLocks } from "@/lib/ai/socialBrandPolicy";
 import { importSocialReview } from "@/lib/db/importSocialReview";
 import { dispatchSocialWorker } from "@/lib/social-approvals/dispatchSocialWorker";
+import {
+  logSocialFailure,
+  type SocialDiagnosticStage,
+} from "@/lib/social-approvals/socialDiagnostics";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
@@ -29,6 +34,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   if (!approvalConfig() || process.env.SLACK_SOCIAL_AI_ENABLED !== "true")
     return NextResponse.json({ error: "IMPORT_DISABLED" }, { status: 503 });
+  const requestId = randomUUID();
+  const headers = { "X-Social-Diagnostic-Id": requestId };
+  let stage: SocialDiagnosticStage = "import.parse";
   try {
     const raw = await request.text();
     if (raw.length > 10000)
@@ -44,20 +52,31 @@ export async function POST(request: NextRequest) {
       input.copyLocks,
       input.useReviewedExample,
     );
-    const source = await resolveOwnedInstagramPost(input.instagramUrl);
+    stage = "import.lookup";
+    const source = await resolveOwnedInstagramPost(
+      input.instagramUrl,
+      (step) => {
+        stage = step;
+      },
+    );
+    stage = "import.persist";
     const result = await importSocialReview(source, session.user.id, locks);
     after(async () => {
       try {
         await dispatchSocialWorker();
-      } catch {
-        console.error("[social-import] dispatch failed; job stays queued for the next dispatch");
+      } catch (error) {
+        logSocialFailure("import.dispatch", error, {
+          requestId,
+          jobId: result.jobId,
+        });
       }
     });
     return NextResponse.json(
       { ...result, approvalRequired: true, publishingAllowed: false },
-      { status: result.created ? 202 : 200 },
+      { status: result.created ? 202 : 200, headers },
     );
   } catch (error) {
+    logSocialFailure(stage, error, { requestId });
     const code = error instanceof Error ? error.message : "";
     const invalid = [
       "INVALID_INSTAGRAM_URL",
@@ -76,6 +95,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: known.includes(code) ? code : "IMPORT_FAILED" },
       {
+        headers,
         status:
           invalid.includes(code) ||
           error instanceof SyntaxError ||

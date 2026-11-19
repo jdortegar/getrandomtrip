@@ -1,3 +1,4 @@
+import { logSocialFailure } from "./socialDiagnostics";
 import sharp from "sharp";
 import { AiServiceError } from "@/lib/ai/aiService";
 import { parseCopyLocks } from "@/lib/ai/socialBrandPolicy";
@@ -111,6 +112,10 @@ export async function runSocialRevision(): Promise<boolean> {
       data: { status: "COMPLETE", leaseToken: null, leaseUntil: null },
     });
   } catch (error) {
+    logSocialFailure("worker.run", error, {
+      jobId: job.id,
+      reviewId: job.reviewId ?? undefined,
+    });
     // Every uncertain paid/delivery attempt requires explicit admin recovery, never blind retries.
     const failure =
       job.kind === "REVISE" && error instanceof AiServiceError
@@ -206,7 +211,7 @@ async function reviseJob(
     slides,
   );
   if (!row) throw new Error("STALE_SOURCE");
-  await postSocialReview(config, row);
+  await postSocialReview(config, row, job.id);
   await refreshSocialMessage(review, "SUPERSEDED");
 }
 
@@ -294,7 +299,7 @@ async function translateJob(
     where: { id: job.id, status: "RUNNING", leaseToken },
     data: { newReviewId: row.id },
   });
-  const messageTs = await postSocialReview(config, row);
+  const messageTs = await postSocialReview(config, row, job.id);
   if (plan.notes?.length) await postReviewNotes(config, messageTs, plan.notes);
   await prisma.socialSource.updateMany({
     where: { id: source.id, status: "TRANSLATION_QUEUED" },

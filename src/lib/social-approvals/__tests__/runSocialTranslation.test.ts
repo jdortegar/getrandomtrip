@@ -154,10 +154,14 @@ it("translates caption and slides into one review and marks the source translate
     sourceId: "src",
     createdBy: "U1",
   });
-  expect(m.post).toHaveBeenCalledWith(expect.anything(), {
-    id: "review",
-    revision: 1,
-  });
+  expect(m.post).toHaveBeenCalledWith(
+    expect.anything(),
+    {
+      id: "review",
+      revision: 1,
+    },
+    job.id,
+  );
   expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toMatchObject({
     thread_ts: "1.1",
   });
