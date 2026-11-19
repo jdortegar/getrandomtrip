@@ -47,7 +47,7 @@ it("renders the photo header, card copy, detail rows and price", () => {
   const photo = card().querySelector("img")!;
   expect(photo.getAttribute("alt")).toBe(content.photoAlt);
   expect(photo.getAttribute("src")).toContain("experience-cards");
-  expect(card().textContent).toContain(content.tag);
+  expect(photo.parentElement?.querySelector("span")?.textContent).toBe("SOLUM");
   expect(card().textContent).toContain(content.kicker);
   expect(card().querySelector("h3")?.textContent).toBe(content.name);
   expect(card().querySelector("h3")?.getAttribute("data-name-lines")).toBe("2");
@@ -69,6 +69,18 @@ it("renders the photo header, card copy, detail rows and price", () => {
   );
   expect(card().textContent).toContain(content.transportNote);
   expect(card().classList.contains("bg-white")).toBe(true);
+});
+
+it("keeps a photo badge without a separator intact", () => {
+  const level = {
+    ...explora,
+    card: { ...explora.card!, tag: "CUSTOM COLLECTION" },
+  };
+  act(() => root.render(<ExperienceCard level={level} />));
+  const photo = card().querySelector("img")!;
+  expect(photo.parentElement?.querySelector("span")?.textContent).toBe(
+    "CUSTOM COLLECTION",
+  );
 });
 
 it("keeps long detail values in their column so they do not overlap labels", () => {
