@@ -9,6 +9,7 @@ import {
   resolvePeekDisplay,
   type FieldPeek,
 } from "./field-peek";
+import { FieldMeta } from "./FieldMeta";
 import { formControlClass, formLabelClass } from "./formControlClass";
 
 const DEFAULT_MAX = 280;
@@ -17,6 +18,8 @@ export interface TextAreaInputProps extends Omit<
   React.ComponentProps<"textarea">,
   "id" | "maxLength"
 > {
+  /** Optional helper text below the field (left of the counter). */
+  hint?: ReactNode;
   id: string;
   label: ReactNode;
   maxLength?: number;
@@ -26,6 +29,7 @@ export interface TextAreaInputProps extends Omit<
 
 export function TextAreaInput({
   className,
+  hint,
   id,
   label,
   maxLength = DEFAULT_MAX,
@@ -74,9 +78,18 @@ export function TextAreaInput({
           {validation.error}
         </p>
       )}
-      <span className="text-xs text-neutral-400 self-end">
-        {length} / {maxLength}
-      </span>
+      {hint ? (
+        <FieldMeta count={{ length, max: maxLength }} hint={hint} />
+      ) : (
+        <span
+          className={cn(
+            "self-end text-xs",
+            length > maxLength ? "text-red-700" : "text-neutral-400",
+          )}
+        >
+          {length} / {maxLength}
+        </span>
+      )}
     </div>
   );
 }

@@ -11,21 +11,37 @@ import {
   resolvePeekDisplay,
   type FieldPeek,
 } from "./field-peek";
+import { FieldMeta } from "./FieldMeta";
 import { formControlClass, formLabelClass } from "./formControlClass";
 
 export interface FormFieldProps extends Omit<
   React.ComponentProps<"input">,
   "id"
 > {
+  /** Optional helper text below the field (left of the counter). */
+  hint?: ReactNode;
   id: string;
   label: ReactNode;
   /** Opt-in "peek at original" toggle. Undefined by default — zero effect on other call sites. */
   peek?: FieldPeek;
+  /** Shows a "length / maxLength" counter below the field. Requires `maxLength`. */
+  showCount?: boolean;
 }
 
 export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   function FormField(
-    { className, id, label, peek, placeholder, type, value, ...inputProps },
+    {
+      className,
+      hint,
+      id,
+      label,
+      peek,
+      placeholder,
+      showCount = false,
+      type,
+      value,
+      ...inputProps
+    },
     ref,
   ) {
     const validation = useFieldValidation(
@@ -87,6 +103,14 @@ export const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             {validation.error}
           </p>
         )}
+        <FieldMeta
+          count={
+            showCount && inputProps.maxLength
+              ? { length: String(value ?? "").length, max: inputProps.maxLength }
+              : undefined
+          }
+          hint={hint}
+        />
       </div>
     );
   },

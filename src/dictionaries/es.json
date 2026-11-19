@@ -757,6 +757,9 @@
       "readOnly": "Campo de solo lectura",
       "readOnlyValue": "Un poco de misterio incluido",
       "disabled": "Campo deshabilitado",
+      "counter": "Nombre público",
+      "counterHint": "Ayuda opcional a la izquierda; contador a la derecha.",
+      "counterValue": "Nico Aranda",
       "disabledValue": "No disponible en este ejemplo",
       "pace": "Ritmo del viaje",
       "flexible": "Un poco de todo",
@@ -864,7 +867,183 @@
     "dashboard": {
       "nav": "Pestañas de nav",
       "kpis": "Tarjetas KPI",
-      "toggle": "Toggle de vista"
+      "toggle": "Toggle de vista",
+      "profileEditor": "Editor de perfil del Tripper",
+      "profileEditorBody": "Cada componente del editor de perfil por separado, con sus estados, más el editor completo con datos de ejemplo.",
+      "profileEditorCta": "Ver catálogo"
+    },
+    "profileEditorCatalog": {
+      "flowCta": "Ver el editor completo",
+      "publicCta": "Ver el perfil público",
+      "publicMetaTitle": "Ejemplo: perfil público del Tripper",
+      "hero": {
+        "eyebrow": "Design system / Tripper OS",
+        "title": "Editor de perfil: catálogo de componentes",
+        "body": "Cada pieza del editor de perfil del Tripper, por separado y en sus estados. Son los componentes reales con datos ficticios; nada se guarda."
+      },
+      "index": "Índice del catálogo",
+      "metaDescription": "Catálogo de componentes del editor de perfil del Tripper, con estados y variantes.",
+      "metaTitle": "Catálogo: editor de perfil del Tripper",
+      "openModal": "Abrir el modal",
+      "panels": {
+        "aside": "ProfileEditorAside · consejo del paso",
+        "card": "ProfileEditorCard · con meta",
+        "countrySelect": "ProfileCountryOptions · dentro de FormSelectField",
+        "fieldCounter": "FormField · hint y contador",
+        "fieldMeta": "FieldMeta · hint y contador",
+        "fieldMetaOver": "FieldMeta · supera el máximo",
+        "footerFirst": "ProfileEditorFooterNav · primer paso",
+        "footerLast": "ProfileEditorFooterNav · último paso",
+        "footerMiddle": "ProfileEditorFooterNav · paso intermedio",
+        "galleryEmpty": "GalleryEditor · vacío",
+        "galleryFilled": "GalleryEditor · con fotos",
+        "galleryFull": "GalleryEditor · completo (8 de 8)",
+        "headerBlocked": "ProfileEditorHeader · faltan esenciales",
+        "headerReady": "ProfileEditorHeader · listo para enviar",
+        "imageCover": "ProfileImagePicker · portada 9:5",
+        "imageEmpty": "ProfileImagePicker · vacío",
+        "imagePortrait": "ProfileImagePicker · retrato 4:5",
+        "mediaItemCollapsed": "MediaItemEditor · contraído",
+        "mediaItemExpanded": "MediaItemEditor · abierto, enlace inválido",
+        "mediaItemUpload": "MediaItemEditor · video propio",
+        "navDone": "ProfileEditorStepNav · esenciales completos",
+        "navStart": "ProfileEditorStepNav · primer ingreso",
+        "placeListPending": "AtlasPlaceList · sin historias publicadas",
+        "placeListStories": "AtlasPlaceList · con historias para relacionar",
+        "reorder": "ProfileReorderControls",
+        "saveStates": "ProfileEditorStatusBar · estados de guardado",
+        "statuses": "ProfileEditorStatusBar · estados de revisión",
+        "stepAtlas": "AtlasStep",
+        "stepHeaderEssential": "ProfileEditorStepHeader · esencial",
+        "stepHeaderOptional": "ProfileEditorStepHeader · opcional",
+        "stepIdentity": "IdentityStep",
+        "stepPerspective": "PerspectiveStep",
+        "stepStories": "StoriesStep · con artículos",
+        "stepTravelerTypes": "TravelerTypesStep",
+        "storiesEmpty": "StoriesStep · primer ingreso",
+        "submitModal": "ProfileEditorSubmitModal",
+        "publicAbout": "TripperProfileAbout",
+        "publicAtlas": "TripperProfileAtlas · mapa, filtros y panel",
+        "publicAtlasList": "TripperProfileAtlasList · vista de lista",
+        "publicClosing": "TripperProfileClosing",
+        "publicFaq": "TripperProfileFaq",
+        "publicGallery": "TripperProfileGalleryCarousel · fotos ampliables",
+        "publicHeroFull": "TripperProfileHero · completo",
+        "publicHeroMinimal": "TripperProfileHero · sin retrato ni nota",
+        "publicJourneysAll": "TripperProfileJourneyCards · tres tipos",
+        "publicJourneysTwo": "TripperProfileJourneyCards · dos tipos",
+        "publicMediaCarousel": "TripperProfileMediaCarousel · un reproductor por vez",
+        "publicMobileCta": "TripperProfileMobileCta · barra inferior en móvil",
+        "publicMediaPoster": "TripperProfileMediaCard · reproducir bajo demanda",
+        "publicMediaProfileLink": "TripperProfileMediaCard · perfil de Instagram (solo enlace)",
+        "publicMediaUpload": "TripperProfileMediaCard · video propio",
+        "publicSegmented": "TripperProfileSegmented",
+        "publicStoriesEditorial": "TripperProfileStories · selección editorial de Randomtrip",
+        "publicStoriesTripper": "TripperProfileStories · historias propias",
+        "publicStrip": "TripperProfileExpertiseStrip",
+        "publicSubnav": "TripperProfileSubnav"
+      },
+      "sampleCardBody": "El contenido de cada paso vive dentro de estas tarjetas.",
+      "sampleHint": "Un texto de ayuda breve.",
+      "sections": {
+        "chrome": {
+          "nav": "Encabezado",
+          "title": "Encabezado y estado",
+          "description": "La entrada del editor: título, acciones de vista previa y envío, y la barra que muestra el estado de revisión y el guardado."
+        },
+        "progress": {
+          "nav": "Progreso",
+          "title": "Paso a paso",
+          "description": "Navegación entre los seis pasos con el contador de esenciales. Vertical en escritorio, desplazable en móvil."
+        },
+        "structure": {
+          "nav": "Estructura",
+          "title": "Piezas de cada paso",
+          "description": "Encabezado del paso, tarjeta de formulario, consejo lateral y navegación anterior / siguiente."
+        },
+        "fields": {
+          "nav": "Campos",
+          "title": "Campos con límite",
+          "description": "Ayuda y contador compartidos por todos los textos. El contador se marca en rojo cuando un texto previo supera el nuevo máximo."
+        },
+        "imageInputs": {
+          "nav": "Imágenes",
+          "title": "Imágenes y orden",
+          "description": "Selector de imagen con su proporción y controles para mover o quitar elementos de una lista."
+        },
+        "identity": {
+          "nav": "Identidad",
+          "title": "Identidad y fotos",
+          "description": "Nombre, residencia, enlace público, frase, retrato y portada con su descripción accesible."
+        },
+        "perspective": {
+          "nav": "Mirada",
+          "title": "Tu mirada",
+          "description": "Título, introducción, biografía con mínimo, anécdota y hasta tres afinidades."
+        },
+        "travelerTypes": {
+          "nav": "Viajeros",
+          "title": "Cómo viajas",
+          "description": "SOLUM, BOND y CREW: cada tipo se activa por separado con su foto e invitación."
+        },
+        "atlas": {
+          "nav": "Recorrido",
+          "title": "Tu recorrido",
+          "description": "Orientación de primer ingreso, alta asistida de lugares y la lista del atlas con su historia relacionada."
+        },
+        "media": {
+          "nav": "Medios",
+          "title": "Fotos y canales",
+          "description": "Piezas de YouTube, Instagram, TikTok o video propio, y una galería de hasta ocho fotos o videos."
+        },
+        "stories": {
+          "nav": "Historias",
+          "title": "Tus historias",
+          "description": "Biblioteca del blog con búsqueda, páginas de tres y hasta tres destacadas. Incluye el estado sin artículos."
+        },
+        "review": {
+          "nav": "Revisión",
+          "title": "Enviar a revisión",
+          "description": "El modal que confirma derechos de uso y envía una copia del borrador al equipo."
+        },
+        "publicHero": {
+          "nav": "Perfil · portada",
+          "title": "Perfil público: portada",
+          "description": "La barra del perfil, la portada con retrato y la franja que resume para quién diseña experiencias."
+        },
+        "publicJourneys": {
+          "nav": "Perfil · viajes",
+          "title": "Cómo viajar y su mirada",
+          "description": "Una tarjeta por tipo de viajero activo y la sección de biografía con afinidades."
+        },
+        "publicMedia": {
+          "nav": "Perfil · medios",
+          "title": "Videos, posts y cuaderno",
+          "description": "Los reproductores externos se cargan solo al tocar; los videos propios usan controles nativos. Las fotos se amplían."
+        },
+        "publicAtlas": {
+          "nav": "Perfil · atlas",
+          "title": "El atlas público",
+          "description": "Mapa SVG de Natural Earth sin servicios externos, filtro de conocimiento local, vista de lista y panel por país."
+        },
+        "publicStories": {
+          "nav": "Perfil · cierre",
+          "title": "Historias, preguntas y cierre",
+          "description": "Historias propias o la selección editorial con su autoría, las preguntas frecuentes y la franja final."
+        }
+      }
+    },
+    "profileEditorExample": {
+      "backLink": "Volver al catálogo",
+      "backToComponents": "Volver a componentes",
+      "body": "Ejemplo interactivo con un Tripper ficticio. Nada se guarda ni se envía: los cambios viven solo en esta pestaña.",
+      "eyebrow": "Design system / Ejemplo",
+      "metaDescription": "Ejemplo interactivo del editor de perfil del Tripper con datos ficticios.",
+      "metaTitle": "Ejemplo: editor de perfil del Tripper",
+      "title": "Editor de perfil del Tripper",
+      "variantFull": "Perfil completo",
+      "variantNew": "Primer ingreso",
+      "variants": "Variantes del ejemplo"
     },
     "layout": {
       "eyebrow": "La composición",
@@ -6048,6 +6227,10 @@
       "newDrop": {
         "title": "Nuevo Drop",
         "description": "Crea un nuevo drop XSED"
+      },
+      "profile": {
+        "title": "Mi perfil",
+        "description": "Tu perfil público, paso a paso"
       }
     },
     "stats": {
@@ -7579,5 +7762,558 @@
   "currency": {
     "checkoutDisclaimer": "Los cobros se hacen en dólares (USD). Los montos en otras monedas son aproximados y tu banco define el tipo de cambio final.",
     "cardTaxesNote": "Tu banco o tarjeta puede sumar impuestos y cargos (por ejemplo, percepciones)."
+  },
+  "tripperProfileEditor": {
+    "aside": {
+      "reviewNoteBody": "Solo la versión aprobada pasa al perfil público.",
+      "reviewNoteTitle": "Tú guardas. Randomtrip revisa.",
+      "tips": {
+        "identity": {
+          "title": "Una primera impresión con intención.",
+          "body": "Tu retrato pone la persona. Tu portada abre la puerta a tu mundo."
+        },
+        "perspective": {
+          "title": "Escribe como hablas.",
+          "body": "Tu historia vale más que una lista de credenciales."
+        },
+        "travelerTypes": {
+          "title": "Para quién, antes que qué.",
+          "body": "Solo aparecen los formatos que elijas. Las experiencias se crean aparte."
+        },
+        "atlas": {
+          "title": "Un mapa que se construye con el tiempo.",
+          "body": "Distingue los lugares que recorriste de los que conoces de cerca."
+        },
+        "media": {
+          "title": "Una selección, no un feed infinito.",
+          "body": "Un video, una puerta a Instagram y algunas fotos propias. Lo justo para conocerte mejor."
+        },
+        "stories": {
+          "title": "Tu voz, con su autoría clara.",
+          "body": "Tus historias primero. Si no hay, el contenido editorial de Randomtrip acompaña sin hacerse pasar por tuyo."
+        }
+      }
+    },
+    "atlas": {
+      "addCta": "Agregar al recorrido",
+      "addMeta": "Selección asistida",
+      "addTitle": "Agregar un lugar",
+      "city": {
+        "hint": "Puedes registrar solo el país.",
+        "label": "Ciudad o pueblo",
+        "placeholder": "Primero elige un país"
+      },
+      "country": {
+        "label": "País o territorio",
+        "placeholder": "Elige un país"
+      },
+      "countryOnly": "Todo el país",
+      "duplicate": "Ese lugar ya está en tu recorrido.",
+      "eyebrow": "04 / Tu recorrido",
+      "lead": "Separa tu recorrido personal de los lugares que conoces en profundidad.",
+      "listEmpty": "Todavía no agregaste lugares. Puedes enviar tu perfil sin completar este paso.",
+      "listTitle": "Tu atlas personal",
+      "localExpert": {
+        "hint": "Puedo aportar conocimiento local, más allá de haberlo visitado.",
+        "label": "Conozco este lugar de cerca"
+      },
+      "localExpertBadge": "Conozco de cerca",
+      "storyLabel": "Historia relacionada",
+      "storyNone": "Sin historia",
+      "storyPending": "Pendiente: se completa cuando publiques en Mi blog.",
+      "timeline": [
+        {
+          "title": "Completa tu perfil",
+          "body": "Puedes enviarlo a revisión sin rutas ni blogs cargados."
+        },
+        {
+          "title": "Carga experiencias",
+          "body": "En la sección Experiencias del Tripper OS."
+        },
+        {
+          "title": "Publica blogs, si quieres",
+          "body": "Desde Mi blog. Es contenido opcional."
+        },
+        {
+          "title": "Vuelve a este atlas",
+          "body": "Relaciona cada lugar con una historia ya publicada."
+        }
+      ],
+      "timelineEyebrow": "Esto se construye con el tiempo",
+      "timelineFootnote": "Ahora puedes registrar tus lugares y dejar «Historia relacionada» pendiente.",
+      "timelineTitle": "Hoy armas tu perfil. Después, conectas tus historias.",
+      "title": "Los lugares que se te quedan.",
+      "visitedBadge": "Mi recorrido"
+    },
+    "common": {
+      "idealSize": "Ideal: {{width}} × {{height}} px.",
+      "imageFormats": "JPG, PNG o WebP · hasta 8 MB",
+      "moveDown": "Mover después",
+      "moveUp": "Mover antes",
+      "overLimit": "Supera el máximo. Ajústalo antes de enviar.",
+      "remove": "Quitar",
+      "requiredHint": "* Campos esenciales"
+    },
+    "footer": {
+      "next": {
+        "identity": "Seguir con mi mirada",
+        "perspective": "Seguir con cómo viajo",
+        "travelerTypes": "Seguir con mi recorrido",
+        "atlas": "Seguir con fotos y canales",
+        "media": "Seguir con tus historias",
+        "stories": "Revisar y enviar"
+      },
+      "previous": "Anterior",
+      "stepOf": "{{current}} de {{total}}"
+    },
+    "header": {
+      "eyebrow": "Tu espacio / Mi perfil público",
+      "previewCta": "Vista previa",
+      "previewUnavailable": "La vista previa estará disponible cuando tu perfil tenga un enlace público.",
+      "submitCta": "Enviar a revisión",
+      "subtitle": "Cuenta quién eres. Muestra cómo viajas. Nosotros cuidamos el resto.",
+      "title": "Tu mirada merece su propio lugar."
+    },
+    "identity": {
+      "city": {
+        "hint": "Tu ciudad de residencia.",
+        "label": "Ciudad donde vives *"
+      },
+      "country": {
+        "label": "País donde vives *",
+        "placeholder": "Elige un país"
+      },
+      "cover": {
+        "change": "Cambiar portada",
+        "hint": "Un paisaje con el que conectes.",
+        "upload": "Subir portada"
+      },
+      "coverAlt": {
+        "help": "Describe lo que se ve, para quien no pueda ver la imagen.",
+        "hint": "Descripción accesible; no se muestra como un título.",
+        "label": "Descripción accesible de la portada *"
+      },
+      "coverCaption": {
+        "hint": "Una nota breve para acompañar tu portada.",
+        "label": "Nota sobre tu portada"
+      },
+      "eyebrow": "01 / Identidad y fotos",
+      "headline": {
+        "hint": "Una idea corta que cuente qué te mueve a viajar.",
+        "label": "Tu frase de presentación *"
+      },
+      "imagesTitle": "Tu cara y tu paisaje",
+      "lead": "Tu nombre, tu punto en el mapa y dos imágenes que hablen de ti.",
+      "name": {
+        "hint": "Tu nombre se muestra en el encabezado del perfil.",
+        "label": "Nombre público *"
+      },
+      "portrait": {
+        "change": "Cambiar retrato",
+        "hint": "Una foto tuya, con luz natural.",
+        "upload": "Subir retrato"
+      },
+      "presentationTitle": "Tu presentación",
+      "slug": {
+        "hint": "El enlace se confirma antes de publicar.",
+        "invalid": "Usa solo letras minúsculas, números y guiones.",
+        "label": "Tu enlace público *",
+        "prefix": "getrandomtrip.com/trippers/",
+        "rules": "Usa letras minúsculas, números y guiones. El enlace final se valida antes de publicar."
+      },
+      "title": "Primero, que te conozcan."
+    },
+    "media": {
+      "addCta": "Agregar",
+      "addLabel": "¿Qué quieres agregar?",
+      "eyebrow": "05 / Fotos y canales",
+      "gallery": {
+        "addHint": "Puedes seleccionar varios archivos",
+        "addTitle": "Suma fotos o videos a tu cuaderno",
+        "after": "Después",
+        "before": "Antes",
+        "captionLabel": "Epígrafe / descripción",
+        "captionPlaceholder": "¿Qué pasa en esta imagen?",
+        "full": "Tu cuaderno está completo. Quita un elemento para sumar otro.",
+        "intro": "Una galería de hasta ocho fotos o videos, en el orden que elijas. En tu perfil se verá como un carrusel.",
+        "meta": "{{count}} / {{max}} elementos",
+        "orientationNote": "Se admiten formatos horizontales y verticales. El epígrafe de cada foto sirve como descripción accesible.",
+        "photoLabel": "Foto",
+        "specsPhotos": "Fotos: JPG, PNG o WebP · hasta 8 MB. Ideal 1.600 × 1.200 px, 4:3.",
+        "specsVideos": "Videos: MP4 o WebM · hasta 25 MB. Ideal 1.280 × 720 px o 720 × 1.280 px; clips de 15–90 s.",
+        "title": "Tu cuaderno en imágenes",
+        "videoLabel": "Video"
+      },
+      "item": {
+        "collapse": "Contraer",
+        "expand": "Editar",
+        "invalidUrl": "Revisa el enlace: tiene que ser una publicación pública de esta plataforma.",
+        "posterChange": "Cambiar portada",
+        "posterHint": "Ideal 1.280 × 720 px, 16:9. JPG, PNG o WebP · hasta 8 MB.",
+        "show": "Mostrar en mi perfil",
+        "titleHint": "Breve, para mantener equilibradas las tarjetas del carrusel.",
+        "titleLabel": "Título en tu perfil",
+        "untitled": "Sin título",
+        "uploadVideo": "Subir video",
+        "urlHints": {
+          "youtube": "Acepta videos, Shorts y enlaces youtu.be.",
+          "instagram": "Pega la URL de un post o Reel público. Los perfiles se muestran como enlace.",
+          "tiktok": "Usa la URL completa del video, con su ID. Los enlaces acortados no funcionan.",
+          "upload": "MP4 o WebM · hasta 25 MB."
+        },
+        "urlLabels": {
+          "youtube": "Enlace público de YouTube",
+          "instagram": "Enlace del post o Reel",
+          "tiktok": "Enlace del video de TikTok",
+          "upload": "Video desde tu dispositivo"
+        }
+      },
+      "itemsEmpty": "Todavía no agregaste videos ni publicaciones.",
+      "itemsFootnote": "Si una pieza no puede cargarse, siempre queda un acceso al original.",
+      "itemsIntro": "Agrega todo el material que quieras y ordénalo. Los enlaces públicos de YouTube, Instagram y TikTok se abren dentro del perfil cuando la plataforma permite mostrarlos.",
+      "itemsMeta": "{{count}} elementos · sin límite de cantidad",
+      "itemsTitle": "Videos y publicaciones",
+      "lead": "Suma videos, posts y momentos. Quien visite tu perfil los recorre en carruseles.",
+      "linkedin": {
+        "label": "LinkedIn",
+        "placeholder": "https://www.linkedin.com/in/..."
+      },
+      "otherTitle": "Otros espacios tuyos",
+      "providers": {
+        "youtube": "YouTube",
+        "instagram": "Post o Reel de Instagram",
+        "tiktok": "TikTok",
+        "upload": "Video desde tu dispositivo"
+      },
+      "title": "Tu mundo tiene más de una ventana.",
+      "website": {
+        "label": "Web o blog personal",
+        "placeholder": "https://..."
+      }
+    },
+    "nav": {
+      "completeLabel": "Completo",
+      "essentialsCount": "{{done}} de {{total}}",
+      "essentialsHint": "El resto suma tu forma de ver el mundo.",
+      "essentialsLabel": "esenciales completos",
+      "eyebrow": "Tu perfil, paso a paso",
+      "incompleteLabel": "Pendiente",
+      "scopeNote": "Tu perfil presenta tu mirada. Las experiencias se gestionan por separado.",
+      "steps": {
+        "identity": {
+          "title": "Identidad y fotos",
+          "subtitle": "Así te van a conocer"
+        },
+        "perspective": {
+          "title": "Tu mirada",
+          "subtitle": "Tu historia y afinidades"
+        },
+        "travelerTypes": {
+          "title": "Cómo viajas",
+          "subtitle": "Para quién curas"
+        },
+        "atlas": {
+          "title": "Tu recorrido",
+          "subtitle": "Países y localidades"
+        },
+        "media": {
+          "title": "Fotos y canales",
+          "subtitle": "Tu universo audiovisual"
+        },
+        "stories": {
+          "title": "Tus historias",
+          "subtitle": "Del blog a tu perfil"
+        }
+      }
+    },
+    "perspective": {
+      "affinitiesHint": "Los temas que atraviesan tu manera de viajar. Son distintos de los tipos de viajero.",
+      "affinitiesMeta": "Elige hasta tres",
+      "affinitiesTitle": "Tus afinidades *",
+      "affinityOptions": {
+        "backRoads": "Caminos secundarios",
+        "localTables": "Mesas locales",
+        "slowTravel": "Viajar sin prisa",
+        "natureMountains": "Naturaleza y montaña",
+        "designCulture": "Diseño y cultura",
+        "cityLife": "Vida de ciudad",
+        "seaCoast": "Mar y costa",
+        "outdoorAdventure": "Aventura al aire libre",
+        "wellnessPause": "Bienestar y pausa"
+      },
+      "bioBody": {
+        "hint": "Desde dónde miras el mundo, qué buscas y qué aportas como Tripper.",
+        "label": "Tu biografía *",
+        "minHint": "Mínimo {{min}} caracteres."
+      },
+      "bioLead": {
+        "hint": "Una introducción breve a tu manera de viajar.",
+        "label": "Lo que te define, en pocas palabras"
+      },
+      "bioMore": {
+        "hint": "Se mostrará dentro de «Un poco más de mí».",
+        "label": "Una anécdota, un ritual o algo que siempre llevas"
+      },
+      "bioTitle": {
+        "hint": "Un título corto, idealmente en dos o tres líneas.",
+        "label": "Un título para tu historia *"
+      },
+      "cardTitle": "Tu forma de mirar el viaje",
+      "eyebrow": "02 / Tu mirada",
+      "lead": "Escribe como hablas. Tu historia vale más que una lista de credenciales.",
+      "title": "La mejor guía empieza por una persona."
+    },
+    "status": {
+      "descriptions": {
+        "DRAFT": "Todavía no se envió a revisión.",
+        "PENDING_REVIEW": "El equipo está revisando la versión enviada. Puedes seguir editando tu borrador.",
+        "CHANGES_REQUESTED": "El equipo pidió algunos ajustes antes de publicar.",
+        "APPROVED": "Tu perfil público está al día con la última versión aprobada."
+      },
+      "labels": {
+        "DRAFT": "Borrador",
+        "PENDING_REVIEW": "En revisión",
+        "CHANGES_REQUESTED": "Ajustes solicitados",
+        "APPROVED": "Publicado"
+      },
+      "notSavedYet": "Aún no guardado",
+      "saveDraft": "Guardar borrador",
+      "saved": "Guardado · {{time}}",
+      "saving": "Guardando…",
+      "unsaved": "Cambios sin guardar"
+    },
+    "stepBadges": {
+      "essential": "Esencial",
+      "optional": "Opcional"
+    },
+    "stories": {
+      "cardTitle": "Historias de tu blog",
+      "emptyBody": "Primero completa tu perfil y carga tus experiencias. Si después quieres compartir una historia o una guía, créala en Mi blog. Una vez publicada, va a aparecer acá: podrás buscarla, destacarla y relacionarla con un lugar de tu recorrido.",
+      "emptyCta": "Ir a Mi blog",
+      "emptyTitle": "Tu primera historia todavía está por escribirse.",
+      "eyebrow": "06 / Tus historias",
+      "finalBody": "Revisa cómo se ve, guarda tu borrador y envía la versión que quieras presentar al equipo de Randomtrip.",
+      "finalCta": "Ver mi perfil completo",
+      "finalEyebrow": "La última mirada",
+      "finalTitle": "Listo para que tu perfil hable de ti.",
+      "growNoteBody": "El blog es opcional. Si no seleccionas historias propias, la selección editorial de Randomtrip acompaña tu perfil.",
+      "growNoteTitle": "Tu perfil puede crecer contigo.",
+      "lead": "Puedes publicar todos los blogs que quieras. Elige hasta tres para destacar en tu perfil.",
+      "maxReached": "Ya elegiste tres. Quita una para destacar otra.",
+      "meta": "{{count}} / {{max}} destacadas",
+      "next": "Página siguiente",
+      "noResults": "Ningún artículo coincide con tu búsqueda.",
+      "pageInfo": "{{from}}–{{to}} de {{total}} artículos · página {{page}}/{{pages}}",
+      "previous": "Página anterior",
+      "searchLabel": "Buscar entre tus artículos publicados",
+      "searchPlaceholder": "Título, tema o lugar…",
+      "title": "Cuando tengas historias, vuelve por acá."
+    },
+    "submitModal": {
+      "body": "Se enviará una copia de tu perfil tal como está ahora. Puedes seguir trabajando en un borrador mientras el equipo lo revisa.",
+      "cancel": "Seguir editando",
+      "confirmLabel": "Confirmo que puedo usar estas imágenes, textos y enlaces.",
+      "eyebrow": "Versión para revisar",
+      "submit": "Enviar esta versión a revisión",
+      "submitting": "Enviando…",
+      "title": "Una última mirada. Después, lo vemos juntos."
+    },
+    "toasts": {
+      "draftSaved": "Borrador guardado.",
+      "fileTooLarge": "El archivo supera el tamaño máximo.",
+      "galleryFull": "Solo se sumaron los elementos que entraban en tu cuaderno.",
+      "invalidFileType": "Ese formato no está admitido.",
+      "submitted": "Tu perfil se envió a revisión.",
+      "saveFailed": "No pudimos guardar tu borrador. Intenta de nuevo.",
+      "submitFailed": "No pudimos enviar tu perfil. Intenta de nuevo.",
+      "uploadFailed": "No pudimos subir el archivo. Intenta de nuevo."
+    },
+    "travelerTypes": {
+      "eyebrow": "03 / Cómo viajas",
+      "image": {
+        "hint": "Ideal 1.080 × 1.350 px, 4:5. JPG, PNG o WebP · hasta 8 MB.",
+        "upload": "Subir foto"
+      },
+      "lead": "En tu perfil solo aparecerán los formatos que selecciones y estén activos.",
+      "scopeNote": "Esto presenta tu perfil. Crear y validar experiencias vendibles es un paso separado.",
+      "show": "Mostrar en mi perfil",
+      "text": {
+        "hint": "Una invitación corta, en una o dos líneas.",
+        "label": "Tu invitación"
+      },
+      "title": "¿Para quién curas experiencias?",
+      "types": {
+        "solo": {
+          "label": "Solo",
+          "product": "SOLUM"
+        },
+        "couple": {
+          "label": "Pareja",
+          "product": "BOND"
+        },
+        "group": {
+          "label": "Amigos",
+          "product": "CREW"
+        }
+      }
+    }
+  },
+  "tripperPublicProfile": {
+    "about": {
+      "affinitiesLabel": "Afinidades",
+      "eyebrow": "02 / Antes del destino, una mirada",
+      "more": "Un poco más de mí",
+      "notebookCaption": "{{name}} / Notas de un curioso",
+      "notebookLabel": "Randomtrip / Cuaderno de viaje"
+    },
+    "atlas": {
+      "aside": "Un mapa de lo que recorrí. Y de los lugares que conozco de cerca.",
+      "disclaimer": "Este mapa muestra el recorrido personal de {{name}}. No indica disponibilidad ni anticipa el destino de un viaje sorpresa.",
+      "empty": "Todavía no hay lugares en esta vista.",
+      "eyebrow": "03 / Mi recorrido",
+      "filters": {
+        "expert": "Conozco de cerca",
+        "visited": "Mi recorrido"
+      },
+      "listTitle": "Todos los lugares",
+      "localExpert": "Conozco de cerca",
+      "mapLabel": "Mapa del recorrido de {{name}}",
+      "noPins": "Algunos lugares todavía no tienen ubicación en el mapa; aparecen en la lista.",
+      "story": "Leer la historia",
+      "summary": "{{countries}} países · {{places}} lugares",
+      "title": "Hay lugares que se te quedan.",
+      "views": {
+        "list": "Lista",
+        "map": "Mapa"
+      },
+      "visited": "Mi recorrido",
+      "wholeCountry": "Todo el país",
+      "allCountries": "Ver todos los países",
+      "atlasEyebrow": "Mi atlas personal",
+      "disableMove": "Desactivar movimiento",
+      "enableMove": "Activar movimiento",
+      "mapHint": "Toca un país para acercarte. Los números cuentan lugares.",
+      "countryMarker": "{{country}}: {{count}} lugares",
+      "credit": "Cartografía: Natural Earth",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "zoomReset": "Ver todo el mapa"
+    },
+    "carousel": {
+      "next": "Siguiente",
+      "position": "{{from}}–{{to}} / {{total}}",
+      "previous": "Anterior"
+    },
+    "closing": {
+      "cta": "Que empiece con {{name}}",
+      "eyebrow": "Una mirada que conecta con la tuya.",
+      "payoff": "Wonder. Wander. Repeat.",
+      "title": "La próxima historia todavía no tiene destino."
+    },
+    "faq": {
+      "aside": "El destino es el secreto. Lo importante, bien resuelto.",
+      "eyebrow": "Lo que conviene saber",
+      "items": [
+        {
+          "question": "¿Qué significa viajar con un Tripper?",
+          "answer": "Eliges una mirada que conecta con la tuya. El Tripper aporta conocimiento y curaduría; Randomtrip gestiona la experiencia, la logística y el soporte. La presencia del Tripper durante el viaje depende de lo que indique cada experiencia."
+        },
+        {
+          "question": "¿Voy a conocer mi destino antes de reservar?",
+          "answer": "El destino se revela 48 horas antes de salir. Antes de confirmar conoces el precio, el nivel de experiencia, las condiciones y las inclusiones. Tus preferencias y restricciones guían la curaduría."
+        },
+        {
+          "question": "¿Todos los viajes incluyen vuelos?",
+          "answer": "Las inclusiones dependen de la experiencia y del punto de partida. El transporte, el alojamiento y los demás servicios se detallan antes de confirmar, para que sepas exactamente qué estás comprando."
+        }
+      ],
+      "title": "La sorpresa, con confianza."
+    },
+    "gallery": {
+      "aside": "Un cuaderno de fotos y videos, para recorrer sin apuro.",
+      "close": "Cerrar",
+      "enlarge": "Ampliar foto",
+      "eyebrow": "Mi cuaderno en imágenes",
+      "fallbackCaption": "Del cuaderno de {{name}}",
+      "title": "Pequeñas cosas. Grandes historias."
+    },
+    "hero": {
+      "aboutLink": "Conoce mi forma de viajar",
+      "collection": "Colección {{number}}",
+      "cta": "Encuentra tu punto de partida",
+      "eyebrow": "Tripper",
+      "mapLabel": "Mi punto en el mapa",
+      "portraitAlt": "Retrato de {{name}}"
+    },
+    "journeys": {
+      "aside": "La compañía cambia el viaje. Mi forma de curarlo, también.",
+      "ctas": {
+        "solo": "Empieza tu viaje",
+        "couple": "Empiecen su viaje",
+        "group": "Empiecen su historia"
+      },
+      "eyebrow": "01 / El viaje empieza contigo",
+      "taglines": {
+        "solo": "Tu ritmo. Tu historia.",
+        "couple": "Un secreto para dos.",
+        "group": "Del chat a la ruta."
+      },
+      "title": "Encuentra el punto de partida perfecto para tu próximo viaje.",
+      "trust": [
+        "Curaduría humana",
+        "Precio claro antes de confirmar",
+        "Destino revelado 48 h antes",
+        "Soporte de Randomtrip"
+      ]
+    },
+    "media": {
+      "aside": "Videos y publicaciones para conocer mi forma de viajar.",
+      "eyebrow": "Desde mi libreta",
+      "openProfile": "Abrir perfil",
+      "original": "Ver original en {{provider}}",
+      "play": "Ver contenido",
+      "playerTitle": "{{title}} — {{provider}}",
+      "providers": {
+        "youtube": "YouTube",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "upload": "Video"
+      },
+      "stop": "Cerrar reproductor",
+      "title": "Mi mundo tiene más de una ventana."
+    },
+    "stories": {
+      "aside": "Ideas para mirar distinto. Sin apurar el próximo capítulo.",
+      "byline": "Por {{author}}",
+      "editorialAside": "Una selección editorial mientras {{name}} prepara sus próximas historias.",
+      "editorialEyebrow": "04 / Tripper's Inspiration",
+      "editorialTitle": "Más historias de Randomtrip.",
+      "eyebrow": "04 / Historias en primera persona",
+      "read": "Leer historia",
+      "title": "De mi cuaderno al tuyo.",
+      "minutes": "{{minutes}} min"
+    },
+    "strip": {
+      "atlasLink": "Mi recorrido en el mapa",
+      "label": "Diseño experiencias para",
+      "promise": "La mirada de {{name}}. La logística y el respaldo de Randomtrip."
+    },
+    "subnav": {
+      "cta": "Viaja con {{name}}",
+      "label": "Tripper",
+      "links": {
+        "about": "Mi mirada",
+        "atlas": "Mi recorrido",
+        "journeys": "Cómo viajar",
+        "stories": "Historias"
+      },
+      "navLabel": "Secciones del perfil",
+      "menu": "Menú",
+      "closeMenu": "Cerrar menú"
+    },
+    "mobileCta": {
+      "cta": "Empieza tu viaje",
+      "text": "Una ruta con la mirada de {{name}}."
+    }
   }
 }

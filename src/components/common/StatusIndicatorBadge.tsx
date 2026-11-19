@@ -18,6 +18,7 @@ interface StatusIndicatorBadgeProps {
     | "email-send"
     | "tripper-booking"
     | "tripper-booking-summary"
+    | "tripper-profile"
     | "notification"
     | "review";
   label: string;
@@ -75,6 +76,15 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
   review: { fallback: "warning", statuses: { submitted: "success" } },
   "tripper-booking": TRIPPER_BOOKING,
   "tripper-booking-summary": TRIPPER_BOOKING,
+  "tripper-profile": {
+    fallback: "warning",
+    statuses: {
+      APPROVED: "success",
+      CHANGES_REQUESTED: "danger",
+      DRAFT: "warning",
+      PENDING_REVIEW: "info",
+    },
+  },
   availability: { fallback: "inactive", statuses: {} },
   blog: {
     fallback: "warning",

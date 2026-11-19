@@ -1,4 +1,12 @@
 import type { PromoRejectionReason } from "@/types/payments";
+import type { ProfileEditorCatalogSection } from "@/lib/constants/PROFILE_EDITOR_CATALOG";
+import type {
+  TripperProfileAffinity,
+  TripperProfileMediaProvider,
+  TripperProfileStatus,
+  TripperProfileStepId,
+  TripperProfileTravelerType,
+} from "@/types/tripper";
 
 export interface DesignSystemSectionDict {
   nav: string;
@@ -283,6 +291,79 @@ export interface DesignSystemHeroDict {
   localOnly: string;
 }
 
+/** Copy for the Tripper profile editor component catalog (design-system gallery). */
+export interface ProfileEditorCatalogDict {
+  flowCta: string;
+  publicCta: string;
+  publicMetaTitle: string;
+  hero: { body: string; eyebrow: string; title: string };
+  index: string;
+  metaDescription: string;
+  metaTitle: string;
+  openModal: string;
+  panels: {
+    aside: string;
+    card: string;
+    countrySelect: string;
+    fieldCounter: string;
+    fieldMeta: string;
+    fieldMetaOver: string;
+    footerFirst: string;
+    footerLast: string;
+    footerMiddle: string;
+    galleryEmpty: string;
+    galleryFilled: string;
+    galleryFull: string;
+    headerBlocked: string;
+    headerReady: string;
+    imageCover: string;
+    imageEmpty: string;
+    imagePortrait: string;
+    mediaItemCollapsed: string;
+    mediaItemExpanded: string;
+    mediaItemUpload: string;
+    navDone: string;
+    navStart: string;
+    placeListPending: string;
+    placeListStories: string;
+    publicAbout: string;
+    publicAtlas: string;
+    publicAtlasList: string;
+    publicClosing: string;
+    publicFaq: string;
+    publicGallery: string;
+    publicHeroFull: string;
+    publicHeroMinimal: string;
+    publicJourneysAll: string;
+    publicJourneysTwo: string;
+    publicMediaCarousel: string;
+    publicMobileCta: string;
+    publicMediaPoster: string;
+    publicMediaProfileLink: string;
+    publicMediaUpload: string;
+    publicSegmented: string;
+    publicStoriesEditorial: string;
+    publicStoriesTripper: string;
+    publicStrip: string;
+    publicSubnav: string;
+    reorder: string;
+    saveStates: string;
+    statuses: string;
+    stepAtlas: string;
+    stepHeaderEssential: string;
+    stepHeaderOptional: string;
+    stepIdentity: string;
+    stepPerspective: string;
+    stepStories: string;
+    stepTravelerTypes: string;
+    storiesEmpty: string;
+    submitModal: string;
+  };
+  sampleCardBody: string;
+  sampleHint: string;
+  sections: Record<ProfileEditorCatalogSection, DesignSystemSectionDict>;
+}
+
 export interface DesignSystemDict {
   skip: string;
   navigation: string;
@@ -364,6 +445,9 @@ export interface DesignSystemDict {
     states: string;
     readOnly: string;
     readOnlyValue: string;
+    counter: string;
+    counterHint: string;
+    counterValue: string;
     disabled: string;
     disabledValue: string;
     pace: string;
@@ -473,6 +557,22 @@ export interface DesignSystemDict {
     nav: string;
     kpis: string;
     toggle: string;
+    profileEditor: string;
+    profileEditorBody: string;
+    profileEditorCta: string;
+  };
+  profileEditorCatalog: ProfileEditorCatalogDict;
+  profileEditorExample: {
+    backLink: string;
+    backToComponents: string;
+    body: string;
+    eyebrow: string;
+    metaDescription: string;
+    metaTitle: string;
+    title: string;
+    variantFull: string;
+    variantNew: string;
+    variants: string;
   };
   layout: {
     eyebrow: string;
@@ -1022,6 +1122,7 @@ export interface TripperDashboardDict {
     blogs: { title: string; description: string };
     notifications: { title: string; description: string };
     newDrop: { title: string; description: string };
+    profile: { title: string; description: string };
   };
   stats: {
     totalBookings: string;
@@ -3714,6 +3815,312 @@ export interface MaintenanceDict {
   title: string;
 }
 
+/** Copy for the Tripper OS profile editor (`/dashboard/tripper/profile`). */
+export interface TripperProfileEditorDict {
+  aside: {
+    reviewNoteBody: string;
+    reviewNoteTitle: string;
+    tips: Record<TripperProfileStepId, { body: string; title: string }>;
+  };
+  atlas: {
+    addCta: string;
+    addMeta: string;
+    addTitle: string;
+    city: { hint: string; label: string; placeholder: string };
+    country: { label: string; placeholder: string };
+    countryOnly: string;
+    duplicate: string;
+    eyebrow: string;
+    lead: string;
+    listEmpty: string;
+    listTitle: string;
+    localExpert: { hint: string; label: string };
+    localExpertBadge: string;
+    storyLabel: string;
+    storyNone: string;
+    storyPending: string;
+    timeline: { body: string; title: string }[];
+    timelineEyebrow: string;
+    timelineFootnote: string;
+    timelineTitle: string;
+    title: string;
+    visitedBadge: string;
+  };
+  common: {
+    idealSize: string;
+    imageFormats: string;
+    moveDown: string;
+    moveUp: string;
+    overLimit: string;
+    remove: string;
+    requiredHint: string;
+  };
+  footer: {
+    next: Record<TripperProfileStepId, string>;
+    previous: string;
+    stepOf: string;
+  };
+  header: {
+    eyebrow: string;
+    previewCta: string;
+    previewUnavailable: string;
+    submitCta: string;
+    subtitle: string;
+    title: string;
+  };
+  identity: {
+    city: { hint: string; label: string };
+    country: { label: string; placeholder: string };
+    cover: { change: string; hint: string; upload: string };
+    coverAlt: { help: string; hint: string; label: string };
+    coverCaption: { hint: string; label: string };
+    eyebrow: string;
+    headline: { hint: string; label: string };
+    imagesTitle: string;
+    lead: string;
+    name: { hint: string; label: string };
+    portrait: { change: string; hint: string; upload: string };
+    presentationTitle: string;
+    slug: { hint: string; invalid: string; label: string; prefix: string; rules: string };
+    title: string;
+  };
+  media: {
+    addCta: string;
+    addLabel: string;
+    eyebrow: string;
+    gallery: {
+      addHint: string;
+      addTitle: string;
+      after: string;
+      before: string;
+      captionLabel: string;
+      captionPlaceholder: string;
+      full: string;
+      intro: string;
+      meta: string;
+      orientationNote: string;
+      photoLabel: string;
+      specsPhotos: string;
+      specsVideos: string;
+      title: string;
+      videoLabel: string;
+    };
+    item: {
+      collapse: string;
+      expand: string;
+      invalidUrl: string;
+      posterChange: string;
+      posterHint: string;
+      show: string;
+      titleHint: string;
+      titleLabel: string;
+      untitled: string;
+      uploadVideo: string;
+      urlHints: Record<TripperProfileMediaProvider, string>;
+      urlLabels: Record<TripperProfileMediaProvider, string>;
+    };
+    itemsEmpty: string;
+    itemsFootnote: string;
+    itemsIntro: string;
+    itemsMeta: string;
+    itemsTitle: string;
+    lead: string;
+    linkedin: { label: string; placeholder: string };
+    otherTitle: string;
+    providers: Record<TripperProfileMediaProvider, string>;
+    title: string;
+    website: { label: string; placeholder: string };
+  };
+  nav: {
+    completeLabel: string;
+    essentialsCount: string;
+    essentialsHint: string;
+    essentialsLabel: string;
+    eyebrow: string;
+    incompleteLabel: string;
+    scopeNote: string;
+    steps: Record<TripperProfileStepId, { subtitle: string; title: string }>;
+  };
+  perspective: {
+    affinitiesHint: string;
+    affinitiesMeta: string;
+    affinitiesTitle: string;
+    affinityOptions: Record<TripperProfileAffinity, string>;
+    bioBody: { hint: string; label: string; minHint: string };
+    bioLead: { hint: string; label: string };
+    bioMore: { hint: string; label: string };
+    bioTitle: { hint: string; label: string };
+    cardTitle: string;
+    eyebrow: string;
+    lead: string;
+    title: string;
+  };
+  status: {
+    descriptions: Record<TripperProfileStatus, string>;
+    labels: Record<TripperProfileStatus, string>;
+    notSavedYet: string;
+    saveDraft: string;
+    saved: string;
+    saving: string;
+    unsaved: string;
+  };
+  stepBadges: { essential: string; optional: string };
+  stories: {
+    cardTitle: string;
+    emptyBody: string;
+    emptyCta: string;
+    emptyTitle: string;
+    eyebrow: string;
+    finalBody: string;
+    finalCta: string;
+    finalEyebrow: string;
+    finalTitle: string;
+    growNoteBody: string;
+    growNoteTitle: string;
+    lead: string;
+    maxReached: string;
+    meta: string;
+    next: string;
+    noResults: string;
+    pageInfo: string;
+    previous: string;
+    searchLabel: string;
+    searchPlaceholder: string;
+    title: string;
+  };
+  submitModal: {
+    body: string;
+    cancel: string;
+    confirmLabel: string;
+    eyebrow: string;
+    submit: string;
+    submitting: string;
+    title: string;
+  };
+  toasts: {
+    draftSaved: string;
+    fileTooLarge: string;
+    galleryFull: string;
+    invalidFileType: string;
+    saveFailed: string;
+    submitFailed: string;
+    submitted: string;
+    uploadFailed: string;
+  };
+  travelerTypes: {
+    eyebrow: string;
+    image: { hint: string; upload: string };
+    lead: string;
+    scopeNote: string;
+    show: string;
+    text: { hint: string; label: string };
+    title: string;
+    types: Record<TripperProfileTravelerType, { label: string; product: string }>;
+  };
+}
+
+/** Copy for the public Tripper profile (`/trippers/[slug]`, redesigned sections). */
+export interface TripperPublicProfileDict {
+  about: {
+    affinitiesLabel: string;
+    eyebrow: string;
+    more: string;
+    notebookCaption: string;
+    notebookLabel: string;
+  };
+  atlas: {
+    allCountries: string;
+    aside: string;
+    atlasEyebrow: string;
+    countryMarker: string;
+    credit: string;
+    disableMove: string;
+    disclaimer: string;
+    enableMove: string;
+    mapHint: string;
+    empty: string;
+    eyebrow: string;
+    filters: { expert: string; visited: string };
+    listTitle: string;
+    localExpert: string;
+    mapLabel: string;
+    noPins: string;
+    story: string;
+    summary: string;
+    title: string;
+    views: { list: string; map: string };
+    visited: string;
+    wholeCountry: string;
+    zoomIn: string;
+    zoomOut: string;
+    zoomReset: string;
+  };
+  carousel: { next: string; position: string; previous: string };
+  closing: { cta: string; eyebrow: string; payoff: string; title: string };
+  faq: {
+    aside: string;
+    eyebrow: string;
+    items: { answer: string; question: string }[];
+    title: string;
+  };
+  gallery: {
+    aside: string;
+    close: string;
+    enlarge: string;
+    eyebrow: string;
+    fallbackCaption: string;
+    title: string;
+  };
+  hero: {
+    aboutLink: string;
+    collection: string;
+    cta: string;
+    eyebrow: string;
+    mapLabel: string;
+    portraitAlt: string;
+  };
+  journeys: {
+    aside: string;
+    ctas: Record<TripperProfileTravelerType, string>;
+    eyebrow: string;
+    taglines: Record<TripperProfileTravelerType, string>;
+    title: string;
+    trust: string[];
+  };
+  media: {
+    aside: string;
+    eyebrow: string;
+    openProfile: string;
+    original: string;
+    play: string;
+    playerTitle: string;
+    providers: Record<TripperProfileMediaProvider, string>;
+    stop: string;
+    title: string;
+  };
+  stories: {
+    aside: string;
+    byline: string;
+    editorialAside: string;
+    editorialEyebrow: string;
+    editorialTitle: string;
+    eyebrow: string;
+    minutes: string;
+    read: string;
+    title: string;
+  };
+  strip: { atlasLink: string; label: string; promise: string };
+  mobileCta: { cta: string; text: string };
+  subnav: {
+    closeMenu: string;
+    cta: string;
+    label: string;
+    links: { about: string; atlas: string; journeys: string; stories: string };
+    menu: string;
+    navLabel: string;
+  };
+}
+
 export interface MarketingDictionary {
   socialImport: import("./SocialImportCopy").SocialImportCopy;
   tripTransport: {
@@ -5270,6 +5677,8 @@ export interface MarketingDictionary {
   travelerDashboard: TravelerDashboardDict;
   tripperDashboard: TripperDashboardDict;
   tripperProfilePage: TripperProfilePageDict;
+  tripperProfileEditor: TripperProfileEditorDict;
+  tripperPublicProfile: TripperPublicProfileDict;
   tripperExperiences: TripperExperiencesDict;
   tripperEarnings: TripperEarningsDict;
   tripperReviews: TripperReviewsDict;

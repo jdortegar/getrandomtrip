@@ -23,6 +23,7 @@ export function resolveTripperPageHeading(
   if (pathname.startsWith(base("/reviews"))) return headings.reviews;
   if (pathname.startsWith(base("/blog"))) return headings.blogs;
   if (pathname.startsWith(base("/notifications"))) return headings.notifications;
+  if (pathname.startsWith(base("/profile"))) return headings.profile;
   if (pathname.startsWith(base("/settings"))) {
     return headings.dashboard;
   }
