@@ -14,11 +14,13 @@ const m = vi.hoisted(() => ({
   sourceFind: vi.fn(),
   sourceUpdate: vi.fn(),
   sourceCount: vi.fn(),
+  transactionOptions: vi.fn(),
 }));
 vi.mock("@/lib/prisma", () => ({
   prisma: {
-    $transaction: (work: (tx: unknown) => unknown) =>
-      work({
+    $transaction: (work: (tx: unknown) => unknown, options?: unknown) => {
+      m.transactionOptions(options);
+      return work({
         socialApproval: {
           findUnique: m.approvalFind,
           update: m.approvalUpdate,
@@ -37,7 +39,8 @@ vi.mock("@/lib/prisma", () => ({
           update: m.jobUpdate,
           updateMany: m.jobUpdateMany,
         },
-      }),
+      });
+    },
   },
 }));
 vi.mock("../socialApprovals", () => ({ lockSocialApproval: m.lock }));
@@ -216,6 +219,10 @@ describe("queueSocialTranslation", () => {
   });
   it("queues one TRANSLATE job and marks the source queued", async () => {
     expect(await queueSocialTranslation(input)).toBe("queued");
+    expect(m.transactionOptions).toHaveBeenCalledWith({
+      maxWait: 5000,
+      timeout: 15000,
+    });
     expect(m.jobCreate).toHaveBeenCalledWith({
       data: {
         kind: "TRANSLATE",

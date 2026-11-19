@@ -2,6 +2,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
   find: vi.fn(),
+  findMany: vi.fn(),
   update: vi.fn(),
   approvalCount: vi.fn(),
   createMany: vi.fn(),
@@ -14,11 +15,15 @@ vi.mock("@/lib/prisma", () => ({
         socialSource: { findUnique: m.find, update: m.update },
         socialApproval: { count: m.approvalCount },
       }),
-    socialSource: { createMany: m.createMany },
+    socialSource: { createMany: m.createMany, findMany: m.findMany },
   },
 }));
 vi.mock("../socialApprovals", () => ({ lockSocialApproval: m.lock }));
-import { markSourcePosted, markSyncedThrough } from "../socialSources";
+import {
+  listSourceRows,
+  markSourcePosted,
+  markSyncedThrough,
+} from "../socialSources";
 
 const input = { sourceId: "src", messageTs: "9.9" };
 beforeEach(() => {
@@ -82,4 +87,11 @@ it("records the starting point as synced without touching existing rows", async 
     data: [expect.objectContaining({ igMediaId: "ig-1", status: "SYNCED" })],
     skipDuplicates: true,
   });
+});
+
+it("checks only Spanish sources, leaving imported English tests outside the queue", async () => {
+  await listSourceRows();
+  expect(m.findMany).toHaveBeenCalledWith(
+    expect.objectContaining({ where: { accountUsername: "getrandomtrip.es" } }),
+  );
 });

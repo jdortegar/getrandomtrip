@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { logSocialFailure } from "@/lib/social-approvals/socialDiagnostics";
 import { after, NextRequest, NextResponse } from "next/server";
 import {
   refreshSocialMessage,
@@ -242,7 +243,11 @@ async function notifyClicker(action: ApprovalAction, text: string) {
       method: "POST",
       redirect: "error",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ response_type: "ephemeral", text }),
+      body: JSON.stringify({
+        response_type: "ephemeral",
+        replace_original: false,
+        text,
+      }),
       signal: AbortSignal.timeout(5000),
     });
   } catch {
@@ -264,15 +269,7 @@ async function translate(action: ApprovalAction) {
             })
           : "disabled";
     } catch (error) {
-      console.error("[social-approvals] could not queue translation", {
-        sourceId: action.id,
-        code:
-          error instanceof Prisma.PrismaClientKnownRequestError
-            ? error.code
-            : error instanceof Error
-              ? error.name
-              : "unknown",
-      });
+      logSocialFailure("slack.queue", error, { sourceId: action.id });
       await notifyClicker(
         action,
         "Could not queue the translation. Try again.",

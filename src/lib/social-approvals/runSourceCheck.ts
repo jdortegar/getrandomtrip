@@ -1,3 +1,4 @@
+import { refreshSourceMessage } from "./refreshSocialMessage";
 import { getProfile } from "@/lib/instagram-recap/instagramClient";
 import {
   MIRRORED_STATUSES,
@@ -40,6 +41,23 @@ export async function advanceSourceQueue(now = Date.now()) {
   const known = new Set(rows.map((r) => r.igMediaId));
   const pending = rows.filter((r) => !MIRRORED_STATUSES.includes(r.status));
   if (pending.length) {
+    const source = pending[0];
+    if (
+      pending.length === 1 &&
+      source.status === "ANNOUNCED" &&
+      source.messageTs
+    ) {
+      // A failed click may have replaced the card. Restore its actions in place,
+      // never enqueue work or announce a later post as part of this repair.
+      try {
+        await refreshSourceMessage(source, "ANNOUNCED", undefined, {
+          onlyIfAnnounced: true,
+        });
+      } catch {
+        console.error("[social-sources] pending source card refresh failed");
+      }
+      return { announced: 0, reason: "IN_PROGRESS" };
+    }
     // A card Slack never confirmed has no buttons and would block the queue
     // forever: post it again once it is clearly stuck.
     const stuck = pending.find(

@@ -101,7 +101,8 @@ export async function queueSocialTranslation(input: {
       });
       return "queued";
     },
-    { maxWait: 500, timeout: 1500 },
+    // This work runs after the Slack ACK; allow bounded cold-database latency.
+    { maxWait: 5000, timeout: 15000 },
   );
 }
 

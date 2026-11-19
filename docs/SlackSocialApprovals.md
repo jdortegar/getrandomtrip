@@ -100,3 +100,18 @@ confirmation. Only bounded categories, HTTP statuses and allowlisted codes are
 logged, never messages, stacks, payloads, tokens, URLs, or captions. A failure
 at `slack.record` may follow a successful send: inspect Slack before any recovery.
 Diagnostics do not retry, regenerate, or change approval/publication state.
+
+Translation clicks are acknowledged before database work. Their atomic enqueue
+allows up to 5 seconds to acquire a transaction and 15 seconds to complete it;
+locks, uniqueness and the daily budget remain unchanged. Queue failures log
+`slack.queue` with a validated source ID and sanitized error code, and send a
+non-replacing ephemeral notice. The admin social-approvals page’s **Check for posts**
+control repairs the sole recorded
+`ANNOUNCED` Spanish card in place, restoring its buttons without queuing AI work,
+advancing the queue, or creating a duplicate message. If repair fails, it stays
+in progress; inspect logs rather than deleting source history.
+
+Source-card updates serialize across instances with a dedicated per-source lock,
+read the current database status inside it, and keep the lock through the bounded
+Slack update. Queue transactions remain network-free; a waiting card update reads
+the latest state rather than restoring obsolete action buttons.

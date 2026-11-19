@@ -1,5 +1,11 @@
 {
   "socialImport": {
+    "check": "Check for posts",
+    "checking": "Checking Spanish posts…",
+    "checked": "Check complete. Open Slack to review the queue. Nothing was translated or published.",
+    "checkDescription": "Check the Spanish queue or restore the current waiting post’s Slack buttons. This does not start a translation or publish to Instagram.",
+    "checkError": "The Spanish queue could not be checked. Please try again.",
+    "checkBaseline": "Set the sync starting point before checking for Spanish posts.",
     "title": "Create review from Instagram URL",
     "description": "Import one image post owned by @getrandomtrip.en. Generate an English draft in the app and send it to Slack for approval. This import cannot publish to Instagram.",
     "url": "Instagram post URL",

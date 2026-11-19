@@ -319,3 +319,34 @@ it("explains an out-of-order publish to the clicker", async () => {
   expect(body.text).toContain("same order");
   expect(dispatchSocialWorker).not.toHaveBeenCalled();
 });
+
+it("keeps the source card retryable when a post-ACK translation transaction fails", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.mocked(queueSocialTranslation).mockRejectedValue(
+    Object.assign(new Error("secret caption or token"), {
+      code: "P2028",
+      name: "secret",
+    }),
+  );
+  expect((await POST(request(translateClick))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(queueSocialTranslation).toHaveBeenCalledOnce();
+  expect(dispatchSocialWorker).not.toHaveBeenCalled();
+  expect(refreshSourceMessage).not.toHaveBeenCalled();
+  expect(fetch).toHaveBeenCalledOnce();
+  expect(
+    JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string),
+  ).toMatchObject({
+    response_type: "ephemeral",
+    replace_original: false,
+    text: "Could not queue the translation. Try again.",
+  });
+  expect(log).toHaveBeenCalledWith(
+    "[social-diagnostics]",
+    expect.objectContaining({ stage: "slack.queue", code: "P2028" }),
+  );
+  expect(JSON.stringify(log.mock.calls)).not.toContain("secret");
+  log.mockRestore();
+});

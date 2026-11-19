@@ -1,5 +1,11 @@
 {
   "socialImport": {
+    "check": "Revisar publicaciones",
+    "checking": "Revisando publicaciones en español…",
+    "checked": "Revisión completa. Abre Slack para ver la cola. No se tradujo ni publicó nada.",
+    "checkDescription": "Revisa la cola en español o restaura los botones de Slack de la publicación pendiente. Esto no inicia una traducción ni publica en Instagram.",
+    "checkError": "No se pudo revisar la cola en español. Inténtalo de nuevo.",
+    "checkBaseline": "Configura el punto de sincronización antes de revisar publicaciones en español.",
     "title": "Crear revisión desde una URL de Instagram",
     "description": "Importa una publicación de una imagen de @getrandomtrip.en. La aplicación genera un borrador en inglés y lo envía a Slack para aprobación. Esta importación no puede publicar en Instagram.",
     "url": "URL de la publicación de Instagram",

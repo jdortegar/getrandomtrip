@@ -6,12 +6,14 @@ export type SocialDiagnosticStage =
   | "import.persist"
   | "import.dispatch"
   | "worker.run"
+  | "slack.queue"
   | "slack.post"
   | "slack.parse"
   | "slack.accept"
   | "slack.record";
 interface DiagnosticContext {
   requestId?: string;
+  sourceId?: string;
   jobId?: string;
   reviewId?: string;
   httpStatus?: number;
@@ -69,7 +71,7 @@ export function logSocialFailure(
       httpStatus <= 599
     )
       data.httpStatus = httpStatus;
-    for (const key of ["requestId", "jobId", "reviewId"] as const) {
+    for (const key of ["requestId", "sourceId", "jobId", "reviewId"] as const) {
       const id = context[key];
       if (typeof id === "string" && ID.test(id)) data[key] = id;
     }
