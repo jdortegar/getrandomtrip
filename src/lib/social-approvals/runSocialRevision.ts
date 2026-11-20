@@ -59,6 +59,7 @@ type Checkpoint = (data: {
 
 const ERROR_CODES = new Set([
   "STALE_SOURCE",
+  "TRANSLATION_MODE_INVALID",
   "LEASE_LOST",
   "AI_IMAGE_UNCONFIGURED",
   "AI_CAPTION_INVALID",
@@ -161,6 +162,17 @@ async function reviseJob(
 ) {
   const review = job.review;
   if (!review) throw new Error("STALE_SOURCE");
+  if (
+    !["full", "caption"].includes(review.translationMode ?? "full") ||
+    !["full", "caption"].includes(job.translationMode ?? "full")
+  )
+    throw new Error("TRANSLATION_MODE_INVALID");
+  if (
+    (review.translationMode === "caption" ||
+      job.translationMode === "caption") &&
+    job.target !== "caption"
+  )
+    throw new Error("TRANSLATION_MODE_INVALID");
   const current = await prisma.socialApproval.findUnique({
     where: { id: review.id },
   });
@@ -228,10 +240,14 @@ async function translateJob(
 ) {
   const source = job.source;
   if (!source) throw new Error("STALE_SOURCE");
+  const mode = job.translationMode ?? "full";
+  if (mode !== "full" && mode !== "caption")
+    throw new Error("TRANSLATION_MODE_INVALID");
+  const captionOnly = mode === "caption";
   const imported = source.accountUsername === "getrandomtrip.en";
   const account = imported ? socialImportConfig() : socialSourceConfig();
   if (!account) throw new Error("SOURCE_UNCONFIGURED");
-  if (!process.env.OPENAI_SOCIAL_IMAGE_MODEL)
+  if (!captionOnly && !process.env.OPENAI_SOCIAL_IMAGE_MODEL)
     throw new Error("AI_IMAGE_UNCONFIGURED");
   if (imported) {
     const profile = await getProfile(account.token);
@@ -241,12 +257,21 @@ async function translateJob(
   const locks = parseCopyLocks(source.copyLocks);
   const urls = await getSourceSlides(account.token, source.igMediaId);
   const images = await Promise.all(urls.map(downloadSourceImage));
+  if (
+    captionOnly &&
+    images.some(
+      (image) => image.type !== "image/jpeg" && image.type !== "image/png",
+    )
+  )
+    throw new Error("SOURCE_MEDIA_INVALID");
   let plan = job.transcreation as Transcreation | null;
   let caption = job.generatedCaption;
   if (!plan || !caption || plan.slides?.length !== images.length) {
-    const result = Object.keys(locks).length
-      ? await transcreatePost(source.caption, images, locks)
-      : await transcreatePost(source.caption, images);
+    const result = captionOnly
+      ? await transcreatePost(source.caption, images, locks, "caption")
+      : Object.keys(locks).length
+        ? await transcreatePost(source.caption, images, locks)
+        : await transcreatePost(source.caption, images);
     plan = result;
     caption = result.caption;
     await checkpoint({
@@ -264,6 +289,15 @@ async function translateJob(
   for (let index = done.length; index < images.length; index += 1) {
     const image = images[index];
     const copy = plan.slides[index];
+    if (captionOnly) {
+      if (image.type !== "image/jpeg" && image.type !== "image/png")
+        throw new Error("SOURCE_MEDIA_INVALID");
+      done.push(
+        await saveSocialArtwork(job.id, image.bytes, index + 1, image.type),
+      );
+      await checkpoint({ generatedImageUrls: [...done] });
+      continue;
+    }
     // Slides without Spanish text keep the original, normalized to JPEG.
     const url =
       copy.replacements.length || copy.lockedHeadline
@@ -287,6 +321,7 @@ async function translateJob(
     reviewKey: `instagram-${shortcodeOf(source.permalink) ?? source.igMediaId}`,
     requestId: `translated-${job.id}`,
     caption: locks.caption ?? caption,
+    ...(captionOnly ? { translationMode: "caption" } : {}),
     imageUrl: done[0],
     imageUrls: done,
     ...(imported ? {} : { sourceId: source.id }),
@@ -341,6 +376,11 @@ async function postReviewNotes(
 async function publishJob(job: ClaimedJob, checkpoint: Checkpoint) {
   const review = job.review;
   if (!review) throw new Error("STALE_SOURCE");
+  if (
+    !["full", "caption"].includes(review.translationMode ?? "full") ||
+    !["full", "caption"].includes(job.translationMode ?? "full")
+  )
+    throw new Error("TRANSLATION_MODE_INVALID");
   const target = socialTargetConfig();
   if (!target) throw new Error("PUBLISH_DISABLED");
   const current = await prisma.socialApproval.findUnique({

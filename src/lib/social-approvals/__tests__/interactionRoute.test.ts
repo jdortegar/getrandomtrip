@@ -223,6 +223,7 @@ it("Translate this post queues one translation, marks the card and dispatches th
   await Promise.all(mocks.tasks.map((task) => task()));
   expect(queueSocialTranslation).toHaveBeenCalledWith({
     sourceId: "src",
+    translationMode: "full",
     user: "U1",
     messageTs: "123.456",
   });
@@ -349,4 +350,19 @@ it("keeps the source card retryable when a post-ACK translation transaction fail
   );
   expect(JSON.stringify(log.mock.calls)).not.toContain("secret");
   log.mockRestore();
+});
+
+it("caption-only click queues the explicit mode after Slack acknowledgement", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  vi.mocked(queueSocialTranslation).mockResolvedValue("queued");
+  const click = {
+    ...translateClick,
+    actions: [{ action_id: "social_translate_caption", value: "src" }],
+  };
+  expect((await POST(request(click))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(queueSocialTranslation).toHaveBeenCalledWith(
+    expect.objectContaining({ sourceId: "src", translationMode: "caption" }),
+  );
 });

@@ -108,3 +108,15 @@ it("rejects slide entries that are not slide numbers", () => {
   expect(parseSocialFeedback(withSlides("image", "two"), config)).toBeNull();
   expect(parseSocialFeedback(withSlides("image", "11"), config)).toBeNull();
 });
+
+it("caption-only reviews offer only caption feedback", () => {
+  const view = feedbackModal(action, "secret", true);
+  const target = view.blocks.find(
+    (b) => "block_id" in b && b.block_id === "target",
+  );
+  expect(target).toMatchObject({
+    element: { options: [{ value: "caption" }] },
+  });
+  expect(JSON.stringify(view)).not.toContain('"value":"image"');
+  expect(JSON.stringify(view)).not.toContain('"value":"both"');
+});

@@ -1220,6 +1220,7 @@ model SocialApproval {
   createdAt   DateTime           @default(now())
   decision    String?
   copyLocks   Json?
+  translationMode String @default("full")
   revisionJob SocialRevisionJob?
 
   @@unique([reviewKey, revision])
@@ -1231,6 +1232,7 @@ model SocialApproval {
 model SocialRevisionJob {
   id                 String          @id @default(cuid())
   kind               String          @default("REVISE")
+  translationMode    String          @default("full")
   reviewId           String?         @unique
   review             SocialApproval? @relation(fields: [reviewId], references: [id], onDelete: Restrict)
   sourceId           String?         @unique

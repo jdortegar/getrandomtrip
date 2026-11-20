@@ -238,3 +238,21 @@ it("never resumes a publish that already reached media_publish without a result"
     }),
   );
 });
+
+it("publishes approved caption-only reviews using original artwork snapshots in order", async () => {
+  m.claim.mockResolvedValue({
+    ...job,
+    translationMode: "caption",
+    target: "both",
+    review: { ...review, translationMode: "caption" },
+  });
+  await runSocialRevision();
+  expect(m.load).toHaveBeenNthCalledWith(1, review.imageUrls[0]);
+  expect(m.load).toHaveBeenNthCalledWith(2, review.imageUrls[1]);
+  expect(m.publish).toHaveBeenCalledOnce();
+  expect(m.approvalUpdate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({ status: "PUBLISHED" }),
+    }),
+  );
+});

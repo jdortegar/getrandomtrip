@@ -276,3 +276,70 @@ it("imports EN-owned selected copy into a fresh review that cannot publish", asy
   });
   expect(m.post).toHaveBeenCalledOnce();
 });
+
+it("caption-only preserves original bytes and order without an image model or edit", async () => {
+  vi.stubEnv("OPENAI_SOCIAL_IMAGE_MODEL", "");
+  m.claim.mockResolvedValue({ ...job, translationMode: "caption" });
+  await runSocialRevision();
+  expect(m.translate).not.toHaveBeenCalled();
+  expect(m.save).toHaveBeenNthCalledWith(
+    1,
+    "job",
+    new Uint8Array([1]),
+    1,
+    "image/jpeg",
+  );
+  expect(m.save).toHaveBeenNthCalledWith(
+    2,
+    "job",
+    new Uint8Array([2]),
+    2,
+    "image/jpeg",
+  );
+  expect(m.create).toHaveBeenCalledWith(
+    expect.objectContaining({
+      translationMode: "caption",
+      caption: "Three steps.",
+      imageUrls: ["https://app.test/s1", "https://app.test/s2"],
+    }),
+  );
+});
+
+it("caption-only resumes original snapshots without repeating completed slides or caption", async () => {
+  m.claim.mockResolvedValue({
+    ...job,
+    translationMode: "caption",
+    generatedCaption: plan.caption,
+    transcreation: plan,
+    generatedImageUrls: ["https://app.test/s1"],
+  });
+  await runSocialRevision();
+  expect(m.transcreate).not.toHaveBeenCalled();
+  expect(m.translate).not.toHaveBeenCalled();
+  expect(m.save).toHaveBeenCalledExactlyOnceWith(
+    "job",
+    new Uint8Array([2]),
+    2,
+    "image/jpeg",
+  );
+});
+
+it("rejects an unknown persisted translation mode before generation", async () => {
+  m.claim.mockResolvedValue({ ...job, translationMode: "evil" });
+  await runSocialRevision();
+  expect(m.transcreate).not.toHaveBeenCalled();
+  expect(m.save).not.toHaveBeenCalled();
+  expect(m.create).not.toHaveBeenCalled();
+});
+
+it("caption-only rejects unsupported original format before paid generation", async () => {
+  m.claim.mockResolvedValue({ ...job, translationMode: "caption" });
+  m.download.mockResolvedValue({
+    bytes: new Uint8Array([1]),
+    type: "image/webp",
+  });
+  await runSocialRevision();
+  expect(m.transcreate).not.toHaveBeenCalled();
+  expect(m.translate).not.toHaveBeenCalled();
+  expect(m.create).not.toHaveBeenCalled();
+});

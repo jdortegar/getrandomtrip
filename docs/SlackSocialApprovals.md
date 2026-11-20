@@ -115,3 +115,15 @@ Source-card updates serialize across instances with a dedicated per-source lock,
 read the current database status inside it, and keep the lock through the bounded
 Slack update. Queue transactions remain network-free; a waiting card update reads
 the latest state rather than restoring obsolete action buttons.
+
+### Caption-only translations
+
+Source cards offer **Translate caption only** alongside the full translation action.
+This transcreates the caption with the same brand policy and retains the original
+JPEG/PNG artwork as stable, ordered snapshots; it never invokes image generation.
+Other source formats fail closed rather than silently converting the artwork.
+The first accepted choice is durable; clicking the other mode cannot replace it.
+Caption-only reviews accept caption feedback only. Approval and the separate
+publication action are unchanged; neither translation action publishes anything.
+Deploy migration `20261120145000_social_caption_only` to the target database
+before deploying this code. Existing jobs/reviews retain the full mode by default.

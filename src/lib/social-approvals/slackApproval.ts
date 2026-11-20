@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 export interface ApprovalContent {
   id: string;
   revision: number;
+  translationMode?: string;
   sourceId?: string | null;
   caption: string;
   imageUrl: string;
@@ -92,7 +93,7 @@ export function approvalMessage(
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `*@getrandomtrip.en* · Revision ${row.revision}\n${status}${row.decidedBy ? ` (<@${row.decidedBy}>)` : ""}`,
+          text: `*@getrandomtrip.en* · Revision ${row.revision}\n${status}${row.translationMode === "caption" ? "\nCaption translated · Original artwork unchanged." : ""}${row.decidedBy ? ` (<@${row.decidedBy}>)` : ""}`,
         },
       },
       ...slideUrls(row).map((url, index, all) => ({
@@ -169,6 +170,7 @@ export interface ApprovalAction {
     | "TRANSLATE"
     | "PUBLISH"
     | "MARK_POSTED";
+  translationMode?: "full" | "caption";
   responseUrl: string;
 }
 
@@ -176,6 +178,7 @@ const ACTIONS: Record<string, ApprovalAction["status"]> = {
   social_approve: "APPROVED",
   social_changes: "CHANGES_REQUESTED",
   social_translate: "TRANSLATE",
+  social_translate_caption: "TRANSLATE",
   social_publish: "PUBLISH",
   social_mark_posted: "MARK_POSTED",
 };
@@ -227,5 +230,13 @@ export function parseApprovalAction(
     user: p.user.id,
     messageTs: p.message.ts,
     status,
+    ...(status === "TRANSLATE"
+      ? {
+          translationMode:
+            a.action_id === "social_translate_caption"
+              ? ("caption" as const)
+              : ("full" as const),
+        }
+      : {}),
   };
 }

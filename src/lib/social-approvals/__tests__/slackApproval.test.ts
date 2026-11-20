@@ -183,3 +183,26 @@ it("never offers publication for an unlinked imported review even when publishin
   });
   expect(JSON.stringify(message)).not.toContain('"action_id":"social_publish"');
 });
+
+it("parses the caption-only action as an explicit mode, not a different source", () => {
+  const p = payload();
+  p.actions = [{ action_id: "social_translate_caption", value: "src" }];
+  expect(parseApprovalAction(p, config)).toMatchObject({
+    id: "src",
+    status: "TRANSLATE",
+    translationMode: "caption",
+  });
+  p.actions = [{ action_id: "social_translate", value: "src" }];
+  expect(parseApprovalAction(p, config)?.translationMode).toBe("full");
+});
+
+it("labels caption-only artwork unchanged without bypassing approval", () => {
+  const message = approvalMessage({
+    ...approved,
+    status: "PENDING",
+    translationMode: "caption",
+  });
+  expect(JSON.stringify(message)).toContain("Original artwork unchanged");
+  expect(actionIds(message)).toContain("social_approve");
+  expect(actionIds(message)).not.toContain("social_publish");
+});

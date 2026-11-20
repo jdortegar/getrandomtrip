@@ -323,3 +323,102 @@ describe("queueSocialPublish", () => {
     expect(m.jobCreate).not.toHaveBeenCalled();
   });
 });
+
+it("rejects artwork feedback on a caption-only draft before queuing", async () => {
+  m.approvalFind.mockResolvedValue({ ...source, translationMode: "caption" });
+  expect(await queueSocialRevision(feedback)).toBe("stale");
+  expect(m.jobCreate).not.toHaveBeenCalled();
+});
+
+it("does not reuse a full-translation job for a caption-only click", async () => {
+  m.sourceFind.mockResolvedValue({
+    id: "src",
+    messageTs: "123",
+    status: "ANNOUNCED",
+  });
+  m.jobFind.mockResolvedValue({ translationMode: "full" });
+  expect(
+    await queueSocialTranslation({
+      sourceId: "src",
+      user: "U",
+      messageTs: "123",
+      translationMode: "caption",
+    }),
+  ).toBe("stale");
+  expect(m.jobCreate).not.toHaveBeenCalled();
+});
+
+it("persists caption-only choice and repeats it idempotently", async () => {
+  m.sourceFind.mockResolvedValue({
+    id: "src",
+    messageTs: "123",
+    status: "ANNOUNCED",
+  });
+  const input = {
+    sourceId: "src",
+    user: "U",
+    messageTs: "123",
+    translationMode: "caption" as const,
+  };
+  expect(await queueSocialTranslation(input)).toBe("queued");
+  expect(m.jobCreate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      data: expect.objectContaining({ translationMode: "caption" }),
+    }),
+  );
+  m.jobFind.mockResolvedValue({ translationMode: "caption" });
+  expect(await queueSocialTranslation(input)).toBe("queued");
+  expect(
+    await queueSocialTranslation({ ...input, translationMode: "full" }),
+  ).toBe("stale");
+  expect(m.jobCreate).toHaveBeenCalledOnce();
+});
+
+it("rejects an invalid incoming translation mode without DB writes", async () => {
+  expect(
+    await queueSocialTranslation({
+      sourceId: "src",
+      user: "U",
+      messageTs: "123",
+      translationMode: "evil" as "full",
+    }),
+  ).toBe("stale");
+  expect(m.sourceFind).not.toHaveBeenCalled();
+  expect(m.jobCreate).not.toHaveBeenCalled();
+});
+
+it("preserves caption-only mode and original slides through revisions, rejecting substituted artwork", async () => {
+  const captionReview = {
+    ...source,
+    translationMode: "caption",
+    imageUrl: "a",
+    imageUrls: ["a", "b"],
+    status: "CHANGES_REQUESTED",
+  };
+  m.jobFind.mockResolvedValue({
+    id: "job",
+    review: captionReview,
+    target: "caption",
+    status: "RUNNING",
+    leaseToken: "lease",
+  });
+  m.approvalFind.mockResolvedValue(captionReview);
+  m.approvalCreate.mockResolvedValue({ id: "new" });
+  expect(
+    await finishGeneratedSocialRevision("job", "lease", "new caption", [
+      "changed",
+      "b",
+    ]),
+  ).toBeNull();
+  expect(m.approvalCreate).not.toHaveBeenCalled();
+  await finishGeneratedSocialRevision("job", "lease", "new caption", [
+    "a",
+    "b",
+  ]);
+  expect(m.approvalCreate).toHaveBeenCalledWith({
+    data: expect.objectContaining({
+      translationMode: "caption",
+      imageUrls: ["a", "b"],
+    }),
+  });
+});

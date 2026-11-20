@@ -89,6 +89,15 @@ export function sourceMessage(
                         style: "primary",
                         value: source.id,
                       },
+                      {
+                        type: "button",
+                        action_id: "social_translate_caption",
+                        text: {
+                          type: "plain_text",
+                          text: "Translate caption only",
+                        },
+                        value: source.id,
+                      },
                     ]
                   : []),
                 {

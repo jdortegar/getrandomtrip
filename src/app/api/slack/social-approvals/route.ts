@@ -113,7 +113,11 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           trigger_id: payload.trigger_id,
-          view: feedbackModal(action, config.secret),
+          view: feedbackModal(
+            action,
+            config.secret,
+            source.translationMode === "caption",
+          ),
         }),
         signal: AbortSignal.timeout(1500),
       });
@@ -264,6 +268,7 @@ async function translate(action: ApprovalAction) {
         process.env.SLACK_SOCIAL_AI_ENABLED === "true"
           ? await queueSocialTranslation({
               sourceId: action.id,
+              translationMode: action.translationMode,
               user: action.user,
               messageTs: action.messageTs,
             })

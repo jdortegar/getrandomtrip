@@ -115,3 +115,18 @@ it("sends locked headline separately to image editing, never as caption rational
   expect(m.edit.mock.calls[0][2]).toContain('"GET LOST TO FIND YOURSELF"');
   expect(m.edit.mock.calls[0][2]).toContain("locked exact text");
 });
+
+it("caption-only uses the brand policy but discards image replacements and artwork locks", async () => {
+  const result = await transcreatePost(
+    "Tres pasos.",
+    [
+      { bytes: new Uint8Array([1]), type: "image/jpeg" },
+      { bytes: new Uint8Array([2]), type: "image/jpeg" },
+    ],
+    { artworkHeadline: "DO NOT APPLY" },
+    "caption",
+  );
+  expect(m.complete.mock.calls[0][0]).toContain("CAPTION ONLY");
+  expect(result.slides).toEqual([{ replacements: [] }, { replacements: [] }]);
+  expect(m.edit).not.toHaveBeenCalled();
+});
