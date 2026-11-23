@@ -25,25 +25,27 @@ const payment: TripPaymentSummary = {
   paidAt: "2026-10-08T12:05:00.000Z",
 };
 
-function render(receiptHref?: string) {
+function render(receiptHref?: string, perPerson?: number) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
   act(() =>
     root.render(
-      <TripPaymentCard copy={es.tripDetail} locale="es" payment={payment} receiptHref={receiptHref} />,
+      <TripPaymentCard copy={es.tripDetail} locale="es" payment={payment} perPerson={perPerson} receiptHref={receiptHref} />,
     ),
   );
 }
 
 it("leads with the amount and summarizes when and how it was paid", () => {
-  render("/api/trips/trip-1/receipt");
+  render("/api/trips/trip-1/receipt", 350);
 
   const text = container.textContent ?? "";
   expect(text).toContain(es.tripDetail.paymentStatus.APPROVED);
   expect(text).toContain("USD");
   expect(text).toContain("700,00");
   expect(text).toMatch(/Pagado el 8 oct 2026 con Stripe/);
+  expect(text).toContain(es.tripDetail.perPersonLabel);
+  expect(text).toContain("USD 350,00");
   // Full reference, truncated by CSS rather than sliced.
   expect(text).toContain("pi_3U0TuN50kABCDEF");
 
@@ -53,7 +55,8 @@ it("leads with the amount and summarizes when and how it was paid", () => {
   expect(receipt?.textContent).toContain(es.tripDetail.downloadReceipt);
 });
 
-it("hides the receipt action for an unsettled payment", () => {
+it("hides the receipt action and per-person line for an unsettled payment", () => {
   render();
   expect(container.querySelector("a")).toBeNull();
+  expect(container.textContent).not.toContain(es.tripDetail.perPersonLabel);
 });

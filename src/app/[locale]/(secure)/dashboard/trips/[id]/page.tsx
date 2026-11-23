@@ -264,6 +264,9 @@ function TripDetailsContent() {
     !isCompanion && trip.payment?.status === "APPROVED";
   const buyerDocumentsReadOnly = trip.status === "CANCELLED";
 
+  const paymentSettled =
+    !!trip.payment &&
+    SETTLED_PAYMENT_STATUSES.includes(trip.payment.status as PaymentStatus);
   const price = getTripCostDisplay({
     ...trip,
     addons: addonsList,
@@ -464,7 +467,10 @@ function TripDetailsContent() {
                   )}
                 />
 
-                {!isCompanion && <TripCostSummary copy={copy} price={price} />}
+                {/* The estimate until the trip is paid; then the payment card says it. */}
+                {!isCompanion && !paymentSettled && (
+                  <TripCostSummary copy={copy} price={price} />
+                )}
 
                 {/* Payment (never sent to companions) */}
                 {!isCompanion && trip.payment && (
@@ -472,10 +478,9 @@ function TripDetailsContent() {
                     copy={copy}
                     locale={locale}
                     payment={trip.payment}
+                    perPerson={paymentSettled ? price.perPerson : undefined}
                     receiptHref={
-                      SETTLED_PAYMENT_STATUSES.includes(
-                        trip.payment.status as PaymentStatus,
-                      )
+                      paymentSettled
                         ? `/api/trips/${trip.id}/receipt`
                         : undefined
                     }

@@ -15,9 +15,16 @@ interface TripPaymentCardProps {
     | "paymentIdLabel"
     | "paymentInfoTitle"
     | "paymentStatus"
+    | "perPersonLabel"
   >;
   locale: string;
   payment: TripPaymentSummary;
+  /**
+   * Paid amount per traveler (major units). Shown for settled payments,
+   * which replace the cost summary card; never a recomputed breakdown, as
+   * no line items are stored with the payment.
+   */
+  perPerson?: number;
   /** Link to the receipt route; omit when the payment isn't settled. */
   receiptHref?: string;
 }
@@ -32,13 +39,15 @@ export function TripPaymentCard({
   copy,
   locale,
   payment,
+  perPerson,
   receiptHref,
 }: TripPaymentCardProps) {
   const currency = (payment.currency ?? "USD").toUpperCase();
-  const amount = new Intl.NumberFormat(locale, {
+  const number = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(payment.amount);
+  });
+  const amount = number.format(payment.amount);
   const paidOn = new Date(
     payment.paidAt ?? payment.createdAt,
   ).toLocaleDateString(locale, {
@@ -77,6 +86,15 @@ export function TripPaymentCard({
             {interpolateTemplate(copy.paidOn, { date: paidOn, provider })}
           </p>
         </div>
+
+        {perPerson !== undefined ? (
+          <div className="flex items-baseline justify-between gap-4 border-t border-gray-200 pt-4 text-sm">
+            <span className="text-neutral-600">{copy.perPersonLabel}</span>
+            <span className="font-medium text-ink">
+              {currency} {number.format(perPerson)}
+            </span>
+          </div>
+        ) : null}
 
         {payment.providerPaymentId ? (
           <div className="border-t border-gray-200 pt-4">

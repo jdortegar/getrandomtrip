@@ -122,12 +122,24 @@ it("offers Save to a companion whose own details are incomplete, even after the 
   }
 });
 
-it("still shows the buyer the cost summary and payment info", async () => {
-  const { container, unmount } = await mount(buyerTrip);
+it("shows an unpaid buyer the cost estimate and no payment card", async () => {
+  const { container, unmount } = await mount({ ...buyerTrip, status: "PENDING_PAYMENT", payment: undefined });
   try {
     const text = container.textContent ?? "";
     expect(text).toContain(en.tripDetail.costsTitle);
+    expect(text).not.toContain(en.tripDetail.paymentInfoTitle);
+  } finally {
+    unmount();
+  }
+});
+
+it("still shows the buyer the payment info, which replaces the cost summary once paid", async () => {
+  const { container, unmount } = await mount(buyerTrip);
+  try {
+    const text = container.textContent ?? "";
     expect(text).toContain(en.tripDetail.paymentInfoTitle);
+    expect(text).toContain(en.tripDetail.perPersonLabel);
+    expect(text).not.toContain(en.tripDetail.costsTitle);
   } finally {
     unmount();
   }
