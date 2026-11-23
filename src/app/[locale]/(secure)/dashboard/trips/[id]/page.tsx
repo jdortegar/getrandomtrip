@@ -474,8 +474,10 @@ function TripDetailsContent() {
 
                 {/* Payment Info (never sent to companions) */}
                 {!isCompanion && trip.payment && (
-                  <PanelCard
-                    meta={
+                  <PanelCard title={copy.paymentInfoTitle}>
+                    <div className="space-y-3">
+                      {/* In the body, not PanelCard's meta slot: the meta
+                          column is capped at 45% and would wrap the badge. */}
                       <StatusBadge
                         status={trip.payment.status}
                         label={labelFor(
@@ -484,11 +486,7 @@ function TripDetailsContent() {
                         )}
                         variant="payment"
                       />
-                    }
-                    title={copy.paymentInfoTitle}
-                  >
-                    <div>
-                      <div className="space-y-2 text-sm">
+                      <div className="space-y-2 border-t border-gray-200 pt-3 text-sm">
                         <div className="flex justify-between">
                           <span className="text-neutral-600">
                             {copy.amountLabel}
