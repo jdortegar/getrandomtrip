@@ -12,7 +12,7 @@ import { TripDetailsHeader } from "@/components/app/dashboard/traveler/TripDetai
 import { Button } from "@/components/ui/Button";
 import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
-import { Loader2, ArrowLeft, Star } from "lucide-react";
+import { Download, Loader2, ArrowLeft, Star } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
@@ -36,6 +36,8 @@ import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
 import { PanelCard } from "@/components/common/PanelCard";
+import type { PaymentStatus } from "@prisma/client";
+import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
 import { TripStatusBar } from "@/components/app/dashboard/traveler/TripStatusBar";
 import { TripSetupSummary } from "@/components/app/dashboard/traveler/TripSetupSummary";
 import { TripTimeline } from "@/components/app/dashboard/traveler/TripTimeline";
@@ -521,10 +523,30 @@ function TripDetailsContent() {
                           <span className="text-ink">
                             {new Date(
                               trip.payment.createdAt,
-                            ).toLocaleDateString()}
+                            ).toLocaleDateString(locale)}
                           </span>
                         </div>
                       </div>
+                      {SETTLED_PAYMENT_STATUSES.includes(
+                        trip.payment.status as PaymentStatus,
+                      ) && (
+                        <Button
+                          asChild
+                          className="w-full"
+                          size="sm"
+                          variant="secondary"
+                        >
+                          {/* Redirects to Stripe's hosted receipt, which has its own PDF download. */}
+                          <a
+                            href={`/api/trips/${trip.id}/receipt`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            <Download aria-hidden className="h-4 w-4" />
+                            {copy.downloadReceipt}
+                          </a>
+                        </Button>
+                      )}
                     </div>
                   </PanelCard>
                 )}

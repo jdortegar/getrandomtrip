@@ -7458,6 +7458,7 @@
     "perPersonLabel": "Per person",
     "estimateNote": "(estimated)",
     "paymentInfoTitle": "Payment Information",
+    "downloadReceipt": "Download receipt",
     "paymentStatus": {
       "APPROVED": "Payment Approved",
       "COMPLETED": "Payment Completed",

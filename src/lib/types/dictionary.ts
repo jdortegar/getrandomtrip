@@ -3568,6 +3568,8 @@ export interface TripDetailDict {
   perPersonLabel: string;
   estimateNote: string;
   paymentInfoTitle: string;
+  /** Payment card action: opens the Stripe receipt (PDF download there). */
+  downloadReceipt: string;
   paymentStatus: {
     APPROVED: string;
     COMPLETED: string;
