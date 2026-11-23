@@ -7459,6 +7459,7 @@
     "estimateNote": "(estimado)",
     "paymentInfoTitle": "Información de Pago",
     "downloadReceipt": "Descargar recibo",
+    "paidOn": "Pagado el {{date}} con {{provider}}",
     "paymentStatus": {
       "APPROVED": "Pago Aprobado",
       "COMPLETED": "Pago Completado",

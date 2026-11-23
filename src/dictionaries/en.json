@@ -7459,6 +7459,7 @@
     "estimateNote": "(estimated)",
     "paymentInfoTitle": "Payment Information",
     "downloadReceipt": "Download receipt",
+    "paidOn": "Paid on {{date}} with {{provider}}",
     "paymentStatus": {
       "APPROVED": "Payment Approved",
       "COMPLETED": "Payment Completed",

@@ -12,7 +12,7 @@ import { TripDetailsHeader } from "@/components/app/dashboard/traveler/TripDetai
 import { Button } from "@/components/ui/Button";
 import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
-import { Download, Loader2, ArrowLeft, Star } from "lucide-react";
+import { Loader2, ArrowLeft, Star } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
@@ -25,7 +25,7 @@ import {
 import { BuyerTravelDocumentsSection } from "@/components/app/travelers/BuyerTravelDocumentsSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
-import type { TripDetailsData } from "@/types/tripDetails";
+import type { TripDetailsData, TripPaymentSummary } from "@/types/tripDetails";
 import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
@@ -36,6 +36,7 @@ import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
 import { PanelCard } from "@/components/common/PanelCard";
+import { TripPaymentCard } from "@/components/app/dashboard/traveler/TripPaymentCard";
 import type { PaymentStatus } from "@prisma/client";
 import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
 import { TripStatusBar } from "@/components/app/dashboard/traveler/TripStatusBar";
@@ -93,16 +94,7 @@ interface TripDetails extends BuyerDocumentsSnapshot {
   customerFeedback?: string | null;
 
   // Relations
-  payment?: {
-    id: string;
-    status: string;
-    amount: number;
-    currency?: string;
-    provider: string;
-    providerPaymentId?: string;
-    createdAt: string;
-    paidAt?: string | null;
-  };
+  payment?: TripPaymentSummary & { id: string };
 
   createdAt: string;
   updatedAt: string;
@@ -474,81 +466,20 @@ function TripDetailsContent() {
 
                 {!isCompanion && <TripCostSummary copy={copy} price={price} />}
 
-                {/* Payment Info (never sent to companions) */}
+                {/* Payment (never sent to companions) */}
                 {!isCompanion && trip.payment && (
-                  <PanelCard title={copy.paymentInfoTitle}>
-                    <div className="space-y-3">
-                      {/* In the body, not PanelCard's meta slot: the meta
-                          column is capped at 45% and would wrap the badge. */}
-                      <StatusBadge
-                        status={trip.payment.status}
-                        label={labelFor(
-                          copy.paymentStatus,
-                          trip.payment.status,
-                        )}
-                        variant="payment"
-                      />
-                      <div className="space-y-2 border-t border-gray-200 pt-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-neutral-600">
-                            {copy.amountLabel}
-                          </span>
-                          <span className="font-semibold text-ink">
-                            {trip.payment.currency ?? "USD"}{" "}
-                            {(trip.payment?.amount ?? 0).toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-600">
-                            {copy.providerLabel}
-                          </span>
-                          <span className="font-medium text-ink capitalize">
-                            {trip.payment.provider}
-                          </span>
-                        </div>
-                        {trip.payment.providerPaymentId && (
-                          <div className="flex justify-between">
-                            <span className="text-neutral-600">
-                              {copy.paymentIdLabel}
-                            </span>
-                            <span className="font-mono text-xs text-ink">
-                              {trip.payment.providerPaymentId.slice(0, 12)}...
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex justify-between">
-                          <span className="text-neutral-600">
-                            {copy.dateLabel}
-                          </span>
-                          <span className="text-ink">
-                            {new Date(
-                              trip.payment.createdAt,
-                            ).toLocaleDateString(locale)}
-                          </span>
-                        </div>
-                      </div>
-                      {SETTLED_PAYMENT_STATUSES.includes(
+                  <TripPaymentCard
+                    copy={copy}
+                    locale={locale}
+                    payment={trip.payment}
+                    receiptHref={
+                      SETTLED_PAYMENT_STATUSES.includes(
                         trip.payment.status as PaymentStatus,
-                      ) && (
-                        <Button
-                          asChild
-                          className="w-full"
-                          size="sm"
-                          variant="secondary"
-                        >
-                          {/* Redirects to Stripe's hosted receipt, which has its own PDF download. */}
-                          <a
-                            href={`/api/trips/${trip.id}/receipt`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            <Download aria-hidden className="h-4 w-4" />
-                            {copy.downloadReceipt}
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </PanelCard>
+                      )
+                        ? `/api/trips/${trip.id}/receipt`
+                        : undefined
+                    }
+                  />
                 )}
               </div>
             </div>

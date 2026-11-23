@@ -3570,6 +3570,8 @@ export interface TripDetailDict {
   paymentInfoTitle: string;
   /** Payment card action: opens the Stripe receipt (PDF download there). */
   downloadReceipt: string;
+  /** Payment card caption: "Pagado el {{date}} con {{provider}}". */
+  paidOn: string;
   paymentStatus: {
     APPROVED: string;
     COMPLETED: string;

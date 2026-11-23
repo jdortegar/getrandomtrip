@@ -75,3 +75,19 @@ export interface TripTimelineStep {
   /** True for calendar-date fields (start/end) that must be formatted in UTC to avoid a day shift. */
   dateOnly?: boolean;
 }
+
+/** The buyer's payment as the trip-details payment card shows it (`GET /api/trips/[id]`). */
+export interface TripPaymentSummary {
+  /** `PaymentStatus` enum value. */
+  status: string;
+  /** Major units of `currency` (e.g. 700 = USD 700.00). */
+  amount: number;
+  /** ISO 4217 code; absent on legacy rows (USD). */
+  currency?: string;
+  /** Payment provider id, e.g. "stripe". */
+  provider: string;
+  /** Provider reference (Stripe PaymentIntent id). */
+  providerPaymentId?: string;
+  createdAt: string;
+  paidAt?: string | null;
+}
