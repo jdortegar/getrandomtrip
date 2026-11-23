@@ -887,7 +887,7 @@
       "openModal": "Abrir el modal",
       "panels": {
         "aside": "ProfileEditorAside · consejo del paso",
-        "card": "ProfileEditorCard · con meta",
+        "card": "PanelCard · con meta",
         "countrySelect": "ProfileCountryOptions · dentro de FormSelectField",
         "fieldCounter": "FormField · hint y contador",
         "fieldMeta": "FieldMeta · hint y contador",
@@ -7372,7 +7372,8 @@
     },
     "revealReplay": {
       "line": "El misterio cambia de forma. El viaje empieza.",
-      "action": "Volver a vivir el reveal"
+      "action": "Volver a vivir el reveal",
+      "details": "Ver detalles del viaje"
     },
     "boardReveal": {
       "eyebrow": "El gran momento",
@@ -7415,6 +7416,18 @@
     "notFoundDescription": "El viaje que buscas no existe o no tienes permiso para verlo.",
     "destinationSorpresa": "Destino Sorpresa",
     "detailsTitle": "Detalles del Viaje",
+    "statusDescriptions": {
+      "DRAFT": "Todavía estás armando este viaje.",
+      "SAVED": "Guardaste este viaje. Seguimos cuando quieras.",
+      "PENDING_PAYMENT": "Falta el pago para confirmar tu lugar.",
+      "COLLECTING": "Estamos reuniendo el pago de cada viajero.",
+      "CONFIRMED": "Tu viaje está confirmado. El destino se revela 48 horas antes de salir.",
+      "REVEALED": "Ya sabes adónde vas. Lo demás, en tu destino.",
+      "COMPLETED": "Viaje terminado. Ojalá te haya dejado una buena historia.",
+      "CANCELLED": "Este viaje fue cancelado."
+    },
+    "setupEyebrow": "Así lo armaste",
+    "setupTitle": "Tu viaje",
     "status": {
       "DRAFT": "Borrador",
       "SAVED": "Guardado",
@@ -7426,11 +7439,12 @@
       "CANCELLED": "Cancelado"
     },
     "destinationRevealedTitle": "Destino Revelado",
-    "viewRevelationAction": "Ver Revelación",
+    "viewRevelationAction": "Ver destino",
     "departureFromLabel": "Salida desde",
     "passengersLabel": "Pasajeros",
     "datesLabel": "Fechas",
     "nightsLabel": "Noches",
+    "nightsCount": "{{n}} noches",
     "filtersTitle": "Filtros y Preferencias",
     "avoidDestinationsLabel": "Destinos a evitar",
     "cityChipLabel": "Ciudad",
@@ -7459,6 +7473,10 @@
     "paymentConfirmedLabel": "Pago confirmado",
     "timelineDestinationRevealedLabel": "Destino revelado",
     "tripCompletedLabel": "Viaje completado",
+    "timelineDepartureLabel": "Comienza el viaje",
+    "timelineDoneLabel": "Hecho",
+    "timelineCurrentLabel": "Próximo paso",
+    "timelineUpcomingLabel": "Más adelante",
     "actionsTitle": "Acciones",
     "viewItineraryAction": "Ver Itinerario",
     "tripInfoTitle": "Información del Viaje",

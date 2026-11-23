@@ -59,7 +59,7 @@ export default function DestinationRevealed({
   tripId,
 }: DestinationRevealedProps) {
   const c = copy[locale];
-  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/reveal`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/destination`;
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>

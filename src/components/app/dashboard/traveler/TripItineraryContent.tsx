@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useLenis } from "lenis/react";
-import { ArrowLeft, Calendar, Check, X } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Calendar, Check, X } from "lucide-react";
 import LoadingSpinner from "@/components/layout/LoadingSpinner";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { hasLocale, DEFAULT_LOCALE } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import { hasSeenReveal, markRevealSeen } from "@/lib/helpers/revealSeen";
 import { formatAdminDate } from "@/lib/admin/format";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
@@ -32,22 +32,32 @@ import {
 } from "./tripDetailsHelpers";
 import styles from "./traveler-trip-details.module.css";
 
-/** Self-contained: fetches its own trip data and dictionary, so it can be
- * mounted directly from the reveal page's post-reveal branch with no props. */
+function isRevealedStatus(status: string): boolean {
+  return status === "REVEALED" || status === "COMPLETED";
+}
+
+/** Self-contained: fetches its own trip data and dictionary, so the
+ * destination page mounts it with no props. A trip that isn't revealed (or
+ * can't be loaded) is sent back to the trip-details page, which owns the
+ * countdown and the not-found state. */
 export function TripItineraryContent() {
   const params = useParams();
+  const router = useRouter();
   const { data: session } = useSession();
   const [trip, setTrip] = useState<TripDetailsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [copy, setCopy] = useState<TripItineraryDict | null>(null);
   const [supportOpen, setSupportOpen] = useState(false);
-  const [heroRevealed, setHeroRevealed] = useState(false);
+  const tripIdParam = params.id as string;
+  // Read once on mount: a traveler who already saw this reveal opens on the hero.
+  const [startRevealed] = useState(() => hasSeenReveal(tripIdParam));
+  const [heroRevealed, setHeroRevealed] = useState(startRevealed);
   // Bumped by "Relive the reveal": remounts the gate as a fresh run.
   const [revealRun, setRevealRun] = useState(0);
   const lenis = useLenis();
   const mainRef = useRef<HTMLElement>(null);
 
-  const tripId = params.id as string;
+  const tripId = tripIdParam;
   const rawLocale = (params.locale as string) ?? "es";
   const locale = hasLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
 
@@ -66,7 +76,11 @@ export function TripItineraryContent() {
       .finally(() => setLoading(false));
   }, [session, tripId]);
 
-  const revealGateVisible = !loading && !!copy && trip?.documents !== undefined && !heroRevealed;
+  // Not revealed yet (the API omits documents for a non-fulfillment status,
+  // design.md ADR-7) or not loadable: the details page has the countdown and
+  // the not-found state.
+  const notViewable = !loading && (!trip || trip.documents === undefined || !isRevealedStatus(trip.status));
+  const revealGateVisible = !loading && !!copy && !notViewable && !heroRevealed;
 
   // Body scroll lock while the reveal gate is up — a class (not an inline
   // style) so it composes cleanly and always cleans up on completion/unmount.
@@ -87,11 +101,17 @@ export function TripItineraryContent() {
     const el = mainRef.current;
     if (el) void el.offsetHeight;
     el?.classList.add(styles.mainRevealed);
-  }, [heroRevealed]);
+    // `loading`/`copy`: when the page opens already revealed, <main> only
+    // mounts after the data arrives, so re-run once it exists.
+  }, [heroRevealed, loading, copy]);
 
   // The full-viewport hero carries its own "Explore my trip" button down to
   // the guide, so the page stays on the destination when the reveal ends.
-  const handleRevealComplete = useCallback(() => setHeroRevealed(true), []);
+  // Revealing or skipping both count as "seen"; leaving mid-gate does not.
+  const handleRevealComplete = useCallback(() => {
+    markRevealSeen(tripId);
+    setHeroRevealed(true);
+  }, [tripId]);
 
   // Back to the ready screen at the top of the page, with the guide hidden and
   // scroll locked again until the traveler reveals (or skips) once more.
@@ -102,36 +122,14 @@ export function TripItineraryContent() {
     setRevealRun((run) => run + 1);
   }, [lenis]);
 
-  if (loading || !copy) {
+  useEffect(() => {
+    if (notViewable) router.replace(pathForLocale(locale, `/dashboard/trips/${tripId}`));
+  }, [notViewable, router, locale, tripId]);
+
+  if (loading || !copy || notViewable) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white" data-component="TripItineraryContent">
         <LoadingSpinner />
-      </div>
-    );
-  }
-
-  // The API omits itinerary/inclusions/exclusions/documents entirely for a
-  // non-fulfillment-visible status (server-side gate in GET /api/trips/[id],
-  // design.md ADR-7) — the `.root` subtree is never mounted for those
-  // statuses; a plain pre-reveal notice renders instead.
-  const isPreReveal = !!trip && trip.documents === undefined;
-
-  if (isPreReveal) {
-    return (
-      <div className="mx-auto max-w-3xl px-6 py-10" data-component="TripItineraryContent">
-        <div className="mb-6">
-          <Button asChild size="sm" variant="ghost">
-            <Link href={`/${locale}/dashboard/trips/${tripId}`}>
-              <ArrowLeft className="h-4 w-4" />
-              {copy.backToTrip}
-            </Link>
-          </Button>
-        </div>
-        <div className="flex flex-col items-center gap-4 rounded-lg border border-gray-200 bg-white p-10 text-center shadow-sm">
-          <Calendar className="h-10 w-10 text-gray-300" />
-          <h3 className="text-lg font-semibold text-ink">{copy.preRevealTitle}</h3>
-          <p className="max-w-sm text-sm text-gray-500">{copy.preRevealDescription}</p>
-        </div>
       </div>
     );
   }
@@ -153,6 +151,7 @@ export function TripItineraryContent() {
         copy={copy.boardReveal}
         focusCta={revealRun > 0}
         key={revealRun}
+        startRevealed={revealRun === 0 && startRevealed}
         destination={boardPlace}
         locale={locale}
         onComplete={handleRevealComplete}
@@ -161,7 +160,13 @@ export function TripItineraryContent() {
         <TripDestinationHero copy={copy.hero} trip={trip} />
       </TripBoardReveal>
 
-      {heroRevealed && <TriggerRevealAnimation copy={copy.revealReplay} onReplay={handleReplay} />}
+      {heroRevealed && (
+        <TriggerRevealAnimation
+          copy={copy.revealReplay}
+          detailsHref={pathForLocale(locale, `/dashboard/trips/${tripId}`)}
+          onReplay={handleReplay}
+        />
+      )}
 
       {heroRevealed && (
         <main className={styles.wrap} id={TRIP_GUIDE_ID} ref={mainRef}>

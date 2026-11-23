@@ -3194,6 +3194,8 @@ export interface TripItineraryDict {
   revealReplay: {
     line: string;
     action: string;
+    /** Link to the full trip-details page (/dashboard/trips/[id]). */
+    details: string;
   };
   /** Compass + split-flap reveal gate shown over the hero on every visit (TripBoardReveal). */
   boardReveal: {
@@ -3530,6 +3532,11 @@ export interface TripDetailDict {
   notFoundDescription: string;
   destinationSorpresa: string;
   detailsTitle: string;
+  /** One line per trip status for `TripStatusBar`; same keys as `status`. */
+  statusDescriptions: TripDetailDict["status"];
+  /** Eyebrow + heading of the "Your trip" setup summary card. */
+  setupEyebrow: string;
+  setupTitle: string;
   status: {
     DRAFT: string;
     SAVED: string;
@@ -3546,6 +3553,8 @@ export interface TripDetailDict {
   passengersLabel: string;
   datesLabel: string;
   nightsLabel: string;
+  /** "{{n}} noches" — night count in the trip-details header. */
+  nightsCount: string;
   filtersTitle: string;
   avoidDestinationsLabel: string;
   cityChipLabel: string;
@@ -3574,6 +3583,11 @@ export interface TripDetailDict {
   paymentConfirmedLabel: string;
   timelineDestinationRevealedLabel: string;
   tripCompletedLabel: string;
+  timelineDepartureLabel: string;
+  /** Timeline step states — the "Next step" tag is visible, the others are screen-reader text. */
+  timelineDoneLabel: string;
+  timelineCurrentLabel: string;
+  timelineUpcomingLabel: string;
   actionsTitle: string;
   viewItineraryAction: string;
   tripInfoTitle: string;

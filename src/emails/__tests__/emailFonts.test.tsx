@@ -86,7 +86,7 @@ const cases = [
       locale,
       element: <TripStartVouchers {...vouchers} locale={locale} />,
       text: "Confirmación Ñ",
-      href: `${base}/${locale}/dashboard/trips/font-test/reveal`,
+      href: `${base}/${locale}/dashboard/trips/font-test/destination`,
       order: orders.vouchers,
       last: "600",
     },

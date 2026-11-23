@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { ProfileCountryOptions } from "@/components/app/dashboard/tripper/profile-editor/ProfileCountryOptions";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import { AtlasPlaceList } from "@/components/app/dashboard/tripper/profile-editor/steps/AtlasPlaceList";
 import { TRIPPER_PROFILE_TEXT_LIMITS } from "@/lib/constants/TRIPPER_PROFILE_LIMITS";
 import { createProfileItemId, hasProfilePlace } from "@/lib/helpers/tripperProfileEditor";
@@ -71,7 +71,7 @@ export function AtlasStep({ commonCopy, copy, locale, onChange, places, stories 
         <p className="mt-5 text-xs text-neutral-600">{copy.timelineFootnote}</p>
       </section>
 
-      <ProfileEditorCard meta={copy.addMeta} title={copy.addTitle}>
+      <PanelCard meta={copy.addMeta} title={copy.addTitle}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <FormSelectField
             id="atlas-country"
@@ -126,9 +126,9 @@ export function AtlasStep({ commonCopy, copy, locale, onChange, places, stories 
             <Plus aria-hidden />
           </Button>
         </div>
-      </ProfileEditorCard>
+      </PanelCard>
 
-      <ProfileEditorCard meta={String(places.length)} title={copy.listTitle}>
+      <PanelCard meta={String(places.length)} title={copy.listTitle}>
         <AtlasPlaceList
           commonCopy={commonCopy}
           copy={copy}
@@ -138,7 +138,7 @@ export function AtlasStep({ commonCopy, copy, locale, onChange, places, stories 
           places={places}
           stories={stories}
         />
-      </ProfileEditorCard>
+      </PanelCard>
     </div>
   );
 }

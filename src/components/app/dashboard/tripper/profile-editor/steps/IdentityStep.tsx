@@ -3,7 +3,7 @@
 import { FormField, FormSelectField } from "@/components/ui/FormField";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
 import { ProfileCountryOptions } from "@/components/app/dashboard/tripper/profile-editor/ProfileCountryOptions";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import { ProfileImagePicker } from "@/components/app/dashboard/tripper/profile-editor/ProfileImagePicker";
 import {
   TRIPPER_PROFILE_IMAGE_SIZES,
@@ -52,7 +52,7 @@ export function IdentityStep({
 
   return (
     <div className="flex flex-col gap-6" data-component="IdentityStep">
-      <ProfileEditorCard meta={commonCopy.requiredHint} title={copy.presentationTitle}>
+      <PanelCard meta={commonCopy.requiredHint} title={copy.presentationTitle}>
         <FormField
           autoComplete="name"
           hint={
@@ -117,9 +117,9 @@ export function IdentityStep({
           onChange={(e) => onChange({ headline: e.target.value })}
           value={identity.headline}
         />
-      </ProfileEditorCard>
+      </PanelCard>
 
-      <ProfileEditorCard meta={commonCopy.imageFormats} title={copy.imagesTitle}>
+      <PanelCard meta={commonCopy.imageFormats} title={copy.imagesTitle}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-[2fr_3fr]">
           <ProfileImagePicker
             alt={identity.name}
@@ -165,7 +165,7 @@ export function IdentityStep({
           onChange={(e) => onChange({ coverAlt: e.target.value })}
           value={identity.coverAlt}
         />
-      </ProfileEditorCard>
+      </PanelCard>
     </div>
   );
 }

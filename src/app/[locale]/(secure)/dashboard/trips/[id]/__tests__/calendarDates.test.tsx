@@ -66,8 +66,8 @@ it.each([false, true])("shows dates and allows missing traveler details to save 
         </Suspense>,
       ),
     );
-    expect(container.textContent).toContain("10/9/2026 → 10/11/2026");
-    expect(container.textContent).not.toContain("10/8/2026");
+    expect(container.textContent).toContain("Fri, Oct 9 → Sun, Oct 11, 2026");
+    expect(container.textContent).not.toContain("Oct 8");
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith("/api/trips/trip");
     const input = container.querySelector<HTMLInputElement>("#traveler-trav-1-idDocument")!;
     expect(input.disabled).toBe(false);

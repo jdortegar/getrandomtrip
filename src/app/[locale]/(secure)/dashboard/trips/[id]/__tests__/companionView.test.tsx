@@ -91,7 +91,7 @@ it("hides price and payment for a companion and lists others by name only (T6)",
   const { container, unmount } = await mount(companionTrip("PASS-1", true));
   try {
     const text = container.textContent ?? "";
-    expect(text).toContain("10/9/2026 → 10/11/2026");
+    expect(text).toContain("Fri, Oct 9 → Sun, Oct 11, 2026");
     expect(text).not.toContain(en.tripDetail.costsTitle);
     expect(text).not.toContain(en.tripDetail.paymentInfoTitle);
     expect(text).not.toContain(en.tripDetail.totalTripLabel);

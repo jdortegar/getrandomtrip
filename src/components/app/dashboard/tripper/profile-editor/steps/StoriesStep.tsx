@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
 import { FormField } from "@/components/ui/FormField";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import {
   TRIPPER_PROFILE_MAX_FEATURED_STORIES,
   TRIPPER_PROFILE_STORIES_PAGE_SIZE,
@@ -65,7 +65,7 @@ export function StoriesStep({ blogHref, copy, featuredIds, onChange, onPreview, 
 
   return (
     <div className="flex flex-col gap-6" data-component="StoriesStep">
-      <ProfileEditorCard meta={meta} title={copy.cardTitle}>
+      <PanelCard meta={meta} title={copy.cardTitle}>
         {stories.length === 0 ? (
           <div className="flex flex-col items-start gap-3 rounded-xl bg-ground px-5 py-6">
             <h4 className="font-barlow-condensed text-xl font-bold text-ink">{copy.emptyTitle}</h4>
@@ -174,7 +174,7 @@ export function StoriesStep({ blogHref, copy, featuredIds, onChange, onPreview, 
             {copy.growNoteBody}
           </p>
         </div>
-      </ProfileEditorCard>
+      </PanelCard>
 
       <section className="flex flex-col items-start gap-3 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-200 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{copy.finalEyebrow}</p>

@@ -283,7 +283,7 @@ export default function TripStartVouchers({
 }: TripStartVouchersProps) {
   const c = copy[locale];
   const firstName = firstNameOf(client);
-  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/reveal`;
+  const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/destination`;
   const settingsHref = `${getApplicationOrigin()}/${locale}/dashboard/traveler/settings`;
   const year = new Date().getFullYear();
 

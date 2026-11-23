@@ -48,3 +48,30 @@ export interface TripDetailsData {
   /** Absent (not empty) when the server's fulfillment gate hid it (ADR-7). */
   documents?: TripDocumentDTO[];
 }
+
+/** One label/value row in the trip-details "Your trip" summary (already localized). */
+export interface TripSetupItem {
+  label: string;
+  value: string;
+}
+
+/** Lifecycle milestones shown in the trip-details timeline, in order. */
+export type TripTimelineStepKey =
+  | "created"
+  | "paid"
+  | "revealed"
+  | "departure"
+  | "completed"
+  | "cancelled";
+
+/** `current` is the first step not reached yet — what the traveler waits on. */
+export type TripTimelineStepState = "done" | "current" | "upcoming";
+
+export interface TripTimelineStep {
+  key: TripTimelineStepKey;
+  state: TripTimelineStepState;
+  /** ISO timestamp: when it happened, or the planned date for an upcoming step; null when unknown. */
+  date: string | null;
+  /** True for calendar-date fields (start/end) that must be formatted in UTC to avoid a day shift. */
+  dateOnly?: boolean;
+}

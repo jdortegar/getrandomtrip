@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
-import { Calendar, Clock, Eye, MapPin, Plus, Sparkles } from "lucide-react";
+import { Calendar, Eye, MapPin, Plus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import Img from "@/components/common/Img";
 import { Button } from "@/components/ui/Button";
@@ -10,7 +10,7 @@ import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import type { Locale } from "@/lib/i18n/config";
-import { isAwaitingReveal, isUpcomingTrip, type Trip } from "@/lib/utils/trips";
+import { isUpcomingTrip, type Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
 interface UpcomingTripsListProps {
@@ -99,28 +99,6 @@ export function UpcomingTripsList({
                     </div>
                     <span className="hidden shrink-0 sm:inline-flex"><StatusIndicatorBadge family="traveler-trip" label={statusLabel} status={trip.status} /></span>
                     <div className="flex shrink-0 items-center gap-1.5">
-                      {isAwaitingReveal(trip.status) && (
-                        <TableIconLink
-                          href={pathForLocale(
-                            locale as Locale,
-                            `/dashboard/trips/${trip.id}/reveal`,
-                          )}
-                          title={copy.upcomingTrips.revealCountdown}
-                        >
-                          <Clock className="h-4 w-4" />
-                        </TableIconLink>
-                      )}
-                      {trip.status === "REVEALED" && (
-                        <TableIconLink
-                          href={pathForLocale(
-                            locale as Locale,
-                            `/dashboard/trips/${trip.id}/reveal`,
-                          )}
-                          title={copy.upcomingTrips.revealDestination}
-                        >
-                          <Sparkles className="h-4 w-4" />
-                        </TableIconLink>
-                      )}
                       <TableIconLink
                         href={pathForLocale(
                           locale as Locale,
@@ -130,6 +108,17 @@ export function UpcomingTripsList({
                       >
                         <Eye className="h-4 w-4" />
                       </TableIconLink>
+                      {(trip.status === "REVEALED" || trip.status === "COMPLETED") && (
+                        <TableIconLink
+                          href={pathForLocale(
+                            locale as Locale,
+                            `/dashboard/trips/${trip.id}/destination`,
+                          )}
+                          title={copy.upcomingTrips.revealDestination}
+                        >
+                          <Sparkles className="h-4 w-4" />
+                        </TableIconLink>
+                      )}
                     </div>
                   </div>
                   <div className="mt-2 flex items-center gap-3 text-xs text-ink">

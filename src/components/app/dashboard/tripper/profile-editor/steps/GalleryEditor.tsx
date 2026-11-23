@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { Plus } from "lucide-react";
 import Img from "@/components/common/Img";
 import { FormField } from "@/components/ui/FormField";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import { ProfileReorderControls } from "@/components/app/dashboard/tripper/profile-editor/ProfileReorderControls";
 import {
   TRIPPER_PROFILE_IMAGE_MIME_TYPES,
@@ -44,7 +44,7 @@ export function GalleryEditor({ commonCopy, copy, items, onAddFiles, onChange }:
   }
 
   return (
-    <ProfileEditorCard meta={meta} title={copy.title}>
+    <PanelCard meta={meta} title={copy.title}>
       <p className="-mt-3 text-sm text-neutral-600">{copy.intro}</p>
 
       {items.length > 0 ? (
@@ -134,6 +134,6 @@ export function GalleryEditor({ commonCopy, copy, items, onAddFiles, onChange }:
         <p>{copy.specsVideos}</p>
       </div>
       <p className="-mt-2 text-xs text-neutral-500">{copy.orientationNote}</p>
-    </ProfileEditorCard>
+    </PanelCard>
   );
 }

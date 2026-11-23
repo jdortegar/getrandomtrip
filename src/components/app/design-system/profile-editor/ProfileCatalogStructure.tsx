@@ -1,7 +1,7 @@
 "use client";
 
 import { ProfileEditorAside } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorAside";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import { ProfileEditorFooterNav } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorFooterNav";
 import { ProfileEditorStepHeader } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorStepHeader";
 import type { ProfileCatalogExampleProps } from "@/components/app/design-system/fixtures/tripperProfileEditorFixture";
@@ -39,9 +39,9 @@ export function ProfileCatalogStructure({ catalog, copy }: ProfileCatalogExample
           />
         </GalleryPanel>
         <GalleryPanel className="min-w-0 bg-ground" title={catalog.panels.card}>
-          <ProfileEditorCard meta={copy.common.requiredHint} title={copy.identity.presentationTitle}>
+          <PanelCard meta={copy.common.requiredHint} title={copy.identity.presentationTitle}>
             <p className="text-sm text-neutral-600">{catalog.sampleCardBody}</p>
-          </ProfileEditorCard>
+          </PanelCard>
         </GalleryPanel>
         <GalleryPanel className="min-w-0 bg-ground" title={catalog.panels.aside}>
           <div className="max-w-[260px]">
@@ -64,7 +64,7 @@ export function ProfileCatalogStructure({ catalog, copy }: ProfileCatalogExample
       ))}
       <UsageExample
         code={`<ProfileEditorStepHeader badge={copy.stepBadges.essential} eyebrow={copy.identity.eyebrow} lead={copy.identity.lead} title={copy.identity.title} />
-<ProfileEditorCard meta={copy.common.requiredHint} title={copy.identity.presentationTitle}>…</ProfileEditorCard>
+<PanelCard meta={copy.common.requiredHint} title={copy.identity.presentationTitle}>…</PanelCard>
 <ProfileEditorFooterNav activeStep="identity" copy={copy.footer} isLastStep={false} onNext={next} onPrevious={back} stepIndex={0} totalSteps={6} />`}
         label={catalog.panels.card}
       />

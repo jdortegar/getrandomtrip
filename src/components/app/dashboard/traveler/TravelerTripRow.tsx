@@ -1,11 +1,11 @@
-import { Clock, Eye, MapPin, Sparkles, Star } from "lucide-react";
+import { Eye, MapPin, Sparkles, Star } from "lucide-react";
 import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { TableIconLink } from "@/components/ui/TableIconButton";
 import { getTripExperienceDisplay } from "@/lib/helpers/dashboard-trip-display";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import { isFulfillmentVisible } from "@/lib/trips/fulfillmentVisibility";
 import type { Locale } from "@/lib/i18n/config";
-import { isAwaitingReveal, type Trip } from "@/lib/utils/trips";
+import type { Trip } from "@/lib/utils/trips";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
 interface TravelerTripRowProps {
@@ -63,22 +63,20 @@ export function TravelerTripRow({ copy, locale, trip }: TravelerTripRowProps) {
       {/* Actions */}
       <td className="px-5 py-4">
         <div className="flex items-center gap-1.5">
-          {isAwaitingReveal(trip.status) && (
+          <TableIconLink
+            href={pathForLocale(
+              locale as Locale,
+              `/dashboard/trips/${trip.id}`,
+            )}
+            title={copy.upcomingTrips.viewDetails}
+          >
+            <Eye className="h-4 w-4" />
+          </TableIconLink>
+          {(trip.status === "REVEALED" || trip.status === "COMPLETED") && (
             <TableIconLink
               href={pathForLocale(
                 locale as Locale,
-                `/dashboard/trips/${trip.id}/reveal`,
-              )}
-              title={copy.upcomingTrips.revealCountdown}
-            >
-              <Clock className="h-4 w-4" />
-            </TableIconLink>
-          )}
-          {trip.status === "REVEALED" && (
-            <TableIconLink
-              href={pathForLocale(
-                locale as Locale,
-                `/dashboard/trips/${trip.id}/reveal`,
+                `/dashboard/trips/${trip.id}/destination`,
               )}
               title={copy.upcomingTrips.revealDestination}
             >
@@ -98,15 +96,6 @@ export function TravelerTripRow({ copy, locale, trip }: TravelerTripRowProps) {
                 <Star className="h-4 w-4" />
               </TableIconLink>
             )}
-          <TableIconLink
-            href={pathForLocale(
-              locale as Locale,
-              `/dashboard/trips/${trip.id}`,
-            )}
-            title={copy.upcomingTrips.viewDetails}
-          >
-            <Eye className="h-4 w-4" />
-          </TableIconLink>
         </div>
       </td>
     </tr>

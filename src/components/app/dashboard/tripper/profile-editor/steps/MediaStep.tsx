@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormField, FormSelectField } from "@/components/ui/FormField";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import { GalleryEditor } from "@/components/app/dashboard/tripper/profile-editor/steps/GalleryEditor";
 import { MediaItemEditor } from "@/components/app/dashboard/tripper/profile-editor/steps/MediaItemEditor";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
@@ -66,7 +66,7 @@ export function MediaStep({
 
   return (
     <div className="flex flex-col gap-6" data-component="MediaStep">
-      <ProfileEditorCard
+      <PanelCard
         meta={interpolateTemplate(copy.itemsMeta, { count: String(items.length) })}
         title={copy.itemsTitle}
       >
@@ -119,7 +119,7 @@ export function MediaStep({
           </p>
         )}
         <p className="text-xs text-neutral-500">{copy.itemsFootnote}</p>
-      </ProfileEditorCard>
+      </PanelCard>
 
       <GalleryEditor
         commonCopy={commonCopy}
@@ -129,7 +129,7 @@ export function MediaStep({
         onChange={(gallery) => onChange({ gallery })}
       />
 
-      <ProfileEditorCard title={copy.otherTitle}>
+      <PanelCard title={copy.otherTitle}>
         <FormField
           id="media-linkedin"
           inputMode="url"
@@ -148,7 +148,7 @@ export function MediaStep({
           type="url"
           value={media.websiteUrl}
         />
-      </ProfileEditorCard>
+      </PanelCard>
     </div>
   );
 }

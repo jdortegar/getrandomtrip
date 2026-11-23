@@ -2,7 +2,7 @@
 
 import Chip from "@/components/Chip";
 import { TextAreaInput } from "@/components/ui/TextAreaInput";
-import { ProfileEditorCard } from "@/components/app/dashboard/tripper/profile-editor/ProfileEditorCard";
+import { PanelCard } from "@/components/common/PanelCard";
 import {
   TRIPPER_PROFILE_BIO_MIN_LENGTH,
   TRIPPER_PROFILE_MAX_AFFINITIES,
@@ -31,7 +31,7 @@ export function PerspectiveStep({ bio, commonCopy, copy, onChange }: Perspective
 
   return (
     <div className="flex flex-col gap-6" data-component="PerspectiveStep">
-      <ProfileEditorCard meta={commonCopy.requiredHint} title={copy.cardTitle}>
+      <PanelCard meta={commonCopy.requiredHint} title={copy.cardTitle}>
         <TextAreaInput
           className="min-h-[96px]"
           hint={copy.bioTitle.hint}
@@ -77,9 +77,9 @@ export function PerspectiveStep({ bio, commonCopy, copy, onChange }: Perspective
           onChange={(e) => onChange({ more: e.target.value })}
           value={bio.more}
         />
-      </ProfileEditorCard>
+      </PanelCard>
 
-      <ProfileEditorCard meta={copy.affinitiesMeta} title={copy.affinitiesTitle}>
+      <PanelCard meta={copy.affinitiesMeta} title={copy.affinitiesTitle}>
         <p className="-mt-3 text-sm text-neutral-600">{copy.affinitiesHint}</p>
         <div className="flex flex-wrap gap-2" role="group" aria-label={copy.affinitiesTitle}>
           {TRIPPER_PROFILE_AFFINITIES.map((affinity) => {
@@ -97,7 +97,7 @@ export function PerspectiveStep({ bio, commonCopy, copy, onChange }: Perspective
             );
           })}
         </div>
-      </ProfileEditorCard>
+      </PanelCard>
     </div>
   );
 }

@@ -887,7 +887,7 @@
       "openModal": "Open the modal",
       "panels": {
         "aside": "ProfileEditorAside · step tip",
-        "card": "ProfileEditorCard · with meta",
+        "card": "PanelCard · with meta",
         "countrySelect": "ProfileCountryOptions · inside FormSelectField",
         "fieldCounter": "FormField · hint and counter",
         "fieldMeta": "FieldMeta · hint and counter",
@@ -7372,7 +7372,8 @@
     },
     "revealReplay": {
       "line": "The mystery changes shape. The journey begins.",
-      "action": "Relive the reveal"
+      "action": "Relive the reveal",
+      "details": "View trip details"
     },
     "boardReveal": {
       "eyebrow": "The big moment",
@@ -7415,6 +7416,18 @@
     "notFoundDescription": "The trip you're looking for doesn't exist or you don't have permission to view it.",
     "destinationSorpresa": "Surprise Destination",
     "detailsTitle": "Trip Details",
+    "statusDescriptions": {
+      "DRAFT": "You're still shaping this trip.",
+      "SAVED": "You saved this trip. Pick it up whenever you like.",
+      "PENDING_PAYMENT": "Payment is all that's left to lock in your spot.",
+      "COLLECTING": "We're collecting each traveler's payment.",
+      "CONFIRMED": "Your trip is confirmed. The destination is revealed 48 hours before you leave.",
+      "REVEALED": "You know where you're going. The rest is on your destination page.",
+      "COMPLETED": "Trip complete. We hope it left you a good story.",
+      "CANCELLED": "This trip was cancelled."
+    },
+    "setupEyebrow": "How you shaped it",
+    "setupTitle": "Your trip",
     "status": {
       "DRAFT": "Draft",
       "SAVED": "Saved",
@@ -7426,11 +7439,12 @@
       "CANCELLED": "Cancelled"
     },
     "destinationRevealedTitle": "Destination Revealed",
-    "viewRevelationAction": "View Reveal",
+    "viewRevelationAction": "View destination",
     "departureFromLabel": "Departing from",
     "passengersLabel": "Travelers",
     "datesLabel": "Dates",
     "nightsLabel": "Nights",
+    "nightsCount": "{{n}} nights",
     "filtersTitle": "Filters & Preferences",
     "avoidDestinationsLabel": "Destinations to avoid",
     "cityChipLabel": "City",
@@ -7459,6 +7473,10 @@
     "paymentConfirmedLabel": "Payment confirmed",
     "timelineDestinationRevealedLabel": "Destination revealed",
     "tripCompletedLabel": "Trip completed",
+    "timelineDepartureLabel": "Trip starts",
+    "timelineDoneLabel": "Done",
+    "timelineCurrentLabel": "Next step",
+    "timelineUpcomingLabel": "Later",
     "actionsTitle": "Actions",
     "viewItineraryAction": "View Itinerary",
     "tripInfoTitle": "Trip Information",
