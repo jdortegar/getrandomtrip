@@ -39,7 +39,7 @@ describe("TripStartVouchers", () => {
 
     expect(html).toContain("Hotel Confirmation");
     expect(html).toContain("Flight Ticket");
-    expect(html).toContain(`/es/dashboard/trips/${baseProps.tripId}/reveal`);
+    expect(html).toContain(`/es/dashboard/trips/${baseProps.tripId}/destination`);
   });
 
   it("renders the skipped-document notice only when skippedCount > 0", async () => {

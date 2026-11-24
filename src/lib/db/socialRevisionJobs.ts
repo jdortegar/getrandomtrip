@@ -34,6 +34,10 @@ export async function queueSocialRevision(input: SocialFeedback) {
       const existing = await tx.socialRevisionJob.findUnique({
         where: { reviewId: input.id },
       });
+      if (row && !["full", "caption"].includes(row.translationMode ?? "full"))
+        return "stale";
+      if (row?.translationMode === "caption" && input.target !== "caption")
+        return "stale";
       if (existing) return "queued"; // Retry cannot create another paid job.
       if (!row || row.status !== "PENDING" || row.revision >= 5) return "stale";
       if (!(await dailyBudgetLeft(tx))) return "budget";
@@ -49,6 +53,9 @@ export async function queueSocialRevision(input: SocialFeedback) {
       await tx.socialRevisionJob.create({
         data: {
           reviewId: row.id,
+          ...(row.translationMode === "caption"
+            ? { translationMode: "caption" }
+            : {}),
           actor: input.user,
           feedback: input.feedback,
           target: input.target,
@@ -67,9 +74,12 @@ export async function queueSocialRevision(input: SocialFeedback) {
  */
 export async function queueSocialTranslation(input: {
   sourceId: string;
+  translationMode?: "full" | "caption";
   user: string;
   messageTs: string;
 }) {
+  const mode = input.translationMode ?? "full";
+  if (mode !== "full" && mode !== "caption") return "stale";
   return prisma.$transaction(
     async (tx) => {
       await lockSocialApproval(tx, `source:${input.sourceId}`);
@@ -78,12 +88,13 @@ export async function queueSocialTranslation(input: {
         where: { id: input.sourceId },
       });
       if (!source || source.messageTs !== input.messageTs) return "stale";
-      if (
-        await tx.socialRevisionJob.findUnique({
-          where: { sourceId: source.id },
-        })
-      )
-        return "queued";
+      const existing = await tx.socialRevisionJob.findUnique({
+        where: { sourceId: source.id },
+      });
+      if (existing)
+        return (existing.translationMode ?? "full") === mode
+          ? "queued"
+          : "stale";
       if (source.status !== "ANNOUNCED") return "stale";
       if (!(await dailyBudgetLeft(tx))) return "budget";
       await tx.socialSource.update({
@@ -93,6 +104,7 @@ export async function queueSocialTranslation(input: {
       await tx.socialRevisionJob.create({
         data: {
           kind: "TRANSLATE",
+          ...(mode === "caption" ? { translationMode: mode } : {}),
           sourceId: source.id,
           actor: input.user,
           feedback: "",
@@ -101,7 +113,8 @@ export async function queueSocialTranslation(input: {
       });
       return "queued";
     },
-    { maxWait: 500, timeout: 1500 },
+    // This work runs after the Slack ACK; allow bounded cold-database latency.
+    { maxWait: 5000, timeout: 15000 },
   );
 }
 
@@ -157,6 +170,9 @@ export async function queueSocialPublish(input: {
         data: {
           kind: "PUBLISH",
           reviewId: row.id,
+          ...(row.translationMode === "caption"
+            ? { translationMode: "caption" }
+            : {}),
           actor: input.user,
           feedback: "",
           target: "both",
@@ -247,6 +263,15 @@ export async function finishGeneratedSocialRevision(
       where: { id: job.review.id },
     });
     if (source?.status !== "CHANGES_REQUESTED") return null;
+    if (
+      source.translationMode === "caption" &&
+      (job.target !== "caption" ||
+        imageUrls.join("\n") !==
+          (source.imageUrls.length ? source.imageUrls : [source.imageUrl]).join(
+            "\n",
+          ))
+    )
+      return null;
     await tx.socialApproval.update({
       where: { id: source.id },
       data: { status: "SUPERSEDED" },
@@ -260,6 +285,9 @@ export async function finishGeneratedSocialRevision(
         imageUrl: imageUrls[0],
         imageUrls,
         sourceId: source.sourceId,
+        ...(source.translationMode === "caption"
+          ? { translationMode: "caption" }
+          : {}),
         ...(source.copyLocks
           ? { copyLocks: source.copyLocks as Prisma.InputJsonValue }
           : {}),

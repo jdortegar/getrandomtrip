@@ -76,15 +76,15 @@ it.each([
     const links = Array.from(container.querySelectorAll("a")).map((link) =>
       link.getAttribute("href"),
     );
-    const action =
-      status === "CONFIRMED" || status === "COLLECTING" || status === "REVEALED"
-        ? `${prefix}/dashboard/trips/trip-id/reveal`
+    const actions =
+      status === "REVEALED"
+        ? [`${prefix}/dashboard/trips/trip-id/destination`]
         : status === "COMPLETED"
-          ? `${prefix}/review/review-token`
-          : null;
+          ? [`${prefix}/dashboard/trips/trip-id/destination`, `${prefix}/review/review-token`]
+          : [];
     expect(links).toEqual([
-      ...(action ? [action] : []),
       `${prefix}/dashboard/trips/trip-id`,
+      ...actions,
     ]);
     const copy = (locale === "en" ? en : es).dashboard;
     expect(container.textContent).toContain(copy.tripStatus[status]);

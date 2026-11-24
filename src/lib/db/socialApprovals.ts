@@ -15,6 +15,7 @@ interface NewApproval {
   imageUrls?: string[];
   sourceId?: string;
   copyLocks?: Prisma.InputJsonValue;
+  translationMode?: "full" | "caption";
   createdBy: string;
 }
 
@@ -38,6 +39,8 @@ export async function createSocialApproval(input: NewApproval) {
       if (
         oldLocks.caption !== newLocks.caption ||
         oldLocks.artworkHeadline !== newLocks.artworkHeadline ||
+        (existing.translationMode ?? "full") !==
+          (input.translationMode ?? "full") ||
         existing.reviewKey !== input.reviewKey ||
         existing.caption !== input.caption ||
         existing.imageUrl !== input.imageUrl ||

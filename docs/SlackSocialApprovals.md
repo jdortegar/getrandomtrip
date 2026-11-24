@@ -88,3 +88,42 @@ For this exact reviewed solo post, selecting `useReviewedExample: true` locks th
 Locked caption text bypasses rewriting, including during generic Slack feedback revisions. Locked headline instructions take precedence in artwork edits; pixel-exact rendering still requires visual approval. General feedback does not silently unlock either field. For an explicitly changed locked field, an admin can submit a new manual review using the existing admin review endpoint with a new request ID, the same review key, updated artwork URL/caption, and updated `copyLocks`. Re-importing an already queued post with different locks returns a conflict rather than creating another paid assignment.
 
 The corrected brand policy is versioned in `src/lib/ai/socialBrandPolicy.ts` and used by initial transcreation **and** feedback revisions. Artwork, caption and editorial rationale remain separate; rationale cannot enter the caption. No generated field implies a human approval. See `docs/SocialTranscreationPolicy.md` for policy provenance and scope.
+
+### Safe failure diagnostics
+
+Import failures include an `X-Social-Diagnostic-Id` response header. Match it to
+`[social-diagnostics]` in the same deployment's server logs. Stages distinguish
+input parsing, Meta profile/feed lookup, database persistence, and dispatch.
+Worker logs use job/review IDs; `slack.post`, `slack.parse`, `slack.accept`, and
+`slack.record` distinguish transport, response parsing, rejection, and database
+confirmation. Only bounded categories, HTTP statuses and allowlisted codes are
+logged, never messages, stacks, payloads, tokens, URLs, or captions. A failure
+at `slack.record` may follow a successful send: inspect Slack before any recovery.
+Diagnostics do not retry, regenerate, or change approval/publication state.
+
+Translation clicks are acknowledged before database work. Their atomic enqueue
+allows up to 5 seconds to acquire a transaction and 15 seconds to complete it;
+locks, uniqueness and the daily budget remain unchanged. Queue failures log
+`slack.queue` with a validated source ID and sanitized error code, and send a
+non-replacing ephemeral notice. The admin social-approvals page’s **Check for posts**
+control repairs the sole recorded
+`ANNOUNCED` Spanish card in place, restoring its buttons without queuing AI work,
+advancing the queue, or creating a duplicate message. If repair fails, it stays
+in progress; inspect logs rather than deleting source history.
+
+Source-card updates serialize across instances with a dedicated per-source lock,
+read the current database status inside it, and keep the lock through the bounded
+Slack update. Queue transactions remain network-free; a waiting card update reads
+the latest state rather than restoring obsolete action buttons.
+
+### Caption-only translations
+
+Source cards offer **Translate caption only** alongside the full translation action.
+This transcreates the caption with the same brand policy and retains the original
+JPEG/PNG artwork as stable, ordered snapshots; it never invokes image generation.
+Other source formats fail closed rather than silently converting the artwork.
+The first accepted choice is durable; clicking the other mode cannot replace it.
+Caption-only reviews accept caption feedback only. Approval and the separate
+publication action are unchanged; neither translation action publishes anything.
+Deploy migration `20261120145000_social_caption_only` to the target database
+before deploying this code. Existing jobs/reviews retain the full mode by default.

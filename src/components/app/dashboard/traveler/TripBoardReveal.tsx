@@ -37,12 +37,18 @@ interface TripBoardRevealProps {
   onComplete?: (result: { instant: boolean }) => void;
   /** Focus "Reveal my destination" on mount — set when the traveler asked to replay. */
   focusCta?: boolean;
+  /**
+   * Open on the final state with no gate — the traveler already watched (or
+   * skipped) this reveal. `onComplete` still fires, but focus stays put.
+   */
+  startRevealed?: boolean;
 }
 
 /**
  * Compass + split-flap destination reveal, ported from the approved
  * "Randomtrip Reveal — Tablero v2" prototype. Wraps `children` (the trip
- * hero) and plays on every visit — "Ir al destino" skips it:
+ * hero) and plays until the traveler has seen it once (`startRevealed`
+ * then opens on the final state) — "Ir al destino" skips it:
  * ready → orienting (compass finds north) → boarding (brand words flip) →
  * the destination settles in ochre → opening (photo comes into focus) → done.
  *
@@ -64,14 +70,17 @@ export function TripBoardReveal({
   children,
   onComplete,
   focusCta = false,
+  startRevealed = false,
 }: TripBoardRevealProps) {
   const hydrated = useHydrated();
   const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const { setNavbarOverlay } = useNavbarChrome();
 
-  const [phase, setPhase] = useState<Phase>("ready");
-  const [instant, setInstant] = useState(false);
-  const [destinationShown, setDestinationShown] = useState(false);
+  const [phase, setPhase] = useState<Phase>(startRevealed ? "done" : "ready");
+  const [instant, setInstant] = useState(startRevealed);
+  const [destinationShown, setDestinationShown] = useState(startRevealed);
+  // Opening already revealed must not pull focus to the hero title on load.
+  const focusOnDoneRef = useRef(!startRevealed);
   const [previousTrip, setPreviousTrip] = useState(tripId);
   if (previousTrip !== tripId) {
     setPreviousTrip(tripId);
@@ -157,6 +166,10 @@ export function TripBoardReveal({
     if (phase === "orienting") skipRef.current?.focus({ preventScroll: true });
     if (phase !== "done") return;
     onCompleteRef.current?.({ instant });
+    if (!focusOnDoneRef.current) {
+      focusOnDoneRef.current = true;
+      return;
+    }
     // Hand focus from the gate to the revealed destination title.
     const heading = contentRef.current?.querySelector<HTMLElement>("h1");
     if (heading) {

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { DashboardStatsGrid } from "@/components/app/dashboard/DashboardStatsGrid";
 import { buildTravelerNavTabs } from "@/components/app/dashboard/config/travelerNav";
 import type { DashboardNavTabItem } from "@/components/app/dashboard/config/dashboardNavTypes";
@@ -9,10 +11,12 @@ import {
   TripperViewToggle,
   type TripperProfileViewMode,
 } from "@/components/app/dashboard/tripper/settings/TripperViewToggle";
+import { Button } from "@/components/ui/Button";
 import { GalleryPanel } from "@/components/app/design-system/GalleryPanel";
 import { UsageExample } from "@/components/app/design-system/UsageExample";
 import { useDictionary, useLocale } from "@/hooks/useDictionary";
 import { DEFAULT_LOCALE, hasLocale } from "@/lib/i18n/config";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 
@@ -65,6 +69,17 @@ export function DashboardExamples({ copy }: DashboardExamplesProps) {
             onChange={setView}
             value={view}
           />
+        </GalleryPanel>
+        <GalleryPanel title={labels.profileEditor}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-neutral-600 text-sm">{labels.profileEditorBody}</p>
+            <Button asChild size="sm" variant="secondary">
+              <Link href={pathForLocale(locale, "/design-system/tripper-profile-editor")}>
+                {labels.profileEditorCta}
+                <ArrowUpRight aria-hidden />
+              </Link>
+            </Button>
+          </div>
         </GalleryPanel>
       </div>
       <UsageExample

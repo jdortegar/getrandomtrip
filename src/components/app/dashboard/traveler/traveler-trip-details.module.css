@@ -665,6 +665,11 @@
   position: absolute;
   inset: 0;
   max-width: none;
+  /* On the element itself (not only while gated), so the reveal's focus-in
+     keeps easing after the gate is removed instead of snapping. */
+  transition:
+    filter 1.3s ease,
+    transform 5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .destShade {
   position: absolute;
@@ -680,6 +685,9 @@
   position: absolute;
   z-index: 2;
   inset: auto 6% 55px;
+  transition:
+    opacity 0.8s ease,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .destEyebrow {
   margin: 0;
@@ -940,6 +948,12 @@
   border-radius: 50%;
   background: var(--color-feature);
 }
+.replayActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 32px;
+}
 .root .replayButton {
   display: inline-flex;
   align-items: center;
@@ -994,10 +1008,11 @@
   position: relative;
   overflow: hidden;
 }
+/* Fills the viewport below the navbar at any height — no max-height cap, or
+   tall screens show the page beneath the gate. */
 .revealGated {
   height: calc(100svh - 4rem);
   min-height: 620px;
-  max-height: 1000px;
 }
 .revealContent {
   position: relative;
@@ -1018,20 +1033,15 @@
 .revealGated .destPhoto {
   filter: blur(18px);
   transform: scale(1.12);
-  transition:
-    filter 1.3s ease,
-    transform 5s var(--reveal-ease);
 }
 .revealGated .destContent {
   opacity: 0;
   transform: translateY(24px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.9s var(--reveal-ease);
 }
 .revealOpening .destPhoto {
   filter: none;
-  transform: scale(1.045);
+  /* Same resting scale as the revealed hero, so nothing jumps at the end. */
+  transform: none;
 }
 .revealOpening .destContent {
   opacity: 1;
@@ -1518,9 +1528,6 @@
 }
 
 @media (max-width: 650px) {
-  .revealGated {
-    min-height: 600px;
-  }
   .ready {
     display: flex;
     flex-direction: column-reverse;

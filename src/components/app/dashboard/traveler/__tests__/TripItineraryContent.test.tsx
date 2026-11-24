@@ -6,8 +6,11 @@ import { TripItineraryContent } from "../TripItineraryContent";
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
+const mockReplace = vi.fn();
+const mockRouter = { replace: mockReplace };
 vi.mock("next/navigation", () => ({
   useParams: () => ({ id: "trip-1", locale: "en" }),
+  useRouter: () => mockRouter,
 }));
 
 // A STABLE object reference matters: next-auth's real useSession only
@@ -31,6 +34,19 @@ async function flush() {
       await new Promise((resolve) => setTimeout(resolve, 10));
     });
   }
+}
+
+// The test environment has no localStorage; give each test a fresh in-memory one.
+function installMemoryStorage() {
+  const store = new Map<string, string>();
+  const storage = {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => void store.set(key, String(value)),
+    removeItem: (key: string) => void store.delete(key),
+    clear: () => store.clear(),
+  };
+  Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+  return storage;
 }
 
 let container: HTMLDivElement;
@@ -72,6 +88,8 @@ function baseTrip(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  mockReplace.mockReset();
+  installMemoryStorage();
 });
 
 afterEach(() => {
@@ -89,7 +107,7 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
-  it("renders the pre-reveal card and NOT the hero eyebrow when documents is undefined", async () => {
+  it("sends an unrevealed trip (documents omitted) back to the details page", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -103,9 +121,8 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     render();
     await flush();
 
-    const text = container.textContent ?? "";
-    expect(text).toContain("This trip's itinerary and documents show up once your destination is revealed.");
-    expect(text).not.toContain("Your next story");
+    expect(mockReplace).toHaveBeenCalledWith("/en/dashboard/trips/trip-1");
+    expect(container.textContent).not.toContain("Your next story");
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
   });
 
@@ -127,7 +144,7 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(true);
   });
 
-  it("renders a muted (non-celebratory) hero for a CANCELLED trip, with no departure pill", async () => {
+  it("sends a cancelled trip back to the details page", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -141,9 +158,69 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     render();
     await flush();
 
-    const text = container.textContent ?? "";
-    expect(text).toContain("Trip cancelled");
-    expect(text).not.toContain("Departs in");
+    expect(mockReplace).toHaveBeenCalledWith("/en/dashboard/trips/trip-1");
+    expect(container.querySelector('[data-component="TripBoardReveal"]')).toBeNull();
+  });
+
+  it("sends a trip that fails to load back to the details page", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ error: "Not found" }) }),
+    );
+
+    render();
+    await flush();
+
+    expect(mockReplace).toHaveBeenCalledWith("/en/dashboard/trips/trip-1");
+  });
+});
+
+describe("TripItineraryContent — reveal plays once per browser", () => {
+  const phase = () =>
+    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')?.dataset.phase;
+  const button = (label: string) =>
+    Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(label));
+
+  it("marks the reveal as seen when the traveler skips it", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }) }) }),
+    );
+
+    render();
+    await flush();
+    expect(phase()).toBe("ready");
+    expect(window.localStorage.getItem("rt:reveal-seen:trip-1")).toBeNull();
+
+    act(() => button("Reveal my destination")!.click());
+    act(() => button("Skip to destination")!.click());
+    await flush();
+
+    expect(window.localStorage.getItem("rt:reveal-seen:trip-1")).not.toBeNull();
+  });
+
+  it("opens straight on the destination when the reveal was already seen", async () => {
+    window.localStorage.setItem("rt:reveal-seen:trip-1", "2026-08-20T00:00:00.000Z");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }) }) }),
+    );
+
+    render();
+    await flush();
+
+    expect(phase()).toBe("done");
+    expect(button("Reveal my destination")).toBeUndefined();
+    expect(button("Relive the reveal")).not.toBeUndefined();
+    expect(container.querySelector("main#trip-guide")).not.toBeNull();
+    expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
+    // Opening already revealed doesn't steal focus to the hero title.
+    expect(document.activeElement?.tagName).not.toBe("H1");
+
+    // Replaying still goes back to the ready screen.
+    act(() => button("Relive the reveal")!.click());
+    await flush();
+    expect(phase()).toBe("ready");
   });
 });
 
@@ -168,12 +245,15 @@ describe("TripItineraryContent — relive the reveal", () => {
     render();
     await flush();
     expect(button("Relive the reveal")).toBeUndefined();
+    // The "Destination revealed on …" footer belongs to the revealed page, not the gate.
+    expect(container.textContent).not.toContain("Destination revealed on");
 
     act(() => button("Reveal my destination")!.click());
     act(() => button("Skip to destination")!.click());
     await flush();
 
     expect(phase()).toBe("done");
+    expect(container.textContent).toContain("Destination revealed on");
     expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
     expect(container.querySelector("main")).not.toBeNull();
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);

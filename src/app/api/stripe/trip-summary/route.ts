@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { findPaymentByStripeIntentId } from "@/lib/db/payment";
 import { findShareByIntent } from "@/lib/db/paymentShare";
 import { prisma } from "@/lib/prisma";
-import { getStripe } from "@/lib/stripe";
+import { getStripeReceiptUrl } from "@/lib/payments/stripeReceiptUrl";
 import { getRosterForTrip } from "@/lib/travelers/travelerRoster";
 
 export const dynamic = "force-dynamic";
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         amount: share.amount,
         currency: share.currency,
         status: share.status,
-        receiptUrl: await receiptUrlFor(share.stripePaymentIntentId),
+        receiptUrl: await getStripeReceiptUrl(share.stripePaymentIntentId),
       },
       trip: { ...tripSummary(share.payment.tripRequest), roster: null },
     });
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
   const trip = payment.tripRequest;
 
-  const receiptUrl = await receiptUrlFor(payment.stripePaymentIntentId);
+  const receiptUrl = await getStripeReceiptUrl(payment.stripePaymentIntentId);
 
   const roster = await getRosterForTrip(trip.id, session.user.id);
   // INDIVIDUAL: `Payment.amount` is the trip bill; the organizer paid only their share.
@@ -78,21 +78,6 @@ export async function GET(request: NextRequest) {
     },
     trip: { ...tripSummary(trip), roster },
   });
-}
-
-/** Stripe receipt link for an intent's latest charge; null when unavailable. */
-async function receiptUrlFor(intentId: string | null): Promise<string | null> {
-  if (!intentId) return null;
-  try {
-    const pi = await getStripe().paymentIntents.retrieve(intentId, { expand: ["latest_charge"] });
-    const charge = pi.latest_charge;
-    if (charge && typeof charge === "object" && "receipt_url" in charge) {
-      return (charge as { receipt_url: string | null }).receipt_url;
-    }
-  } catch {
-    // non-fatal — button will be hidden
-  }
-  return null;
 }
 
 /** Trip fields the success page shows (no prices). */

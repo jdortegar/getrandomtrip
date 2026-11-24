@@ -36,7 +36,11 @@ export function parseSlideList(raw: string | undefined): number[] | null {
 function sign(value: string, secret: string) {
   return createHmac("sha256", secret).update(value).digest("hex");
 }
-export function feedbackModal(action: ApprovalAction, secret: string) {
+export function feedbackModal(
+  action: ApprovalAction,
+  secret: string,
+  captionOnly = false,
+) {
   const data = Buffer.from(
     JSON.stringify({
       id: action.id,
@@ -57,7 +61,9 @@ export function feedbackModal(action: ApprovalAction, secret: string) {
         type: "section",
         text: {
           type: "plain_text",
-          text: "Describe the changes. AI will create a new draft for approval, never publish it. Artwork edits preserve the photo and layout as closely as possible; always review the result.",
+          text: captionOnly
+            ? "Describe caption changes. Original artwork stays unchanged. A new draft needs approval before publication."
+            : "Describe the changes. AI will create a new draft for approval, never publish it. Artwork edits preserve the photo and layout as closely as possible; always review the result.",
         },
       },
       {
@@ -67,11 +73,14 @@ export function feedbackModal(action: ApprovalAction, secret: string) {
         element: {
           type: "static_select",
           action_id: "target",
-          options: [
-            ["caption", "Caption only"],
-            ["image", "Artwork only"],
-            ["both", "Caption and artwork"],
-          ].map(([value, text]) => ({
+          options: (captionOnly
+            ? [["caption", "Caption only"]]
+            : [
+                ["caption", "Caption only"],
+                ["image", "Artwork only"],
+                ["both", "Caption and artwork"],
+              ]
+          ).map(([value, text]) => ({
             text: { type: "plain_text", text },
             value,
           })),

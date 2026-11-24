@@ -55,7 +55,7 @@ describe("deliverDestinationRevealedEmail", () => {
     expect(mail.subject).toBe("Your destination is ready");
     const html = renderToStaticMarkup(mail.content.react);
     expect(html).toContain("October 3, 2026");
-    expect(html).toContain("/en/dashboard/trips/trip-1/reveal");
+    expect(html).toContain("/en/dashboard/trips/trip-1/destination");
     expect(html).not.toContain("Lisbon");
   });
 

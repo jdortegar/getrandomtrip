@@ -81,3 +81,20 @@ it("pages through the whole Spanish feed and returns it oldest first", async () 
   expect(String(fetchMock.mock.calls[1][0])).toContain("after=cur");
   vi.unstubAllGlobals();
 });
+
+it("offers caption-only translation alongside full translation without changing the primary action", () => {
+  const actions = sourceMessage(source).blocks.find(
+    (b) => b.type === "actions",
+  );
+  expect(actions).toMatchObject({
+    elements: [
+      { action_id: "social_translate", style: "primary" },
+      {
+        action_id: "social_translate_caption",
+        value: "src",
+        text: { text: "Translate caption only" },
+      },
+      { action_id: "social_mark_posted" },
+    ],
+  });
+});

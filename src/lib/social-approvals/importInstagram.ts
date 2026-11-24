@@ -27,13 +27,18 @@ export function instagramImportUrl(input: unknown) {
     permalink: `https://www.instagram.com/p/${match[1]}/`,
   };
 }
-export async function resolveOwnedInstagramPost(input: unknown) {
+export async function resolveOwnedInstagramPost(
+  input: unknown,
+  onStage?: (stage: "import.profile" | "import.feed") => void,
+) {
   const wanted = instagramImportUrl(input);
   const account = socialImportConfig();
   if (!account) throw new Error("IMPORT_ACCOUNT_UNCONFIGURED");
+  onStage?.("import.profile");
   const profile = await getProfile(account.token);
   if (profile.username !== account.username)
     throw new Error("IMPORT_ACCOUNT_MISMATCH");
+  onStage?.("import.feed");
   const posts = await listSourceMedia(account.token, profile.userId);
   const found = posts.find((post) => {
     try {

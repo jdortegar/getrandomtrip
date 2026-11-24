@@ -44,6 +44,8 @@ it("never leaks upstream errors or the token", async () => {
   );
   const err = await getProfile("page-token").catch((e: Error) => e);
   expect((err as Error).message).toBe("instagram_request_failed");
+  expect(err).toMatchObject({ httpStatus: 400, diagnosticCategory: "http" });
+  expect(JSON.stringify(err)).not.toMatch(/secret|page-token/);
 });
 
 it("maps total_value account insights", async () => {

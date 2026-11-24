@@ -41,10 +41,15 @@ it("canonicalizes locally and rejects deceptive hosts, redirects, credentials an
     expect(() => instagramImportUrl(url)).toThrow();
 });
 it("resolves only exact matching permalinks from the configured owned EN feed", async () => {
+  const stages = vi.fn();
   expect(
-    await resolveOwnedInstagramPost("https://instagram.com/p/De0IMw8jOGl/"),
+    await resolveOwnedInstagramPost(
+      "https://instagram.com/p/De0IMw8jOGl/",
+      stages,
+    ),
   ).toMatchObject({ id: "123", accountUsername: "getrandomtrip.en" });
   expect(m.list).toHaveBeenCalledWith("x".repeat(30), "owned");
+  expect(stages.mock.calls).toEqual([["import.profile"], ["import.feed"]]);
   await expect(
     resolveOwnedInstagramPost("https://instagram.com/p/OTHER123/"),
   ).rejects.toThrow("POST_NOT_IN_OWNED_FEED");

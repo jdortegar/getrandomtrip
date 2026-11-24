@@ -219,12 +219,14 @@ it("Translate this post queues one translation, marks the card and dispatches th
     status: "TRANSLATION_QUEUED",
   } as never);
   expect((await POST(request(translateClick))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
   expect(queueSocialTranslation).toHaveBeenCalledWith({
     sourceId: "src",
+    translationMode: "full",
     user: "U1",
     messageTs: "123.456",
   });
-  await Promise.all(mocks.tasks.map((task) => task()));
   expect(refreshSourceMessage).toHaveBeenCalledWith(
     expect.objectContaining({ id: "src" }),
     "TRANSLATION_QUEUED",
@@ -317,4 +319,50 @@ it("explains an out-of-order publish to the clicker", async () => {
   const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string);
   expect(body.text).toContain("same order");
   expect(dispatchSocialWorker).not.toHaveBeenCalled();
+});
+
+it("keeps the source card retryable when a post-ACK translation transaction fails", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  vi.mocked(queueSocialTranslation).mockRejectedValue(
+    Object.assign(new Error("secret caption or token"), {
+      code: "P2028",
+      name: "secret",
+    }),
+  );
+  expect((await POST(request(translateClick))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(queueSocialTranslation).toHaveBeenCalledOnce();
+  expect(dispatchSocialWorker).not.toHaveBeenCalled();
+  expect(refreshSourceMessage).not.toHaveBeenCalled();
+  expect(fetch).toHaveBeenCalledOnce();
+  expect(
+    JSON.parse(vi.mocked(fetch).mock.calls[0][1]?.body as string),
+  ).toMatchObject({
+    response_type: "ephemeral",
+    replace_original: false,
+    text: "Could not queue the translation. Try again.",
+  });
+  expect(log).toHaveBeenCalledWith(
+    "[social-diagnostics]",
+    expect.objectContaining({ stage: "slack.queue", code: "P2028" }),
+  );
+  expect(JSON.stringify(log.mock.calls)).not.toContain("secret");
+  log.mockRestore();
+});
+
+it("caption-only click queues the explicit mode after Slack acknowledgement", async () => {
+  vi.stubEnv("SLACK_SOCIAL_AI_ENABLED", "true");
+  vi.mocked(queueSocialTranslation).mockResolvedValue("queued");
+  const click = {
+    ...translateClick,
+    actions: [{ action_id: "social_translate_caption", value: "src" }],
+  };
+  expect((await POST(request(click))).status).toBe(200);
+  expect(queueSocialTranslation).not.toHaveBeenCalled();
+  await Promise.all(mocks.tasks.map((task) => task()));
+  expect(queueSocialTranslation).toHaveBeenCalledWith(
+    expect.objectContaining({ sourceId: "src", translationMode: "caption" }),
+  );
 });

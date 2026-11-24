@@ -42,8 +42,14 @@ export async function transcreatePost(
   caption: string,
   images: { bytes: Uint8Array; type: string }[],
   locks: SocialCopyLocks = {},
+  mode: "full" | "caption" = "full",
 ): Promise<Transcreation> {
-  if (locks.caption && locks.artworkHeadline && images.length === 1)
+  if (
+    mode === "full" &&
+    locks.caption &&
+    locks.artworkHeadline &&
+    images.length === 1
+  )
     return {
       caption: locks.caption,
       slides: [{ replacements: [], lockedHeadline: locks.artworkHeadline }],
@@ -67,14 +73,23 @@ export async function transcreatePost(
       }),
     ),
   ];
-  const raw = await completeJson(TRANSCREATION_SYSTEM, parts, {
-    maxTokens: 4096,
-    model: socialTextModel(),
-    signal: AbortSignal.timeout(90_000),
-  });
+  const raw = await completeJson(
+    TRANSCREATION_SYSTEM +
+      (mode === "caption"
+        ? "\nThis request is CAPTION ONLY. Use images only as context for the caption. Artwork will remain byte-for-byte unchanged: return empty replacements for every slide, ignore artwork headline locks, and do not suggest artwork edits in notes."
+        : ""),
+    parts,
+    {
+      maxTokens: 4096,
+      model: socialTextModel(),
+      signal: AbortSignal.timeout(90_000),
+    },
+  );
   const plan = parseTranscreation(raw, images.length);
   plan.caption = locks.caption ?? captionOnly(plan.caption);
-  if (locks.artworkHeadline && plan.slides.length === 1)
+  if (mode === "caption")
+    plan.slides = images.map(() => ({ replacements: [] }));
+  if (mode === "full" && locks.artworkHeadline && plan.slides.length === 1)
     plan.slides[0].lockedHeadline = locks.artworkHeadline;
   return plan;
 }

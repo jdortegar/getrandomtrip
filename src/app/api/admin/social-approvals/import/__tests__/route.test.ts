@@ -121,3 +121,28 @@ it("rejects a manual review whose caption contradicts the exact locked caption",
     error: "Locked caption must match the submitted caption exactly",
   });
 });
+
+it("correlates sanitized lookup and persistence failures without changing the public response", async () => {
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  for (const stage of ["lookup", "persist"]) {
+    m.resolve.mockResolvedValue({ id: "ig123" });
+    const failure = Object.assign(new Error("secret token and caption"), {
+      code: "P2028",
+    });
+    if (stage === "lookup") m.resolve.mockRejectedValue(failure);
+    else m.create.mockRejectedValue(failure);
+    const response = await POST(request());
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: "IMPORT_FAILED" });
+    expect(log).toHaveBeenLastCalledWith(
+      "[social-diagnostics]",
+      expect.objectContaining({
+        stage: `import.${stage}`,
+        requestId: response.headers.get("X-Social-Diagnostic-Id"),
+        code: "P2028",
+      }),
+    );
+  }
+  expect(JSON.stringify(log.mock.calls)).not.toContain("secret");
+  log.mockRestore();
+});

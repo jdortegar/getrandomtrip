@@ -124,10 +124,10 @@ describe("resolveClientNotificationHref", () => {
       metadata: { tripRequestId: "t1" },
     });
     expect(resolveClientNotificationHref(notification, "es")).toBe(
-      "/dashboard/trips/t1/reveal",
+      "/dashboard/trips/t1/destination",
     );
     expect(resolveClientNotificationHref(notification, "en")).toBe(
-      "/en/dashboard/trips/t1/reveal",
+      "/en/dashboard/trips/t1/destination",
     );
   });
 

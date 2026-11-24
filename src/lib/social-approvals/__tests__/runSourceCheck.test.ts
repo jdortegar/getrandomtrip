@@ -7,6 +7,7 @@ const m = vi.hoisted(() => ({
   record: vi.fn(),
   recordTs: vi.fn(),
   synced: vi.fn(),
+  refresh: vi.fn(),
 }));
 vi.mock("@/lib/instagram-recap/instagramClient", () => ({
   getProfile: m.profile,
@@ -22,6 +23,7 @@ vi.mock("@/lib/db/socialSources", () => ({
   recordNewSource: m.record,
   recordSourceMessage: m.recordTs,
 }));
+vi.mock("../refreshSocialMessage", () => ({ refreshSourceMessage: m.refresh }));
 import {
   advanceSourceQueue,
   announceNextSourcePost,
@@ -208,4 +210,49 @@ it("leaves a fresh or confirmed card alone", async () => {
     reason: "IN_PROGRESS",
   });
   expect(fetchMock).not.toHaveBeenCalled();
+});
+
+it("repairs the sole announced source card in place without advancing or queueing work", async () => {
+  const pending = row("P2", 2, "ANNOUNCED");
+  m.rows.mockResolvedValue([row("P1", 1, "SYNCED"), pending]);
+  expect(await advanceSourceQueue()).toEqual({
+    announced: 0,
+    reason: "IN_PROGRESS",
+  });
+  expect(m.refresh).toHaveBeenCalledWith(pending, "ANNOUNCED", undefined, {
+    onlyIfAnnounced: true,
+  });
+  expect(m.record).not.toHaveBeenCalled();
+  expect(m.recordTs).not.toHaveBeenCalled();
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+it.each([
+  ["ANNOUNCED", null],
+  ["TRANSLATION_QUEUED", "1.1"],
+  ["TRANSLATION_FAILED", "1.1"],
+])(
+  "does not repair %s without a retryable recorded card",
+  async (status, messageTs) => {
+    m.rows.mockResolvedValue([
+      row("P1", 1, "SYNCED"),
+      row("P2", 2, status!, { messageTs }),
+    ]);
+    await advanceSourceQueue();
+    expect(m.refresh).not.toHaveBeenCalled();
+    expect(m.record).not.toHaveBeenCalled();
+  },
+);
+it("never advances or reposts when repairing an announced card fails", async () => {
+  m.rows.mockResolvedValue([row("P1", 1, "SYNCED"), row("P2", 2, "ANNOUNCED")]);
+  m.refresh.mockRejectedValue(new Error("private upstream data"));
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  expect(await advanceSourceQueue()).toEqual({
+    announced: 0,
+    reason: "IN_PROGRESS",
+  });
+  expect(m.record).not.toHaveBeenCalled();
+  expect(m.recordTs).not.toHaveBeenCalled();
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(JSON.stringify(log.mock.calls)).not.toContain("private");
+  log.mockRestore();
 });

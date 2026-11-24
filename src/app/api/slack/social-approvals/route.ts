@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { logSocialFailure } from "@/lib/social-approvals/socialDiagnostics";
 import { after, NextRequest, NextResponse } from "next/server";
 import {
   refreshSocialMessage,
@@ -112,7 +113,11 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           trigger_id: payload.trigger_id,
-          view: feedbackModal(action, config.secret),
+          view: feedbackModal(
+            action,
+            config.secret,
+            source.translationMode === "caption",
+          ),
         }),
         signal: AbortSignal.timeout(1500),
       });
@@ -242,7 +247,11 @@ async function notifyClicker(action: ApprovalAction, text: string) {
       method: "POST",
       redirect: "error",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ response_type: "ephemeral", text }),
+      body: JSON.stringify({
+        response_type: "ephemeral",
+        replace_original: false,
+        text,
+      }),
       signal: AbortSignal.timeout(5000),
     });
   } catch {
@@ -252,21 +261,38 @@ async function notifyClicker(action: ApprovalAction, text: string) {
 
 /** "Translate this post": queue one paid translation, then hand off to the worker. */
 async function translate(action: ApprovalAction) {
-  const result =
-    process.env.SLACK_SOCIAL_AI_ENABLED === "true"
-      ? await queueSocialTranslation({
-          sourceId: action.id,
-          user: action.user,
-          messageTs: action.messageTs,
-        })
-      : "disabled";
   after(async () => {
+    let result: Awaited<ReturnType<typeof queueSocialTranslation>> | "disabled";
+    try {
+      result =
+        process.env.SLACK_SOCIAL_AI_ENABLED === "true"
+          ? await queueSocialTranslation({
+              sourceId: action.id,
+              translationMode: action.translationMode,
+              user: action.user,
+              messageTs: action.messageTs,
+            })
+          : "disabled";
+    } catch (error) {
+      logSocialFailure("slack.queue", error, { sourceId: action.id });
+      await notifyClicker(
+        action,
+        "Could not queue the translation. Try again.",
+      );
+      return;
+    }
     if (result === "queued") {
-      const source = await prisma.socialSource.findUnique({
-        where: { id: action.id },
-      });
-      if (source?.status === "TRANSLATION_QUEUED")
-        await refreshSourceMessage(source, "TRANSLATION_QUEUED", action.user);
+      try {
+        const source = await prisma.socialSource.findUnique({
+          where: { id: action.id },
+        });
+        if (source?.status === "TRANSLATION_QUEUED")
+          await refreshSourceMessage(source, "TRANSLATION_QUEUED", action.user);
+      } catch {
+        console.error(
+          "[social-approvals] could not refresh queued translation card",
+        );
+      }
       try {
         await dispatchSocialWorker();
       } catch {

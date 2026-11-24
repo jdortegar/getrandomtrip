@@ -8,23 +8,11 @@ import Link from "next/link";
 import SecureRoute from "@/components/auth/SecureRoute";
 import Section from "@/components/layout/Section";
 import HeaderHero from "@/components/journey/HeaderHero";
-import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetailsHero";
+import { TripDetailsHeader } from "@/components/app/dashboard/traveler/TripDetailsHeader";
 import { Button } from "@/components/ui/Button";
 import RemovableTag from "@/components/RemovableTag";
 import { StatusBadge } from "@/components/app/admin/StatusBadge";
-import {
-  Loader2,
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  Users,
-  Moon,
-  Star,
-  CreditCard,
-  Eye,
-  CheckCircle,
-  Info,
-} from "lucide-react";
+import { Loader2, ArrowLeft, Star } from "lucide-react";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import { ADDONS } from "@/lib/data/shared/addons-catalog";
@@ -37,7 +25,7 @@ import {
 import { BuyerTravelDocumentsSection } from "@/components/app/travelers/BuyerTravelDocumentsSection";
 import { hasLocale, type Locale } from "@/lib/i18n/config";
 import type { TravelerRoster } from "@/types/traveler";
-import type { TripDetailsData } from "@/types/tripDetails";
+import type { TripDetailsData, TripPaymentSummary } from "@/types/tripDetails";
 import type { BuyerDocumentsSnapshot } from "@/types/documents";
 import { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 import { TripCostSummary } from "@/components/app/dashboard/traveler/TripCostSummary";
@@ -47,7 +35,15 @@ import { isAwaitingReveal } from "@/lib/utils/trips";
 import { resolveTripTransportLabel } from "@/lib/helpers/transport";
 import { resolveExcuseSelectionLabels } from "@/lib/helpers/excuse-helper";
 import { travelerTypeOf } from "@/lib/db/tripRequestFamily";
-import { ExcuseSummary } from "@/components/common/ExcuseSummary";
+import { PanelCard } from "@/components/common/PanelCard";
+import { TripPaymentCard } from "@/components/app/dashboard/traveler/TripPaymentCard";
+import type { PaymentStatus } from "@prisma/client";
+import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
+import { TripStatusBar } from "@/components/app/dashboard/traveler/TripStatusBar";
+import { TripSetupSummary } from "@/components/app/dashboard/traveler/TripSetupSummary";
+import { TripTimeline } from "@/components/app/dashboard/traveler/TripTimeline";
+import { TripRevealCountdown } from "@/components/app/dashboard/traveler/TripRevealCountdown";
+import { buildTripTimeline } from "@/components/app/dashboard/traveler/tripDetailsHelpers";
 
 interface TripDetails extends BuyerDocumentsSnapshot {
   /**
@@ -68,6 +64,8 @@ interface TripDetails extends BuyerDocumentsSnapshot {
   originCountry: string;
   originCity: string;
   startDate: string;
+  /** IANA zone the start date is interpreted in; drives the reveal countdown. */
+  departureTimeZone?: string | null;
   endDate: string;
   nights: number;
   pax: number;
@@ -96,16 +94,7 @@ interface TripDetails extends BuyerDocumentsSnapshot {
   customerFeedback?: string | null;
 
   // Relations
-  payment?: {
-    id: string;
-    status: string;
-    amount: number;
-    currency?: string;
-    provider: string;
-    providerPaymentId?: string;
-    createdAt: string;
-    paidAt?: string | null;
-  };
+  payment?: TripPaymentSummary & { id: string };
 
   createdAt: string;
   updatedAt: string;
@@ -192,7 +181,7 @@ function TripDetailsContent() {
                 {copy.notFoundDescription}
               </p>
               <Button asChild>
-                <Link href={`/${locale}/dashboard/traveler`}>
+                <Link href={`/${locale}/dashboard/traveler/trips`}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   {copy.backToDashboard}
                 </Link>
@@ -224,11 +213,15 @@ function TripDetailsContent() {
     const categoryLabel = optionDef?.label ?? f.key;
     const selectedOption = optionDef?.options?.find((o) => o.key === f.value);
     const regularLabel = selectedOption?.label ?? f.value;
-    const valueLabel = f.key === "transport"
-      ? resolveTripTransportLabel(
-          trip.type, trip.transport, dict.tripTransport.ownCar, regularLabel,
-        ) ?? regularLabel
-      : regularLabel;
+    const valueLabel =
+      f.key === "transport"
+        ? (resolveTripTransportLabel(
+            trip.type,
+            trip.transport,
+            dict.tripTransport.ownCar,
+            regularLabel,
+          ) ?? regularLabel)
+        : regularLabel;
     return {
       category: categoryLabel,
       value: valueLabel,
@@ -260,15 +253,20 @@ function TripDetailsContent() {
   const ownRow = trip.roster?.travelers.find((t) => t.isSelf);
   const rosterEditable = isCompanion
     ? Boolean(ownRow)
-    : !trip.roster?.locked || trip.roster.travelers.some(hasMissingTravelerDetails);
+    : !trip.roster?.locked ||
+      trip.roster.travelers.some(hasMissingTravelerDetails);
 
   // The buyer's own documents: paid trips only (checkout collects them
   // before payment). Linked = live: they are the buyer's profile documents,
   // so no roster lock applies; only a cancelled trip is read-only (the same
   // rule as the buyer-documents route).
-  const showBuyerDocuments = !isCompanion && trip.payment?.status === "APPROVED";
+  const showBuyerDocuments =
+    !isCompanion && trip.payment?.status === "APPROVED";
   const buyerDocumentsReadOnly = trip.status === "CANCELLED";
 
+  const paymentSettled =
+    !!trip.payment &&
+    SETTLED_PAYMENT_STATUSES.includes(trip.payment.status as PaymentStatus);
   const price = getTripCostDisplay({
     ...trip,
     addons: addonsList,
@@ -288,9 +286,23 @@ function TripDetailsContent() {
 
   return (
     <>
-      <TripDetailsHero
-        copy={dict.tripItinerary.hero}
+      <TripDetailsHeader
+        backHref={`/${locale}/dashboard/traveler/trips`}
+        copy={copy}
+        heroCopy={dict.tripItinerary.hero}
         locale={locale}
+        statusBar={
+          <TripStatusBar
+            description={labelFor(copy.statusDescriptions, trip.status)}
+            label={labelFor(copy.status, trip.status)}
+            status={trip.status}
+          />
+        }
+        revealHref={
+          canRevealDestination
+            ? `/${locale}/dashboard/trips/${trip.id}/destination`
+            : undefined
+        }
         trip={{
           id: trip.id,
           status: trip.status,
@@ -307,455 +319,178 @@ function TripDetailsContent() {
         }}
       />
 
-      <Section>
-        <div className="max-w-6xl mx-auto text-left">
-          {/* Back Button */}
-          <div className="mb-6">
-            <Button variant="ghost" size="sm" className="justify-start" asChild>
-              <Link href={`/${locale}/dashboard/traveler`}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {copy.backToDashboard}
-              </Link>
-            </Button>
-          </div>
+      {isAwaitingReveal(trip.status) && trip.startDate && (
+        <TripRevealCountdown
+          copy={dict.tripReveal}
+          departureTimeZone={trip.departureTimeZone}
+          startDate={trip.startDate}
+        />
+      )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Trip Overview */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <div className="flex items-start justify-between mb-4">
-                  <h2 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
-                    {copy.detailsTitle}
-                  </h2>
-                  <StatusBadge
-                    status={trip.status}
-                    label={labelFor(copy.status, trip.status)}
-                    variant="trip"
-                  />
-                </div>
-
-                {/* Destination Reveal */}
-                {canRevealDestination && (
-                  <div className="mb-6 flex items-center justify-between gap-4 rounded-xl bg-violet-50 p-4">
-                    <div className="flex items-center gap-3">
-                      <Eye className="h-5 w-5 shrink-0 text-violet-700" />
-                      <div>
-                        <h3 className="font-semibold text-violet-900">
-                          {copy.destinationRevealedTitle}
-                        </h3>
-                        <p className="text-sm text-violet-700">
-                          {trip.actualDestination}
-                        </p>
+      <div className="bg-ground">
+        <div className="rt-container py-8 md:py-10">
+          <div className="mx-auto max-w-6xl text-left">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Invite your travel friends / traveler roster */}
+                {trip.roster && trip.roster.cap > 0 && (
+                  <PanelCard>
+                    <TravelerRosterSection
+                      copy={dict.inviteTravelers}
+                      locale={hasLocale(locale) ? (locale as Locale) : "es"}
+                      ref={rosterRef}
+                      roster={trip.roster}
+                    />
+                    {rosterEditable && (
+                      <div className="mt-6">
+                        <Button
+                          aria-busy={savingTravelers}
+                          disabled={savingTravelers}
+                          onClick={() => void handleSaveTravelers()}
+                          size="sm"
+                          variant="default"
+                        >
+                          {savingTravelers && (
+                            <Loader2
+                              aria-hidden
+                              className="h-4 w-4 animate-spin"
+                            />
+                          )}
+                          {savingTravelers
+                            ? dict.inviteTravelers.savingAction
+                            : dict.inviteTravelers.saveAction}
+                        </Button>
                       </div>
-                    </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="rounded-full border-0 shadow-sm"
-                      asChild
-                    >
-                      <Link href={`/${locale}/dashboard/trips/${trip.id}/reveal`}>
-                        {copy.viewRevelationAction}
-                      </Link>
-                    </Button>
-                  </div>
+                    )}
+                  </PanelCard>
                 )}
 
-                {/* Logistics Grid */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="h-4 w-4 text-ink" />
-                      <span className="text-xs text-neutral-600">
-                        {copy.departureFromLabel}
-                      </span>
-                    </div>
-                    <p className="font-medium text-ink">
-                      {trip.originCity}, {trip.originCountry}
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Users className="h-4 w-4 text-ink" />
-                      <span className="text-xs text-neutral-600">
-                        {copy.passengersLabel}
-                      </span>
-                    </div>
-                    <p className="font-medium text-ink">{trip.pax}</p>
-                  </div>
-
-                  <div className="p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="h-4 w-4 text-ink" />
-                      <span className="text-xs text-neutral-600">
-                        {copy.datesLabel}
-                      </span>
-                    </div>
-                    <p className="font-medium text-ink text-sm">
-                      {new Date(trip.startDate).toLocaleDateString(locale, { timeZone: "UTC" })} →{" "}
-                      {new Date(trip.endDate).toLocaleDateString(locale, { timeZone: "UTC" })}
-                    </p>
-                  </div>
-
-                  <div className="p-3 bg-gray-50 rounded-md">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Moon className="h-4 w-4 text-ink" />
-                      <span className="text-xs text-neutral-600">
-                        {copy.nightsLabel}
-                      </span>
-                    </div>
-                    <p className="font-medium text-ink">
-                      {trip.nights}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Invite your travel friends / traveler roster */}
-              {trip.roster && trip.roster.cap > 0 && (
-                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <TravelerRosterSection
-                    copy={dict.inviteTravelers}
-                    locale={hasLocale(locale) ? (locale as Locale) : "es"}
-                    ref={rosterRef}
-                    roster={trip.roster}
-                  />
-                  {rosterEditable && (
-                    <div className="mt-6">
-                      <Button
-                        aria-busy={savingTravelers}
-                        disabled={savingTravelers}
-                        onClick={() => void handleSaveTravelers()}
-                        size="sm"
-                        variant="default"
-                      >
-                        {savingTravelers && <Loader2 aria-hidden className="h-4 w-4 animate-spin" />}
-                        {savingTravelers
-                          ? dict.inviteTravelers.savingAction
-                          : dict.inviteTravelers.saveAction}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {showBuyerDocuments && (
-                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <BuyerTravelDocumentsSection
-                    copy={copy.buyerDocuments}
-                    errorCopy={dict.journey.checkout.errors}
-                    initialValue={{
-                      nationalities: trip.buyerNationalities ?? [],
-                      visas: trip.buyerVisas ?? [],
-                    }}
-                    locale={locale}
-                    readOnly={buyerDocumentsReadOnly}
-                    tripId={trip.id}
-                  />
-                </div>
-              )}
-
-              {/* Filters & Preferences */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
-                  {copy.filtersTitle} ({filterChips.length})
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {filterChips.map((chip, index) => (
-                    <RemovableTag
-                      color="primary"
-                      item={{
-                        key: chip.category ?? String(index),
-                        label: chip.category,
-                        value: chip.value,
+                {showBuyerDocuments && (
+                  <PanelCard>
+                    <BuyerTravelDocumentsSection
+                      copy={copy.buyerDocuments}
+                      errorCopy={dict.journey.checkout.errors}
+                      initialValue={{
+                        nationalities: trip.buyerNationalities ?? [],
+                        visas: trip.buyerVisas ?? [],
                       }}
-                      key={index}
-                      size="md"
+                      locale={locale}
+                      readOnly={buyerDocumentsReadOnly}
+                      tripId={trip.id}
                     />
-                  ))}
-                </div>
+                  </PanelCard>
+                )}
 
-                {trip.avoidDestinations.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-sm font-medium text-neutral-700 mb-2">
-                      {copy.avoidDestinationsLabel}
-                    </p>
+                {/* Your trip: type, level, excuse, filters */}
+                <TripSetupSummary
+                  avoidDestinations={trip.avoidDestinations}
+                  copy={copy}
+                  excuse={excuse}
+                  filters={filterChips.map((chip) => ({
+                    label: chip.category,
+                    value: chip.value,
+                  }))}
+                  items={[
+                    { label: copy.typeLabel, value: typeLabel },
+                    { label: copy.levelLabel, value: levelLabel },
+                  ]}
+                />
+
+                {/* Add-ons */}
+                {addonChips.length > 0 && (
+                  <PanelCard>
+                    <h3 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
+                      {copy.addonsTitle} ({addonChips.length})
+                    </h3>
                     <div className="flex flex-wrap gap-2">
-                      {trip.avoidDestinations.map((dest, index) => (
+                      {addonChips.map((addon: any, index: number) => (
                         <RemovableTag
                           key={index}
                           item={{
-                            key: dest,
-                            label: copy.cityChipLabel,
-                            value: dest,
+                            key: addon.id,
+                            label: addon.category,
+                            value: addon.value,
                           }}
-                          color="secondary"
-                          size="sm"
+                          color="success"
+                          size="md"
                         />
                       ))}
                     </div>
-                  </div>
+                  </PanelCard>
+                )}
+
+                {/* Customer Review */}
+                {trip.customerRating && (
+                  <PanelCard>
+                    <h3 className="font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
+                      {copy.reviewTitle}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-5 w-5 ${
+                            i < (trip.customerRating || 0)
+                              ? "text-feature fill-current"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="font-semibold text-ink">
+                        {(trip.customerRating ?? 0).toFixed(1)}
+                      </span>
+                    </div>
+                    {trip.customerFeedback && (
+                      <p className="text-neutral-700">
+                        {trip.customerFeedback}
+                      </p>
+                    )}
+                  </PanelCard>
                 )}
               </div>
 
-              {/* Add-ons */}
-              {addonChips.length > 0 && (
-                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
-                    {copy.addonsTitle} ({addonChips.length})
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {addonChips.map((addon: any, index: number) => (
-                      <RemovableTag
-                        key={index}
-                        item={{
-                          key: addon.id,
-                          label: addon.category,
-                          value: addon.value,
-                        }}
-                        color="success"
-                        size="md"
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Customer Review */}
-              {trip.customerRating && (
-                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
-                    {copy.reviewTitle}
-                  </h3>
-                  <div className="flex items-center gap-2 mb-3">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-5 w-5 ${
-                          i < (trip.customerRating || 0)
-                            ? "text-feature fill-current"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
-                    <span className="font-semibold text-ink">
-                      {(trip.customerRating ?? 0).toFixed(1)}
-                    </span>
-                  </div>
-                  {trip.customerFeedback && (
-                    <p className="text-neutral-700">{trip.customerFeedback}</p>
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Trip Timeline */}
+                <TripTimeline
+                  completedNote={
+                    trip.status === "COMPLETED" && !trip.customerRating
+                      ? dict.tripReview.emailHint
+                      : undefined
+                  }
+                  copy={copy}
+                  locale={locale}
+                  steps={buildTripTimeline(
+                    { ...trip, paidAt: trip.payment?.paidAt ?? null },
+                    new Date(),
                   )}
-                </div>
-              )}
-            </div>
+                />
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {!isCompanion && <TripCostSummary copy={copy} price={price} />}
+                {/* The estimate until the trip is paid; then the payment card says it. */}
+                {!isCompanion && !paymentSettled && (
+                  <TripCostSummary copy={copy} price={price} />
+                )}
 
-              {/* Payment Info (never sent to companions) */}
-              {!isCompanion && trip.payment && (
-                <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                  <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
-                    {copy.paymentInfoTitle}
-                  </h3>
-                  <div className="space-y-3">
-                    <StatusBadge
-                      status={trip.payment.status}
-                      label={labelFor(copy.paymentStatus, trip.payment.status)}
-                      variant="payment"
-                    />
-
-                    <div className="pt-3 border-t border-gray-200 space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-neutral-600">
-                          {copy.amountLabel}
-                        </span>
-                        <span className="font-semibold text-ink">
-                          {trip.payment.currency ?? "USD"} {(trip.payment?.amount ?? 0).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-neutral-600">
-                          {copy.providerLabel}
-                        </span>
-                        <span className="font-medium text-ink capitalize">
-                          {trip.payment.provider}
-                        </span>
-                      </div>
-                      {trip.payment.providerPaymentId && (
-                        <div className="flex justify-between">
-                          <span className="text-neutral-600">
-                            {copy.paymentIdLabel}
-                          </span>
-                          <span className="font-mono text-xs text-ink">
-                            {trip.payment.providerPaymentId.slice(0, 12)}...
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex justify-between">
-                        <span className="text-neutral-600">
-                          {copy.dateLabel}
-                        </span>
-                        <span className="text-ink">
-                          {new Date(
-                            trip.payment.createdAt,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Trip Timeline */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
-                  {copy.timelineTitle}
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-ink">
-                        {copy.tripCreatedLabel}
-                      </p>
-                      <p className="text-sm text-neutral-600">
-                        {new Date(trip.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-
-                  {trip.payment?.paidAt && (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                        <CreditCard className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-ink">
-                          {copy.paymentConfirmedLabel}
-                        </p>
-                        <p className="text-sm text-neutral-600">
-                          {new Date(trip.payment.paidAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {trip.destinationRevealedAt && (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
-                        <Eye className="h-4 w-4 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-ink">
-                          {copy.timelineDestinationRevealedLabel}
-                        </p>
-                        <p className="text-sm text-neutral-600">
-                          {new Date(
-                            trip.destinationRevealedAt,
-                          ).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {trip.completedAt && (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-ink">
-                          {copy.tripCompletedLabel}
-                        </p>
-                        <p className="text-sm text-neutral-600">
-                          {new Date(trip.completedAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Actions */}
-              <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-                <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
-                  {copy.actionsTitle}
-                </h3>
-                <div className="space-y-3">
-                  {trip.status === "COMPLETED" && !trip.customerRating && (
-                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-                      <p className="text-sm font-medium text-ink">
-                        {dict.tripReview.emailHintTitle}
-                      </p>
-                      <p className="mt-1 text-xs text-gray-500">
-                        {dict.tripReview.emailHint}
-                      </p>
-                    </div>
-                  )}
-
-                  {(isAwaitingReveal(trip.status) ||
-                    trip.status === "REVEALED" ||
-                    trip.status === "COMPLETED") && (
-                    <Button
-                      variant="secondary"
-                      className="w-full justify-start"
-                      asChild
-                    >
-                      <Link href={`/${locale}/dashboard/trips/${trip.id}/reveal`}>
-                        <Calendar className="w-4 h-4 mr-2" />
-                        {copy.viewItineraryAction}
-                      </Link>
-                    </Button>
-                  )}
-
-                  <Button
-                    variant="secondary"
-                    className="w-full justify-start"
-                    asChild
-                  >
-                    <Link href={`/${locale}/dashboard/traveler`}>
-                      <ArrowLeft className="w-4 h-4 mr-2" />
-                      {copy.backToDashboard}
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Trip Info Card */}
-              <div className="rounded-2xl bg-secondary/5 p-6 ring-1 ring-secondary/20">
-                <h3 className="mb-2 flex items-center gap-2 font-barlow-condensed text-lg font-bold uppercase leading-none text-primary">
-                  <Info className="h-4 w-4" />
-                  {copy.tripInfoTitle}
-                </h3>
-                <ul className="text-sm text-neutral-700 space-y-2">
-                  <li>
-                    • {copy.typeLabel}: <strong>{typeLabel}</strong>
-                  </li>
-                  <li>
-                    • {copy.levelLabel}: <strong>{levelLabel}</strong>
-                  </li>
-                  {excuse && (
-                    <li>
-                      <ExcuseSummary
-                        excuse={excuse}
-                        label={`• ${copy.excuseLabel}`}
-                        refineLabel={`• ${copy.refineDetailsLabel}`}
-                      />
-                    </li>
-                  )}
-                  {isAwaitingReveal(trip.status) && <li>• {copy.confirmedHint}</li>}
-                  {trip.status === "REVEALED" && <li>• {copy.revealedHint}</li>}
-                </ul>
+                {/* Payment (never sent to companions) */}
+                {!isCompanion && trip.payment && (
+                  <TripPaymentCard
+                    copy={copy}
+                    locale={locale}
+                    payment={trip.payment}
+                    perPerson={paymentSettled ? price.perPerson : undefined}
+                    receiptHref={
+                      paymentSettled
+                        ? `/api/trips/${trip.id}/receipt`
+                        : undefined
+                    }
+                  />
+                )}
               </div>
             </div>
           </div>
         </div>
-      </Section>
+      </div>
     </>
   );
 }

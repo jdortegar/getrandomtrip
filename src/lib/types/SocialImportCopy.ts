@@ -1,4 +1,10 @@
 export interface SocialImportCopy {
+  check: string;
+  checking: string;
+  checked: string;
+  checkDescription: string;
+  checkError: string;
+  checkBaseline: string;
   title: string;
   description: string;
   url: string;
