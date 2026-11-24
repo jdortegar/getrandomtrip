@@ -11,10 +11,7 @@ describe("component-owned status treatments", () => {
   it.each([
     ["trip", "CONFIRMED", "green"],
     ["trip", "REVEALED", "sky"],
-    ["traveler-trip", "CONFIRMED", "blue"],
-    ["traveler-trip", "REVEALED", "purple"],
     ["experience", "ACTIVE", "green"],
-    ["experience", "PENDING_TRIPPER_REVIEW", "purple"],
     ["payment", "FAILED", "red"],
     ["role", "ADMIN", "purple"],
     ["document", "published", "green"],
@@ -48,6 +45,47 @@ describe("component-owned status treatments", () => {
     expect(html).toContain("uppercase");
     expect(html).toContain("rounded-full");
     expect(html).toContain("Confirmado");
+  });
+
+  it.each([
+    ["CONFIRMED", "bg-secondary/35", "text-primary"],
+    ["REVEALED", "bg-feature/15", "text-ink"],
+    ["COMPLETED", "bg-primary/10", "text-primary"],
+    ["CANCELLED", "bg-red-50", "text-red-800"],
+    ["PENDING_PAYMENT", "bg-ground", "text-neutral-600"],
+  ])("uses brand tones for traveler-trip %s", (status, wash, text) => {
+    const html = renderToStaticMarkup(
+      <StatusIndicatorBadge family="traveler-trip" label="x" status={status} />,
+    );
+    expect(html).toContain(wash);
+    expect(html).toContain(text);
+  });
+
+  it.each([
+    ["experience", "PENDING_REVIEW", "bg-secondary/35"],
+    ["experience", "PENDING_TRIPPER_REVIEW", "bg-primary/10"],
+    ["blog", "PENDING_REVIEW", "bg-secondary/35"],
+    ["blog", "PENDING_TRIPPER_REVIEW", "bg-primary/10"],
+  ] as const)("uses brand tones for %s %s", (family, status, wash) => {
+    const html = renderToStaticMarkup(
+      <StatusIndicatorBadge family={family} label="x" status={status} />,
+    );
+    expect(html).toContain(wash);
+    expect(html).toContain("text-primary");
+  });
+
+  it.each([
+    ["experience", "DRAFT", "bg-feature/15", "text-ink"],
+    ["blog", "DRAFT", "bg-feature/15", "text-ink"],
+    ["experience", "ARCHIVED", "bg-ground", "text-neutral-600"],
+    ["experience", "ACTIVE", "bg-green-50", "text-green-800"],
+    ["experience", "INACTIVE", "bg-red-50", "text-red-800"],
+  ] as const)("maps %s %s to its tone", (family, status, wash, text) => {
+    const html = renderToStaticMarkup(
+      <StatusIndicatorBadge family={family} label="x" status={status} />,
+    );
+    expect(html).toContain(wash);
+    expect(html).toContain(text);
   });
 
   it.each(["unknown", "constructor", "toString"])(
@@ -125,6 +163,6 @@ describe("component-owned status treatments", () => {
       />,
     );
     expect(html).toContain("px-2 py-0.5 text-[10px]");
-    expect(html).toContain("bg-blue-50");
+    expect(html).toContain("bg-secondary/35");
   });
 });

@@ -53,18 +53,37 @@ const TONES = {
     badge: "bg-blue-50 border-blue-200 text-blue-800",
     dot: "bg-blue-500",
   },
+  // Brand tones: traveler-facing surfaces built on the brand palette, where
+  // generic Tailwind hues clash. Text stays Deep Teal or Ink for AA contrast;
+  // Sage and Ochre are too light for text and only tint the wash and dot.
+  brandSage: {
+    badge: "bg-secondary/35 border-secondary text-primary",
+    dot: "bg-primary/50",
+  },
+  brandOchre: {
+    badge: "bg-feature/15 border-feature/50 text-ink",
+    dot: "bg-feature",
+  },
+  brandTeal: {
+    badge: "bg-primary/10 border-primary/25 text-primary",
+    dot: "bg-primary",
+  },
+  brandGround: {
+    badge: "bg-ground border-gray-200 text-neutral-600",
+    dot: "bg-neutral-400",
+  },
 };
 interface StatusFamily {
   fallback: keyof typeof TONES;
   statuses: Record<string, keyof typeof TONES>;
 }
 const TRAVELER_TRIP: StatusFamily = {
-  fallback: "neutral",
+  fallback: "brandGround",
   statuses: {
     CANCELLED: "danger",
-    COMPLETED: "success",
-    CONFIRMED: "booked",
-    REVEALED: "review",
+    COMPLETED: "brandTeal",
+    CONFIRMED: "brandSage",
+    REVEALED: "brandOchre",
   },
 };
 const TRIPPER_BOOKING: StatusFamily = {
@@ -89,9 +108,9 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
   blog: {
     fallback: "warning",
     statuses: {
-      DRAFT: "warning",
-      PENDING_REVIEW: "info",
-      PENDING_TRIPPER_REVIEW: "review",
+      DRAFT: "brandOchre",
+      PENDING_REVIEW: "brandSage",
+      PENDING_TRIPPER_REVIEW: "brandTeal",
       PUBLISHED: "success",
     },
   },
@@ -131,11 +150,11 @@ const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
     fallback: "warning",
     statuses: {
       ACTIVE: "success",
-      ARCHIVED: "inactive",
-      DRAFT: "warning",
+      ARCHIVED: "brandGround",
+      DRAFT: "brandOchre",
       INACTIVE: "danger",
-      PENDING_REVIEW: "info",
-      PENDING_TRIPPER_REVIEW: "review",
+      PENDING_REVIEW: "brandSage",
+      PENDING_TRIPPER_REVIEW: "brandTeal",
     },
   },
   payment: {

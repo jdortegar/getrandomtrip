@@ -789,6 +789,14 @@
         "PENDING_TRIPPER_REVIEW": "Pendiente de revisión del tripper",
         "INACTIVE": "Inactivo",
         "ARCHIVED": "Archivado"
+      },
+      "travelerStatusHint": "Las insignias de viajes del viajero usan los tonos de marca: viven en páginas con la paleta de marca.",
+      "travelerStatuses": {
+        "CONFIRMED": "Confirmado",
+        "REVEALED": "Revelado",
+        "COMPLETED": "Completado",
+        "CANCELLED": "Cancelado",
+        "COLLECTING": "Esperando a tu grupo"
       }
     },
     "headings": {

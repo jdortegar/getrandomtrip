@@ -28,7 +28,7 @@ describe("Badge style ownership", () => {
   });
 
   it.each([
-    ["category", "family", "bg-sky-50"],
+    ["category", "family", "bg-secondary/20"],
     ["approval", "approved", "bg-green-50"],
     ["approval", "pending", "bg-amber-50"],
     ["invitation", "invited", "bg-sky-50"],

@@ -268,13 +268,25 @@ Shape: `rounded-[6px]` with a colored dot — never `rounded-full`. Dict keys mu
 | Status                  | Background  | Text        | Border      | Dot         |
 | ----------------------- | ----------- | ----------- | ----------- | ----------- |
 | `ACTIVE`                | green-50    | green-800   | green-200   | green-500   |
-| `DRAFT`                 | amber-50    | amber-800   | amber-200   | amber-400   |
-| `PENDING_REVIEW`        | sky-50      | sky-800     | sky-200     | sky-500     |
-| `PENDING_TRIPPER_REVIEW`| purple-50   | purple-800  | purple-200  | purple-500  |
+| `DRAFT`                 | feature/15  | ink         | feature/50  | feature     |
+| `PENDING_REVIEW`        | secondary/35 | primary    | secondary   | primary/50  |
+| `PENDING_TRIPPER_REVIEW`| primary/10  | primary     | primary/25  | primary     |
 | `INACTIVE`              | red-50      | red-800     | red-200     | red-500     |
-| `ARCHIVED`              | neutral-50  | neutral-600 | neutral-200 | neutral-400 |
+| `ARCHIVED`              | ground      | neutral-600 | gray-200    | neutral-400 |
 
 `<StatusBadge>` (`variant="trip" | "payment" | "role"`) colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
+
+**Traveler-facing trip badges use brand tones**, not the Tailwind hues above. The `traveler-trip` / `traveler-trip-summary` families (trips list, home upcoming list, trip status bar) sit on brand-palette pages, so `StatusIndicatorBadge` maps them to `brand*` tones. Admin/tripper families keep the semantic Tailwind colors (dense operational tables read faster with conventional green/amber/red).
+
+| Traveler status | Wash / border | Text | Dot |
+| --- | --- | --- | --- |
+| `CONFIRMED` | `secondary/35` / `secondary` | `primary` | `primary/50` |
+| `REVEALED` | `feature/15` / `feature/50` | `ink` | `feature` |
+| `COMPLETED` | `primary/10` / `primary/25` | `primary` | `primary` |
+| `CANCELLED` | red-50 / red-200 | red-800 | red-500 |
+| other | `ground` / gray-200 | neutral-600 | neutral-400 |
+
+Sage and Ochre never carry badge text (below AA on white); they tint the wash and dot only. The `experience` and `blog` review states (`PENDING_REVIEW`, `PENDING_TRIPPER_REVIEW`) use the same sage/teal tones, `DRAFT` uses the Ochre wash and `ARCHIVED` the Off White one; green (`ACTIVE`) and red (`INACTIVE`) stay as the strong live/problem signals. Category/type labels (`Badge kind="category"`, non-XSED `product`) use the sage wash with Deep Teal text, never a status hue.
 
 ### Category / type label (read-only)
 
@@ -287,7 +299,7 @@ Use `<ExperienceTypePills>` from `@/components/common/ExperienceTypePills`. Neve
 Manual chip style when needed outside the component:
 
 ```tsx
-<span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+<span className="rounded-[6px] border border-secondary/60 bg-secondary/20 px-2 py-0.5 text-[11px] font-medium text-primary">
   {label}
 </span>
 ```

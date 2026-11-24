@@ -471,7 +471,15 @@ export interface DesignSystemDict {
       PENDING_REVIEW: string;
       PENDING_TRIPPER_REVIEW: string;
       INACTIVE: string;
-        ARCHIVED: string;
+      ARCHIVED: string;
+    };
+    travelerStatusHint: string;
+    travelerStatuses: {
+      CONFIRMED: string;
+      REVEALED: string;
+      COMPLETED: string;
+      CANCELLED: string;
+      COLLECTING: string;
     };
   };
   headings: {

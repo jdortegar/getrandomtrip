@@ -24,12 +24,14 @@ interface BadgeProps {
 
 const CATEGORY = "border font-medium px-2 py-0.5 rounded-[6px] text-[11px]";
 const SKY = "bg-sky-50 border-sky-200 text-sky-700";
+/** Type labels (what something is) use the brand's Mineral Sage, not a status hue. */
+const SAGE = "bg-secondary/20 border-secondary/60 text-primary";
 const KIND_STYLES = {
   "admin-set": `${CATEGORY} bg-gray-50 border-gray-200 gap-1 inline-flex items-center text-ink`,
   approval: CATEGORY,
   "article-tag":
     "bg-blue-100 font-medium px-2 py-1 rounded-full text-blue-800 text-xs",
-  category: `${CATEGORY} ${SKY}`,
+  category: `${CATEGORY} ${SAGE}`,
   country:
     "border font-medium gap-1.5 inline-flex items-center px-[9px] py-[3px] rounded-[6px] text-[11px] whitespace-nowrap",
   credential:
@@ -67,7 +69,7 @@ export function Badge({ kind = "category", label, value }: BadgeProps) {
   let stateStyle = "";
   if (kind === "product") {
     stateStyle =
-      value?.toLowerCase() === "xsed" ? "bg-xsed border-xsed text-white" : SKY;
+      value?.toLowerCase() === "xsed" ? "bg-xsed border-xsed text-white" : SAGE;
   } else if (kind === "invitation") {
     stateStyle = Object.hasOwn(INVITATION_STYLES, value ?? "")
       ? INVITATION_STYLES[value!]

@@ -789,6 +789,14 @@
         "PENDING_TRIPPER_REVIEW": "Pending tripper review",
         "INACTIVE": "Inactive",
         "ARCHIVED": "Archived"
+      },
+      "travelerStatusHint": "Traveler trip badges use brand tones: they live on brand-palette pages.",
+      "travelerStatuses": {
+        "CONFIRMED": "Confirmed",
+        "REVEALED": "Revealed",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled",
+        "COLLECTING": "Waiting on your group"
       }
     },
     "headings": {
