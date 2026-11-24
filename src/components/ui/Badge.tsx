@@ -1,6 +1,6 @@
 import { Lock, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import styles from "./Badge.module.css";
+import { BADGE_TONES } from "./badgeTones";
 
 interface BadgeProps {
   kind?:
@@ -23,17 +23,13 @@ interface BadgeProps {
 }
 
 const CATEGORY = "border font-medium px-2 py-0.5 rounded-[6px] text-[11px]";
-const SKY = "bg-sky-50 border-sky-200 text-sky-700";
-/** Type labels (what something is) use the brand's Mineral Sage, not a status hue. */
-const SAGE = "bg-secondary/20 border-secondary/60 text-primary";
+const T = BADGE_TONES;
 const KIND_STYLES = {
-  "admin-set": `${CATEGORY} bg-gray-50 border-gray-200 gap-1 inline-flex items-center text-ink`,
+  "admin-set": `${CATEGORY} ${T.ground.badge} gap-1 inline-flex items-center`,
   approval: CATEGORY,
-  "article-tag":
-    "bg-blue-100 font-medium px-2 py-1 rounded-full text-blue-800 text-xs",
-  category: `${CATEGORY} ${SAGE}`,
-  country:
-    "border font-medium gap-1.5 inline-flex items-center px-[9px] py-[3px] rounded-[6px] text-[11px] whitespace-nowrap",
+  "article-tag": `border font-medium px-2 py-1 rounded-full text-xs ${T.category.badge}`,
+  category: `${CATEGORY} ${T.category.badge}`,
+  country: `border font-medium gap-1.5 inline-flex items-center px-[9px] py-[3px] rounded-[6px] text-[11px] whitespace-nowrap ${T.ground.badge}`,
   credential:
     "bg-white/10 inline-flex items-center px-3 py-1 rounded-[6px] text-white text-xs",
   "inspiration-level":
@@ -43,8 +39,7 @@ const KIND_STYLES = {
   "inspiration-type":
     "backdrop-blur-md bg-black/60 border border-white/40 font-semibold px-4 py-2 rounded-sm shadow-lg text-sm text-white",
   invitation: CATEGORY,
-  level:
-    "border font-semibold inline-flex items-center px-2.5 py-1 rounded-[6px] text-[12px] whitespace-nowrap",
+  level: `${CATEGORY} inline-flex items-center whitespace-nowrap ${T.category.badge}`,
   preference:
     "border font-medium gap-1 inline-flex items-center px-2 py-0.5 rounded-full text-xs",
   product: `${CATEGORY} inline-flex items-center whitespace-nowrap`,
@@ -52,9 +47,9 @@ const KIND_STYLES = {
     "bg-emerald-500/90 font-semibold gap-1 inline-flex items-center px-2 py-0.5 rounded-[6px] text-white text-xs",
 };
 const INVITATION_STYLES: Record<string, string> = {
-  alreadyMember: "bg-neutral-50 border-neutral-200 text-neutral-600",
-  expired: "bg-amber-50 border-amber-200 text-amber-700",
-  invited: SKY,
+  alreadyMember: T.ground.badge,
+  expired: T.ochre.badge,
+  invited: T.sage.badge,
 };
 const LEVEL_STYLES: Record<string, string> = {
   atelier: "bg-rose-500",
@@ -69,16 +64,15 @@ export function Badge({ kind = "category", label, value }: BadgeProps) {
   let stateStyle = "";
   if (kind === "product") {
     stateStyle =
-      value?.toLowerCase() === "xsed" ? "bg-xsed border-xsed text-white" : SAGE;
+      value?.toLowerCase() === "xsed"
+        ? "bg-xsed border-xsed text-white"
+        : T.category.badge;
   } else if (kind === "invitation") {
     stateStyle = Object.hasOwn(INVITATION_STYLES, value ?? "")
       ? INVITATION_STYLES[value!]
-      : SKY;
+      : T.sage.badge;
   } else if (kind === "approval") {
-    stateStyle =
-      value === "approved"
-        ? "bg-green-50 border-green-200 text-green-700"
-        : "bg-amber-50 border-amber-200 text-amber-700";
+    stateStyle = value === "approved" ? T.success.badge : T.ochre.badge;
   } else if (kind === "inspiration-level") {
     stateStyle = Object.hasOwn(LEVEL_STYLES, value ?? "")
       ? LEVEL_STYLES[value!]
@@ -90,8 +84,6 @@ export function Badge({ kind = "category", label, value }: BadgeProps) {
         "uppercase",
         KIND_STYLES[kind],
         stateStyle,
-        kind === "country" && styles.country,
-        kind === "level" && styles.level,
         kind === "credential" && "md:text-sm",
       )}
       data-component="Badge"

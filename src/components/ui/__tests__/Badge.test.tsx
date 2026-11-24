@@ -30,13 +30,13 @@ describe("Badge style ownership", () => {
   it.each([
     ["category", "family", "bg-secondary/20"],
     ["approval", "approved", "bg-green-50"],
-    ["approval", "pending", "bg-amber-50"],
-    ["invitation", "invited", "bg-sky-50"],
-    ["invitation", "expired", "bg-amber-50"],
-    ["invitation", "alreadyMember", "bg-neutral-50"],
-    ["country", "AR", "country"],
-    ["level", "essenza", "level"],
-    ["article-tag", "family", "bg-blue-100"],
+    ["approval", "pending", "bg-feature/15"],
+    ["invitation", "invited", "bg-secondary/35"],
+    ["invitation", "expired", "bg-feature/15"],
+    ["invitation", "alreadyMember", "bg-ground"],
+    ["country", "AR", "bg-ground"],
+    ["level", "essenza", "bg-secondary/20"],
+    ["article-tag", "family", "bg-secondary/20"],
     ["credential", "ambassador", "bg-white/10"],
     ["inspiration-type", "couple", "bg-black/60"],
     ["inspiration-level", "essenza", "bg-amber-500"],
@@ -66,16 +66,17 @@ describe("Badge style ownership", () => {
     );
   });
 
-  it("preserves local legacy treatments and inherited level line height", () => {
+  it("uses the shared brand tones instead of hardcoded hex palettes", () => {
     const country = renderToStaticMarkup(
       <Badge kind="country" label="Argentina" />,
     );
     const level = renderToStaticMarkup(<Badge kind="level" label="Essenza" />);
-    expect(country).toContain("country");
-    expect(level).toContain("text-[12px]");
-    expect(level).not.toContain("text-xs");
-    expect(country).not.toContain("var(--");
-    expect(level).not.toContain("var(--");
+    expect(country).toContain("bg-ground");
+    expect(level).toContain("bg-secondary/20 border-secondary/60 text-primary");
+    for (const html of [country, level]) {
+      expect(html).not.toMatch(/(sky|blue|amber|gray)-50/);
+      expect(html).not.toContain("var(--");
+    }
   });
 
   it("keeps preference tags round and read-only", () => {

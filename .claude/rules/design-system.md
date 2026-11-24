@@ -265,28 +265,22 @@ Use `<ExperienceStatusBadge>` from `@/components/common/ExperienceStatusBadge`, 
 
 Shape: `rounded-[6px]` with a colored dot — never `rounded-full`. Dict keys must match Prisma enum exactly (SCREAMING_SNAKE_CASE).
 
-| Status                  | Background  | Text        | Border      | Dot         |
-| ----------------------- | ----------- | ----------- | ----------- | ----------- |
-| `ACTIVE`                | green-50    | green-800   | green-200   | green-500   |
-| `DRAFT`                 | feature/15  | ink         | feature/50  | feature     |
-| `PENDING_REVIEW`        | secondary/35 | primary    | secondary   | primary/50  |
-| `PENDING_TRIPPER_REVIEW`| primary/10  | primary     | primary/25  | primary     |
-| `INACTIVE`              | red-50      | red-800     | red-200     | red-500     |
-| `ARCHIVED`              | ground      | neutral-600 | gray-200    | neutral-400 |
+Every family maps its statuses onto **one brand-aligned tone set**, `BADGE_TONES` in `src/components/ui/badgeTones.ts`, shared by `StatusIndicatorBadge` and `Badge` (plus `category` for type and level labels). Never add a tone with a generic Tailwind hue (sky, purple, blue, amber, gray) — a test fails if one appears.
 
-`<StatusBadge>` (`variant="trip" | "payment" | "role"`) colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
+| Tone | Meaning | Wash / border | Text | Dot | Examples |
+| --- | --- | --- | --- | --- | --- |
+| `success` | live / done well | green-50 / green-200 | green-800 | green-500 | `ACTIVE`, `PUBLISHED`, payment `APPROVED`, email `DELIVERED` |
+| `danger` | problem | red-50 / red-200 | red-800 | red-500 | `INACTIVE`, `CANCELLED`, `FAILED`, `BOUNCED` |
+| `ochre` | needs attention / pending; the reveal | `feature/15` / `feature/50` | `ink` | `feature` | `DRAFT`, `PENDING_PAYMENT`, payment `PENDING`, trip `REVEALED` |
+| `sage` | in progress / booked | `secondary/35` / `secondary` | `primary` | `primary/50` | trip `CONFIRMED`, `PENDING_REVIEW`, `SENDING`, `INVITED` |
+| `teal` | finished / with the tripper | `primary/10` / `primary/25` | `primary` | `primary` | trip `COMPLETED`, `PENDING_TRIPPER_REVIEW`, role `ADMIN` |
+| `ground` | inactive / other | `ground` / gray-200 | neutral-600 | neutral-400 | `ARCHIVED`, `SAVED`, `QUEUED`, `REFUNDED`, unknown |
 
-**Traveler-facing trip badges use brand tones**, not the Tailwind hues above. The `traveler-trip` / `traveler-trip-summary` families (trips list, home upcoming list, trip status bar) sit on brand-palette pages, so `StatusIndicatorBadge` maps them to `brand*` tones. Admin/tripper families keep the semantic Tailwind colors (dense operational tables read faster with conventional green/amber/red).
+Trip statuses read the same in traveler and admin views (`TRIP_LIFECYCLE`); the traveler view only calms `COLLECTING` to `ground` since the traveler isn't asked to act. Sage and Ochre never carry badge text (below AA on white); they tint the wash and dot only. All text is ≥ 6:1 on its wash.
 
-| Traveler status | Wash / border | Text | Dot |
-| --- | --- | --- | --- |
-| `CONFIRMED` | `secondary/35` / `secondary` | `primary` | `primary/50` |
-| `REVEALED` | `feature/15` / `feature/50` | `ink` | `feature` |
-| `COMPLETED` | `primary/10` / `primary/25` | `primary` | `primary` |
-| `CANCELLED` | red-50 / red-200 | red-800 | red-500 |
-| other | `ground` / gray-200 | neutral-600 | neutral-400 |
+`<StatusBadge>` (`variant="trip" | "payment" | "role"`) renders through `StatusIndicatorBadge`. Always pass a translated `label`; never render the raw enum `status` as text.
 
-Sage and Ochre never carry badge text (below AA on white); they tint the wash and dot only. The `experience` and `blog` review states (`PENDING_REVIEW`, `PENDING_TRIPPER_REVIEW`) use the same sage/teal tones, `DRAFT` uses the Ochre wash and `ARCHIVED` the Off White one; green (`ACTIVE`) and red (`INACTIVE`) stay as the strong live/problem signals. Category/type labels (`Badge kind="category"`, non-XSED `product`) use the sage wash with Deep Teal text, never a status hue.
+Category/type labels (`Badge kind="category"`, non-XSED `product`) use the sage wash (`secondary/20` / `secondary/60`) with Deep Teal text, never a status hue.
 
 ### Category / type label (read-only)
 
@@ -304,7 +298,7 @@ Manual chip style when needed outside the component:
 </span>
 ```
 
-Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip treatment.
+Level: `<Badge kind="level">` in the same row and the same `category` tone as the type chips. Types and level share one color — don't give the level or each type its own.
 
 Existing XSED category badges/chips use `<ProductBadge value={label} />`. It uppercases only the exact product marker and uses `bg-xsed` with `text-white`, as explicitly requested. White text on the existing orange does not meet WCAG AA for small text. This is a **badge-only** treatment: never wrap navigation, headings, tabs, prose, or plain summary/level text. Keep translated TGIS labels and free-form content unchanged. Do not use the legacy red `xsed-50`–`xsed-800` scale for orange branding.
 
