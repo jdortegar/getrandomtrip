@@ -948,6 +948,12 @@
   border-radius: 50%;
   background: var(--color-feature);
 }
+.replayActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 32px;
+}
 .root .replayButton {
   display: inline-flex;
   align-items: center;

@@ -10,7 +10,7 @@ export function resolveClientNotificationHref(
   if (!metadata) return null;
 
   if ("tripRequestId" in metadata && metadata.tripRequestId) {
-    const suffix = type === "BOOKING_REVEALED" ? "/reveal" : "";
+    const suffix = type === "BOOKING_REVEALED" ? "/destination" : "";
     return pathForLocale(
       locale as Locale,
       `/dashboard/trips/${metadata.tripRequestId}${suffix}`,

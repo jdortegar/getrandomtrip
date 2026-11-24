@@ -22,6 +22,7 @@ export function ControlExamples({ copy }: ControlExamplesProps) {
   const [notes, setNotes] = useState("");
   const [updates, setUpdates] = useState(false);
   const [quantity, setQuantity] = useState(2);
+  const [publicName, setPublicName] = useState(copy.controls.counterValue);
   const labels = copy.controls;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -89,6 +90,15 @@ export function ControlExamples({ copy }: ControlExamplesProps) {
             value={labels.readOnlyValue}
           />
           <FormField
+            hint={labels.counterHint}
+            id="demo-counter"
+            label={labels.counter}
+            maxLength={40}
+            onChange={(event) => setPublicName(event.target.value)}
+            showCount
+            value={publicName}
+          />
+          <FormField
             disabled
             id="demo-disabled"
             label={labels.disabled}
@@ -129,7 +139,8 @@ export function ControlExamples({ copy }: ControlExamplesProps) {
       </div>
       <UsageExample
         code={`<FormField id="email" label={copy.email} name="email" required type="email" />
-<TextAreaInput id="notes" label={copy.notes} onChange={handleChange} value={notes} />
+<TextAreaInput hint={copy.notesHint} id="notes" label={copy.notes} maxLength={120} onChange={handleChange} value={notes} />
+<FormField hint={copy.nameHint} id="name" label={copy.name} maxLength={40} showCount value={name} />
 <Switch checked={updates} id="updates" onCheckedChange={setUpdates} />`}
         label={copy.usage}
       />

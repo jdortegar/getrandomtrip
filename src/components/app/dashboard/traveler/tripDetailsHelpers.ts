@@ -9,6 +9,7 @@ import {
   getDepartureCountdown,
 } from "@/lib/helpers/getRevealCountdown";
 import { interpolateTemplate } from "@/lib/helpers/interpolateTemplate";
+import type { TripTimelineStep } from "@/types/tripDetails";
 
 interface DestinationLikeTrip {
   actualDestination: string | null;
@@ -201,4 +202,94 @@ export function resolveGuidePhotos(trip: PhotoLikeTrip, fallback: string): strin
   const unique = [...new Set(photos)];
   if (unique.length) return unique;
   return [experience?.heroImage?.trim() || fallback];
+}
+
+interface TimelineLikeTrip {
+  status: string;
+  createdAt: string;
+  startDate: string | null;
+  endDate: string | null;
+  destinationRevealedAt?: string | null;
+  completedAt?: string | null;
+  updatedAt?: string | null;
+  /** The buyer's payment date; companions never receive payment data. */
+  paidAt?: string | null;
+}
+
+const PAID_STATUSES = new Set(["CONFIRMED", "REVEALED", "COMPLETED"]);
+
+/**
+ * The trip's lifecycle as an ordered list of milestones for the timeline:
+ * created → paid → revealed → departure → completed. Reached steps are
+ * `done`, the first unreached one is `current`, the rest `upcoming`. A
+ * cancelled trip keeps the steps it reached and ends on a `cancelled` step
+ * — no future milestones.
+ */
+export function buildTripTimeline(trip: TimelineLikeTrip, now: Date): TripTimelineStep[] {
+  const isCancelled = trip.status === "CANCELLED";
+  const isCompleted = trip.status === "COMPLETED";
+  const departed = !!trip.startDate && new Date(trip.startDate).getTime() <= now.getTime();
+  const revealed = !!trip.destinationRevealedAt || trip.status === "REVEALED" || isCompleted;
+
+  const candidates: Array<Omit<TripTimelineStep, "state"> & { reached: boolean }> = [
+    { key: "created", date: trip.createdAt, reached: true },
+    {
+      key: "paid",
+      date: trip.paidAt ?? null,
+      reached: !!trip.paidAt || PAID_STATUSES.has(trip.status),
+    },
+    {
+      key: "revealed",
+      date: trip.destinationRevealedAt ?? null,
+      reached: revealed,
+    },
+    {
+      key: "departure",
+      date: trip.startDate,
+      dateOnly: true,
+      // A trip can't have started before its destination was revealed —
+      // a CONFIRMED trip past its start date still waits on the reveal.
+      reached: isCompleted || (departed && revealed && !isCancelled),
+    },
+    {
+      key: "completed",
+      date: trip.completedAt ?? trip.endDate,
+      dateOnly: !trip.completedAt,
+      reached: isCompleted,
+    },
+  ];
+
+  if (isCancelled) {
+    return [
+      ...candidates
+        .filter((step) => step.reached)
+        .map(({ reached: _reached, ...step }) => ({ ...step, state: "done" as const })),
+      { key: "cancelled", state: "done", date: trip.updatedAt ?? null },
+    ];
+  }
+
+  let currentAssigned = false;
+  return candidates.map(({ reached, ...step }) => {
+    if (reached) return { ...step, state: "done" };
+    if (!currentAssigned) {
+      currentAssigned = true;
+      return { ...step, state: "current" };
+    }
+    return { ...step, state: "upcoming" };
+  });
+}
+
+/** Timeline date: "12 mar 2026" — calendar dates (start/end) in UTC so they never shift a day. */
+export function formatTimelineDate(
+  date: string | null,
+  locale: string,
+  dateOnly = false,
+): string | null {
+  if (!date) return null;
+  return new Intl.DateTimeFormat(resolveLocaleTag(locale), {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    ...(dateOnly ? { timeZone: "UTC" } : {}),
+  }).format(new Date(date));
 }

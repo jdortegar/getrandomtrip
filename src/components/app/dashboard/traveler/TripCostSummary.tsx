@@ -1,3 +1,4 @@
+import { PanelCard } from "@/components/common/PanelCard";
 import type { MarketingDictionary } from "@/lib/types/dictionary";
 import type { getTripCostDisplay } from "@/lib/helpers/trip-cost-display";
 
@@ -26,10 +27,7 @@ export function TripCostSummary({ copy, price }: TripCostSummaryProps) {
       ]
     : [];
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-md ring-1 ring-gray-100">
-      <h3 className="mb-4 font-barlow-condensed text-lg font-bold uppercase leading-none text-ink">
-        {copy.costsTitle}
-      </h3>
+    <PanelCard title={copy.costsTitle}>
       <div className="space-y-3">
         {lines.map(({ label, value }) => (
           <div
@@ -58,6 +56,6 @@ export function TripCostSummary({ copy, price }: TripCostSummaryProps) {
           <span className="font-medium">{amount(price.perPerson)}</span>
         </div>
       </div>
-    </div>
+    </PanelCard>
   );
 }

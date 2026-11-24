@@ -45,7 +45,7 @@ describe("DestinationRevealed — does not leak the destination", () => {
     expect(html).toContain(baseProps.departureDate);
     expect(html).toContain(baseProps.returnDate);
     expect(html).toContain(
-      `/es/dashboard/trips/${baseProps.tripId}/reveal`,
+      `/es/dashboard/trips/${baseProps.tripId}/destination`,
     );
   });
 });

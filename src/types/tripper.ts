@@ -553,3 +553,146 @@ export type TripperContextState =
   | { status: "none" }
   | { status: "ok"; context: TripperJourneyContext }
   | { status: "unavailable"; name?: string };
+
+// ─── Tripper profile editor (Tripper OS · Mi perfil) ─────────────────────────
+
+/** Review lifecycle of a Tripper profile: draft → in review → approved, or back with changes requested. */
+export type TripperProfileStatus =
+  | "DRAFT"
+  | "PENDING_REVIEW"
+  | "CHANGES_REQUESTED"
+  | "APPROVED";
+
+/** The six editor steps, in order. */
+export type TripperProfileStepId =
+  | "identity"
+  | "perspective"
+  | "travelerTypes"
+  | "atlas"
+  | "media"
+  | "stories";
+
+/** Traveler types a Tripper can present on the profile (SOLUM, BOND, CREW). */
+export type TripperProfileTravelerType = "solo" | "couple" | "group";
+
+/** Affinity theme keys; labels live in the dictionary under `tripperProfileEditor.perspective.affinityOptions`. */
+export type TripperProfileAffinity =
+  | "backRoads"
+  | "localTables"
+  | "slowTravel"
+  | "natureMountains"
+  | "designCulture"
+  | "cityLife"
+  | "seaCoast"
+  | "outdoorAdventure"
+  | "wellnessPause";
+
+export interface TripperProfileIdentity {
+  city: string;
+  /** Accessible description of the cover image (not rendered as a title). */
+  coverAlt: string;
+  coverCaption: string;
+  coverUrl: string;
+  /** ISO 3166-1 alpha-2 code of the country of residence. */
+  countryCode: string;
+  headline: string;
+  name: string;
+  portraitUrl: string;
+  slug: string;
+}
+
+export interface TripperProfileBio {
+  affinities: TripperProfileAffinity[];
+  body: string;
+  lead: string;
+  /** Anecdote or ritual shown inside the "a bit more about me" disclosure. */
+  more: string;
+  title: string;
+}
+
+export interface TripperProfileTravelerTypeCard {
+  enabled: boolean;
+  imageUrl: string;
+  text: string;
+}
+
+export interface TripperProfilePlace {
+  /** Optional town/city; a place can be a whole country. */
+  city?: string;
+  /** Map pin; absent until places come from a geo catalog with coordinates. */
+  coordinates?: { lat: number; lng: number };
+  /** ISO 3166-1 alpha-2 code. */
+  countryCode: string;
+  id: string;
+  /** Knows the place in depth (local knowledge), not just visited it. */
+  isLocalExpert: boolean;
+  /** Related published blog post id; empty until the Tripper has stories. */
+  storyId?: string;
+}
+
+export type TripperProfileMediaProvider = "youtube" | "instagram" | "tiktok" | "upload";
+
+export interface TripperProfileMediaItem {
+  id: string;
+  isVisible: boolean;
+  posterUrl: string;
+  provider: TripperProfileMediaProvider;
+  title: string;
+  /** Public post URL, or the uploaded file URL when provider is "upload". */
+  url: string;
+}
+
+export interface TripperProfileGalleryItem {
+  /** Caption, also used as the accessible description. */
+  caption: string;
+  id: string;
+  kind: "photo" | "video";
+  url: string;
+}
+
+export interface TripperProfileMedia {
+  gallery: TripperProfileGalleryItem[];
+  items: TripperProfileMediaItem[];
+  linkedinUrl: string;
+  websiteUrl: string;
+}
+
+/** Full editable profile content (the draft the Tripper submits for review). */
+export interface TripperProfileDraft {
+  bio: TripperProfileBio;
+  featuredStoryIds: string[];
+  identity: TripperProfileIdentity;
+  media: TripperProfileMedia;
+  places: TripperProfilePlace[];
+  travelerTypes: Record<TripperProfileTravelerType, TripperProfileTravelerTypeCard>;
+}
+
+/** A published blog post the Tripper can feature or link to an atlas place. */
+export interface TripperProfileStoryOption {
+  /** Byline when the story isn't the Tripper's own (editorial fallback). */
+  author?: string;
+  category: string;
+  href: string;
+  id: string;
+  imageUrl: string;
+  /** Estimated reading time, in minutes. */
+  minutes?: number;
+  title: string;
+}
+
+/** Per-step completion used by the step nav and the essentials counter. */
+export interface TripperProfileStepProgress {
+  /** Required step whose essentials are filled, or optional step with content. */
+  complete: boolean;
+  essential: boolean;
+  id: TripperProfileStepId;
+}
+
+/** Who wrote the stories shown on the public profile. */
+export type TripperProfileStorySource = "tripper" | "editorial";
+
+/** Places sharing a country, for the public atlas list. */
+export interface TripperProfileCountryGroup {
+  countryCode: string;
+  places: TripperProfilePlace[];
+}
