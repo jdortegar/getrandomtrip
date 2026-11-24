@@ -4,7 +4,9 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { TripRevealCountdown } from "@/components/app/dashboard/traveler/TripRevealCountdown";
 import es from "@/dictionaries/es.json";
 
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 let container: HTMLDivElement;
 let root: Root;
@@ -47,7 +49,9 @@ it("counts down to the reveal on a high-contrast teal panel", () => {
   expect(container.textContent).not.toContain("diciembre");
 
   act(() => vi.advanceTimersByTime(1000));
-  expect(container.querySelector('[role="timer"]')?.textContent).toContain("59");
+  expect(container.querySelector('[role="timer"]')?.textContent).toContain(
+    "59",
+  );
 });
 
 it("shows the being-prepared note once the reveal moment has passed", () => {

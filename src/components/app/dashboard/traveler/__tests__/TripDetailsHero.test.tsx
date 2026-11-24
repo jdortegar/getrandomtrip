@@ -5,7 +5,6 @@ import { TripDetailsHero } from "@/components/app/dashboard/traveler/TripDetails
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDetailsData } from "@/types/tripDetails";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: TripItineraryDict["hero"] = {
@@ -140,7 +139,9 @@ describe("TripDetailsHero — REVEALED status (unchanged behavior)", () => {
       trip({
         status: "REVEALED",
         actualDestination: "Rio de Janeiro, Brazil",
-        startDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 60_000).toISOString(),
+        startDate: new Date(
+          Date.now() + 3 * 24 * 60 * 60 * 1000 + 60_000,
+        ).toISOString(),
       }),
     );
 

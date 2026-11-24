@@ -6413,7 +6413,7 @@
       "emptyFiltered": "No hay viajes que coincidan con este filtro.",
       "errorLoad": "No se pudieron cargar los viajes. Intenta de nuevo.",
       "experienceLabel": "Experiencia",
-      "eyebrow": "Inventario",
+      "eyebrow": "Tu historial",
       "filterAll": "Todos",
       "filterCompleted": "Completados",
       "filterLabel": "Estado del viaje",
@@ -6448,6 +6448,9 @@
       "paidOn": "Pagado el",
       "title": "Viajes realizados",
       "totalLabel": "viajes",
+      "nightOne": "1 noche",
+      "nights": "{{n}} noches",
+      "travelers": "{{n}} viajeros",
       "viewMore": "Ver mas"
     },
     "common": {
@@ -6550,10 +6553,10 @@
       "emptyTitle": "No tienes viajes proximos",
       "newTrip": "Nuevo Viaje",
       "title": "Proximos Viajes",
-      "viewDetails": "Ver Detalles",
+      "viewDetails": "Ver detalles",
       "revealCountdown": "Cuenta Regresiva",
-      "revealDestination": "Ver Destino",
-      "writeReview": "Dejar Reseña"
+      "revealDestination": "Ver destino",
+      "writeReview": "Dejar reseña"
     }
   },
   "tripperReviews": {

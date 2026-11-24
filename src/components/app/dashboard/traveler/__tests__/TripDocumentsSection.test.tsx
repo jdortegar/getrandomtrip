@@ -5,12 +5,16 @@ import { TripDocumentsSection } from "../TripDocumentsSection";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { TripDocumentDTO } from "@/types/tripDocument";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: Pick<
   TripItineraryDict,
-  "documentsNote" | "documentsCancelledNote" | "documentsEmpty" | "view" | "download" | "documents"
+  | "documentsNote"
+  | "documentsCancelledNote"
+  | "documentsEmpty"
+  | "view"
+  | "download"
+  | "documents"
 > = {
   documentsNote: "These are yours alone.",
   documentsCancelledNote: "This trip is cancelled.",
@@ -42,12 +46,23 @@ function doc(overrides: Partial<TripDocumentDTO> = {}): TripDocumentDTO {
 let container: HTMLDivElement;
 let root: Root;
 
-function render(documents: TripDocumentDTO[], status = "REVEALED", locale = "en") {
+function render(
+  documents: TripDocumentDTO[],
+  status = "REVEALED",
+  locale = "en",
+) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
-    root.render(<TripDocumentsSection copy={copy} documents={documents} locale={locale} status={status} />);
+    root.render(
+      <TripDocumentsSection
+        copy={copy}
+        documents={documents}
+        locale={locale}
+        status={status}
+      />,
+    );
   });
 }
 

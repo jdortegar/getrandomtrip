@@ -58,7 +58,7 @@ export default async function TravelerNotificationsPage(props: {
   ]);
 
   return (
-    <Section className="py-10!">
+    <Section className="py-10!" variant="ground">
       <div className="rt-container text-left">
         <TravelerNotificationsPageClient
           audience="TRAVELER"

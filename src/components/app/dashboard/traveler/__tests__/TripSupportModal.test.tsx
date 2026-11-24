@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripSupportModal } from "../TripSupportModal";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: Pick<TripItineraryDict, "support"> = {
@@ -125,7 +124,9 @@ describe("TripSupportModal", () => {
     });
 
     await act(async () => {
-      findButton("Send")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      findButton("Send")?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -155,7 +156,9 @@ describe("TripSupportModal", () => {
     });
 
     await act(async () => {
-      findButton("Send")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      findButton("Send")?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -175,7 +178,9 @@ describe("TripSupportModal", () => {
     });
 
     await act(async () => {
-      findButton("Send")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      findButton("Send")?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true }),
+      );
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -183,7 +188,6 @@ describe("TripSupportModal", () => {
     expect(document.body.textContent).toContain("Could not send your message.");
   });
 });
-
 
 describe("TripSupportModal compose session", () => {
   it.each([true, false])(

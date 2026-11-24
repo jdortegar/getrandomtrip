@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import { TripEssentialsStrip } from "../TripEssentialsStrip";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: TripItineraryDict["essentials"] = {

@@ -1320,6 +1320,12 @@ export interface DashboardDict {
     paidOn: string;
     title: string;
     totalLabel: string;
+    /** Trip length when it is a single night. */
+    nightOne: string;
+    /** "{{n}} nights" — `n` is the night count (2+). */
+    nights: string;
+    /** "{{n}} travelers" — `n` is the headcount. */
+    travelers: string;
     viewMore: string;
   };
   common: {

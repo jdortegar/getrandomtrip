@@ -160,7 +160,11 @@ it("preserves heading, dropdown and pager across deferred page/filter refreshes"
   expect(panel().getAttribute("aria-busy")).toBe("true");
   await settle(2, "upcoming-trip");
   expect(panel().getAttribute("aria-busy")).toBe("false");
-  expect(container.querySelector("tbody")?.closest("[inert]")).toBeNull();
+  expect(
+    container
+      .querySelector('[data-component="TravelerTripRow"]')
+      ?.closest("[inert]"),
+  ).toBeNull();
 
   act(() => button(en.common.pagination.next).click());
   await settle(3, "upcoming-page-two");
@@ -213,7 +217,11 @@ it("combines experience/type/status/search before pagination and resets only cha
   expect(requests).toHaveLength(6);
   search("  Buenos Aires  ");
   expect(panel().getAttribute("aria-busy")).toBe("true");
-  expect(container.querySelector("tbody")?.closest("[inert]")).not.toBeNull();
+  expect(
+    container
+      .querySelector('[data-component="TravelerTripRow"]')
+      ?.closest("[inert]"),
+  ).not.toBeNull();
   expect(requests).toHaveLength(6);
   act(() => vi.advanceTimersByTime(349));
   expect(requests).toHaveLength(6);
@@ -353,7 +361,9 @@ it.each(["en", "es"] as const)(
     expect(container.querySelector('[role="alert"]')?.textContent).toContain(
       copy.errorLoad,
     );
-    expect(container.querySelector("tbody")).toBeNull();
+    expect(
+      container.querySelector('[data-component="TravelerTripRow"]'),
+    ).toBeNull();
     expect(container.textContent).not.toContain(copy.emptyFiltered);
     expect(container.querySelector("h2")).toBe(heading);
     expect(container.querySelector("select")).toBe(select);
@@ -451,7 +461,11 @@ it.each(["debounce", "refetch", "error"])(
     );
     expect(container.querySelector('[role="alert"]')).toBeNull();
     expect(panel().getAttribute("aria-busy")).toBe("true");
-    expect(container.querySelector("tbody")?.closest("[inert]")).not.toBeNull();
+    expect(
+      container
+        .querySelector('[data-component="TravelerTripRow"]')
+        ?.closest("[inert]"),
+    ).not.toBeNull();
     act(() => vi.advanceTimersByTime(500));
     expect(requests).toHaveLength(previousCount + 1);
     await settle(previousCount, "cleared-trip");

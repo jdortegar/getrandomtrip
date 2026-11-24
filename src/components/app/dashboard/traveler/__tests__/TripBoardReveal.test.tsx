@@ -19,7 +19,9 @@ import {
 import en from "@/dictionaries/en.json";
 import { NavbarChromeContext } from "@/context/NavbarChromeContext";
 
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 const TRIP_ID = "trip-123";
 const copy = en.tripItinerary.boardReveal;
@@ -44,7 +46,9 @@ function mockReducedMotion(matches: boolean) {
     addListener: vi.fn(),
     removeListener: vi.fn(),
   });
-  vi.spyOn(window, "matchMedia").mockReturnValue(media as unknown as MediaQueryList);
+  vi.spyOn(window, "matchMedia").mockReturnValue(
+    media as unknown as MediaQueryList,
+  );
   return media;
 }
 
@@ -57,7 +61,13 @@ function render(onComplete = vi.fn(), destination = "Mendoza") {
   root = createRoot(container);
   act(() => {
     root.render(
-      <TripBoardReveal copy={copy} destination={destination} locale="en" onComplete={onComplete} tripId={TRIP_ID}>
+      <TripBoardReveal
+        copy={copy}
+        destination={destination}
+        locale="en"
+        onComplete={onComplete}
+        tripId={TRIP_ID}
+      >
         <h1 data-testid="hero-title">Mendoza, Argentina</h1>
       </TripBoardReveal>,
     );
@@ -65,12 +75,18 @@ function render(onComplete = vi.fn(), destination = "Mendoza") {
   return onComplete;
 }
 
-const wrap = () => container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')!;
-const content = () => container.querySelector('[data-testid="hero-title"]')!.parentElement!;
+const wrap = () =>
+  container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')!;
+const content = () =>
+  container.querySelector('[data-testid="hero-title"]')!.parentElement!;
 const ctaButton = () =>
-  Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(copy.cta));
+  Array.from(container.querySelectorAll("button")).find((b) =>
+    b.textContent?.includes(copy.cta),
+  );
 const skipButton = () =>
-  Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(copy.skip));
+  Array.from(container.querySelectorAll("button")).find((b) =>
+    b.textContent?.includes(copy.skip),
+  );
 const boardText = () =>
   Array.from(container.querySelectorAll("[data-half='staticTop'] [data-glyph]"))
     .map((glyph) => glyph.textContent)
@@ -79,12 +95,19 @@ const boardText = () =>
 
 /** Ms from clicking the CTA until the destination word is on the board. */
 const destinationAt =
-  BOARD_REVEAL_CONFIG.orientMs + pickBoardSequence(TRIP_ID).length * BOARD_REVEAL_CONFIG.wordIntervalMs;
+  BOARD_REVEAL_CONFIG.orientMs +
+  pickBoardSequence(TRIP_ID).length * BOARD_REVEAL_CONFIG.wordIntervalMs;
 const totalMs =
-  destinationAt + boardSettleMs(1) + BOARD_REVEAL_CONFIG.finalHoldMs + BOARD_REVEAL_CONFIG.openingMs;
+  destinationAt +
+  boardSettleMs(1) +
+  BOARD_REVEAL_CONFIG.finalHoldMs +
+  BOARD_REVEAL_CONFIG.openingMs;
 
 beforeEach(() => {
-  Object.defineProperty(window, "localStorage", { configurable: true, value: makeLocalStorageStub() });
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: makeLocalStorageStub(),
+  });
 });
 
 afterEach(() => {
@@ -129,7 +152,9 @@ describe("TripBoardReveal — sequence", () => {
     expect(boardText()).toBe(pickBoardSequence(TRIP_ID)[0]);
     expect(boardText()).not.toBe("MENDOZA");
 
-    act(() => vi.advanceTimersByTime(destinationAt - BOARD_REVEAL_CONFIG.orientMs));
+    act(() =>
+      vi.advanceTimersByTime(destinationAt - BOARD_REVEAL_CONFIG.orientMs),
+    );
     expect(boardText()).toBe("MENDOZA");
     expect(container.textContent).toContain(copy.boardCaptionFinal);
     expect(onComplete).not.toHaveBeenCalled();
@@ -138,7 +163,9 @@ describe("TripBoardReveal — sequence", () => {
     expect(wrap().dataset.phase).toBe("done");
     expect(onComplete).toHaveBeenCalledWith({ instant: false });
     expect(content().getAttribute("aria-hidden")).toBe("false");
-    expect(document.activeElement).toBe(container.querySelector('[data-testid="hero-title"]'));
+    expect(document.activeElement).toBe(
+      container.querySelector('[data-testid="hero-title"]'),
+    );
     expect(container.textContent).toContain("Your destination: Mendoza.");
   });
 
@@ -192,7 +219,9 @@ describe("TripBoardReveal — sequence", () => {
     act(() => ctaButton()!.click());
     act(() => vi.advanceTimersByTime(destinationAt));
 
-    const tiles = container.querySelectorAll("[data-half='staticTop'] [data-glyph]");
+    const tiles = container.querySelectorAll(
+      "[data-half='staticTop'] [data-glyph]",
+    );
     expect(tiles).toHaveLength(2 * BOARD_REVEAL_CONFIG.columns);
     expect(boardText().replace(/\s+/g, " ")).toBe("SAN CARLOS DE BARILOCHE");
   });
@@ -207,8 +236,15 @@ describe("TripBoardReveal — navbar chrome", () => {
     root = createRoot(container);
     act(() => {
       root.render(
-        <NavbarChromeContext.Provider value={{ setNavbarBackgroundPrimary: vi.fn(), setNavbarOverlay }}>
-          <TripBoardReveal copy={copy} destination="Mendoza" locale="en" tripId={TRIP_ID}>
+        <NavbarChromeContext.Provider
+          value={{ setNavbarBackgroundPrimary: vi.fn(), setNavbarOverlay }}
+        >
+          <TripBoardReveal
+            copy={copy}
+            destination="Mendoza"
+            locale="en"
+            tripId={TRIP_ID}
+          >
             <h1 data-testid="hero-title">Mendoza.</h1>
           </TripBoardReveal>
         </NavbarChromeContext.Provider>,
@@ -243,5 +279,7 @@ it("after a skip, keeps transitions on controls inside the hero (only the reveal
   );
   // A blanket `.revealInstant *` would freeze ButtonV2's hover lift in the hero.
   expect(css).not.toMatch(/\.revealInstant\s+\*/);
-  expect(css).toMatch(/\.revealInstant \.destPhoto,\n\.revealInstant \.destContent \{/);
+  expect(css).toMatch(
+    /\.revealInstant \.destPhoto,\n\.revealInstant \.destContent \{/,
+  );
 });

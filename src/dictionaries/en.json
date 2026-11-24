@@ -6413,7 +6413,7 @@
       "emptyFiltered": "No trips match this filter.",
       "errorLoad": "Could not load trips. Please try again.",
       "experienceLabel": "Experience",
-      "eyebrow": "Inventory",
+      "eyebrow": "Your history",
       "filterAll": "All",
       "filterCompleted": "Completed",
       "filterLabel": "Trip status",
@@ -6448,6 +6448,9 @@
       "paidOn": "Paid on",
       "title": "Completed trips",
       "totalLabel": "trips",
+      "nightOne": "1 night",
+      "nights": "{{n}} nights",
+      "travelers": "{{n}} travelers",
       "viewMore": "View more"
     },
     "common": {

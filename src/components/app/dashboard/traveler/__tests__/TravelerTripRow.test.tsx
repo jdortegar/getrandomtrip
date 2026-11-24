@@ -44,15 +44,13 @@ function render(
   };
   act(() =>
     root.render(
-      <table>
-        <tbody>
-          <TravelerTripRow
-            copy={(locale === "en" ? en : es).dashboard}
-            locale={locale}
-            trip={trip}
-          />
-        </tbody>
-      </table>,
+      <ul>
+        <TravelerTripRow
+          copy={(locale === "en" ? en : es).dashboard}
+          locale={locale}
+          trip={trip}
+        />
+      </ul>,
     ),
   );
 }
@@ -80,14 +78,17 @@ it.each([
       status === "REVEALED"
         ? [`${prefix}/dashboard/trips/trip-id/destination`]
         : status === "COMPLETED"
-          ? [`${prefix}/dashboard/trips/trip-id/destination`, `${prefix}/review/review-token`]
+          ? [
+              `${prefix}/dashboard/trips/trip-id/destination`,
+              `${prefix}/review/review-token`,
+            ]
           : [];
-    expect(links).toEqual([
-      `${prefix}/dashboard/trips/trip-id`,
-      ...actions,
-    ]);
+    expect(links).toEqual([`${prefix}/dashboard/trips/trip-id`, ...actions]);
     const copy = (locale === "en" ? en : es).dashboard;
     expect(container.textContent).toContain(copy.tripStatus[status]);
+    expect(container.textContent).toContain(
+      locale === "en" ? "2 travelers" : "2 viajeros",
+    );
     expect(container.textContent).toContain(
       locale === "en" ? "Jan 1, 2027" : "1 ene 2027",
     );
@@ -109,9 +110,38 @@ it.each([{ reviewSubmittedAt: "2027-01-04" }, { reviewToken: null }])(
   },
 );
 
-it.each(["en", "es"] as const)("capitalizes the raw XSED level fallback in %s", (locale) => {
-  render("CONFIRMED", locale, { level: "Xsed" });
-  const level = container.querySelector("tbody td p:nth-child(2)");
-  expect(level?.textContent).toBe("XSED");
-  expect(level?.querySelector("span")).toBeNull();
+it.each(["en", "es"] as const)(
+  "capitalizes the raw XSED level fallback in %s",
+  (locale) => {
+    render("CONFIRMED", locale, { level: "Xsed" });
+    const experience = container.querySelector("li p");
+    expect(experience?.textContent?.endsWith(" · XSED")).toBe(true);
+    expect(experience?.querySelector("span")).toBeNull();
+  },
+);
+
+it("shows XSED's level alone instead of repeating the type", () => {
+  render("COMPLETED", "es", { type: "xsed", level: "family" });
+  const eyebrow = container.querySelector("li p");
+  expect(eyebrow?.textContent).not.toContain("·");
+  expect(eyebrow?.textContent?.toLowerCase()).toContain("xsed");
 });
+
+it("keeps the type · level eyebrow when the level doesn't repeat the type", () => {
+  render("CONFIRMED", "en");
+  expect(container.querySelector("li p")?.textContent).toContain(" · ");
+});
+
+it.each([
+  ["es", { nights: 1 }, "1 noche"],
+  ["en", { nights: 4 }, "4 nights"],
+  ["en", {}, "2 nights"], // falls back to the start/end dates
+] as const)(
+  "shows the trip length instead of repeating the stub's date (%s)",
+  (locale, overrides, label) => {
+    render("CONFIRMED", locale, overrides);
+    expect(container.textContent).toContain(label);
+    const date = container.querySelector(".sr-only");
+    expect(date?.textContent).toMatch(/2027/);
+  },
+);
