@@ -95,8 +95,8 @@ Read `references/voice-and-positioning.md` for strategic nuances.
 - Never promise a destination, specific experience or resolution the source does not support.
 
 ### Hashtags / emoji / punctuation
-- Preserve official branded hashtags and approved campaign tags; don't blindly translate an existing Spanish hashtag into an unvalidated English trend claim.
-- If English hashtags are desired, favor a few relevant natural tags over a long generic block; don't add performance claims.
+- In unlocked English captions, replace descriptive Spanish hashtags in place with natural English equivalents (e.g. `#ViajesSorpresa` → `#SurpriseTrips`). Preserve source order and hashtag syntax.
+- Keep brand, product, and campaign hashtags exactly as written. Do not add tags without a source counterpart or make claims about reach or trends. Leave locked captions verbatim.
 - Keep a source emoji when its meaning still works; remove/replace only if it makes the line unnatural. No unnecessary emoji stuffing.
 - English uses standard punctuation; keep question marks and exclamation marks natural, with no Spanish opening `¿` or `¡`.
 - Retain diacritics in destinations and people's names. Spell-check every output.
