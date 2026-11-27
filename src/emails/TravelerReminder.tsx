@@ -1,6 +1,9 @@
-import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 import { formatTripDates, tripTypeLabel } from "./TravelerInvite";
 
 interface TravelerReminderProps {
@@ -18,6 +21,7 @@ interface TravelerReminderProps {
 // pronoun referring to the buyer) and the same empty-name fallback.
 const copy = {
   es: {
+    eyebrow: "Recordatorio",
     heading: "Tu viaje te está esperando",
     body: (buyerFirstName: string) =>
       `${buyerFirstName.trim() ? `${buyerFirstName.trim()} te sumó a su randomtrip` : "Te sumaron a un randomtrip"} y todavía no lo viste.`,
@@ -26,9 +30,10 @@ const copy = {
     account:
       "Creá tu cuenta para ver el viaje en tu panel y confirmar tus datos.",
     subtext: "Este enlace vence en 7 días.",
-    cta: "VER MI VIAJE",
+    cta: "Ver mi viaje",
   },
   en: {
+    eyebrow: "Reminder",
     heading: "Your trip is waiting for you",
     body: (buyerFirstName: string) =>
       `${buyerFirstName.trim() ? `${buyerFirstName.trim()} added you to their randomtrip` : "You've been added to a randomtrip"} and you haven't seen it yet.`,
@@ -37,7 +42,7 @@ const copy = {
     account:
       "Create an account to see the trip in your dashboard and confirm your details.",
     subtext: "This link expires in 7 days.",
-    cta: "SEE MY TRIP",
+    cta: "See my trip",
   },
 };
 
@@ -62,79 +67,19 @@ export default function TravelerReminder({
   const dates = formatTripDates(startDate, endDate, locale);
   const type = tripTypeLabel(tripType, locale);
 
+  const details = [
+    ...(dates ? [{ label: c.datesLabel, value: dates }] : []),
+    ...(type ? [{ label: c.typeLabel, value: type }] : []),
+  ];
+
   return (
     <EmailLayout locale={locale} preview={c.body(buyerFirstName)}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(buyerFirstName)}</Text>
-      {dates && (
-        <Text style={detailText}>
-          <strong>{c.datesLabel}:</strong> {dates}
-        </Text>
-      )}
-      {type && (
-        <Text style={detailText}>
-          <strong>{c.typeLabel}:</strong> {type}
-        </Text>
-      )}
-      <Text style={bodyText}>{c.account}</Text>
-      <Text style={subtextStyle}>{c.subtext}</Text>
-      <Button href={inviteUrl} style={ctaButton}>
-        {c.cta}
-      </Button>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(buyerFirstName)}</EmailText>
+      {details.length > 0 && <EmailDetailList items={details} />}
+      <EmailText>{c.account}</EmailText>
+      <EmailText variant="note">{c.subtext}</EmailText>
+      <EmailButton href={inviteUrl}>{c.cta}</EmailButton>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 16px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const detailText: React.CSSProperties = {
-  ...bodyText,
-  margin: "0 auto 8px",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};

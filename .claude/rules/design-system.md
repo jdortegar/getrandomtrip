@@ -423,3 +423,15 @@ Dashboard pages use `<HeaderHero>` (not `<Hero>`):
 ```
 
 **Critical**: `Section` component (`src/components/layout/Section.tsx` line 63) applies `text-center` to its inner wrapper. Always add `text-left` to the `rt-container` div — otherwise all content inherits centered alignment.
+
+---
+
+## Emails
+
+Templates in `src/emails/` are built from the shared parts in `src/emails/components/`. Never hand-roll heading, button or panel styles in a template.
+
+- `EmailLayout` — Off White canvas, colour logo header, white card, and `EmailFooter` (the app footer, read from `dict.footer`). Content is left-aligned.
+- `EmailHeading` (optional `eyebrow`), `EmailText` (`body` | `note`), `EmailDetailList` (key/value rows), `EmailPanel` (Off White block with a label).
+- `EmailButton` — ButtonV2 shape, `sm` size by default (44px; `size="default"` for 58px). `primary` (Teal) by default; `feature` (Ochre) only for moment emails (reveal, trip start, trip completed); `xsed` (Canyon Clay) only for XSED. `align="center"` only inside centred marketing blocks.
+- Colours and fonts come from `src/emails/components/tokens.ts`. Images are PNG (no SVG) served from `EMAIL_ASSET_ORIGIN`.
+- Editorial weight is 700; `emailBrandRules.test.ts` fails on 800 or a template without the shared footer.

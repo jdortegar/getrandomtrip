@@ -19,10 +19,10 @@ describe("TravelerReminder", () => {
     expect(html).toContain("Ana te sumó a su randomtrip");
     expect(html).toContain("3–4 de octubre de 2026");
     expect(html).toContain("XSED");
-    expect(html).toContain("VER MI VIAJE");
+    expect(html).toContain("Ver mi viaje");
     expect(html).toContain("Este enlace vence en 7 días.");
     expect(html).toContain('href="https://getrandomtrip.com/es/invite/tok123"');
-    expect(html).not.toContain("COMPLETAR MIS DATOS");
+    expect(html.toLowerCase()).not.toContain("completar mis datos");
   });
 
   it("renders en copy and labels XSED as TGIS", async () => {
@@ -32,7 +32,7 @@ describe("TravelerReminder", () => {
     expect(html).toContain("October 3 – 4, 2026");
     expect(html).toContain("TGIS");
     expect(html).not.toContain("XSED");
-    expect(html).toContain("SEE MY TRIP");
+    expect(html).toContain("See my trip");
   });
 
   it("falls back to neutral copy when the buyer name is empty", async () => {

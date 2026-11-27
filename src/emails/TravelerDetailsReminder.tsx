@@ -1,5 +1,7 @@
-import { Button, Heading, Text } from "@react-email/components";
+import EmailButton from "./components/EmailButton";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 import en from "@/dictionaries/en.json";
 import es from "@/dictionaries/es.json";
 
@@ -21,20 +23,15 @@ export default function TravelerDetailsReminder({
       : dictionary.travelerDetailsReminder;
   return (
     <EmailLayout locale={locale} preview={copy.preview}>
-      <Heading>{copy.heading}</Heading>
-      <Text>{copy.body}</Text>
-      <Text>{copy.fillEmpty}</Text>
-      <Button
+      <EmailHeading eyebrow={copy.eyebrow}>{copy.heading}</EmailHeading>
+      <EmailText>{copy.body}</EmailText>
+      <EmailText variant="note">{copy.fillEmpty}</EmailText>
+      <EmailButton
         href={dashboardUrl}
-        style={{
-          backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-          color: "#383838", // Ink
-          padding: "16px 32px",
-          borderRadius: "2px",
-        }}
+        variant={variant === "AUTOMATIC" ? "xsed" : "primary"}
       >
         {copy.cta}
-      </Button>
+      </EmailButton>
     </EmailLayout>
   );
 }

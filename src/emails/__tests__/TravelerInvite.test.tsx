@@ -39,7 +39,7 @@ describe("TravelerInvite body", () => {
     expect(html).toContain("3–4 de octubre de 2026");
     expect(html).toContain("XSED");
     expect(html).toContain("Creá tu cuenta");
-    expect(html).toContain("VER MI VIAJE");
+    expect(html).toContain("Ver mi viaje");
     expect(html).toContain("Este enlace vence en 7 días.");
     expect(html).toContain('href="https://getrandomtrip.com/es/invite/tok123"');
   });
@@ -56,7 +56,7 @@ describe("TravelerInvite body", () => {
     expect(html).toContain("October 3 – 4, 2026");
     expect(html).toContain("Group");
     expect(html).toContain("Create an account");
-    expect(html).toContain("SEE MY TRIP");
+    expect(html).toContain("See my trip");
     expect(html).toContain("This link expires in 7 days.");
   });
 
@@ -72,7 +72,7 @@ describe("TravelerInvite body", () => {
       <TravelerInvite {...props} locale="en" startDate={null} endDate={null} tripType={null} />,
     );
 
-    expect(html).toContain("SEE MY TRIP");
+    expect(html).toContain("See my trip");
     expect(html).not.toContain("October");
   });
 

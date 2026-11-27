@@ -1,19 +1,13 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import {
-  Body,
-  Button,
-  Column,
-  Font,
-  Head,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Img, Link, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
+import EmailLayout from "./components/EmailLayout";
+import EmailPanel from "./components/EmailPanel";
+import EmailText from "./components/EmailText";
+import { EMAIL_ASSET_ORIGIN, emailColors, emailFonts } from "./components/tokens";
 
 interface TripStartVouchersProps {
   client: string;
@@ -31,28 +25,7 @@ interface TripStartVouchersProps {
   tripId: string;
 }
 
-const BASE_URL = "https://getrandomtrip.com";
 const WHATSAPP_HREF = "https://wa.me/526241928208";
-const INSTAGRAM_HREF = "https://www.instagram.com/getrandomtrip";
-const FACEBOOK_HREF = "https://www.facebook.com/getrandomtrip";
-const LINKEDIN_HREF = "https://www.linkedin.com/company/getrandomtrip";
-
-// ── Design tokens (resolved to literal hex per handoff) ─────────────────────────
-
-const ink = "#111827";
-const ink50 = "#f0f4f8";
-const ink100 = "#d9e2ec";
-const ink500 = "#627d98";
-const feature = "#e5a51c";
-const textOnSun = "#1f2937";
-const neutral50 = "#fafafa";
-const neutral100 = "#f5f5f5";
-const neutral200 = "#e5e5e5";
-const neutral400 = "#a3a3a3";
-const neutral500 = "#737373";
-const neutral600 = "#525252";
-const neutral700 = "#404040";
-const desk = "#ededeb";
 
 // ── Copy ─────────────────────────────────────────────────────────────────────
 
@@ -79,7 +52,6 @@ const copy = {
   es: {
     preview: "Tus documentos de viaje están listos.",
     heroAlt: "Un camino al amanecer",
-    tagline: "WONDER • WANDER • REPEAT",
     titleLine1: "Tu Randomtrip",
     titleLine2: "arranca hoy",
     greeting: (firstName: string) => `Hola ${firstName},`,
@@ -100,15 +72,12 @@ const copy = {
     ctaSubtext: "También los vas a encontrar siempre en tu panel.",
     support:
       "¿Algo cambia en el camino? Escribinos por WhatsApp — te responde una persona.",
-    footerBrand: "Vive lo inesperado sin improvisar",
-    designedSerendipity: "SERENDIPIA DISEÑADA",
     preferences: "Preferencias",
     unsubscribe: "Desuscribirse",
   },
   en: {
     preview: "Your travel documents are ready.",
     heroAlt: "A road at first light",
-    tagline: "WONDER • WANDER • REPEAT",
     titleLine1: "Your Randomtrip",
     titleLine2: "starts today",
     greeting: (firstName: string) => `Hi ${firstName},`,
@@ -129,8 +98,6 @@ const copy = {
     ctaSubtext: "They also live in your dashboard, always.",
     support:
       "Something shifts on the road? Write us on WhatsApp — a human answers.",
-    footerBrand: "Live the unexpected without improvising",
-    designedSerendipity: "DESIGNED SERENDIPITY",
     preferences: "Preferences",
     unsubscribe: "Unsubscribe",
   },
@@ -178,95 +145,6 @@ function formatDateRange(start: Date, end: Date, locale: "es" | "en"): string {
     : `${startDay} ${startMonth} – ${endDay} ${endMonth}`;
 }
 
-// ── Icon pucks ───────────────────────────────────────────────────────────────
-// Table-based circular badges, not inline <svg> — Gmail and several other
-// clients strip inline SVG markup entirely, which silently renders as blank
-// space. Referenced <Img> assets survive everywhere.
-
-function IconPuck({
-  content,
-  background,
-  size = 34,
-}: {
-  content: React.ReactNode;
-  background: string;
-  size?: number;
-}) {
-  return (
-    <table
-      role="presentation"
-      cellPadding={0}
-      cellSpacing={0}
-      style={{ width: size, height: size }}
-    >
-      <tbody>
-        <tr>
-          <td
-            align="center"
-            valign="middle"
-            style={{
-              width: size,
-              height: size,
-              borderRadius: 999,
-              backgroundColor: background,
-              textAlign: "center",
-              verticalAlign: "middle",
-              fontSize: 16,
-              lineHeight: `${size}px`,
-            }}
-          >
-            {content}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  );
-}
-
-function SocialLink({
-  href,
-  src,
-  alt,
-}: {
-  href: string;
-  src: string;
-  alt: string;
-}) {
-  return (
-    <Link href={href} className="rt-social" style={{ display: "inline-block" }}>
-      <IconPuck
-        background="rgba(255,255,255,0.1)"
-        content={
-          <Img
-            src={src}
-            width={18}
-            height={18}
-            alt={alt}
-            style={{ display: "inline-block", verticalAlign: "middle" }}
-          />
-        }
-      />
-    </Link>
-  );
-}
-
-function WhatsAppIcon() {
-  return (
-    <svg
-      width={22}
-      height={22}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke={ink}
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-3.3-.6L3 21l1.7-5.1A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5Z" />
-    </svg>
-  );
-}
-
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function TripStartVouchers({
@@ -285,12 +163,17 @@ export default function TripStartVouchers({
   const firstName = firstNameOf(client);
   const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/destination`;
   const settingsHref = `${getApplicationOrigin()}/${locale}/dashboard/traveler/settings`;
-  const year = new Date().getFullYear();
 
-  const showSnapshot = Boolean(startDate && endDate);
   const nightsValue = `${nights} ${nights === 1 ? c.night : c.nights}`;
   const travelerTypeLabel = travelerTypeLabels[locale][tripType] ?? tripType;
-  const travelersValue = `${pax} · ${travelerTypeLabel}`;
+  const snapshot =
+    startDate && endDate
+      ? [
+          { label: c.snapshotDates, value: formatDateRange(startDate, endDate, locale) },
+          { label: c.snapshotNights, value: nightsValue },
+          { label: c.snapshotTravelers, value: `${pax} · ${travelerTypeLabel}` },
+        ]
+      : [];
 
   const allPdf =
     documents.length > 0 &&
@@ -301,547 +184,95 @@ export default function TripStartVouchers({
     : `${documents.length} ${filesWord}`;
 
   return (
-    <Html lang={locale} style={{ colorScheme: "light" }}>
-      <Head>
-        <meta name="color-scheme" content="light" />
-        <meta name="supported-color-schemes" content="light" />
-        <Font
-          fallbackFontFamily="Arial"
-          fontFamily="Barlow Condensed"
-          fontStyle="normal"
-          fontWeight={700}
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
-            format: "woff2",
-          }}
-        />
-        <Font
-          fontFamily="Barlow Condensed"
-          fallbackFontFamily="Arial"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
-            format: "woff2",
-          }}
-          fontWeight={800}
-          fontStyle="normal"
-        />
-        <Font
-          fallbackFontFamily="Arial"
-          fontFamily="Barlow"
-          fontStyle="normal"
-          fontWeight={400}
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
-            format: "woff2",
-          }}
-        />
-        <Font
-          fallbackFontFamily="Arial"
-          fontFamily="Barlow"
-          fontStyle="normal"
-          fontWeight={500}
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3_-gs51ostz0rdg.woff2",
-            format: "woff2",
-          }}
-        />
-        <Font
-          fallbackFontFamily="Arial"
-          fontFamily="Barlow"
-          fontStyle="normal"
-          fontWeight={700}
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
-            format: "woff2",
-          }}
-        />
-        <Font
-          fontFamily="Barlow"
-          fallbackFontFamily="Arial"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E30-8s51ostz0rdg.woff2",
-            format: "woff2",
-          }}
-          fontWeight={600}
-          fontStyle="normal"
-        />
-        <style>{`
-          a.rt-cta:hover { background-color: #eab308 !important; border-color: #eab308 !important; }
-          a.rt-social:hover { opacity: 0.8; }
-          a.rt-legal-link:hover { color: #ffffff !important; }
-        `}</style>
-      </Head>
-      <Preview>{c.preview}</Preview>
-      <Body
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: desk,
-          colorScheme: "light",
-        }}
-      >
-        <Section style={{ backgroundColor: desk, padding: "48px 0" }}>
-          <Section
-            width={600}
-            style={{
-              width: 600,
-              maxWidth: 600,
-              margin: "0 auto",
-              backgroundColor: "#ffffff",
-              border: `1px solid ${neutral200}`,
-              borderRadius: 16,
-              overflow: "hidden",
-            }}
-          >
-            {/* ── Header bar ── */}
-            <Section style={{ backgroundColor: ink }}>
-              <Row>
-                <Column style={{ padding: "20px 0 20px 32px", width: "50%" }}>
-                  <Img
-                    src={`${BASE_URL}/assets/logos/logo_white_no_tag.svg`}
-                    width={104}
-                    height={26}
-                    alt="Randomtrip"
-                    style={{ display: "block" }}
-                  />
-                </Column>
-                <Column
-                  align="right"
-                  style={{
-                    padding: "20px 32px 20px 0",
-                    width: "50%",
-                    textAlign: "right",
-                  }}
-                >
-                  <Text style={taglineStyle}>{c.tagline}</Text>
-                </Column>
-              </Row>
-            </Section>
+    <EmailLayout locale={locale} preview={c.preview}>
+      <Img
+        alt={c.heroAlt}
+        height={220}
+        src={`${EMAIL_ASSET_ORIGIN}/images/emails/trip-start-hero.jpg`}
+        style={hero}
+        width={520}
+      />
+      <EmailHeading eyebrow={startDate ? formatEyebrow(startDate, locale) : undefined}>
+        {c.titleLine1}
+        <br />
+        {c.titleLine2}
+      </EmailHeading>
+      <EmailText>
+        {c.greeting(firstName)}
+        <br />
+        {c.body}
+      </EmailText>
 
-            {/* ── Hero photo (no text over it) ── */}
-            <Img
-              src={`${BASE_URL}/images/emails/trip-start-hero.jpg`}
-              width={600}
-              height={260}
-              alt={c.heroAlt}
-              style={{
-                display: "block",
-                width: "100%",
-                maxWidth: 600,
-                height: 260,
-              }}
-            />
+      {snapshot.length > 0 && <EmailDetailList items={snapshot} />}
 
-            {/* ── Title panel ── */}
-            <Section style={{ backgroundColor: ink, padding: "32px" }}>
-              <Text style={eyebrowStyle}>
-                {startDate ? formatEyebrow(startDate, locale) : ""}
-              </Text>
-              <Text style={titleStyle}>
-                {c.titleLine1}
-                <br />
-                {c.titleLine2}
-              </Text>
-            </Section>
+      {documents.length > 0 && (
+        <EmailPanel label={`${c.attachedLabel} · ${attachedCountText}`}>
+          {documents.map((doc, i) => (
+            <Text key={`${doc.label}-${i}`} style={docName}>
+              {doc.label}
+            </Text>
+          ))}
+        </EmailPanel>
+      )}
 
-            {/* ── Greeting + body ── */}
-            <Section style={{ padding: "32px 32px 8px" }}>
-              <Text style={greetingStyle}>{c.greeting(firstName)}</Text>
-              <Text style={bodyStyle}>{c.body}</Text>
-            </Section>
+      {skippedCount > 0 && (
+        <EmailText variant="note">{c.skippedNotice(skippedCount)}</EmailText>
+      )}
 
-            {/* ── Trip snapshot ── */}
-            {showSnapshot && (
-              <Section style={{ padding: "0 32px" }}>
-                <table
-                  role="presentation"
-                  width="100%"
-                  cellPadding={0}
-                  cellSpacing={0}
-                  style={{
-                    borderCollapse: "collapse",
-                    border: `1px solid ${neutral200}`,
-                    borderRadius: 12,
-                    backgroundColor: ink50,
-                    marginTop: 28,
-                  }}
-                >
-                  <tbody>
-                    <tr>
-                      <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>
-                          {c.snapshotDates}
-                        </Text>
-                        <Text style={snapshotValueStyle}>
-                          {formatDateRange(
-                            startDate as Date,
-                            endDate as Date,
-                            locale,
-                          )}
-                        </Text>
-                      </td>
-                      <td style={{ width: 1, backgroundColor: ink100 }} />
-                      <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>
-                          {c.snapshotNights}
-                        </Text>
-                        <Text style={snapshotValueStyle}>{nightsValue}</Text>
-                      </td>
-                      <td style={{ width: 1, backgroundColor: ink100 }} />
-                      <td style={snapshotCellStyle}>
-                        <Text style={snapshotLabelStyle}>
-                          {c.snapshotTravelers}
-                        </Text>
-                        <Text style={snapshotValueStyle}>{travelersValue}</Text>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </Section>
-            )}
+      <EmailButton href={ctaHref} variant="feature">
+        {c.cta}
+      </EmailButton>
+      <EmailText variant="note">{c.ctaSubtext}</EmailText>
 
-            {/* ── Attached documents ── */}
-            {documents.length > 0 && (
-              <Section style={{ padding: "28px 32px 0" }}>
-                <table
-                  role="presentation"
-                  width="100%"
-                  cellPadding={0}
-                  cellSpacing={0}
-                  style={{
-                    borderCollapse: "collapse",
-                    border: `1px solid ${neutral200}`,
-                    borderRadius: 12,
-                  }}
-                >
-                  <tbody>
-                    <tr>
-                      <td style={docHeaderLeftStyle}>{c.attachedLabel}</td>
-                      <td style={docHeaderRightStyle}>{attachedCountText}</td>
-                    </tr>
-                    {documents.map((doc, i) => (
-                      <tr key={`${doc.label}-${i}`}>
-                        <td
-                          style={{
-                            ...docNameCellStyle,
-                            borderTop:
-                              i > 0 ? `1px solid ${neutral100}` : "none",
-                          }}
-                        >
-                          {doc.label}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </Section>
-            )}
+      <EmailText>
+        <Link href={WHATSAPP_HREF} style={link}>
+          {c.support}
+        </Link>
+      </EmailText>
 
-            {skippedCount > 0 && (
-              <Text style={skippedNoticeStyle}>
-                {c.skippedNotice(skippedCount)}
-              </Text>
-            )}
-
-            {/* ── CTA ── */}
-            <Section style={{ padding: "28px 32px 36px", textAlign: "center" }}>
-              <Button href={ctaHref} className="rt-cta" style={ctaButtonStyle}>
-                {c.cta}
-              </Button>
-              <Text style={ctaSubtextStyle}>{c.ctaSubtext}</Text>
-            </Section>
-
-            {/* ── Support band ── */}
-            <Section
-              style={{
-                backgroundColor: ink50,
-                borderTop: `1px solid ${neutral200}`,
-                padding: "22px 32px",
-              }}
-            >
-              <Row>
-                <Column style={{ width: 34, verticalAlign: "middle" }}>
-                  <WhatsAppIcon />
-                </Column>
-                <Column style={{ verticalAlign: "middle" }}>
-                  <Link href={WHATSAPP_HREF} style={supportTextStyle}>
-                    {c.support}
-                  </Link>
-                </Column>
-              </Row>
-            </Section>
-
-            {/* ── Footer ── */}
-            <Section
-              style={{
-                backgroundColor: ink,
-                padding: "32px",
-                textAlign: "center",
-              }}
-            >
-              <Text style={footerBrandStyle}>{c.footerBrand}</Text>
-              <table
-                role="presentation"
-                align="center"
-                cellPadding={0}
-                cellSpacing={0}
-                style={{ margin: "0 auto" }}
-              >
-                <tbody>
-                  <tr>
-                    <td style={{ padding: "0 6px" }}>
-                      <SocialLink
-                        href={INSTAGRAM_HREF}
-                        src={`${BASE_URL}/images/newsletter/social-instagram.png`}
-                        alt="Instagram"
-                      />
-                    </td>
-                    <td style={{ padding: "0 6px" }}>
-                      <SocialLink
-                        href={FACEBOOK_HREF}
-                        src={`${BASE_URL}/images/newsletter/social-facebook.png`}
-                        alt="Facebook"
-                      />
-                    </td>
-                    <td style={{ padding: "0 6px" }}>
-                      <SocialLink
-                        href={LINKEDIN_HREF}
-                        src={`${BASE_URL}/images/newsletter/social-linkedin.png`}
-                        alt="LinkedIn"
-                      />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <table
-                role="presentation"
-                width="100%"
-                cellPadding={0}
-                cellSpacing={0}
-                style={{ margin: "16px 0" }}
-              >
-                <tbody>
-                  <tr>
-                    <td
-                      style={{
-                        height: 1,
-                        backgroundColor: "rgba(255,255,255,0.12)",
-                        fontSize: 1,
-                        lineHeight: "1px",
-                      }}
-                    >
-                      &nbsp;
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <Text style={legalStyle}>
-                © {year} RANDOMTRIP · {c.designedSerendipity}
-                <br />
-                <Link
-                  href={settingsHref}
-                  className="rt-legal-link"
-                  style={legalLinkStyle}
-                >
-                  {c.preferences}
-                </Link>{" "}
-                ·{" "}
-                <Link
-                  href={settingsHref}
-                  className="rt-legal-link"
-                  style={legalLinkStyle}
-                >
-                  {c.unsubscribe}
-                </Link>
-              </Text>
-            </Section>
-          </Section>
-        </Section>
-      </Body>
-    </Html>
+      <Text style={legal}>
+        <Link href={settingsHref} style={link}>
+          {c.preferences}
+        </Link>
+        {" · "}
+        <Link href={settingsHref} style={link}>
+          {c.unsubscribe}
+        </Link>
+      </Text>
+    </EmailLayout>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const taglineStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "10px",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase",
-  color: "rgba(255,255,255,0.55)",
-  fontWeight: 600,
-  margin: 0,
-  textAlign: "right",
-};
-
-const eyebrowStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase",
-  color: feature,
-  fontWeight: 600,
-  margin: "0 0 10px",
-};
-
-const titleStyle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  fontSize: "44px",
-  lineHeight: "0.96",
-  color: "#ffffff",
-  letterSpacing: "-0.01em",
-  margin: 0,
-};
-
-const greetingStyle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  fontSize: "26px",
-  lineHeight: "1",
-  color: ink,
-  margin: "0 0 14px",
-};
-
-const bodyStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "17px",
-  lineHeight: "1.55",
-  color: neutral700,
-  margin: "0 0 24px",
-};
-
-const snapshotCellStyle: React.CSSProperties = {
-  padding: "18px 20px",
-  verticalAlign: "top",
-};
-
-const snapshotLabelStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "10px",
-  letterSpacing: "0.16em",
-  textTransform: "uppercase",
-  color: ink500,
-  fontWeight: 700,
-  margin: "0 0 6px",
-};
-
-const snapshotValueStyle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  fontSize: "22px",
-  lineHeight: "1",
-  color: ink,
-  margin: 0,
-};
-
-const docHeaderLeftStyle: React.CSSProperties = {
-  padding: "14px 20px",
-  backgroundColor: neutral50,
-  borderBottom: `1px solid ${neutral200}`,
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "11px",
-  letterSpacing: "0.18em",
-  textTransform: "uppercase",
-  color: neutral600,
-  fontWeight: 700,
-  whiteSpace: "nowrap",
-};
-
-const docHeaderRightStyle: React.CSSProperties = {
-  padding: "14px 20px",
-  backgroundColor: neutral50,
-  borderBottom: `1px solid ${neutral200}`,
-  textAlign: "right",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "11px",
-  letterSpacing: "0.06em",
-  color: neutral400,
-  fontWeight: 600,
+const hero: React.CSSProperties = {
+  borderRadius: "8px",
+  display: "block",
+  height: "auto",
+  margin: "0 0 28px",
+  maxWidth: "100%",
   width: "100%",
-  whiteSpace: "nowrap",
 };
 
-const docNameCellStyle: React.CSSProperties = {
-  padding: "13px 20px",
-  textAlign: "left",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "16px",
-  fontWeight: 600,
-  color: ink,
-  verticalAlign: "middle",
-};
-
-const skippedNoticeStyle: React.CSSProperties = {
-  color: "#9a6b00",
-  fontSize: "12.5px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: 400,
-  margin: "16px 32px 0",
-  lineHeight: "1.6",
-  textAlign: "center",
-};
-
-const ctaButtonStyle: React.CSSProperties = {
-  display: "inline-block",
-  textAlign: "center",
-  backgroundColor: feature,
-  border: `2px solid ${feature}`,
-  borderRadius: 6,
-  padding: "15px 40px",
-  fontFamily: "'Barlow', Arial, sans-serif",
+const docName: React.CSSProperties = {
+  color: emailColors.ink,
+  fontFamily: emailFonts.body,
   fontSize: "15px",
-  fontWeight: 600,
-  letterSpacing: "1.5px",
-  textTransform: "uppercase",
-  color: textOnSun,
-  textDecoration: "none",
-};
-
-const ctaSubtextStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "14px",
+  fontWeight: "600",
   lineHeight: "1.5",
-  color: neutral500,
-  textAlign: "center",
-  margin: "12px 0 0",
+  margin: "4px 0 0",
 };
 
-const supportTextStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "14px",
+const link: React.CSSProperties = {
+  color: emailColors.primary,
+  fontWeight: "600",
+  textDecoration: "underline",
+};
+
+const legal: React.CSSProperties = {
+  color: emailColors.muted,
+  fontFamily: emailFonts.body,
+  fontSize: "12px",
   lineHeight: "1.5",
-  color: neutral700,
-  textDecoration: "none",
-};
-
-const footerBrandStyle: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  fontSize: "15px",
-  letterSpacing: "0.06em",
-  color: feature,
-  textAlign: "center",
-  margin: "0 0 16px",
-};
-
-const legalStyle: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "11px",
-  letterSpacing: "0.14em",
-  textTransform: "uppercase",
-  color: "rgba(255,255,255,0.45)",
-  textAlign: "center",
-  lineHeight: "1.8",
-  margin: 0,
-};
-
-const legalLinkStyle: React.CSSProperties = {
-  color: "rgba(255,255,255,0.45)",
-  textDecoration: "none",
+  margin: "0",
 };

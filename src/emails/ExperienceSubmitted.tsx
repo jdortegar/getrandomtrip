@@ -1,7 +1,10 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import { Button, Heading, Section, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface ExperienceSubmittedProps {
   tripperName: string;
@@ -12,12 +15,13 @@ interface ExperienceSubmittedProps {
 const copy = {
   preview: (title: string) =>
     `Nueva experiencia enviada para revisión: "${title}"`,
+  eyebrow: "Panel admin",
   heading: "Nueva experiencia para revisar",
   body: (tripperName: string, title: string) =>
     `El tripper ${tripperName} acaba de enviar la experiencia "${title}" para su revisión y publicación en Randomtrip.`,
   subtext:
     "Ingresá al panel de administración para revisar los detalles y aprobar o rechazar la experiencia.",
-  cta: "REVISAR EXPERIENCIA",
+  cta: "Revisar experiencia",
 };
 
 export const subjects = {
@@ -34,99 +38,16 @@ export default function ExperienceSubmitted({
 
   return (
     <EmailLayout locale="es" preview={copy.preview(experienceTitle)}>
-      <Heading style={heading}>{copy.heading}</Heading>
-      <Text style={bodyText}>{copy.body(tripperName, experienceTitle)}</Text>
-
-      {/* Experience detail */}
-      <Section style={detailPanel}>
-        <Text style={detailRow}>
-          <span style={detailLabel}>Tripper:</span>{" "}
-          <span style={detailValue}>{tripperName}</span>
-        </Text>
-        <Text style={detailRow}>
-          <span style={detailLabel}>Experiencia:</span>{" "}
-          <span style={detailValue}>{experienceTitle}</span>
-        </Text>
-      </Section>
-
-      <Text style={subtextStyle}>{copy.subtext}</Text>
-      <Button href={reviewUrl} style={ctaButton}>
-        {copy.cta}
-      </Button>
+      <EmailHeading eyebrow={copy.eyebrow}>{copy.heading}</EmailHeading>
+      <EmailText>{copy.body(tripperName, experienceTitle)}</EmailText>
+      <EmailDetailList
+        items={[
+          { label: "Tripper", value: tripperName },
+          { label: "Experiencia", value: experienceTitle },
+        ]}
+      />
+      <EmailText variant="note">{copy.subtext}</EmailText>
+      <EmailButton href={reviewUrl}>{copy.cta}</EmailButton>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "38px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 24px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const detailPanel: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  borderRadius: "8px",
-  padding: "20px 32px",
-  margin: "0 auto 24px",
-  maxWidth: "400px",
-  textAlign: "left",
-};
-
-const detailRow: React.CSSProperties = {
-  margin: "0 0 8px",
-  fontSize: "13px",
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-};
-
-const detailLabel: React.CSSProperties = {
-  fontWeight: "700",
-  color: "#383838", // Ink
-};
-
-const detailValue: React.CSSProperties = {
-  fontWeight: "400",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};

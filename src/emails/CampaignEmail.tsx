@@ -1,11 +1,4 @@
-import {
-  Button,
-  Heading,
-  Hr,
-  Link,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Hr, Link, Section, Text } from "@react-email/components";
 import * as React from "react";
 
 import {
@@ -14,7 +7,11 @@ import {
   type MarkdownInline,
 } from "@/lib/email-campaigns/markdown";
 import type { CampaignEmailPromo, CampaignLocale } from "@/types/emailCampaign";
+import EmailButton from "./components/EmailButton";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
+import { emailColors, emailFonts } from "./components/tokens";
 
 interface CampaignEmailProps {
   locale: CampaignLocale;
@@ -80,11 +77,7 @@ function renderInline(nodes: MarkdownInline[]): React.ReactNode[] {
 
 function renderBlock(block: MarkdownBlock, index: number): React.ReactNode {
   if (block.type === "paragraph") {
-    return (
-      <Text key={index} style={bodyText}>
-        {renderInline(block.children)}
-      </Text>
-    );
+    return <EmailText key={index}>{renderInline(block.children)}</EmailText>;
   }
   const items = block.items.map((item, itemIndex) => (
     <li key={itemIndex} style={listItem}>
@@ -118,10 +111,8 @@ export default function CampaignEmail({
 
   return (
     <EmailLayout locale={locale} preview={preheader?.trim() || title}>
-      <Heading style={heading}>{title}</Heading>
-      <Section style={bodySection}>
-        {parseCampaignMarkdown(bodyMarkdown).map(renderBlock)}
-      </Section>
+      <EmailHeading>{title}</EmailHeading>
+      {parseCampaignMarkdown(bodyMarkdown).map(renderBlock)}
 
       {promo && (
         <Section style={promoSection}>
@@ -132,55 +123,27 @@ export default function CampaignEmail({
         </Section>
       )}
 
-      {cta && (
-        <Section style={ctaSection}>
-          <Button href={cta.url} style={ctaButton}>
-            {cta.label}
-          </Button>
-        </Section>
-      )}
+      {cta && <EmailButton href={cta.url}>{cta.label}</EmailButton>}
 
       <Hr style={divider} />
-      <Text style={footerText}>
+      <EmailText variant="note">
         {c.footer}{" "}
-        <Link href={unsubscribeUrl} style={unsubscribeLink}>
+        <Link href={unsubscribeUrl} style={inlineLink}>
           {c.unsubscribe}
         </Link>
-      </Text>
+      </EmailText>
     </EmailLayout>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodySection: React.CSSProperties = {
-  maxWidth: "480px",
-  margin: "0 auto",
-  textAlign: "left",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "15px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 0 16px",
-  lineHeight: "1.7",
-  textAlign: "left",
-};
-
 const list: React.CSSProperties = {
-  ...bodyText,
+  color: emailColors.ink,
+  fontFamily: emailFonts.body,
+  fontSize: "15px",
+  lineHeight: "1.65",
+  margin: "0 0 24px",
   paddingLeft: "22px",
 };
 
@@ -189,92 +152,59 @@ const listItem: React.CSSProperties = {
 };
 
 const inlineLink: React.CSSProperties = {
-  color: "#0F5C60", // Deep Teal (brand primary),
+  color: emailColors.primary,
   textDecoration: "underline",
 };
 
+// Coupon: dashed Teal outline, centred for emphasis.
 const promoSection: React.CSSProperties = {
-  border: "2px dashed #0F5C60",
-  borderRadius: "8px",
-  margin: "16px auto 8px",
-  maxWidth: "360px",
+  border: `2px dashed ${emailColors.primary}`,
+  borderCollapse: "separate",
+  borderRadius: "12px",
+  margin: "0 0 24px",
   padding: "20px 16px",
   textAlign: "center",
 };
 
 const promoLabel: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#0F5C60",
-  fontSize: "12px",
-  fontWeight: "700",
-  letterSpacing: "3px",
-  textTransform: "uppercase",
-  margin: "0 0 8px",
+  color: emailColors.primary,
+  fontFamily: emailFonts.body,
+  fontSize: "11px",
+  fontWeight: "600",
+  letterSpacing: "0.18em",
   lineHeight: "1.4",
+  margin: "0 0 8px",
+  textTransform: "uppercase",
 };
 
 const promoCode: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  color: "#383838", // Ink
+  color: emailColors.ink,
+  fontFamily: emailFonts.editorial,
   fontSize: "36px",
-  fontWeight: "800",
+  fontWeight: "700",
   letterSpacing: "4px",
-  margin: "0 0 8px",
   lineHeight: "1.1",
+  margin: "0 0 8px",
 };
 
 const promoDiscount: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#383838", // Ink
+  color: emailColors.ink,
+  fontFamily: emailFonts.body,
   fontSize: "15px",
   fontWeight: "700",
-  margin: "0",
   lineHeight: "1.5",
+  margin: "0",
 };
 
 const promoExpiry: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#383838", // Ink
+  color: emailColors.ink,
+  fontFamily: emailFonts.body,
   fontSize: "13px",
-  margin: "4px 0 0",
   lineHeight: "1.5",
-};
-
-const ctaSection: React.CSSProperties = {
-  margin: "24px 0 8px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
+  margin: "4px 0 0",
 };
 
 const divider: React.CSSProperties = {
-  borderTop: "1px solid #E5E7EB",
-  margin: "32px 0 16px",
-};
-
-const footerText: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#383838", // Ink
-  fontSize: "12px",
-  margin: "0",
-  lineHeight: "1.6",
-  textAlign: "center",
-};
-
-const unsubscribeLink: React.CSSProperties = {
-  color: "#0F5C60", // Deep Teal (brand primary)
-  textDecoration: "underline",
+  borderColor: emailColors.border,
+  margin: "8px 0 20px",
 };

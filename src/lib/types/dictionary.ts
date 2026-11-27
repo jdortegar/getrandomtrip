@@ -3642,6 +3642,7 @@ export interface TripDetailBuyerDocumentsDict {
 export interface DestinationAssignmentReminderDict {
   subject: string;
   preview: string;
+  eyebrow: string;
   heading: string;
   body: string;
   clientLabel: string;
@@ -3661,6 +3662,7 @@ export interface TripRevealNotificationDict {
 export interface TravelerDetailsReminderDict {
   subject: string;
   preview: string;
+  eyebrow: string;
   heading: string;
   body: string;
   fillEmpty: string;
