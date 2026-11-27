@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Column,
   Container,
   Font,
@@ -16,6 +15,10 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import EmailClientResets from "./components/EmailClientResets";
+import EmailButton from "./components/EmailButton";
+import EmailFooter from "./components/EmailFooter";
+import { emailColors } from "./components/tokens";
 
 const BASE_URL = "https://getrandomtrip.com";
 const XSED_URL = `${BASE_URL}/es/xsed`;
@@ -26,6 +29,17 @@ export default function XsedCampaign() {
   return (
     <Html lang="es">
       <Head>
+        <EmailClientResets />
+        <Font
+          fontFamily="Nothing You Could Do"
+          fallbackFontFamily="Georgia"
+          webFont={{
+            url: "https://fonts.gstatic.com/s/nothingyoucoulddo/v21/oY1B8fbBpaP5OX3DtrRYf_Q2BPB1SnfZb3OOnVsH2pmp.woff2",
+            format: "woff2",
+          }}
+          fontWeight={400}
+          fontStyle="normal"
+        />
         <style>{`
           @media only screen and (max-width: 480px) {
             .col-half {
@@ -55,16 +69,6 @@ export default function XsedCampaign() {
             format: "woff2",
           }}
           fontWeight={700}
-          fontStyle="normal"
-        />
-        <Font
-          fontFamily="Barlow Condensed"
-          fallbackFontFamily="Arial"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
-            format: "woff2",
-          }}
-          fontWeight={800}
           fontStyle="normal"
         />
         <Font
@@ -112,7 +116,7 @@ export default function XsedCampaign() {
         Tu próximo XSED te está esperando. Solo 10 cupos. Cada domingo, sin
         aviso previo.
       </Preview>
-      <Body style={body}>
+      <Body id="body" style={body}>
         <Container style={container}>
           {/* ── 1. Hero ── */}
           <Section style={{ padding: "0", margin: "0" }}>
@@ -130,9 +134,9 @@ export default function XsedCampaign() {
 
           {/* ── 2. CTA / Waitlist ── */}
           <Section style={ctaSection}>
-            <Button href={XSED_URL} style={ctaButton}>
-              UNITE A LA LISTA DE ESPERA
-            </Button>
+            <EmailButton align="center" href={XSED_URL} variant="xsed">
+              Unite a la lista de espera
+            </EmailButton>
             <Text style={ctaBody}>
               Te avisaremos 10 minutos antes de que se abra la pasarela cada
               domingo.
@@ -207,9 +211,9 @@ export default function XsedCampaign() {
 
           {/* ── "ver todas" button ── */}
           <Section style={verTodasSection}>
-            <Button href={XSED_URL} style={verTodasButton}>
-              VER TODAS
-            </Button>
+            <EmailButton align="center" href={XSED_URL} variant="xsed">
+              Ver todas
+            </EmailButton>
           </Section>
 
           {/* ── 4. El Veredicto ── */}
@@ -278,61 +282,7 @@ export default function XsedCampaign() {
             </Column>
           </Row>
 
-          {/* ── 5. Footer ── */}
-          <Section style={footerSection}>
-            <Row>
-              <Column align="center">
-                <Text style={footerCopyright}>© 2026 RANDOMTRIP</Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Text style={footerTagline}>
-                  VIAJAR TAMBIÉN ES SOLTAR EL CONTROL.
-                </Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column style={{ height: "60px" }} />
-            </Row>
-            <Row>
-              <Column align="center">
-                <Link
-                  href="https://www.instagram.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-instagram.png")}
-                    width="24"
-                    height="24"
-                    alt="Instagram"
-                  />
-                </Link>
-                <Link
-                  href="https://www.facebook.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-facebook.png")}
-                    width="24"
-                    height="24"
-                    alt="Facebook"
-                  />
-                </Link>
-                <Link
-                  href="https://www.linkedin.com/company/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-linkedin.png")}
-                    width="24"
-                    height="24"
-                    alt="LinkedIn"
-                  />
-                </Link>
-              </Column>
-            </Row>
-          </Section>
+          <EmailFooter locale="es" />
         </Container>
       </Body>
     </Html>
@@ -342,7 +292,7 @@ export default function XsedCampaign() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const body: React.CSSProperties = {
-  backgroundColor: "#f5f5f5",
+  backgroundColor: emailColors.ground,
   margin: "0",
   padding: "0",
   fontFamily: "'Barlow', Arial, Helvetica, sans-serif",
@@ -361,23 +311,9 @@ const ctaSection: React.CSSProperties = {
   textAlign: "center",
 };
 
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#d97e4a",
-  color: "#ffffff",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-  lineHeight: "24px",
-  textDecoration: "none",
-  padding: "12px 32px",
-  borderRadius: "2px",
-  display: "inline-block",
-};
 
 const ctaBody: React.CSSProperties = {
-  color: "#979797",
+  color: emailColors.muted,
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -396,7 +332,7 @@ const bitacoraHeaderSection: React.CSSProperties = {
 
 const eyebrowLabel: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#d97e4a",
+  color: emailColors.xsed,
   fontSize: "12px",
   fontWeight: "700",
   letterSpacing: "4px",
@@ -410,7 +346,7 @@ const sectionHeading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', Impact, 'Arial Narrow', Arial, sans-serif",
   fontSize: "48px",
   fontWeight: "700",
-  color: "#111827",
+  color: emailColors.ink,
   margin: "0 0 12px",
   lineHeight: "1.05",
   textTransform: "uppercase",
@@ -418,13 +354,13 @@ const sectionHeading: React.CSSProperties = {
 };
 
 const headingAccent: React.CSSProperties = {
-  color: "#d97e4a",
+  color: emailColors.xsed,
   fontFamily: "'Barlow Condensed', Impact, 'Arial Narrow', Arial, sans-serif",
   fontWeight: "700",
 };
 
 const sectionSubtitle: React.CSSProperties = {
-  color: "#888787",
+  color: emailColors.muted,
   fontSize: "12px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -441,7 +377,7 @@ const dropFeaturedSection: React.CSSProperties = {
 
 const dropDate: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#d97e4a",
+  color: emailColors.xsed,
   fontSize: "12px",
   fontWeight: "700",
   letterSpacing: "3px",
@@ -452,7 +388,7 @@ const dropDate: React.CSSProperties = {
 
 const dropTitle: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
-  color: "#888787",
+  color: emailColors.muted,
   fontSize: "25px",
   fontWeight: "300",
   margin: "0 0 8px",
@@ -460,7 +396,7 @@ const dropTitle: React.CSSProperties = {
 };
 
 const dropDivider: React.CSSProperties = {
-  borderTop: "1px solid #d97e4a",
+  borderTop: `1px solid ${emailColors.xsed}`,
   margin: "8px 0 0",
 };
 
@@ -483,29 +419,16 @@ const verTodasSection: React.CSSProperties = {
   padding: "16px 30px 40px",
 };
 
-const verTodasButton: React.CSSProperties = {
-  backgroundColor: "#d97e4a",
-  color: "#ffffff",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "12px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};
 
 // El Veredicto
 const veredictoSection: React.CSSProperties = {
-  backgroundColor: "#fbfafa",
+  backgroundColor: emailColors.ground,
   padding: "40px 30px 20px",
   textAlign: "center",
 };
 
 const testimonialsRow: React.CSSProperties = {
-  backgroundColor: "#fbfafa",
+  backgroundColor: emailColors.ground,
   margin: "0",
   padding: "0 20px 40px",
 };
@@ -535,7 +458,7 @@ const avatarCell: React.CSSProperties = {
 };
 
 const avatarCircle: React.CSSProperties = {
-  backgroundColor: "#282828",
+  backgroundColor: emailColors.ink,
   width: "44px",
   height: "44px",
   borderRadius: "50%",
@@ -555,7 +478,7 @@ const avatarInitial: React.CSSProperties = {
 
 const testimonialName: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#282828",
+  color: emailColors.ink,
   fontSize: "20px",
   fontWeight: "600",
   margin: "0 0 2px",
@@ -564,7 +487,7 @@ const testimonialName: React.CSSProperties = {
 
 const testimonialCountry: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#888787",
+  color: emailColors.muted,
   fontSize: "12px",
   fontWeight: "300",
   margin: "0",
@@ -573,7 +496,7 @@ const testimonialCountry: React.CSSProperties = {
 
 const testimonialQuote: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#888787",
+  color: emailColors.muted,
   fontSize: "13px",
   fontWeight: "400",
   textAlign: "center",
@@ -583,7 +506,7 @@ const testimonialQuote: React.CSSProperties = {
 
 const verOpinionLink: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#d97e4a",
+  color: emailColors.xsed,
   fontSize: "12px",
   fontWeight: "300",
   letterSpacing: "1.2px",
@@ -594,37 +517,6 @@ const verOpinionLink: React.CSSProperties = {
 };
 
 // Footer
-const footerSection: React.CSSProperties = {
-  backgroundColor: "#ffffff",
-  padding: "24px 32px 28px",
-  textAlign: "center",
-  marginTop: "20px",
-};
 
-const footerCopyright: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#616161",
-  fontSize: "9px",
-  fontWeight: "500",
-  letterSpacing: "1px",
-  textAlign: "center",
-  margin: "0",
-  lineHeight: "1.5",
-};
 
-const footerTagline: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "9px",
-  fontWeight: "400",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "0",
-  lineHeight: "1.5",
-};
 
-const socialLink: React.CSSProperties = {
-  display: "inline-block",
-  margin: "0 15px",
-};

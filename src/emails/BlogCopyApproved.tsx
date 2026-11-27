@@ -1,6 +1,7 @@
-import { Heading, Text } from "@react-email/components";
 import * as React from "react";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface BlogCopyApprovedProps {
   adminName: string;
@@ -13,6 +14,7 @@ const copy = {
   es: {
     preview: (title: string) =>
       `El tripper aprobó tus cambios para "${title}". El artículo ya está publicado.`,
+    eyebrow: "Revisión de contenido",
     heading: "¡Cambios aprobados!",
     body: (adminName: string, tripperName: string, title: string) =>
       `Hola ${adminName}, ${tripperName} aprobó los cambios que propusiste para el artículo "${title}". El artículo ya está publicado en Randomtrip.`,
@@ -21,6 +23,7 @@ const copy = {
   en: {
     preview: (title: string) =>
       `The tripper approved your changes for "${title}". The article is now live.`,
+    eyebrow: "Content review",
     heading: "Changes Approved!",
     body: (adminName: string, tripperName: string, title: string) =>
       `Hi ${adminName}, ${tripperName} approved the changes you proposed for the article "${title}". The article is now live on Randomtrip.`,
@@ -43,43 +46,9 @@ export default function BlogCopyApproved({
 
   return (
     <EmailLayout locale={locale} preview={c.preview(blogTitle)}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(adminName, tripperName, blogTitle)}</Text>
-      <Text style={subtextStyle}>{c.subtext}</Text>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(adminName, tripperName, blogTitle)}</EmailText>
+      <EmailText variant="note">{c.subtext}</EmailText>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 16px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};

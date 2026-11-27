@@ -1,11 +1,16 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import { Button, Heading, Section, Text } from "@react-email/components";
+import { Text } from "@react-email/components";
 import * as React from "react";
 import {
   assignmentReminderCopy,
   formatAssignmentReminderText,
 } from "@/lib/email/assignmentReminderCopy";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
+import { emailColors, emailFonts } from "./components/tokens";
 
 interface DestinationAssignmentReminderProps {
   adminName: string;
@@ -31,112 +36,42 @@ export default function DestinationAssignmentReminder({
   });
   return (
     <EmailLayout locale={locale} preview={copy.preview}>
-      <Heading style={heading_style}>{copy.heading}</Heading>
-      <Text style={bodyText}>
+      <EmailHeading eyebrow={copy.eyebrow}>{copy.heading}</EmailHeading>
+      <EmailText>
         {formatAssignmentReminderText(copy.body, { admin: adminName })}
-      </Text>
-      <Section style={summaryPanel}>
-        <Text style={summaryRow}>
-          <span style={summaryLabel}>{copy.tripIdLabel}</span>{" "}
-          <span style={summaryValue}>{tripId}</span>
-        </Text>
-        <Text style={summaryRow}>
-          <span style={summaryLabel}>{copy.clientLabel}</span>{" "}
-          <span style={summaryValue}>{clientName}</span>
-        </Text>
-        <Text style={summaryRow}>
-          <span style={summaryLabel}>{copy.deadlineLabel}</span>{" "}
-          <span style={summaryValue}>{revealAt}</span>
-        </Text>
-      </Section>
-      <Text style={milestoneHours === 24 ? urgencyTextEscalated : urgencyText}>
+      </EmailText>
+      <EmailDetailList
+        items={[
+          { label: copy.tripIdLabel, value: tripId },
+          { label: copy.clientLabel, value: clientName },
+          { label: copy.deadlineLabel, value: revealAt },
+        ]}
+      />
+      <Text style={milestoneHours === 24 ? urgencyEscalated : urgencyStyle}>
         {urgency}
       </Text>
-      <Button
+      <EmailButton
         href={`${getApplicationOrigin()}/${locale}/dashboard/admin/trip-requests/${encodeURIComponent(tripId)}`}
-        style={ctaButton}
       >
         {copy.cta}
-      </Button>
+      </EmailButton>
     </EmailLayout>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const heading_style: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "38px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
+const urgencyStyle: React.CSSProperties = {
+  color: emailColors.ink,
+  fontFamily: emailFonts.body,
   fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 24px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const summaryPanel: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  borderRadius: "8px",
-  padding: "20px 32px",
-  margin: "0 auto 24px",
-  maxWidth: "400px",
-  textAlign: "left",
-};
-
-const summaryRow: React.CSSProperties = {
-  margin: "0 0 8px",
-  fontSize: "13px",
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-};
-
-const summaryLabel: React.CSSProperties = {
-  fontWeight: "700",
-  color: "#383838", // Ink
-};
-
-const summaryValue: React.CSSProperties = {
-  fontWeight: "400",
-};
-
-const urgencyText: React.CSSProperties = {
-  color: "#b45309",
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "600",
-  margin: "0 auto 32px",
   lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
+  margin: "0 0 24px",
 };
 
-const urgencyTextEscalated: React.CSSProperties = {
-  ...urgencyText,
-  color: "#b91c1c",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
+// Last milestone before the reveal: red, matching the `danger` badge text.
+const urgencyEscalated: React.CSSProperties = {
+  ...urgencyStyle,
+  color: "#991B1B",
 };

@@ -1,7 +1,9 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface TripCompletedProps {
   client: string;
@@ -12,21 +14,23 @@ interface TripCompletedProps {
 const copy = {
   es: {
     preview: "¡Tu viaje fue completado! Esperamos que haya sido increíble.",
+    eyebrow: "De vuelta",
     heading: "¡Viaje completado!",
     body: (client: string) =>
       `Hola ${client}, ¡tu aventura llegó a su fin! Esperamos que cada momento haya sido memorable y que hayas disfrutado al máximo tu experiencia Randomtrip.`,
     subtext:
       "Tu opinión nos importa mucho. ¿Qué tal si compartís tu experiencia con otros viajeros dejando una reseña?",
-    cta: "DEJAR UNA RESEÑA",
+    cta: "Dejar una reseña",
   },
   en: {
     preview: "Your trip is complete! We hope it was incredible.",
+    eyebrow: "Back home",
     heading: "Trip completed!",
     body: (client: string) =>
       `Hi ${client}, your adventure has come to an end! We hope every moment was memorable and that you fully enjoyed your Randomtrip experience.`,
     subtext:
       "Your opinion matters to us. How about sharing your experience with other travelers by leaving a review?",
-    cta: "LEAVE A REVIEW",
+    cta: "Leave a review",
   },
 };
 
@@ -45,61 +49,12 @@ export default function TripCompleted({
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(client)}</Text>
-      <Text style={subtextStyle}>{c.subtext}</Text>
-      <Button href={ctaHref} style={ctaButton}>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(client)}</EmailText>
+      <EmailText variant="note">{c.subtext}</EmailText>
+      <EmailButton href={ctaHref} variant="feature">
         {c.cta}
-      </Button>
+      </EmailButton>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 16px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};

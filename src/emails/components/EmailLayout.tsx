@@ -1,18 +1,17 @@
 import {
   Body,
-  Column,
   Container,
   Font,
   Head,
   Html,
   Img,
-  Link,
   Preview,
-  Row,
   Section,
-  Text,
 } from "@react-email/components";
 import * as React from "react";
+import EmailClientResets from "./EmailClientResets";
+import EmailFooter from "./EmailFooter";
+import { EMAIL_ASSET_ORIGIN, emailColors, emailFonts } from "./tokens";
 
 interface EmailLayoutProps {
   locale: "es" | "en";
@@ -20,12 +19,16 @@ interface EmailLayoutProps {
   children: React.ReactNode;
 }
 
-const BASE_URL = "https://getrandomtrip.com";
-
-const footerTaglines = {
-  es: "VIAJAR TAMBIÉN ES SOLTAR EL CONTROL.",
-  en: "TRAVEL IS ALSO ABOUT LETTING GO.",
-};
+// Clients that honour <style> stack the footer and drop the card edge on phones.
+const responsiveCss = `
+@media (max-width: 480px) {
+  .rt-px { padding-left: 24px !important; padding-right: 24px !important; }
+  .rt-card-body { padding: 32px 24px 28px !important; }
+  .rt-detail-value { font-size: 18px !important; }
+  .rt-stack { display: block !important; width: 100% !important; text-align: left !important; }
+  .rt-stack + .rt-stack { padding-top: 14px !important; }
+  .rt-social { margin-left: 0 !important; margin-right: 8px !important; }
+}`;
 
 export default function EmailLayout({
   locale,
@@ -35,25 +38,27 @@ export default function EmailLayout({
   return (
     <Html lang={locale} style={{ colorScheme: "light" }}>
       <Head>
+        <EmailClientResets />
         <meta name="color-scheme" content="light" />
         <meta name="supported-color-schemes" content="light" />
+        {/* Barlow 400 last: each <Font> sets the global family, last one wins. */}
         <Font
-          fontFamily="Barlow Condensed"
-          fallbackFontFamily="Arial"
+          fallbackFontFamily="Georgia"
+          fontFamily="Nothing You Could Do"
+          fontStyle="normal"
+          fontWeight={400}
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
+            url: "https://fonts.gstatic.com/s/nothingyoucoulddo/v21/oY1B8fbBpaP5OX3DtrRYf_Q2BPB1SnfZb3OOnVsH2pmp.woff2",
             format: "woff2",
           }}
-          fontWeight={700}
-          fontStyle="normal"
         />
         <Font
           fallbackFontFamily="Arial"
           fontFamily="Barlow Condensed"
           fontStyle="normal"
-          fontWeight={800}
+          fontWeight={700}
           webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
+            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
             format: "woff2",
           }}
         />
@@ -71,6 +76,16 @@ export default function EmailLayout({
           fallbackFontFamily="Arial"
           fontFamily="Barlow"
           fontStyle="normal"
+          fontWeight={600}
+          webFont={{
+            url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E30-8s51ostz0rdg.woff2",
+            format: "woff2",
+          }}
+        />
+        <Font
+          fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
           fontWeight={700}
           webFont={{
             url: "https://fonts.gstatic.com/s/barlow/v13/7cHqv4kjgoGqM7E3t-4s51ostz0rdg.woff2",
@@ -78,87 +93,44 @@ export default function EmailLayout({
           }}
         />
         <Font
-          fontFamily="Barlow"
           fallbackFontFamily="Arial"
+          fontFamily="Barlow"
+          fontStyle="normal"
+          fontWeight={400}
           webFont={{
             url: "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
             format: "woff2",
           }}
-          fontWeight={400}
-          fontStyle="normal"
         />
+        <style>{responsiveCss}</style>
       </Head>
       <Preview>{preview}</Preview>
-      <Body style={body}>
+      <Body id="body" style={body}>
         <Container style={container}>
-          {/* ── Header ── */}
-          <Section style={headerSection}>
+          {/* ── Header: colour lockup on Off White ── */}
+          <Section className="rt-px" style={header}>
             <Img
               // PNG, not SVG: Gmail and Outlook don't render SVG images.
-              src={`${BASE_URL}/assets/logos/logo_white_no_tag_email.png`}
-              width={160}
-              height={40}
               alt="Randomtrip"
-              style={{ display: "block", margin: "0 auto" }}
+              height={40}
+              src={`${EMAIL_ASSET_ORIGIN}/assets/logos/logo_color_email.png`}
+              style={{ display: "block" }}
+              width={160}
             />
           </Section>
 
-          {/* ── Main ── */}
-          <Section style={mainSection}>{children}</Section>
-
-          {/* ── Footer ── */}
-          <Section style={footerSection}>
-            <Row>
-              <Column align="center">
-                <Text style={footerCopyright}>© 2026 RANDOMTRIP</Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Text style={footerTagline}>{footerTaglines[locale]}</Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column style={{ height: "20px" }} />
-            </Row>
-            <Row>
-              <Column align="center">
-                <Link
-                  href="https://www.instagram.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={`${BASE_URL}/images/newsletter/social-instagram.png`}
-                    width={24}
-                    height={24}
-                    alt="Instagram"
-                  />
-                </Link>
-                <Link
-                  href="https://www.facebook.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={`${BASE_URL}/images/newsletter/social-facebook.png`}
-                    width={24}
-                    height={24}
-                    alt="Facebook"
-                  />
-                </Link>
-                <Link
-                  href="https://www.linkedin.com/company/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={`${BASE_URL}/images/newsletter/social-linkedin.png`}
-                    width={24}
-                    height={24}
-                    alt="LinkedIn"
-                  />
-                </Link>
-              </Column>
-            </Row>
+          {/* ── Card ── */}
+          {/* Side margins match the logo and footer padding, so the box's
+              edges line up with their text. */}
+          <Section className="rt-px" style={cardWrapper}>
+            <Section style={card}>
+              <Section className="rt-card-body" style={cardBody}>
+                {children}
+              </Section>
+            </Section>
           </Section>
+
+          <EmailFooter locale={locale} />
         </Container>
       </Body>
     </Html>
@@ -168,63 +140,35 @@ export default function EmailLayout({
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const body: React.CSSProperties = {
-  backgroundColor: "#f5f5f5",
+  backgroundColor: emailColors.ground,
+  colorScheme: "light",
+  fontFamily: emailFonts.body,
   margin: "0",
   padding: "0",
-  fontFamily: "'Barlow', Arial, Helvetica, sans-serif",
-  colorScheme: "light",
 };
 
 const container: React.CSSProperties = {
-  backgroundColor: "#ffffff",
-  maxWidth: "600px",
+  backgroundColor: emailColors.ground,
   margin: "0 auto",
+  maxWidth: "600px",
 };
 
-const headerSection: React.CSSProperties = {
-  backgroundColor: "#0F5C60", // Deep Teal (brand primary)
-  padding: "24px 40px",
-  textAlign: "center",
+const header: React.CSSProperties = {
+  padding: "32px 40px 28px",
 };
 
-const mainSection: React.CSSProperties = {
-  backgroundColor: "#ffffff",
-  padding: "48px 40px",
-  textAlign: "center",
+const cardWrapper: React.CSSProperties = {
+  padding: "0 40px 40px",
 };
 
-const footerSection: React.CSSProperties = {
-  marginTop: "20px",
-  backgroundColor: "#ffffff",
-  padding: "24px 32px 28px",
-  textAlign: "center",
+const card: React.CSSProperties = {
+  backgroundColor: emailColors.surface,
+  border: `1px solid ${emailColors.border}`,
+  borderCollapse: "separate",
+  borderRadius: "12px",
 };
 
-const footerCopyright: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "9px",
-  fontWeight: "400",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "0 0 10px",
-  lineHeight: "1.5",
-};
-
-const footerTagline: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "9px",
-  fontWeight: "400",
-  letterSpacing: "1px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "0",
-  lineHeight: "1.5",
-};
-
-const socialLink: React.CSSProperties = {
-  display: "inline-block",
-  margin: "0 8px",
+const cardBody: React.CSSProperties = {
+  padding: "40px 32px 32px",
+  textAlign: "left",
 };

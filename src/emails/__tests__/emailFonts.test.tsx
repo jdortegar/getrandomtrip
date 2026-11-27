@@ -10,30 +10,22 @@ const orders = {
   newsletter: [
     "Nothing You Could Do:400",
     "Barlow Condensed:700",
-    "Barlow Condensed:800",
     "Barlow:400",
     "Barlow:500",
     "Barlow:700",
   ],
   layout: [
+    "Nothing You Could Do:400",
     "Barlow Condensed:700",
-    "Barlow Condensed:800",
     "Barlow:500",
-    "Barlow:700",
-    "Barlow:400",
-  ],
-  vouchers: [
-    "Barlow Condensed:700",
-    "Barlow Condensed:800",
-    "Barlow:400",
-    "Barlow:500",
-    "Barlow:700",
     "Barlow:600",
+    "Barlow:700",
+    "Barlow:400",
   ],
   xsed: [
+    "Nothing You Could Do:400",
     "Barlow Condensed:300",
     "Barlow Condensed:700",
-    "Barlow Condensed:800",
     "Barlow:400",
     "Barlow:500",
     "Barlow:600",
@@ -66,7 +58,7 @@ const cases = [
     name: "xsed",
     locale: "es",
     element: <XsedCampaign />,
-    text: "UNITE A LA LISTA DE ESPERA",
+    text: "Unite a la lista de espera",
     href: `${base}/es/xsed`,
     order: orders.xsed,
     last: "700",
@@ -87,8 +79,8 @@ const cases = [
       element: <TripStartVouchers {...vouchers} locale={locale} />,
       text: "Confirmación Ñ",
       href: `${base}/${locale}/dashboard/trips/font-test/destination`,
-      order: orders.vouchers,
-      last: "600",
+      order: orders.layout,
+      last: "400",
     },
   ]),
 ];
@@ -175,8 +167,6 @@ const urls: Record<string, string> = {
     "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47rxz3bWuYMBYro.woff2",
   "Barlow Condensed:700":
     "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuYMBYro.woff2",
-  "Barlow Condensed:800":
-    "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
   "Barlow:400":
     "https://fonts.gstatic.com/s/barlow/v13/7cHpv4kjgoGqM7E_DMs5ynghnQ.woff2",
   "Barlow:500":
