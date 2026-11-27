@@ -4873,6 +4873,7 @@
         "promo": {
           "expired": "Este código promocional venció.",
           "max_redemptions_reached": "Este código promocional alcanzó su límite de usos.",
+          "country_not_allowed": "Este código promocional no es válido para el país de salida de tu viaje.",
           "already_used": "Ya usaste este código promocional.",
           "first_time_only": "Este código promocional solo es válido en tu primera compra.",
           "minimum_amount": "Tu viaje no alcanza el monto mínimo de este código promocional."

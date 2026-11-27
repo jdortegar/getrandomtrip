@@ -4,6 +4,7 @@ import type { TripDetailRowsTrip } from "@/types/Checkout";
 export type PromoRejectionReason =
   | "expired"
   | "max_redemptions_reached"
+  | "country_not_allowed"
   | "already_used"
   | "first_time_only"
   | "minimum_amount";
