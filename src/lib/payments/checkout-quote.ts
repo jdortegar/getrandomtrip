@@ -11,7 +11,12 @@ import { resolveBasePricePerPerson } from "@/lib/pricing/resolve-base-price";
 import { loadTripperPriceOverrides } from "@/lib/pricing/tripper-price-overrides.server";
 import { upsertPaymentForTripCheckout } from "@/lib/db/payment";
 import { revertExpiredPendingPayment } from "@/lib/db/tripRequest";
-import { evaluatePromoRules, promoErrorCode } from "@/lib/payments/promo-rules";
+import { resolveCountryCode } from "@/lib/geo/countryNameToCode";
+import {
+  evaluatePromoRules,
+  promoErrorCode,
+  promoMetadataRules,
+} from "@/lib/payments/promo-rules";
 import { SETTLED_PAYMENT_STATUSES } from "@/lib/payments/settledStatuses";
 import {
   maxTopUpCents,
@@ -31,6 +36,7 @@ const fail = (error: string, status: number, errorCode?: string) =>
 /** Fallback API messages; the checkout UI localizes by `errorCode`. */
 const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
   already_used: "You have already used this promo code",
+  country_not_allowed: "This promo code is not valid for your trip's departure country",
   expired: "This promo code has expired",
   first_time_only: "This promo code is only valid on your first purchase",
   max_redemptions_reached: "This promo code has reached its usage limit",
@@ -43,6 +49,7 @@ const PROMO_RULE_MESSAGES: Record<PromoRejectionReason, string> = {
  * promotion code, not every code that shares the coupon. */
 async function checkPromoRules(params: {
   amountCents: number;
+  tripOriginCountry: string | null;
   coupon: Stripe.Coupon;
   promotion: Stripe.PromotionCode;
   tripId: string;
@@ -56,17 +63,19 @@ async function checkPromoRules(params: {
     tripRequestId: { not: tripId },
   };
   const byCode = { ...settled, stripePromotionCodeId: promotion.id };
+  const metadata = promoMetadataRules(promotion.metadata);
   const [codeRedemptions, userCodeUses, userSettledPayments] = await Promise.all([
     promotion.max_redemptions != null
       ? prisma.payment.count({ where: byCode })
       : 0,
-    prisma.payment.count({ where: { ...byCode, userId } }),
+    metadata.reusable ? 0 : prisma.payment.count({ where: { ...byCode, userId } }),
     restrictions.first_time_transaction
       ? prisma.payment.count({ where: { ...settled, userId } })
       : 0,
   ]);
   return evaluatePromoRules({
     amountCents: params.amountCents,
+    tripOriginCountry: params.tripOriginCountry,
     codeRedemptions,
     coupon: { redeem_by: coupon.redeem_by ?? null },
     currency: "usd",
@@ -74,6 +83,7 @@ async function checkPromoRules(params: {
     promotion: {
       expires_at: promotion.expires_at ?? null,
       max_redemptions: promotion.max_redemptions ?? null,
+      metadata,
       restrictions: {
         currency_options: restrictions.currency_options,
         first_time_transaction: Boolean(restrictions.first_time_transaction),
@@ -261,6 +271,7 @@ export async function checkoutQuoteResponse(
         return rejectPromo("This promo code is no longer valid");
       const rules = await checkPromoRules({
         amountCents: Math.round(totals.totalTrip * 100),
+        tripOriginCountry: resolveCountryCode(trip.originCountry),
         coupon,
         promotion,
         tripId,

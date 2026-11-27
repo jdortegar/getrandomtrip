@@ -5,6 +5,8 @@ import type { PromoErrorCode, PromoRejectionReason } from "@/types/payments";
 export interface PromoRuleInput {
   /** Pre-discount charge in the smallest unit of `currency` (USD cents). */
   amountCents: number;
+  /** ISO alpha-2 country the trip departs from, or null when unknown. */
+  tripOriginCountry: string | null;
   /** Settled payments, on other trips, that used this promotion code. */
   codeRedemptions: number;
   coupon: { redeem_by: number | null };
@@ -15,6 +17,8 @@ export interface PromoRuleInput {
     /** Unix seconds. */
     expires_at: number | null;
     max_redemptions: number | null;
+    /** App-enforced rules read from the promotion code's Stripe metadata. */
+    metadata: PromoMetadataRules;
     restrictions: {
       currency_options?: Record<string, { minimum_amount: number }>;
       first_time_transaction: boolean;
@@ -27,6 +31,28 @@ export interface PromoRuleInput {
   userCodeUses: number;
   /** The buyer's settled payments on other trips, with or without a code. */
   userSettledPayments: number;
+}
+
+/** Rules Stripe has no field for, set as promotion code metadata:
+ * `allowed_countries` ("AR" or "AR,UY") and `reusable` ("true"). */
+export interface PromoMetadataRules {
+  /** Uppercase ISO alpha-2 departure countries; null means any country. */
+  allowedCountries: string[] | null;
+  /** True lets one buyer use the code on any number of trips. */
+  reusable: boolean;
+}
+
+export function promoMetadataRules(
+  metadata: Record<string, string> | null | undefined,
+): PromoMetadataRules {
+  const countries = (metadata?.allowed_countries ?? "")
+    .split(",")
+    .map((code) => code.trim().toUpperCase())
+    .filter((code) => /^[A-Z]{2}$/.test(code));
+  return {
+    allowedCountries: countries.length > 0 ? countries : null,
+    reusable: metadata?.reusable?.trim().toLowerCase() === "true",
+  };
 }
 
 export type PromoRuleResult =
@@ -66,7 +92,16 @@ export function evaluatePromoRules(input: PromoRuleInput): PromoRuleResult {
   ) {
     return reject("max_redemptions_reached");
   }
-  if (input.userCodeUses > 0) return reject("already_used");
+  const { allowedCountries, reusable } = promotion.metadata;
+  // Checked against the trip's departure country, not the buyer's location
+  // (a VPN can fake that). An unknown origin fails closed.
+  if (
+    allowedCountries &&
+    !(input.tripOriginCountry && allowedCountries.includes(input.tripOriginCountry))
+  ) {
+    return reject("country_not_allowed");
+  }
+  if (!reusable && input.userCodeUses > 0) return reject("already_used");
   if (
     promotion.restrictions.first_time_transaction &&
     input.userSettledPayments > 0
@@ -83,6 +118,7 @@ export function evaluatePromoRules(input: PromoRuleInput): PromoRuleResult {
 const PROMO_REASONS: readonly PromoRejectionReason[] = [
   "expired",
   "max_redemptions_reached",
+  "country_not_allowed",
   "already_used",
   "first_time_only",
   "minimum_amount",

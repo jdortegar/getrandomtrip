@@ -4866,6 +4866,7 @@
         "promo": {
           "expired": "This promo code has expired.",
           "max_redemptions_reached": "This promo code has reached its usage limit.",
+          "country_not_allowed": "This promo code isn't valid for your trip's departure country.",
           "already_used": "You've already used this promo code.",
           "first_time_only": "This promo code is only valid on your first purchase.",
           "minimum_amount": "Your trip doesn't reach this promo code's minimum amount."
