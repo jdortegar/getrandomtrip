@@ -1,14 +1,10 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import {
-  Button,
-  Column,
-  Heading,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface DestinationRevealedProps {
   client: string;
@@ -24,6 +20,7 @@ interface DestinationRevealedProps {
 const copy = {
   es: {
     preview: "Ya podés descubrir tu destino sorpresa.",
+    eyebrow: "Llegó el momento",
     heading: "Tu destino ya está listo",
     body: (client: string) =>
       `Hola ${client}, llegó el momento que tanto esperabas. Tu destino sorpresa ya está cargado en tu panel, esperando a que lo descubras.`,
@@ -31,10 +28,11 @@ const copy = {
     returnLabel: "Regreso",
     subtext:
       "No te lo contamos por acá a propósito: tu destino te espera en tu panel.",
-    cta: "DESCUBRIR MI DESTINO",
+    cta: "Descubrir mi destino",
   },
   en: {
     preview: "You can now uncover your surprise destination.",
+    eyebrow: "The moment is here",
     heading: "Your destination is ready",
     body: (client: string) =>
       `Hi ${client}, the moment you've been waiting for has arrived. Your surprise destination is loaded in your dashboard, waiting for you to uncover it.`,
@@ -42,7 +40,7 @@ const copy = {
     returnLabel: "Return",
     subtext:
       "We're deliberately not saying it here — it's waiting for you in your dashboard.",
-    cta: "UNCOVER MY DESTINATION",
+    cta: "Uncover my destination",
   },
 };
 
@@ -61,171 +59,20 @@ export default function DestinationRevealed({
   const c = copy[locale];
   const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${tripId}/destination`;
 
+  const dates = [
+    ...(departureDate ? [{ label: c.departureLabel, value: departureDate }] : []),
+    ...(returnDate ? [{ label: c.returnLabel, value: returnDate }] : []),
+  ];
+
   return (
     <EmailLayout locale={locale} preview={c.preview}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(client)}</Text>
-
-      {/* Teaser panel — dark gradient echoing the reveal page's gate,
-          deliberately no destination name anywhere in it. */}
-      <Section style={destinationPanel}>
-        <Text style={teaserLine}>
-          {locale === "es" ? (
-            <>
-              Revelalo en tu panel
-              <br />
-              cuando quieras
-            </>
-          ) : (
-            <>
-              Reveal it in your
-              <br />
-              dashboard
-            </>
-          )}
-        </Text>
-      </Section>
-
-      {departureDate && (
-        <Section style={dateTableWrapper}>
-          <Row>
-            <Column style={dateCellLeft}>
-              <Section style={dateCellBox}>
-                <Text style={dateCellLabel}>{c.departureLabel}</Text>
-                <Text style={dateCellValue}>{departureDate}</Text>
-              </Section>
-            </Column>
-            {returnDate && (
-              <Column style={dateCellRight}>
-                <Section style={dateCellBox}>
-                  <Text style={dateCellLabel}>{c.returnLabel}</Text>
-                  <Text style={dateCellValue}>{returnDate}</Text>
-                </Section>
-              </Column>
-            )}
-          </Row>
-        </Section>
-      )}
-
-      <Button href={ctaHref} style={ctaButton}>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(client)}</EmailText>
+      {dates.length > 0 && <EmailDetailList items={dates} />}
+      <EmailButton href={ctaHref} variant="feature">
         {c.cta}
-      </Button>
-      <Text style={subtextStyle}>{c.subtext}</Text>
+      </EmailButton>
+      <EmailText variant="note">{c.subtext}</EmailText>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "38px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 28px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const destinationPanel: React.CSSProperties = {
-  backgroundColor: "#0b0f1a",
-  backgroundImage:
-    "linear-gradient(135deg, #141a2b 0%, #0b0f1a 50%, #12283a 100%)",
-  borderRadius: "8px",
-  padding: "36px 32px",
-  margin: "0 auto 28px",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const teaserLine: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
-  color: "#ffffff",
-  fontSize: "30px",
-  fontWeight: "800",
-  textTransform: "uppercase",
-  letterSpacing: "1px",
-  lineHeight: "1.05",
-  margin: "0",
-};
-
-const dateTableWrapper: React.CSSProperties = {
-  maxWidth: "400px",
-  margin: "0 auto 32px",
-};
-
-const dateCellLeft: React.CSSProperties = {
-  width: "50%",
-  paddingRight: "8px",
-  verticalAlign: "top",
-};
-
-const dateCellRight: React.CSSProperties = {
-  width: "50%",
-  paddingLeft: "8px",
-  verticalAlign: "top",
-};
-
-const dateCellBox: React.CSSProperties = {
-  border: "1px solid #e5e7eb",
-  borderRadius: "6px",
-  padding: "14px 16px",
-  textAlign: "left",
-  margin: "0",
-};
-
-const dateCellLabel: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#383838", // Ink
-  fontSize: "10px",
-  fontWeight: "700",
-  letterSpacing: "1.5px",
-  textTransform: "uppercase",
-  margin: "0 0 4px",
-};
-
-const dateCellValue: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', Arial, sans-serif",
-  color: "#383838", // Ink
-  fontSize: "20px",
-  fontWeight: "700",
-  lineHeight: "1",
-  margin: "0",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "12.5px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "22px auto 0",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};

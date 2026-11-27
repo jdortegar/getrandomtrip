@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { BADGE_TONES } from "@/components/ui/badgeTones";
 
 interface StatusIndicatorBadgeProps {
   family:
@@ -25,154 +26,121 @@ interface StatusIndicatorBadgeProps {
   status: string;
 }
 
-const TONES = {
-  success: {
-    badge: "bg-green-50 border-green-200 text-green-800",
-    dot: "bg-green-500",
-  },
-  warning: {
-    badge: "bg-amber-50 border-amber-200 text-amber-800",
-    dot: "bg-amber-400",
-  },
-  unread: { badge: "bg-sky-50 border-sky-200 text-sky-700", dot: "bg-sky-500" },
-  info: { badge: "bg-sky-50 border-sky-200 text-sky-800", dot: "bg-sky-500" },
-  review: {
-    badge: "bg-purple-50 border-purple-200 text-purple-800",
-    dot: "bg-purple-500",
-  },
-  danger: { badge: "bg-red-50 border-red-200 text-red-800", dot: "bg-red-500" },
-  inactive: {
-    badge: "bg-neutral-50 border-neutral-200 text-neutral-600",
-    dot: "bg-neutral-400",
-  },
-  neutral: {
-    badge: "bg-gray-50 border-gray-200 text-gray-700",
-    dot: "bg-gray-400",
-  },
-  booked: {
-    badge: "bg-blue-50 border-blue-200 text-blue-800",
-    dot: "bg-blue-500",
-  },
-};
+const TONES = BADGE_TONES;
 interface StatusFamily {
   fallback: keyof typeof TONES;
   statuses: Record<string, keyof typeof TONES>;
 }
+/** Trip lifecycle, shared by traveler and admin views so a status reads the same everywhere. */
+const TRIP_LIFECYCLE: Record<string, keyof typeof TONES> = {
+  CANCELLED: "danger",
+  COLLECTING: "ochre",
+  COMPLETED: "teal",
+  CONFIRMED: "sage",
+  DRAFT: "ground",
+  PENDING_PAYMENT: "ochre",
+  REVEALED: "ochre",
+  SAVED: "ground",
+};
 const TRAVELER_TRIP: StatusFamily = {
-  fallback: "neutral",
-  statuses: {
-    CANCELLED: "danger",
-    COMPLETED: "success",
-    CONFIRMED: "booked",
-    REVEALED: "review",
-  },
+  fallback: "ground",
+  // Travelers waiting on their group aren't being asked to act, so stay calm.
+  statuses: { ...TRIP_LIFECYCLE, COLLECTING: "ground" },
 };
 const TRIPPER_BOOKING: StatusFamily = {
-  fallback: "warning",
-  statuses: { confirmed: "success", completed: "success", revealed: "review" },
+  fallback: "ground",
+  statuses: { completed: "teal", confirmed: "sage", revealed: "ochre" },
 };
 const FAMILIES: Record<StatusIndicatorBadgeProps["family"], StatusFamily> = {
-  notification: { fallback: "unread", statuses: {} },
-  review: { fallback: "warning", statuses: { submitted: "success" } },
+  notification: { fallback: "sage", statuses: {} },
+  review: { fallback: "ochre", statuses: { submitted: "success" } },
   "tripper-booking": TRIPPER_BOOKING,
   "tripper-booking-summary": TRIPPER_BOOKING,
   "tripper-profile": {
-    fallback: "warning",
+    fallback: "ochre",
     statuses: {
       APPROVED: "success",
       CHANGES_REQUESTED: "danger",
-      DRAFT: "warning",
-      PENDING_REVIEW: "info",
+      DRAFT: "ochre",
+      PENDING_REVIEW: "sage",
     },
   },
-  availability: { fallback: "inactive", statuses: {} },
+  availability: { fallback: "ground", statuses: {} },
   blog: {
-    fallback: "warning",
+    fallback: "ochre",
     statuses: {
-      DRAFT: "warning",
-      PENDING_REVIEW: "info",
-      PENDING_TRIPPER_REVIEW: "review",
+      DRAFT: "ochre",
+      PENDING_REVIEW: "sage",
+      PENDING_TRIPPER_REVIEW: "teal",
       PUBLISHED: "success",
     },
   },
-  document: { fallback: "warning", statuses: { published: "success" } },
+  document: { fallback: "ochre", statuses: { published: "success" } },
   "email-campaign": {
-    fallback: "warning",
+    fallback: "ochre",
     statuses: {
-      DRAFT: "warning",
+      DRAFT: "ochre",
       PARTIAL: "danger",
-      SENDING: "info",
+      SENDING: "sage",
       SENT: "success",
     },
   },
   "email-send": {
-    fallback: "inactive",
+    fallback: "ground",
     statuses: {
       BOUNCED: "danger",
       DELIVERED: "success",
       FAILED: "danger",
-      QUEUED: "inactive",
-      SENT: "info",
+      QUEUED: "ground",
+      SENT: "sage",
     },
   },
   "email-contact": {
-    fallback: "inactive",
+    fallback: "ground",
     statuses: {
       BOUNCED: "danger",
       SUBSCRIBED: "success",
-      UNSUBSCRIBED: "inactive",
+      UNSUBSCRIBED: "ground",
     },
   },
   earning: {
-    fallback: "warning",
-    statuses: { paid: "success", pending: "warning", processing: "info" },
+    fallback: "ochre",
+    statuses: { paid: "success", pending: "ochre", processing: "sage" },
   },
   experience: {
-    fallback: "warning",
+    fallback: "ochre",
     statuses: {
       ACTIVE: "success",
-      ARCHIVED: "inactive",
-      DRAFT: "warning",
+      ARCHIVED: "ground",
+      DRAFT: "ochre",
       INACTIVE: "danger",
-      PENDING_REVIEW: "info",
-      PENDING_TRIPPER_REVIEW: "review",
+      PENDING_REVIEW: "sage",
+      PENDING_TRIPPER_REVIEW: "teal",
     },
   },
   payment: {
-    fallback: "neutral",
+    fallback: "ground",
     statuses: {
       APPROVED: "success",
-      CANCELLED: "neutral",
+      CANCELLED: "ground",
       COMPLETED: "success",
       FAILED: "danger",
-      PENDING: "warning",
-      REFUNDED: "neutral",
+      PENDING: "ochre",
+      REFUNDED: "ground",
       REJECTED: "danger",
     },
   },
   role: {
-    fallback: "neutral",
-    statuses: { ADMIN: "review", TRAVELER: "booked", TRIPPER: "success" },
+    fallback: "ground",
+    statuses: { ADMIN: "teal", TRAVELER: "sage", TRIPPER: "ochre" },
   },
   traveler: {
-    fallback: "warning",
-    statuses: { COMPLETE: "success", INVITED: "info", PENDING: "warning" },
+    fallback: "ochre",
+    statuses: { COMPLETE: "success", INVITED: "sage", PENDING: "ochre" },
   },
   "traveler-trip": TRAVELER_TRIP,
   "traveler-trip-summary": TRAVELER_TRIP,
-  trip: {
-    fallback: "neutral",
-    statuses: {
-      CANCELLED: "danger",
-      COLLECTING: "warning",
-      COMPLETED: "success",
-      CONFIRMED: "success",
-      DRAFT: "neutral",
-      PENDING_PAYMENT: "warning",
-      REVEALED: "info",
-      SAVED: "neutral",
-    },
-  },
+  trip: { fallback: "ground", statuses: TRIP_LIFECYCLE },
 };
 
 /** Canonical read-only status + dot. Domain state selects component-owned styling. */

@@ -3,7 +3,6 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TripItineraryContent } from "../TripItineraryContent";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const mockReplace = vi.fn();
@@ -45,7 +44,10 @@ function installMemoryStorage() {
     removeItem: (key: string) => void store.delete(key),
     clear: () => store.clear(),
   };
-  Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+  Object.defineProperty(window, "localStorage", {
+    configurable: true,
+    value: storage,
+  });
   return storage;
 }
 
@@ -77,7 +79,9 @@ function baseTrip(overrides: Record<string, unknown> = {}) {
       heroImage: null,
       destinationCity: "Mendoza",
       destinationCountry: "Argentina",
-      itinerary: [{ title: "Touchdown", description: "Arrival day.", image: null }],
+      itinerary: [
+        { title: "Touchdown", description: "Arrival day.", image: null },
+      ],
       inclusions: [],
       exclusions: [],
     },
@@ -159,13 +163,19 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
     await flush();
 
     expect(mockReplace).toHaveBeenCalledWith("/en/dashboard/trips/trip-1");
-    expect(container.querySelector('[data-component="TripBoardReveal"]')).toBeNull();
+    expect(
+      container.querySelector('[data-component="TripBoardReveal"]'),
+    ).toBeNull();
   });
 
   it("sends a trip that fails to load back to the details page", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ error: "Not found" }) }),
+      vi
+        .fn()
+        .mockResolvedValue({
+          json: () => Promise.resolve({ error: "Not found" }),
+        }),
     );
 
     render();
@@ -177,14 +187,28 @@ describe("TripItineraryContent — ADR-7 status branching", () => {
 
 describe("TripItineraryContent — reveal plays once per browser", () => {
   const phase = () =>
-    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')?.dataset.phase;
+    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')
+      ?.dataset.phase;
   const button = (label: string) =>
-    Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(label));
+    Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes(label),
+    );
 
   it("marks the reveal as seen when the traveler skips it", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }) }) }),
+      vi
+        .fn()
+        .mockResolvedValue({
+          json: () =>
+            Promise.resolve({
+              trip: baseTrip({
+                type: "couple",
+                originCity: "Buenos Aires",
+                originCountry: "Argentina",
+              }),
+            }),
+        }),
     );
 
     render();
@@ -200,10 +224,24 @@ describe("TripItineraryContent — reveal plays once per browser", () => {
   });
 
   it("opens straight on the destination when the reveal was already seen", async () => {
-    window.localStorage.setItem("rt:reveal-seen:trip-1", "2026-08-20T00:00:00.000Z");
+    window.localStorage.setItem(
+      "rt:reveal-seen:trip-1",
+      "2026-08-20T00:00:00.000Z",
+    );
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ json: () => Promise.resolve({ trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }) }) }),
+      vi
+        .fn()
+        .mockResolvedValue({
+          json: () =>
+            Promise.resolve({
+              trip: baseTrip({
+                type: "couple",
+                originCity: "Buenos Aires",
+                originCountry: "Argentina",
+              }),
+            }),
+        }),
     );
 
     render();
@@ -226,9 +264,12 @@ describe("TripItineraryContent — reveal plays once per browser", () => {
 
 describe("TripItineraryContent — relive the reveal", () => {
   const button = (label: string) =>
-    Array.from(container.querySelectorAll("button")).find((b) => b.textContent?.includes(label));
+    Array.from(container.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes(label),
+    );
   const phase = () =>
-    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')?.dataset.phase;
+    container.querySelector<HTMLElement>('[data-component="TripBoardReveal"]')
+      ?.dataset.phase;
 
   it("shows the bar after the reveal and sends the traveler back to the ready screen", async () => {
     vi.stubGlobal(
@@ -236,7 +277,11 @@ describe("TripItineraryContent — relive the reveal", () => {
       vi.fn().mockResolvedValue({
         json: () =>
           Promise.resolve({
-            trip: baseTrip({ type: "couple", originCity: "Buenos Aires", originCountry: "Argentina" }),
+            trip: baseTrip({
+              type: "couple",
+              originCity: "Buenos Aires",
+              originCountry: "Argentina",
+            }),
           }),
       }),
     );
@@ -254,15 +299,21 @@ describe("TripItineraryContent — relive the reveal", () => {
 
     expect(phase()).toBe("done");
     expect(container.textContent).toContain("Destination revealed on");
-    expect(container.textContent).toContain("The mystery changes shape. The journey begins.");
+    expect(container.textContent).toContain(
+      "The mystery changes shape. The journey begins.",
+    );
     expect(container.querySelector("main")).not.toBeNull();
     expect(document.body.classList.contains("rt-reveal-locked")).toBe(false);
     // The guide intro sits after the trip-details strip; "See my route" lands
     // on the itinerary, and the hero's "Explore my trip" on the trip <main>.
     const main = container.querySelector("main#trip-guide");
     expect(main?.querySelector('[data-component="TripGuide"]')).not.toBeNull();
-    const blocks = Array.from(main!.children).map((el) => el.querySelector("[data-component]")?.getAttribute("data-component"));
-    expect(blocks.indexOf("TripEssentialsStrip")).toBeLessThan(blocks.indexOf("TripGuide"));
+    const blocks = Array.from(main!.children).map((el) =>
+      el.querySelector("[data-component]")?.getAttribute("data-component"),
+    );
+    expect(blocks.indexOf("TripEssentialsStrip")).toBeLessThan(
+      blocks.indexOf("TripGuide"),
+    );
     expect(container.querySelector('a[href="#itinerary"]')).not.toBeNull();
     expect(main?.querySelector("#itinerary")).not.toBeNull();
 

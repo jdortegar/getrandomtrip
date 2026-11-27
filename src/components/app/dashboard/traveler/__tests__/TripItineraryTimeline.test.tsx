@@ -5,7 +5,6 @@ import { TripItineraryTimeline } from "../TripItineraryTimeline";
 import type { TripItineraryDict } from "@/lib/types/dictionary";
 import type { ItineraryDayEntry } from "@/types/tripper";
 
-
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy: Pick<TripItineraryDict, "itinerary"> = {
@@ -31,13 +30,21 @@ const days: ItineraryDayEntry[] = [
 let container: HTMLDivElement;
 let root: Root;
 
-function render(entries: ItineraryDayEntry[], startDate: string | null = "2026-08-22T00:00:00.000Z") {
+function render(
+  entries: ItineraryDayEntry[],
+  startDate: string | null = "2026-08-22T00:00:00.000Z",
+) {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
   act(() => {
     root.render(
-      <TripItineraryTimeline copy={copy} days={entries} locale="en" startDate={startDate} />,
+      <TripItineraryTimeline
+        copy={copy}
+        days={entries}
+        locale="en"
+        startDate={startDate}
+      />,
     );
   });
 }

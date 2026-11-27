@@ -265,16 +265,22 @@ Use `<ExperienceStatusBadge>` from `@/components/common/ExperienceStatusBadge`, 
 
 Shape: `rounded-[6px]` with a colored dot — never `rounded-full`. Dict keys must match Prisma enum exactly (SCREAMING_SNAKE_CASE).
 
-| Status                  | Background  | Text        | Border      | Dot         |
-| ----------------------- | ----------- | ----------- | ----------- | ----------- |
-| `ACTIVE`                | green-50    | green-800   | green-200   | green-500   |
-| `DRAFT`                 | amber-50    | amber-800   | amber-200   | amber-400   |
-| `PENDING_REVIEW`        | sky-50      | sky-800     | sky-200     | sky-500     |
-| `PENDING_TRIPPER_REVIEW`| purple-50   | purple-800  | purple-200  | purple-500  |
-| `INACTIVE`              | red-50      | red-800     | red-200     | red-500     |
-| `ARCHIVED`              | neutral-50  | neutral-600 | neutral-200 | neutral-400 |
+Every family maps its statuses onto **one brand-aligned tone set**, `BADGE_TONES` in `src/components/ui/badgeTones.ts`, shared by `StatusIndicatorBadge` and `Badge` (plus `category` for type and level labels). Never add a tone with a generic Tailwind hue (sky, purple, blue, amber, gray) — a test fails if one appears.
 
-`<StatusBadge>` (`variant="trip" | "payment" | "role"`) colors are defined in `src/lib/admin/trip-status.ts`. Always pass a translated `label`; never render the raw enum `status` as text.
+| Tone | Meaning | Wash / border | Text | Dot | Examples |
+| --- | --- | --- | --- | --- | --- |
+| `success` | live / done well | green-50 / green-200 | green-800 | green-500 | `ACTIVE`, `PUBLISHED`, payment `APPROVED`, email `DELIVERED` |
+| `danger` | problem | red-50 / red-200 | red-800 | red-500 | `INACTIVE`, `CANCELLED`, `FAILED`, `BOUNCED` |
+| `ochre` | needs attention / pending; the reveal | `feature/15` / `feature/50` | `ink` | `feature` | `DRAFT`, `PENDING_PAYMENT`, payment `PENDING`, trip `REVEALED` |
+| `sage` | in progress / booked | `secondary/35` / `secondary` | `primary` | `primary/50` | trip `CONFIRMED`, `PENDING_REVIEW`, `SENDING`, `INVITED` |
+| `teal` | finished / with the tripper | `primary/10` / `primary/25` | `primary` | `primary` | trip `COMPLETED`, `PENDING_TRIPPER_REVIEW`, role `ADMIN` |
+| `ground` | inactive / other | `ground` / gray-200 | neutral-600 | neutral-400 | `ARCHIVED`, `SAVED`, `QUEUED`, `REFUNDED`, unknown |
+
+Trip statuses read the same in traveler and admin views (`TRIP_LIFECYCLE`); the traveler view only calms `COLLECTING` to `ground` since the traveler isn't asked to act. Sage and Ochre never carry badge text (below AA on white); they tint the wash and dot only. All text is ≥ 6:1 on its wash.
+
+`<StatusBadge>` (`variant="trip" | "payment" | "role"`) renders through `StatusIndicatorBadge`. Always pass a translated `label`; never render the raw enum `status` as text.
+
+Category/type labels (`Badge kind="category"`, non-XSED `product`) use the sage wash (`secondary/20` / `secondary/60`) with Deep Teal text, never a status hue.
 
 ### Category / type label (read-only)
 
@@ -287,12 +293,12 @@ Use `<ExperienceTypePills>` from `@/components/common/ExperienceTypePills`. Neve
 Manual chip style when needed outside the component:
 
 ```tsx
-<span className="rounded-[6px] border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700">
+<span className="rounded-[6px] border border-secondary/60 bg-secondary/20 px-2 py-0.5 text-[11px] font-medium text-primary">
   {label}
 </span>
 ```
 
-Level label (below chips): plain `text-xs text-neutral-500 mt-1` — no chip treatment.
+Level: `<Badge kind="level">` in the same row and the same `category` tone as the type chips. Types and level share one color — don't give the level or each type its own.
 
 Existing XSED category badges/chips use `<ProductBadge value={label} />`. It uppercases only the exact product marker and uses `bg-xsed` with `text-white`, as explicitly requested. White text on the existing orange does not meet WCAG AA for small text. This is a **badge-only** treatment: never wrap navigation, headings, tabs, prose, or plain summary/level text. Keep translated TGIS labels and free-form content unchanged. Do not use the legacy red `xsed-50`–`xsed-800` scale for orange branding.
 
@@ -417,3 +423,15 @@ Dashboard pages use `<HeaderHero>` (not `<Hero>`):
 ```
 
 **Critical**: `Section` component (`src/components/layout/Section.tsx` line 63) applies `text-center` to its inner wrapper. Always add `text-left` to the `rt-container` div — otherwise all content inherits centered alignment.
+
+---
+
+## Emails
+
+Templates in `src/emails/` are built from the shared parts in `src/emails/components/`. Never hand-roll heading, button or panel styles in a template.
+
+- `EmailLayout` — Off White canvas, colour logo header, white card, and `EmailFooter` (the app footer, read from `dict.footer`). Content is left-aligned.
+- `EmailHeading` (optional `eyebrow`), `EmailText` (`body` | `note`), `EmailDetailList` (key/value rows), `EmailPanel` (Off White block with a label).
+- `EmailButton` — ButtonV2 shape, `sm` size by default (44px; `size="default"` for 58px). `primary` (Teal) by default; `feature` (Ochre) only for moment emails (reveal, trip start, trip completed); `xsed` (Canyon Clay) only for XSED. `align="center"` only inside centred marketing blocks.
+- Colours and fonts come from `src/emails/components/tokens.ts`. Images are PNG (no SVG) served from `EMAIL_ASSET_ORIGIN`.
+- Editorial weight is 700; `emailBrandRules.test.ts` fails on 800 or a template without the shared footer.

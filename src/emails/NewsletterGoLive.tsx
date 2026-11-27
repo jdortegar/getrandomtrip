@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Column,
   Container,
   Font,
@@ -15,6 +14,10 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import EmailClientResets from "./components/EmailClientResets";
+import EmailButton from "./components/EmailButton";
+import EmailFooter from "./components/EmailFooter";
+import { emailColors } from "./components/tokens";
 
 interface NewsletterGoLiveProps {
   appUrl?: string;
@@ -51,6 +54,7 @@ export default function NewsletterGoLive({
   return (
     <Html lang="es">
       <Head>
+        <EmailClientResets />
         <Font
           fontFamily="Nothing You Could Do"
           fallbackFontFamily="Georgia"
@@ -69,16 +73,6 @@ export default function NewsletterGoLive({
             format: "woff2",
           }}
           fontWeight={700}
-          fontStyle="normal"
-        />
-        <Font
-          fontFamily="Barlow Condensed"
-          fallbackFontFamily="Arial"
-          webFont={{
-            url: "https://fonts.gstatic.com/s/barlowcondensed/v13/HTxwL3I-JCGChYJ8VI-L6OO_au7B47b1z3bWuYMBYro.woff2",
-            format: "woff2",
-          }}
-          fontWeight={800}
           fontStyle="normal"
         />
         <Font
@@ -115,7 +109,7 @@ export default function NewsletterGoLive({
       <Preview>
         Tu próxima aventura te espera — diseñada especialmente para vos.
       </Preview>
-      <Body style={body}>
+      <Body id="body" style={body}>
         <Container style={container}>
           {/* ── Hero ── */}
           <Section style={heroSection}>
@@ -234,70 +228,12 @@ export default function NewsletterGoLive({
 
           {/* ── CTA ── */}
           <Section style={ctaSection}>
-            <Button href={BASE_URL} style={ctaButton}>
+            <EmailButton align="center" href={BASE_URL} variant="feature">
               GETRANDOMTRIP!
-            </Button>
+            </EmailButton>
           </Section>
 
-          {/* ── Footer ── */}
-          <Section style={footerSection}>
-            <Row>
-              <Column align="center">
-                <Text style={footerTagline}>
-                  VIAJAR TAMBIÉN ES SOLTAR EL CONTROL.
-                </Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Text style={footerLogo}>
-                  WONDER • WANDER • <span style={footerLogoScript}>REPEAT</span>
-                </Text>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Link
-                  href="https://www.facebook.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-facebook.png")}
-                    width="24"
-                    height="24"
-                    alt="Facebook"
-                  />
-                </Link>
-                <Link
-                  href="https://www.instagram.com/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-instagram.png")}
-                    width="24"
-                    height="24"
-                    alt="Instagram"
-                  />
-                </Link>
-                <Link
-                  href="https://www.linkedin.com/company/getrandomtrip"
-                  style={socialLink}
-                >
-                  <Img
-                    src={img("/images/newsletter/social-linkedin.png")}
-                    width="24"
-                    height="24"
-                    alt="LinkedIn"
-                  />
-                </Link>
-              </Column>
-            </Row>
-            <Row>
-              <Column align="center">
-                <Text style={footerCopyright}>© 2026 RANDOMTRIP</Text>
-              </Column>
-            </Row>
-          </Section>
+          <EmailFooter locale="es" />
         </Container>
       </Body>
     </Html>
@@ -307,7 +243,7 @@ export default function NewsletterGoLive({
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const body: React.CSSProperties = {
-  backgroundColor: "#f5f5f5",
+  backgroundColor: emailColors.ground,
   margin: "0",
   padding: "0",
   fontFamily: "'Barlow', Arial, Helvetica, sans-serif",
@@ -324,13 +260,13 @@ const heroSection: React.CSSProperties = {
 };
 
 const introSection: React.CSSProperties = {
-  backgroundColor: "#f9f8f8",
+  backgroundColor: emailColors.ground,
   padding: "36px 40px",
   textAlign: "center",
 };
 
 const introText: React.CSSProperties = {
-  color: "#888787",
+  color: emailColors.muted,
   fontSize: "13px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -348,7 +284,7 @@ const chooseSection: React.CSSProperties = {
 
 const eyebrow: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#a4b4aa",
+  color: emailColors.primary,
   fontSize: "12px",
   fontWeight: "700",
   letterSpacing: "6px",
@@ -362,7 +298,7 @@ const sectionHeading: React.CSSProperties = {
   fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
   fontSize: "48px",
   fontWeight: "700",
-  color: "#111827",
+  color: emailColors.ink,
   margin: "0 0 16px",
   lineHeight: "1.04",
   textTransform: "uppercase",
@@ -370,7 +306,7 @@ const sectionHeading: React.CSSProperties = {
 };
 
 const sectionDescription: React.CSSProperties = {
-  color: "#888",
+  color: emailColors.muted,
   fontSize: "12px",
   fontFamily: "'Barlow', Arial, sans-serif",
   fontWeight: "400",
@@ -399,7 +335,7 @@ const howSection: React.CSSProperties = {
 };
 
 const stepsSection: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
+  backgroundColor: emailColors.ground,
   padding: "48px 40px",
 };
 
@@ -417,7 +353,7 @@ const stepIcon: React.CSSProperties = {
 
 const stepTitle: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#111827",
+  color: emailColors.ink,
   fontSize: "16px",
   fontWeight: "700",
   margin: "0 0 12px",
@@ -427,7 +363,7 @@ const stepTitle: React.CSSProperties = {
 
 const stepDescription: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#4b5563",
+  color: emailColors.muted,
   fontSize: "12px",
   fontWeight: "400",
   margin: "0",
@@ -443,7 +379,7 @@ const closingSection: React.CSSProperties = {
 
 const closingHeadline: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#111827",
+  color: emailColors.ink,
   fontSize: "20px",
   fontWeight: "400",
   margin: "0 auto 16px",
@@ -454,7 +390,7 @@ const closingHeadline: React.CSSProperties = {
 
 const closingSubtext: React.CSSProperties = {
   fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#888",
+  color: emailColors.muted,
   fontSize: "13px",
   fontWeight: "400",
   margin: "0 auto",
@@ -469,75 +405,9 @@ const ctaSection: React.CSSProperties = {
   textAlign: "center",
 };
 
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#ffc500",
-  color: "#0f5c60",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.2px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "11px 40px",
-  borderRadius: "3px",
-  display: "inline-block",
-};
 
-const footerSection: React.CSSProperties = {
-  marginTop: "12px",
-  backgroundColor: "#ffffff",
-  padding: "24px 32px 32px",
-  textAlign: "center",
-};
 
-const footerTagline: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "9px",
-  fontWeight: "400",
-  letterSpacing: "0.9px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "0 0 16px",
-  lineHeight: "1.5",
-};
 
-const footerLogo: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "16px",
-  fontWeight: "400",
-  letterSpacing: "2px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "0 0 16px",
-  lineHeight: "1.4",
-};
 
-const footerLogoScript: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "16px",
-  fontWeight: "400",
-  letterSpacing: "2px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  color: "#ffc500",
-};
 
-const socialLink: React.CSSProperties = {
-  display: "inline-block",
-  margin: "0 15px",
-};
 
-const footerCopyright: React.CSSProperties = {
-  fontFamily: "'Barlow', Arial, sans-serif",
-  color: "#626262",
-  fontSize: "9px",
-  fontWeight: "400",
-  letterSpacing: "0.9px",
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "16px 0 0",
-  lineHeight: "1.5",
-};

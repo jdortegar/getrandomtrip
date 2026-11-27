@@ -471,7 +471,15 @@ export interface DesignSystemDict {
       PENDING_REVIEW: string;
       PENDING_TRIPPER_REVIEW: string;
       INACTIVE: string;
-        ARCHIVED: string;
+      ARCHIVED: string;
+    };
+    travelerStatusHint: string;
+    travelerStatuses: {
+      CONFIRMED: string;
+      REVEALED: string;
+      COMPLETED: string;
+      CANCELLED: string;
+      COLLECTING: string;
     };
   };
   headings: {
@@ -1320,6 +1328,12 @@ export interface DashboardDict {
     paidOn: string;
     title: string;
     totalLabel: string;
+    /** Trip length when it is a single night. */
+    nightOne: string;
+    /** "{{n}} nights" — `n` is the night count (2+). */
+    nights: string;
+    /** "{{n}} travelers" — `n` is the headcount. */
+    travelers: string;
     viewMore: string;
   };
   common: {
@@ -3628,6 +3642,7 @@ export interface TripDetailBuyerDocumentsDict {
 export interface DestinationAssignmentReminderDict {
   subject: string;
   preview: string;
+  eyebrow: string;
   heading: string;
   body: string;
   clientLabel: string;
@@ -3647,6 +3662,7 @@ export interface TripRevealNotificationDict {
 export interface TravelerDetailsReminderDict {
   subject: string;
   preview: string;
+  eyebrow: string;
   heading: string;
   body: string;
   fillEmpty: string;

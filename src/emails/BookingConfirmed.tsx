@@ -1,7 +1,12 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import { Button, Heading, Section, Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
+import { emailColors, emailFonts } from "./components/tokens";
 
 interface BookingConfirmedProps {
   client: string;
@@ -16,28 +21,30 @@ interface BookingConfirmedProps {
 const copy = {
   es: {
     preview: "¡Tu reserva está confirmada! Tu aventura comienza pronto.",
+    eyebrow: "Tu viaje",
     heading: "¡Reserva confirmada!",
     body: (client: string) =>
       `Hola ${client}, tu reserva fue confirmada exitosamente. Estamos preparando todo para que tu experiencia sea increíble.`,
-    tripLabel: "Tipo de viaje:",
-    nightsLabel: "Noches:",
-    departureDateLabel: "Fecha de salida:",
+    tripLabel: "Tipo de viaje",
+    nightsLabel: "Noches",
+    departureDateLabel: "Fecha de salida",
     subtext:
       "Recibirás más detalles a medida que se acerque la fecha. ¡Gracias por confiar en Randomtrip!",
-    cta: "VER MI VIAJE",
+    cta: "Ver mi viaje",
     receiptLink: "Ver comprobante de pago",
   },
   en: {
     preview: "Your booking is confirmed! Your adventure starts soon.",
+    eyebrow: "Your trip",
     heading: "Booking confirmed!",
     body: (client: string) =>
       `Hi ${client}, your booking has been successfully confirmed. We're preparing everything to make your experience incredible.`,
-    tripLabel: "Trip type:",
-    nightsLabel: "Nights:",
-    departureDateLabel: "Departure date:",
+    tripLabel: "Trip type",
+    nightsLabel: "Nights",
+    departureDateLabel: "Departure date",
     subtext:
       "You'll receive more details as the date approaches. Thank you for trusting Randomtrip!",
-    cta: "VIEW MY TRIP",
+    cta: "View my trip",
     receiptLink: "View payment receipt",
   },
 };
@@ -59,38 +66,26 @@ export default function BookingConfirmed({
   const c = copy[locale];
   const ctaHref = `${getApplicationOrigin()}/${locale}/dashboard/trips/${encodeURIComponent(tripRequestId)}`;
 
+  const details = [
+    { label: c.tripLabel, value: tripType },
+    { label: c.nightsLabel, value: nights },
+    ...(departureDate
+      ? [{ label: c.departureDateLabel, value: departureDate }]
+      : []),
+  ];
+
   return (
     <EmailLayout locale={locale} preview={c.preview}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(client)}</Text>
-
-      {/* Trip summary */}
-      <Section style={summaryPanel}>
-        <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.tripLabel}</span>{" "}
-          <span style={summaryValue}>{tripType}</span>
-        </Text>
-        <Text style={summaryRow}>
-          <span style={summaryLabel}>{c.nightsLabel}</span>{" "}
-          <span style={summaryValue}>{nights}</span>
-        </Text>
-        {departureDate && (
-          <Text style={summaryRow}>
-            <span style={summaryLabel}>{c.departureDateLabel}</span>{" "}
-            <span style={summaryValue}>{departureDate}</span>
-          </Text>
-        )}
-      </Section>
-
-      <Text style={subtextStyle}>{c.subtext}</Text>
-      <Button href={ctaHref} style={ctaButton}>
-        {c.cta}
-      </Button>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(client)}</EmailText>
+      <EmailDetailList items={details} />
+      <EmailText variant="note">{c.subtext}</EmailText>
+      <EmailButton href={ctaHref}>{c.cta}</EmailButton>
       {receiptUrl && (
-        <Text style={receiptLinkText}>
-          <a href={receiptUrl} style={receiptLinkAnchor}>
+        <Text style={receiptText}>
+          <Link href={receiptUrl} style={receiptLink}>
             {c.receiptLink}
-          </a>
+          </Link>
         </Text>
       )}
     </EmailLayout>
@@ -99,87 +94,14 @@ export default function BookingConfirmed({
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
+const receiptText: React.CSSProperties = {
+  margin: "0",
 };
 
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
+const receiptLink: React.CSSProperties = {
+  color: emailColors.primary,
+  fontFamily: emailFonts.body,
   fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 24px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const summaryPanel: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  borderRadius: "8px",
-  padding: "20px 32px",
-  margin: "0 auto 24px",
-  maxWidth: "400px",
-  textAlign: "left",
-};
-
-const summaryRow: React.CSSProperties = {
-  margin: "0 0 8px",
-  fontSize: "13px",
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-};
-
-const summaryLabel: React.CSSProperties = {
-  fontWeight: "700",
-  color: "#383838", // Ink
-};
-
-const summaryValue: React.CSSProperties = {
-  fontWeight: "400",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const receiptLinkText: React.CSSProperties = {
-  margin: "16px auto 0",
-  textAlign: "center",
-};
-
-const receiptLinkAnchor: React.CSSProperties = {
-  color: "#0F5C60", // Deep Teal (brand primary)
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "13px",
   fontWeight: "600",
   textDecoration: "underline",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
 };

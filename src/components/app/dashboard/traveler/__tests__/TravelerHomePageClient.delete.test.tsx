@@ -118,14 +118,19 @@ it.each(["http", "network"])(
 it("never lists a companion's paid trip as awaiting payment", async () => {
   // The API strips `payment` for companions, so the trip arrives without one.
   vi.mocked(getTrips).mockResolvedValue([
-    { ...trips[0], id: "companion-trip", status: "CONFIRMED", viewerRole: "companion" },
+    {
+      ...trips[0],
+      id: "companion-trip",
+      status: "CONFIRMED",
+      viewerRole: "companion",
+    },
   ]);
 
   await act(async () =>
     root.render(
       <TravelerHomePageClient
         copy={en.dashboard}
-          currencyCopy={en.currency}
+        currencyCopy={en.currency}
         eyebrow="Dashboard"
         heading="Your trips"
         locale="en"
@@ -135,6 +140,10 @@ it("never lists a companion's paid trip as awaiting payment", async () => {
     ),
   );
 
-  expect(container.querySelector('[data-component="UnpaidTripsAlert"]')).toBeNull();
-  expect(container.querySelector('a[href="/en/checkout?tripId=companion-trip"]')).toBeNull();
+  expect(
+    container.querySelector('[data-component="UnpaidTripsAlert"]'),
+  ).toBeNull();
+  expect(
+    container.querySelector('a[href="/en/checkout?tripId=companion-trip"]'),
+  ).toBeNull();
 });

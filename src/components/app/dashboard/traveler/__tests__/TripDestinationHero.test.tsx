@@ -5,11 +5,16 @@ import { TripDestinationHero } from "@/components/app/dashboard/traveler/TripDes
 import en from "@/dictionaries/en.json";
 import type { TripDetailsData } from "@/types/tripDetails";
 
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 const copy = en.tripItinerary.hero;
 
-function trip(overrides: Partial<TripDetailsData> = {}, teaser: string | null = "A pause on the road."): TripDetailsData {
+function trip(
+  overrides: Partial<TripDetailsData> = {},
+  teaser: string | null = "A pause on the road.",
+): TripDetailsData {
   return {
     id: "trip-1",
     status: "REVEALED",
@@ -70,7 +75,10 @@ describe("TripDestinationHero", () => {
 
   it("drops the country when none is known", () => {
     const text = render(
-      trip({ actualDestination: null, experience: { ...trip().experience!, destinationCountry: null } }),
+      trip({
+        actualDestination: null,
+        experience: { ...trip().experience!, destinationCountry: null },
+      }),
     );
     expect(text).toContain("Your next story");
     expect(text).not.toContain("Your next story /");

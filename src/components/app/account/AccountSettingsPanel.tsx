@@ -444,7 +444,7 @@ export function AccountSettingsPanel({
       {/* Overview */}
       {activeTab === "overview" && (
         <div className="space-y-6">
-          <div className="flex flex-col gap-4 rounded-2xl bg-neutral-50 p-6 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-200 sm:flex-row sm:items-center">
             <AvatarEditor
               imageEditorCopy={dict.imageEditor}
               showStatus

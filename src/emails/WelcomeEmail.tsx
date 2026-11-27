@@ -1,7 +1,9 @@
 import { getApplicationOrigin } from "@/lib/deployment";
-import { Button, Heading, Text } from "@react-email/components";
 import * as React from "react";
+import EmailButton from "./components/EmailButton";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface WelcomeEmailProps {
   name: string;
@@ -11,21 +13,23 @@ interface WelcomeEmailProps {
 const copy = {
   es: {
     preview: "¡Bienvenido/a a Randomtrip! Tu próxima aventura te espera.",
+    eyebrow: "Tu cuenta",
     heading: "¡Bienvenido/a!",
     body: (name: string) =>
       `Hola ${name}, estamos muy contentos de que te hayas unido a Randomtrip. Somos la plataforma donde el destino es siempre una sorpresa.`,
     subtext:
       "Configurá tu viaje, contanos qué tipo de experiencia buscás, y nosotros nos encargamos del resto. ¡La aventura está a un paso!",
-    cta: "EMPEZAR A PLANIFICAR",
+    cta: "Empezar a planificar",
   },
   en: {
     preview: "Welcome to Randomtrip! Your next adventure awaits.",
+    eyebrow: "Your account",
     heading: "Welcome!",
     body: (name: string) =>
       `Hi ${name}, we're thrilled to have you join Randomtrip. We're the platform where the destination is always a surprise.`,
     subtext:
       "Set up your trip, tell us what kind of experience you're looking for, and we'll take care of the rest. Adventure is just one step away!",
-    cta: "START PLANNING",
+    cta: "Start planning",
   },
 };
 
@@ -40,61 +44,12 @@ export default function WelcomeEmail({ name, locale }: WelcomeEmailProps) {
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
-      <Heading style={heading}>{c.heading}</Heading>
-      <Text style={bodyText}>{c.body(name)}</Text>
-      <Text style={subtextStyle}>{c.subtext}</Text>
-      <Button href={ctaHref} style={ctaButton}>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailText>{c.body(name)}</EmailText>
+      <EmailText variant="note">{c.subtext}</EmailText>
+      <EmailButton href={ctaHref}>
         {c.cta}
-      </Button>
+      </EmailButton>
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 16px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "center",
-};
-
-const subtextStyle: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "13px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 auto 32px",
-  lineHeight: "1.6",
-  maxWidth: "400px",
-  textAlign: "center",
-};
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: "#E5A51C", // Ochre (brand feature/CTA)
-  color: "#383838", // Ink
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontSize: "12px",
-  fontWeight: "600",
-  letterSpacing: "1.5px",
-  lineHeight: "24px",
-  textTransform: "uppercase",
-  textDecoration: "none",
-  padding: "16px 40px",
-  borderRadius: "2px",
-  display: "inline-block",
-};

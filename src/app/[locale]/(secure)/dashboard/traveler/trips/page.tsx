@@ -14,7 +14,7 @@ export default async function TravelerTripsPage(props: {
   const dict = await getDictionary(locale);
 
   return (
-    <Section className="py-10!">
+    <Section className="py-10!" variant="ground">
       <div className="rt-container text-left">
         <TravelerTripsPageClient
           copy={dict.dashboard}

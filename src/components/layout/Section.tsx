@@ -14,7 +14,8 @@ type SectionProps = {
   eyebrow?: string;
   eyebrowColor?: string;
   className?: string;
-  variant?: "default" | "light" | "dark";
+  /** `ground`: Off White canvas, for dashboard pages whose cards are white. */
+  variant?: "default" | "light" | "dark" | "ground";
   id?: string;
   fullWidth?: boolean;
   style?: React.CSSProperties;
@@ -41,6 +42,7 @@ const Section = ({
       className={cn("relative ", {
         "bg-white text-ink": variant === "default",
         "bg-gray-50 text-ink": variant === "light",
+        "bg-ground text-ink": variant === "ground",
         "bg-primary text-white": variant === "dark",
       })} data-component="Section"
     >

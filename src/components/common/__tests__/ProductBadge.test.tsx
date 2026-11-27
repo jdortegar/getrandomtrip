@@ -30,7 +30,7 @@ describe("ProductBadge", () => {
       const html = renderToStaticMarkup(<ProductBadge value={value} />);
       expect(html).toContain(`>${value}</span>`);
       expect(html).toContain("uppercase");
-      expect(html).toContain("bg-sky-50");
+      expect(html).toContain("bg-secondary/20");
       expect(html).not.toContain("bg-xsed");
     },
   );
@@ -39,7 +39,7 @@ describe("ProductBadge", () => {
     const html = renderToStaticMarkup(
       <ProductBadge value="couple" />,
     );
-    expect(html).toContain("bg-sky-50");
+    expect(html).toContain("bg-secondary/20");
     expect(html).toContain(">couple</span>");
     expect(html).not.toContain("bg-xsed");
   });

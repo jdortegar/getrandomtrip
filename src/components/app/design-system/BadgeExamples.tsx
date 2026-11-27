@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ProductBadge } from "@/components/common/ProductBadge";
 import Chip from "@/components/Chip";
 import { ExperienceStatusBadge } from "@/components/common/ExperienceStatusBadge";
+import { StatusIndicatorBadge } from "@/components/common/StatusIndicatorBadge";
 import { GalleryPanel } from "@/components/app/design-system/GalleryPanel";
 import { UsageExample } from "@/components/app/design-system/UsageExample";
 import type { DesignSystemDict } from "@/lib/types/dictionary";
@@ -37,6 +38,19 @@ export function BadgeExamples({ copy }: BadgeExamplesProps) {
             ))}
           </div>
           <p className="mt-5 text-neutral-600 text-sm">{labels.statusHint}</p>
+          <div className="flex flex-wrap gap-3 mt-6">
+            {Object.entries(labels.travelerStatuses).map(([status, label]) => (
+              <StatusIndicatorBadge
+                family="traveler-trip"
+                key={status}
+                label={label}
+                status={status}
+              />
+            ))}
+          </div>
+          <p className="mt-5 text-neutral-600 text-sm">
+            {labels.travelerStatusHint}
+          </p>
         </GalleryPanel>
         <GalleryPanel className="bg-accent" title={labels.chipTitle}>
           <div
@@ -68,6 +82,7 @@ export function BadgeExamples({ copy }: BadgeExamplesProps) {
       </div>
       <UsageExample
         code={`<ExperienceStatusBadge label={copy.status.ACTIVE} status="ACTIVE" />
+<StatusIndicatorBadge family="traveler-trip" label={copy.tripStatus.REVEALED} status="REVEALED" />
 <Badge label={copy.category} />
 <Chip active={selected} onClick={() => setSelected(!selected)}>{copy.category}</Chip>`}
         label={copy.usage}

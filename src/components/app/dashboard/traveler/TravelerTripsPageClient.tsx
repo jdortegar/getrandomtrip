@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Plus } from "lucide-react";
 import {
   TravelerTripsTable,
   type StatusFilter,
 } from "@/components/app/dashboard/traveler/TravelerTripsTable";
 import { DashboardSkeleton } from "@/components/app/dashboard/DashboardSkeleton";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import { useDictionary } from "@/hooks/useDictionary";
 import { useHasLoadedOnce } from "@/hooks/useHasLoadedOnce";
 import type { DashboardCopy } from "@/components/app/dashboard/types";
 import type { TravelerDashboardDict } from "@/lib/types/dictionary";
+import { pathForLocale } from "@/lib/i18n/pathForLocale";
+import type { Locale } from "@/lib/i18n/config";
 import { getPaginatedTrips, type Trip } from "@/lib/utils/trips";
 
 const PAGE_SIZE = 20;
@@ -166,13 +171,24 @@ export function TravelerTripsPageClient({
       className="space-y-10 py-10 text-left"
       data-component="TravelerTripsPageClient"
     >
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          {pageCopy.eyebrow}
-        </p>
-        <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
-          {pageCopy.title}
-        </h2>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+            {pageCopy.eyebrow}
+          </p>
+          <h2 className="mt-1.5 font-barlow-condensed text-3xl font-bold uppercase leading-none text-ink">
+            {pageCopy.title}
+          </h2>
+          <p className="mt-2 text-sm text-neutral-600">
+            {pageCopy.description}
+          </p>
+        </div>
+        <ButtonV2 asChild className="self-start sm:self-auto" size="sm">
+          <Link href={pathForLocale(locale as Locale, "/journey")}>
+            {copy.upcomingTrips.newTrip}
+            <Plus aria-hidden="true" />
+          </Link>
+        </ButtonV2>
       </div>
 
       <TravelerTripsTable

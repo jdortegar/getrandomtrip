@@ -789,6 +789,14 @@
         "PENDING_TRIPPER_REVIEW": "Pending tripper review",
         "INACTIVE": "Inactive",
         "ARCHIVED": "Archived"
+      },
+      "travelerStatusHint": "Traveler trip badges use brand tones: they live on brand-palette pages.",
+      "travelerStatuses": {
+        "CONFIRMED": "Confirmed",
+        "REVEALED": "Revealed",
+        "COMPLETED": "Completed",
+        "CANCELLED": "Cancelled",
+        "COLLECTING": "Waiting on your group"
       }
     },
     "headings": {
@@ -6413,7 +6421,7 @@
       "emptyFiltered": "No trips match this filter.",
       "errorLoad": "Could not load trips. Please try again.",
       "experienceLabel": "Experience",
-      "eyebrow": "Inventory",
+      "eyebrow": "Your history",
       "filterAll": "All",
       "filterCompleted": "Completed",
       "filterLabel": "Trip status",
@@ -6448,6 +6456,9 @@
       "paidOn": "Paid on",
       "title": "Completed trips",
       "totalLabel": "trips",
+      "nightOne": "1 night",
+      "nights": "{{n}} nights",
+      "travelers": "{{n}} travelers",
       "viewMore": "View more"
     },
     "common": {
@@ -7680,6 +7691,7 @@
   "manualTravelerDetailsReminder": {
     "subject": "Complete your companion details",
     "preview": "Help us prepare the reservations for your trip.",
+    "eyebrow": "Your trip",
     "heading": "We need your companion details",
     "body": "Some companion details are still missing from your trip. Please complete them so we can prepare your reservations.",
     "fillEmpty": "Open your trip dashboard to fill in the missing details or invite your companions to complete their information.",
@@ -7692,10 +7704,11 @@
   "travelerDetailsReminder": {
     "subject": "Your XSED trip: complete your companion details",
     "preview": "Your XSED trip is within 72 hours. Some companion details are still missing.",
+    "eyebrow": "Your XSED trip",
     "heading": "Complete your companion details",
     "body": "Your XSED trip departs within 72 hours, and some companion details are still missing. Open your trip to complete them or send an invitation.",
     "fillEmpty": "Empty fields remain editable. Details already saved are protected; contact us if they need a correction.",
-    "cta": "OPEN MY TRIP"
+    "cta": "Open my trip"
   },
   "pdfLayout": {
     "reservationDetails": "RESERVATION DETAILS",
@@ -7776,14 +7789,15 @@
   "destinationAssignmentReminder": {
     "subject": "Assign destination: reveal within {hours} hours",
     "preview": "Assign an experience before the destination reveal.",
+    "eyebrow": "Admin panel",
     "heading": "Destination assignment pending",
     "body": "Hi {admin}, please assign an experience for this trip before the destination reveal.",
-    "clientLabel": "Traveler:",
-    "tripIdLabel": "Booking ID:",
-    "deadlineLabel": "Scheduled reveal deadline (UTC):",
+    "clientLabel": "Traveler",
+    "tripIdLabel": "Booking ID",
+    "deadlineLabel": "Reveal (UTC)",
     "urgency": "The destination reveal is scheduled within {hours} hours. Please assign an experience before {deadline}.",
     "notificationBody": "The destination reveal for {client} is scheduled within {hours} hours ({deadline}). Assign an experience before the reveal.",
-    "cta": "GO TO ADMIN PANEL"
+    "cta": "Go to admin panel"
   },
   "currency": {
     "checkoutDisclaimer": "Charges are made in US dollars (USD). Amounts in other currencies are approximate, and your bank sets the final exchange rate.",

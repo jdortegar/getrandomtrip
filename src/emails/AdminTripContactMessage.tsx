@@ -1,6 +1,7 @@
-import { Heading, Text } from "@react-email/components";
 import * as React from "react";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailText from "./components/EmailText";
 
 interface AdminTripContactMessageProps {
   /** Raw admin-authored plain text, newlines intact. */
@@ -12,9 +13,11 @@ interface AdminTripContactMessageProps {
 
 const copy = {
   es: {
+    eyebrow: "Tu viaje",
     heading: "Un mensaje del equipo",
   },
   en: {
+    eyebrow: "Your trip",
     heading: "A message from the team",
   },
 };
@@ -42,35 +45,10 @@ export default function AdminTripContactMessage({
 
   return (
     <EmailLayout locale={locale} preview={subject}>
-      <Heading style={heading}>{c.heading}</Heading>
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
       {toParagraphs(body).map((paragraph, i) => (
-        <Text key={i} style={bodyText}>
-          {paragraph}
-        </Text>
+        <EmailText key={i}>{paragraph}</EmailText>
       ))}
     </EmailLayout>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "42px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1",
-  textTransform: "uppercase",
-};
-
-const bodyText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 0 16px",
-  lineHeight: "1.7",
-  maxWidth: "440px",
-  textAlign: "left",
-};

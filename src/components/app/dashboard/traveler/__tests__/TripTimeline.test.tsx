@@ -4,7 +4,9 @@ import { afterEach, expect, it } from "vitest";
 import { TripTimeline } from "@/components/app/dashboard/traveler/TripTimeline";
 import es from "@/dictionaries/es.json";
 
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 let container: HTMLDivElement;
 let root: Root;
@@ -27,7 +29,12 @@ it("renders every milestone in order and flags the current one", () => {
           { key: "created", state: "done", date: "2026-01-10T15:00:00.000Z" },
           { key: "paid", state: "done", date: null },
           { key: "revealed", state: "current", date: null },
-          { key: "departure", state: "upcoming", date: "2026-03-12T00:00:00.000Z", dateOnly: true },
+          {
+            key: "departure",
+            state: "upcoming",
+            date: "2026-03-12T00:00:00.000Z",
+            dateOnly: true,
+          },
         ]}
       />,
     ),

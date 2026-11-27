@@ -1,6 +1,10 @@
-import { Heading, Link, Section, Text } from "@react-email/components";
+import { Link } from "@react-email/components";
 import * as React from "react";
+import EmailDetailList from "./components/EmailDetailList";
+import EmailHeading from "./components/EmailHeading";
 import EmailLayout from "./components/EmailLayout";
+import EmailPanel from "./components/EmailPanel";
+import { emailColors } from "./components/tokens";
 
 interface ContactFormSubmissionProps {
   attachmentName?: string;
@@ -13,6 +17,7 @@ interface ContactFormSubmissionProps {
 
 const copy = {
   es: {
+    eyebrow: "Bandeja de entrada",
     heading: "Nuevo mensaje del formulario de contacto",
     name: "Nombre",
     email: "Email",
@@ -22,6 +27,7 @@ const copy = {
     preview: "Nuevo mensaje del formulario de contacto",
   },
   en: {
+    eyebrow: "Inbox",
     heading: "New contact form submission",
     name: "Name",
     email: "Email",
@@ -44,79 +50,32 @@ export default function ContactFormSubmission({
 
   return (
     <EmailLayout locale={locale} preview={c.preview}>
-      <Heading style={heading}>{c.heading}</Heading>
-
-      <Text style={fieldText}>
-        <strong>{c.name}:</strong> {name}
-      </Text>
-      <Text style={fieldText}>
-        <strong>{c.email}:</strong>{" "}
-        <Link href={`mailto:${email}`} style={emailLink}>
-          {email}
-        </Link>
-      </Text>
-      <Text style={fieldText}>
-        <strong>{c.interest}:</strong> {interest}
-      </Text>
-
-      <Text style={{ ...fieldText, marginTop: "20px" }}>
-        <strong>{c.message}:</strong>
-      </Text>
-      <Section style={messageBox}>
-        <Text style={messageText}>{message}</Text>
-      </Section>
-
-      {attachmentName && (
-        <Text style={{ ...fieldText, marginTop: "20px" }}>
-          <strong>{c.attachment}:</strong> {attachmentName}
-        </Text>
-      )}
+      <EmailHeading eyebrow={c.eyebrow}>{c.heading}</EmailHeading>
+      <EmailDetailList
+        items={[
+          { label: c.name, value: name },
+          {
+            label: c.email,
+            value: (
+              <Link href={`mailto:${email}`} style={emailLink}>
+                {email}
+              </Link>
+            ),
+          },
+          { label: c.interest, value: interest },
+          ...(attachmentName
+            ? [{ label: c.attachment, value: attachmentName }]
+            : []),
+        ]}
+      />
+      <EmailPanel label={c.message}>{message}</EmailPanel>
     </EmailLayout>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const heading: React.CSSProperties = {
-  fontFamily: "'Barlow Condensed', 'Impact', 'Arial Narrow', Arial, sans-serif",
-  fontSize: "32px",
-  fontWeight: "800",
-  color: "#383838", // Ink
-  margin: "0 0 24px",
-  lineHeight: "1.15",
-  textAlign: "left",
-};
-
-const fieldText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0 0 8px",
-  lineHeight: "1.6",
-  textAlign: "left",
-};
-
-const messageBox: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  border: "1px solid #e5e7eb",
-  borderRadius: "10px",
-  padding: "14px",
-  margin: "8px 0 0",
-};
-
-const messageText: React.CSSProperties = {
-  color: "#383838", // Ink
-  fontSize: "14px",
-  fontFamily: "'Barlow', Arial, sans-serif",
-  fontWeight: "400",
-  margin: "0",
-  lineHeight: "1.6",
-  textAlign: "left",
-  whiteSpace: "pre-wrap",
-};
-
 const emailLink: React.CSSProperties = {
-  color: "#0F5C60", // Deep Teal (brand primary),
+  color: emailColors.primary,
   textDecoration: "underline",
 };

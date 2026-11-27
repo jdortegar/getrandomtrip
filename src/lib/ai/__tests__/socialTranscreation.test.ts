@@ -40,6 +40,22 @@ it("sends the Spanish caption and every slide to a vision model with the brand r
   expect(parts[1].image_url.url).toMatch(/^data:image\/jpeg;base64,/);
   expect(options.model).toBe("gpt-4.1");
 });
+it("instructs the model to localize descriptive hashtags but preserve campaign tags", async () => {
+  const caption = "Tres pasos. #ViajesSorpresa #XSED";
+  const englishCaption = "Three steps. #SurpriseTrips #XSED";
+  m.complete.mockResolvedValue(
+    JSON.stringify({ ...valid, caption: englishCaption, slides: [] }),
+  );
+
+  expect((await transcreatePost(caption, [])).caption).toBe(englishCaption);
+
+  const [system, parts] = m.complete.mock.calls[0];
+  expect(JSON.parse(parts[0].text).spanishCaption).toBe(caption);
+  expect(system).toContain("#ViajesSorpresa becomes #SurpriseTrips");
+  expect(system).toContain(
+    "Keep brand, product, and campaign hashtags exactly as written.",
+  );
+});
 it("uses the configured social text model when set", async () => {
   vi.stubEnv("OPENAI_SOCIAL_TEXT_MODEL", "gpt-5");
   await transcreatePost(

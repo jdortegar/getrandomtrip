@@ -1,6 +1,10 @@
 import { normalizeExperienceClassification } from "@/lib/experiences/xsedExperience";
-import { EXPERIENCE_LEVELS, getExperienceTypes } from "@/lib/constants/packages";
+import {
+  EXPERIENCE_LEVELS,
+  getExperienceTypes,
+} from "@/lib/constants/packages";
 import { ProductBadge } from "@/components/common/ProductBadge";
+import { Badge } from "@/components/ui/Badge";
 
 interface ExperienceTypePillsProps {
   types: string[];
@@ -13,11 +17,16 @@ export function ExperienceTypePills({
   level,
   locale,
 }: ExperienceTypePillsProps) {
-  const classification = normalizeExperienceClassification({ type: types, level });
-  const displayLevel = level || types.includes("XSED") ? classification.level : null;
+  const classification = normalizeExperienceClassification({
+    type: types,
+    level,
+  });
+  const displayLevel =
+    level || types.includes("XSED") ? classification.level : null;
   const typeOptions = getExperienceTypes(locale);
   const levelLabel = displayLevel
-    ? (EXPERIENCE_LEVELS.find((l) => l.value === displayLevel)?.label ?? displayLevel)
+    ? (EXPERIENCE_LEVELS.find((l) => l.value === displayLevel)?.label ??
+      displayLevel)
     : null;
 
   return (
@@ -29,10 +38,8 @@ export function ExperienceTypePills({
             value={typeOptions.find((et) => et.value === t)?.label ?? t}
           />
         ))}
+        {levelLabel && <Badge kind="level" label={levelLabel} />}
       </div>
-      {levelLabel && (
-        <p className="mt-1 text-xs text-ink">{levelLabel}</p>
-      )}
     </div>
   );
 }

@@ -103,7 +103,9 @@ describe("TravelerTripsTable — empty-state journey link", () => {
       render("en", filter);
 
       expect(container.querySelector("a")).toBeNull();
-      expect(container.querySelector("table")).not.toBeNull();
+      expect(container.textContent).toContain(
+        enCopy.travelerDashboard.trips.emptyFiltered,
+      );
     },
   );
 
@@ -111,7 +113,9 @@ describe("TravelerTripsTable — empty-state journey link", () => {
     render("en", "all", 1);
 
     expect(container.querySelector("a")).toBeNull();
-    expect(container.querySelector("table")).not.toBeNull();
+    expect(container.textContent).toContain(
+      enCopy.travelerDashboard.trips.emptyFiltered,
+    );
   });
 });
 

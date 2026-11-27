@@ -789,6 +789,14 @@
         "PENDING_TRIPPER_REVIEW": "Pendiente de revisión del tripper",
         "INACTIVE": "Inactivo",
         "ARCHIVED": "Archivado"
+      },
+      "travelerStatusHint": "Las insignias de viajes del viajero usan los tonos de marca: viven en páginas con la paleta de marca.",
+      "travelerStatuses": {
+        "CONFIRMED": "Confirmado",
+        "REVEALED": "Revelado",
+        "COMPLETED": "Completado",
+        "CANCELLED": "Cancelado",
+        "COLLECTING": "Esperando a tu grupo"
       }
     },
     "headings": {
@@ -6413,7 +6421,7 @@
       "emptyFiltered": "No hay viajes que coincidan con este filtro.",
       "errorLoad": "No se pudieron cargar los viajes. Intenta de nuevo.",
       "experienceLabel": "Experiencia",
-      "eyebrow": "Inventario",
+      "eyebrow": "Tu historial",
       "filterAll": "Todos",
       "filterCompleted": "Completados",
       "filterLabel": "Estado del viaje",
@@ -6448,6 +6456,9 @@
       "paidOn": "Pagado el",
       "title": "Viajes realizados",
       "totalLabel": "viajes",
+      "nightOne": "1 noche",
+      "nights": "{{n}} noches",
+      "travelers": "{{n}} viajeros",
       "viewMore": "Ver mas"
     },
     "common": {
@@ -6550,10 +6561,10 @@
       "emptyTitle": "No tienes viajes proximos",
       "newTrip": "Nuevo Viaje",
       "title": "Proximos Viajes",
-      "viewDetails": "Ver Detalles",
+      "viewDetails": "Ver detalles",
       "revealCountdown": "Cuenta Regresiva",
-      "revealDestination": "Ver Destino",
-      "writeReview": "Dejar Reseña"
+      "revealDestination": "Ver destino",
+      "writeReview": "Dejar reseña"
     }
   },
   "tripperReviews": {
@@ -7680,6 +7691,7 @@
   "manualTravelerDetailsReminder": {
     "subject": "Completar los datos de acompañantes",
     "preview": "Ayúdanos a preparar las reservas de tu viaje.",
+    "eyebrow": "Tu viaje",
     "heading": "Necesitamos los datos de tus acompañantes",
     "body": "Todavía faltan datos de acompañantes en tu viaje. Completarlos nos permite preparar tus reservas.",
     "fillEmpty": "Desde el panel de tu viaje puedes completar los datos faltantes o invitar a tus acompañantes a completar su información.",
@@ -7692,10 +7704,11 @@
   "travelerDetailsReminder": {
     "subject": "Tu viaje XSED: completá los datos de tus acompañantes",
     "preview": "Tu viaje XSED sale en 72 horas o menos. Faltan datos de tus acompañantes.",
+    "eyebrow": "Tu viaje XSED",
     "heading": "Completá los datos de tus acompañantes",
     "body": "Tu viaje XSED sale en 72 horas o menos y todavía faltan datos de tus acompañantes. Abrí tu viaje para completarlos o enviar una invitación.",
     "fillEmpty": "Los campos vacíos siguen disponibles. Los datos guardados están protegidos; contactanos si necesitás corregirlos.",
-    "cta": "ABRIR MI VIAJE"
+    "cta": "Abrir mi viaje"
   },
   "pdfLayout": {
     "reservationDetails": "DETALLES DE LA RESERVA",
@@ -7776,14 +7789,15 @@
   "destinationAssignmentReminder": {
     "subject": "Asignar destino: revelación en las próximas {hours} horas",
     "preview": "Asignar una experiencia antes de la revelación del destino.",
+    "eyebrow": "Panel admin",
     "heading": "Asignación de destino pendiente",
     "body": "Hola {admin}, por favor asigna una experiencia para este viaje antes de la revelación del destino.",
-    "clientLabel": "Viajero:",
-    "tripIdLabel": "ID de reserva:",
-    "deadlineLabel": "Fecha límite de revelación programada (UTC):",
+    "clientLabel": "Viajero",
+    "tripIdLabel": "ID de reserva",
+    "deadlineLabel": "Revelación (UTC)",
     "urgency": "La revelación del destino está programada en las próximas {hours} horas. Asigna una experiencia antes de {deadline}.",
     "notificationBody": "La revelación del destino para {client} está programada en las próximas {hours} horas ({deadline}). Asigna una experiencia antes de la revelación.",
-    "cta": "IR AL PANEL ADMIN"
+    "cta": "Ir al panel admin"
   },
   "currency": {
     "checkoutDisclaimer": "Los cobros se hacen en dólares (USD). Los montos en otras monedas son aproximados y tu banco define el tipo de cambio final.",

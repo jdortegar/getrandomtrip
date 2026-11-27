@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Calendar, Loader2, Plane, Plus } from "lucide-react";
+import { ArrowRight, Loader2, Plane } from "lucide-react";
 import { TravelerTripRow } from "@/components/app/dashboard/traveler/TravelerTripRow";
 import { TravelerTripsFilters } from "@/components/app/dashboard/traveler/TravelerTripsFilters";
 import { Button } from "@/components/ui/Button";
+import { ButtonV2 } from "@/components/ui/ButtonV2";
 import { Pagination } from "@/components/ui/Pagination";
 import { TableLoadingOverlay } from "@/components/ui/TableLoadingOverlay";
 import { pathForLocale } from "@/lib/i18n/pathForLocale";
@@ -93,16 +94,13 @@ export function TravelerTripsTable({
         travelType={travelType}
       />
 
-      <TableLoadingOverlay
-        className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
-        isLoading={isLoading}
-      >
+      <TableLoadingOverlay className="rounded-2xl" isLoading={isLoading}>
         {hasError ? (
           <div
-            className="flex flex-col gap-3 items-center p-6 text-center"
+            className="flex flex-col items-center gap-3 rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-200"
             role="alert"
           >
-            <p className="text-red-600 text-sm">{pageCopy.errorLoad}</p>
+            <p className="text-sm text-red-600">{pageCopy.errorLoad}</p>
             <Button
               aria-busy={isLoading}
               disabled={isLoading}
@@ -110,7 +108,7 @@ export function TravelerTripsTable({
               variant="secondary"
             >
               {isLoading && (
-                <Loader2 aria-hidden="true" className="animate-spin h-4 w-4" />
+                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
               )}
               {isLoading ? pageCopy.loading : pageCopy.retry}
             </Button>
@@ -118,73 +116,40 @@ export function TravelerTripsTable({
         ) : (
           <div inert={isLoading || undefined}>
             {isEmptyAccount ? (
-              <div className="flex flex-col items-center gap-4 py-16 text-center">
-                <Plane className="h-14 w-14 text-neutral-300" />
+              <div className="flex flex-col items-center gap-5 rounded-2xl bg-white px-6 py-16 text-center shadow-sm ring-1 ring-gray-200">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary/15 text-primary">
+                  <Plane aria-hidden="true" className="h-6 w-6" />
+                </span>
                 <div>
-                  <p className="text-sm font-semibold text-neutral-700">
+                  <p className="font-barlow-condensed text-2xl font-bold uppercase leading-none text-ink">
                     {copy.upcomingTrips.emptyTitle}
                   </p>
-                  <p className="mt-1 text-sm text-ink">
+                  <p className="mt-2 text-sm text-neutral-600">
                     {copy.upcomingTrips.emptyMessage}
                   </p>
                 </div>
-                <Button asChild size="md">
+                <ButtonV2 asChild size="sm">
                   <Link href={pathForLocale(locale as Locale, "/journey")}>
-                    <Plus className="h-4 w-4" />
                     {copy.upcomingTrips.emptyCta}
+                    <ArrowRight aria-hidden="true" />
                   </Link>
-                </Button>
+                </ButtonV2>
               </div>
+            ) : trips.length === 0 ? (
+              <p className="rounded-2xl bg-white px-5 py-10 text-center text-sm text-neutral-600 shadow-sm ring-1 ring-gray-200">
+                {isLoading ? pageCopy.loading : pageCopy.emptyFiltered}
+              </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
-                        Trip
-                      </th>
-                      <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink sm:table-cell">
-                        Destination
-                      </th>
-                      <th className="hidden px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink md:table-cell">
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="h-3.5 w-3.5" />
-                          Date
-                        </span>
-                      </th>
-                      <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
-                        Status
-                      </th>
-                      <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-ink">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {trips.length === 0 ? (
-                      <tr>
-                        <td
-                          className="px-5 py-10 text-center text-sm text-ink"
-                          colSpan={5}
-                        >
-                          {isLoading
-                            ? pageCopy.loading
-                            : pageCopy.emptyFiltered}
-                        </td>
-                      </tr>
-                    ) : (
-                      trips.map((trip) => (
-                        <TravelerTripRow
-                          copy={copy}
-                          key={trip.id}
-                          locale={locale}
-                          trip={trip}
-                        />
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <ul className="flex flex-col gap-3">
+                {trips.map((trip) => (
+                  <TravelerTripRow
+                    copy={copy}
+                    key={trip.id}
+                    locale={locale}
+                    trip={trip}
+                  />
+                ))}
+              </ul>
             )}
           </div>
         )}

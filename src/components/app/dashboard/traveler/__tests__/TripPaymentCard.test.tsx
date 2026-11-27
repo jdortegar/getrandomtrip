@@ -5,7 +5,9 @@ import { TripPaymentCard } from "@/components/app/dashboard/traveler/TripPayment
 import es from "@/dictionaries/es.json";
 import type { TripPaymentSummary } from "@/types/tripDetails";
 
-(globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+(
+  globalThis as unknown as { IS_REACT_ACT_ENVIRONMENT: boolean }
+).IS_REACT_ACT_ENVIRONMENT = true;
 
 let container: HTMLDivElement;
 let root: Root;
@@ -31,7 +33,13 @@ function render(receiptHref?: string, perPerson?: number) {
   root = createRoot(container);
   act(() =>
     root.render(
-      <TripPaymentCard copy={es.tripDetail} locale="es" payment={payment} perPerson={perPerson} receiptHref={receiptHref} />,
+      <TripPaymentCard
+        copy={es.tripDetail}
+        locale="es"
+        payment={payment}
+        perPerson={perPerson}
+        receiptHref={receiptHref}
+      />,
     ),
   );
 }

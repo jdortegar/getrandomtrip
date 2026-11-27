@@ -64,7 +64,7 @@ export default async function TravelerSettingsPage(props: {
   }
 
   return (
-    <Section className="py-10!">
+    <Section className="py-10!" variant="ground">
       <div className="rt-container text-left">
         <div className="space-y-10">
           <div>
